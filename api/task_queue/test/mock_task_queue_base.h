@@ -32,6 +32,8 @@ class MockTaskQueueBase : public TaskQueueBase {
               (override));
 };
 
+static_assert(!std::is_abstract_v<MockTaskQueueBase>);
+
 }  // namespace webrtc
 
 #endif  // API_TASK_QUEUE_TEST_MOCK_TASK_QUEUE_BASE_H_

@@ -39,6 +39,8 @@ class MockAudioSink final : public webrtc::AudioTrackSinkInterface {
               (override));
 };
 
+static_assert(!std::is_abstract_v<MockAudioSink>);
+
 }  // namespace webrtc
 
 #endif  // API_TEST_MOCK_AUDIO_SINK_H_

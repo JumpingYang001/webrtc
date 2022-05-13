@@ -19,8 +19,12 @@
 
 namespace webrtc {
 
-class MockRtpReceiver : public rtc::RefCountedObject<RtpReceiverInterface> {
+class MockRtpReceiver : public RtpReceiverInterface {
  public:
+  static rtc::scoped_refptr<MockRtpReceiver> Create() {
+    return rtc::make_ref_counted<MockRtpReceiver>();
+  }
+
   MOCK_METHOD(rtc::scoped_refptr<MediaStreamTrackInterface>,
               track,
               (),
@@ -38,7 +42,12 @@ class MockRtpReceiver : public rtc::RefCountedObject<RtpReceiverInterface> {
               (absl::optional<double>),
               (override));
   MOCK_METHOD(std::vector<RtpSource>, GetSources, (), (const, override));
+
+ protected:
+  MockRtpReceiver() = default;
 };
+
+static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockRtpReceiver>>);
 
 }  // namespace webrtc
 

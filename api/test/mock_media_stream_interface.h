@@ -13,16 +13,16 @@
 
 #include <string>
 
+#include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
 #include "test/gmock.h"
 
 namespace webrtc {
 
-class MockAudioSource final
-    : public rtc::RefCountedObject<AudioSourceInterface> {
+class MockAudioSource : public AudioSourceInterface {
  public:
   static rtc::scoped_refptr<MockAudioSource> Create() {
-    return rtc::scoped_refptr<MockAudioSource>(new MockAudioSource());
+    return rtc::make_ref_counted<MockAudioSource>();
   }
 
   MOCK_METHOD(void,
@@ -48,14 +48,16 @@ class MockAudioSource final
   MOCK_METHOD(void, RemoveSink, (AudioTrackSinkInterface * sink), (override));
   MOCK_METHOD(const cricket::AudioOptions, options, (), (const, override));
 
- private:
+ protected:
   MockAudioSource() = default;
 };
 
-class MockAudioTrack final : public rtc::RefCountedObject<AudioTrackInterface> {
+static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockAudioSource>>);
+
+class MockAudioTrack : public AudioTrackInterface {
  public:
   static rtc::scoped_refptr<MockAudioTrack> Create() {
-    return rtc::scoped_refptr<MockAudioTrack>(new MockAudioTrack());
+    return rtc::make_ref_counted<MockAudioTrack>();
   }
 
   MOCK_METHOD(void,
@@ -80,12 +82,18 @@ class MockAudioTrack final : public rtc::RefCountedObject<AudioTrackInterface> {
               (),
               (override));
 
- private:
+ protected:
   MockAudioTrack() = default;
 };
 
+static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockAudioTrack>>);
+
 class MockMediaStream : public MediaStreamInterface {
  public:
+  static rtc::scoped_refptr<MockMediaStream> Create() {
+    return rtc::make_ref_counted<MockMediaStream>();
+  }
+
   MOCK_METHOD(std::string, id, (), (const override));
   MOCK_METHOD(AudioTrackVector, GetAudioTracks, (), (override));
   MOCK_METHOD(VideoTrackVector, GetVideoTracks, (), (override));
@@ -128,7 +136,7 @@ class MockMediaStream : public MediaStreamInterface {
               (override));
 };
 
-static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockMediaStream>>, "");
+static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockMediaStream>>);
 
 }  // namespace webrtc
 

@@ -37,6 +37,8 @@ class MockDecodedImageCallback : public DecodedImageCallback {
               (override));
 };
 
+static_assert(!std::is_abstract_v<MockDecodedImageCallback>);
+
 class MockVideoDecoder : public VideoDecoder {
  public:
   MockVideoDecoder() {
@@ -64,6 +66,8 @@ class MockVideoDecoder : public VideoDecoder {
   // destruction of the decoder instance occurs.
   MOCK_METHOD(void, Destruct, (), ());
 };
+
+static_assert(!std::is_abstract_v<MockVideoDecoder>);
 
 }  // namespace webrtc
 

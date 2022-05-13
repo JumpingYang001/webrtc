@@ -28,6 +28,8 @@ class MockAsyncDnsResolverResult : public AsyncDnsResolverResult {
   MOCK_METHOD(int, GetError, (), (const, override));
 };
 
+static_assert(!std::is_abstract_v<MockAsyncDnsResolverResult>);
+
 class MockAsyncDnsResolver : public AsyncDnsResolverInterface {
  public:
   MOCK_METHOD(void,
@@ -40,6 +42,8 @@ class MockAsyncDnsResolver : public AsyncDnsResolverInterface {
               (override));
   MOCK_METHOD(AsyncDnsResolverResult&, result, (), (const, override));
 };
+
+static_assert(!std::is_abstract_v<MockAsyncDnsResolver>);
 
 class MockAsyncDnsResolverFactory : public AsyncDnsResolverFactoryInterface {
  public:
@@ -56,6 +60,8 @@ class MockAsyncDnsResolverFactory : public AsyncDnsResolverFactoryInterface {
               (),
               (override));
 };
+
+static_assert(!std::is_abstract_v<MockAsyncDnsResolverFactory>);
 
 }  // namespace webrtc
 

@@ -17,10 +17,10 @@
 #include <utility>
 #include <vector>
 
+#include "api/make_ref_counted.h"
 #include "api/peer_connection_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/sctp_transport_interface.h"
-#include "rtc_base/ref_counted_object.h"
 #include "test/gmock.h"
 
 namespace webrtc {
@@ -205,8 +205,7 @@ class MockPeerConnectionInterface : public webrtc::PeerConnectionInterface {
 };
 
 static_assert(
-    !std::is_abstract_v<rtc::RefCountedObject<MockPeerConnectionInterface>>,
-    "");
+    !std::is_abstract_v<rtc::RefCountedObject<MockPeerConnectionInterface>>);
 
 }  // namespace webrtc
 

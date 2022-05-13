@@ -27,6 +27,8 @@ class MockEncodedImageCallback : public EncodedImageCallback {
   MOCK_METHOD(void, OnDroppedFrame, (DropReason reason), (override));
 };
 
+static_assert(!std::is_abstract_v<MockEncodedImageCallback>);
+
 class MockVideoEncoder : public VideoEncoder {
  public:
   MOCK_METHOD(void,
@@ -67,6 +69,8 @@ class MockVideoEncoder : public VideoEncoder {
               (override));
   MOCK_METHOD(EncoderInfo, GetEncoderInfo, (), (const, override));
 };
+
+static_assert(!std::is_abstract_v<MockVideoEncoder>);
 
 }  // namespace webrtc
 

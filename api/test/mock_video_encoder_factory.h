@@ -37,6 +37,8 @@ class MockVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   MOCK_METHOD(void, Die, ());
 };
 
+static_assert(!std::is_abstract_v<MockVideoEncoderFactory>);
+
 }  // namespace webrtc
 
 #endif  // API_TEST_MOCK_VIDEO_ENCODER_FACTORY_H_

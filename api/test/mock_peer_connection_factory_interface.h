@@ -14,17 +14,17 @@
 #include <memory>
 #include <string>
 
+#include "api/make_ref_counted.h"
 #include "api/peer_connection_interface.h"
 #include "test/gmock.h"
 
 namespace webrtc {
 
-class MockPeerConnectionFactoryInterface final
-    : public rtc::RefCountedObject<webrtc::PeerConnectionFactoryInterface> {
+class MockPeerConnectionFactoryInterface
+    : public PeerConnectionFactoryInterface {
  public:
   static rtc::scoped_refptr<MockPeerConnectionFactoryInterface> Create() {
-    return rtc::scoped_refptr<MockPeerConnectionFactoryInterface>(
-        new MockPeerConnectionFactoryInterface());
+    return rtc::make_ref_counted<MockPeerConnectionFactoryInterface>();
   }
 
   MOCK_METHOD(void, SetOptions, (const Options&), (override));
@@ -75,6 +75,9 @@ class MockPeerConnectionFactoryInterface final
  protected:
   MockPeerConnectionFactoryInterface() = default;
 };
+
+static_assert(!std::is_abstract_v<
+              rtc::RefCountedObject<MockPeerConnectionFactoryInterface>>);
 
 }  // namespace webrtc
 

@@ -21,6 +21,8 @@ class MockFecControllerOverride : public FecControllerOverride {
   MOCK_METHOD(void, SetFecAllowed, (bool fec_allowed), (override));
 };
 
+static_assert(!std::is_abstract_v<MockFecControllerOverride>);
+
 }  // namespace webrtc
 
 #endif  // API_TEST_MOCK_FEC_CONTROLLER_OVERRIDE_H_
