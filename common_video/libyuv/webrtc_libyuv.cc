@@ -26,7 +26,8 @@ size_t CalcBufferSize(VideoType type, int width, int height) {
   switch (type) {
     case VideoType::kI420:
     case VideoType::kIYUV:
-    case VideoType::kYV12: {
+    case VideoType::kYV12:
+    case VideoType::kNV12: {
       int half_width = (width + 1) >> 1;
       int half_height = (height + 1) >> 1;
       buffer_size = width * height + half_width * half_height * 2;
@@ -105,6 +106,8 @@ int ConvertVideoType(VideoType video_type) {
       return libyuv::FOURCC_ARGB;
     case VideoType::kBGRA:
       return libyuv::FOURCC_BGRA;
+    case VideoType::kNV12:
+      return libyuv::FOURCC_NV12;
   }
   RTC_DCHECK_NOTREACHED();
   return libyuv::FOURCC_ANY;
