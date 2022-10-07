@@ -1177,6 +1177,22 @@ public class PeerConnection {
   }
 
   /**
+   * Gets stats using the new stats collection API, see webrtc/api/stats/. These
+   * will replace old stats collection API when the new API has matured enough.
+   */
+  public void getStats(RtpSender sender, RTCStatsCollectorCallback callback) {
+    nativeNewGetStatsSender(sender.getNativeRtpSender(), callback);
+  }
+
+  /**
+   * Gets stats using the new stats collection API, see webrtc/api/stats/. These
+   * will replace old stats collection API when the new API has matured enough.
+   */
+  public void getStats(RtpReceiver receiver, RTCStatsCollectorCallback callback) {
+    nativeNewGetStatsReceiver(receiver.getNativeRtpReceiver(), callback);
+  }
+
+  /**
    * Limits the bandwidth allocated for all RTP streams sent by this
    * PeerConnection. Pass null to leave a value unchanged.
    */
@@ -1310,6 +1326,8 @@ public class PeerConnection {
   private native void nativeRemoveLocalStream(long stream);
   private native boolean nativeOldGetStats(StatsObserver observer, long nativeTrack);
   private native void nativeNewGetStats(RTCStatsCollectorCallback callback);
+  private native void nativeNewGetStatsSender(long sender, RTCStatsCollectorCallback callback);
+  private native void nativeNewGetStatsReceiver(long receiver, RTCStatsCollectorCallback callback);
   private native RtpSender nativeCreateSender(String kind, String stream_id);
   private native List<RtpSender> nativeGetSenders();
   private native List<RtpReceiver> nativeGetReceivers();
