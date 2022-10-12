@@ -155,7 +155,7 @@ std::tuple<bool, absl::string_view, int> ParseHostnameAndPortFromString(
 
 // Adds a STUN or TURN server to the appropriate list,
 // by parsing `url` and using the username/password in `server`.
-RTCError ParseIceServerUrl(
+RTCErrorType ParseIceServerUrl(
     const PeerConnectionInterface::IceServer& server,
     absl::string_view url,
     cricket::ServerAddresses* stun_servers,
@@ -186,24 +186,20 @@ RTCError ParseIceServerUrl(
     std::vector<absl::string_view> transport_tokens =
         rtc::split(tokens[1], '=');
     if (transport_tokens[0] != kTransport) {
-      LOG_AND_RETURN_ERROR(
-          RTCErrorType::SYNTAX_ERROR,
-          "ICE server parsing failed: Invalid transport parameter key.");
+      RTC_LOG(LS_WARNING) << "Invalid transport parameter key.";
+      return RTCErrorType::SYNTAX_ERROR;
     }
     if (transport_tokens.size() < 2) {
-      LOG_AND_RETURN_ERROR(
-          RTCErrorType::SYNTAX_ERROR,
-          "ICE server parsing failed: Transport parameter missing value.");
+      RTC_LOG(LS_WARNING) << "Transport parameter missing value.";
+      return RTCErrorType::SYNTAX_ERROR;
     }
 
     absl::optional<cricket::ProtocolType> proto =
         cricket::StringToProto(transport_tokens[1]);
     if (!proto ||
         (*proto != cricket::PROTO_UDP && *proto != cricket::PROTO_TCP)) {
-      LOG_AND_RETURN_ERROR(
-          RTCErrorType::SYNTAX_ERROR,
-          "ICE server parsing failed: Transport parameter should "
-          "always be udp or tcp.");
+      RTC_LOG(LS_WARNING) << "Transport parameter should always be udp or tcp.";
+      return RTCErrorType::SYNTAX_ERROR;
     }
     turn_transport_type = *proto;
   }
@@ -211,10 +207,8 @@ RTCError ParseIceServerUrl(
   auto [service_type, hoststring] =
       GetServiceTypeAndHostnameFromUri(uri_without_transport);
   if (service_type == ServiceType::INVALID) {
-    RTC_LOG(LS_ERROR) << "Invalid transport parameter in ICE URI: " << url;
-    LOG_AND_RETURN_ERROR(
-        RTCErrorType::SYNTAX_ERROR,
-        "ICE server parsing failed: Invalid transport parameter in ICE URI");
+    RTC_LOG(LS_WARNING) << "Invalid transport parameter in ICE URI: " << url;
+    return RTCErrorType::SYNTAX_ERROR;
   }
 
   // GetServiceTypeAndHostnameFromUri should never give an empty hoststring
@@ -227,25 +221,22 @@ RTCError ParseIceServerUrl(
   }
 
   if (hoststring.find('@') != absl::string_view::npos) {
-    RTC_LOG(LS_ERROR) << "Invalid url with long deprecated user@host syntax: "
-                      << uri_without_transport;
-    LOG_AND_RETURN_ERROR(RTCErrorType::SYNTAX_ERROR,
-                         "ICE server parsing failed: Invalid url with long "
-                         "deprecated user@host syntax");
+    RTC_LOG(LS_WARNING) << "Invalid url: " << uri_without_transport;
+    RTC_LOG(LS_WARNING)
+        << "Note that user-info@ in turn:-urls is long-deprecated.";
+    return RTCErrorType::SYNTAX_ERROR;
   }
 
   auto [success, address, port] =
       ParseHostnameAndPortFromString(hoststring, default_port);
   if (!success) {
-    RTC_LOG(LS_ERROR) << "Invalid hostname format: " << uri_without_transport;
-    LOG_AND_RETURN_ERROR(RTCErrorType::SYNTAX_ERROR,
-                         "ICE server parsing failed: Invalid hostname format");
+    RTC_LOG(LS_WARNING) << "Invalid hostname format: " << uri_without_transport;
+    return RTCErrorType::SYNTAX_ERROR;
   }
 
   if (port <= 0 || port > 0xffff) {
-    RTC_LOG(LS_ERROR) << "Invalid port: " << port;
-    LOG_AND_RETURN_ERROR(RTCErrorType::SYNTAX_ERROR,
-                         "ICE server parsing failed: Invalid port");
+    RTC_LOG(LS_WARNING) << "Invalid port: " << port;
+    return RTCErrorType::SYNTAX_ERROR;
   }
 
   switch (service_type) {
@@ -258,10 +249,8 @@ RTCError ParseIceServerUrl(
       if (server.username.empty() || server.password.empty()) {
         // The WebRTC spec requires throwing an InvalidAccessError when username
         // or credential are ommitted; this is the native equivalent.
-        LOG_AND_RETURN_ERROR(
-            RTCErrorType::INVALID_PARAMETER,
-            "ICE server parsing failed: TURN server with empty "
-            "username or password");
+        RTC_LOG(LS_WARNING) << "TURN server with empty username or password";
+        return RTCErrorType::INVALID_PARAMETER;
       }
       // If the hostname field is not empty, then the server address must be
       // the resolved IP for that host, the hostname is needed later for TLS
@@ -274,11 +263,10 @@ RTCError ParseIceServerUrl(
         if (!IPFromString(address, &ip)) {
           // When hostname is set, the server address must be a
           // resolved ip address.
-          LOG_AND_RETURN_ERROR(
-              RTCErrorType::INVALID_PARAMETER,
-              "ICE server parsing failed: "
-              "IceServer has hostname field set, but URI does not "
-              "contain an IP address.");
+          RTC_LOG(LS_WARNING)
+              << "IceServer has hostname field set, but URI does not "
+                 "contain an IP address.";
+          return RTCErrorType::INVALID_PARAMETER;
         }
         socket_address.SetResolvedIP(ip);
       }
@@ -299,16 +287,15 @@ RTCError ParseIceServerUrl(
     default:
       // We shouldn't get to this point with an invalid service_type, we should
       // have returned an error already.
-      LOG_AND_RETURN_ERROR(
-          RTCErrorType::INTERNAL_ERROR,
-          "ICE server parsing failed: Unexpected service type");
+      RTC_DCHECK_NOTREACHED() << "Unexpected service type";
+      return RTCErrorType::INTERNAL_ERROR;
   }
-  return RTCError::OK();
+  return RTCErrorType::NONE;
 }
 
 }  // namespace
 
-RTCError ParseIceServers(
+RTCErrorType ParseIceServers(
     const PeerConnectionInterface::IceServers& servers,
     cricket::ServerAddresses* stun_servers,
     std::vector<cricket::RelayServerConfig>* turn_servers) {
@@ -316,26 +303,25 @@ RTCError ParseIceServers(
     if (!server.urls.empty()) {
       for (const std::string& url : server.urls) {
         if (url.empty()) {
-          LOG_AND_RETURN_ERROR(RTCErrorType::SYNTAX_ERROR,
-                               "ICE server parsing failed: Empty uri.");
+          RTC_LOG(LS_WARNING) << "Empty uri.";
+          return RTCErrorType::SYNTAX_ERROR;
         }
-        RTCError err =
+        RTCErrorType err =
             ParseIceServerUrl(server, url, stun_servers, turn_servers);
-        if (!err.ok()) {
+        if (err != RTCErrorType::NONE) {
           return err;
         }
       }
     } else if (!server.uri.empty()) {
       // Fallback to old .uri if new .urls isn't present.
-      RTCError err =
+      RTCErrorType err =
           ParseIceServerUrl(server, server.uri, stun_servers, turn_servers);
-
-      if (!err.ok()) {
+      if (err != RTCErrorType::NONE) {
         return err;
       }
     } else {
-      LOG_AND_RETURN_ERROR(RTCErrorType::SYNTAX_ERROR,
-                           "ICE server parsing failed: Empty uri.");
+      RTC_LOG(LS_WARNING) << "Empty uri.";
+      return RTCErrorType::SYNTAX_ERROR;
     }
   }
   // Candidates must have unique priorities, so that connectivity checks
@@ -345,7 +331,7 @@ RTCError ParseIceServers(
     // First in the list gets highest priority.
     turn_server.priority = priority--;
   }
-  return RTCError::OK();
+  return RTCErrorType::NONE;
 }
 
 }  // namespace webrtc
