@@ -12,7 +12,6 @@
 
 #include "absl/types/optional.h"
 #include "modules/audio_processing/aec3/aec3_common.h"
-#include "system_wrappers/include/metrics.h"
 #include "test/gtest.h"
 
 namespace webrtc {
@@ -21,49 +20,15 @@ namespace webrtc {
 TEST(RenderDelayControllerMetrics, NormalUsage) {
   RenderDelayControllerMetrics metrics;
 
-  int expected_num_metric_reports = 0;
-
   for (int j = 0; j < 3; ++j) {
     for (int k = 0; k < kMetricsReportingIntervalBlocks - 1; ++k) {
-      metrics.Update(absl::nullopt, absl::nullopt,
+      metrics.Update(absl::nullopt, 0, absl::nullopt,
                      ClockdriftDetector::Level::kNone);
-      EXPECT_METRIC_EQ(
-          metrics::NumSamples("WebRTC.Audio.EchoCanceller.EchoPathDelay"),
-          expected_num_metric_reports);
-      EXPECT_METRIC_EQ(
-          metrics::NumSamples("WebRTC.Audio.EchoCanceller.BufferDelay"),
-          expected_num_metric_reports);
-      EXPECT_METRIC_EQ(metrics::NumSamples(
-                           "WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"),
-                       expected_num_metric_reports);
-      EXPECT_METRIC_EQ(
-          metrics::NumSamples("WebRTC.Audio.EchoCanceller.DelayChanges"),
-          expected_num_metric_reports);
-      EXPECT_METRIC_EQ(
-          metrics::NumSamples("WebRTC.Audio.EchoCanceller.Clockdrift"),
-          expected_num_metric_reports);
+      EXPECT_FALSE(metrics.MetricsReported());
     }
-
-    // We expect metric reports every kMetricsReportingIntervalBlocks blocks.
-    ++expected_num_metric_reports;
-
-    metrics.Update(absl::nullopt, absl::nullopt,
+    metrics.Update(absl::nullopt, 0, absl::nullopt,
                    ClockdriftDetector::Level::kNone);
-    EXPECT_METRIC_EQ(
-        metrics::NumSamples("WebRTC.Audio.EchoCanceller.EchoPathDelay"),
-        expected_num_metric_reports);
-    EXPECT_METRIC_EQ(
-        metrics::NumSamples("WebRTC.Audio.EchoCanceller.BufferDelay"),
-        expected_num_metric_reports);
-    EXPECT_METRIC_EQ(metrics::NumSamples(
-                         "WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"),
-                     expected_num_metric_reports);
-    EXPECT_METRIC_EQ(
-        metrics::NumSamples("WebRTC.Audio.EchoCanceller.DelayChanges"),
-        expected_num_metric_reports);
-    EXPECT_METRIC_EQ(
-        metrics::NumSamples("WebRTC.Audio.EchoCanceller.Clockdrift"),
-        expected_num_metric_reports);
+    EXPECT_TRUE(metrics.MetricsReported());
   }
 }
 
