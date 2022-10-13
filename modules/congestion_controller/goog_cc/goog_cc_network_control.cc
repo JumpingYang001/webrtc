@@ -27,6 +27,7 @@
 #include "api/units/timestamp.h"
 #include "logging/rtc_event_log/events/rtc_event_remote_estimate.h"
 #include "modules/congestion_controller/goog_cc/alr_detector.h"
+#include "modules/congestion_controller/goog_cc/loss_based_bwe_v2.h"
 #include "modules/congestion_controller/goog_cc/probe_controller.h"
 #include "modules/remote_bitrate_estimator/include/bwe_defines.h"
 #include "modules/remote_bitrate_estimator/test/bwe_test_logging.h"
@@ -59,6 +60,19 @@ bool IsEnabled(const FieldTrialsView* config, absl::string_view key) {
 bool IsNotDisabled(const FieldTrialsView* config, absl::string_view key) {
   return !absl::StartsWith(config->Lookup(key), "Disabled");
 }
+
+BandwidthLimitedCause GetBandwidthLimitedCause(
+    LossBasedState loss_based_state) {
+  switch (loss_based_state) {
+    case LossBasedState::kDecreasing:
+      return BandwidthLimitedCause::kLossLimitedBweDecreasing;
+    case LossBasedState::kIncreasing:
+      return BandwidthLimitedCause::kLossLimitedBweIncreasing;
+    default:
+      return BandwidthLimitedCause::kDelayBasedLimited;
+  }
+}
+
 }  // namespace
 
 GoogCcNetworkController::GoogCcNetworkController(NetworkControllerConfig config,
@@ -614,10 +628,6 @@ void GoogCcNetworkController::MaybeTriggerOnNetworkChanged(
   uint8_t fraction_loss = bandwidth_estimation_->fraction_loss();
   TimeDelta round_trip_time = bandwidth_estimation_->round_trip_time();
   DataRate loss_based_target_rate = bandwidth_estimation_->target_rate();
-  bool bwe_limited_due_to_packet_loss =
-      loss_based_target_rate.IsFinite() &&
-      bandwidth_estimation_->delay_based_limit().IsFinite() &&
-      loss_based_target_rate < bandwidth_estimation_->delay_based_limit();
   DataRate pushback_target_rate = loss_based_target_rate;
 
   BWE_TEST_LOGGING_PLOT(1, "fraction_loss_%", at_time.ms(),
@@ -680,7 +690,9 @@ void GoogCcNetworkController::MaybeTriggerOnNetworkChanged(
     update->target_rate = target_rate_msg;
 
     auto probes = probe_controller_->SetEstimatedBitrate(
-        loss_based_target_rate, bwe_limited_due_to_packet_loss, at_time);
+        loss_based_target_rate,
+        GetBandwidthLimitedCause(bandwidth_estimation_->loss_based_state()),
+        at_time);
     update->probe_cluster_configs.insert(update->probe_cluster_configs.end(),
                                          probes.begin(), probes.end());
     update->pacer_config = GetPacingRates(at_time);

@@ -79,6 +79,15 @@ struct ProbeControllerConfig {
   FieldTrialParameter<double> skip_if_estimate_larger_than_fraction_of_max;
 };
 
+// Reason that bandwidth estimate is limited. Bandwidth estimate can be limited
+// by either delay based bwe, or loss based bwe when it increases/decreases the
+// estimate.
+enum class BandwidthLimitedCause {
+  kLossLimitedBweIncreasing = 0,
+  kLossLimitedBweDecreasing = 1,
+  kDelayBasedLimited = 2
+};
+
 // This class controls initiation of probing to estimate initial channel
 // capacity. There is also support for probing during a session when max
 // bitrate is adjusted by an application.
@@ -108,7 +117,7 @@ class ProbeController {
 
   ABSL_MUST_USE_RESULT std::vector<ProbeClusterConfig> SetEstimatedBitrate(
       DataRate bitrate,
-      bool bwe_limited_due_to_packet_loss,
+      BandwidthLimitedCause bandwidth_limited_cause,
       Timestamp at_time);
 
   void EnablePeriodicAlrProbing(bool enable);
@@ -150,7 +159,6 @@ class ProbeController {
   bool TimeForNetworkStateProbe(Timestamp at_time) const;
 
   bool network_available_;
-  bool bwe_limited_due_to_packet_loss_;
   State state_;
   DataRate min_bitrate_to_probe_further_ = DataRate::PlusInfinity();
   Timestamp time_last_probing_initiated_ = Timestamp::MinusInfinity();
@@ -175,7 +183,8 @@ class ProbeController {
   RtcEventLog* event_log_;
 
   int32_t next_probe_cluster_id_ = 1;
-
+  BandwidthLimitedCause bandwidth_limited_cause_ =
+      BandwidthLimitedCause::kDelayBasedLimited;
   ProbeControllerConfig config_;
 };
 
