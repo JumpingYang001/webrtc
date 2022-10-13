@@ -267,9 +267,6 @@ if (is_linux || is_chromeos) {
     }
     pkg_config("libdrm") {
       packages = [ "libdrm" ]
-      if (!rtc_link_pipewire) {
-        ignore_libs = true
-      }
     }
 
     if (!rtc_link_pipewire) {
@@ -279,7 +276,6 @@ if (is_linux || is_chromeos) {
         configs = [
           "../../:common_config",
           ":pipewire",
-          ":libdrm",
         ]
         deps = [ "../../rtc_base" ]
         extra_header = "linux/wayland/pipewire_stub_header.fragment"
@@ -287,10 +283,7 @@ if (is_linux || is_chromeos) {
         logging_include = "rtc_base/logging.h"
         output_name = "linux/wayland/pipewire_stubs"
         path_from_source = "modules/desktop_capture/linux/wayland"
-        sigs = [
-          "linux/wayland/pipewire.sigs",
-          "linux/wayland/drm.sigs",
-        ]
+        sigs = [ "linux/wayland/pipewire.sigs" ]
         if (!build_with_chromium) {
           macro_include = "rtc_base/system/no_cfi_icall.h"
           macro_deps = [ "../../rtc_base/system:no_cfi_icall" ]
