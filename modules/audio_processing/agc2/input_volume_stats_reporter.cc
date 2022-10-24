@@ -19,6 +19,8 @@
 namespace webrtc {
 namespace {
 
+using InputVolumeType = InputVolumeStatsReporter::InputVolumeType;
+
 constexpr int kFramesIn60Seconds = 6000;
 constexpr int kMinInputVolume = 0;
 constexpr int kMaxInputVolume = 255;
@@ -35,9 +37,102 @@ float ComputeAverageUpdate(int sum_updates, int num_updates) {
   return std::round(static_cast<float>(sum_updates) /
                     static_cast<float>(num_updates));
 }
+
+metrics::Histogram* CreateRateHistogram(absl::string_view name) {
+  return metrics::HistogramFactoryGetCounts(
+      name, /*min=*/1, /*max=*/kFramesIn60Seconds, /*bucket_count=*/50);
+}
+
+metrics::Histogram* CreateAverageHistogram(absl::string_view name) {
+  return metrics::HistogramFactoryGetCounts(name, /*min=*/1, /*max=*/kMaxUpdate,
+                                            /*bucket_count=*/50);
+}
+
+metrics::Histogram* CreateDecreaseRateHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.DecreaseRate");
+    case InputVolumeType::kRecommended:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.DecreaseRate");
+  }
+}
+
+metrics::Histogram* CreateDecreaseAverageHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.DecreaseAverage");
+    case InputVolumeType::kRecommended:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.DecreaseAverage");
+  }
+}
+
+metrics::Histogram* CreateIncreaseRateHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.IncreaseRate");
+    case InputVolumeType::kRecommended:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.IncreaseRate");
+  }
+}
+
+metrics::Histogram* CreateIncreaseAverageHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.IncreaseAverage");
+    case InputVolumeType::kRecommended:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.IncreaseAverage");
+  }
+}
+
+metrics::Histogram* CreateUpdateRateHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.UpdateRate");
+    case InputVolumeType::kRecommended:
+      return CreateRateHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.UpdateRate");
+  }
+}
+
+metrics::Histogram* CreateUpdateAverageHistogram(
+    InputVolumeType input_volume_type) {
+  switch (input_volume_type) {
+    case InputVolumeType::kApplied:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.AppliedInputVolume.UpdateAverage");
+    case InputVolumeType::kRecommended:
+      return CreateAverageHistogram(
+          "WebRTC.Audio.Apm.RecommendedInputVolume.UpdateAverage");
+  }
+}
+
 }  // namespace
 
-InputVolumeStatsReporter::InputVolumeStatsReporter() = default;
+InputVolumeStatsReporter::InputVolumeStatsReporter(
+    InputVolumeType input_volume_type)
+    : decrease_rate_histogram_(CreateDecreaseRateHistogram(input_volume_type)),
+      decrease_average_histogram_(
+          CreateDecreaseAverageHistogram(input_volume_type)),
+      increase_rate_histogram_(CreateIncreaseRateHistogram(input_volume_type)),
+      increase_average_histogram_(
+          CreateIncreaseAverageHistogram(input_volume_type)),
+      update_rate_histogram_(CreateUpdateRateHistogram(input_volume_type)),
+      update_average_histogram_(
+          CreateUpdateAverageHistogram(input_volume_type)) {}
 
 InputVolumeStatsReporter::~InputVolumeStatsReporter() = default;
 
@@ -74,47 +169,19 @@ void InputVolumeStatsReporter::LogVolumeUpdateStats() const {
   const float average_update = ComputeAverageUpdate(
       volume_update_stats_.sum_decreases + volume_update_stats_.sum_increases,
       num_updates);
-  RTC_HISTOGRAM_COUNTS_LINEAR(
-      /*name=*/"WebRTC.Audio.ApmAnalogGainDecreaseRate",
-      /*sample=*/volume_update_stats_.num_decreases,
-      /*min=*/1,
-      /*max=*/kFramesIn60Seconds,
-      /*bucket_count=*/50);
+  metrics::HistogramAdd(decrease_rate_histogram_,
+                        volume_update_stats_.num_decreases);
   if (volume_update_stats_.num_decreases > 0) {
-    RTC_HISTOGRAM_COUNTS_LINEAR(
-        /*name=*/"WebRTC.Audio.ApmAnalogGainDecreaseAverage",
-        /*sample=*/average_decrease,
-        /*min=*/1,
-        /*max=*/kMaxUpdate,
-        /*bucket_count=*/50);
+    metrics::HistogramAdd(decrease_average_histogram_, average_decrease);
   }
-  RTC_HISTOGRAM_COUNTS_LINEAR(
-      /*name=*/"WebRTC.Audio.ApmAnalogGainIncreaseRate",
-      /*sample=*/volume_update_stats_.num_increases,
-      /*min=*/1,
-      /*max=*/kFramesIn60Seconds,
-      /*bucket_count=*/50);
+  metrics::HistogramAdd(increase_rate_histogram_,
+                        volume_update_stats_.num_increases);
   if (volume_update_stats_.num_increases > 0) {
-    RTC_HISTOGRAM_COUNTS_LINEAR(
-        /*name=*/"WebRTC.Audio.ApmAnalogGainIncreaseAverage",
-        /*sample=*/average_increase,
-        /*min=*/1,
-        /*max=*/kMaxUpdate,
-        /*bucket_count=*/50);
+    metrics::HistogramAdd(increase_average_histogram_, average_increase);
   }
-  RTC_HISTOGRAM_COUNTS_LINEAR(
-      /*name=*/"WebRTC.Audio.ApmAnalogGainUpdateRate",
-      /*sample=*/num_updates,
-      /*min=*/1,
-      /*max=*/kFramesIn60Seconds,
-      /*bucket_count=*/50);
+  metrics::HistogramAdd(update_rate_histogram_, num_updates);
   if (num_updates > 0) {
-    RTC_HISTOGRAM_COUNTS_LINEAR(
-        /*name=*/"WebRTC.Audio.ApmAnalogGainUpdateAverage",
-        /*sample=*/average_update,
-        /*min=*/1,
-        /*max=*/kMaxUpdate,
-        /*bucket_count=*/50);
+    metrics::HistogramAdd(update_average_histogram_, average_update);
   }
 }
 
