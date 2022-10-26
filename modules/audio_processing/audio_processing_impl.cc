@@ -291,11 +291,7 @@ AudioProcessingImpl::AudioProcessingImpl(
                  MinimizeProcessingForUnusedOutput(),
                  field_trial::IsEnabled("WebRTC-TransientSuppressorForcedOff")),
       capture_(),
-      capture_nonlocked_(),
-      applied_input_volume_stats_reporter_(
-          InputVolumeStatsReporter::InputVolumeType::kApplied),
-      recommended_input_volume_stats_reporter_(
-          InputVolumeStatsReporter::InputVolumeType::kRecommended) {
+      capture_nonlocked_() {
   RTC_LOG(LS_INFO) << "Injected APM submodules:"
                       "\nEcho control factory: "
                    << !!echo_control_factory_
@@ -1365,10 +1361,6 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
   stats_reporter_.UpdateStatistics(capture_.stats);
 
   UpdateRecommendedInputVolumeLocked();
-  if (capture_.recommended_input_volume.has_value()) {
-    recommended_input_volume_stats_reporter_.UpdateStatistics(
-        *capture_.recommended_input_volume);
-  }
 
   if (submodules_.capture_levels_adjuster) {
     submodules_.capture_levels_adjuster->ApplyPostLevelAdjustment(
