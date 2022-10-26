@@ -1131,7 +1131,8 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
   }
 
   if (capture_.applied_input_volume.has_value()) {
-    applied_input_volume_stats_reporter_.UpdateStatistics(
+    // Log the applied input volume only when available.
+    input_volume_stats_reporter_.UpdateStatistics(
         *capture_.applied_input_volume);
   }
 
