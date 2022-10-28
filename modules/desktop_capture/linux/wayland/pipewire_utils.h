@@ -8,10 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef MODULES_PORTAL_PIPEWIRE_UTILS_H_
-#define MODULES_PORTAL_PIPEWIRE_UTILS_H_
-
-struct pw_thread_loop;
+#ifndef MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_PIPEWIRE_UTILS_H_
+#define MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_PIPEWIRE_UTILS_H_
 
 namespace webrtc {
 
@@ -20,16 +18,6 @@ namespace webrtc {
 // running nor does it establish a connection to one.
 bool InitializePipeWire();
 
-// Locks pw_thread_loop in the current scope
-class PipeWireThreadLoopLock {
- public:
-  explicit PipeWireThreadLoopLock(pw_thread_loop* loop);
-  ~PipeWireThreadLoopLock();
-
- private:
-  pw_thread_loop* const loop_;
-};
-
 }  // namespace webrtc
 
-#endif  // MODULES_PORTAL_PIPEWIRE_UTILS_H_
+#endif  // MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_PIPEWIRE_UTILS_H_

@@ -8,14 +8,12 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "modules/portal/pipewire_utils.h"
-
-#include <pipewire/pipewire.h>
+#include "modules/desktop_capture/linux/wayland/pipewire_utils.h"
 
 #include "rtc_base/sanitizer.h"
 
 #if defined(WEBRTC_DLOPEN_PIPEWIRE)
-#include "modules/portal/pipewire_stubs.h"
+#include "modules/desktop_capture/linux/wayland/pipewire_stubs.h"
 #endif  // defined(WEBRTC_DLOPEN_PIPEWIRE)
 
 namespace webrtc {
@@ -25,10 +23,10 @@ bool InitializePipeWire() {
 #if defined(WEBRTC_DLOPEN_PIPEWIRE)
   static constexpr char kPipeWireLib[] = "libpipewire-0.3.so.0";
 
-  using modules_portal::InitializeStubs;
-  using modules_portal::kModulePipewire;
+  using modules_desktop_capture_linux_wayland::InitializeStubs;
+  using modules_desktop_capture_linux_wayland::kModulePipewire;
 
-  modules_portal::StubPathMap paths;
+  modules_desktop_capture_linux_wayland::StubPathMap paths;
 
   // Check if the PipeWire library is available.
   paths[kModulePipewire].push_back(kPipeWireLib);
@@ -39,15 +37,6 @@ bool InitializePipeWire() {
 #else
   return true;
 #endif  // defined(WEBRTC_DLOPEN_PIPEWIRE)
-}
-
-PipeWireThreadLoopLock::PipeWireThreadLoopLock(pw_thread_loop* loop)
-    : loop_(loop) {
-  pw_thread_loop_lock(loop_);
-}
-
-PipeWireThreadLoopLock::~PipeWireThreadLoopLock() {
-  pw_thread_loop_unlock(loop_);
 }
 
 }  // namespace webrtc

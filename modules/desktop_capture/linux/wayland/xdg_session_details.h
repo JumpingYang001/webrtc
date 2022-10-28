@@ -11,7 +11,23 @@
 #ifndef MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_XDG_SESSION_DETAILS_H_
 #define MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_XDG_SESSION_DETAILS_H_
 
-// TODO(bugs.webrtc.org/14187): remove when all users are gone
-#include "modules/portal/xdg_session_details.h"
+#include <gio/gio.h>
+
+#include <string>
+
+namespace webrtc {
+namespace xdg_portal {
+
+// Details of the session associated with XDG desktop portal session. Portal API
+// calls can be invoked by utilizing the information here.
+struct SessionDetails {
+  GDBusProxy* proxy = nullptr;
+  GCancellable* cancellable = nullptr;
+  std::string session_handle;
+  uint32_t pipewire_stream_node_id = 0;
+};
+
+}  // namespace xdg_portal
+}  // namespace webrtc
 
 #endif  // MODULES_DESKTOP_CAPTURE_LINUX_WAYLAND_XDG_SESSION_DETAILS_H_

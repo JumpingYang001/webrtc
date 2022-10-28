@@ -1,5 +1,4 @@
 include_rules = [
-  "+common_video",
   "+system_wrappers",
   "+third_party/libyuv",
 ]
