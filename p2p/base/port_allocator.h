@@ -171,12 +171,14 @@ struct RTC_EXPORT RelayServerConfig {
   ~RelayServerConfig();
 
   bool operator==(const RelayServerConfig& o) const {
-    return ports == o.ports && credentials == o.credentials;
+    return ports == o.ports && credentials == o.credentials &&
+           priority == o.priority;
   }
   bool operator!=(const RelayServerConfig& o) const { return !(*this == o); }
 
   PortList ports;
   RelayCredentials credentials;
+  int priority = 0;
   TlsCertPolicy tls_cert_policy = TlsCertPolicy::TLS_CERT_POLICY_SECURE;
   std::vector<std::string> tls_alpn_protocols;
   std::vector<std::string> tls_elliptic_curves;
