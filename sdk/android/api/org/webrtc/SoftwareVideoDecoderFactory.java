@@ -16,33 +16,40 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SoftwareVideoDecoderFactory implements VideoDecoderFactory {
-  private static final String TAG = "SoftwareVideoDecoderFactory";
-
-  private final long nativeFactory;
-
-  public SoftwareVideoDecoderFactory() {
-    this.nativeFactory = nativeCreateFactory();
-  }
-
   @Nullable
   @Override
-  public VideoDecoder createDecoder(VideoCodecInfo info) {
-    return new WrappedNativeVideoDecoder() {
-      @Override
-      public long createNativeVideoDecoder() {
-        return nativeCreateDecoder(nativeFactory, info);
-      }
-    };
+  public VideoDecoder createDecoder(VideoCodecInfo codecInfo) {
+    String codecName = codecInfo.getName();
+
+    if (codecName.equalsIgnoreCase(VideoCodecMimeType.VP8.name())) {
+      return new LibvpxVp8Decoder();
+    }
+    if (codecName.equalsIgnoreCase(VideoCodecMimeType.VP9.name())
+        && LibvpxVp9Decoder.nativeIsSupported()) {
+      return new LibvpxVp9Decoder();
+    }
+    if (codecName.equalsIgnoreCase(VideoCodecMimeType.AV1.name())) {
+      return new Dav1dDecoder();
+    }
+
+    return null;
   }
 
   @Override
   public VideoCodecInfo[] getSupportedCodecs() {
-    return nativeGetSupportedCodecs(nativeFactory).toArray(new VideoCodecInfo[0]);
+    return supportedCodecs();
   }
 
-  private static native long nativeCreateFactory();
+  static VideoCodecInfo[] supportedCodecs() {
+    List<VideoCodecInfo> codecs = new ArrayList<VideoCodecInfo>();
 
-  private static native long nativeCreateDecoder(long factory, VideoCodecInfo videoCodecInfo);
+    codecs.add(new VideoCodecInfo(VideoCodecMimeType.VP8.name(), new HashMap<>()));
+    if (LibvpxVp9Decoder.nativeIsSupported()) {
+      codecs.add(new VideoCodecInfo(VideoCodecMimeType.VP9.name(), new HashMap<>()));
+    }
 
-  private static native List<VideoCodecInfo> nativeGetSupportedCodecs(long factory);
+    codecs.add(new VideoCodecInfo(VideoCodecMimeType.AV1.name(), new HashMap<>()));
+
+    return codecs.toArray(new VideoCodecInfo[codecs.size()]);
+  }
 }

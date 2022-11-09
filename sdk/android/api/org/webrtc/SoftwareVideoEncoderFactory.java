@@ -16,38 +16,35 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SoftwareVideoEncoderFactory implements VideoEncoderFactory {
-  private static final String TAG = "SoftwareVideoEncoderFactory";
-
-  private final long nativeFactory;
-
-  public SoftwareVideoEncoderFactory() {
-    this.nativeFactory = nativeCreateFactory();
-  }
-
   @Nullable
   @Override
-  public VideoEncoder createEncoder(VideoCodecInfo info) {
-    return new WrappedNativeVideoEncoder() {
-      @Override
-      public long createNativeVideoEncoder() {
-        return nativeCreateEncoder(nativeFactory, info);
-      }
+  public VideoEncoder createEncoder(VideoCodecInfo codecInfo) {
+    String codecName = codecInfo.getName();
 
-      @Override
-      public boolean isHardwareEncoder() {
-        return false;
-      }
-    };
+    if (codecName.equalsIgnoreCase(VideoCodecMimeType.VP8.name())) {
+      return new LibvpxVp8Encoder();
+    }
+    if (codecName.equalsIgnoreCase(VideoCodecMimeType.VP9.name())
+        && LibvpxVp9Encoder.nativeIsSupported()) {
+      return new LibvpxVp9Encoder();
+    }
+
+    return null;
   }
 
   @Override
   public VideoCodecInfo[] getSupportedCodecs() {
-    return nativeGetSupportedCodecs(nativeFactory).toArray(new VideoCodecInfo[0]);
+    return supportedCodecs();
   }
 
-  private static native long nativeCreateFactory();
+  static VideoCodecInfo[] supportedCodecs() {
+    List<VideoCodecInfo> codecs = new ArrayList<VideoCodecInfo>();
 
-  private static native long nativeCreateEncoder(long factory, VideoCodecInfo videoCodecInfo);
+    codecs.add(new VideoCodecInfo(VideoCodecMimeType.VP8.name(), new HashMap<>()));
+    if (LibvpxVp9Encoder.nativeIsSupported()) {
+      codecs.add(new VideoCodecInfo(VideoCodecMimeType.VP9.name(), new HashMap<>()));
+    }
 
-  private static native List<VideoCodecInfo> nativeGetSupportedCodecs(long factory);
+    return codecs.toArray(new VideoCodecInfo[codecs.size()]);
+  }
 }
