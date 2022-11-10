@@ -979,7 +979,6 @@ if (rtc_include_tests) {
     sources = [ "test/mock_audio_mixer.h" ]
 
     deps = [
-      ":make_ref_counted",
       "../test:test_support",
       "audio:audio_mixer_api",
     ]
@@ -991,7 +990,7 @@ if (rtc_include_tests) {
     sources = [ "test/mock_audio_sink.h" ]
 
     deps = [
-      ":media_stream_interface",
+      "../api:media_stream_interface",
       "../test:test_support",
     ]
     absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
@@ -1004,7 +1003,6 @@ if (rtc_include_tests) {
 
     deps = [
       ":libjingle_peerconnection_api",
-      ":make_ref_counted",
       "../test:test_support",
     ]
   }
@@ -1016,7 +1014,6 @@ if (rtc_include_tests) {
 
     deps = [
       ":libjingle_peerconnection_api",
-      ":make_ref_counted",
       "../test:test_support",
     ]
   }
@@ -1036,7 +1033,8 @@ if (rtc_include_tests) {
     testonly = true
     sources = [ "test/mock_frame_encryptor.h" ]
     deps = [
-      ":make_ref_counted",
+      # For api/crypto/frame_encryptor_interface.h
+      ":libjingle_peerconnection_api",
       "../test:test_support",
       "crypto:frame_encryptor_interface",
     ]
@@ -1047,7 +1045,7 @@ if (rtc_include_tests) {
     testonly = true
     sources = [ "test/mock_frame_decryptor.h" ]
     deps = [
-      ":make_ref_counted",
+      ":libjingle_peerconnection_api",
       "../test:test_support",
       "crypto:frame_decryptor_interface",
     ]
@@ -1058,8 +1056,9 @@ if (rtc_include_tests) {
     testonly = true
     sources = [ "test/mock_encoder_selector.h" ]
     deps = [
+      ":libjingle_peerconnection_api",
+      "../api/video_codecs:video_codecs_api",
       "../test:test_support",
-      "video_codecs:video_codecs_api",
     ]
   }
 
@@ -1072,6 +1071,8 @@ if (rtc_include_tests) {
     ]
     deps = [
       ":array_view",
+      ":libjingle_peerconnection_api",
+      ":make_ref_counted",
       ":rtp_parameters",
       "../rtc_base:checks",
       "../rtc_base:refcount",
@@ -1088,6 +1089,8 @@ if (rtc_include_tests) {
     ]
     deps = [
       ":array_view",
+      ":libjingle_peerconnection_api",
+      ":make_ref_counted",
       ":rtp_parameters",
       "../rtc_base:checks",
       "crypto:frame_decryptor_interface",
@@ -1100,7 +1103,6 @@ if (rtc_include_tests) {
     sources = [ "test/mock_media_stream_interface.h" ]
 
     deps = [
-      ":make_ref_counted",
       ":media_stream_interface",
       "../test:test_support",
     ]
@@ -1124,8 +1126,8 @@ if (rtc_include_tests) {
 
     deps = [
       ":libjingle_peerconnection_api",
-      ":make_ref_counted",
-      ":scoped_refptr",
+      "../api:scoped_refptr",
+      "../rtc_base:refcount",
       "../test:test_support",
     ]
   }
@@ -1137,7 +1139,6 @@ if (rtc_include_tests) {
 
     deps = [
       ":libjingle_peerconnection_api",
-      ":make_ref_counted",
       "../test:test_support",
     ]
   }
@@ -1173,7 +1174,6 @@ if (rtc_include_tests) {
 
     deps = [
       ":libjingle_peerconnection_api",
-      ":make_ref_counted",
       "../test:test_support",
     ]
   }
@@ -1195,8 +1195,8 @@ if (rtc_include_tests) {
     sources = [ "test/mock_video_bitrate_allocator.h" ]
 
     deps = [
+      "../api/video:video_bitrate_allocator",
       "../test:test_support",
-      "video:video_bitrate_allocator",
     ]
   }
 
@@ -1206,8 +1206,8 @@ if (rtc_include_tests) {
     sources = [ "test/mock_video_bitrate_allocator_factory.h" ]
 
     deps = [
+      "../api/video:video_bitrate_allocator_factory",
       "../test:test_support",
-      "video:video_bitrate_allocator_factory",
     ]
   }
 
@@ -1220,8 +1220,8 @@ if (rtc_include_tests) {
     ]
 
     deps = [
+      "../api/video_codecs:video_codecs_api",
       "../test:test_support",
-      "video_codecs:video_codecs_api",
     ]
   }
 
@@ -1231,8 +1231,8 @@ if (rtc_include_tests) {
     sources = [ "test/mock_video_decoder.h" ]
 
     deps = [
+      "../api/video_codecs:video_codecs_api",
       "../test:test_support",
-      "video_codecs:video_codecs_api",
     ]
   }
 
@@ -1242,8 +1242,8 @@ if (rtc_include_tests) {
     sources = [ "test/mock_video_encoder.h" ]
 
     deps = [
+      "../api/video_codecs:video_codecs_api",
       "../test:test_support",
-      "video_codecs:video_codecs_api",
     ]
   }
 
@@ -1253,9 +1253,9 @@ if (rtc_include_tests) {
     sources = [ "test/mock_video_track.h" ]
 
     deps = [
-      ":make_ref_counted",
-      ":media_stream_interface",
-      ":scoped_refptr",
+      "../api:media_stream_interface",
+      "../api:scoped_refptr",
+      "../rtc_base:refcount",
       "../test:test_support",
     ]
   }

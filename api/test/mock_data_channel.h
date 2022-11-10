@@ -14,15 +14,16 @@
 #include <string>
 
 #include "api/data_channel_interface.h"
-#include "api/make_ref_counted.h"
 #include "test/gmock.h"
 
 namespace webrtc {
 
-class MockDataChannelInterface : public webrtc::DataChannelInterface {
+class MockDataChannelInterface final
+    : public rtc::RefCountedObject<webrtc::DataChannelInterface> {
  public:
   static rtc::scoped_refptr<MockDataChannelInterface> Create() {
-    return rtc::make_ref_counted<MockDataChannelInterface>();
+    return rtc::scoped_refptr<MockDataChannelInterface>(
+        new MockDataChannelInterface());
   }
 
   MOCK_METHOD(void,
@@ -54,9 +55,6 @@ class MockDataChannelInterface : public webrtc::DataChannelInterface {
  protected:
   MockDataChannelInterface() = default;
 };
-
-static_assert(
-    !std::is_abstract_v<rtc::RefCountedObject<MockDataChannelInterface>>);
 
 }  // namespace webrtc
 

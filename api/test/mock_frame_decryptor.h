@@ -14,17 +14,12 @@
 #include <vector>
 
 #include "api/crypto/frame_decryptor_interface.h"
-#include "api/make_ref_counted.h"
 #include "test/gmock.h"
 
 namespace webrtc {
 
 class MockFrameDecryptor : public FrameDecryptorInterface {
  public:
-  static rtc::scoped_refptr<MockFrameDecryptor> Create() {
-    return rtc::make_ref_counted<MockFrameDecryptor>();
-  }
-
   MOCK_METHOD(Result,
               Decrypt,
               (cricket::MediaType,
@@ -38,12 +33,7 @@ class MockFrameDecryptor : public FrameDecryptorInterface {
               GetMaxPlaintextByteSize,
               (cricket::MediaType, size_t encrypted_frame_size),
               (override));
-
- protected:
-  MockFrameDecryptor() = default;
 };
-
-static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockFrameDecryptor>>);
 
 }  // namespace webrtc
 

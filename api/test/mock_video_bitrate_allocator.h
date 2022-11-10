@@ -23,8 +23,6 @@ class MockVideoBitrateAllocator : public webrtc::VideoBitrateAllocator {
               (override));
 };
 
-static_assert(!std::is_abstract_v<MockVideoBitrateAllocator>);
-
 }  // namespace webrtc
 
 #endif  // API_TEST_MOCK_VIDEO_BITRATE_ALLOCATOR_H_

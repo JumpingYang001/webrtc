@@ -18,7 +18,8 @@
 
 namespace webrtc {
 
-class MockVideoBitrateAllocatorFactory : public VideoBitrateAllocatorFactory {
+class MockVideoBitrateAllocatorFactory
+    : public webrtc::VideoBitrateAllocatorFactory {
  public:
   ~MockVideoBitrateAllocatorFactory() override { Die(); }
   MOCK_METHOD(std::unique_ptr<VideoBitrateAllocator>,
@@ -27,8 +28,6 @@ class MockVideoBitrateAllocatorFactory : public VideoBitrateAllocatorFactory {
               (override));
   MOCK_METHOD(void, Die, ());
 };
-
-static_assert(!std::is_abstract_v<MockVideoBitrateAllocatorFactory>);
 
 }  // namespace webrtc
 

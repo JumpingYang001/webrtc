@@ -13,17 +13,18 @@
 
 #include <string>
 
-#include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
 #include "api/scoped_refptr.h"
+#include "rtc_base/ref_counted_object.h"
 #include "test/gmock.h"
 
 namespace webrtc {
 
-class MockVideoTrack : public webrtc::VideoTrackInterface {
+class MockVideoTrack final
+    : public rtc::RefCountedObject<webrtc::VideoTrackInterface> {
  public:
   static rtc::scoped_refptr<MockVideoTrack> Create() {
-    return rtc::make_ref_counted<MockVideoTrack>();
+    return rtc::scoped_refptr<MockVideoTrack>(new MockVideoTrack());
   }
 
   // NotifierInterface
@@ -61,12 +62,7 @@ class MockVideoTrack : public webrtc::VideoTrackInterface {
 
   MOCK_METHOD(ContentHint, content_hint, (), (const, override));
   MOCK_METHOD(void, set_content_hint, (ContentHint hint), (override));
-
- protected:
-  MockVideoTrack() = default;
 };
-
-static_assert(!std::is_abstract_v<rtc::RefCountedObject<MockVideoTrack>>);
 
 }  // namespace webrtc
 

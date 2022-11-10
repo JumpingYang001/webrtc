@@ -250,6 +250,14 @@ specific_include_rules = {
     "+test/gmock.h",
   ],
 
+  "mock_peerconnectioninterface\.h": [
+    "+rtc_base/ref_counted_object.h",
+  ],
+
+  "mock_video_track\.h": [
+    "+rtc_base/ref_counted_object.h",
+  ],
+
   "notifier\.h": [
     "+rtc_base/system/no_unique_address.h",
   ],

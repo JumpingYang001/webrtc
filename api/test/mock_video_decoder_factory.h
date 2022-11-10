@@ -35,9 +35,6 @@ class MockVideoDecoderFactory : public webrtc::VideoDecoderFactory {
               (override));
   MOCK_METHOD(void, Die, ());
 };
-
-static_assert(!std::is_abstract_v<MockVideoDecoderFactory>);
-
 }  // namespace webrtc
 
 #endif  // API_TEST_MOCK_VIDEO_DECODER_FACTORY_H_
