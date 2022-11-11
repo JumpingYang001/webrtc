@@ -219,7 +219,6 @@ rtc_library("libjingle_peerconnection_api") {
     "sctp_transport_interface.h",
     "set_local_description_observer_interface.h",
     "set_remote_description_observer_interface.h",
-    "stats_types.h",
     "uma_metrics.h",
     "video_track_source_proxy_factory.h",
   ]
