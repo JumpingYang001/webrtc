@@ -76,7 +76,13 @@ ABSL_FLAG(bool,
           false,
           "Tells to initialize new API for exporting performance metrics");
 
+// TODO(crbug.com/1384172): Re-enable logs by default once the issue with
+// logcat is solved.
+#if defined(WEBRTC_ANDROID)
+ABSL_FLAG(bool, logs, false, "print logs to stderr");
+#else
 ABSL_FLAG(bool, logs, true, "print logs to stderr");
+#endif
 ABSL_FLAG(bool, verbose, false, "verbose logs to stderr");
 
 ABSL_FLAG(std::string,
