@@ -20,6 +20,7 @@
 #if WEBRTC_USE_BUILTIN_ILBC
 #include "api/audio_codecs/ilbc/audio_encoder_ilbc.h"  // nogncheck
 #endif
+#include "api/audio_codecs/isac/audio_encoder_isac.h"
 #if WEBRTC_USE_BUILTIN_OPUS
 #include "api/audio_codecs/opus/audio_encoder_multi_channel_opus.h"
 #include "api/audio_codecs/opus/audio_encoder_opus.h"  // nogncheck
@@ -62,7 +63,7 @@ rtc::scoped_refptr<AudioEncoderFactory> CreateBuiltinAudioEncoderFactory() {
       AudioEncoderOpus, NotAdvertised<AudioEncoderMultiChannelOpus>,
 #endif
 
-      AudioEncoderG722,
+      AudioEncoderIsac, AudioEncoderG722,
 
 #if WEBRTC_USE_BUILTIN_ILBC
       AudioEncoderIlbc,

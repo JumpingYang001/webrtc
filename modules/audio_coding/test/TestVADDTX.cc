@@ -18,6 +18,8 @@
 #include "api/audio_codecs/audio_encoder_factory_template.h"
 #include "api/audio_codecs/ilbc/audio_decoder_ilbc.h"
 #include "api/audio_codecs/ilbc/audio_encoder_ilbc.h"
+#include "api/audio_codecs/isac/audio_decoder_isac_float.h"
+#include "api/audio_codecs/isac/audio_encoder_isac_float.h"
 #include "api/audio_codecs/opus/audio_decoder_opus.h"
 #include "api/audio_codecs/opus/audio_encoder_opus.h"
 #include "modules/audio_coding/codecs/cng/audio_encoder_cng.h"
@@ -66,10 +68,12 @@ void MonitoringAudioPacketizationCallback::GetStatistics(uint32_t* counter) {
 }
 
 TestVadDtx::TestVadDtx()
-    : encoder_factory_(
-          CreateAudioEncoderFactory<AudioEncoderIlbc, AudioEncoderOpus>()),
-      decoder_factory_(
-          CreateAudioDecoderFactory<AudioDecoderIlbc, AudioDecoderOpus>()),
+    : encoder_factory_(CreateAudioEncoderFactory<AudioEncoderIlbc,
+                                                 AudioEncoderIsacFloat,
+                                                 AudioEncoderOpus>()),
+      decoder_factory_(CreateAudioDecoderFactory<AudioDecoderIlbc,
+                                                 AudioDecoderIsacFloat,
+                                                 AudioDecoderOpus>()),
       acm_send_(AudioCodingModule::Create(
           AudioCodingModule::Config(decoder_factory_))),
       acm_receive_(AudioCodingModule::Create(
@@ -178,6 +182,8 @@ void TestVadDtx::Run(absl::string_view in_filename,
 TestWebRtcVadDtx::TestWebRtcVadDtx() : output_file_num_(0) {}
 
 void TestWebRtcVadDtx::Perform() {
+  RunTestCases({"ISAC", 16000, 1});
+  RunTestCases({"ISAC", 32000, 1});
   RunTestCases({"ILBC", 8000, 1});
   RunTestCases({"opus", 48000, 2});
 }

@@ -13,7 +13,6 @@
 #include <algorithm>  // std::min
 #include <memory>
 
-#include "absl/types/optional.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "modules/audio_coding/codecs/cng/audio_encoder_cng.h"
@@ -65,14 +64,12 @@ class AcmReceiverTestOldApi : public AudioPacketizationCallback,
                             const SdpAudioFormat& format,
                             const std::map<int, int> cng_payload_types = {}) {
     // Create the speech encoder.
-    absl::optional<AudioCodecInfo> info =
-        encoder_factory_->QueryAudioEncoder(format);
-    RTC_CHECK(info.has_value());
+    AudioCodecInfo info = encoder_factory_->QueryAudioEncoder(format).value();
     std::unique_ptr<AudioEncoder> enc =
         encoder_factory_->MakeAudioEncoder(payload_type, format, absl::nullopt);
 
     // If we have a compatible CN specification, stack a CNG on top.
-    auto it = cng_payload_types.find(info->sample_rate_hz);
+    auto it = cng_payload_types.find(info.sample_rate_hz);
     if (it != cng_payload_types.end()) {
       AudioEncoderCngConfig config;
       config.speech_encoder = std::move(enc);
@@ -84,7 +81,7 @@ class AcmReceiverTestOldApi : public AudioPacketizationCallback,
 
     // Actually start using the new encoder.
     acm_->SetEncoder(std::move(enc));
-    return *info;
+    return info;
   }
 
   int InsertOnePacketOfSilence(const AudioCodecInfo& info) {
@@ -151,7 +148,8 @@ class AcmReceiverTestOldApi : public AudioPacketizationCallback,
 #define MAYBE_SampleRate SampleRate
 #endif
 TEST_F(AcmReceiverTestOldApi, MAYBE_SampleRate) {
-  const std::map<int, SdpAudioFormat> codecs = {{0, {"OPUS", 48000, 2}}};
+  const std::map<int, SdpAudioFormat> codecs = {{0, {"ISAC", 16000, 1}},
+                                                {1, {"ISAC", 32000, 1}}};
   receiver_->SetCodecs(codecs);
 
   constexpr int kOutSampleRateHz = 8000;  // Different than codec sample rate.
@@ -235,6 +233,15 @@ TEST_F(AcmReceiverTestFaxModeOldApi, MAYBE_VerifyAudioFramePCMU) {
 }
 
 #if defined(WEBRTC_ANDROID)
+#define MAYBE_VerifyAudioFrameISAC DISABLED_VerifyAudioFrameISAC
+#else
+#define MAYBE_VerifyAudioFrameISAC VerifyAudioFrameISAC
+#endif
+TEST_F(AcmReceiverTestFaxModeOldApi, MAYBE_VerifyAudioFrameISAC) {
+  RunVerifyAudioFrame({"ISAC", 16000, 1});
+}
+
+#if defined(WEBRTC_ANDROID)
 #define MAYBE_VerifyAudioFrameOpus DISABLED_VerifyAudioFrameOpus
 #else
 #define MAYBE_VerifyAudioFrameOpus VerifyAudioFrameOpus
@@ -303,10 +310,12 @@ TEST_F(AcmReceiverTestPostDecodeVadPassiveOldApi, MAYBE_PostdecodingVad) {
 #else
 #define MAYBE_LastAudioCodec LastAudioCodec
 #endif
-#if defined(WEBRTC_CODEC_OPUS)
+#if defined(WEBRTC_CODEC_ISAC)
 TEST_F(AcmReceiverTestOldApi, MAYBE_LastAudioCodec) {
-  const std::map<int, SdpAudioFormat> codecs = {
-      {0, {"PCMU", 8000, 1}}, {1, {"PCMA", 8000, 1}}, {2, {"L16", 32000, 1}}};
+  const std::map<int, SdpAudioFormat> codecs = {{0, {"ISAC", 16000, 1}},
+                                                {1, {"PCMA", 8000, 1}},
+                                                {2, {"ISAC", 32000, 1}},
+                                                {3, {"L16", 32000, 1}}};
   const std::map<int, int> cng_payload_types = {
       {8000, 100}, {16000, 101}, {32000, 102}};
   {
