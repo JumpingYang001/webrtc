@@ -110,5 +110,15 @@ static void JNI_RtpSender_SetFrameEncryptor(JNIEnv* jni,
               j_frame_encryptor_pointer)));
 }
 
+static ScopedJavaLocalRef<jstring> JNI_RtpSender_GetMediaType(
+    JNIEnv* jni,
+    jlong j_rtp_sender_pointer) {
+  cricket::MediaType media_type =
+      reinterpret_cast<RtpSenderInterface*>(j_rtp_sender_pointer)->media_type();
+  return media_type == cricket::MEDIA_TYPE_AUDIO
+             ? NativeToJavaString(jni, "audio")
+             : NativeToJavaString(jni, "video");
+}
+
 }  // namespace jni
 }  // namespace webrtc
