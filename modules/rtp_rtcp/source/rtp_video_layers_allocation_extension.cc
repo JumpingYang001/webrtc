@@ -184,12 +184,16 @@ bool RtpVideoLayersAllocationExtension::Write(
   }
   ++write_at;
 
-  {  // Number of temporal layers per spatial layer (at most kMaxSpatialIds).
-    static_assert(VideoLayersAllocation::kMaxSpatialIds == 4);
+  {  // Number of temporal layers.
     int bit_offset = 8;
     *write_at = 0;
     for (const auto& layer : allocation.active_spatial_layers) {
-      bit_offset -= 2;
+      if (bit_offset == 0) {
+        bit_offset = 6;
+        *++write_at = 0;
+      } else {
+        bit_offset -= 2;
+      }
       *write_at |=
           ((layer.target_bitrate_per_temporal_layer.size() - 1) << bit_offset);
     }
@@ -265,9 +269,8 @@ bool RtpVideoLayersAllocationExtension::Parse(
     return false;
   }
 
-  // Read number of temporal layers per spatial layer (at most kMaxSpatialIds),
-  // create `allocation->active_spatial_layers` while iterating though it.
-  static_assert(VideoLayersAllocation::kMaxSpatialIds == 4);
+  // Read number of temporal layers,
+  // Create `allocation->active_spatial_layers` while iterating though it.
   int bit_offset = 8;
   for (int stream_idx = 0; stream_idx < num_rtp_streams; ++stream_idx) {
     for (int sid = 0; sid < VideoLayersAllocation::kMaxSpatialIds; ++sid) {
@@ -275,7 +278,14 @@ bool RtpVideoLayersAllocationExtension::Parse(
         continue;
       }
 
-      bit_offset -= 2;
+      if (bit_offset == 0) {
+        bit_offset = 6;
+        if (++read_at == end) {
+          return false;
+        }
+      } else {
+        bit_offset -= 2;
+      }
       int num_temporal_layers = 1 + ((*read_at >> bit_offset) & 0b11);
       allocation->active_spatial_layers.emplace_back();
       auto& layer = allocation->active_spatial_layers.back();
