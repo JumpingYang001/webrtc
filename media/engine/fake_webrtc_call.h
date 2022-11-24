@@ -202,7 +202,7 @@ class FakeVideoSendStream final
   void OnFrame(const webrtc::VideoFrame& frame) override;
 
   // webrtc::VideoSendStream implementation.
-  void StartPerRtpStream(std::vector<bool> active_layers) override;
+  void UpdateActiveSimulcastLayers(std::vector<bool> active_layers) override;
   void Start() override;
   void Stop() override;
   bool started() override { return IsSending(); }

@@ -312,16 +312,29 @@ void VideoSendStreamImpl::DeliverRtcp(const uint8_t* packet, size_t length) {
   rtp_video_sender_->DeliverRtcp(packet, length);
 }
 
-void VideoSendStreamImpl::StartPerRtpStream(
+void VideoSendStreamImpl::UpdateActiveSimulcastLayers(
     const std::vector<bool> active_layers) {
   RTC_DCHECK_RUN_ON(rtp_transport_queue_);
   bool previously_active = rtp_video_sender_->IsActive();
   rtp_video_sender_->SetActiveModules(active_layers);
   if (!rtp_video_sender_->IsActive() && previously_active) {
+    // Payload router switched from active to inactive.
     StopVideoSendStream();
   } else if (rtp_video_sender_->IsActive() && !previously_active) {
+    // Payload router switched from inactive to active.
     StartupVideoSendStream();
   }
+}
+
+void VideoSendStreamImpl::Start() {
+  RTC_DCHECK_RUN_ON(rtp_transport_queue_);
+  RTC_LOG(LS_INFO) << "VideoSendStream::Start";
+  if (rtp_video_sender_->IsActive())
+    return;
+
+  TRACE_EVENT_INSTANT0("webrtc", "VideoSendStream::Start");
+  rtp_video_sender_->SetActive(true);
+  StartupVideoSendStream();
 }
 
 void VideoSendStreamImpl::StartupVideoSendStream() {
@@ -365,7 +378,7 @@ void VideoSendStreamImpl::Stop() {
 
   RTC_DCHECK(transport_queue_safety_->alive());
   TRACE_EVENT_INSTANT0("webrtc", "VideoSendStream::Stop");
-  rtp_video_sender_->Stop();
+  rtp_video_sender_->SetActive(false);
   StopVideoSendStream();
 }
 
