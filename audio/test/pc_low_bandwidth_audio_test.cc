@@ -134,6 +134,7 @@ TEST(PCLowBandwidthAudioTest, PCGoodNetworkHighBitrate) {
       [](PeerConfigurer* alice) {
         AudioConfig audio;
         audio.stream_label = "alice-audio";
+        audio.sync_group = "alice-media";
         audio.mode = AudioConfig::Mode::kFile;
         audio.input_file_name = AudioInputFile();
         audio.output_dump_file_name = AudioOutputFile();
@@ -160,6 +161,7 @@ TEST(PCLowBandwidthAudioTest, PC40kbpsNetwork) {
       [](PeerConfigurer* alice) {
         AudioConfig audio;
         audio.stream_label = "alice-audio";
+        audio.sync_group = "alice-media";
         audio.mode = AudioConfig::Mode::kFile;
         audio.input_file_name = AudioInputFile();
         audio.output_dump_file_name = AudioOutputFile();

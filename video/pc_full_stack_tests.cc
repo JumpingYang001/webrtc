@@ -133,6 +133,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Net_Delay_0_0_Plr_0_VP9) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -164,6 +165,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -202,6 +204,7 @@ TEST(PCFullStackTest, MAYBE_Pc_Generator_Net_Delay_0_0_Plr_0_VP9Profile2) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateSquareFrameGenerator(
             video, test::FrameGeneratorInterface::OutputType::kI010);
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -261,6 +264,7 @@ TEST(PCFullStackTest, Pc_Net_Delay_0_0_Plr_0) {
       [](PeerConfigurer* alice) {
         VideoConfig video(176, 144, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("paris_qcif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -281,6 +285,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -301,6 +306,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 10);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -329,6 +335,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Link_150kbps_Net_Delay_0_0_Plr_0) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -351,6 +358,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Link_130kbps_Delay100ms_Loss1_Ulpfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -374,6 +382,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Link_50kbps_Delay100ms_Loss1_Ulpfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -399,6 +408,7 @@ TEST(PCFullStackTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -427,6 +437,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Link_250kbps_Delay100ms_10pkts_Loss1) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -450,6 +461,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -472,6 +484,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -494,6 +507,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Delay_50_0_Plr_5_Flexfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -519,6 +533,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_500kbps_Delay_50_0_Plr_3_Flexfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -544,6 +559,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_500kbps_Delay_50_0_Plr_3_Ulpfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -565,6 +581,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Net_Delay_0_0_Plr_0_H264) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -587,6 +604,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_30kbps_Net_Delay_0_0_Plr_0_H264) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 10);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -618,6 +636,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -645,6 +664,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Sps_Pps_Idr) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -669,6 +689,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Flexfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -699,6 +720,7 @@ TEST(PCFullStackTest, DISABLED_Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Ulpfec) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -726,6 +748,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_500kbps) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -748,6 +771,7 @@ TEST_P(ParameterizedPCFullStackTest, Pc_Foreman_Cif_500kbps_32pkts_Queue) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -777,6 +801,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_500kbps_100ms) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -800,6 +825,7 @@ TEST(PCGenericDescriptorTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -843,6 +869,7 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_1000kbps_100ms_32pkts_Queue) {
       [](PeerConfigurer* alice) {
         VideoConfig video(352, 288, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -866,6 +893,7 @@ TEST(PCFullStackTest, Pc_Conference_Motion_Hd_2000kbps_100ms_32pkts_Queue) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1280, 720, 50);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("ConferenceMotion_1280_720_50"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -1017,6 +1045,7 @@ TEST_P(ParameterizedPCFullStackTest,
       [](PeerConfigurer* alice) {
         VideoConfig video(1280, 720, 50);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("ConferenceMotion_1280_720_50"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -1052,6 +1081,7 @@ TEST(PCFullStackTest, Pc_Screenshare_Slides_No_Conference_Mode) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1850, 1110, 5);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.content_hint = VideoTrackInterface::ContentHint::kText;
         auto frame_generator = CreateScreenShareFrameGenerator(
             video, ScreenShareConfig(TimeDelta::Seconds(10)));
@@ -1071,6 +1101,7 @@ TEST(PCFullStackTest, Pc_Screenshare_Slides) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1850, 1110, 5);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.content_hint = VideoTrackInterface::ContentHint::kText;
         auto frame_generator = CreateScreenShareFrameGenerator(
             video, ScreenShareConfig(TimeDelta::Seconds(10)));
@@ -1098,6 +1129,7 @@ TEST(PCFullStackTest, Pc_Screenshare_Slides_Simulcast_No_Conference_Mode) {
         video.emulated_sfu_config = EmulatedSFUConfig(1);
         video.temporal_layers_count = 2;
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.content_hint = VideoTrackInterface::ContentHint::kText;
         auto frame_generator = CreateScreenShareFrameGenerator(
             video, ScreenShareConfig(TimeDelta::Seconds(10)));
@@ -1121,6 +1153,7 @@ TEST_P(ParameterizedPCFullStackTest, Pc_Screenshare_Slides_Simulcast) {
         video.emulated_sfu_config = EmulatedSFUConfig(1);
         video.temporal_layers_count = 2;
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.content_hint = VideoTrackInterface::ContentHint::kText;
         auto frame_generator = CreateScreenShareFrameGenerator(
             video, ScreenShareConfig(TimeDelta::Seconds(10)));
@@ -1331,6 +1364,7 @@ TEST(PCFullStackTest, Pc_Screenshare_Slides_Vp9_3sl_High_Fps) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1850, 1110, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.simulcast_config = VideoSimulcastConfig(3);
         video.emulated_sfu_config = EmulatedSFUConfig(2);
         video.content_hint = VideoTrackInterface::ContentHint::kText;
@@ -1364,6 +1398,7 @@ TEST(PCFullStackTest, Pc_Vp9svc_3sl_High) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1280, 720, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.simulcast_config = VideoSimulcastConfig(3);
         video.emulated_sfu_config = EmulatedSFUConfig(2);
         video.temporal_layers_count = 3;
@@ -1397,6 +1432,7 @@ TEST(PCFullStackTest, Pc_Vp9svc_3sl_Low) {
       [](PeerConfigurer* alice) {
         VideoConfig video(1280, 720, 30);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         video.simulcast_config = VideoSimulcastConfig(3);
         video.emulated_sfu_config = EmulatedSFUConfig(0);
         video.temporal_layers_count = 3;
@@ -1533,6 +1569,7 @@ TEST(PCFullStackTest, MAYBE_Pc_Simulcast_HD_High) {
         video.emulated_sfu_config = EmulatedSFUConfig(2);
         video.temporal_layers_count = 3;
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         alice->AddVideoConfig(std::move(video));
       },
       [](PeerConfigurer* bob) {});
@@ -1554,6 +1591,7 @@ TEST_P(ParameterizedPCFullStackTest, Pc_Simulcast_Vp8_3sl_High) {
         video.simulcast_config = VideoSimulcastConfig(3);
         video.emulated_sfu_config = EmulatedSFUConfig(2);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("ConferenceMotion_1280_720_50"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
@@ -1583,6 +1621,7 @@ TEST(PCFullStackTest, Pc_Simulcast_Vp8_3sl_Low) {
         video.simulcast_config = VideoSimulcastConfig(3);
         video.emulated_sfu_config = EmulatedSFUConfig(0);
         video.stream_label = "alice-video";
+        video.sync_group = "alice-media";
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("ConferenceMotion_1280_720_50"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));

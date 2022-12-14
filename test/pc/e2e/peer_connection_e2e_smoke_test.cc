@@ -138,11 +138,11 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Smoke) {
 
     AudioConfig audio;
     audio.stream_label = "alice-audio";
+    audio.sync_group = "alice-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
     audio.sampling_frequency_in_hz = 48000;
-    audio.sync_group = "alice-media";
     alice->SetAudioConfig(std::move(audio));
     alice->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
@@ -155,11 +155,13 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Smoke) {
     charlie->SetName("charlie");
     VideoConfig video(160, 120, 15);
     video.stream_label = "charlie-video";
+    video.sync_group = "charlie-media";
     video.temporal_layers_count = 2;
     charlie->AddVideoConfig(std::move(video));
 
     AudioConfig audio;
     audio.stream_label = "charlie-audio";
+    audio.sync_group = "charlie-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
@@ -226,11 +228,13 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest,
     charlie->SetName("charlie");
     VideoConfig video(160, 120, 15);
     video.stream_label = "charlie-video";
+    video.sync_group = "charlie-media";
     video.temporal_layers_count = 2;
     charlie->AddVideoConfig(std::move(video));
 
     AudioConfig audio;
     audio.stream_label = "charlie-audio";
+    audio.sync_group = "charlie-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
@@ -276,11 +280,13 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, SmokeH264) {
     charlie->SetName("charlie");
     VideoConfig video(160, 120, 15);
     video.stream_label = "charlie-video";
+    video.sync_group = "charlie-media";
     video.temporal_layers_count = 2;
     charlie->AddVideoConfig(std::move(video));
 
     AudioConfig audio;
     audio.stream_label = "charlie-audio";
+    audio.sync_group = "charlie-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
@@ -387,6 +393,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Screenshare) {
   AddPeer(network_links.first, [](PeerConfigurer* alice) {
     VideoConfig screenshare(320, 180, 30);
     screenshare.stream_label = "alice-screenshare";
+    screenshare.sync_group = "alice-media";
     screenshare.content_hint = VideoTrackInterface::ContentHint::kText;
     ScreenShareConfig screen_share_config =
         ScreenShareConfig(TimeDelta::Seconds(2));
@@ -413,6 +420,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Echo) {
   AddPeer(network_links.first, [](PeerConfigurer* alice) {
     AudioConfig audio;
     audio.stream_label = "alice-audio";
+    audio.sync_group = "alice-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
@@ -422,6 +430,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Echo) {
   AddPeer(network_links.second, [](PeerConfigurer* bob) {
     AudioConfig audio;
     audio.stream_label = "bob-audio";
+    audio.sync_group = "bob-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
@@ -444,12 +453,14 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Simulcast) {
   AddPeer(network_links.first, [](PeerConfigurer* alice) {
     VideoConfig simulcast(1280, 720, 15);
     simulcast.stream_label = "alice-simulcast";
+    simulcast.sync_group = "alice-media";
     simulcast.simulcast_config = VideoSimulcastConfig(2);
     simulcast.emulated_sfu_config = EmulatedSFUConfig(0);
     alice->AddVideoConfig(std::move(simulcast));
 
     AudioConfig audio;
     audio.stream_label = "alice-audio";
+    audio.sync_group = "alice-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
@@ -470,14 +481,18 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Svc) {
   std::pair<EmulatedNetworkManagerInterface*, EmulatedNetworkManagerInterface*>
       network_links = CreateNetwork();
   AddPeer(network_links.first, [](PeerConfigurer* alice) {
-    VideoConfig simulcast("alice-svc", 1280, 720, 15);
+    VideoConfig simulcast(1280, 720, 15);
+    simulcast.stream_label = "alice-svc";
+    simulcast.sync_group = "alice-media";
     // Because we have network with packets loss we can analyze only the
     // highest spatial layer in SVC mode.
     simulcast.simulcast_config = VideoSimulcastConfig(2);
     simulcast.emulated_sfu_config = EmulatedSFUConfig(1);
     alice->AddVideoConfig(std::move(simulcast));
 
-    AudioConfig audio("alice-audio");
+    AudioConfig audio;
+    audio.stream_label = "alice-audio";
+    audio.sync_group = "alice-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
@@ -507,6 +522,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_HighBitrate) {
     alice->SetBitrateSettings(bitrate_settings);
     VideoConfig video(800, 600, 15);
     video.stream_label = "alice-video";
+    video.sync_group = "alice-media";
     RtpEncodingParameters encoding_parameters;
     encoding_parameters.min_bitrate_bps = 500'000;
     encoding_parameters.max_bitrate_bps = 3'000'000;
@@ -515,6 +531,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_HighBitrate) {
 
     AudioConfig audio;
     audio.stream_label = "alice-audio";
+    audio.sync_group = "alice-media";
     audio.mode = AudioConfig::Mode::kFile;
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
