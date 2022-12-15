@@ -32,6 +32,14 @@
       }
     }
   },
+  'bullhead': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'bullhead',
+        'os': 'Android'
+      }
+    }
+  },
   'chrome-tester-service-account': {
     'swarming': {
       'service_account':
@@ -48,6 +56,14 @@
     'swarming': {
       'dimensions': {
         'cores': '12'
+      }
+    }
+  },
+  'hammerhead': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'hammerhead',
+        'os': 'Android'
       }
     }
   },
@@ -160,6 +176,20 @@
       }]
     }
   },
+  'marshmallow': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'MMB29Q'
+      }
+    }
+  },
+  'marshmallow_generic': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'M'
+      }
+    }
+  },
   'out_dir_arg': {
     '$mixin_append': {
       'args': ['--out-dir', '${ISOLATED_OUTDIR}']
@@ -239,6 +269,14 @@
   'resultdb-json-format': {
     'resultdb': {
       'result_format': 'json'
+    }
+  },
+  'shamu': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'shamu',
+        'os': 'Android'
+      }
     }
   },
   'shards-2': {
