@@ -1633,6 +1633,7 @@ if (is_android) {
       "../../api/task_queue:default_task_queue_factory",
       "../../api/video:video_frame",
       "../../api/video:video_rtp_headers",
+      "../../media:media_constants",
       "../../media:rtc_audio_video",
       "../../media:rtc_internal_video_codecs",
       "../../media:rtc_media_base",

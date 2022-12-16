@@ -719,6 +719,7 @@ if (is_ios || is_mac) {
         ":helpers_objc",
         "../api/video_codecs:video_codecs_api",
         "../common_video",
+        "../media:media_constants",
         "../media:rtc_media_base",
         "../modules/video_coding:video_codec_interface",
         "../rtc_base:checks",
@@ -763,6 +764,7 @@ if (is_ios || is_mac) {
 
       deps = [
         ":base_objc",
+        "../media:media_constants",
         "../media:rtc_media_base",
       ]
     }
@@ -1082,6 +1084,7 @@ if (is_ios || is_mac) {
         "../api/video:video_rtp_headers",
         "../api/video_codecs:video_codecs_api",
         "../common_video",
+        "../media:media_constants",
         "../media:rtc_audio_video",
         "../media:rtc_media_base",
         "../modules/audio_device:audio_device_api",
@@ -1185,6 +1188,7 @@ if (is_ios || is_mac) {
             "../api/video:video_frame",
             "../api/video_codecs:video_codecs_api",
             "../common_video",
+            "../media:codec",
             "../media:rtc_media_base",
             "../media:rtc_media_tests_utils",
             "../modules/audio_device:audio_device_api",
@@ -1559,6 +1563,7 @@ if (is_ios || is_mac) {
         ":base_objc",
         ":helpers_objc",
         "../api/video_codecs:video_codecs_api",
+        "../media:codec",
         "../media:rtc_media_base",
       ]
     }
@@ -1672,6 +1677,7 @@ if (is_ios || is_mac) {
         "../api/video:video_rtp_headers",
         "../api/video_codecs:video_codecs_api",
         "../common_video",
+        "../media:codec",
         "../media:rtc_audio_video",
         "../media:rtc_media_base",
         "../modules/video_coding:video_codec_interface",
