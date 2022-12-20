@@ -663,8 +663,6 @@ AudioProcessingImpl::AudioProcessingImpl(
       use_setup_specific_default_aec3_config_(
           UseSetupSpecificDefaultAec3Congfig()),
       gain_controller2_experiment_params_(GetGainController2ExperimentParams()),
-      use_denormal_disabler_(
-          !field_trial::IsEnabled("WebRTC-ApmDenormalDisablerKillSwitch")),
       transient_suppressor_vad_mode_(
           GetTransientSuppressorVadMode(gain_controller2_experiment_params_)),
       capture_runtime_settings_(RuntimeSettingQueueSize()),
@@ -1159,7 +1157,7 @@ int AudioProcessingImpl::ProcessStream(const float* const* src,
                                        const StreamConfig& output_config,
                                        float* const* dest) {
   TRACE_EVENT0("webrtc", "AudioProcessing::ProcessStream_StreamConfig");
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
   RETURN_ON_ERR(
       HandleUnsupportedAudioFormats(src, input_config, output_config, dest));
   MaybeInitializeCapture(input_config, output_config);
@@ -1464,7 +1462,7 @@ int AudioProcessingImpl::ProcessStream(const int16_t* const src,
   MaybeInitializeCapture(input_config, output_config);
 
   MutexLock lock_capture(&mutex_capture_);
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
 
   if (aec_dump_) {
     RecordUnprocessedCaptureStream(src, input_config);
@@ -1493,7 +1491,7 @@ int AudioProcessingImpl::ProcessStream(const int16_t* const src,
 int AudioProcessingImpl::ProcessCaptureStreamLocked() {
   EmptyQueuedRenderAudioLocked();
   HandleCaptureRuntimeSettings();
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
 
   // Ensure that not both the AEC and AECM are active at the same time.
   // TODO(peah): Simplify once the public API Enable functions for these
@@ -1830,7 +1828,7 @@ int AudioProcessingImpl::AnalyzeReverseStream(
     const StreamConfig& reverse_config) {
   TRACE_EVENT0("webrtc", "AudioProcessing::AnalyzeReverseStream_StreamConfig");
   MutexLock lock(&mutex_render_);
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
   RTC_DCHECK(data);
   for (size_t i = 0; i < reverse_config.num_channels(); ++i) {
     RTC_DCHECK(data[i]);
@@ -1848,7 +1846,7 @@ int AudioProcessingImpl::ProcessReverseStream(const float* const* src,
                                               float* const* dest) {
   TRACE_EVENT0("webrtc", "AudioProcessing::ProcessReverseStream_StreamConfig");
   MutexLock lock(&mutex_render_);
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
   RETURN_ON_ERR(
       HandleUnsupportedAudioFormats(src, input_config, output_config, dest));
 
@@ -1896,7 +1894,7 @@ int AudioProcessingImpl::ProcessReverseStream(const int16_t* const src,
   TRACE_EVENT0("webrtc", "AudioProcessing::ProcessReverseStream_AudioFrame");
 
   MutexLock lock(&mutex_render_);
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
 
   RETURN_ON_ERR(
       HandleUnsupportedAudioFormats(src, input_config, output_config, dest));
@@ -1920,7 +1918,7 @@ int AudioProcessingImpl::ProcessRenderStreamLocked() {
   AudioBuffer* render_buffer = render_.render_audio.get();  // For brevity.
 
   HandleRenderRuntimeSettings();
-  DenormalDisabler denormal_disabler(use_denormal_disabler_);
+  DenormalDisabler denormal_disabler;
 
   if (submodules_.render_pre_processor) {
     submodules_.render_pre_processor->Process(render_buffer);
