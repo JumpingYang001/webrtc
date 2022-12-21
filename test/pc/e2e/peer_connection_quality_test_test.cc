@@ -114,9 +114,7 @@ TEST_F(PeerConnectionE2EQualityTestTest, OutputVideoIsDumpedWhenRequested) {
   EmulatedNetworkManagerInterface* bob_network =
       network_emulation->CreateEmulatedNetworkManagerInterface({bob_endpoint});
 
-  VideoConfig alice_video(320, 180, 15);
-  alice_video.stream_label = "alice-video";
-  alice_video.sync_group = "alice-media";
+  VideoConfig alice_video("alice_video", 320, 180, 15);
   alice_video.output_dump_options = VideoDumpOptions(test_directory_);
   PeerConfigurer alice(alice_network->network_dependencies());
   alice.SetName("alice");
@@ -130,7 +128,7 @@ TEST_F(PeerConnectionE2EQualityTestTest, OutputVideoIsDumpedWhenRequested) {
   fixture.Run(RunParams(TimeDelta::Seconds(2)));
 
   auto frame_reader = test::CreateY4mFrameReader(
-      test::JoinFilename(test_directory_, "alice-video_bob_320x180_15.y4m"));
+      test::JoinFilename(test_directory_, "alice_video_bob_320x180_15.y4m"));
   EXPECT_THAT(frame_reader->num_frames(), Eq(31));  // 2 seconds 15 fps + 1
 
   ExpectOutputFilesCount(1);

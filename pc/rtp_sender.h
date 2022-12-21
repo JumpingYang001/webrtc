@@ -164,8 +164,9 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
     RTC_DCHECK_RUN_ON(signaling_thread_);
     return stream_ids_;
   }
-  // Set stream ids, eliminating duplicates in the process.
-  void set_stream_ids(const std::vector<std::string>& stream_ids) override;
+  void set_stream_ids(const std::vector<std::string>& stream_ids) override {
+    stream_ids_ = stream_ids;
+  }
   void SetStreams(const std::vector<std::string>& stream_ids) override;
 
   std::string id() const override { return id_; }

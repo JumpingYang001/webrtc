@@ -329,7 +329,6 @@ TEST_P(SvcTest, ScalabilityModeSupported) {
       [this](PeerConfigurer* alice) {
         VideoConfig video(/*stream_label=*/"alice-video", /*width=*/1850,
                           /*height=*/1110, /*fps=*/30);
-        video.sync_group = "alice-media";
         if (IsSMode()) {
           video.emulated_sfu_config = EmulatedSFUConfig(
               SvcTestParameters().expected_spatial_layers - 1,
