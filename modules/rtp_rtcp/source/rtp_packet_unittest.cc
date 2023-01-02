@@ -855,7 +855,7 @@ struct UncopyableValue {
   UncopyableValue& operator=(const UncopyableValue&) = delete;
 };
 struct UncopyableExtension {
-  static constexpr RTPExtensionType kId = kRtpExtensionGenericFrameDescriptor02;
+  static constexpr RTPExtensionType kId = kRtpExtensionDependencyDescriptor;
   static constexpr absl::string_view Uri() { return "uri"; }
 
   static size_t ValueSize(const UncopyableValue& value) { return 1; }
@@ -868,7 +868,6 @@ struct UncopyableExtension {
     return true;
   }
 };
-constexpr RTPExtensionType UncopyableExtension::kId;
 
 TEST(RtpPacketTest, SetUncopyableExtension) {
   RtpPacket::ExtensionManager extensions;
