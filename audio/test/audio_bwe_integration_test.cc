@@ -115,6 +115,7 @@ class NoBandwidthDropAfterDtx : public AudioBweTest {
         RtpExtension(RtpExtension::kTransportSequenceNumberUri,
                      kTransportSequenceNumberExtensionId));
     for (AudioReceiveStreamInterface::Config& recv_config : *receive_configs) {
+      recv_config.rtp.transport_cc = true;
       recv_config.rtp.extensions = send_config->rtp.extensions;
       recv_config.rtp.remote_ssrc = send_config->rtp.ssrc;
     }

@@ -270,6 +270,7 @@ class WebRtcVoiceMediaChannel final : public VoiceMediaChannel,
   AudioOptions options_;
   absl::optional<int> dtmf_payload_type_;
   int dtmf_payload_freq_ = -1;
+  bool recv_transport_cc_enabled_ = false;
   bool recv_nack_enabled_ = false;
   bool enable_non_sender_rtt_ = false;
   bool playout_ = false;

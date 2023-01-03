@@ -84,6 +84,11 @@ bool HasTransportSequenceNumber(const RtpHeaderExtensionMap& map) {
          map.IsRegistered(kRtpExtensionTransportSequenceNumber02);
 }
 
+bool UseSendSideBwe(const ReceiveStreamInterface* stream) {
+  return stream->transport_cc() &&
+         HasTransportSequenceNumber(stream->GetRtpExtensionMap());
+}
+
 const int* FindKeyByValue(const std::map<int, int>& m, int v) {
   for (const auto& kv : m) {
     if (kv.second == v)
@@ -1548,8 +1553,7 @@ bool Call::IdentifyReceivedPacket(RtpPacketReceived& packet,
   packet.IdentifyExtensions(it->second->GetRtpExtensionMap());
 
   if (use_send_side_bwe) {
-    *use_send_side_bwe =
-        HasTransportSequenceNumber(it->second->GetRtpExtensionMap());
+    *use_send_side_bwe = UseSendSideBwe(it->second);
   }
 
   return true;
