@@ -126,7 +126,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtcStats(JNIEnv* env,
                 MemberToJava(env, *member));
   }
   return Java_RTCStats_create(
-      env, stats.timestamp_us(), NativeToJavaString(env, stats.type()),
+      env, stats.timestamp().us(), NativeToJavaString(env, stats.type()),
       NativeToJavaString(env, stats.id()), builder.GetJavaMap());
 }
 
@@ -138,7 +138,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtcStatsReport(
         return std::make_pair(NativeToJavaString(env, stats.id()),
                               NativeToJavaRtcStats(env, stats));
       });
-  return Java_RTCStatsReport_create(env, report->timestamp_us(), j_stats_map);
+  return Java_RTCStatsReport_create(env, report->timestamp().us(), j_stats_map);
 }
 
 }  // namespace
