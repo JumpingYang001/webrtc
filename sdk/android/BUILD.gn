@@ -141,6 +141,7 @@ if (is_android) {
       ":video_egl_jni",
       "../../pc:libjingle_peerconnection",
       "../../rtc_base",
+      "../../rtc_base:ssl",
     ]
     output_extension = "so"
   }
@@ -787,10 +788,13 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base",
       "../../rtc_base:checks",
       "../../rtc_base:event_tracer",
+      "../../rtc_base:log_sinks",
       "../../rtc_base:logging",
       "../../rtc_base:refcount",
+      "../../rtc_base:rtc_certificate_generator",
       "../../rtc_base:rtc_task_queue",
       "../../rtc_base:safe_conversions",
+      "../../rtc_base:ssl",
       "../../rtc_base:stringutils",
       "../../rtc_base:threading",
       "../../system_wrappers:field_trial",
@@ -1558,6 +1562,7 @@ if (is_android) {
       ":native_api_jni",
       "../../pc:libjingle_peerconnection",
       "../../rtc_base",
+      "../../rtc_base:ssl",
     ]
     output_extension = "so"
   }
