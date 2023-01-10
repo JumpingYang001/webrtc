@@ -111,6 +111,7 @@ if ((is_linux || is_chromeos) && rtc_use_pipewire) {
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../rtc_base:sanitizer",
+      "../../rtc_base/system:rtc_export",
     ]
     absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
 
