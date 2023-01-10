@@ -1382,6 +1382,7 @@ rtc_library("socket_address_pair") {
 }
 
 rtc_library("net_helper") {
+  visibility = [ "*" ]
   sources = [
     "net_helper.cc",
     "net_helper.h",
