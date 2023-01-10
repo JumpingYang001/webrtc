@@ -21,6 +21,7 @@
 #include "modules/rtp_rtcp/source/rtcp_packet/report_block.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_rtcp_config.h"
+#include "modules/rtp_rtcp/source/time_util.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/clock.h"
@@ -116,9 +117,8 @@ void StreamStatisticianImpl::UpdateCounters(const RtpPacketReceived& packet) {
   receive_counters_.transmitted.AddPacket(packet);
   --cumulative_loss_;
 
-  // Use PeekUnwrap and later update the state to avoid updating the state for
-  // out of order packets.
-  int64_t sequence_number = seq_unwrapper_.PeekUnwrap(packet.SequenceNumber());
+  int64_t sequence_number =
+      seq_unwrapper_.UnwrapWithoutUpdate(packet.SequenceNumber());
 
   if (!ReceivedRtpPacket()) {
     received_seq_first_ = sequence_number;
@@ -131,8 +131,7 @@ void StreamStatisticianImpl::UpdateCounters(const RtpPacketReceived& packet) {
   // In order packet.
   cumulative_loss_ += sequence_number - received_seq_max_;
   received_seq_max_ = sequence_number;
-  // Update the internal state of `seq_unwrapper_`.
-  seq_unwrapper_.Unwrap(packet.SequenceNumber());
+  seq_unwrapper_.UpdateLast(sequence_number);
 
   // If new time stamp and more than one in-order packet received, calculate
   // new jitter statistics.
