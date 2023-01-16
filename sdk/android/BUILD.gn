@@ -140,7 +140,6 @@ if (is_android) {
       ":native_api_jni",
       ":video_egl_jni",
       "../../pc:libjingle_peerconnection",
-      "../../rtc_base",
       "../../rtc_base:ssl",
     ]
     output_extension = "so"
@@ -571,7 +570,6 @@ if (current_os == "linux" || is_android) {
       "../../api:sequence_checker",
       "../../api/task_queue:pending_task_safety_flag",
       "../../modules/audio_processing:api",
-      "../../rtc_base",
       "../../rtc_base:checks",
       "../../rtc_base:ip_address",
       "../../rtc_base:logging",
@@ -674,7 +672,6 @@ if (current_os == "linux" || is_android) {
       "../../modules/video_coding:video_codec_interface",
       "../../modules/video_coding:video_coding_utility",
       "../../modules/video_coding/svc:scalable_video_controller",
-      "../../rtc_base",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../rtc_base:race_checker",
@@ -785,7 +782,6 @@ if (current_os == "linux" || is_android) {
       "../../modules/utility",
       "../../pc:media_stream_observer",
       "../../pc:webrtc_sdp",
-      "../../rtc_base",
       "../../rtc_base:checks",
       "../../rtc_base:event_tracer",
       "../../rtc_base:log_sinks",
@@ -955,7 +951,6 @@ if (current_os == "linux" || is_android) {
     deps = [
       ":base_jni",
       ":native_api_jni",
-      "//rtc_base",
       "//rtc_base:checks",
     ]
   }
@@ -1016,7 +1011,6 @@ if (current_os == "linux" || is_android) {
     deps = [
       ":base_jni",
       "../../rtc_base:threading",
-      "//rtc_base",
     ]
   }
 
@@ -1033,7 +1027,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:threading",
       "//api:libjingle_peerconnection_api",
       "//api/video_codecs:video_codecs_api",
-      "//rtc_base",
     ]
   }
 
@@ -1075,7 +1068,6 @@ if (current_os == "linux" || is_android) {
       "//api:media_stream_interface",
       "//api/video:video_frame",
       "//api/video:video_rtp_headers",
-      "//rtc_base",
     ]
   }
 
@@ -1120,7 +1112,6 @@ if (current_os == "linux" || is_android) {
       "../../api/video:video_frame",
       "../../api/video:video_rtp_headers",
       "../../common_video",
-      "../../rtc_base",
       "../../rtc_base:checks",
       "../../rtc_base:refcount",
       "../../rtc_base:timeutils",
@@ -1138,7 +1129,6 @@ if (current_os == "linux" || is_android) {
       ":base_jni",
       ":generated_logging_jni",
       ":native_api_jni",
-      "../../rtc_base",
       "../../rtc_base:logging",
     ]
 
@@ -1561,7 +1551,6 @@ if (is_android) {
       ":libjingle_peerconnection_metrics_default_jni",
       ":native_api_jni",
       "../../pc:libjingle_peerconnection",
-      "../../rtc_base",
       "../../rtc_base:ssl",
     ]
     output_extension = "so"
@@ -1653,7 +1642,6 @@ if (is_android) {
       "../../rtc_base:logging",
       "../../rtc_base:macromagic",
       "../../rtc_base:platform_thread",
-      "../../rtc_base:rtc_base",
       "../../rtc_base:rtc_event",
       "../../rtc_base:stringutils",
       "../../rtc_base:threading",
