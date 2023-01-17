@@ -1890,7 +1890,7 @@ void AddPacketizationLine(const T& codec, std::string* message) {
 
 template <class T>
 void AddRtcpFbLines(const T& codec, std::string* message) {
-  for (const cricket::FeedbackParam& param : codec.feedback_params.params()) {
+  for (const auto& param : codec.feedback_params.params()) {
     rtc::StringBuilder os;
     WriteRtcpFbHeader(codec.id, &os);
     os << " " << param.id();
@@ -1898,6 +1898,30 @@ void AddRtcpFbLines(const T& codec, std::string* message) {
       os << " " << param.param();
     }
     AddLine(os.str(), message);
+  }
+}
+
+template <class T>
+void AddWildcardRtcpFbLines(const std::vector<T>& codecs,
+                            std::string* message) {
+  if (codecs.empty()) {
+    return;
+  }
+  for (const auto& param : codecs[0].feedback_params.params()) {
+    bool is_common_feedback = absl::c_all_of(codecs, [&param](const T& codec) {
+      // FEC mechanisms like RED, ulpfec and flexfec have empty feedback.
+      return codec.feedback_params.params().empty() ||
+             codec.feedback_params.Has(param);
+    });
+    if (is_common_feedback) {
+      rtc::StringBuilder os;
+      WriteRtcpFbHeader(kWildcardPayloadType, &os);
+      os << " " << param.id();
+      if (!param.param().empty()) {
+        os << " " << param.param();
+      }
+      AddLine(os.str(), message);
+    }
   }
 }
 
@@ -1944,6 +1968,9 @@ void BuildRtpmap(const MediaContentDescription* media_desc,
       AddRtcpFbLines(codec, message);
       AddFmtpLine(codec, message);
     }
+    // rtcp-fb:* is added in addition to the per-codec feedback to allow
+    // downstream users time to upgrade their parsers.
+    AddWildcardRtcpFbLines(media_desc->as_video()->codecs(), message);
   } else if (media_type == cricket::MEDIA_TYPE_AUDIO) {
     std::vector<int> ptimes;
     std::vector<int> maxptimes;
@@ -1975,6 +2002,9 @@ void BuildRtpmap(const MediaContentDescription* media_desc,
         maxptimes.push_back(maxptime);
       }
     }
+    // rtcp-fb:* is added in addition to the per-codec feedback to allow
+    // downstream users time to upgrade their parsers.
+    AddWildcardRtcpFbLines(media_desc->as_audio()->codecs(), message);
     // Populate the maxptime attribute with the smallest maxptime of all codecs
     // under the same m-line.
     int min_maxptime = INT_MAX;

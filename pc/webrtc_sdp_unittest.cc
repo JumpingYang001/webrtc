@@ -3296,6 +3296,38 @@ TEST_F(WebRtcSdpTest, DeserializeSerializeRtcpFbWildcard) {
   TestSerialize(jdesc_output);
 }
 
+TEST_F(WebRtcSdpTest, SerializeRtcpFbWildcard) {
+  std::string sdp =
+      "v=0\r\n"
+      "o=- 18446744069414584320 18446462598732840960 IN IP4 127.0.0.1\r\n"
+      "s=-\r\n"
+      "t=0 0\r\n"
+      "m=video 3457 RTP/SAVPF 100 101 102 103\r\n"
+      "a=rtpmap:100 VP8/90000\r\n"
+      "a=rtcp-fb:100 nack\r\n"
+      "a=rtcp-fb:100 nack pli\r\n"
+      "a=rtpmap:101 rtx/90000\r\n"
+      "a=fmtp:101 apt=100\r\n"
+      "a=rtpmap:102 VP9/90000\r\n"
+      "a=rtcp-fb:102 nack\r\n"
+      "a=rtpmap:103 rtx/90000\r\n"
+      "a=fmtp:103 apt=102\r\n";
+  JsepSessionDescription jdesc(kDummyType);
+  SdpParseError error;
+  EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &jdesc, &error));
+
+  std::string message = webrtc::SdpSerialize(jdesc);
+  // NACK is a common parameter so serialized with wildcard in addition to
+  // per-codec entries.
+  EXPECT_NE(message.find("\r\na=rtcp-fb:100 nack\r\n"), std::string::npos);
+  EXPECT_NE(message.find("\r\na=rtcp-fb:102 nack\r\n"), std::string::npos);
+  EXPECT_NE(message.find("\r\na=rtcp-fb:* nack\r\n"), std::string::npos);
+  // PLI is not a common parameter so no wildcard.
+  EXPECT_NE(message.find("\r\na=rtcp-fb:100 nack pli\r\n"), std::string::npos);
+  EXPECT_EQ(message.find("\r\na=rtcp-fb:102 nack pli\r\n"), std::string::npos);
+  EXPECT_EQ(message.find("\r\na=rtcp-fb:* nack pli\r\n"), std::string::npos);
+}
+
 TEST_F(WebRtcSdpTest, DeserializeVideoFmtp) {
   JsepSessionDescription jdesc_output(kDummyType);
 
