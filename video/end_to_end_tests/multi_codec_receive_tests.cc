@@ -131,8 +131,22 @@ class MultiCodecReceiveTest : public test::CallTest {
   MultiCodecReceiveTest() {
     SendTask(task_queue(), [this]() {
       CreateCalls();
-      CreateSendTransport(BuiltInNetworkBehaviorConfig(), &observer_);
-      CreateReceiveTransport(BuiltInNetworkBehaviorConfig(), &observer_);
+
+      send_transport_.reset(new test::PacketTransport(
+          task_queue(), sender_call_.get(), &observer_,
+          test::PacketTransport::kSender, kPayloadTypeMap,
+          std::make_unique<FakeNetworkPipe>(
+              Clock::GetRealTimeClock(), std::make_unique<SimulatedNetwork>(
+                                             BuiltInNetworkBehaviorConfig()))));
+      send_transport_->SetReceiver(receiver_call_->Receiver());
+
+      receive_transport_.reset(new test::PacketTransport(
+          task_queue(), receiver_call_.get(), &observer_,
+          test::PacketTransport::kReceiver, kPayloadTypeMap,
+          std::make_unique<FakeNetworkPipe>(
+              Clock::GetRealTimeClock(), std::make_unique<SimulatedNetwork>(
+                                             BuiltInNetworkBehaviorConfig()))));
+      receive_transport_->SetReceiver(sender_call_->Receiver());
     });
   }
 
@@ -156,6 +170,10 @@ class MultiCodecReceiveTest : public test::CallTest {
   void RunTestWithCodecs(const std::vector<CodecConfig>& configs);
 
  private:
+  const std::map<uint8_t, MediaType> kPayloadTypeMap = {
+      {CallTest::kPayloadTypeVP8, MediaType::VIDEO},
+      {CallTest::kPayloadTypeVP9, MediaType::VIDEO},
+      {CallTest::kPayloadTypeH264, MediaType::VIDEO}};
   FrameObserver observer_;
 };
 
@@ -227,9 +245,9 @@ void MultiCodecReceiveTest::RunTestWithCodecs(
   // Create and start call.
   SendTask(task_queue(),
            [this, &configs, &encoder_factory, &decoder_factory]() {
-             CreateSendConfig(1, 0, 0);
+             CreateSendConfig(1, 0, 0, send_transport_.get());
              ConfigureEncoder(configs[0], &encoder_factory);
-             CreateMatchingReceiveConfigs();
+             CreateMatchingReceiveConfigs(receive_transport_.get());
              video_receive_configs_[0].renderer = &observer_;
              // Disable to avoid post-decode frame dropping in
              // VideoRenderFrames.

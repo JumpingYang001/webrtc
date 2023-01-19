@@ -256,12 +256,19 @@ class FlexfecRenderObserver : public test::EndToEndTest,
     return SEND_PACKET;
   }
 
-  BuiltInNetworkBehaviorConfig GetSendTransportConfig() const override {
+  std::unique_ptr<test::PacketTransport> CreateSendTransport(
+      TaskQueueBase* task_queue,
+      Call* sender_call) override {
     // At low RTT (< kLowRttNackMs) -> NACK only, no FEC.
     const int kNetworkDelayMs = 100;
     BuiltInNetworkBehaviorConfig config;
     config.queue_delay_ms = kNetworkDelayMs;
-    return config;
+    return std::make_unique<test::PacketTransport>(
+        task_queue, sender_call, this, test::PacketTransport::kSender,
+        test::CallTest::payload_type_map_,
+        std::make_unique<FakeNetworkPipe>(
+            Clock::GetRealTimeClock(),
+            std::make_unique<SimulatedNetwork>(config)));
   }
 
   void OnFrame(const VideoFrame& video_frame) override {
@@ -432,13 +439,20 @@ TEST_F(FecEndToEndTest, ReceivedUlpfecPacketsNotNacked) {
       return SEND_PACKET;
     }
 
-    BuiltInNetworkBehaviorConfig GetSendTransportConfig() const override {
+    std::unique_ptr<test::PacketTransport> CreateSendTransport(
+        TaskQueueBase* task_queue,
+        Call* sender_call) override {
       // At low RTT (< kLowRttNackMs) -> NACK only, no FEC.
       // Configure some network delay.
       const int kNetworkDelayMs = 50;
       BuiltInNetworkBehaviorConfig config;
       config.queue_delay_ms = kNetworkDelayMs;
-      return config;
+      return std::make_unique<test::PacketTransport>(
+          task_queue, sender_call, this, test::PacketTransport::kSender,
+          payload_type_map_,
+          std::make_unique<FakeNetworkPipe>(
+              Clock::GetRealTimeClock(),
+              std::make_unique<SimulatedNetwork>(config)));
     }
 
     // TODO(holmer): Investigate why we don't send FEC packets when the bitrate

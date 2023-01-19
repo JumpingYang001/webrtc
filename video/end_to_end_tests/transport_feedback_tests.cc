@@ -9,9 +9,7 @@
  */
 
 #include <memory>
-#include <vector>
 
-#include "api/rtp_parameters.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
 #include "call/call.h"
@@ -48,18 +46,14 @@ TEST(TransportFeedbackMultiStreamTest, AssignsTransportSequenceNumbers) {
         TaskQueueBase* task_queue,
         Call* sender_call,
         const std::map<uint32_t, uint32_t>& ssrc_map,
-        const std::map<uint8_t, MediaType>& payload_type_map,
-        rtc::ArrayView<const RtpExtension> audio_extensions,
-        rtc::ArrayView<const RtpExtension> video_extensions)
+        const std::map<uint8_t, MediaType>& payload_type_map)
         : DirectTransport(task_queue,
                           std::make_unique<FakeNetworkPipe>(
                               Clock::GetRealTimeClock(),
                               std::make_unique<SimulatedNetwork>(
                                   BuiltInNetworkBehaviorConfig())),
                           sender_call,
-                          payload_type_map,
-                          audio_extensions,
-                          video_extensions),
+                          payload_type_map),
           rtx_to_media_ssrcs_(ssrc_map),
           rtx_padding_observed_(false),
           retransmit_observed_(false),
@@ -225,12 +219,8 @@ TEST(TransportFeedbackMultiStreamTest, AssignsTransportSequenceNumbers) {
       RTC_DCHECK(payload_type_map.find(kSendRtxPayloadType) ==
                  payload_type_map.end());
       payload_type_map[kSendRtxPayloadType] = MediaType::VIDEO;
-      std::vector<RtpExtension> extensions = {
-          RtpExtension(RtpExtension::kTransportSequenceNumberUri,
-                       kTransportSequenceNumberExtensionId)};
       auto observer = std::make_unique<RtpExtensionHeaderObserver>(
-          task_queue, sender_call, rtx_to_media_ssrcs_, payload_type_map,
-          extensions, extensions);
+          task_queue, sender_call, rtx_to_media_ssrcs_, payload_type_map);
       observer_ = observer.get();
       return observer;
     }

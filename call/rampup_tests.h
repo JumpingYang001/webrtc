@@ -83,7 +83,7 @@ class RampUpTester : public test::EndToEndTest {
   Call* sender_call_;
   VideoSendStream* send_stream_;
   test::PacketTransport* send_transport_;
-  SimulatedNetworkInterface* send_simulated_network_;
+  SimulatedNetwork* send_simulated_network_;
 
  private:
   typedef std::map<uint32_t, uint32_t> SsrcMap;
@@ -93,7 +93,9 @@ class RampUpTester : public test::EndToEndTest {
   void OnVideoStreamsCreated(VideoSendStream* send_stream,
                              const std::vector<VideoReceiveStreamInterface*>&
                                  receive_streams) override;
-  BuiltInNetworkBehaviorConfig GetSendTransportConfig() const override;
+  std::unique_ptr<test::PacketTransport> CreateSendTransport(
+      TaskQueueBase* task_queue,
+      Call* sender_call) override;
   void ModifyVideoConfigs(
       VideoSendStream::Config* send_config,
       std::vector<VideoReceiveStreamInterface::Config>* receive_configs,
@@ -104,10 +106,6 @@ class RampUpTester : public test::EndToEndTest {
   void ModifyFlexfecConfigs(
       std::vector<FlexfecReceiveStream::Config>* receive_configs) override;
   void OnCallsCreated(Call* sender_call, Call* receiver_call) override;
-  void OnTransportCreated(test::PacketTransport* to_receiver,
-                          SimulatedNetworkInterface* sender_network,
-                          test::PacketTransport* to_sender,
-                          SimulatedNetworkInterface* receiver_network) override;
 
   const int start_bitrate_bps_;
   const int64_t min_run_time_ms_;

@@ -39,15 +39,8 @@ LayerFilteringTransport::LayerFilteringTransport(
     int selected_sl,
     const std::map<uint8_t, MediaType>& payload_type_map,
     uint32_t ssrc_to_filter_min,
-    uint32_t ssrc_to_filter_max,
-    rtc::ArrayView<const RtpExtension> audio_extensions,
-    rtc::ArrayView<const RtpExtension> video_extensions)
-    : DirectTransport(task_queue,
-                      std::move(pipe),
-                      send_call,
-                      payload_type_map,
-                      audio_extensions,
-                      video_extensions),
+    uint32_t ssrc_to_filter_max)
+    : DirectTransport(task_queue, std::move(pipe), send_call, payload_type_map),
       vp8_video_payload_type_(vp8_video_payload_type),
       vp9_video_payload_type_(vp9_video_payload_type),
       vp8_depacketizer_(CreateVideoRtpDepacketizer(kVideoCodecVP8)),
@@ -66,9 +59,7 @@ LayerFilteringTransport::LayerFilteringTransport(
     uint8_t vp9_video_payload_type,
     int selected_tl,
     int selected_sl,
-    const std::map<uint8_t, MediaType>& payload_type_map,
-    rtc::ArrayView<const RtpExtension> audio_extensions,
-    rtc::ArrayView<const RtpExtension> video_extensions)
+    const std::map<uint8_t, MediaType>& payload_type_map)
     : LayerFilteringTransport(task_queue,
                               std::move(pipe),
                               send_call,
@@ -78,9 +69,7 @@ LayerFilteringTransport::LayerFilteringTransport(
                               selected_sl,
                               payload_type_map,
                               /*ssrc_to_filter_min=*/0,
-                              /*ssrc_to_filter_max=*/0xFFFFFFFF,
-                              audio_extensions,
-                              video_extensions) {}
+                              /*ssrc_to_filter_max=*/0xFFFFFFFF) {}
 
 bool LayerFilteringTransport::DiscardedLastPacket() const {
   return discarded_last_packet_;
