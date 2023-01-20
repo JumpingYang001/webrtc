@@ -148,7 +148,7 @@ struct RTPHeaderExtension {
 
 enum { kRtpCsrcSize = 15 };  // RFC 3550 page 13
 
-struct RTPHeader {
+struct RTC_EXPORT RTPHeader {
   RTPHeader();
   RTPHeader(const RTPHeader& other);
   RTPHeader& operator=(const RTPHeader& other);
