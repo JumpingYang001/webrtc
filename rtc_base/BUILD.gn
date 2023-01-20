@@ -839,7 +839,7 @@ rtc_library("net_helpers") {
     "net_helpers.cc",
     "net_helpers.h",
   ]
-  deps = []
+  deps = [ "system:rtc_export" ]
   if (is_android) {
     deps += [ ":ifaddrs_android" ]
   }
@@ -1389,6 +1389,7 @@ rtc_library("net_helper") {
     "net_helper.h",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
+  deps = [ "system:rtc_export" ]
 }
 
 rtc_library("socket_adapters") {
