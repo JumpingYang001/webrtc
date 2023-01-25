@@ -108,8 +108,7 @@ TEST_F(SsrcEndToEndTest, UnknownRtpPacketTriggersUndemuxablePacketHandler) {
             std::make_unique<FakeNetworkPipe>(
                 Clock::GetRealTimeClock(), std::make_unique<SimulatedNetwork>(
                                                BuiltInNetworkBehaviorConfig())),
-            receiver_call_.get(), payload_type_map_, GetRegisteredExtensions(),
-            GetRegisteredExtensions());
+            receiver_call_.get(), payload_type_map_);
         input_observer =
             std::make_unique<PacketInputObserver>(receiver_call_->Receiver());
         send_transport->SetReceiver(input_observer.get());

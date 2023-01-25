@@ -110,11 +110,6 @@ class BitrateEstimatorTest : public test::CallTest {
 
   virtual void SetUp() {
     SendTask(task_queue(), [this]() {
-      RegisterRtpExtension(
-          RtpExtension(RtpExtension::kTimestampOffsetUri, kTOFExtensionId));
-      RegisterRtpExtension(
-          RtpExtension(RtpExtension::kAbsSendTimeUri, kASTExtensionId));
-
       CreateCalls();
 
       CreateSendTransport(BuiltInNetworkBehaviorConfig(), /*observer=*/nullptr);
