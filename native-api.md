@@ -1,6 +1,3 @@
-<!-- go/cmark -->
-<!--* freshness: {owner: 'hta' reviewed: '2021-01-01'} *-->
-
 # API header files
 
 As a user of the WebRTC library, you may use headers and build files
