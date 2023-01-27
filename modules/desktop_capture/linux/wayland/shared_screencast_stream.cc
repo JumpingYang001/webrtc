@@ -78,7 +78,8 @@ class SharedScreenCastStreamPrivate {
                              int fd,
                              uint32_t width = 0,
                              uint32_t height = 0,
-                             bool is_cursor_embedded = false);
+                             bool is_cursor_embedded = false,
+                             DesktopCapturer::Callback* callback = nullptr);
   void UpdateScreenCastStreamResolution(uint32_t width, uint32_t height);
   void UpdateScreenCastStreamFrameRate(uint32_t frame_rate);
   void SetUseDamageRegion(bool use_damage_region) {
@@ -156,6 +157,9 @@ class SharedScreenCastStreamPrivate {
 
   void ProcessBuffer(pw_buffer* buffer);
   void ConvertRGBxToBGRx(uint8_t* frame, uint32_t size);
+  void UpdateFrameUpdatedRegions(const spa_buffer* spa_buffer,
+                                 DesktopFrame& frame);
+  void NotifyCallbackOfNewFrame(std::unique_ptr<SharedDesktopFrame> frame);
 
   // PipeWire callbacks
   static void OnCoreError(void* data,
@@ -178,6 +182,8 @@ class SharedScreenCastStreamPrivate {
   // failed to use and try to use a different one or fallback to shared memory
   // buffers.
   static void OnRenegotiateFormat(void* data, uint64_t);
+
+  DesktopCapturer::Callback* callback_;
 };
 
 void SharedScreenCastStreamPrivate::OnCoreError(void* data,
@@ -392,9 +398,11 @@ bool SharedScreenCastStreamPrivate::StartScreenCastStream(
     int fd,
     uint32_t width,
     uint32_t height,
-    bool is_cursor_embedded) {
+    bool is_cursor_embedded,
+    DesktopCapturer::Callback* callback) {
   width_ = width;
   height_ = height;
+  callback_ = callback;
   is_cursor_embedded_ = is_cursor_embedded;
   if (!InitializePipeWire()) {
     RTC_LOG(LS_ERROR) << "Unable to open PipeWire library";
@@ -633,8 +641,59 @@ DesktopVector SharedScreenCastStreamPrivate::CaptureCursorPosition() {
   return mouse_cursor_position_;
 }
 
+void SharedScreenCastStreamPrivate::UpdateFrameUpdatedRegions(
+    const spa_buffer* spa_buffer,
+    DesktopFrame& frame) {
+  if (!use_damage_region_) {
+    frame.mutable_updated_region()->SetRect(
+        DesktopRect::MakeSize(frame.size()));
+    return;
+  }
+
+  const struct spa_meta* video_damage = static_cast<struct spa_meta*>(
+      spa_buffer_find_meta(spa_buffer, SPA_META_VideoDamage));
+  if (!video_damage) {
+    damage_region_.SetRect(DesktopRect::MakeSize(frame.size()));
+    return;
+  }
+
+  frame.mutable_updated_region()->Clear();
+  spa_meta_region* meta_region;
+  spa_meta_for_each(meta_region, video_damage) {
+    // Skip empty regions
+    if (meta_region->region.size.width == 0 ||
+        meta_region->region.size.height == 0) {
+      continue;
+    }
+
+    damage_region_.AddRect(DesktopRect::MakeXYWH(
+        meta_region->region.position.x, meta_region->region.position.y,
+        meta_region->region.size.width, meta_region->region.size.height));
+  }
+}
+
+void SharedScreenCastStreamPrivate::NotifyCallbackOfNewFrame(
+    std::unique_ptr<SharedDesktopFrame> frame) {
+  if (!pw_stream_ || !frame->data()) {
+    callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_TEMPORARY,
+                               nullptr);
+    return;
+  }
+
+  if (use_damage_region_) {
+    frame->mutable_updated_region()->Swap(&damage_region_);
+    damage_region_.Clear();
+  }
+  callback_->OnCaptureResult(DesktopCapturer::Result::SUCCESS,
+                             std::move(frame));
+}
+
 RTC_NO_SANITIZE("cfi-icall")
 void SharedScreenCastStreamPrivate::ProcessBuffer(pw_buffer* buffer) {
+  if (callback_) {
+    callback_->OnFrameCaptureStart();
+  }
+
   spa_buffer* spa_buffer = buffer->buffer;
   ScopedBuf map;
   std::unique_ptr<uint8_t[]> src_unique_ptr;
@@ -878,34 +937,12 @@ void SharedScreenCastStreamPrivate::ProcessBuffer(pw_buffer* buffer) {
     observer_->OnDesktopFrameChanged();
   }
 
-  if (use_damage_region_) {
-    const struct spa_meta* video_damage = static_cast<struct spa_meta*>(
-        spa_buffer_find_meta(spa_buffer, SPA_META_VideoDamage));
-    if (video_damage) {
-      spa_meta_region* meta_region;
-
-      queue_.current_frame()->mutable_updated_region()->Clear();
-
-      spa_meta_for_each(meta_region, video_damage) {
-        // Skip empty regions
-        if (meta_region->region.size.width == 0 ||
-            meta_region->region.size.height == 0) {
-          continue;
-        }
-
-        damage_region_.AddRect(DesktopRect::MakeXYWH(
-            meta_region->region.position.x, meta_region->region.position.y,
-            meta_region->region.size.width, meta_region->region.size.height));
-      }
-    } else {
-      damage_region_.SetRect(
-          DesktopRect::MakeSize(queue_.current_frame()->size()));
-    }
-  } else {
-    queue_.current_frame()->mutable_updated_region()->SetRect(
-        DesktopRect::MakeSize(queue_.current_frame()->size()));
-  }
+  UpdateFrameUpdatedRegions(spa_buffer, *queue_.current_frame());
   queue_.current_frame()->set_may_contain_cursor(is_cursor_embedded_);
+
+  if (callback_) {
+    NotifyCallbackOfNewFrame(queue_.current_frame()->Share());
+  }
 }
 
 void SharedScreenCastStreamPrivate::ConvertRGBxToBGRx(uint8_t* frame,
@@ -934,13 +971,15 @@ bool SharedScreenCastStream::StartScreenCastStream(uint32_t stream_node_id) {
   return private_->StartScreenCastStream(stream_node_id, -1);
 }
 
-bool SharedScreenCastStream::StartScreenCastStream(uint32_t stream_node_id,
-                                                   int fd,
-                                                   uint32_t width,
-                                                   uint32_t height,
-                                                   bool is_cursor_embedded) {
+bool SharedScreenCastStream::StartScreenCastStream(
+    uint32_t stream_node_id,
+    int fd,
+    uint32_t width,
+    uint32_t height,
+    bool is_cursor_embedded,
+    DesktopCapturer::Callback* callback) {
   return private_->StartScreenCastStream(stream_node_id, fd, width, height,
-                                         is_cursor_embedded);
+                                         is_cursor_embedded, callback);
 }
 
 void SharedScreenCastStream::UpdateScreenCastStreamResolution(uint32_t width,
