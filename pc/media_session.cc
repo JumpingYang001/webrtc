@@ -684,8 +684,11 @@ static bool CreateContentOffer(
       if (extension_with_id.uri == extension.uri) {
         // TODO(crbug.com/1051821): Configure the extension direction from
         // the information in the media_description_options extension
-        // capability.
-        extensions.push_back(extension_with_id);
+        // capability. For now, do not include stopped extensions.
+        // See also crbug.com/webrtc/7477 about the general lack of direction.
+        if (extension.direction != RtpTransceiverDirection::kStopped) {
+          extensions.push_back(extension_with_id);
+        }
       }
     }
   }
