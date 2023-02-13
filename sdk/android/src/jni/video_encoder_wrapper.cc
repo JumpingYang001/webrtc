@@ -151,8 +151,13 @@ int32_t VideoEncoderWrapper::Encode(
   JNIEnv* jni = AttachCurrentThreadIfNeeded();
 
   // Construct encode info.
-  ScopedJavaLocalRef<jobjectArray> j_frame_types =
-      NativeToJavaFrameTypeArray(jni, *frame_types);
+  ScopedJavaLocalRef<jobjectArray> j_frame_types;
+  if (frame_types != nullptr) {
+    j_frame_types = NativeToJavaFrameTypeArray(jni, *frame_types);
+  } else {
+    j_frame_types =
+        NativeToJavaFrameTypeArray(jni, {VideoFrameType::kVideoFrameDelta});
+  }
   ScopedJavaLocalRef<jobject> encode_info =
       Java_EncodeInfo_Constructor(jni, j_frame_types);
 
