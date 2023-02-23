@@ -45,6 +45,7 @@ extern const char kCodecParamAssociatedCodecName[];
 extern const char kCodecParamNotInNameValueFormat[];
 
 extern const char kOpusCodecName[];
+extern const char kIsacCodecName[];
 extern const char kL16CodecName[];
 extern const char kG722CodecName[];
 extern const char kIlbcCodecName[];
