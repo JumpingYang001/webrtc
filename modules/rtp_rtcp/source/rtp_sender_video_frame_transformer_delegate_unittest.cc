@@ -163,7 +163,8 @@ TEST_F(RtpSenderVideoFrameTransformerDelegateTest, CloneSenderVideoFrame) {
   EXPECT_EQ(video_frame->GetPayloadType(), clone->GetPayloadType());
   EXPECT_EQ(video_frame->GetSsrc(), clone->GetSsrc());
   EXPECT_EQ(video_frame->GetTimestamp(), clone->GetTimestamp());
-  EXPECT_EQ(video_frame->GetMetadata(), clone->GetMetadata());
+  // TODO(bugs.webrtc.org/14708): Expect equality of GetMetadata() once we have
+  // an equality operator defined.
 }
 
 TEST_F(RtpSenderVideoFrameTransformerDelegateTest, MetadataEqualsGetMetadata) {
