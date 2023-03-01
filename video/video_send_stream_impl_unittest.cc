@@ -16,7 +16,6 @@
 
 #include "absl/types/optional.h"
 #include "api/rtc_event_log/rtc_event_log.h"
-#include "api/sequence_checker.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
@@ -162,7 +161,7 @@ class VideoSendStreamImplTest : public ::testing::Test {
       int initial_encoder_max_bitrate,
       double initial_encoder_bitrate_priority,
       VideoEncoderConfig::ContentType content_type) {
-    RTC_DCHECK_RUN_ON(&worker_queue_);
+    RTC_DCHECK(!worker_queue_.IsCurrent());
 
     EXPECT_CALL(bitrate_allocator_, GetStartBitrate(_))
         .WillOnce(Return(123000));
