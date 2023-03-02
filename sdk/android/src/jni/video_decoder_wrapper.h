@@ -48,6 +48,8 @@ class VideoDecoderWrapper : public VideoDecoder {
 
   const char* ImplementationName() const override;
 
+  DecoderInfo GetDecoderInfo() const override;
+
   // Wraps the frame to a AndroidVideoBuffer and passes it to the callback.
   void OnDecodedFrame(JNIEnv* env,
                       const JavaRef<jobject>& j_frame,

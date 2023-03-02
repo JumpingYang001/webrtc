@@ -150,6 +150,13 @@ const char* VideoDecoderWrapper::ImplementationName() const {
   return implementation_name_.c_str();
 }
 
+VideoDecoder::DecoderInfo VideoDecoderWrapper::GetDecoderInfo() const {
+  VideoDecoder::DecoderInfo decoder_info;
+  decoder_info.implementation_name = implementation_name_;
+  decoder_info.is_hardware_accelerated = true;
+  return decoder_info;
+}
+
 void VideoDecoderWrapper::OnDecodedFrame(
     JNIEnv* env,
     const JavaRef<jobject>& j_frame,
