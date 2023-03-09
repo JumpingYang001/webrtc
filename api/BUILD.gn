@@ -614,7 +614,6 @@ rtc_source_set("peer_connection_quality_test_fixture_api") {
 
 rtc_source_set("frame_generator_api") {
   visibility = [ "*" ]
-  testonly = true
   sources = [
     "test/frame_generator_interface.cc",
     "test/frame_generator_interface.h",
