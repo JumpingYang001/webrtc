@@ -487,8 +487,9 @@ static jlong JNI_PeerConnectionFactory_CreateVideoTrack(
   rtc::scoped_refptr<VideoTrackInterface> track =
       PeerConnectionFactoryFromJava(native_factory)
           ->CreateVideoTrack(
-              JavaToStdString(jni, id),
-              reinterpret_cast<VideoTrackSourceInterface*>(native_source));
+              rtc::scoped_refptr<VideoTrackSourceInterface>(
+                  reinterpret_cast<VideoTrackSourceInterface*>(native_source)),
+              JavaToStdString(jni, id));
   return jlongFromPointer(track.release());
 }
 
