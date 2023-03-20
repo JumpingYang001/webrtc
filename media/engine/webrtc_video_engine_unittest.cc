@@ -8463,9 +8463,7 @@ TEST_F(WebRtcVideoChannelTest,
       webrtc::ScalabilityModeFromString(kDefaultScalabilityModeStr);
   EXPECT_EQ(2, stream->num_encoder_reconfigurations());
   webrtc::VideoEncoderConfig encoder_config = stream->GetEncoderConfig().Copy();
-  // When `scalability_mode` has been specified on any encoding, we do not
-  // reduce the number of simulcast streams.
-  EXPECT_EQ(3u, encoder_config.number_of_streams);
+  EXPECT_EQ(1u, encoder_config.number_of_streams);
   EXPECT_THAT(encoder_config.simulcast_layers,
               ElementsAre(Field(&webrtc::VideoStream::scalability_mode,
                                 ScalabilityMode::kL3T3),
@@ -8478,11 +8476,7 @@ TEST_F(WebRtcVideoChannelTest,
   // VideoStreams are created appropriately for the simulcast case.
   EXPECT_THAT(stream->GetVideoStreams(),
               ElementsAre(Field(&webrtc::VideoStream::scalability_mode,
-                                ScalabilityMode::kL3T3),
-                          Field(&webrtc::VideoStream::scalability_mode,
-                                kDefaultScalabilityMode),
-                          Field(&webrtc::VideoStream::scalability_mode,
-                                kDefaultScalabilityMode)));
+                                ScalabilityMode::kL3T3)));
 
   // GetParameters.
   parameters = send_channel_->GetRtpSendParameters(last_ssrc_);

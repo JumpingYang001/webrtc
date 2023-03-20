@@ -60,6 +60,7 @@
 #include "rtc_base/thread.h"
 #include "rtc_base/unique_id_generator.h"
 #include "system_wrappers/include/metrics.h"
+#include "test/field_trial.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
@@ -1431,8 +1432,13 @@ TEST_F(PeerConnectionSimulcastWithMediaFlowTests,
               Optional(std::string("L3T3_KEY")));
 }
 
+// TODO(https://crbug.com/webrtc/14884): A field trial shouldn't be needed to
+// get spec-compliant behavior!
 TEST_F(PeerConnectionSimulcastWithMediaFlowTests,
        SendingThreeEncodings_VP9_Simulcast) {
+  test::ScopedFieldTrials field_trials(
+      "WebRTC-AllowDisablingLegacyScalability/Enabled/");
+
   rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper = CreatePc();
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
@@ -1497,9 +1503,17 @@ TEST_F(PeerConnectionSimulcastWithMediaFlowTests,
   EXPECT_THAT(*outbound_rtps[2]->scalability_mode, StrEq("L1T3"));
 }
 
+// TODO(https://crbug.com/webrtc/15005): A field trial shouldn't be needed to
+// get spec-compliant behavior! The same field trial is also used for VP9
+// simulcast (https://crbug.com/webrtc/14884).
 TEST_F(PeerConnectionSimulcastWithMediaFlowTests,
        SendingThreeEncodings_AV1_Simulcast) {
+  test::ScopedFieldTrials field_trials(
+      "WebRTC-AllowDisablingLegacyScalability/Enabled/");
+
   rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper = CreatePc();
+  // TODO(https://crbug.com/webrtc/15011): Expand testing support for AV1 or
+  // allow compile time checks so that gates like this isn't needed at runtime.
   if (!HasSenderVideoCodecCapability(local_pc_wrapper, "AV1")) {
     RTC_LOG(LS_WARNING) << "\n***\nAV1 is not available, skipping test.\n***";
     return;
