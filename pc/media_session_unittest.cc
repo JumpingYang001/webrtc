@@ -2018,7 +2018,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 }
 
 TEST_F(MediaSessionDescriptionFactoryTest,
-       AllowsStoppedExtensionsToBeRemovedFromSubsequentOffer) {
+       AppendsStoppedExtensionIfKnownAndPresentInTheOffer) {
   MediaSessionOptions opts;
   AddMediaDescriptionOptions(MEDIA_TYPE_VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
@@ -2043,7 +2043,8 @@ TEST_F(MediaSessionDescriptionFactoryTest,
       ElementsAre(Property(
           &ContentInfo::media_description,
           Pointee(Property(&MediaContentDescription::rtp_header_extensions,
-                           ElementsAre(Field(&RtpExtension::uri, "uri1")))))));
+                           ElementsAre(Field(&RtpExtension::uri, "uri1"),
+                                       Field(&RtpExtension::uri, "uri2")))))));
 }
 
 TEST_F(MediaSessionDescriptionFactoryTest,
