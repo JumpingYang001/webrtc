@@ -328,7 +328,7 @@ void JavaMapBuilder::put(const JavaRef<jobject>& key,
   JNI_Map::Java_Map_put(env_, j_map_, key, value);
 }
 
-jlong NativeToJavaPointer(void* ptr) {
+jlong NativeToJavaPointer(const void* ptr) {
   static_assert(sizeof(intptr_t) <= sizeof(jlong),
                 "Time to rethink the use of jlongs");
   // Going through intptr_t to be obvious about the definedness of the
