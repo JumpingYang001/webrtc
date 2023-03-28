@@ -51,8 +51,6 @@ class TransformableVideoReceiverFrame
     return frame_->FrameType() == VideoFrameType::kVideoFrameKey;
   }
 
-  const VideoFrameMetadata& GetMetadata() const override { return metadata_; }
-
   VideoFrameMetadata Metadata() const override { return metadata_; }
 
   void SetMetadata(const VideoFrameMetadata&) override {
