@@ -242,6 +242,8 @@ std::vector<int8_t> JavaToNativeByteArray(JNIEnv* env,
                                           const JavaRef<jbyteArray>& jarray);
 std::vector<int32_t> JavaToNativeIntArray(JNIEnv* env,
                                           const JavaRef<jintArray>& jarray);
+std::vector<float> JavaToNativeFloatArray(JNIEnv* env,
+                                          const JavaRef<jfloatArray>& jarray);
 
 ScopedJavaLocalRef<jobjectArray> NativeToJavaBooleanArray(
     JNIEnv* env,

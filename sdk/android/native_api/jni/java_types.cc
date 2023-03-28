@@ -265,6 +265,21 @@ std::vector<int32_t> JavaToNativeIntArray(JNIEnv* env,
   return container;
 }
 
+std::vector<float> JavaToNativeFloatArray(JNIEnv* env,
+                                          const JavaRef<jfloatArray>& jarray) {
+  // jfloat is a "machine-dependent native type" which represents a 32-bit
+  // float. C++ makes no guarantees about the size of floating point types, and
+  // some exotic architectures don't even have 32-bit floats (or even binary
+  // floats), but on all architectures we care about this is a float.
+  static_assert(std::is_same<float, jfloat>::value, "jfloat must be float");
+  float* array_ptr =
+      env->GetFloatArrayElements(jarray.obj(), /*isCopy=*/nullptr);
+  size_t array_length = env->GetArrayLength(jarray.obj());
+  std::vector<float> container(array_ptr, array_ptr + array_length);
+  env->ReleaseFloatArrayElements(jarray.obj(), array_ptr, /*mode=*/JNI_ABORT);
+  return container;
+}
+
 ScopedJavaLocalRef<jobjectArray> NativeToJavaBooleanArray(
     JNIEnv* env,
     const std::vector<bool>& container) {
