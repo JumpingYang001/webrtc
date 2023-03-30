@@ -12,6 +12,7 @@ package org.webrtc;
 
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
@@ -318,4 +319,14 @@ public class FakeMediaCodecWrapper implements MediaCodecWrapper {
 
   @Override
   public void setParameters(Bundle params) {}
+
+  @Override
+  public MediaCodecInfo getCodecInfo() {
+    return null;
+  }
+
+  @Override
+  public MediaFormat getOutputFormat(int index) {
+    return outputFormat;
+  }
 }
