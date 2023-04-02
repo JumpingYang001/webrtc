@@ -10,15 +10,24 @@
 
 package org.webrtc;
 
+import static android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
+import static android.media.MediaCodec.BUFFER_FLAG_SYNC_FRAME;
 import static com.google.common.truth.Truth.assertThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.webrtc.VideoCodecMimeType.AV1;
+import static org.webrtc.VideoCodecMimeType.H264;
+import static org.webrtc.VideoCodecMimeType.H265;
+import static org.webrtc.VideoCodecMimeType.VP8;
+import static org.webrtc.VideoCodecMimeType.VP9;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -27,6 +36,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import androidx.test.runner.AndroidJUnit4;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -131,7 +141,7 @@ public class HardwareVideoEncoderTest {
   }
 
   private class TestEncoderBuilder {
-    private VideoCodecMimeType codecType = VideoCodecMimeType.VP8;
+    private VideoCodecMimeType codecType = VP8;
     private BitrateAdjuster bitrateAdjuster = new BaseBitrateAdjuster();
     private boolean isEncodingStatisticsSupported;
 
@@ -187,8 +197,7 @@ public class HardwareVideoEncoderTest {
   @Test
   public void testInit() {
     // Set-up.
-    HardwareVideoEncoder encoder =
-        new TestEncoderBuilder().setCodecType(VideoCodecMimeType.VP8).build();
+    HardwareVideoEncoder encoder = new TestEncoderBuilder().setCodecType(VP8).build();
 
     // Test.
     assertThat(encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback))
@@ -203,8 +212,7 @@ public class HardwareVideoEncoderTest {
         .isEqualTo(TEST_ENCODER_SETTINGS.width);
     assertThat(mediaFormat.getInteger(MediaFormat.KEY_HEIGHT))
         .isEqualTo(TEST_ENCODER_SETTINGS.height);
-    assertThat(mediaFormat.getString(MediaFormat.KEY_MIME))
-        .isEqualTo(VideoCodecMimeType.VP8.mimeType());
+    assertThat(mediaFormat.getString(MediaFormat.KEY_MIME)).isEqualTo(VP8.mimeType());
 
     assertThat(fakeMediaCodecWrapper.getConfiguredFlags())
         .isEqualTo(MediaCodec.CONFIGURE_FLAG_ENCODE);
@@ -231,7 +239,7 @@ public class HardwareVideoEncoderTest {
 
     fakeMediaCodecWrapper.addOutputData(CodecTestHelper.generateRandomData(100),
         /* presentationTimestampUs= */ 0,
-        /* flags= */ MediaCodec.BUFFER_FLAG_SYNC_FRAME);
+        /* flags= */ BUFFER_FLAG_SYNC_FRAME);
 
     encoder.waitDeliverEncodedImage();
 
@@ -267,7 +275,7 @@ public class HardwareVideoEncoderTest {
 
     fakeMediaCodecWrapper.addOutputData(CodecTestHelper.generateRandomData(100),
         /* presentationTimestampUs= */ 0,
-        /* flags= */ MediaCodec.BUFFER_FLAG_SYNC_FRAME);
+        /* flags= */ BUFFER_FLAG_SYNC_FRAME);
 
     encoder.waitDeliverEncodedImage();
 
@@ -453,5 +461,84 @@ public class HardwareVideoEncoderTest {
     long frameDurationMs = SECONDS.toMicros(1) / 30;
     assertThat(timestampCaptor.getAllValues())
         .containsExactly(0L, frameDurationMs, 2 * frameDurationMs);
+  }
+
+  private void encodeWithConfigBuffer(VideoCodecMimeType codecType, boolean keyFrame,
+      boolean emptyConfig, String expected) throws InterruptedException {
+    String configData = emptyConfig ? "" : "config";
+    byte[] configBytes = configData.getBytes(Charset.defaultCharset());
+    byte[] frameBytes = "frame".getBytes(Charset.defaultCharset());
+    byte[] expectedBytes = expected.getBytes(Charset.defaultCharset());
+
+    TestEncoder encoder = new TestEncoderBuilder().setCodecType(codecType).build();
+    encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback);
+
+    encoder.encode(createTestVideoFrame(/* timestampNs= */ 0), ENCODE_INFO_DELTA_FRAME);
+
+    fakeMediaCodecWrapper.addOutputData(
+        configBytes, /* presentationTimestampUs= */ 0, /* flags= */ BUFFER_FLAG_CODEC_CONFIG);
+    encoder.waitDeliverEncodedImage();
+
+    fakeMediaCodecWrapper.addOutputData(frameBytes, /* presentationTimestampUs= */ 0,
+        /* flags= */ keyFrame ? BUFFER_FLAG_SYNC_FRAME : 0);
+    encoder.waitDeliverEncodedImage();
+
+    verify(mockEncoderCallback)
+        .onEncodedFrame(
+            argThat(
+                (EncodedImage encoded) -> encoded.buffer.equals(ByteBuffer.wrap(expectedBytes))),
+            nullable(CodecSpecificInfo.class));
+
+    assertThat(encoder.release()).isEqualTo(VideoCodecStatus.OK);
+  }
+
+  @Test
+  public void encode_vp8KeyFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(VP8, /*keyFrame=*/true, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_vp9KeyFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(VP9, /*keyFrame=*/true, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_av1KeyFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(AV1, /*keyFrame=*/true, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_h264KeyFrame_nonEmptyConfig_configPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(H264, /*keyFrame=*/true, /* emptyConfig= */ false, "configframe");
+  }
+
+  @Test
+  public void encode_h265KeyFrame_nonEmptyConfig_configPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(H265, /*keyFrame=*/true, /* emptyConfig= */ false, "configframe");
+  }
+
+  @Test
+  public void encode_vp8DeltaFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(VP8, /*keyFrame=*/false, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_vp9DeltaFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(VP9, /*keyFrame=*/false, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_av1DeltaFrame_nonEmptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(AV1, /*keyFrame=*/false, /* emptyConfig= */ false, "frame");
+  }
+
+  @Test
+  public void encode_h264KeyFrame_emptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(H264, /*keyFrame=*/true, /* emptyConfig= */ true, "frame");
+  }
+
+  @Test
+  public void encode_h265KeyFrame_emptyConfig_configNotPrepended() throws InterruptedException {
+    encodeWithConfigBuffer(H265, /*keyFrame=*/true, /* emptyConfig= */ true, "frame");
   }
 }
