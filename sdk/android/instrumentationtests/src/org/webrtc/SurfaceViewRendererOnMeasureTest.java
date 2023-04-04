@@ -15,11 +15,11 @@ import static org.junit.Assert.fail;
 
 import android.annotation.SuppressLint;
 import android.graphics.Point;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.rule.UiThreadTestRule;
 import android.view.View.MeasureSpec;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.rule.UiThreadTestRule;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
