@@ -32,8 +32,8 @@ public class SoftwareVideoEncoderFactoryTest {
     VideoCodecInfo[] codecs = factory.getSupportedCodecs();
     assertThat(codecs.length).isEqualTo(3);
     assertThat(codecs[0].name).isEqualTo("VP8");
-    assertThat(codecs[1].name).isEqualTo("VP9");
-    assertThat(codecs[2].name).isEqualTo("AV1");
+    assertThat(codecs[1].name).isEqualTo("AV1");
+    assertThat(codecs[2].name).isEqualTo("VP9");
   }
 
   @SmallTest

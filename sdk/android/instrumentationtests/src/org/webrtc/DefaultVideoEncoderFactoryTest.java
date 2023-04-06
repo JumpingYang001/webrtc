@@ -53,8 +53,8 @@ public class DefaultVideoEncoderFactoryTest {
     VideoCodecInfo[] supportedCodecs = defFactory.getSupportedCodecs();
     assertEquals(3, supportedCodecs.length);
     assertEquals("VP8", supportedCodecs[0].name);
-    assertEquals("VP9", supportedCodecs[1].name);
-    assertEquals("AV1", supportedCodecs[2].name);
+    assertEquals("AV1", supportedCodecs[1].name);
+    assertEquals("VP9", supportedCodecs[2].name);
   }
 
   @SmallTest
@@ -68,8 +68,8 @@ public class DefaultVideoEncoderFactoryTest {
     VideoCodecInfo[] supportedCodecs = defFactory.getSupportedCodecs();
     assertEquals(4, supportedCodecs.length);
     assertEquals("VP8", supportedCodecs[0].name);
-    assertEquals("VP9", supportedCodecs[1].name);
-    assertEquals("AV1", supportedCodecs[2].name);
+    assertEquals("AV1", supportedCodecs[1].name);
+    assertEquals("VP9", supportedCodecs[2].name);
     assertEquals("VP8", supportedCodecs[3].name);
     assertEquals(1, supportedCodecs[3].params.size());
     assertEquals("value", supportedCodecs[3].params.get("param"));
