@@ -18,8 +18,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -286,6 +289,31 @@ public class HardwareVideoEncoderTest {
     EncodedImage videoFrame = videoFrameCaptor.getValue();
     assertThat(videoFrame).isNotNull();
     assertThat(videoFrame.qp).isEqualTo(123);
+  }
+
+  @Test
+  public void encodingStatistics_fetchedBeforeFrameBufferIsReleased() throws InterruptedException {
+    TestEncoder encoder =
+        new TestEncoderBuilder().setCodecType(H264).SetIsEncodingStatisticsSupported(true).build();
+    assertThat(encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback))
+        .isEqualTo(VideoCodecStatus.OK);
+
+    encoder.encode(createTestVideoFrame(/* timestampNs= */ 42), ENCODE_INFO_KEY_FRAME);
+    fakeMediaCodecWrapper.addOutputData(CodecTestHelper.generateRandomData(/* length= */ 100),
+        /* presentationTimestampUs= */ 0,
+        /* flags= */ MediaCodec.BUFFER_FLAG_CODEC_CONFIG);
+    encoder.waitDeliverEncodedImage();
+
+    int frameBufferIndex =
+        fakeMediaCodecWrapper.addOutputData(CodecTestHelper.generateRandomData(/* length= */ 100),
+            /* presentationTimestampUs= */ 0,
+            /* flags= */ MediaCodec.BUFFER_FLAG_SYNC_FRAME);
+    encoder.waitDeliverEncodedImage();
+
+    InOrder inOrder = inOrder(fakeMediaCodecWrapper);
+    inOrder.verify(fakeMediaCodecWrapper).getOutputFormat(eq(frameBufferIndex));
+    inOrder.verify(fakeMediaCodecWrapper)
+        .releaseOutputBuffer(eq(frameBufferIndex), /* render= */ eq(false));
   }
 
   @Test
