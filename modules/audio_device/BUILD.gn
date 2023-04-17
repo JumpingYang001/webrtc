@@ -192,6 +192,7 @@ rtc_library("audio_device_impl") {
     "../../api:scoped_refptr",
     "../../api:sequence_checker",
     "../../api/task_queue",
+    "../../api/units:time_delta",
     "../../common_audio",
     "../../common_audio:common_audio_c",
     "../../rtc_base:buffer",
@@ -217,6 +218,7 @@ rtc_library("audio_device_impl") {
   absl_deps = [
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/strings:strings",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
   if (rtc_include_internal_audio_device && is_ios) {
     deps += [ "../../sdk:audio_device" ]
@@ -228,8 +230,6 @@ rtc_library("audio_device_impl") {
     "dummy/file_audio_device.cc",
     "dummy/file_audio_device.h",
     "include/fake_audio_device.h",
-    "include/test_audio_device.cc",
-    "include/test_audio_device.h",
   ]
 
   if (build_with_mozilla) {
@@ -253,6 +253,10 @@ rtc_library("audio_device_impl") {
       "audio_device_impl.cc",
       "audio_device_impl.h",
       "include/audio_device_data_observer.h",
+      "include/test_audio_device.cc",
+      "include/test_audio_device.h",
+      "test_audio_device_impl.cc",
+      "test_audio_device_impl.h",
     ]
     if (is_android) {
       sources += [
@@ -414,10 +418,12 @@ if (rtc_include_tests && !build_with_chromium) {
     sources = [
       "fine_audio_buffer_unittest.cc",
       "include/test_audio_device_unittest.cc",
+      "test_audio_device_impl_test.cc",
     ]
     deps = [
       ":audio_device",
       ":audio_device_buffer",
+      ":audio_device_generic",
       ":audio_device_impl",
       ":mock_audio_device",
       "../../api:array_view",
@@ -425,6 +431,8 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../api:sequence_checker",
       "../../api/task_queue",
       "../../api/task_queue:default_task_queue_factory",
+      "../../api/units:time_delta",
+      "../../api/units:timestamp",
       "../../common_audio",
       "../../rtc_base:buffer",
       "../../rtc_base:checks",
@@ -439,6 +447,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../system_wrappers",
       "../../test:fileutils",
       "../../test:test_support",
+      "../../test/time_controller",
     ]
     absl_deps = [
       "//third_party/abseil-cpp/absl/strings",
