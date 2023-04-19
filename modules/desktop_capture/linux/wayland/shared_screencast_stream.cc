@@ -449,8 +449,8 @@ bool SharedScreenCastStreamPrivate::StartScreenCastStream(
     PipeWireThreadLoopLock thread_loop_lock(pw_main_loop_);
 
     if (fd >= 0) {
-      pw_core_ = pw_context_connect_fd(
-          pw_context_, fcntl(fd, F_DUPFD_CLOEXEC), nullptr, 0);
+      pw_core_ = pw_context_connect_fd(pw_context_, fcntl(fd, F_DUPFD_CLOEXEC),
+                                       nullptr, 0);
     } else {
       pw_core_ = pw_context_connect(pw_context_, nullptr, 0);
     }

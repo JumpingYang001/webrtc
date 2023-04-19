@@ -10,9 +10,9 @@
 
 #include "modules/desktop_capture/linux/x11/x_error_trap.h"
 
-#include <atomic>
-
 #include <stddef.h>
+
+#include <atomic>
 
 #include "rtc_base/checks.h"
 
