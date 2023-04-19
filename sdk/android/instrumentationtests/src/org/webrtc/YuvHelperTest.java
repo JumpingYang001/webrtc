@@ -103,6 +103,22 @@ public class YuvHelperTest {
   public void testI420CopyStride() {
     final int dstStrideY = 4;
     final int dstSliceHeightY = 4;
+    final int dstSize = dstStrideY * dstStrideY * 3 / 2;
+
+    final ByteBuffer dst = ByteBuffer.allocateDirect(dstSize);
+    YuvHelper.I420Copy(TEST_I420_Y, TEST_I420_STRIDE_Y, TEST_I420_U, TEST_I420_STRIDE_V,
+        TEST_I420_V, TEST_I420_STRIDE_U, dst, TEST_WIDTH, TEST_HEIGHT, dstStrideY, dstSliceHeightY);
+
+    assertByteBufferContentEquals(new byte[] {1, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9, 0, 0, 0, 0, 0, 51,
+                                      52, 53, 54, 101, 102, 105, 106},
+        dst);
+  }
+
+  @SmallTest
+  @Test
+  public void testI420CopyChromaStride() {
+    final int dstStrideY = 4;
+    final int dstSliceHeightY = 4;
     final int dstStrideU = dstStrideY / 2;
     final int dstSliceHeightU = dstSliceHeightY / 2;
     final int dstSize = dstStrideY * dstStrideY * 3 / 2;

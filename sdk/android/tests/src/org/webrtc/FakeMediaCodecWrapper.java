@@ -105,18 +105,13 @@ public class FakeMediaCodecWrapper implements MediaCodecWrapper {
   private State state = State.STOPPED_UNINITIALIZED;
   private @Nullable MediaFormat configuredFormat;
   private int configuredFlags;
-  private final MediaFormat inputFormat;
-  private final MediaFormat outputFormat;
   private final ByteBuffer[] inputBuffers = new ByteBuffer[NUM_INPUT_BUFFERS];
   private final ByteBuffer[] outputBuffers = new ByteBuffer[NUM_OUTPUT_BUFFERS];
   private final boolean[] inputBufferReserved = new boolean[NUM_INPUT_BUFFERS];
   private final boolean[] outputBufferReserved = new boolean[NUM_OUTPUT_BUFFERS];
   private final List<QueuedOutputBufferInfo> queuedOutputBuffers = new ArrayList<>();
 
-  public FakeMediaCodecWrapper(MediaFormat inputFormat, MediaFormat outputFormat) {
-    this.inputFormat = inputFormat;
-    this.outputFormat = outputFormat;
-  }
+  public FakeMediaCodecWrapper() {}
 
   /** Returns the current simulated state of MediaCodec. */
   public State getState() {
@@ -304,12 +299,17 @@ public class FakeMediaCodecWrapper implements MediaCodecWrapper {
 
   @Override
   public MediaFormat getInputFormat() {
-    return inputFormat;
+    return new MediaFormat();
   }
 
   @Override
   public MediaFormat getOutputFormat() {
-    return outputFormat;
+    return new MediaFormat();
+  }
+
+  @Override
+  public MediaFormat getOutputFormat(int index) {
+    return new MediaFormat();
   }
 
   @Override
@@ -323,10 +323,5 @@ public class FakeMediaCodecWrapper implements MediaCodecWrapper {
   @Override
   public MediaCodecInfo getCodecInfo() {
     return null;
-  }
-
-  @Override
-  public MediaFormat getOutputFormat(int index) {
-    return outputFormat;
   }
 }

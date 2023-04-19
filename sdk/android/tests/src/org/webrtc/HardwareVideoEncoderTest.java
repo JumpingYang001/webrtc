@@ -12,6 +12,8 @@ package org.webrtc;
 
 import static android.media.MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 import static android.media.MediaCodec.BUFFER_FLAG_SYNC_FRAME;
+import static android.media.MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
+import static android.media.MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
 import static com.google.common.truth.Truth.assertThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,9 +34,7 @@ import static org.webrtc.VideoCodecMimeType.VP8;
 import static org.webrtc.VideoCodecMimeType.VP9;
 
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import androidx.test.runner.AndroidJUnit4;
 import java.nio.ByteBuffer;
@@ -48,10 +48,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.robolectric.annotation.Config;
 import org.webrtc.EncodedImage;
 import org.webrtc.EncodedImage.FrameType;
 import org.webrtc.FakeMediaCodecWrapper.State;
+import org.webrtc.Logging;
 import org.webrtc.VideoCodecStatus;
 import org.webrtc.VideoEncoder;
 import org.webrtc.VideoEncoder.BitrateAllocation;
@@ -65,10 +67,10 @@ import org.webrtc.VideoFrame.I420Buffer;
 @RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
 public class HardwareVideoEncoderTest {
+  private static final int WIDTH = 640;
+  private static final int HEIGHT = 480;
   private static final VideoEncoder.Settings TEST_ENCODER_SETTINGS = new Settings(
-      /* numberOfCores= */ 1,
-      /* width= */ 640,
-      /* height= */ 480,
+      /* numberOfCores= */ 1, WIDTH, HEIGHT,
       /* startBitrate= */ 10000,
       /* maxFramerate= */ 30,
       /* numberOfSimulcastStreams= */ 1,
@@ -147,6 +149,7 @@ public class HardwareVideoEncoderTest {
     private VideoCodecMimeType codecType = VP8;
     private BitrateAdjuster bitrateAdjuster = new BaseBitrateAdjuster();
     private boolean isEncodingStatisticsSupported;
+    private int colorFormat = COLOR_FormatYUV420Planar;
 
     public TestEncoderBuilder setCodecType(VideoCodecMimeType codecType) {
       this.codecType = codecType;
@@ -158,9 +161,14 @@ public class HardwareVideoEncoderTest {
       return this;
     }
 
-    public TestEncoderBuilder SetIsEncodingStatisticsSupported(
+    public TestEncoderBuilder setIsEncodingStatisticsSupported(
         boolean isEncodingStatisticsSupported) {
       this.isEncodingStatisticsSupported = isEncodingStatisticsSupported;
+      return this;
+    }
+
+    public TestEncoderBuilder setColorFormat(int colorFormat) {
+      this.colorFormat = colorFormat;
       return this;
     }
 
@@ -168,8 +176,7 @@ public class HardwareVideoEncoderTest {
       return new TestEncoder((String name)
                                  -> fakeMediaCodecWrapper,
           "org.webrtc.testencoder", codecType,
-          /* surfaceColorFormat= */ null,
-          /* yuvColorFormat= */ MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar,
+          /* surfaceColorFormat= */ null, colorFormat,
           /* params= */ new HashMap<>(),
           /* keyFrameIntervalSec= */ 0,
           /* forceKeyFrameIntervalMs= */ 0, bitrateAdjuster,
@@ -185,16 +192,12 @@ public class HardwareVideoEncoderTest {
     return new VideoFrame(testBuffer, /* rotation= */ 0, timestampNs);
   }
 
-  @Mock VideoEncoder.Callback mockEncoderCallback;
-  private FakeMediaCodecWrapper fakeMediaCodecWrapper;
+  @Mock private VideoEncoder.Callback mockEncoderCallback;
+  @Spy private FakeMediaCodecWrapper fakeMediaCodecWrapper;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    MediaFormat inputFormat = new MediaFormat();
-    MediaFormat outputFormat = new MediaFormat();
-    // TODO(sakal): Add more details to output format as needed.
-    fakeMediaCodecWrapper = spy(new FakeMediaCodecWrapper(inputFormat, outputFormat));
   }
 
   @Test
@@ -223,7 +226,7 @@ public class HardwareVideoEncoderTest {
 
   @Test
   public void encodingStatistics_unsupported_disabled() throws InterruptedException {
-    TestEncoder encoder = new TestEncoderBuilder().SetIsEncodingStatisticsSupported(false).build();
+    TestEncoder encoder = new TestEncoderBuilder().setIsEncodingStatisticsSupported(false).build();
 
     assertThat(encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback))
         .isEqualTo(VideoCodecStatus.OK);
@@ -257,7 +260,7 @@ public class HardwareVideoEncoderTest {
 
   @Test
   public void encodingStatistics_supported_enabled() throws InterruptedException {
-    TestEncoder encoder = new TestEncoderBuilder().SetIsEncodingStatisticsSupported(true).build();
+    TestEncoder encoder = new TestEncoderBuilder().setIsEncodingStatisticsSupported(true).build();
 
     assertThat(encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback))
         .isEqualTo(VideoCodecStatus.OK);
@@ -294,7 +297,7 @@ public class HardwareVideoEncoderTest {
   @Test
   public void encodingStatistics_fetchedBeforeFrameBufferIsReleased() throws InterruptedException {
     TestEncoder encoder =
-        new TestEncoderBuilder().setCodecType(H264).SetIsEncodingStatisticsSupported(true).build();
+        new TestEncoderBuilder().setCodecType(H264).setIsEncodingStatisticsSupported(true).build();
     assertThat(encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback))
         .isEqualTo(VideoCodecStatus.OK);
 
@@ -568,5 +571,85 @@ public class HardwareVideoEncoderTest {
   @Test
   public void encode_h265KeyFrame_emptyConfig_configNotPrepended() throws InterruptedException {
     encodeWithConfigBuffer(H265, /*keyFrame=*/true, /* emptyConfig= */ true, "frame");
+  }
+
+  private void encodeWithStride(int colorFormat, int stride, int sliceHeight,
+      int expectedBufferSize) throws InterruptedException {
+    MediaFormat inputFormat = new MediaFormat();
+    inputFormat.setInteger(MediaFormat.KEY_STRIDE, stride);
+    inputFormat.setInteger(MediaFormat.KEY_SLICE_HEIGHT, sliceHeight);
+    doReturn(inputFormat).when(fakeMediaCodecWrapper).getInputFormat();
+
+    ByteBuffer inputBuffer = ByteBuffer.allocateDirect(calcBufferSize(
+        colorFormat, HEIGHT, Math.max(stride, WIDTH), Math.max(sliceHeight, HEIGHT)));
+    doReturn(inputBuffer).when(fakeMediaCodecWrapper).getInputBuffer(anyInt());
+
+    TestEncoder encoder = new TestEncoderBuilder().setColorFormat(colorFormat).build();
+    encoder.initEncode(TEST_ENCODER_SETTINGS, mockEncoderCallback);
+    encoder.encode(createTestVideoFrame(/* timestampNs= */ 0), ENCODE_INFO_DELTA_FRAME);
+
+    verify(fakeMediaCodecWrapper)
+        .queueInputBuffer(
+            /*index=*/anyInt(), /*offset=*/eq(0), /*size=*/eq(expectedBufferSize),
+            /*presentationTimeUs=*/anyLong(), /*flags=*/anyInt());
+  }
+
+  @Test
+  public void encode_invalidStride_planar_ignored() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420Planar,
+        /*stride=*/WIDTH / 2,
+        /*sliceHeight=*/HEIGHT,
+        /*expectedBufferSize=*/WIDTH * HEIGHT * 3 / 2);
+  }
+
+  @Test
+  public void encode_invalidSliceHeight_planar_ignored() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420Planar,
+        /*stride=*/WIDTH,
+        /*sliceHeight=*/HEIGHT / 2,
+        /*expectedBufferSize=*/WIDTH * HEIGHT * 3 / 2);
+  }
+
+  @Test
+  public void encode_validStride_planar_applied() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420Planar,
+        /*stride=*/WIDTH * 2,
+        /*sliceHeight=*/HEIGHT,
+        /*expectedBufferSize=*/WIDTH * 2 * HEIGHT * 3 / 2);
+  }
+
+  @Test
+  public void encode_validSliceHeight_planar_applied() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420Planar,
+        /*stride=*/WIDTH,
+        /*sliceHeight=*/HEIGHT * 2,
+        /*expectedBufferSize=*/WIDTH * HEIGHT * 2 * 3 / 2);
+  }
+
+  @Test
+  public void encode_validStride_semiPlanar_applied() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420SemiPlanar,
+        /*stride=*/WIDTH * 2,
+        /*sliceHeight=*/HEIGHT,
+        /*expectedBufferSize=*/WIDTH * 2 * HEIGHT * 3 / 2);
+  }
+
+  @Test
+  public void encode_validSliceHeight_semiPlanar_applied() throws InterruptedException {
+    encodeWithStride(/*colorFormat=*/COLOR_FormatYUV420SemiPlanar,
+        /*stride=*/WIDTH,
+        /*sliceHeight=*/HEIGHT * 2,
+        /*expectedBufferSize=*/WIDTH * HEIGHT * 2 + WIDTH * HEIGHT / 2);
+  }
+
+  /** Returns buffer size in bytes for the given color format and dimensions. */
+  private int calcBufferSize(int colorFormat, int height, int stride, int sliceHeight) {
+    if (colorFormat == COLOR_FormatYUV420SemiPlanar) {
+      int chromaHeight = (height + 1) / 2;
+      return sliceHeight * stride + chromaHeight * stride;
+    }
+    int chromaStride = (stride + 1) / 2;
+    int chromaSliceHeight = (sliceHeight + 1) / 2;
+    return sliceHeight * stride + chromaSliceHeight * chromaStride * 2;
   }
 }
