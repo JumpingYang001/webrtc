@@ -87,10 +87,9 @@ bool VideoDecoderWrapper::ConfigureInternal(JNIEnv* jni) {
   return status == WEBRTC_VIDEO_CODEC_OK;
 }
 
-int32_t VideoDecoderWrapper::Decode(
-    const EncodedImage& image_param,
-    bool missing_frames,
-    int64_t render_time_ms) {
+int32_t VideoDecoderWrapper::Decode(const EncodedImage& image_param,
+                                    bool missing_frames,
+                                    int64_t render_time_ms) {
   RTC_DCHECK_RUN_ON(&decoder_thread_checker_);
   if (!initialized_) {
     // Most likely initializing the codec failed.

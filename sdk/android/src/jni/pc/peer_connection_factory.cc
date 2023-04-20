@@ -350,8 +350,7 @@ JNI_PeerConnectionFactory_CreatePeerConnectionFactory(
       TakeOwnershipOfUniquePtr<NetEqFactory>(native_neteq_factory));
 }
 
-static void JNI_PeerConnectionFactory_FreeFactory(JNIEnv*,
-                                                  jlong j_p) {
+static void JNI_PeerConnectionFactory_FreeFactory(JNIEnv*, jlong j_p) {
   delete reinterpret_cast<OwnedFactoryAndThreads*>(j_p);
   field_trial::InitFieldTrialsFromString(nullptr);
   GetStaticObjects().field_trials_init_string = nullptr;

@@ -51,8 +51,7 @@ class VideoEncoderWrapper : public VideoEncoder {
   EncoderInfo GetEncoderInfo() const override;
 
   // Should only be called by JNI.
-  void OnEncodedFrame(JNIEnv* jni,
-                      const JavaRef<jobject>& j_encoded_image);
+  void OnEncodedFrame(JNIEnv* jni, const JavaRef<jobject>& j_encoded_image);
 
  private:
   struct FrameExtraInfo {
