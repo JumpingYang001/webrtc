@@ -116,13 +116,7 @@ class RTCPReceiver final {
 
   std::vector<rtcp::ReceiveTimeInfo> ConsumeReceivedXrReferenceTimeInfo();
 
-  // Get rtt.
-  int32_t RTT(uint32_t remote_ssrc,
-              int64_t* last_rtt_ms,
-              int64_t* avg_rtt_ms,
-              int64_t* min_rtt_ms,
-              int64_t* max_rtt_ms) const;
-
+  absl::optional<TimeDelta> AverageRtt() const;
   absl::optional<TimeDelta> LastRtt() const;
 
   // Returns non-sender RTT metrics for the remote SSRC.
@@ -253,14 +247,10 @@ class RTCPReceiver final {
     void AddRtt(TimeDelta rtt);
 
     TimeDelta last_rtt() const { return last_rtt_; }
-    TimeDelta min_rtt() const { return min_rtt_; }
-    TimeDelta max_rtt() const { return max_rtt_; }
     TimeDelta average_rtt() const { return sum_rtt_ / num_rtts_; }
 
    private:
     TimeDelta last_rtt_ = TimeDelta::Zero();
-    TimeDelta min_rtt_ = TimeDelta::PlusInfinity();
-    TimeDelta max_rtt_ = TimeDelta::MinusInfinity();
     TimeDelta sum_rtt_ = TimeDelta::Zero();
     size_t num_rtts_ = 0;
   };
