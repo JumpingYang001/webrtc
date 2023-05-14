@@ -16,6 +16,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RTC_OBJC_TYPE(RTCRtpCodecCapability);
+
 extern NSString *const kRTCRtpTransceiverErrorDomain;
 
 /** https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiverdirection */
@@ -104,6 +106,13 @@ RTC_OBJC_EXPORT
  */
 @property(nonatomic, readonly) RTCRtpTransceiverDirection direction;
 
+/** The codecPreferences indicates any overridden codec preferences, which
+ *  will be used in calls to createOffer and createAnswer. An empty array
+ *  indicates that the default codec preferences will be used.
+ *  https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-setcodecpreferences
+ */
+@property(nonatomic, readonly) NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *codecPreferences;
+
 /** The currentDirection attribute indicates the current direction negotiated
  *  for this transceiver. If this transceiver has never been represented in an
  *  offer/answer exchange, or if the transceiver is stopped, the value is not
@@ -124,6 +133,15 @@ RTC_OBJC_EXPORT
  *  https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-direction
  */
 - (void)setDirection:(RTCRtpTransceiverDirection)direction error:(NSError **)error;
+
+/** The setCodecPreferences method will reject attempts to set codecs not
+ *  matching codecs found in sender or receiver capabilities for kind, where
+ *  kind is the mediaType of the RTCRtpTransceiver on which the method is
+ *  called.
+ *  https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-setcodecpreferences
+ */
+- (void)setCodecPreferences:(NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *)codecPreferences
+                      error:(NSError **)error;
 
 @end
 
