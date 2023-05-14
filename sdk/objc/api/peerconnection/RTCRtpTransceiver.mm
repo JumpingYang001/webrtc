@@ -10,6 +10,8 @@
 
 #import "RTCRtpTransceiver+Private.h"
 
+#import "RTCRtpCodecCapability+Private.h"
+#import "RTCRtpCodecCapability.h"
 #import "RTCRtpEncodingParameters+Private.h"
 #import "RTCRtpParameters+Private.h"
 #import "RTCRtpReceiver+Private.h"
@@ -62,6 +64,40 @@ NSString *const kRTCRtpTransceiverErrorDomain = @"org.webrtc.RTCRtpTranceiver";
     return [NSString stringForStdString:*_nativeRtpTransceiver->mid()];
   } else {
     return nil;
+  }
+}
+
+- (NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *)codecPreferences {
+  NSMutableArray *result = [NSMutableArray array];
+  std::vector<webrtc::RtpCodecCapability> capabilities = _nativeRtpTransceiver->codec_preferences();
+
+  for (auto &element : capabilities) {
+    RTCRtpCodecCapability *object =
+        [[RTCRtpCodecCapability alloc] initWithNativeCodecCapability:element];
+    [result addObject:object];
+  }
+
+  return result;
+}
+
+- (void)setCodecPreferences:(NSArray<RTC_OBJC_TYPE(RTCRtpCodecCapability) *> *)codecPreferences
+                      error:(NSError **)error {
+  std::vector<webrtc::RtpCodecCapability> objects;
+
+  for (RTCRtpCodecCapability *object in codecPreferences) {
+    objects.push_back(object.nativeCodecCapability);
+  }
+
+  webrtc::RTCError nativeError = _nativeRtpTransceiver->SetCodecPreferences(
+      rtc::ArrayView<webrtc::RtpCodecCapability>(objects.data(), objects.size()));
+
+  if (!nativeError.ok() && error) {
+    *error = [NSError errorWithDomain:kRTCRtpTransceiverErrorDomain
+                                 code:static_cast<int>(nativeError.type())
+                             userInfo:@{
+                               @"message" : [NSString stringWithCString:nativeError.message()
+                                                               encoding:NSUTF8StringEncoding]
+                             }];
   }
 }
 

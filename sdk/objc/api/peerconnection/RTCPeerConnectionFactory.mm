@@ -19,6 +19,10 @@
 #import "RTCMediaConstraints+Private.h"
 #import "RTCMediaStream+Private.h"
 #import "RTCPeerConnection+Private.h"
+#import "RTCRtpCapabilities+Private.h"
+#import "RTCRtpCodecCapability+Private.h"
+#import "RTCRtpReceiver+Private.h"
+#import "RTCRtpSender+Private.h"
 #import "RTCVideoSource+Private.h"
 #import "RTCVideoTrack+Private.h"
 #import "base/RTCLogging.h"
@@ -301,6 +305,18 @@
                                                             constraints:constraints
                                                            dependencies:std::move(dependencies)
                                                                delegate:delegate];
+}
+
+- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpSenderCapabilitiesFor:(RTCRtpMediaType)mediaType {
+  webrtc::RtpCapabilities capabilities = _nativeFactory->GetRtpSenderCapabilities(
+      [RTCRtpReceiver nativeMediaTypeForMediaType:mediaType]);
+  return [[RTCRtpCapabilities alloc] initWithNativeCapabilities:capabilities];
+}
+
+- (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpReceiverCapabilitiesFor:(RTCRtpMediaType)mediaType {
+  webrtc::RtpCapabilities capabilities = _nativeFactory->GetRtpReceiverCapabilities(
+      [RTCRtpReceiver nativeMediaTypeForMediaType:mediaType]);
+  return [[RTCRtpCapabilities alloc] initWithNativeCapabilities:capabilities];
 }
 
 - (void)setOptions:(nonnull RTC_OBJC_TYPE(RTCPeerConnectionFactoryOptions) *)options {
