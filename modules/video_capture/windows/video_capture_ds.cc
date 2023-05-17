@@ -125,7 +125,6 @@ int32_t VideoCaptureDS::Init(const char* deviceUniqueIdUTF8) {
 
 int32_t VideoCaptureDS::StartCapture(const VideoCaptureCapability& capability) {
   RTC_DCHECK_RUN_ON(&api_checker_);
-  MutexLock lock(&api_lock_);
 
   if (capability != _requestedCapability) {
     DisconnectGraph();
@@ -150,7 +149,6 @@ int32_t VideoCaptureDS::StartCapture(const VideoCaptureCapability& capability) {
 
 int32_t VideoCaptureDS::StopCapture() {
   RTC_DCHECK_RUN_ON(&api_checker_);
-  MutexLock lock(&api_lock_);
 
   HRESULT hr = _mediaControl->StopWhenReady();
   if (FAILED(hr)) {
