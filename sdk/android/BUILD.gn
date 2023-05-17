@@ -212,6 +212,7 @@ if (is_android) {
       "api/org/webrtc/EglBase10.java",
       "api/org/webrtc/EglBase14.java",
       "api/org/webrtc/EglRenderer.java",
+      "api/org/webrtc/EglThread.java",
       "api/org/webrtc/GlRectDrawer.java",
       "api/org/webrtc/GlShader.java",
       "api/org/webrtc/GlTextureFrameBuffer.java",
