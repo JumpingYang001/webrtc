@@ -1065,8 +1065,6 @@ if (is_win) {
     sources = [
       "win32.cc",
       "win32.h",
-      "win32_window.cc",
-      "win32_window.h",
     ]
 
     deps = [
@@ -2042,10 +2040,7 @@ if (rtc_include_tests) {
         deps += [ "synchronization:synchronization_unittests" ]
       }
       if (is_win) {
-        sources += [
-          "win32_unittest.cc",
-          "win32_window_unittest.cc",
-        ]
+        sources += [ "win32_unittest.cc" ]
         deps += [ ":win32" ]
       }
       if (is_posix || is_fuchsia) {
