@@ -260,8 +260,6 @@ void JavaToNativeRTCConfiguration(
       Java_RTCConfiguration_getSuspendBelowMinBitrate(jni, j_rtc_config);
   rtc_config->screencast_min_bitrate = JavaToNativeOptionalInt(
       jni, Java_RTCConfiguration_getScreencastMinBitrate(jni, j_rtc_config));
-  rtc_config->combined_audio_video_bwe = JavaToNativeOptionalBool(
-      jni, Java_RTCConfiguration_getCombinedAudioVideoBwe(jni, j_rtc_config));
   rtc_config->network_preference =
       JavaToNativeNetworkPreference(jni, j_network_preference);
   rtc_config->sdp_semantics = JavaToNativeSdpSemantics(jni, j_sdp_semantics);
