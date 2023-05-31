@@ -828,7 +828,6 @@ def RunPythonTests(input_api, output_api):
   test_directories = [
       input_api.PresubmitLocalPath(),
       Join('rtc_tools', 'py_event_log_analyzer'),
-      Join('audio', 'test', 'unittests'),
   ] + [
       root for root, _, files in os.walk(Join('tools_webrtc')) if any(
           f.endswith('_test.py') and f not in excluded_files for f in files)
