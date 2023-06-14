@@ -1455,6 +1455,7 @@ rtc_library("ssl") {
     "../api/task_queue:pending_task_safety_flag",
     "../api/units:time_delta",
     "../system_wrappers:field_trial",
+    "synchronization:mutex",
     "system:rtc_export",
     "task_utils:repeating_task",
     "third_party/base64",
