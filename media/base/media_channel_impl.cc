@@ -61,11 +61,6 @@ MediaChannelUtil::MediaChannelUtil(TaskQueueBase* network_thread,
                                    bool enable_dscp)
     : transport_(network_thread, enable_dscp) {}
 
-MediaChannel::MediaChannel(Role role,
-                           TaskQueueBase* network_thread,
-                           bool enable_dscp)
-    : MediaChannelUtil(network_thread, enable_dscp), role_(role) {}
-
 MediaChannelUtil::~MediaChannelUtil() {}
 
 void MediaChannelUtil::SetInterface(MediaChannelNetworkInterface* iface) {
@@ -181,10 +176,6 @@ std::map<std::string, std::string> AudioSendParameters::ToStringMap() const {
   return params;
 }
 
-cricket::MediaType VoiceMediaChannel::media_type() const {
-  return cricket::MediaType::MEDIA_TYPE_AUDIO;
-}
-
 VideoSendParameters::VideoSendParameters() = default;
 VideoSendParameters::~VideoSendParameters() = default;
 
@@ -193,12 +184,6 @@ std::map<std::string, std::string> VideoSendParameters::ToStringMap() const {
   params["conference_mode"] = (conference_mode ? "yes" : "no");
   return params;
 }
-
-cricket::MediaType VideoMediaChannel::media_type() const {
-  return cricket::MediaType::MEDIA_TYPE_VIDEO;
-}
-
-void VideoMediaChannel::SetVideoCodecSwitchingEnabled(bool enabled) {}
 
 // --------------------- MediaChannelUtil::TransportForMediaChannels -----
 
