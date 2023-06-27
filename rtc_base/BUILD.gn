@@ -551,6 +551,7 @@ rtc_library("timeutils") {
     ":stringutils",
     "system:rtc_export",
   ]
+
   if (rtc_exclude_system_time) {
     defines = [ "WEBRTC_EXCLUDE_SYSTEM_TIME" ]
   }
@@ -558,6 +559,7 @@ rtc_library("timeutils") {
   libs = []
   if (is_win) {
     libs += [ "winmm.lib" ]
+    deps += [ ":win32" ]
   }
 }
 
@@ -1070,7 +1072,6 @@ if (is_win) {
     deps = [
       ":byte_order",
       ":checks",
-      ":logging",
       ":macromagic",
       ":stringutils",
     ]
