@@ -50,7 +50,7 @@ class VideoCaptureModulePipeWire : public VideoCaptureImpl {
       RTC_GUARDED_BY(capture_checker_);
   bool started_ RTC_GUARDED_BY(api_lock_);
 
-  struct pw_stream* stream_ RTC_GUARDED_BY(capture_checker_);
+  struct pw_stream* stream_ RTC_GUARDED_BY(capture_checker_) = nullptr;
   struct spa_hook stream_listener_ RTC_GUARDED_BY(capture_checker_);
 };
 }  // namespace videocapturemodule
