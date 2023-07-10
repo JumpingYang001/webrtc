@@ -33,15 +33,19 @@ public class EglThread {
     renderThread.start();
     Handler handler = new Handler(renderThread.getLooper());
 
-    // If sharedContext is null, then texture frames are disabled. This is typically for old
-    // devices that might not be fully spec compliant, so force EGL 1.0 since EGL 1.4 has
-    // caused trouble on some weird devices.
-    EglConnection eglConnection;
-    if (sharedContext == null) {
-      eglConnection = EglConnection.createEgl10(configAttributes);
-    } else {
-      eglConnection = EglConnection.create(sharedContext, configAttributes);
-    }
+    // Not creating the EGLContext on the thread it will be used on seems to cause issues with
+    // creating window surfaces on certain devices. So keep the same legacy behavior as EglRenderer
+    // and create the context on the render thread.
+    EglConnection eglConnection = ThreadUtils.invokeAtFrontUninterruptibly(handler, () -> {
+      // If sharedContext is null, then texture frames are disabled. This is typically for old
+      // devices that might not be fully spec compliant, so force EGL 1.0 since EGL 1.4 has
+      // caused trouble on some weird devices.
+      if (sharedContext == null) {
+        return EglConnection.createEgl10(configAttributes);
+      } else {
+        return EglConnection.create(sharedContext, configAttributes);
+      }
+    });
 
     return new EglThread(
         releaseMonitor != null ? releaseMonitor : eglThread -> true, handler, eglConnection);
