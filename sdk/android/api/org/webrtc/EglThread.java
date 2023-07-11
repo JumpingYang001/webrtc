@@ -12,8 +12,12 @@ package org.webrtc;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.List;
 import org.webrtc.EglBase.EglConnection;
 
 /** EGL graphics thread that allows multiple clients to share the same underlying EGLContext. */
@@ -31,7 +35,8 @@ public class EglThread {
       @Nullable final EglBase.Context sharedContext, final int[] configAttributes) {
     final HandlerThread renderThread = new HandlerThread("EglThread");
     renderThread.start();
-    Handler handler = new Handler(renderThread.getLooper());
+    HandlerWithExceptionCallbacks handler =
+        new HandlerWithExceptionCallbacks(renderThread.getLooper());
 
     // Not creating the EGLContext on the thread it will be used on seems to cause issues with
     // creating window surfaces on certain devices. So keep the same legacy behavior as EglRenderer
@@ -51,12 +56,51 @@ public class EglThread {
         releaseMonitor != null ? releaseMonitor : eglThread -> true, handler, eglConnection);
   }
 
+  /**
+   * Handler that triggers callbacks when an uncaught exception happens when handling a message.
+   */
+  private static class HandlerWithExceptionCallbacks extends Handler {
+    private final Object callbackLock = new Object();
+    @GuardedBy("callbackLock") private final List<Runnable> exceptionCallbacks = new ArrayList<>();
+
+    public HandlerWithExceptionCallbacks(Looper looper) {
+      super(looper);
+    }
+
+    @Override
+    public void dispatchMessage(Message msg) {
+      try {
+        super.dispatchMessage(msg);
+      } catch (Exception e) {
+        Logging.e("EglThread", "Exception on EglThread", e);
+        synchronized (callbackLock) {
+          for (Runnable callback : exceptionCallbacks) {
+            callback.run();
+          }
+        }
+        throw e;
+      }
+    }
+
+    public void addExceptionCallback(Runnable callback) {
+      synchronized (callbackLock) {
+        exceptionCallbacks.add(callback);
+      }
+    }
+
+    public void removeExceptionCallback(Runnable callback) {
+      synchronized (callbackLock) {
+        exceptionCallbacks.remove(callback);
+      }
+    }
+  }
+
   private final ReleaseMonitor releaseMonitor;
-  private final Handler handler;
+  private final HandlerWithExceptionCallbacks handler;
   private final EglConnection eglConnection;
 
-  @VisibleForTesting
-  EglThread(ReleaseMonitor releaseMonitor, Handler handler, EglConnection eglConnection) {
+  private EglThread(ReleaseMonitor releaseMonitor, HandlerWithExceptionCallbacks handler,
+      EglConnection eglConnection) {
     this.releaseMonitor = releaseMonitor;
     this.handler = handler;
     this.eglConnection = eglConnection;
@@ -87,5 +131,19 @@ public class EglThread {
    */
   public Handler getHandler() {
     return handler;
+  }
+
+  /**
+   * Adds a callback that will be called on the EGL thread if there is an exception on the thread.
+   */
+  public void addExceptionCallback(Runnable callback) {
+    handler.addExceptionCallback(callback);
+  }
+
+  /**
+   * Removes a previously added exception callback.
+   */
+  public void removeExceptionCallback(Runnable callback) {
+    handler.removeExceptionCallback(callback);
   }
 }
