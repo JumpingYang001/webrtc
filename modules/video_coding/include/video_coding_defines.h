@@ -53,7 +53,8 @@ class VCMReceiveCallback {
   virtual int32_t FrameToRender(VideoFrame& videoFrame,  // NOLINT
                                 absl::optional<uint8_t> qp,
                                 TimeDelta decode_time,
-                                VideoContentType content_type) = 0;
+                                VideoContentType content_type,
+                                VideoFrameType frame_type) = 0;
 
   virtual void OnDroppedFrames(uint32_t frames_dropped);
 
