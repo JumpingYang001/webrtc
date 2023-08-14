@@ -38,14 +38,11 @@ class MockVCMReceiveCallback : public VCMReceiveCallback {
   MockVCMReceiveCallback() {}
   virtual ~MockVCMReceiveCallback() {}
 
-  MOCK_METHOD(int32_t,
-              FrameToRender,
-              (VideoFrame&,
-               absl::optional<uint8_t>,
-               TimeDelta,
-               VideoContentType,
-               VideoFrameType),
-              (override));
+  MOCK_METHOD(
+      int32_t,
+      FrameToRender,
+      (VideoFrame&, absl::optional<uint8_t>, TimeDelta, VideoContentType),
+      (override));
   MOCK_METHOD(void, OnIncomingPayloadType, (int), (override));
   MOCK_METHOD(void,
               OnDecoderInfoChanged,
