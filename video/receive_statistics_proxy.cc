@@ -592,7 +592,8 @@ void ReceiveStatisticsProxy::OnCname(uint32_t ssrc, absl::string_view cname) {
 void ReceiveStatisticsProxy::OnDecodedFrame(const VideoFrame& frame,
                                             absl::optional<uint8_t> qp,
                                             TimeDelta decode_time,
-                                            VideoContentType content_type) {
+                                            VideoContentType content_type,
+                                            VideoFrameType frame_type) {
   TimeDelta processing_delay = TimeDelta::Zero();
   webrtc::Timestamp current_time = clock_->CurrentTime();
   // TODO(bugs.webrtc.org/13984): some tests do not fill packet_infos().
@@ -615,11 +616,11 @@ void ReceiveStatisticsProxy::OnDecodedFrame(const VideoFrame& frame,
   // may be on. E.g. on iOS this gets called on
   // "com.apple.coremedia.decompressionsession.clientcallback"
   VideoFrameMetaData meta(frame, current_time);
-  worker_thread_->PostTask(
-      SafeTask(task_safety_.flag(), [meta, qp, decode_time, processing_delay,
-                                     assembly_time, content_type, this]() {
+  worker_thread_->PostTask(SafeTask(
+      task_safety_.flag(), [meta, qp, decode_time, processing_delay,
+                            assembly_time, content_type, frame_type, this]() {
         OnDecodedFrame(meta, qp, decode_time, processing_delay, assembly_time,
-                       content_type);
+                       content_type, frame_type);
       }));
 }
 
@@ -629,7 +630,8 @@ void ReceiveStatisticsProxy::OnDecodedFrame(
     TimeDelta decode_time,
     TimeDelta processing_delay,
     TimeDelta assembly_time,
-    VideoContentType content_type) {
+    VideoContentType content_type,
+    VideoFrameType frame_type) {
   RTC_DCHECK_RUN_ON(&main_thread_);
 
   const bool is_screenshare =
@@ -651,6 +653,11 @@ void ReceiveStatisticsProxy::OnDecodedFrame(
       &content_specific_stats_[content_type];
 
   ++stats_.frames_decoded;
+  if (frame_type == VideoFrameType::kVideoFrameKey) {
+    ++stats_.frame_counts.key_frames;
+  } else {
+    ++stats_.frame_counts.delta_frames;
+  }
   if (qp) {
     if (!stats_.qp_sum) {
       if (stats_.frames_decoded != 1) {
@@ -759,12 +766,6 @@ void ReceiveStatisticsProxy::OnCompleteFrame(bool is_keyframe,
                                              size_t size_bytes,
                                              VideoContentType content_type) {
   RTC_DCHECK_RUN_ON(&main_thread_);
-
-  if (is_keyframe) {
-    ++stats_.frame_counts.key_frames;
-  } else {
-    ++stats_.frame_counts.delta_frames;
-  }
 
   // Content type extension is set only for keyframes and should be propagated
   // for all the following delta frames. Here we may receive frames out of order
