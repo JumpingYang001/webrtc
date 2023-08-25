@@ -872,7 +872,7 @@ struct AudioReceiverParameters : MediaChannelParameters {};
 
 class VoiceMediaSendChannelInterface : public MediaSendChannelInterface {
  public:
-  virtual bool SetSendParameters(const AudioSenderParameter& params) = 0;
+  virtual bool SetSenderParameters(const AudioSenderParameter& params) = 0;
   // Starts or stops sending (and potentially capture) of local audio.
   virtual void SetSend(bool send) = 0;
   // Configure stream for sending.
@@ -894,9 +894,9 @@ class VoiceMediaSendChannelInterface : public MediaSendChannelInterface {
 
 class VoiceMediaReceiveChannelInterface : public MediaReceiveChannelInterface {
  public:
-  virtual bool SetRecvParameters(const AudioReceiverParameters& params) = 0;
+  virtual bool SetReceiverParameters(const AudioReceiverParameters& params) = 0;
   // Get the receive parameters for the incoming stream identified by `ssrc`.
-  virtual webrtc::RtpParameters GetRtpReceiveParameters(
+  virtual webrtc::RtpParameters GetRtpReceiverParameters(
       uint32_t ssrc) const = 0;
   virtual std::vector<webrtc::RtpSource> GetSources(uint32_t ssrc) const = 0;
   // Retrieve the receive parameters for the default receive
@@ -937,7 +937,7 @@ struct VideoReceiverParameters : MediaChannelParameters {};
 
 class VideoMediaSendChannelInterface : public MediaSendChannelInterface {
  public:
-  virtual bool SetSendParameters(const VideoSenderParameters& params) = 0;
+  virtual bool SetSenderParameters(const VideoSenderParameters& params) = 0;
   // Starts or stops transmission (and potentially capture) of local video.
   virtual bool SetSend(bool send) = 0;
   // Configure stream for sending and register a source.
@@ -969,9 +969,9 @@ class VideoMediaSendChannelInterface : public MediaSendChannelInterface {
 
 class VideoMediaReceiveChannelInterface : public MediaReceiveChannelInterface {
  public:
-  virtual bool SetRecvParameters(const VideoReceiverParameters& params) = 0;
+  virtual bool SetReceiverParameters(const VideoReceiverParameters& params) = 0;
   // Get the receive parameters for the incoming stream identified by `ssrc`.
-  virtual webrtc::RtpParameters GetRtpReceiveParameters(
+  virtual webrtc::RtpParameters GetRtpReceiverParameters(
       uint32_t ssrc) const = 0;
   // Starts or stops decoding of remote video.
   virtual void SetReceive(bool receive) = 0;
