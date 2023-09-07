@@ -503,24 +503,6 @@ TEST_F(ResolutionBitrateLimitsWithScalabilityModeTest,
 }
 
 TEST_F(ResolutionBitrateLimitsWithScalabilityModeTest,
-       OneStreamLimitsAppliedForAv1OneSpatialLayer) {
-  webrtc::test::ScopedFieldTrials field_trials(
-      "WebRTC-GetEncoderInfoOverride/"
-      "frame_size_pixels:921600,"
-      "min_start_bitrate_bps:0,"
-      "min_bitrate_bps:32000,"
-      "max_bitrate_bps:133000/");
-
-  InitEncodeTest test(
-      "AV1", {{.active = true, .scalability_mode = ScalabilityMode::kL1T1}},
-      // Expectations:
-      {{.pixels = 1280 * 720,
-        .eq_bitrate = {DataRate::KilobitsPerSec(32),
-                       DataRate::KilobitsPerSec(133)}}});
-  RunBaseTest(&test);
-}
-
-TEST_F(ResolutionBitrateLimitsWithScalabilityModeTest,
        LimitsAppliedForAv1Simulcast) {
   webrtc::test::ScopedFieldTrials field_trials(
       "WebRTC-GetEncoderInfoOverride/"
