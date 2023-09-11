@@ -118,10 +118,21 @@ bool SetAv1SvcConfig(VideoCodec& video_codec,
     spatial_layer.active = true;
   }
 
+  if (info.num_spatial_layers == 1) {
+    SpatialLayer& spatial_layer = video_codec.spatialLayers[0];
+    spatial_layer.minBitrate = video_codec.minBitrate;
+    spatial_layer.maxBitrate = video_codec.maxBitrate;
+    spatial_layer.targetBitrate =
+        (video_codec.minBitrate + video_codec.maxBitrate) / 2;
+    return true;
+  }
+
   for (int sl_idx = 0; sl_idx < info.num_spatial_layers; ++sl_idx) {
     SpatialLayer& spatial_layer = video_codec.spatialLayers[sl_idx];
+    // minBitrate and maxBitrate formulas are copied from vp9 settings and
+    // are not yet tuned for av1.
     const int num_pixels = spatial_layer.width * spatial_layer.height;
-    int min_bitrate_kbps = (480.0 * std::sqrt(num_pixels) - 95'000.0) / 1000.0;
+    int min_bitrate_kbps = (600.0 * std::sqrt(num_pixels) - 95'000.0) / 1000.0;
     spatial_layer.minBitrate = std::max(min_bitrate_kbps, 20);
     spatial_layer.maxBitrate = 50 + static_cast<int>(1.6 * num_pixels / 1000.0);
     spatial_layer.targetBitrate =
