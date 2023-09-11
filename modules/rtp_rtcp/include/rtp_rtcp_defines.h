@@ -422,7 +422,7 @@ class SendSideDelayObserver {
 class SendPacketObserver {
  public:
   virtual ~SendPacketObserver() = default;
-  virtual void OnSendPacket(uint16_t packet_id,
+  virtual void OnSendPacket(absl::optional<uint16_t> packet_id,
                             Timestamp capture_time,
                             uint32_t ssrc) = 0;
 };
