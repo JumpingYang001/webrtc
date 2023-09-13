@@ -211,16 +211,6 @@ bool FakeVideoSendStream::GetH264Settings(
   return true;
 }
 
-bool FakeVideoSendStream::GetAv1Settings(
-    webrtc::VideoCodecAV1* settings) const {
-  if (!codec_settings_set_) {
-    return false;
-  }
-
-  *settings = codec_specific_settings_.av1;
-  return true;
-}
-
 int FakeVideoSendStream::GetNumberOfSwappedFrames() const {
   return num_swapped_frames_;
 }
@@ -325,9 +315,6 @@ void FakeVideoSendStream::ReconfigureVideoEncoder(
     } else if (config_.rtp.payload_name == "H264") {
       codec_specific_settings_.h264.numberOfTemporalLayers =
           num_temporal_layers;
-    } else if (config_.rtp.payload_name == "AV1") {
-      config.encoder_specific_settings->FillVideoCodecAv1(
-          &codec_specific_settings_.av1);
     } else {
       ADD_FAILURE() << "Unsupported encoder payload: "
                     << config_.rtp.payload_name;
