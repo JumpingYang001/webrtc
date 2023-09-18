@@ -79,9 +79,6 @@ class NetworkControllerInterface {
   // Called when a packet is sent on the network.
   ABSL_MUST_USE_RESULT virtual NetworkControlUpdate OnSentPacket(
       SentPacket) = 0;
-  // Called when a packet is received from the remote client.
-  ABSL_MUST_USE_RESULT virtual NetworkControlUpdate OnReceivedPacket(
-      ReceivedPacket) = 0;
   // Called when the stream specific configuration has been updated.
   ABSL_MUST_USE_RESULT virtual NetworkControlUpdate OnStreamsConfig(
       StreamsConfig) = 0;

@@ -96,7 +96,6 @@ class RtpTransportControllerSend final
   absl::optional<Timestamp> GetFirstPacketTime() const override;
   void EnablePeriodicAlrProbing(bool enable) override;
   void OnSentPacket(const rtc::SentPacket& sent_packet) override;
-  void OnReceivedPacket(const ReceivedPacket& packet_msg) override;
 
   void SetSdpBitrateParameters(const BitrateConstraints& constraints) override;
   void SetClientBitratePreferences(const BitrateSettings& preferences) override;

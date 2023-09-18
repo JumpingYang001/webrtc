@@ -40,10 +40,6 @@ class MockNetworkControllerInterface : public NetworkControllerInterface {
               (override));
   MOCK_METHOD(NetworkControlUpdate, OnSentPacket, (SentPacket), (override));
   MOCK_METHOD(NetworkControlUpdate,
-              OnReceivedPacket,
-              (ReceivedPacket),
-              (override));
-  MOCK_METHOD(NetworkControlUpdate,
               OnStreamsConfig,
               (StreamsConfig),
               (override));

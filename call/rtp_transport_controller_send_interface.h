@@ -32,7 +32,6 @@
 #include "modules/rtp_rtcp/include/rtcp_statistics.h"
 #include "modules/rtp_rtcp/include/rtp_packet_sender.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
-#include "modules/rtp_rtcp/source/rtp_packet_received.h"
 
 namespace rtc {
 struct SentPacket;
@@ -138,8 +137,6 @@ class RtpTransportControllerSendInterface {
   // (some tests don't adhere to this). Implementations today should not block
   // the calling thread or make assumptions about the thread context.
   virtual void OnSentPacket(const rtc::SentPacket& sent_packet) = 0;
-
-  virtual void OnReceivedPacket(const ReceivedPacket& received_packet) = 0;
 
   virtual void SetSdpBitrateParameters(
       const BitrateConstraints& constraints) = 0;

@@ -240,7 +240,7 @@ NetworkControlUpdate GoogCcNetworkController::OnProcessInterval(
                                       probes.begin(), probes.end());
 
   if (rate_control_settings_.UseCongestionWindow() &&
-      last_packet_received_time_.IsFinite() && !feedback_max_rtts_.empty()) {
+      !feedback_max_rtts_.empty()) {
     UpdateCongestionWindowSize();
   }
   if (congestion_window_pushback_controller_ && current_data_window_) {
@@ -302,12 +302,6 @@ NetworkControlUpdate GoogCcNetworkController::OnSentPacket(
   } else {
     return NetworkControlUpdate();
   }
-}
-
-NetworkControlUpdate GoogCcNetworkController::OnReceivedPacket(
-    ReceivedPacket received_packet) {
-  last_packet_received_time_ = received_packet.receive_time;
-  return NetworkControlUpdate();
 }
 
 NetworkControlUpdate GoogCcNetworkController::OnStreamsConfig(

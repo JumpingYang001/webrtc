@@ -377,11 +377,6 @@ NetworkControlUpdate PccNetworkController::OnStreamsConfig(StreamsConfig msg) {
   return NetworkControlUpdate();
 }
 
-NetworkControlUpdate PccNetworkController::OnReceivedPacket(
-    ReceivedPacket msg) {
-  return NetworkControlUpdate();
-}
-
 NetworkControlUpdate PccNetworkController::OnNetworkStateEstimate(
     NetworkStateEstimate msg) {
   return NetworkControlUpdate();
