@@ -255,6 +255,13 @@ absl::optional<uint8_t> VideoDecoderWrapper::ParseQP(
       qp = h264_bitstream_parser_.GetLastSliceQp();
       break;
     }
+#ifdef RTC_ENABLE_H265
+    case kVideoCodecH265:
+      h265_bitstream_parser_.ParseBitstream(buffer);
+      qp = h265_bitstream_parser_.GetLastSliceQp().value_or(-1);
+      success = (qp >= 0);
+      break;
+#endif
     default:
       break;  // Default is to not provide QP.
   }

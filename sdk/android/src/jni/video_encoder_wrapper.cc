@@ -227,6 +227,8 @@ VideoEncoderWrapper::GetScalingSettingsInternal(JNIEnv* jni) const {
       return VideoEncoder::ScalingSettings(kLowVp9QpThreshold,
                                            kHighVp9QpThreshold);
     }
+    case kVideoCodecH265:
+    // TODO(bugs.webrtc.org/13485): Use H264 QP thresholds for now.
     case kVideoCodecH264: {
       // Same as in h264_encoder_impl.cc.
       static const int kLowH264QpThreshold = 24;
@@ -355,6 +357,13 @@ int VideoEncoderWrapper::ParseQp(rtc::ArrayView<const uint8_t> buffer) {
       qp = h264_bitstream_parser_.GetLastSliceQp().value_or(-1);
       success = (qp >= 0);
       break;
+#ifdef RTC_ENABLE_H265
+    case kVideoCodecH265:
+      h265_bitstream_parser_.ParseBitstream(buffer);
+      qp = h265_bitstream_parser_.GetLastSliceQp().value_or(-1);
+      success = (qp >= 0);
+      break;
+#endif
     default:  // Default is to not provide QP.
       success = false;
       break;
