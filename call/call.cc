@@ -1460,6 +1460,7 @@ void Call::NotifyBweOfReceivedPacket(const RtpPacketReceived& packet,
   if (packet.GetExtension<AbsoluteSendTime>(&time_24)) {
     packet_msg.send_time = AbsoluteSendTime::ToTimestamp(time_24);
   }
+  transport_send_->OnReceivedPacket(packet_msg);
 
   receive_side_cc_.OnReceivedPacket(packet, media_type);
 }

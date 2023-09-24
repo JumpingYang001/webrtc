@@ -122,6 +122,10 @@ NetworkControlUpdate NetworkControleUpdateCache::OnRoundTripTimeUpdate(
 NetworkControlUpdate NetworkControleUpdateCache::OnSentPacket(SentPacket msg) {
   return Update(controller_->OnSentPacket(msg));
 }
+NetworkControlUpdate NetworkControleUpdateCache::OnReceivedPacket(
+    ReceivedPacket msg) {
+  return Update(controller_->OnReceivedPacket(msg));
+}
 NetworkControlUpdate NetworkControleUpdateCache::OnStreamsConfig(
     StreamsConfig msg) {
   return Update(controller_->OnStreamsConfig(msg));

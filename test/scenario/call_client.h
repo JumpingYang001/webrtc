@@ -47,6 +47,7 @@ class NetworkControleUpdateCache : public NetworkControllerInterface {
   NetworkControlUpdate OnRemoteBitrateReport(RemoteBitrateReport msg) override;
   NetworkControlUpdate OnRoundTripTimeUpdate(RoundTripTimeUpdate msg) override;
   NetworkControlUpdate OnSentPacket(SentPacket msg) override;
+  NetworkControlUpdate OnReceivedPacket(ReceivedPacket msg) override;
   NetworkControlUpdate OnStreamsConfig(StreamsConfig msg) override;
   NetworkControlUpdate OnTargetRateConstraints(
       TargetRateConstraints msg) override;

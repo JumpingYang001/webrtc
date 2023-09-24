@@ -98,6 +98,7 @@ class MockRtpTransportControllerSend
   MOCK_METHOD(void, OnTransportOverheadChanged, (size_t), (override));
   MOCK_METHOD(void, AccountForAudioPacketsInPacedSender, (bool), (override));
   MOCK_METHOD(void, IncludeOverheadInPacedSender, (), (override));
+  MOCK_METHOD(void, OnReceivedPacket, (const ReceivedPacket&), (override));
   MOCK_METHOD(void, EnsureStarted, (), (override));
 };
 }  // namespace webrtc
