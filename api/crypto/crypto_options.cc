@@ -23,13 +23,6 @@ CryptoOptions::CryptoOptions(const CryptoOptions& other) {
 
 CryptoOptions::~CryptoOptions() {}
 
-// static
-CryptoOptions CryptoOptions::NoGcm() {
-  CryptoOptions options;
-  options.srtp.enable_gcm_crypto_suites = false;
-  return options;
-}
-
 std::vector<int> CryptoOptions::GetSupportedDtlsSrtpCryptoSuites() const {
   std::vector<int> crypto_suites;
   // Note: kSrtpAes128CmSha1_80 is what is required to be supported (by

@@ -25,11 +25,6 @@ struct RTC_EXPORT CryptoOptions {
   CryptoOptions(const CryptoOptions& other);
   ~CryptoOptions();
 
-  // Helper method to return an instance of the CryptoOptions with GCM crypto
-  // suites disabled. This method should be used instead of depending on current
-  // default values set by the constructor.
-  static CryptoOptions NoGcm();
-
   // Returns a list of the supported DTLS-SRTP Crypto suites based on this set
   // of crypto options.
   std::vector<int> GetSupportedDtlsSrtpCryptoSuites() const;
@@ -41,7 +36,7 @@ struct RTC_EXPORT CryptoOptions {
   struct Srtp {
     // Enable GCM crypto suites from RFC 7714 for SRTP. GCM will only be used
     // if both sides enable it.
-    bool enable_gcm_crypto_suites = false;
+    bool enable_gcm_crypto_suites = true;
 
     // If set to true, the (potentially insecure) crypto cipher
     // kSrtpAes128CmSha1_32 will be included in the list of supported ciphers
