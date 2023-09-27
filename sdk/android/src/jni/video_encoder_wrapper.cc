@@ -305,7 +305,7 @@ void VideoEncoderWrapper::OnEncodedFrame(
   // CopyOnWriteBuffer.
   EncodedImage frame_copy = frame;
 
-  frame_copy.SetTimestamp(frame_extra_info.timestamp_rtp);
+  frame_copy.SetRtpTimestamp(frame_extra_info.timestamp_rtp);
   frame_copy.capture_time_ms_ = capture_time_ns / rtc::kNumNanosecsPerMillisec;
 
   if (frame_copy.qp_ < 0)
