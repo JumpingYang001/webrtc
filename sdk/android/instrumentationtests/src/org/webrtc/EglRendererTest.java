@@ -103,6 +103,7 @@ public class EglRendererTest {
   final TestFrameListener testFrameListener = new TestFrameListener();
 
   EglRenderer eglRenderer;
+  EglThread eglThread;
   CountDownLatch surfaceReadyLatch = new CountDownLatch(1);
   int oesTextureId;
   SurfaceTexture surfaceTexture;
@@ -113,8 +114,10 @@ public class EglRendererTest {
                                          .builder(InstrumentationRegistry.getTargetContext())
                                          .setNativeLibraryName(TestConstants.NATIVE_LIBRARY)
                                          .createInitializationOptions());
+    eglThread =
+        EglThread.create(null /* releaseMonitor */, null /* sharedContext */, EglBase.CONFIG_RGBA);
     eglRenderer = new EglRenderer("TestRenderer: ");
-    eglRenderer.init(null /* sharedContext */, EglBase.CONFIG_RGBA, new GlRectDrawer());
+    eglRenderer.init(eglThread, new GlRectDrawer(), false /* usePresentationTimeStamp */);
     oesTextureId = GlUtil.generateTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
     surfaceTexture = new SurfaceTexture(oesTextureId);
     surfaceTexture.setDefaultBufferSize(1 /* width */, 1 /* height */);
@@ -244,6 +247,12 @@ public class EglRendererTest {
     }
   }
 
+  private void drainRenderThread() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    eglThread.getHandler().post(() -> latch.countDown());
+    latch.await();
+  }
+
   /** Tells eglRenderer to render test frame with given index. */
   private void feedFrame(int i) {
     final VideoFrame.I420Buffer buffer = JavaI420Buffer.wrap(TEST_FRAME_WIDTH, TEST_FRAME_HEIGHT,
@@ -348,6 +357,22 @@ public class EglRendererTest {
         testFrameListener, 1f /* scaleFactor */, null, true /* applyFpsReduction */);
     feedFrame(1);
     assertFalse(testFrameListener.waitForBitmap(RENDER_WAIT_MS));
+  }
+
+  @Test
+  @SmallTest
+  public void testRecreateSurface() throws Exception {
+    // Make sure the EGLSurface has been created.
+    drainRenderThread();
+
+    // Relase the surface and wait for completion.
+    CountDownLatch latch = new CountDownLatch(1);
+    eglRenderer.releaseEglSurface(() -> latch.countDown());
+    latch.await();
+
+    // Recreate the surface.
+    eglRenderer.createEglSurface(surfaceTexture);
+    drainRenderThread();
   }
 
   private static ByteBuffer[][] copyTestDataToDirectByteBuffers(byte[][][] testData) {

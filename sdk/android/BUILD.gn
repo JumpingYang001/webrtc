@@ -1476,7 +1476,7 @@ if (is_android) {
       apk_name = "android_instrumentation_test_apk"
       android_manifest = "instrumentationtests/AndroidManifest.xml"
       min_sdk_version = 21
-      target_sdk_version = 21
+      target_sdk_version = 23
 
       sources = [
         "instrumentationtests/src/org/webrtc/AndroidVideoDecoderInstrumentationTest.java",
