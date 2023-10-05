@@ -1154,7 +1154,8 @@ TEST_F(AudioDeviceTest, DISABLED_MeasureLoopbackLatency) {
   latency_audio_stream->PrintResults();
 }
 
-TEST(JavaAudioDeviceTest, TestRunningTwoAdmsSimultaneously) {
+// TODO(https://crbug.com/webrtc/15537): test randomly fails.
+TEST(JavaAudioDeviceTest, DISABLED_TestRunningTwoAdmsSimultaneously) {
   JNIEnv* jni = AttachCurrentThreadIfNeeded();
   ScopedJavaLocalRef<jobject> context = GetAppContext(jni);
 
