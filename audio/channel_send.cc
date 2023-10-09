@@ -411,8 +411,10 @@ ChannelSend::ChannelSend(
 
   configuration.event_log = event_log_;
   configuration.rtt_stats = rtcp_rtt_stats;
-  configuration.retransmission_rate_limiter =
-      retransmission_rate_limiter_.get();
+  if (!field_trials.IsEnabled("WebRTC-DisableRtxRateLimiter")) {
+    configuration.retransmission_rate_limiter =
+        retransmission_rate_limiter_.get();
+  }
   configuration.extmap_allow_mixed = extmap_allow_mixed;
   configuration.rtcp_report_interval_ms = rtcp_report_interval_ms;
   configuration.rtcp_packet_type_counter_observer = this;
