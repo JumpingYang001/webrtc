@@ -1236,7 +1236,6 @@ if (!build_with_chromium) {
   }
 
   rtc_library("test_flags") {
-    visibility = [ "*" ]
     testonly = true
     sources = [
       "test_flags.cc",
