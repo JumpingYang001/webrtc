@@ -268,10 +268,12 @@
       'ios', 'debug_bot', 'arm64', 'ios_code_signing_identity_description',
       'xctest'
     ],
+    # TODO(bugs.webrtc.org/15524): Remove 'optimize_for_size' once the bug
+    # has been resolved.
     'ios_internal_pure_release_bot_arm64': [
       'ios', 'pure_release_bot', 'arm64',
       'ios_code_signing_identity_description', 'xctest',
-      'rtc_objc_test_prefix',
+      'rtc_objc_test_prefix', 'optimize_for_size',
     ],
     'ios_internal_release_bot_arm64': [
       'ios', 'release_bot', 'arm64', 'ios_code_signing_identity_description',
@@ -447,6 +449,9 @@
     },
     'optimize_for_fuzzing': {
       'gn_args': 'optimize_for_fuzzing=true',
+    },
+    'optimize_for_size': {
+      'gn_args': 'optimize_for_size=true',
     },
     'partial_code_coverage_instrumentation': {
       'gn_args':
