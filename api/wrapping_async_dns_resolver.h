@@ -33,10 +33,9 @@
 
 namespace webrtc {
 
-class [[deprecated("Use AsyncDnsResolver directly")]] WrappingAsyncDnsResolver;
+class WrappingAsyncDnsResolver;
 
-class [[deprecated(
-    "Use AsyncDnsResolver directly")]] RTC_EXPORT WrappingAsyncDnsResolverResult
+class RTC_EXPORT WrappingAsyncDnsResolverResult
     : public AsyncDnsResolverResult {
  public:
   explicit WrappingAsyncDnsResolverResult(WrappingAsyncDnsResolver* owner)
@@ -55,8 +54,6 @@ class [[deprecated(
 class RTC_EXPORT WrappingAsyncDnsResolver : public AsyncDnsResolverInterface,
                                             public sigslot::has_slots<> {
  public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   explicit WrappingAsyncDnsResolver(rtc::AsyncResolverInterface* wrapped)
       : wrapped_(absl::WrapUnique(wrapped)), result_(this) {}
 
@@ -127,7 +124,6 @@ class RTC_EXPORT WrappingAsyncDnsResolver : public AsyncDnsResolverInterface,
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::kNotStarted;
   WrappingAsyncDnsResolverResult result_ RTC_GUARDED_BY(sequence_checker_);
   bool within_resolve_result_ RTC_GUARDED_BY(sequence_checker_) = false;
-#pragma clang diagnostic pop
 };
 
 }  // namespace webrtc

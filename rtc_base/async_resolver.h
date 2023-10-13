@@ -39,12 +39,7 @@ namespace rtc {
 // happen from the same rtc::Thread, except for Destroy which is allowed to
 // happen on another context provided it's not happening concurrently to another
 // public API call, and is the last access to the object.
-// TODO(bugs.webrtc.org/12598): Deprecate and remove
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstrict-aliasing"
-class [[deprecated("Use AsyncDnsResolver")]] RTC_EXPORT AsyncResolver
-    : public AsyncResolverInterface {
-#pragma clang diagnostic pop
+class RTC_EXPORT AsyncResolver : public AsyncResolverInterface {
  public:
   AsyncResolver();
   ~AsyncResolver() override;

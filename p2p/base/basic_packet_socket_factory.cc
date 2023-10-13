@@ -18,7 +18,6 @@
 #include "api/async_dns_resolver.h"
 #include "api/wrapping_async_dns_resolver.h"
 #include "p2p/base/async_stun_tcp_socket.h"
-#include "rtc_base/async_dns_resolver.h"
 #include "rtc_base/async_tcp_socket.h"
 #include "rtc_base/async_udp_socket.h"
 #include "rtc_base/checks.h"
@@ -185,10 +184,14 @@ AsyncResolverInterface* BasicPacketSocketFactory::CreateAsyncResolver() {
   return new AsyncResolver();
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 std::unique_ptr<webrtc::AsyncDnsResolverInterface>
 BasicPacketSocketFactory::CreateAsyncDnsResolver() {
-  return std::make_unique<webrtc::AsyncDnsResolver>();
+  return std::make_unique<webrtc::WrappingAsyncDnsResolver>(
+      new AsyncResolver());
 }
+#pragma clang diagnostic pop
 
 int BasicPacketSocketFactory::BindSocket(Socket* socket,
                                          const SocketAddress& local_address,
