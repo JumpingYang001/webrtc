@@ -10,6 +10,7 @@
 
 #include "modules/rtp_rtcp/source/rtp_video_stream_receiver_frame_transformer_delegate.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -75,6 +76,10 @@ class TransformableVideoReceiverFrame
   }
 
   Direction GetDirection() const override { return Direction::kReceiver; }
+  std::string GetMimeType() const override {
+    std::string mime_type = "video/";
+    return mime_type + CodecTypeToPayloadString(frame_->codec_type());
+  }
 
   const RtpVideoFrameReceiver* Receiver() { return receiver_; }
 
