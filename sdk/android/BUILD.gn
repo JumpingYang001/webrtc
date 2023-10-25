@@ -221,6 +221,7 @@ if (is_android) {
       "api/org/webrtc/GlTextureFrameBuffer.java",
       "api/org/webrtc/GlUtil.java",
       "api/org/webrtc/JavaI420Buffer.java",
+      "api/org/webrtc/RenderSynchronizer.java",
       "api/org/webrtc/RendererCommon.java",
       "api/org/webrtc/SurfaceTextureHelper.java",
       "api/org/webrtc/TextureBufferImpl.java",
