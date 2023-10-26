@@ -411,7 +411,7 @@ ChannelSend::ChannelSend(
 
   configuration.event_log = event_log_;
   configuration.rtt_stats = rtcp_rtt_stats;
-  if (!field_trials.IsEnabled("WebRTC-DisableRtxRateLimiter")) {
+  if (field_trials.IsDisabled("WebRTC-DisableRtxRateLimiter")) {
     configuration.retransmission_rate_limiter =
         retransmission_rate_limiter_.get();
   }
