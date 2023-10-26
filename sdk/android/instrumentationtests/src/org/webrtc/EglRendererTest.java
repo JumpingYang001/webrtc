@@ -26,12 +26,18 @@ import androidx.test.filters.SmallTest;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 // EmptyActivity is needed for the surface.
+@RunWith(Parameterized.class)
 public class EglRendererTest {
   private final static String TAG = "EglRendererTest";
   private final static int RENDER_WAIT_MS = 1000;
@@ -100,6 +106,9 @@ public class EglRendererTest {
     }
   }
 
+  @Parameter(0)
+  public boolean useRenderSynchronizer;
+
   final TestFrameListener testFrameListener = new TestFrameListener();
 
   EglRenderer eglRenderer;
@@ -108,14 +117,24 @@ public class EglRendererTest {
   int oesTextureId;
   SurfaceTexture surfaceTexture;
 
+  @Parameters
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[] {true}, new Object[] {false});
+  }
+
   @Before
   public void setUp() throws Exception {
     PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions
                                          .builder(InstrumentationRegistry.getTargetContext())
                                          .setNativeLibraryName(TestConstants.NATIVE_LIBRARY)
                                          .createInitializationOptions());
+    RenderSynchronizer renderSynchronizer = useRenderSynchronizer ? new RenderSynchronizer() : null;
     eglThread =
-        EglThread.create(null /* releaseMonitor */, null /* sharedContext */, EglBase.CONFIG_RGBA);
+        EglThread.create(
+            null /* releaseMonitor */,
+            null /* sharedContext */,
+            EglBase.CONFIG_RGBA,
+            renderSynchronizer);
     eglRenderer = new EglRenderer("TestRenderer: ");
     eglRenderer.init(eglThread, new GlRectDrawer(), false /* usePresentationTimeStamp */);
     oesTextureId = GlUtil.generateTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
