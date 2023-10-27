@@ -1720,6 +1720,7 @@ if (is_android) {
       "tests/src/org/webrtc/HardwareVideoEncoderTest.java",
       "tests/src/org/webrtc/IceCandidateTest.java",
       "tests/src/org/webrtc/RefCountDelegateTest.java",
+      "tests/src/org/webrtc/RenderSynchronizerTest.java",
       "tests/src/org/webrtc/ScalingSettingsTest.java",
       "tests/src/org/webrtc/audio/LowLatencyAudioBufferManagerTest.java",
     ]
