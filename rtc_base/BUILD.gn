@@ -369,6 +369,7 @@ rtc_source_set("refcount") {
   ]
   deps = [
     ":macromagic",
+    "../api:ref_count",
     "../api:scoped_refptr",
   ]
 }
