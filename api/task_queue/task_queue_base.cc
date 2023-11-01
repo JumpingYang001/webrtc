@@ -14,6 +14,7 @@
 #include "absl/functional/any_invocable.h"
 #include "api/units/time_delta.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/voucher.h"
 
 #if defined(ABSL_HAVE_THREAD_LOCAL)
 
@@ -26,6 +27,23 @@ ABSL_CONST_INIT thread_local TaskQueueBase* current = nullptr;
 
 TaskQueueBase* TaskQueueBase::Current() {
   return current;
+}
+
+void TaskQueueBase::PostTask(absl::AnyInvocable<void() &&> task,
+                             const Location& location) {
+  PostTaskInternal(std::move(task), PostTaskTraits{}, location);
+}
+
+void TaskQueueBase::PostTaskInternal(absl::AnyInvocable<void() &&> task,
+                                     const PostTaskTraits& traits,
+                                     const Location& location) {
+  auto current = Voucher::Current();
+  PostTaskImpl(
+      [task = std::move(task), current = std::move(current)]() mutable {
+        Voucher::ScopedSetter setter(std::move(current));
+        std::move(task)();
+      },
+      traits, location);
 }
 
 TaskQueueBase::CurrentTaskQueueSetter::CurrentTaskQueueSetter(

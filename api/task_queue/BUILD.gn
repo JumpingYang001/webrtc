@@ -20,6 +20,7 @@ rtc_library("task_queue") {
     "..:location",
     "../../rtc_base:checks",
     "../../rtc_base:macromagic",
+    "../../rtc_base:voucher",
     "../../rtc_base/system:rtc_export",
     "../units:time_delta",
   ]

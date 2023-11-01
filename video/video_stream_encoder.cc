@@ -49,7 +49,9 @@
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
+#include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
+#include "rtc_base/voucher.h"
 #include "system_wrappers/include/metrics.h"
 #include "video/adaptation/video_stream_encoder_resource_manager.h"
 #include "video/alignment_adjuster.h"
@@ -82,6 +84,35 @@ const int64_t kParameterUpdateIntervalMs = 1000;
 constexpr int kMaxAnimationPixels = 1280 * 720;
 
 constexpr int kDefaultMinScreenSharebps = 1200000;
+
+// This voucher attachment measures the time from a passed capture reference
+// time to the time when the voucher is destroyed.
+class CaptureProcessingDurationMeasurement : public Voucher::Attachment {
+ public:
+  static void AttachToCurrentVoucher(Timestamp capture_reference_time) {
+    static const Voucher::Attachment::Id kCaptureToEncodeAttachmentId =
+        Voucher::Attachment::GetNextId();
+    auto voucher = Voucher::CurrentOrCreateForCurrentTask();
+    voucher->SetAttachment(
+        kCaptureToEncodeAttachmentId,
+        std::make_unique<CaptureProcessingDurationMeasurement>(
+            capture_reference_time));
+  }
+  explicit CaptureProcessingDurationMeasurement(
+      Timestamp capture_reference_time)
+      : capture_reference_time_(capture_reference_time) {}
+  ~CaptureProcessingDurationMeasurement() override {
+    auto duration =
+        Clock::GetRealTimeClock()->CurrentTime() - capture_reference_time_;
+    TRACE_EVENT1("webrtc", "CaptureProcessingDurationMeasurement", "duration",
+                 duration.us());
+    RTC_HISTOGRAM_COUNTS_1000("WebRTC.Video.CaptureToSendTimeMs",
+                              duration.ms());
+  }
+
+ private:
+  const Timestamp capture_reference_time_;
+};
 
 int GetNumSpatialLayers(const VideoCodec& codec) {
   if (codec.codecType == kVideoCodecVP9) {
@@ -2033,6 +2064,9 @@ void VideoStreamEncoder::EncodeVideoFrame(const VideoFrame& video_frame,
                out_frame.timestamp());
 
   frame_encode_metadata_writer_.OnEncodeStarted(out_frame);
+
+  CaptureProcessingDurationMeasurement::AttachToCurrentVoucher(
+      out_frame.reference_time().value_or(clock_->CurrentTime()));
 
   const int32_t encode_status = encoder_->Encode(out_frame, &next_frame_types_);
   was_encode_called_since_last_initialization_ = true;
