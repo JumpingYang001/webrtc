@@ -14,21 +14,14 @@
 #include <utility>
 
 #include "absl/memory/memory.h"
-#include "api/video_codecs/video_decoder_factory.h"
-#include "api/video_codecs/video_encoder_factory.h"
-#include "media/base/media_engine.h"
-#include "modules/audio_device/include/audio_device.h"
-#include "modules/utility/include/jvm_android.h"
-// We don't depend on the audio processing module implementation.
-// The user may pass in a nullptr.
-#include "api/call/call_factory_interface.h"
+#include "api/enable_media.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/task_queue/default_task_queue_factory.h"
 #include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_encoder_factory.h"
-#include "media/engine/webrtc_media_engine.h"
 #include "modules/audio_device/include/audio_device.h"
 #include "modules/audio_processing/include/audio_processing.h"
+#include "modules/utility/include/jvm_android.h"
 #include "rtc_base/event_tracer.h"
 #include "rtc_base/physical_socket_server.h"
 #include "rtc_base/thread.h"
@@ -276,7 +269,6 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
   dependencies.worker_thread = worker_thread.get();
   dependencies.signaling_thread = signaling_thread.get();
   dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
-  dependencies.call_factory = CreateCallFactory();
   dependencies.event_log_factory = std::make_unique<RtcEventLogFactory>(
       dependencies.task_queue_factory.get());
   dependencies.fec_controller_factory = std::move(fec_controller_factory);
@@ -290,18 +282,15 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
         std::make_unique<AndroidNetworkMonitorFactory>();
   }
 
-  cricket::MediaEngineDependencies media_dependencies;
-  media_dependencies.task_queue_factory = dependencies.task_queue_factory.get();
-  media_dependencies.adm = std::move(audio_device_module);
-  media_dependencies.audio_encoder_factory = std::move(audio_encoder_factory);
-  media_dependencies.audio_decoder_factory = std::move(audio_decoder_factory);
-  media_dependencies.audio_processing = std::move(audio_processor);
-  media_dependencies.video_encoder_factory =
+  dependencies.adm = std::move(audio_device_module);
+  dependencies.audio_encoder_factory = std::move(audio_encoder_factory);
+  dependencies.audio_decoder_factory = std::move(audio_decoder_factory);
+  dependencies.audio_processing = std::move(audio_processor);
+  dependencies.video_encoder_factory =
       absl::WrapUnique(CreateVideoEncoderFactory(jni, jencoder_factory));
-  media_dependencies.video_decoder_factory =
+  dependencies.video_decoder_factory =
       absl::WrapUnique(CreateVideoDecoderFactory(jni, jdecoder_factory));
-  dependencies.media_engine =
-      cricket::CreateMediaEngine(std::move(media_dependencies));
+  EnableMedia(dependencies);
 
   rtc::scoped_refptr<PeerConnectionFactoryInterface> factory =
       CreateModularPeerConnectionFactory(std::move(dependencies));
