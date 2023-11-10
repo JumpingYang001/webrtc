@@ -32,7 +32,7 @@ class RTC_EXPORT Voucher {
 
   // Vouchers aggregate attachments, which are application-specific attachments
   // that have logic unrelated to the mechanics of Voucher progression.
-  class RTC_EXPORT Attachment {
+  class Attachment {
    public:
     using Id = size_t;
 
@@ -45,7 +45,7 @@ class RTC_EXPORT Voucher {
 
   // Scoped setter that saves the current voucher on stack and instates a new
   // one, until the scope exits.
-  class RTC_EXPORT ScopedSetter {
+  class ScopedSetter {
    public:
     explicit ScopedSetter(Ptr voucher);
     ~ScopedSetter();
