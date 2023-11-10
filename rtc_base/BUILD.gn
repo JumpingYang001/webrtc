@@ -1453,21 +1453,6 @@ rtc_library("crc32") {
   absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
 }
 
-rtc_library("voucher") {
-  sources = [
-    "voucher.cc",
-    "voucher.h",
-  ]
-  deps = [
-    ":macromagic",
-    ":refcount",
-    "../api:make_ref_counted",
-    "synchronization:mutex",
-    "system:rtc_export",
-  ]
-  absl_deps = [ "//third_party/abseil-cpp/absl/container:inlined_vector" ]
-}
-
 rtc_library("stream") {
   visibility = [ "*" ]
   sources = [

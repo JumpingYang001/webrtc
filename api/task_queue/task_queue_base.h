@@ -64,7 +64,9 @@ class RTC_LOCKABLE RTC_EXPORT TaskQueueBase {
   //
   // May be called on any thread or task queue, including this task queue.
   void PostTask(absl::AnyInvocable<void() &&> task,
-                const Location& location = Location::Current());
+                const Location& location = Location::Current()) {
+    PostTaskImpl(std::move(task), PostTaskTraits{}, location);
+  }
 
   // Prefer PostDelayedTask() over PostDelayedHighPrecisionTask() whenever
   // possible.
@@ -185,11 +187,6 @@ class RTC_LOCKABLE RTC_EXPORT TaskQueueBase {
   // Users of the TaskQueue should call Delete instead of directly deleting
   // this object.
   virtual ~TaskQueueBase() = default;
-
- private:
-  void PostTaskInternal(absl::AnyInvocable<void() &&> task,
-                        const PostTaskTraits& traits,
-                        const Location& location);
 };
 
 struct TaskQueueDeleter {
