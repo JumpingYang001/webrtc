@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "absl/memory/memory.h"
+#include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/socket.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
@@ -96,11 +97,10 @@ class AsyncStunTCPSocketTest : public ::testing::Test,
   }
 
   void OnReadPacket(rtc::AsyncPacketSocket* socket,
-                    const char* data,
-                    size_t len,
-                    const rtc::SocketAddress& remote_addr,
-                    const int64_t& /* packet_time_us */) {
-    recv_packets_.push_back(std::string(data, len));
+                    const rtc::ReceivedPacket& packet) {
+    recv_packets_.push_back(
+        std::string(reinterpret_cast<const char*>(packet.payload().data()),
+                    packet.payload().size()));
   }
 
   void OnSentPacket(rtc::AsyncPacketSocket* socket,
@@ -111,8 +111,10 @@ class AsyncStunTCPSocketTest : public ::testing::Test,
   void OnNewConnection(rtc::AsyncListenSocket* /*server*/,
                        rtc::AsyncPacketSocket* new_socket) {
     recv_socket_ = absl::WrapUnique(new_socket);
-    new_socket->SignalReadPacket.connect(this,
-                                         &AsyncStunTCPSocketTest::OnReadPacket);
+    new_socket->RegisterReceivedPacketCallback(
+        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+          OnReadPacket(socket, packet);
+        });
   }
 
   bool Send(const void* data, size_t len) {
