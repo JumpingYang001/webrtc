@@ -474,7 +474,8 @@ std::string Call::Stats::ToString(int64_t time_ms) const {
 }
 
 std::unique_ptr<Call> Call::Create(const CallConfig& config) {
-  Clock* clock = Clock::GetRealTimeClock();
+  Clock* clock =
+      config.env.has_value() ? &config.env->clock() : Clock::GetRealTimeClock();
   return Create(config, clock,
                 RtpTransportControllerSendFactory().Create(
                     config.ExtractTransportConfig(), clock));
