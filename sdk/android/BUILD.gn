@@ -109,6 +109,7 @@ if (is_android) {
     visibility = [ "*" ]
     allow_poison = [
       "audio_codecs",  # TODO(bugs.webrtc.org/8396): Remove.
+      "environment_construction",
       "software_video_codecs",  # TODO(bugs.webrtc.org/7925): Remove.
     ]
     public_deps = [  # no-presubmit-check TODO(webrtc:8603)
@@ -826,7 +827,6 @@ if (current_os == "linux" || is_android) {
       ":generated_metrics_jni",
       ":native_api_jni",
       ":peerconnection_jni",
-      "../../pc:peerconnection",
       "../../rtc_base:stringutils",
       "../../system_wrappers:metrics",
     ]
