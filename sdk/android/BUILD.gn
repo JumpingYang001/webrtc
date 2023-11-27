@@ -822,11 +822,13 @@ if (current_os == "linux" || is_android) {
   rtc_library("libjingle_peerconnection_metrics_default_jni") {
     visibility = [ "*" ]
     sources = [ "src/jni/android_metrics.cc" ]
+    allow_poison = [ "environment_construction" ]
     deps = [
       ":base_jni",
       ":generated_metrics_jni",
       ":native_api_jni",
       ":peerconnection_jni",
+      "../../pc:peerconnection",
       "../../rtc_base:stringutils",
       "../../system_wrappers:metrics",
     ]
