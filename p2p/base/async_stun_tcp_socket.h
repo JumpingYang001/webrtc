@@ -37,7 +37,7 @@ class AsyncStunTCPSocket : public rtc::AsyncTCPSocketBase {
   int Send(const void* pv,
            size_t cb,
            const rtc::PacketOptions& options) override;
-  size_t ProcessInput(rtc::ArrayView<const uint8_t> data) override;
+  void ProcessInput(char* data, size_t* len) override;
 
  private:
   // This method returns the message hdr + length written in the header.

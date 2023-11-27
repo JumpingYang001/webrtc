@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "api/array_view.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/socket.h"
@@ -39,8 +38,7 @@ class AsyncTCPSocketBase : public AsyncPacketSocket {
   int Send(const void* pv,
            size_t cb,
            const rtc::PacketOptions& options) override = 0;
-  // Must return the number of bytes processed.
-  virtual size_t ProcessInput(rtc::ArrayView<const uint8_t> data) = 0;
+  virtual void ProcessInput(char* data, size_t* len) = 0;
 
   SocketAddress GetLocalAddress() const override;
   SocketAddress GetRemoteAddress() const override;
@@ -102,7 +100,7 @@ class AsyncTCPSocket : public AsyncTCPSocketBase {
   int Send(const void* pv,
            size_t cb,
            const rtc::PacketOptions& options) override;
-  size_t ProcessInput(rtc::ArrayView<const uint8_t>) override;
+  void ProcessInput(char* data, size_t* len) override;
 };
 
 class AsyncTcpListenSocket : public AsyncListenSocket {
