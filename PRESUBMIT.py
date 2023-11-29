@@ -59,12 +59,15 @@ PYLINT_OLD_STYLE = [
 # - build/c++11         : Rvalue ref checks are unreliable (false positives),
 #                         include file and feature blocklists are
 #                         google3-specific.
+# - readability/todo    : WebRTC puts bug links, not usernames, in TODOs.
+#                         The new TODO style also doesn't match with this check.
 # - runtime/references  : Mutable references are not banned by the Google
 #                         C++ style guide anymore (starting from May 2020).
 # - whitespace/operators: Same as above (doesn't seem sufficient to eliminate
 #                         all move-related errors).
 DISABLED_LINT_FILTERS = [
     '-build/c++11',
+    '-readability/todo',
     '-runtime/references',
     '-whitespace/operators',
 ]
