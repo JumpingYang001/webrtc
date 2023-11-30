@@ -12,6 +12,9 @@ syntax = "proto3";
 
 package webrtc.test_metrics;
 
+option java_multiple_files = true;
+option java_package = "org.webrtc.api.test.metrics.proto";
+
 // Root message of the proto file. Contains collection of all the metrics.
 message MetricsSet {
   repeated Metric metrics = 1;
