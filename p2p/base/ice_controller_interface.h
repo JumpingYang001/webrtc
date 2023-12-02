@@ -101,7 +101,7 @@ class IceControllerInterface {
   virtual void OnConnectionDestroyed(const Connection* connection) = 0;
 
   // These are all connections that has been added and not destroyed.
-  virtual rtc::ArrayView<const Connection*> connections() const = 0;
+  virtual rtc::ArrayView<const Connection* const> connections() const = 0;
 
   // Is there a pingable connection ?
   // This function is used to boot-strap pinging, after this returns true
