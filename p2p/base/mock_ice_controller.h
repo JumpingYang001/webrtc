@@ -35,7 +35,7 @@ class MockIceController : public cricket::IceControllerInterface {
               OnConnectionDestroyed,
               (const cricket::Connection*),
               (override));
-  MOCK_METHOD(rtc::ArrayView<const cricket::Connection* const>,
+  MOCK_METHOD(rtc::ArrayView<const cricket::Connection*>,
               connections,
               (),
               (const, override));
