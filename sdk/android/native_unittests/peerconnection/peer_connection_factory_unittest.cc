@@ -50,8 +50,7 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> CreateTestPCF(
   pcf_deps.worker_thread = worker_thread;
   pcf_deps.signaling_thread = signaling_thread;
   pcf_deps.task_queue_factory = CreateDefaultTaskQueueFactory();
-  pcf_deps.event_log_factory =
-      std::make_unique<RtcEventLogFactory>(pcf_deps.task_queue_factory.get());
+  pcf_deps.event_log_factory = std::make_unique<RtcEventLogFactory>();
 
   pcf_deps.adm = CreateJavaAudioDeviceModule(jni, GetAppContext(jni).obj());
   pcf_deps.video_encoder_factory =
