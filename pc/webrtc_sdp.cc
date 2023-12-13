@@ -1839,7 +1839,7 @@ bool IsFmtpParam(absl::string_view name) {
   return name != kCodecParamPTime && name != kCodecParamMaxPTime;
 }
 
-bool WriteFmtpParameters(const cricket::CodecParameterMap& parameters,
+bool WriteFmtpParameters(const webrtc::CodecParameterMap& parameters,
                          rtc::StringBuilder* os) {
   bool empty = true;
   const char* delimiter = "";  // No delimiter before first parameter.
@@ -1902,7 +1902,7 @@ bool GetMinValue(const std::vector<int>& values, int* value) {
 }
 
 bool GetParameter(const std::string& name,
-                  const cricket::CodecParameterMap& params,
+                  const webrtc::CodecParameterMap& params,
                   int* value) {
   std::map<std::string, std::string>::const_iterator found = params.find(name);
   if (found == params.end()) {
@@ -2876,7 +2876,7 @@ bool ParseMediaDescription(
   return true;
 }
 
-void AddParameters(const cricket::CodecParameterMap& parameters,
+void AddParameters(const webrtc::CodecParameterMap& parameters,
                    cricket::Codec* codec) {
   for (const auto& entry : parameters) {
     const std::string& key = entry.first;
@@ -2939,7 +2939,7 @@ void AddOrReplaceCodec(MediaContentDescription* content_desc,
 // to `parameters`.
 void UpdateCodec(MediaContentDescription* content_desc,
                  int payload_type,
-                 const cricket::CodecParameterMap& parameters) {
+                 const webrtc::CodecParameterMap& parameters) {
   // Codec might already have been populated (from rtpmap).
   cricket::Codec new_codec = GetCodecWithPayloadType(
       content_desc->type(), content_desc->codecs(), payload_type);
@@ -3762,7 +3762,7 @@ bool ParseFmtpAttributes(absl::string_view line,
   }
 
   // Parse out format specific parameters.
-  cricket::CodecParameterMap codec_params;
+  webrtc::CodecParameterMap codec_params;
   for (absl::string_view param :
        rtc::split(line_params, kSdpDelimiterSemicolonChar)) {
     std::string name;
