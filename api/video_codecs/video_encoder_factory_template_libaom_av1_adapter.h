@@ -24,7 +24,8 @@ struct LibaomAv1EncoderTemplateAdapter {
   static std::vector<SdpVideoFormat> SupportedFormats() {
     absl::InlinedVector<ScalabilityMode, kScalabilityModeCount>
         scalability_modes = LibaomAv1EncoderSupportedScalabilityModes();
-    return {SdpVideoFormat("AV1", CodecParameterMap(), scalability_modes)};
+    return {
+        SdpVideoFormat("AV1", SdpVideoFormat::Parameters(), scalability_modes)};
   }
 
   static std::unique_ptr<VideoEncoder> CreateEncoder(

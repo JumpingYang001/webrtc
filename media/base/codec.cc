@@ -28,8 +28,7 @@
 namespace cricket {
 namespace {
 
-std::string GetH264PacketizationModeOrDefault(
-    const webrtc::CodecParameterMap& params) {
+std::string GetH264PacketizationModeOrDefault(const CodecParameterMap& params) {
   auto it = params.find(kH264FmtpPacketizationMode);
   if (it != params.end()) {
     return it->second;
@@ -39,14 +38,14 @@ std::string GetH264PacketizationModeOrDefault(
   return "0";
 }
 
-bool IsSameH264PacketizationMode(const webrtc::CodecParameterMap& left,
-                                 const webrtc::CodecParameterMap& right) {
+bool IsSameH264PacketizationMode(const CodecParameterMap& left,
+                                 const CodecParameterMap& right) {
   return GetH264PacketizationModeOrDefault(left) ==
          GetH264PacketizationModeOrDefault(right);
 }
 
 #ifdef RTC_ENABLE_H265
-std::string GetH265TxModeOrDefault(const webrtc::CodecParameterMap& params) {
+std::string GetH265TxModeOrDefault(const CodecParameterMap& params) {
   auto it = params.find(kH265FmtpTxMode);
   if (it != params.end()) {
     return it->second;
@@ -56,8 +55,8 @@ std::string GetH265TxModeOrDefault(const webrtc::CodecParameterMap& params) {
   return "SRST";
 }
 
-bool IsSameH265TxMode(const webrtc::CodecParameterMap& left,
-                      const webrtc::CodecParameterMap& right) {
+bool IsSameH265TxMode(const CodecParameterMap& left,
+                      const CodecParameterMap& right) {
   return absl::EqualsIgnoreCase(GetH265TxModeOrDefault(left),
                                 GetH265TxModeOrDefault(right));
 }
@@ -66,9 +65,9 @@ bool IsSameH265TxMode(const webrtc::CodecParameterMap& left,
 // Some (video) codecs are actually families of codecs and rely on parameters
 // to distinguish different incompatible family members.
 bool IsSameCodecSpecific(const std::string& name1,
-                         const webrtc::CodecParameterMap& params1,
+                         const CodecParameterMap& params1,
                          const std::string& name2,
-                         const webrtc::CodecParameterMap& params2) {
+                         const CodecParameterMap& params2) {
   // The names might not necessarily match, so check both.
   auto either_name_matches = [&](const std::string name) {
     return absl::EqualsIgnoreCase(name, name1) ||
@@ -250,7 +249,7 @@ bool Codec::MatchesRtpCodec(const webrtc::RtpCodec& codec_capability) const {
 }
 
 bool Codec::GetParam(const std::string& name, std::string* out) const {
-  webrtc::CodecParameterMap::const_iterator iter = params.find(name);
+  CodecParameterMap::const_iterator iter = params.find(name);
   if (iter == params.end())
     return false;
   *out = iter->second;
@@ -258,7 +257,7 @@ bool Codec::GetParam(const std::string& name, std::string* out) const {
 }
 
 bool Codec::GetParam(const std::string& name, int* out) const {
-  webrtc::CodecParameterMap::const_iterator iter = params.find(name);
+  CodecParameterMap::const_iterator iter = params.find(name);
   if (iter == params.end())
     return false;
   return rtc::FromString(iter->second, out);

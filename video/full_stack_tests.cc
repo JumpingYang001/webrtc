@@ -135,7 +135,7 @@ TEST(FullStackTest, Generator_Net_Delay_0_0_Plr_0_VP9Profile2) {
     return;
   auto fixture = CreateVideoQualityTestFixture();
 
-  CodecParameterMap vp92 = {
+  SdpVideoFormat::Parameters vp92 = {
       {kVP9FmtpProfileId, VP9ProfileToString(VP9Profile::kProfile2)}};
   ParamsWithLogging generator;
   generator.call.send_side_bwe = true;

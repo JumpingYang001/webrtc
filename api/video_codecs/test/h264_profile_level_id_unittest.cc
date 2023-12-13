@@ -145,7 +145,7 @@ TEST(H264ProfileLevelId, TestToStringInvalid) {
 
 TEST(H264ProfileLevelId, TestParseSdpProfileLevelIdEmpty) {
   const absl::optional<H264ProfileLevelId> profile_level_id =
-      ParseSdpForH264ProfileLevelId(CodecParameterMap());
+      ParseSdpForH264ProfileLevelId(SdpVideoFormat::Parameters());
   EXPECT_TRUE(profile_level_id);
   EXPECT_EQ(H264Profile::kProfileConstrainedBaseline,
             profile_level_id->profile);
@@ -153,7 +153,7 @@ TEST(H264ProfileLevelId, TestParseSdpProfileLevelIdEmpty) {
 }
 
 TEST(H264ProfileLevelId, TestParseSdpProfileLevelIdConstrainedHigh) {
-  CodecParameterMap params;
+  SdpVideoFormat::Parameters params;
   params["profile-level-id"] = "640c2a";
   const absl::optional<H264ProfileLevelId> profile_level_id =
       ParseSdpForH264ProfileLevelId(params);
@@ -163,7 +163,7 @@ TEST(H264ProfileLevelId, TestParseSdpProfileLevelIdConstrainedHigh) {
 }
 
 TEST(H264ProfileLevelId, TestParseSdpProfileLevelIdInvalid) {
-  CodecParameterMap params;
+  SdpVideoFormat::Parameters params;
   params["profile-level-id"] = "foobar";
   EXPECT_FALSE(ParseSdpForH264ProfileLevelId(params));
 }
