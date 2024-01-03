@@ -51,9 +51,10 @@ std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
 
   if (kDav1dIsIncluded) {
     formats.push_back(SdpVideoFormat(cricket::kAv1CodecName));
-    formats.push_back(SdpVideoFormat(
-        cricket::kAv1CodecName,
-        {{kAV1FmtpProfile, AV1ProfileToString(AV1Profile::kProfile1).data()}}));
+    formats.push_back(
+        SdpVideoFormat(cricket::kAv1CodecName,
+                       {{cricket::kAv1FmtpProfile,
+                         AV1ProfileToString(AV1Profile::kProfile1).data()}}));
   }
 
   return formats;
