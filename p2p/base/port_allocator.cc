@@ -62,6 +62,7 @@ PortAllocatorSession::PortAllocatorSession(absl::string_view content_name,
                                            int component,
                                            absl::string_view ice_ufrag,
                                            absl::string_view ice_pwd,
+                                           uint64_t ice_tiebreaker,
                                            uint32_t flags)
     : flags_(flags),
       generation_(0),
@@ -69,7 +70,7 @@ PortAllocatorSession::PortAllocatorSession(absl::string_view content_name,
       component_(component),
       ice_ufrag_(ice_ufrag),
       ice_pwd_(ice_pwd),
-      tiebreaker_(0) {
+      ice_tiebreaker_(ice_tiebreaker) {
   // Pooled sessions are allowed to be created with empty content name,
   // component, ufrag and password.
   RTC_DCHECK(ice_ufrag.empty() == ice_pwd.empty());
@@ -101,7 +102,7 @@ PortAllocator::PortAllocator()
       step_delay_(kDefaultStepDelay),
       allow_tcp_listen_(true),
       candidate_filter_(CF_ALL),
-      tiebreaker_(0) {
+      tiebreaker_(rtc::CreateRandomId64()) {
   // The allocator will be attached to a thread in Initialize.
   thread_checker_.Detach();
 }
@@ -195,13 +196,6 @@ bool PortAllocator::SetConfiguration(
         std::unique_ptr<PortAllocatorSession>(pooled_session));
   }
   return true;
-}
-
-void PortAllocator::SetIceTiebreaker(uint64_t tiebreaker) {
-  tiebreaker_ = tiebreaker;
-  for (auto& pooled_session : pooled_sessions_) {
-    pooled_session->set_ice_tiebreaker(tiebreaker_);
-  }
 }
 
 std::unique_ptr<PortAllocatorSession> PortAllocator::CreateSession(

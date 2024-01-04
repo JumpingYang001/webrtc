@@ -243,7 +243,7 @@ PortAllocatorSession* BasicPortAllocator::CreateSessionInternal(
   CheckRunOnValidThreadAndInitialized();
   return new BasicPortAllocatorSession(this, std::string(content_name),
                                        component, std::string(ice_ufrag),
-                                       std::string(ice_pwd));
+                                       std::string(ice_pwd), ice_tiebreaker());
 }
 
 void BasicPortAllocator::AddTurnServerForTesting(
@@ -261,11 +261,13 @@ BasicPortAllocatorSession::BasicPortAllocatorSession(
     absl::string_view content_name,
     int component,
     absl::string_view ice_ufrag,
-    absl::string_view ice_pwd)
+    absl::string_view ice_pwd,
+    uint64_t ice_tiebreaker)
     : PortAllocatorSession(content_name,
                            component,
                            ice_ufrag,
                            ice_pwd,
+                           ice_tiebreaker,
                            allocator->flags()),
       allocator_(allocator),
       network_thread_(rtc::Thread::Current()),
@@ -280,6 +282,19 @@ BasicPortAllocatorSession::BasicPortAllocatorSession(
       this, &BasicPortAllocatorSession::OnNetworksChanged);
   allocator_->network_manager()->StartUpdating();
 }
+
+BasicPortAllocatorSession::BasicPortAllocatorSession(
+    BasicPortAllocator* allocator,
+    absl::string_view content_name,
+    int component,
+    absl::string_view ice_ufrag,
+    absl::string_view ice_pwd)
+    : BasicPortAllocatorSession(allocator,
+                                content_name,
+                                component,
+                                ice_ufrag,
+                                ice_pwd,
+                                0) {}
 
 BasicPortAllocatorSession::~BasicPortAllocatorSession() {
   TRACE_EVENT0("webrtc",

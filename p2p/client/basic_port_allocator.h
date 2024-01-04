@@ -120,6 +120,13 @@ class RTC_EXPORT BasicPortAllocatorSession : public PortAllocatorSession {
                             absl::string_view content_name,
                             int component,
                             absl::string_view ice_ufrag,
+                            absl::string_view ice_pwd,
+                            uint64_t ice_tiebreaker);
+  // TODO(bugs.webrtc.org/14605): remove this constructor
+  BasicPortAllocatorSession(BasicPortAllocator* allocator,
+                            absl::string_view content_name,
+                            int component,
+                            absl::string_view ice_ufrag,
                             absl::string_view ice_pwd);
   ~BasicPortAllocatorSession() override;
 
