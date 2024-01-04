@@ -15,7 +15,6 @@
 
 #include "absl/base/attributes.h"
 #include "api/field_trials_view.h"
-#include "api/metronome/metronome.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
 #include "api/video/video_frame.h"
@@ -82,8 +81,6 @@ class FrameCadenceAdapterInterface
   static std::unique_ptr<FrameCadenceAdapterInterface> Create(
       Clock* clock,
       TaskQueueBase* queue,
-      Metronome* metronome,
-      TaskQueueBase* worker_queue,
       const FieldTrialsView& field_trials);
 
   // Call before using the rest of the API.

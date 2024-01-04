@@ -18,7 +18,6 @@
 
 #include "api/fec_controller.h"
 #include "api/field_trials_view.h"
-#include "api/metronome/metronome.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "call/bitrate_allocator.h"
@@ -63,7 +62,6 @@ class VideoSendStream : public webrtc::VideoSendStream {
       TaskQueueBase* network_queue,
       RtcpRttStats* call_stats,
       RtpTransportControllerSendInterface* transport,
-      Metronome* metronome,
       BitrateAllocatorInterface* bitrate_allocator,
       SendDelayStats* send_delay_stats,
       RtcEventLog* event_log,

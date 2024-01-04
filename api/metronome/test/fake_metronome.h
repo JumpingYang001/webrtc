@@ -55,14 +55,12 @@ class FakeMetronome : public Metronome {
  public:
   explicit FakeMetronome(TimeDelta tick_period);
 
-  void SetTickPeriod(TimeDelta tick_period);
-
   // Metronome implementation.
   void RequestCallOnNextTick(absl::AnyInvocable<void() &&> callback) override;
   TimeDelta TickPeriod() const override;
 
  private:
-  TimeDelta tick_period_;
+  const TimeDelta tick_period_;
   std::vector<absl::AnyInvocable<void() &&>> callbacks_;
 };
 
