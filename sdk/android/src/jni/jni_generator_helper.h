@@ -90,7 +90,7 @@ using webrtc::ScopedJavaLocalRef;
 }  // namespace android
 }  // namespace base
 
-namespace jni_generator {
+namespace jni_zero {
 inline void CheckException(JNIEnv* env) {
   CHECK_EXCEPTION(env);
 }
@@ -156,7 +156,7 @@ struct BASE_EXPORT JniJavaCallContextChecked {
     base.pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
   }
 
-  ~JniJavaCallContextChecked() { jni_generator::CheckException(base.env1); }
+  ~JniJavaCallContextChecked() { jni_zero::CheckException(base.env1); }
 
   JniJavaCallContextUnchecked base;
 };
@@ -164,6 +164,14 @@ struct BASE_EXPORT JniJavaCallContextChecked {
 static_assert(sizeof(JniJavaCallContextChecked) ==
                   sizeof(JniJavaCallContextUnchecked),
               "Stack unwinder cannot work with structs of different sizes.");
+}  // namespace jni_zero
+
+// Re-export helpers in the old jni_generator namespace.
+// TODO(b/319078685): Remove once all uses of the jni_generator has been
+// updated.
+namespace jni_generator {
+using jni_zero::JniJavaCallContextChecked;
+using jni_zero::JniJavaCallContextUnchecked;
 }  // namespace jni_generator
 
 #endif  // SDK_ANDROID_SRC_JNI_JNI_GENERATOR_HELPER_H_
