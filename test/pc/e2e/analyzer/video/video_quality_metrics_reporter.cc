@@ -63,9 +63,7 @@ void VideoQualityMetricsReporter::OnStatsReports(
   }
   RTC_DCHECK_EQ(transport_stats.size(), 1);
   std::string selected_ice_id =
-      transport_stats[0]
-          ->GetAttribute(transport_stats[0]->selected_candidate_pair_id)
-          .ToString();
+      transport_stats[0]->selected_candidate_pair_id.ValueToString();
   // Use the selected ICE candidate pair ID to get the appropriate ICE stats.
   const RTCIceCandidatePairStats ice_candidate_pair_stats =
       report->Get(selected_ice_id)->cast_to<const RTCIceCandidatePairStats>();
