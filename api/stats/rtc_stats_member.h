@@ -65,13 +65,6 @@ class RTCStatsMemberInterface {
   bool operator!=(const RTCStatsMemberInterface& other) const {
     return !(*this == other);
   }
-  virtual std::string ValueToString() const = 0;
-  // This is the same as ValueToString except for kInt64 and kUint64 types,
-  // where the value is represented as a double instead of as an integer.
-  // Since JSON stores numbers as floating point numbers, very large integers
-  // cannot be accurately represented, so we prefer to display them as doubles
-  // instead.
-  virtual std::string ValueToJson() const = 0;
 
   virtual const RTCStatsMemberInterface* member_ptr() const { return this; }
   template <typename T>
@@ -98,8 +91,6 @@ class RTCStatsMember : public RTCStatsMemberInterface {
   bool is_sequence() const override;
   bool is_string() const override;
   bool is_defined() const override { return value_.has_value(); }
-  std::string ValueToString() const override;
-  std::string ValueToJson() const override;
 
   template <typename U>
   inline T value_or(U default_value) const {
@@ -170,10 +161,6 @@ typedef std::map<std::string, double> MapStringDouble;
   RTC_EXPORT bool RTCStatsMember<T>::is_sequence() const;                   \
   template <>                                                               \
   RTC_EXPORT bool RTCStatsMember<T>::is_string() const;                     \
-  template <>                                                               \
-  RTC_EXPORT std::string RTCStatsMember<T>::ValueToString() const;          \
-  template <>                                                               \
-  RTC_EXPORT std::string RTCStatsMember<T>::ValueToJson() const;            \
   extern template class RTC_EXPORT_TEMPLATE_DECLARE(RTC_EXPORT)             \
       RTCStatsMember<T>
 
