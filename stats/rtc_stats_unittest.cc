@@ -44,22 +44,19 @@ class RTCChildStats : public RTCStats {
   WEBRTC_RTCSTATS_DECL();
 
   RTCChildStats(const std::string& id, Timestamp timestamp)
-      : RTCStats(id, timestamp) {}
+      : RTCStats(id, timestamp), child_int("childInt") {}
 
   RTCStatsMember<int32_t> child_int;
 };
 
-WEBRTC_RTCSTATS_IMPL(RTCChildStats,
-                     RTCStats,
-                     "child-stats",
-                     AttributeInit("childInt", &child_int))
+WEBRTC_RTCSTATS_IMPL(RTCChildStats, RTCStats, "child-stats", &child_int)
 
 class RTCGrandChildStats : public RTCChildStats {
  public:
   WEBRTC_RTCSTATS_DECL();
 
   RTCGrandChildStats(const std::string& id, Timestamp timestamp)
-      : RTCChildStats(id, timestamp) {}
+      : RTCChildStats(id, timestamp), grandchild_int("grandchildInt") {}
 
   RTCStatsMember<int32_t> grandchild_int;
 };
@@ -67,7 +64,7 @@ class RTCGrandChildStats : public RTCChildStats {
 WEBRTC_RTCSTATS_IMPL(RTCGrandChildStats,
                      RTCChildStats,
                      "grandchild-stats",
-                     AttributeInit("grandchildInt", &grandchild_int))
+                     &grandchild_int)
 
 TEST(RTCStatsTest, RTCStatsAndAttributes) {
   RTCTestStats stats("testId", Timestamp::Micros(42));
