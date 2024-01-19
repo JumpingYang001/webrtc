@@ -296,9 +296,12 @@ RtpVideoStreamReceiver2::RtpVideoStreamReceiver2(
       frames_decryptable_(false),
       absolute_capture_time_interpolator_(clock) {
   packet_sequence_checker_.Detach();
-  constexpr bool remb_candidate = true;
-  if (packet_router_)
-    packet_router_->AddReceiveRtpModule(rtp_rtcp_.get(), remb_candidate);
+  if (packet_router_) {
+    // Do not register as REMB candidate, this is only done when starting to
+    // receive.
+    packet_router_->AddReceiveRtpModule(rtp_rtcp_.get(),
+                                        /*remb_candidate=*/false);
+  }
 
   RTC_DCHECK(config_.rtp.rtcp_mode != RtcpMode::kOff)
       << "A stream should not be configured with RTCP disabled. This value is "
@@ -1251,11 +1254,23 @@ void RtpVideoStreamReceiver2::SignalNetworkState(NetworkState state) {
 
 void RtpVideoStreamReceiver2::StartReceive() {
   RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
+  if (!receiving_ && packet_router_) {
+    // Change REMB candidate egibility.
+    packet_router_->RemoveReceiveRtpModule(rtp_rtcp_.get());
+    packet_router_->AddReceiveRtpModule(rtp_rtcp_.get(),
+                                        /*remb_candidate=*/true);
+  }
   receiving_ = true;
 }
 
 void RtpVideoStreamReceiver2::StopReceive() {
   RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
+  if (receiving_ && packet_router_) {
+    // Change REMB candidate egibility.
+    packet_router_->RemoveReceiveRtpModule(rtp_rtcp_.get());
+    packet_router_->AddReceiveRtpModule(rtp_rtcp_.get(),
+                                        /*remb_candidate=*/false);
+  }
   receiving_ = false;
 }
 
