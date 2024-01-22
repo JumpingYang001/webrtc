@@ -1068,6 +1068,8 @@ def CommonChecks(input_api, output_api):
         CheckNewlineAtTheEndOfProtoFiles(
             input_api, output_api, source_file_filter=non_third_party_sources))
     results.extend(
+        CheckLFNewline(input_api, output_api, non_third_party_sources))
+    results.extend(
         CheckNoStreamUsageIsAdded(input_api, output_api,
                                   non_third_party_sources))
     results.extend(
@@ -1321,6 +1323,20 @@ def CheckNewlineAtTheEndOfProtoFiles(input_api, output_api,
                     output_api.PresubmitError(error_msg.format(file_path)))
     return results
 
+
+def CheckLFNewline(input_api, output_api, source_file_filter):
+    """Checks that all files have LF newlines."""
+    error_msg = 'File {} must use LF newlines.'
+    results = []
+    file_filter = lambda x: input_api.FilterSourceFile(
+        x, files_to_check=(r'.+', )) and source_file_filter(x)
+    for f in input_api.AffectedSourceFiles(file_filter):
+        file_path = f.LocalPath()
+        with open(file_path, 'rb') as f:
+            if b'\r\n' in f.read():
+                results.append(
+                    output_api.PresubmitError(error_msg.format(file_path)))
+    return results
 
 def _ExtractAddRulesFromParsedDeps(parsed_deps):
     """Extract the rules that add dependencies from a parsed DEPS file.
