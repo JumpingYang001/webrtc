@@ -80,7 +80,6 @@ rtc_library("audio_device_buffer") {
     "../../rtc_base:event_tracer",
     "../../rtc_base:logging",
     "../../rtc_base:macromagic",
-    "../../rtc_base:rtc_task_queue",
     "../../rtc_base:safe_conversions",
     "../../rtc_base:timestamp_aligner",
     "../../rtc_base:timeutils",
