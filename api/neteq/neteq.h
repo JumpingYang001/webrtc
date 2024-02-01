@@ -130,6 +130,7 @@ class NetEq {
     std::string ToString() const;
 
     int sample_rate_hz = 48000;  // Initial value. Will change with input data.
+    bool enable_post_decode_vad = false;
     size_t max_packets_in_buffer = 200;
     int max_delay_ms = 0;
     int min_delay_ms = 0;
@@ -276,6 +277,13 @@ class NetEq {
   // Returns statistics about the performed operations and internal state. These
   // statistics are never reset.
   virtual NetEqOperationsAndState GetOperationsAndState() const = 0;
+
+  // Enables post-decode VAD. When enabled, GetAudio() will return
+  // kOutputVADPassive when the signal contains no speech.
+  virtual void EnableVad() = 0;
+
+  // Disables post-decode VAD.
+  virtual void DisableVad() = 0;
 
   // Returns the RTP timestamp for the last sample delivered by GetAudio().
   // The return value will be empty if no valid timestamp is available.
