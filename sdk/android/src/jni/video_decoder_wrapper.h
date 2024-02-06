@@ -116,9 +116,16 @@ class VideoDecoderWrapper : public VideoDecoder {
 /* If the j_decoder is a wrapped native decoder, unwrap it. If it is not,
  * wrap it in a VideoDecoderWrapper.
  */
+// TODO: bugs.webrtc.org/15791 - delete variant without the webrtcEnvRef
+// parameter when unused.
 std::unique_ptr<VideoDecoder> JavaToNativeVideoDecoder(
     JNIEnv* jni,
     const JavaRef<jobject>& j_decoder);
+
+std::unique_ptr<VideoDecoder> JavaToNativeVideoDecoder(
+    JNIEnv* jni,
+    const JavaRef<jobject>& j_decoder,
+    jlong webrtcEnvRef);
 
 }  // namespace jni
 }  // namespace webrtc

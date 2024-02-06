@@ -663,6 +663,7 @@ if (current_os == "linux" || is_android) {
       "../../api:libjingle_peerconnection_api",
       "../../api:media_stream_interface",
       "../../api:sequence_checker",
+      "../../api/environment",
       "../../api/task_queue",
       "../../api/video:encoded_image",
       "../../api/video:render_resolution",
@@ -689,7 +690,10 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base/synchronization:mutex",
       "//third_party/libyuv",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
+    absl_deps = [
+      "//third_party/abseil-cpp/absl/memory",
+      "//third_party/abseil-cpp/absl/types:optional",
+    ]
   }
 
   # Sources here require -lEGL linker flag. It is separated from video_jni
@@ -908,6 +912,7 @@ if (current_os == "linux" || is_android) {
       ":libvpx_vp9_jni",
       ":native_api_jni",
       ":video_jni",
+      "../../api/environment",
       "../../api/video_codecs:builtin_video_decoder_factory",
       "../../api/video_codecs:builtin_video_encoder_factory",
       "../../api/video_codecs:video_codecs_api",

@@ -8,8 +8,12 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <memory>
+
+#include "api/environment/environment.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/video_decoder.h"
+#include "api/video_codecs/video_decoder_factory.h"
 #include "sdk/android/generated_swcodecs_jni/SoftwareVideoDecoderFactory_jni.h"
 #include "sdk/android/native_api/jni/java_types.h"
 #include "sdk/android/src/jni/jni_helpers.h"
@@ -37,6 +41,27 @@ static jlong JNI_SoftwareVideoDecoderFactory_CreateDecoder(
     return 0;
   }
   return webrtc::NativeToJavaPointer(decoder.release());
+}
+
+jboolean JNI_SoftwareVideoDecoderFactory_IsSupported(
+    JNIEnv* env,
+    jlong j_factory,
+    const JavaParamRef<jobject>& j_info) {
+  return VideoCodecInfoToSdpVideoFormat(env, j_info)
+      .IsCodecInList(reinterpret_cast<VideoDecoderFactory*>(j_factory)
+                         ->GetSupportedFormats());
+}
+
+jlong JNI_SoftwareVideoDecoderFactory_Create(
+    JNIEnv* env,
+    jlong j_factory,
+    jlong j_webrtc_env_ref,
+    const JavaParamRef<jobject>& j_info) {
+  return NativeToJavaPointer(
+      reinterpret_cast<VideoDecoderFactory*>(j_factory)
+          ->Create(*reinterpret_cast<const Environment*>(j_webrtc_env_ref),
+                   VideoCodecInfoToSdpVideoFormat(env, j_info))
+          .release());
 }
 
 static webrtc::ScopedJavaLocalRef<jobject>
