@@ -27,22 +27,6 @@ static jlong JNI_SoftwareVideoDecoderFactory_CreateFactory(JNIEnv* env) {
       CreateBuiltinVideoDecoderFactory().release());
 }
 
-static jlong JNI_SoftwareVideoDecoderFactory_CreateDecoder(
-    JNIEnv* env,
-    jlong j_factory,
-    const webrtc::JavaParamRef<jobject>& j_video_codec_info) {
-  auto* const native_factory =
-      reinterpret_cast<webrtc::VideoDecoderFactory*>(j_factory);
-  const auto video_format =
-      webrtc::jni::VideoCodecInfoToSdpVideoFormat(env, j_video_codec_info);
-
-  auto decoder = native_factory->CreateVideoDecoder(video_format);
-  if (decoder == nullptr) {
-    return 0;
-  }
-  return webrtc::NativeToJavaPointer(decoder.release());
-}
-
 jboolean JNI_SoftwareVideoDecoderFactory_IsSupported(
     JNIEnv* env,
     jlong j_factory,

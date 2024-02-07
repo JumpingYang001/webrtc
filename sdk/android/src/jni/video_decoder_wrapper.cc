@@ -271,20 +271,6 @@ absl::optional<uint8_t> VideoDecoderWrapper::ParseQP(
 
 std::unique_ptr<VideoDecoder> JavaToNativeVideoDecoder(
     JNIEnv* jni,
-    const JavaRef<jobject>& j_decoder) {
-  const jlong native_decoder =
-      Java_VideoDecoder_createNativeVideoDecoder(jni, j_decoder);
-  VideoDecoder* decoder;
-  if (native_decoder == 0) {
-    decoder = new VideoDecoderWrapper(jni, j_decoder);
-  } else {
-    decoder = reinterpret_cast<VideoDecoder*>(native_decoder);
-  }
-  return std::unique_ptr<VideoDecoder>(decoder);
-}
-
-std::unique_ptr<VideoDecoder> JavaToNativeVideoDecoder(
-    JNIEnv* jni,
     const JavaRef<jobject>& j_decoder,
     jlong webrtcEnvRef) {
   if (jlong native_decoder =
