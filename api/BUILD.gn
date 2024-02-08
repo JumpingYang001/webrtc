@@ -274,7 +274,6 @@ rtc_library("libjingle_peerconnection_api") {
   visibility = [ "*" ]
   cflags = []
   sources = [
-    "crypto_params.h",
     "data_channel_interface.cc",
     "data_channel_interface.h",
     "jsep.cc",
