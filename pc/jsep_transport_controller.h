@@ -507,7 +507,7 @@ class JsepTransportController : public sigslot::has_slots<> {
 
   cricket::IceConfig ice_config_;
   cricket::IceRole ice_role_ = cricket::ICEROLE_CONTROLLING;
-  uint64_t ice_tiebreaker_;
+  uint64_t ice_tiebreaker_ = rtc::CreateRandomId64();
   rtc::scoped_refptr<rtc::RTCCertificate> certificate_;
 
   BundleManager bundles_;
