@@ -67,11 +67,11 @@ std::vector<webrtc::RtpExtension> GetDefaultEnabledRtpHeaderExtensions(
 
 webrtc::RTCError CheckScalabilityModeValues(
     const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<cricket::Codec> send_codecs,
+    rtc::ArrayView<cricket::Codec> codec_preferences,
     absl::optional<cricket::Codec> send_codec) {
   using webrtc::RTCErrorType;
 
-  if (send_codecs.empty()) {
+  if (codec_preferences.empty()) {
     // This is an audio sender or an extra check in the stack where the codec
     // list is not available and we can't check the scalability_mode values.
     return webrtc::RTCError::OK();
@@ -80,7 +80,7 @@ webrtc::RTCError CheckScalabilityModeValues(
   for (size_t i = 0; i < rtp_parameters.encodings.size(); ++i) {
     if (rtp_parameters.encodings[i].codec) {
       bool codecFound = false;
-      for (const cricket::Codec& codec : send_codecs) {
+      for (const cricket::VideoCodec& codec : codec_preferences) {
         if (codec.MatchesRtpCodec(*rtp_parameters.encodings[i].codec)) {
           codecFound = true;
           send_codec = codec;
@@ -97,7 +97,7 @@ webrtc::RTCError CheckScalabilityModeValues(
     if (rtp_parameters.encodings[i].scalability_mode) {
       if (!send_codec) {
         bool scalabilityModeFound = false;
-        for (const cricket::Codec& codec : send_codecs) {
+        for (const cricket::VideoCodec& codec : codec_preferences) {
           for (const auto& scalability_mode : codec.scalability_modes) {
             if (ScalabilityModeToString(scalability_mode) ==
                 *rtp_parameters.encodings[i].scalability_mode) {
@@ -139,7 +139,7 @@ webrtc::RTCError CheckScalabilityModeValues(
 
 webrtc::RTCError CheckRtpParametersValues(
     const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<cricket::Codec> send_codecs,
+    rtc::ArrayView<cricket::Codec> codec_preferences,
     absl::optional<cricket::Codec> send_codec) {
   using webrtc::RTCErrorType;
 
@@ -196,7 +196,8 @@ webrtc::RTCError CheckRtpParametersValues(
     }
   }
 
-  return CheckScalabilityModeValues(rtp_parameters, send_codecs, send_codec);
+  return CheckScalabilityModeValues(rtp_parameters, codec_preferences,
+                                    send_codec);
 }
 
 webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
@@ -209,7 +210,7 @@ webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
 webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
     const webrtc::RtpParameters& old_rtp_parameters,
     const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<cricket::Codec> send_codecs,
+    rtc::ArrayView<cricket::Codec> codec_preferences,
     absl::optional<cricket::Codec> send_codec) {
   using webrtc::RTCErrorType;
   if (rtp_parameters.encodings.size() != old_rtp_parameters.encodings.size()) {
@@ -245,7 +246,8 @@ webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
                          "Attempted to set RtpParameters with modified SSRC");
   }
 
-  return CheckRtpParametersValues(rtp_parameters, send_codecs, send_codec);
+  return CheckRtpParametersValues(rtp_parameters, codec_preferences,
+                                  send_codec);
 }
 
 CompositeMediaEngine::CompositeMediaEngine(
