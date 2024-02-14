@@ -360,14 +360,8 @@ int SimulcastEncoderAdapter::InitEncode(
   bool separate_encoders_needed =
       !encoder_context->encoder().GetEncoderInfo().supports_simulcast ||
       active_streams_count == 1;
-  RTC_LOG(LS_INFO) << "[SEA] InitEncode: total_streams_count: "
-                   << total_streams_count_
-                   << ", active_streams_count: " << active_streams_count
-                   << ", separate_encoders_needed: "
-                   << (separate_encoders_needed ? "true" : "false");
   // Singlecast or simulcast with simulcast-capable underlaying encoder.
   if (total_streams_count_ == 1 || !separate_encoders_needed) {
-    RTC_LOG(LS_INFO) << "[SEA] InitEncode: Single-encoder mode";
     int ret = encoder_context->encoder().InitEncode(&codec_, settings);
     if (ret >= 0) {
       stream_contexts_.emplace_back(
@@ -383,8 +377,7 @@ int SimulcastEncoderAdapter::InitEncode(
 
     encoder_context->Release();
     if (total_streams_count_ == 1) {
-      RTC_LOG(LS_ERROR) << "[SEA] InitEncode: failed with error code: "
-                        << WebRtcVideoCodecErrorToString(ret);
+      // Failed to initialize singlecast encoder.
       return ret;
     }
   }
@@ -412,16 +405,10 @@ int SimulcastEncoderAdapter::InitEncode(
         /*is_lowest_quality_stream=*/stream_idx == lowest_quality_stream_idx,
         /*is_highest_quality_stream=*/stream_idx == highest_quality_stream_idx);
 
-    RTC_LOG(LS_INFO) << "[SEA] Multi-encoder mode: initializing stream: "
-                     << stream_idx << ", active: "
-                     << (codec_.simulcastStream[stream_idx].active ? "true"
-                                                                   : "false");
     int ret = encoder_context->encoder().InitEncode(&stream_codec, settings);
     if (ret < 0) {
       encoder_context.reset();
       Release();
-      RTC_LOG(LS_ERROR) << "[SEA] InitEncode: failed with error code: "
-                        << WebRtcVideoCodecErrorToString(ret);
       return ret;
     }
 
