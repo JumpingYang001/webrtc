@@ -11,9 +11,7 @@
 #ifndef MODULES_VIDEO_CODING_INCLUDE_VIDEO_ERROR_CODES_H_
 #define MODULES_VIDEO_CODING_INCLUDE_VIDEO_ERROR_CODES_H_
 
-// NOTE: in sync with video_coding_module_defines.h
-
-// Define return values
+#include <stdint.h>
 
 #define WEBRTC_VIDEO_CODEC_TARGET_BITRATE_OVERSHOOT 5
 #define WEBRTC_VIDEO_CODEC_OK_REQUEST_KEYFRAME 4
@@ -27,5 +25,11 @@
 #define WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE -13
 #define WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED -15
 #define WEBRTC_VIDEO_CODEC_ENCODER_FAILURE -16
+
+namespace webrtc {
+
+const char* WebRtcVideoCodecErrorToString(int32_t error_code);
+
+}  // namespace webrtc
 
 #endif  // MODULES_VIDEO_CODING_INCLUDE_VIDEO_ERROR_CODES_H_
