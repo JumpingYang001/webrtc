@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef MODULES_VIDEO_CODING_H26X_PACKET_BUFFER_H_
-#define MODULES_VIDEO_CODING_H26X_PACKET_BUFFER_H_
+#ifndef MODULES_VIDEO_CODING_H264_PACKET_BUFFER_H_
+#define MODULES_VIDEO_CODING_H264_PACKET_BUFFER_H_
 
 #include <array>
 #include <memory>
@@ -22,16 +22,15 @@
 
 namespace webrtc {
 
-class H26xPacketBuffer {
+class H264PacketBuffer {
  public:
-  // The H26xPacketBuffer does the same job as the PacketBuffer but for H264 and
-  // H265 only. To make it fit in with surronding code the PacketBuffer
-  // input/output classes are used.
+  // The H264PacketBuffer does the same job as the PacketBuffer but for H264
+  // only. To make it fit in with surronding code the PacketBuffer input/output
+  // classes are used.
   using Packet = video_coding::PacketBuffer::Packet;
   using InsertResult = video_coding::PacketBuffer::InsertResult;
 
-  // |h264_idr_only_keyframes_allowed| is ignored if H.265 is used.
-  explicit H26xPacketBuffer(bool h264_idr_only_keyframes_allowed);
+  explicit H264PacketBuffer(bool idr_only_keyframes_allowed);
 
   ABSL_MUST_USE_RESULT InsertResult
   InsertPacket(std::unique_ptr<Packet> packet);
@@ -46,7 +45,7 @@ class H26xPacketBuffer {
                           int64_t end_sequence_number_unwrapped,
                           std::vector<std::unique_ptr<Packet>>& packets);
 
-  const bool h264_idr_only_keyframes_allowed_;
+  const bool idr_only_keyframes_allowed_;
   std::array<std::unique_ptr<Packet>, kBufferSize> buffer_;
   absl::optional<int64_t> last_continuous_unwrapped_seq_num_;
   SeqNumUnwrapper<uint16_t> seq_num_unwrapper_;
@@ -54,4 +53,4 @@ class H26xPacketBuffer {
 
 }  // namespace webrtc
 
-#endif  // MODULES_VIDEO_CODING_H26X_PACKET_BUFFER_H_
+#endif  // MODULES_VIDEO_CODING_H264_PACKET_BUFFER_H_

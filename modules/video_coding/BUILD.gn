@@ -124,10 +124,10 @@ rtc_library("packet_buffer") {
   ]
 }
 
-rtc_library("h26x_packet_buffer") {
+rtc_library("h264_packet_buffer") {
   sources = [
-    "h26x_packet_buffer.cc",
-    "h26x_packet_buffer.h",
+    "h264_packet_buffer.cc",
+    "h264_packet_buffer.h",
   ]
   deps = [
     ":codec_globals_headers",
@@ -1167,9 +1167,9 @@ if (rtc_include_tests) {
       "frame_dependencies_calculator_unittest.cc",
       "frame_helpers_unittest.cc",
       "generic_decoder_unittest.cc",
+      "h264_packet_buffer_unittest.cc",
       "h264_sprop_parameter_sets_unittest.cc",
       "h264_sps_pps_tracker_unittest.cc",
-      "h26x_packet_buffer_unittest.cc",
       "histogram_unittest.cc",
       "loss_notification_controller_unittest.cc",
       "nack_requester_unittest.cc",
@@ -1204,7 +1204,7 @@ if (rtc_include_tests) {
       ":encoded_frame",
       ":frame_dependencies_calculator",
       ":frame_helpers",
-      ":h26x_packet_buffer",
+      ":h264_packet_buffer",
       ":nack_requester",
       ":packet_buffer",
       ":simulcast_test_fixture_impl",

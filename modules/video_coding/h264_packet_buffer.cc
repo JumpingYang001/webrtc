@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "modules/video_coding/h26x_packet_buffer.h"
+#include "modules/video_coding/h264_packet_buffer.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -27,13 +27,9 @@
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/sequence_number_util.h"
-#ifdef RTC_ENABLE_H265
-#include "common_video/h265/h265_common.h"
-#endif
 
 namespace webrtc {
 namespace {
-
 int64_t EuclideanMod(int64_t n, int64_t div) {
   RTC_DCHECK_GT(div, 0);
   return (n %= div) < 0 ? n + div : n;
@@ -52,7 +48,7 @@ bool IsFirstPacketOfFragment(const RTPVideoHeaderH264& h264_header) {
   return h264_header.nalus_length > 0;
 }
 
-bool BeginningOfIdr(const H26xPacketBuffer::Packet& packet) {
+bool BeginningOfIdr(const H264PacketBuffer::Packet& packet) {
   const auto& h264_header =
       absl::get<RTPVideoHeaderH264>(packet.video_header.video_type_header);
   const bool contains_idr_nalu =
@@ -70,7 +66,7 @@ bool BeginningOfIdr(const H26xPacketBuffer::Packet& packet) {
   }
 }
 
-bool HasSps(const H26xPacketBuffer::Packet& packet) {
+bool HasSps(const H264PacketBuffer::Packet& packet) {
   auto& h264_header =
       absl::get<RTPVideoHeaderH264>(packet.video_header.video_type_header);
   return absl::c_any_of(GetNaluInfos(h264_header), [](const auto& nalu_info) {
@@ -78,24 +74,10 @@ bool HasSps(const H26xPacketBuffer::Packet& packet) {
   });
 }
 
-#ifdef RTC_ENABLE_H265
-bool HasVps(const H26xPacketBuffer::Packet& packet) {
-  std::vector<H265::NaluIndex> nalu_indices = H265::FindNaluIndices(
-      packet.video_payload.cdata(), packet.video_payload.size());
-  return absl::c_any_of((nalu_indices), [&packet](
-                                            const H265::NaluIndex& nalu_index) {
-    return H265::ParseNaluType(
-               packet.video_payload.cdata()[nalu_index.payload_start_offset]) ==
-           H265::NaluType::kVps;
-  });
-}
-#endif
-
 // TODO(bugs.webrtc.org/13157): Update the H264 depacketizer so we don't have to
 //                              fiddle with the payload at this point.
-rtc::CopyOnWriteBuffer FixH264VideoPayload(
-    rtc::ArrayView<const uint8_t> payload,
-    const RTPVideoHeader& video_header) {
+rtc::CopyOnWriteBuffer FixVideoPayload(rtc::ArrayView<const uint8_t> payload,
+                                       const RTPVideoHeader& video_header) {
   constexpr uint8_t kStartCode[] = {0, 0, 0, 1};
 
   const auto& h264_header =
@@ -142,15 +124,18 @@ rtc::CopyOnWriteBuffer FixH264VideoPayload(
 
 }  // namespace
 
-H26xPacketBuffer::H26xPacketBuffer(bool h264_idr_only_keyframes_allowed)
-    : h264_idr_only_keyframes_allowed_(h264_idr_only_keyframes_allowed) {}
+H264PacketBuffer::H264PacketBuffer(bool idr_only_keyframes_allowed)
+    : idr_only_keyframes_allowed_(idr_only_keyframes_allowed) {}
 
-H26xPacketBuffer::InsertResult H26xPacketBuffer::InsertPacket(
+H264PacketBuffer::InsertResult H264PacketBuffer::InsertPacket(
     std::unique_ptr<Packet> packet) {
-  RTC_DCHECK(packet->video_header.codec == kVideoCodecH264 ||
-             packet->video_header.codec == kVideoCodecH265);
+  RTC_DCHECK(packet->video_header.codec == kVideoCodecH264);
 
   InsertResult result;
+  if (!absl::holds_alternative<RTPVideoHeaderH264>(
+          packet->video_header.video_type_header)) {
+    return result;
+  }
 
   int64_t unwrapped_seq_num = seq_num_unwrapper_.Unwrap(packet->seq_num);
   auto& packet_slot = GetPacket(unwrapped_seq_num);
@@ -166,27 +151,19 @@ H26xPacketBuffer::InsertResult H26xPacketBuffer::InsertPacket(
   return result;
 }
 
-std::unique_ptr<H26xPacketBuffer::Packet>& H26xPacketBuffer::GetPacket(
+std::unique_ptr<H264PacketBuffer::Packet>& H264PacketBuffer::GetPacket(
     int64_t unwrapped_seq_num) {
   return buffer_[EuclideanMod(unwrapped_seq_num, kBufferSize)];
 }
 
-bool H26xPacketBuffer::BeginningOfStream(
-    const H26xPacketBuffer::Packet& packet) const {
-  if (packet.codec() == kVideoCodecH264) {
-    return HasSps(packet) ||
-           (h264_idr_only_keyframes_allowed_ && BeginningOfIdr(packet));
-#ifdef RTC_ENABLE_H265
-  } else if (packet.codec() == kVideoCodecH265) {
-    return HasVps(packet);
-#endif
-  }
-  RTC_DCHECK_NOTREACHED();
-  return false;
+bool H264PacketBuffer::BeginningOfStream(
+    const H264PacketBuffer::Packet& packet) const {
+  return HasSps(packet) ||
+         (idr_only_keyframes_allowed_ && BeginningOfIdr(packet));
 }
 
-std::vector<std::unique_ptr<H26xPacketBuffer::Packet>>
-H26xPacketBuffer::FindFrames(int64_t unwrapped_seq_num) {
+std::vector<std::unique_ptr<H264PacketBuffer::Packet>>
+H264PacketBuffer::FindFrames(int64_t unwrapped_seq_num) {
   std::vector<std::unique_ptr<Packet>> found_frames;
 
   Packet* packet = GetPacket(unwrapped_seq_num).get();
@@ -246,17 +223,13 @@ H26xPacketBuffer::FindFrames(int64_t unwrapped_seq_num) {
   return found_frames;
 }
 
-bool H26xPacketBuffer::MaybeAssembleFrame(
+bool H264PacketBuffer::MaybeAssembleFrame(
     int64_t start_seq_num_unwrapped,
     int64_t end_sequence_number_unwrapped,
     std::vector<std::unique_ptr<Packet>>& frames) {
-#ifdef RTC_ENABLE_H265
-  bool has_vps = false;
-#endif
   bool has_sps = false;
   bool has_pps = false;
   bool has_idr = false;
-  bool has_irap = false;
 
   int width = -1;
   int height = -1;
@@ -264,42 +237,22 @@ bool H26xPacketBuffer::MaybeAssembleFrame(
   for (int64_t seq_num = start_seq_num_unwrapped;
        seq_num <= end_sequence_number_unwrapped; ++seq_num) {
     const auto& packet = GetPacket(seq_num);
-    if (packet->codec() == kVideoCodecH264) {
-      const auto& h264_header =
-          absl::get<RTPVideoHeaderH264>(packet->video_header.video_type_header);
-      for (const auto& nalu : GetNaluInfos(h264_header)) {
-        has_idr |= nalu.type == H264::NaluType::kIdr;
-        has_sps |= nalu.type == H264::NaluType::kSps;
-        has_pps |= nalu.type == H264::NaluType::kPps;
-      }
-      if (has_idr) {
-        if (!h264_idr_only_keyframes_allowed_ && (!has_sps || !has_pps)) {
-          return false;
-        }
-      }
-#ifdef RTC_ENABLE_H265
-    } else if (packet->codec() == kVideoCodecH265) {
-      std::vector<H265::NaluIndex> nalu_indices = H265::FindNaluIndices(
-          packet->video_payload.cdata(), packet->video_payload.size());
-      for (const auto& nalu_index : nalu_indices) {
-        uint8_t nalu_type = H265::ParseNaluType(
-            packet->video_payload.cdata()[nalu_index.payload_start_offset]);
-        has_irap |= (nalu_type >= H265::NaluType::kBlaWLp &&
-                     nalu_type <= H265::NaluType::kRsvIrapVcl23);
-        has_vps |= nalu_type == H265::NaluType::kVps;
-        has_sps |= nalu_type == H265::NaluType::kSps;
-        has_pps |= nalu_type == H265::NaluType::kPps;
-      }
-      if (has_irap) {
-        if (!has_vps || !has_sps || !has_pps) {
-          return false;
-        }
-      }
-#endif  // RTC_ENABLE_H265
+    const auto& h264_header =
+        absl::get<RTPVideoHeaderH264>(packet->video_header.video_type_header);
+    for (const auto& nalu : GetNaluInfos(h264_header)) {
+      has_idr |= nalu.type == H264::NaluType::kIdr;
+      has_sps |= nalu.type == H264::NaluType::kSps;
+      has_pps |= nalu.type == H264::NaluType::kPps;
     }
 
     width = std::max<int>(packet->video_header.width, width);
     height = std::max<int>(packet->video_header.height, height);
+  }
+
+  if (has_idr) {
+    if (!idr_only_keyframes_allowed_ && (!has_sps || !has_pps)) {
+      return false;
+    }
   }
 
   for (int64_t seq_num = start_seq_num_unwrapped;
@@ -317,16 +270,13 @@ bool H26xPacketBuffer::MaybeAssembleFrame(
         packet->video_header.height = height;
       }
 
-      packet->video_header.frame_type = has_idr || has_irap
+      packet->video_header.frame_type = has_idr
                                             ? VideoFrameType::kVideoFrameKey
                                             : VideoFrameType::kVideoFrameDelta;
     }
 
-    // Start code is inserted by depacktizer for H.265.
-    if (packet->codec() == kVideoCodecH264) {
-      packet->video_payload =
-          FixH264VideoPayload(packet->video_payload, packet->video_header);
-    }
+    packet->video_payload =
+        FixVideoPayload(packet->video_payload, packet->video_header);
 
     frames.push_back(std::move(packet));
   }
