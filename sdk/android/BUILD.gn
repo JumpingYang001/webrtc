@@ -858,6 +858,7 @@ if (current_os == "linux" || is_android) {
       ":base_jni",
       ":generated_libvpx_vp8_jni",
       ":video_jni",
+      "../../api/environment",
       "../../modules/video_coding:webrtc_vp8",
     ]
   }
