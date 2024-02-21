@@ -128,6 +128,7 @@ class FakePortAllocatorSession : public PortAllocatorSession {
                                       field_trials_));
       RTC_DCHECK(port_);
       port_->SetIceTiebreaker(allocator_->ice_tiebreaker());
+      port_->SetFoundationSeed(allocator_->foundation_seed());
       port_->SubscribePortDestroyed(
           [this](PortInterface* port) { OnPortDestroyed(port); });
       AddPort(port_.get());

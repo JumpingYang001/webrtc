@@ -263,7 +263,7 @@ Candidate Candidate::ToSanitizedCopy(bool use_hostname_address,
 }
 
 void Candidate::ComputeFoundation(const rtc::SocketAddress& base_address,
-                                  uint64_t tie_breaker) {
+                                  uint64_t seed) {
   // https://www.rfc-editor.org/rfc/rfc5245#section-4.1.1.3
   // The foundation is an identifier, scoped within a session.  Two candidates
   // MUST have the same foundation ID when all of the following are true:
@@ -282,14 +282,9 @@ void Candidate::ComputeFoundation(const rtc::SocketAddress& base_address,
   rtc::StringBuilder sb;
   sb << type_name() << base_address.ipaddr().ToString() << protocol_
      << relay_protocol_;
-
-  // https://www.rfc-editor.org/rfc/rfc5245#section-5.2
-  // [...] it is possible for both agents to mistakenly believe they are
-  // controlled or controlling. To resolve this, each agent MUST select a random
-  // number, called the tie-breaker, uniformly distributed between 0 and (2**64)
-  // - 1 (that is, a 64-bit positive integer).  This number is used in
-  // connectivity checks to detect and repair this case [...]
-  sb << rtc::ToString(tie_breaker);
+  // The random seed is passed to prevent a reverse CRC32 lookup of the address
+  // based on the foundation.
+  sb << rtc::ToString(seed);
   foundation_ = rtc::ToString(rtc::ComputeCrc32(sb.Release()));
 }
 

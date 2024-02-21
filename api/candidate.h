@@ -254,10 +254,9 @@ class RTC_EXPORT Candidate {
   //   then the foundation will be different.  Two candidate pairs with
   //   the same foundation pairs are likely to have similar network
   //   characteristics. Foundations are used in the frozen algorithm.
-  // A session wide (peerconnection) tie-breaker is applied to the foundation,
+  // A session wide (peerconnection) seed is applied to the foundation,
   // adds additional randomness and must be the same for all candidates.
-  void ComputeFoundation(const rtc::SocketAddress& base_address,
-                         uint64_t tie_breaker);
+  void ComputeFoundation(const rtc::SocketAddress& base_address, uint64_t seed);
 
   // https://www.rfc-editor.org/rfc/rfc5245#section-7.2.1.3
   // Call to populate the foundation field for a new peer reflexive remote

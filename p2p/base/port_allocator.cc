@@ -100,7 +100,8 @@ PortAllocator::PortAllocator()
       step_delay_(kDefaultStepDelay),
       allow_tcp_listen_(true),
       candidate_filter_(CF_ALL),
-      tiebreaker_(rtc::CreateRandomId64()) {
+      tiebreaker_(rtc::CreateRandomId64()),
+      foundation_seed_(rtc::CreateRandomId64()) {
   // The allocator will be attached to a thread in Initialize.
   thread_checker_.Detach();
 }

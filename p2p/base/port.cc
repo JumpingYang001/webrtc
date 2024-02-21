@@ -199,6 +199,14 @@ uint64_t Port::IceTiebreaker() const {
   return tiebreaker_;
 }
 
+void Port::SetFoundationSeed(uint64_t foundation_seed) {
+  foundation_seed_ = foundation_seed;
+}
+
+uint64_t Port::FoundationSeed() const {
+  return foundation_seed_;
+}
+
 bool Port::SharedSocket() const {
   return shared_socket_;
 }
@@ -255,8 +263,8 @@ void Port::AddAddress(const rtc::SocketAddress& address,
               type, generation_, "", network_->id(), network_cost_);
   // Set the relay protocol before computing the foundation field.
   c.set_relay_protocol(relay_protocol);
-  // TODO(bugs.webrtc.org/14605): ensure IceTiebreaker() is set.
-  c.ComputeFoundation(base_address, tiebreaker_);
+  // TODO(bugs.webrtc.org/14605): ensure FoundationSeed() is set.
+  c.ComputeFoundation(base_address, foundation_seed_);
 
   c.set_priority(
       c.GetPriority(type_preference, network_->preference(), relay_preference,

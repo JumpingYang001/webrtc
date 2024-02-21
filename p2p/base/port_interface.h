@@ -62,6 +62,11 @@ class PortInterface {
   virtual void SetIceTiebreaker(uint64_t tiebreaker) = 0;
   virtual uint64_t IceTiebreaker() const = 0;
 
+  // Methods to set/get the PortAllocator random value which is used to seed the
+  // foundation.
+  virtual void SetFoundationSeed(uint64_t foundation_seed) = 0;
+  virtual uint64_t FoundationSeed() const = 0;
+
   virtual bool SharedSocket() const = 0;
 
   virtual bool SupportsProtocol(absl::string_view protocol) const = 0;
