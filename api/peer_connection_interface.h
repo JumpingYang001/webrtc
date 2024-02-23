@@ -1003,6 +1003,8 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
   // for negotiation and subsequent CreateOffer() calls will act as if
   // RTCOfferAnswerOptions::ice_restart is true.
   // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-restartice
+  // TODO(hbos): Remove default implementation when downstream projects
+  // implement this.
   virtual void RestartIce() = 0;
 
   // Create a new offer.
@@ -1073,7 +1075,9 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
   // sure that even if there was a delay (e.g. due to a PostTask) between the
   // event being generated and the time of firing, the Operations Chain is empty
   // and the event is still valid to be fired.
-  virtual bool ShouldFireNegotiationNeededEvent(uint32_t event_id) = 0;
+  virtual bool ShouldFireNegotiationNeededEvent(uint32_t event_id) {
+    return true;
+  }
 
   virtual PeerConnectionInterface::RTCConfiguration GetConfiguration() = 0;
 
@@ -1135,7 +1139,7 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
   // Estimation starts when the first RTP packet is sent.
   // Estimation will be restarted if already started.
   virtual void ReconfigureBandwidthEstimation(
-      const BandwidthEstimationSettings& settings) = 0;
+      const BandwidthEstimationSettings& settings) {}
 
   // Enable/disable playout of received audio streams. Enabled by default. Note
   // that even if playout is enabled, streams will only be played out if the
@@ -1143,12 +1147,12 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
   // playout of the underlying audio device but starts a task which will poll
   // for audio data every 10ms to ensure that audio processing happens and the
   // audio statistics are updated.
-  virtual void SetAudioPlayout(bool playout) = 0;
+  virtual void SetAudioPlayout(bool playout) {}
 
   // Enable/disable recording of transmitted audio streams. Enabled by default.
   // Note that even if recording is enabled, streams will only be recorded if
   // the appropriate SDP is also applied.
-  virtual void SetAudioRecording(bool recording) = 0;
+  virtual void SetAudioRecording(bool recording) {}
 
   // Looks up the DtlsTransport associated with a MID value.
   // In the Javascript API, DtlsTransport is a property of a sender, but
@@ -1180,25 +1184,28 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
 
   // Returns the current state of canTrickleIceCandidates per
   // https://w3c.github.io/webrtc-pc/#attributes-1
-  virtual absl::optional<bool> can_trickle_ice_candidates() = 0;
+  virtual absl::optional<bool> can_trickle_ice_candidates() {
+    // TODO(crbug.com/708484): Remove default implementation.
+    return absl::nullopt;
+  }
 
   // When a resource is overused, the PeerConnection will try to reduce the load
   // on the sysem, for example by reducing the resolution or frame rate of
   // encoded streams. The Resource API allows injecting platform-specific usage
   // measurements. The conditions to trigger kOveruse or kUnderuse are up to the
   // implementation.
-  virtual void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) = 0;
+  // TODO(hbos): Make pure virtual when implemented by downstream projects.
+  virtual void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) {}
 
   // Start RtcEventLog using an existing output-sink. Takes ownership of
-  // `output` and passes it on to Call, which will take the ownership. If
-  // the operation fails the output will be closed and deallocated. The
-  // event log will send serialized events to the output object every
-  // `output_period_ms`. Applications using the event log should generally
-  // make their own trade-off regarding the output period. A long period is
-  // generally more efficient, with potential drawbacks being more bursty
-  // thread usage, and more events lost in case the application crashes. If
-  // the `output_period_ms` argument is omitted, webrtc selects a default
-  // deemed to be workable in most cases.
+  // `output` and passes it on to Call, which will take the ownership. If the
+  // operation fails the output will be closed and deallocated. The event log
+  // will send serialized events to the output object every `output_period_ms`.
+  // Applications using the event log should generally make their own trade-off
+  // regarding the output period. A long period is generally more efficient,
+  // with potential drawbacks being more bursty thread usage, and more events
+  // lost in case the application crashes. If the `output_period_ms` argument is
+  // omitted, webrtc selects a default deemed to be workable in most cases.
   virtual bool StartRtcEventLog(std::unique_ptr<RtcEventLogOutput> output,
                                 int64_t output_period_ms) = 0;
   virtual bool StartRtcEventLog(std::unique_ptr<RtcEventLogOutput> output) = 0;
@@ -1219,7 +1226,8 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
   //
   // Also the only thread on which it's safe to use SessionDescriptionInterface
   // pointers.
-  virtual rtc::Thread* signaling_thread() const = 0;
+  // TODO(deadbeef): Make pure virtual when all subclasses implement it.
+  virtual rtc::Thread* signaling_thread() const { return nullptr; }
 
  protected:
   // Dtor protected as objects shouldn't be deleted via this interface.
