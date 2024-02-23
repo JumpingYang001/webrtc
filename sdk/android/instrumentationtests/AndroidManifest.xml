@@ -31,7 +31,7 @@
         <uses-library android:name="android.test.runner" />
     </application>
 
-    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
+    <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
         tools:ignore="MissingPrefix"
         android:targetPackage="org.webrtc"
         android:label="Tests for WebRTC Android SDK"/>
