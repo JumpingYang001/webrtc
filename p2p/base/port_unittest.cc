@@ -109,7 +109,6 @@ const uint32_t kDefaultPrflxPriority = ICE_TYPE_PREFERENCE_PRFLX << 24 |
 constexpr int kTiebreaker1 = 11111;
 constexpr int kTiebreaker2 = 22222;
 constexpr int kTiebreakerDefault = 44444;
-constexpr int kFoundationSeed = 42;
 
 const char* data = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
@@ -556,7 +555,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
                                 username_, password_, true, absl::nullopt,
                                 &field_trials_);
     port->SetIceTiebreaker(kTiebreakerDefault);
-    port->SetFoundationSeed(kFoundationSeed);
     return port;
   }
 
@@ -569,7 +567,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
         MakeNetworkMultipleAddrs(global_addr, link_local_addr), 0, 0, username_,
         password_, true, absl::nullopt, &field_trials_);
     port->SetIceTiebreaker(kTiebreakerDefault);
-    port->SetFoundationSeed(kFoundationSeed);
     return port;
   }
   std::unique_ptr<TCPPort> CreateTcpPort(const SocketAddress& addr) {
@@ -580,7 +577,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
     auto port = TCPPort::Create(&main_, socket_factory, MakeNetwork(addr), 0, 0,
                                 username_, password_, true, &field_trials_);
     port->SetIceTiebreaker(kTiebreakerDefault);
-    port->SetFoundationSeed(kFoundationSeed);
     return port;
   }
   std::unique_ptr<StunPort> CreateStunPort(const SocketAddress& addr,
@@ -591,7 +587,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
                                  username_, password_, stun_servers,
                                  absl::nullopt, &field_trials_);
     port->SetIceTiebreaker(kTiebreakerDefault);
-    port->SetFoundationSeed(kFoundationSeed);
     return port;
   }
   std::unique_ptr<Port> CreateRelayPort(const SocketAddress& addr,

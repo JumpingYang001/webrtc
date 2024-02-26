@@ -211,9 +211,6 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   void SetIceTiebreaker(uint64_t tiebreaker) override;
   uint64_t IceTiebreaker() const override;
 
-  void SetFoundationSeed(uint64_t foundation_seed) override;
-  uint64_t FoundationSeed() const override;
-
   bool SharedSocket() const override;
   void ResetSharedSocket() { shared_socket_ = false; }
 
@@ -497,7 +494,6 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   bool enable_port_packets_;
   IceRole ice_role_;
   uint64_t tiebreaker_;
-  uint64_t foundation_seed_;
   bool shared_socket_;
   // Information to use when going through a proxy.
   std::string user_agent_;
