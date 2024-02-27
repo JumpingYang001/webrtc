@@ -44,18 +44,15 @@ std::unique_ptr<VideoDecoder> CreateDav1dDecoder() {
 std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
     const {
   std::vector<SdpVideoFormat> formats;
-  formats.push_back(SdpVideoFormat(cricket::kVp8CodecName));
+  formats.push_back(SdpVideoFormat::VP8());
   for (const SdpVideoFormat& format : SupportedVP9DecoderCodecs())
     formats.push_back(format);
   for (const SdpVideoFormat& h264_format : SupportedH264DecoderCodecs())
     formats.push_back(h264_format);
 
   if (kDav1dIsIncluded) {
-    formats.push_back(SdpVideoFormat(cricket::kAv1CodecName));
-    formats.push_back(
-        SdpVideoFormat(cricket::kAv1CodecName,
-                       {{cricket::kAv1FmtpProfile,
-                         AV1ProfileToString(AV1Profile::kProfile1).data()}}));
+    formats.push_back(SdpVideoFormat::AV1Profile0());
+    formats.push_back(SdpVideoFormat::AV1Profile1());
   }
 
   return formats;
