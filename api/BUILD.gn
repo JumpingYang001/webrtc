@@ -335,6 +335,7 @@ rtc_library("libjingle_peerconnection_api") {
     ":sequence_checker",
     ":turn_customizer",
     "../call:rtp_interfaces",
+    "../media:media_engine",
     "../p2p:connection",
     "../p2p:port_allocator",
     "../p2p:rtc_p2p",
