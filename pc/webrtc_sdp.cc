@@ -1120,16 +1120,16 @@ bool ParseCandidate(absl::string_view message,
       return ParseFailed(first_line, "Unsupported transport type.", error);
   }
 
-  IceCandidateType candidate_type;
+  absl::string_view candidate_type;
   const absl::string_view type = fields[7];
   if (type == kCandidateHost) {
-    candidate_type = IceCandidateType::kHost;
+    candidate_type = cricket::LOCAL_PORT_TYPE;
   } else if (type == kCandidateSrflx) {
-    candidate_type = IceCandidateType::kSrflx;
+    candidate_type = cricket::STUN_PORT_TYPE;
   } else if (type == kCandidateRelay) {
-    candidate_type = IceCandidateType::kRelay;
+    candidate_type = cricket::RELAY_PORT_TYPE;
   } else if (type == kCandidatePrflx) {
-    candidate_type = IceCandidateType::kPrflx;
+    candidate_type = cricket::PRFLX_PORT_TYPE;
   } else {
     return ParseFailed(first_line, "Unsupported candidate type.", error);
   }

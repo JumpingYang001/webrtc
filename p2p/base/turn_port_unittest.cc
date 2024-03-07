@@ -57,7 +57,6 @@ using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::ReturnPointee;
 using ::testing::SetArgPointee;
-using ::webrtc::IceCandidateType;
 
 static const SocketAddress kLocalAddr1("11.11.11.11", 0);
 static const SocketAddress kLocalAddr2("22.22.22.22", 0);
@@ -1599,8 +1598,7 @@ TEST_F(TurnPortTest, TestCandidateAddressFamilyMatch) {
 
   // Create an IPv4 candidate. It will match the TURN candidate.
   Candidate remote_candidate(ICE_CANDIDATE_COMPONENT_RTP, "udp", kLocalAddr2, 0,
-                             "", "", IceCandidateType::kHost, 0,
-                             kCandidateFoundation);
+                             "", "", "local", 0, kCandidateFoundation);
   remote_candidate.set_address(kLocalAddr2);
   Connection* conn =
       turn_port_->CreateConnection(remote_candidate, Port::ORIGIN_MESSAGE);

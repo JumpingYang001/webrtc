@@ -53,6 +53,18 @@ using ::webrtc::RTCErrorType;
 using ::webrtc::SafeTask;
 using ::webrtc::TimeDelta;
 
+IceCandidateType PortTypeToIceCandidateType(PortInterface* port) {
+  auto type = port->Type();
+  if (type == LOCAL_PORT_TYPE)
+    return IceCandidateType::kHost;
+  if (type == STUN_PORT_TYPE)
+    return IceCandidateType::kSrflx;
+  if (type == PRFLX_PORT_TYPE)
+    return IceCandidateType::kPrflx;
+  RTC_DCHECK_EQ(type, RELAY_PORT_TYPE);
+  return IceCandidateType::kRelay;
+}
+
 cricket::PortInterface::CandidateOrigin GetOrigin(
     cricket::PortInterface* port,
     cricket::PortInterface* origin_port) {
@@ -1071,8 +1083,8 @@ void P2PTransportChannel::OnUnknownAddress(PortInterface* port,
     // candidate.
     remote_candidate = Candidate(
         component(), ProtoToString(proto), address, remote_candidate_priority,
-        remote_username, remote_password, IceCandidateType::kPrflx,
-        remote_generation, "", network_id, network_cost);
+        remote_username, remote_password, PRFLX_PORT_TYPE, remote_generation,
+        "", network_id, network_cost);
     if (proto == PROTO_TCP) {
       remote_candidate.set_tcptype(TCPTYPE_ACTIVE_STR);
     }
@@ -1410,12 +1422,12 @@ bool P2PTransportChannel::CreateConnection(PortInterface* port,
   }
 
   if (ice_field_trials_.skip_relay_to_non_relay_connections) {
-    IceCandidateType port_type = PortTypeToIceCandidateType(port->Type());
+    IceCandidateType port_type = PortTypeToIceCandidateType(port);
     if ((port_type != remote_candidate.type()) &&
         (port_type == IceCandidateType::kRelay ||
          remote_candidate.is_relay())) {
       RTC_LOG(LS_INFO) << ToString() << ": skip creating connection "
-                       << webrtc::IceCandidateTypeToString(port_type) << " to "
+                       << port->Type() << " to "
                        << remote_candidate.type_name();
       return false;
     }

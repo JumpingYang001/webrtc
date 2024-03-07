@@ -43,8 +43,6 @@
 namespace cricket {
 namespace {
 
-using webrtc::IceCandidateType;
-
 // Determines whether we have seen at least the given maximum number of
 // pings fail to have a response.
 inline bool TooManyFailures(
@@ -77,16 +75,16 @@ inline bool TooLongWithoutResponse(
 
 // Helper methods for converting string values of log description fields to
 // enum.
-IceCandidateType GetRtcEventLogCandidateType(const Candidate& c) {
+webrtc::IceCandidateType GetRtcEventLogCandidateType(const Candidate& c) {
   if (c.is_local()) {
-    return IceCandidateType::kHost;
+    return webrtc::IceCandidateType::kHost;
   } else if (c.is_stun()) {
-    return IceCandidateType::kSrflx;
+    return webrtc::IceCandidateType::kSrflx;
   } else if (c.is_prflx()) {
-    return IceCandidateType::kPrflx;
+    return webrtc::IceCandidateType::kPrflx;
   }
   RTC_DCHECK(c.is_relay());
-  return IceCandidateType::kRelay;
+  return webrtc::IceCandidateType::kRelay;
 }
 
 webrtc::IceCandidatePairProtocol GetProtocolByString(
@@ -1694,7 +1692,7 @@ void Connection::MaybeUpdateLocalCandidate(StunRequest* request,
 
   // Create a peer-reflexive candidate based on the local candidate.
   local_candidate_.generate_id();
-  local_candidate_.set_type(IceCandidateType::kPrflx);
+  local_candidate_.set_type(PRFLX_PORT_TYPE);
   // Set the related address and foundation attributes before changing the
   // address.
   local_candidate_.set_related_address(local_candidate_.address());
