@@ -1046,6 +1046,7 @@ rtc_library("threading") {
     "../api/task_queue:pending_task_safety_flag",
     "../api/units:time_delta",
     "../system_wrappers:field_trial",
+    "./network:ecn_marking",
     "synchronization:mutex",
     "system:no_unique_address",
     "system:rtc_export",
@@ -1092,6 +1093,7 @@ rtc_library("socket") {
     ":macromagic",
     ":socket_address",
     "../api/units:timestamp",
+    "./network:ecn_marking",
     "system:rtc_export",
     "third_party/sigslot",
   ]
