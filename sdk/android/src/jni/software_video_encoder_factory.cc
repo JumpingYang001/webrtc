@@ -8,6 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "api/environment/environment.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
 #include "api/video_codecs/video_encoder.h"
 #include "sdk/android/generated_swcodecs_jni/SoftwareVideoEncoderFactory_jni.h"
@@ -21,6 +22,27 @@ namespace jni {
 static jlong JNI_SoftwareVideoEncoderFactory_CreateFactory(JNIEnv* env) {
   return webrtc::NativeToJavaPointer(
       CreateBuiltinVideoEncoderFactory().release());
+}
+
+jboolean JNI_SoftwareVideoEncoderFactory_IsSupported(
+    JNIEnv* env,
+    jlong j_factory,
+    const JavaParamRef<jobject>& j_info) {
+  return VideoCodecInfoToSdpVideoFormat(env, j_info)
+      .IsCodecInList(reinterpret_cast<VideoEncoderFactory*>(j_factory)
+                         ->GetSupportedFormats());
+}
+
+jlong JNI_SoftwareVideoEncoderFactory_Create(
+    JNIEnv* env,
+    jlong j_factory,
+    jlong j_webrtc_env_ref,
+    const JavaParamRef<jobject>& j_info) {
+  return NativeToJavaPointer(
+      reinterpret_cast<VideoEncoderFactory*>(j_factory)
+          ->Create(*reinterpret_cast<const Environment*>(j_webrtc_env_ref),
+                   VideoCodecInfoToSdpVideoFormat(env, j_info))
+          .release());
 }
 
 static jlong JNI_SoftwareVideoEncoderFactory_CreateEncoder(

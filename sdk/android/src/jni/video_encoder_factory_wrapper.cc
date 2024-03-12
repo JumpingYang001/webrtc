@@ -104,6 +104,19 @@ std::unique_ptr<VideoEncoder> VideoEncoderFactoryWrapper::CreateVideoEncoder(
   return JavaToNativeVideoEncoder(jni, encoder);
 }
 
+std::unique_ptr<VideoEncoder> VideoEncoderFactoryWrapper::Create(
+    const Environment& env,
+    const SdpVideoFormat& format) {
+  JNIEnv* jni = AttachCurrentThreadIfNeeded();
+  ScopedJavaLocalRef<jobject> j_codec_info =
+      SdpVideoFormatToVideoCodecInfo(jni, format);
+  ScopedJavaLocalRef<jobject> encoder = Java_VideoEncoderFactory_createEncoder(
+      jni, encoder_factory_, j_codec_info);
+  if (!encoder.obj())
+    return nullptr;
+  return JavaToNativeVideoEncoder(jni, encoder, NativeToJavaPointer(&env));
+}
+
 std::vector<SdpVideoFormat> VideoEncoderFactoryWrapper::GetSupportedFormats()
     const {
   return supported_formats_;

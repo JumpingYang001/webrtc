@@ -12,6 +12,7 @@
 
 #include <utility>
 
+#include "absl/memory/memory.h"
 #include "common_video/h264/h264_common.h"
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_error_codes.h"
@@ -455,6 +456,19 @@ ScopedJavaLocalRef<jobject> VideoEncoderWrapper::ToJavaRateControlParameters(
 
   return Java_RateControlParameters_Constructor(jni, j_bitrate_allocation,
                                                 rc_parameters.framerate_fps);
+}
+
+std::unique_ptr<VideoEncoder> JavaToNativeVideoEncoder(
+    JNIEnv* jni,
+    const JavaRef<jobject>& j_encoder,
+    jlong j_webrtc_env_ref) {
+  if (jlong native_encoder =
+          Java_VideoEncoder_createNative(jni, j_encoder, j_webrtc_env_ref);
+      native_encoder != 0) {
+    return absl::WrapUnique(reinterpret_cast<VideoEncoder*>(native_encoder));
+  } else {
+    return std::make_unique<VideoEncoderWrapper>(jni, j_encoder);
+  }
 }
 
 std::unique_ptr<VideoEncoder> JavaToNativeVideoEncoder(

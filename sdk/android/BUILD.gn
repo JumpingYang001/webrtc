@@ -869,6 +869,7 @@ if (current_os == "linux" || is_android) {
       ":base_jni",
       ":generated_libvpx_vp9_jni",
       ":video_jni",
+      "../../api/environment",
       "../../modules/video_coding:webrtc_vp9",
     ]
   }
@@ -881,6 +882,7 @@ if (current_os == "linux" || is_android) {
       ":base_jni",
       ":generated_libaom_av1_encoder_jni",
       ":video_jni",
+      "../../api/environment",
       "../../modules/video_coding/codecs/av1:libaom_av1_encoder",
     ]
   }
@@ -1645,6 +1647,8 @@ if (is_android) {
       "../../api:enable_media_with_defaults",
       "../../api:field_trials_view",
       "../../api:scoped_refptr",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "../../api/rtc_event_log:rtc_event_log_factory",
       "../../api/task_queue:default_task_queue_factory",
       "../../api/video:video_frame",
