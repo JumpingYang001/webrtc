@@ -164,7 +164,7 @@ int32_t VideoEncoderWrapper::Encode(
 
   FrameExtraInfo info;
   info.capture_time_ns = frame.timestamp_us() * rtc::kNumNanosecsPerMicrosec;
-  info.timestamp_rtp = frame.timestamp();
+  info.timestamp_rtp = frame.rtp_timestamp();
   {
     MutexLock lock(&frame_extra_infos_lock_);
     frame_extra_infos_.push_back(info);
