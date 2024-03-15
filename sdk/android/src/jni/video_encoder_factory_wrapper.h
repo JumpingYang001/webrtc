@@ -31,9 +31,6 @@ class VideoEncoderFactoryWrapper : public VideoEncoderFactory {
                              const JavaRef<jobject>& encoder_factory);
   ~VideoEncoderFactoryWrapper() override;
 
-  std::unique_ptr<VideoEncoder> CreateVideoEncoder(
-      const SdpVideoFormat& format) override;
-
   std::unique_ptr<VideoEncoder> Create(const Environment& env,
                                        const SdpVideoFormat& format) override;
 

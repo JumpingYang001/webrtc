@@ -19,10 +19,6 @@
 namespace webrtc {
 namespace jni {
 
-static jlong JNI_LibaomAv1Encoder_CreateEncoder(JNIEnv* jni) {
-  return jlongFromPointer(webrtc::CreateLibaomAv1Encoder().release());
-}
-
 jlong JNI_LibaomAv1Encoder_Create(JNIEnv* jni, jlong j_webrtc_env_ref) {
   return NativeToJavaPointer(
       CreateLibaomAv1Encoder(

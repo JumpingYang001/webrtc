@@ -19,10 +19,6 @@
 namespace webrtc {
 namespace jni {
 
-static jlong JNI_LibvpxVp8Encoder_CreateEncoder(JNIEnv* jni) {
-  return jlongFromPointer(VP8Encoder::Create().release());
-}
-
 jlong JNI_LibvpxVp8Encoder_Create(JNIEnv* jni, jlong j_webrtc_env_ref) {
   return NativeToJavaPointer(
       CreateVp8Encoder(*reinterpret_cast<const Environment*>(j_webrtc_env_ref))

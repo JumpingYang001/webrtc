@@ -471,20 +471,6 @@ std::unique_ptr<VideoEncoder> JavaToNativeVideoEncoder(
   }
 }
 
-std::unique_ptr<VideoEncoder> JavaToNativeVideoEncoder(
-    JNIEnv* jni,
-    const JavaRef<jobject>& j_encoder) {
-  const jlong native_encoder =
-      Java_VideoEncoder_createNativeVideoEncoder(jni, j_encoder);
-  VideoEncoder* encoder;
-  if (native_encoder == 0) {
-    encoder = new VideoEncoderWrapper(jni, j_encoder);
-  } else {
-    encoder = reinterpret_cast<VideoEncoder*>(native_encoder);
-  }
-  return std::unique_ptr<VideoEncoder>(encoder);
-}
-
 std::vector<VideoEncoder::ResolutionBitrateLimits>
 JavaToNativeResolutionBitrateLimits(
     JNIEnv* jni,
