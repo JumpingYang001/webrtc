@@ -617,7 +617,13 @@ void DcSctpTransport::ConnectTransportSignals() {
                 const rtc::ReceivedPacket& packet) {
         OnTransportReadPacket(transport, packet);
       });
-  transport_->SignalClosed.connect(this, &DcSctpTransport::OnTransportClosed);
+  transport_->SetOnCloseCallback([this]() {
+    RTC_DCHECK_RUN_ON(network_thread_);
+    RTC_DLOG(LS_VERBOSE) << debug_name_ << "->OnTransportClosed().";
+    if (data_channel_sink_) {
+      data_channel_sink_->OnTransportClosed({});
+    }
+  });
 }
 
 void DcSctpTransport::DisconnectTransportSignals() {
@@ -627,7 +633,7 @@ void DcSctpTransport::DisconnectTransportSignals() {
   }
   transport_->SignalWritableState.disconnect(this);
   transport_->DeregisterReceivedPacketCallback(this);
-  transport_->SignalClosed.disconnect(this);
+  transport_->SetOnCloseCallback(nullptr);
 }
 
 void DcSctpTransport::OnTransportWritableState(
@@ -653,15 +659,6 @@ void DcSctpTransport::OnTransportReadPacket(
                        << packet.payload().size();
   if (socket_) {
     socket_->ReceivePacket(packet.payload());
-  }
-}
-
-void DcSctpTransport::OnTransportClosed(
-    rtc::PacketTransportInternal* transport) {
-  RTC_DCHECK_RUN_ON(network_thread_);
-  RTC_DLOG(LS_VERBOSE) << debug_name_ << "->OnTransportClosed().";
-  if (data_channel_sink_) {
-    data_channel_sink_->OnTransportClosed({});
   }
 }
 
