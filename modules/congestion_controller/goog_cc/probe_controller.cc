@@ -294,13 +294,7 @@ std::vector<ProbeClusterConfig> ProbeController::SetEstimatedBitrate(
 
   if (state_ == State::kWaitingForProbingResult) {
     // Continue probing if probing results indicate channel has greater
-    // capacity unless we already reached the needed bitrate.
-    if (bitrate > max_bitrate_ ||
-        (!max_total_allocated_bitrate_.IsZero() &&
-         bitrate > 2 * max_total_allocated_bitrate_)) {
-      // No need to continue probing.
-      min_bitrate_to_probe_further_ = DataRate::PlusInfinity();
-    }
+    // capacity.
     DataRate network_state_estimate_probe_further_limit =
         config_.network_state_estimate_probing_interval->IsFinite() &&
                 network_estimate_
