@@ -1389,14 +1389,8 @@ rtc_library("dscp") {
 
 rtc_library("proxy_info") {
   visibility = [ "*" ]
-  sources = [
-    "proxy_info.cc",
-    "proxy_info.h",
-  ]
-  deps = [
-    ":crypt_string",
-    ":socket_address",
-  ]
+  sources = [ "proxy_info.h" ]
+  deps = []
 }
 
 rtc_library("file_rotating_stream") {
