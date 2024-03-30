@@ -110,6 +110,58 @@ inline void CheckException(JNIEnv* env) {
 constexpr uint64_t kJniStackMarkerValue = 0xbdbdef1bebcade1b;
 
 // Context about the JNI call with exception checked to be stored in stack.
+template <bool checked>
+struct BASE_EXPORT JniJavaCallContext {
+ public:
+  inline JniJavaCallContext() {
+// TODO(ssid): Implement for other architectures.
+#if defined(__arm__) || defined(__aarch64__)
+    // This assumes that this method does not increment the stack pointer.
+    asm volatile("mov %0, sp" : "=r"(sp));
+#else
+    sp = 0;
+#endif
+  }
+
+  // Force no inline to reduce code size.
+  template <jni_zero::MethodID::Type type>
+  void Init(JNIEnv* env,
+            jclass clazz,
+            const char* method_name,
+            const char* jni_signature,
+            std::atomic<jmethodID>* atomic_method_id) {
+    env_ = env;
+
+    // Make sure compiler doesn't optimize out the assignment.
+    memcpy(&marker, &kJniStackMarkerValue, sizeof(kJniStackMarkerValue));
+    // Gets PC of the calling function.
+    pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
+
+    method_id_ = jni_zero::MethodID::LazyGet<type>(
+        env, clazz, method_name, jni_signature, atomic_method_id);
+  }
+
+  ~JniJavaCallContext() {
+    // Reset so that spurious marker finds are avoided.
+    memset(&marker, 0, sizeof(marker));
+    if (checked) {
+      jni_zero::CheckException(env_);
+    }
+  }
+
+  jmethodID method_id() { return method_id_; }
+
+ private:
+  uint64_t marker;
+  uintptr_t sp;
+  uintptr_t pc;
+
+  JNIEnv* env_;
+  jmethodID method_id_;
+};
+
+// TODO(b/319078685): Remove JniJavaCallContextUnchecked once all uses of the
+// jni_generator has been updated.
 struct BASE_EXPORT JniJavaCallContextUnchecked {
   inline JniJavaCallContextUnchecked() {
 // TODO(ssid): Implement for other architectures.
@@ -152,6 +204,8 @@ struct BASE_EXPORT JniJavaCallContextUnchecked {
   jmethodID method_id;
 };
 
+// TODO(b/319078685): Remove JniJavaCallContextChecked once all uses of the
+// jni_generator has been updated.
 // Context about the JNI call with exception unchecked to be stored in stack.
 struct BASE_EXPORT JniJavaCallContextChecked {
   // Force no inline to reduce code size.
@@ -179,6 +233,7 @@ static_assert(sizeof(JniJavaCallContextChecked) ==
 
 namespace jni_zero {
 namespace internal {
+using jni_zero::JniJavaCallContext;
 using jni_zero::JniJavaCallContextChecked;
 using jni_zero::JniJavaCallContextUnchecked;
 using webrtc::LazyGetClass;
@@ -189,6 +244,7 @@ using webrtc::LazyGetClass;
 // TODO(b/319078685): Remove once all uses of the jni_generator has been
 // updated.
 namespace jni_generator {
+using jni_zero::JniJavaCallContext;
 using jni_zero::JniJavaCallContextChecked;
 using jni_zero::JniJavaCallContextUnchecked;
 }  // namespace jni_generator
