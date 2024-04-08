@@ -50,6 +50,8 @@ CPPLINT_EXCEPTIONS = [
 PYLINT_OLD_STYLE = [
     "PRESUBMIT.py",
     "tools_webrtc/autoroller/roll_deps.py",
+    "tools_webrtc/android/build_aar.py",
+    "tools_webrtc/ios/build_ios_libs.py",
 ]
 
 # These filters will always be removed, even if the caller specifies a filter
