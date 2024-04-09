@@ -1048,6 +1048,12 @@ absl::optional<int64_t> RtpVideoStreamReceiver2::LastReceivedKeyframePacketMs()
   return absl::nullopt;
 }
 
+absl::optional<RtpRtcpInterface::SenderReportStats>
+RtpVideoStreamReceiver2::GetSenderReportStats() const {
+  RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
+  return rtp_rtcp_->GetSenderReportStats();
+}
+
 void RtpVideoStreamReceiver2::ManageFrame(
     std::unique_ptr<RtpFrameObject> frame) {
   RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
