@@ -1027,9 +1027,7 @@ def cmd_header(args: argparse.Namespace) -> None:
 def cmd_expired(args: argparse.Namespace) -> None:
     today = todays_date()
     diff = datetime.timedelta(days=args.in_days)
-    expired = expired_field_trials(
-        today + diff,
-        REGISTERED_FIELD_TRIALS if args.exempt else ACTIVE_FIELD_TRIALS)
+    expired = expired_field_trials(today + diff)
 
     if len(expired) <= 0:
         return
@@ -1074,11 +1072,6 @@ def main() -> None:
         Lists all expired field trials. Exits with a non-zero exit status if
         any field trials has expired, ignoring the --in-days argument.
         ''')
-    parser_expired.add_argument(
-        '--exempt',
-        default=True,
-        action=argparse.BooleanOptionalAction,
-        help='whether to include policy exempt field trials')
     parser_expired.add_argument(
         '--in-days',
         default=0,
