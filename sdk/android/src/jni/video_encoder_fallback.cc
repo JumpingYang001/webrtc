@@ -29,11 +29,12 @@ jlong JNI_VideoEncoderFallback_Create(
   std::unique_ptr<VideoEncoder> primary_encoder =
       JavaToNativeVideoEncoder(jni, j_primary_encoder, j_webrtc_env_ref);
 
-  return NativeToJavaPointer(CreateVideoEncoderSoftwareFallbackWrapper(
-                                 std::move(fallback_encoder),
-                                 std::move(primary_encoder),
-                                 /*prefer_temporal_support=*/false)
-                                 .release());
+  return NativeToJavaPointer(
+      CreateVideoEncoderSoftwareFallbackWrapper(
+          *reinterpret_cast<const Environment*>(j_webrtc_env_ref),
+          std::move(fallback_encoder), std::move(primary_encoder),
+          /*prefer_temporal_support=*/false)
+          .release());
 }
 
 }  // namespace jni
