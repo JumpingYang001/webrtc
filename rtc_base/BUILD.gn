@@ -1386,12 +1386,6 @@ rtc_library("dscp") {
   sources = [ "dscp.h" ]
 }
 
-rtc_library("proxy_info") {
-  visibility = [ "*" ]
-  sources = [ "proxy_info.h" ]
-  deps = []
-}
-
 rtc_library("file_rotating_stream") {
   sources = [
     "file_rotating_stream.cc",
