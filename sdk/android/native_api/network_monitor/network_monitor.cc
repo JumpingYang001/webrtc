@@ -20,7 +20,7 @@ std::unique_ptr<rtc::NetworkMonitorFactory> CreateAndroidNetworkMonitorFactory(
     JNIEnv* env,
     jobject application_context) {
   return std::make_unique<jni::AndroidNetworkMonitorFactory>(
-      env, JavaParamRef<jobject>(application_context));
+      env, JavaParamRef<jobject>(env, application_context));
 }
 
 std::unique_ptr<rtc::NetworkMonitorFactory>

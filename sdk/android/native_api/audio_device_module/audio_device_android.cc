@@ -40,7 +40,7 @@ void GetDefaultAudioParameters(JNIEnv* env,
                                jobject application_context,
                                AudioParameters* input_parameters,
                                AudioParameters* output_parameters) {
-  const JavaParamRef<jobject> j_context(application_context);
+  const JavaParamRef<jobject> j_context(env, application_context);
   const ScopedJavaLocalRef<jobject> j_audio_manager =
       jni::GetAudioManager(env, j_context);
   const int input_sample_rate = jni::GetDefaultSampleRate(env, j_audio_manager);
@@ -78,7 +78,7 @@ CreateJavaInputAndAAudioOutputAudioDeviceModule(JNIEnv* env,
                                                 jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
   // Get default audio input/output parameters.
-  const JavaParamRef<jobject> j_context(application_context);
+  const JavaParamRef<jobject> j_context(env, application_context);
   const ScopedJavaLocalRef<jobject> j_audio_manager =
       jni::GetAudioManager(env, j_context);
   AudioParameters input_parameters;
@@ -104,7 +104,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
     jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
   // Get default audio input/output parameters.
-  const JavaParamRef<jobject> j_context(application_context);
+  const JavaParamRef<jobject> j_context(env, application_context);
   const ScopedJavaLocalRef<jobject> j_audio_manager =
       jni::GetAudioManager(env, j_context);
   AudioParameters input_parameters;
@@ -155,7 +155,7 @@ CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
                                                   jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
   // Get default audio input/output parameters.
-  const JavaParamRef<jobject> j_context(application_context);
+  const JavaParamRef<jobject> j_context(env, application_context);
   const ScopedJavaLocalRef<jobject> j_audio_manager =
       jni::GetAudioManager(env, j_context);
   AudioParameters input_parameters;

@@ -16,7 +16,7 @@
 #include "rtc_base/checks.h"
 #include "sdk/android/generated_native_api_jni/WebRtcClassLoader_jni.h"
 #include "sdk/android/native_api/jni/java_types.h"
-#include "sdk/android/native_api/jni/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Abort the process if `jni` has a Java exception pending. This macros uses the
 // comma operator to execute ExceptionDescribe and ExceptionClear ignoring their
@@ -62,11 +62,18 @@ class ClassLoader {
 
 static ClassLoader* g_class_loader = nullptr;
 
+jclass GetClass(JNIEnv* env, const char* class_name, const char* unused) {
+  RTC_CHECK(g_class_loader);
+  return static_cast<jclass>(
+      g_class_loader->FindClass(env, class_name).Release());
+}
+
 }  // namespace
 
 void InitClassLoader(JNIEnv* env) {
   RTC_CHECK(g_class_loader == nullptr);
   g_class_loader = new ClassLoader(env);
+  jni_zero::SetClassResolver(&GetClass);
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* c_name) {
