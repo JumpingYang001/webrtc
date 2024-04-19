@@ -15,9 +15,9 @@
 
 #include <memory>
 
+#include "api/audio/audio_device_defines.h"
 #include "api/sequence_checker.h"
 #include "modules/audio_device/audio_device_buffer.h"
-#include "modules/audio_device/include/audio_device_defines.h"
 #include "sdk/android/src/jni/audio_device/audio_device_module.h"
 
 namespace webrtc {

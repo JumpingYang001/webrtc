@@ -14,13 +14,13 @@
 #include <utility>
 
 #include "absl/memory/memory.h"
+#include "api/audio/audio_device.h"
 #include "api/audio/audio_processing.h"
 #include "api/enable_media.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/task_queue/default_task_queue_factory.h"
 #include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_encoder_factory.h"
-#include "modules/audio_device/include/audio_device.h"
 #include "modules/utility/include/jvm_android.h"
 #include "rtc_base/event_tracer.h"
 #include "rtc_base/physical_socket_server.h"
