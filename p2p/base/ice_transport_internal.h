@@ -338,11 +338,15 @@ class RTC_EXPORT IceTransportInternal : public rtc::PacketTransportInternal {
   // SignalNetworkRouteChanged.
   sigslot::signal2<IceTransportInternal*, const Candidate&> SignalRouteChange;
 
-  void SetCandidatePairChangeCallback(
+  void AddCandidatePairChangeCallback(
+      const void* removal_tag,
       absl::AnyInvocable<void(const cricket::CandidatePairChangeEvent&)>
           callback) {
-    RTC_DCHECK(!candidate_pair_change_callback_);
-    candidate_pair_change_callback_ = std::move(callback);
+    candidate_pair_change_callback_list_.AddReceiver(removal_tag,
+                                                     std::move(callback));
+  }
+  void RemoveCandidatePairChangeCallback(const void* removal_tag) {
+    candidate_pair_change_callback_list_.RemoveReceivers(removal_tag);
   }
 
   // Invoked when there is conflict in the ICE role between local and remote
@@ -385,7 +389,8 @@ class RTC_EXPORT IceTransportInternal : public rtc::PacketTransportInternal {
 
  protected:
   void SendGatheringStateEvent() { SignalGatheringState(this); }
-
+  webrtc::CallbackList<const cricket::CandidatePairChangeEvent&>
+      candidate_pair_change_callback_list_;
   webrtc::CallbackList<IceTransportInternal*,
                        const StunDictionaryView&,
                        rtc::ArrayView<uint16_t>>
@@ -400,9 +405,6 @@ class RTC_EXPORT IceTransportInternal : public rtc::PacketTransportInternal {
 
   absl::AnyInvocable<void(IceTransportInternal*, const Candidates&)>
       candidates_removed_callback_;
-
-  absl::AnyInvocable<void(const cricket::CandidatePairChangeEvent&)>
-      candidate_pair_change_callback_;
 
  private:
   // TODO(bugs.webrtc.org/11943): remove when removing Signal

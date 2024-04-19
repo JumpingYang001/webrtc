@@ -464,8 +464,8 @@ JsepTransportController::CreateDtlsTransport(
       this, &JsepTransportController::OnTransportStateChanged_n);
   dtls->ice_transport()->SignalIceTransportStateChanged.connect(
       this, &JsepTransportController::OnTransportStateChanged_n);
-  dtls->ice_transport()->SetCandidatePairChangeCallback(
-      [this](const cricket::CandidatePairChangeEvent& event) {
+  dtls->ice_transport()->AddCandidatePairChangeCallback(
+      this, [this](const cricket::CandidatePairChangeEvent& event) {
         RTC_DCHECK_RUN_ON(network_thread_);
         OnTransportCandidatePairChanged_n(event);
       });
