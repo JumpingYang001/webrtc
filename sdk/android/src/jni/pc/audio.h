@@ -11,8 +11,8 @@
 #ifndef SDK_ANDROID_SRC_JNI_PC_AUDIO_H_
 #define SDK_ANDROID_SRC_JNI_PC_AUDIO_H_
 
+#include "api/audio/audio_processing.h"
 #include "api/scoped_refptr.h"
-#include "modules/audio_processing/include/audio_processing.h"
 
 namespace webrtc {
 namespace jni {

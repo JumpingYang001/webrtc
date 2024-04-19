@@ -573,8 +573,8 @@ if (current_os == "linux" || is_android) {
       "../../api:field_trials_view",
       "../../api:scoped_refptr",
       "../../api:sequence_checker",
+      "../../api/audio:audio_processing",
       "../../api/task_queue:pending_task_safety_flag",
-      "../../modules/audio_processing:api",
       "../../rtc_base:checks",
       "../../rtc_base:ip_address",
       "../../rtc_base:logging",
@@ -598,8 +598,8 @@ if (current_os == "linux" || is_android) {
 
     deps = [
       ":base_jni",
+      "../../api/audio:audio_processing",
       "../../modules/audio_processing",
-      "../../modules/audio_processing:api",
     ]
   }
 
@@ -782,6 +782,7 @@ if (current_os == "linux" || is_android) {
       "../../api:rtp_parameters",
       "../../api:rtp_sender_interface",
       "../../api:turn_customizer",
+      "../../api/audio:audio_processing",
       "../../api/crypto:options",
       "../../api/rtc_event_log:rtc_event_log_factory",
       "../../api/task_queue:default_task_queue_factory",
@@ -789,7 +790,6 @@ if (current_os == "linux" || is_android) {
       "../../call:call_interfaces",
       "../../media:rtc_media_base",
       "../../modules/audio_device",
-      "../../modules/audio_processing:api",
       "../../modules/utility",
       "../../pc:media_stream_observer",
       "../../pc:peer_connection_factory",
@@ -1659,7 +1659,6 @@ if (is_android) {
       "../../media:rtc_internal_video_codecs",
       "../../modules/audio_device",
       "../../modules/audio_device:mock_audio_device",
-      "../../modules/audio_processing:api",
       "../../modules/utility",
       "../../pc:libjingle_peerconnection",
       "../../rtc_base:checks",

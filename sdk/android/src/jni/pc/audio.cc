@@ -10,7 +10,7 @@
 
 #include "sdk/android/src/jni/pc/audio.h"
 
-#include "modules/audio_processing/include/audio_processing.h"
+#include "api/audio/audio_processing.h"
 
 namespace webrtc {
 namespace jni {
