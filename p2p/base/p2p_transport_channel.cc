@@ -1838,7 +1838,9 @@ void P2PTransportChannel::SwitchSelectedConnectionInternal(
     } else {
       pair_change.estimated_disconnected_time_ms = 0;
     }
-    candidate_pair_change_callback_list_.Send(pair_change);
+    if (candidate_pair_change_callback_) {
+      candidate_pair_change_callback_(pair_change);
+    }
   }
 
   ++selected_candidate_pair_changes_;

@@ -3326,8 +3326,8 @@ class P2PTransportChannelPingTest : public ::testing::Test,
                                   &P2PTransportChannelPingTest::OnReadyToSend);
     ch->SignalStateChanged.connect(
         this, &P2PTransportChannelPingTest::OnChannelStateChanged);
-    ch->AddCandidatePairChangeCallback(
-        this, [this](const cricket::CandidatePairChangeEvent& event) {
+    ch->SetCandidatePairChangeCallback(
+        [this](const cricket::CandidatePairChangeEvent& event) {
           OnCandidatePairChanged(event);
         });
   }
