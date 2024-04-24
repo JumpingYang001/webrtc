@@ -1,24 +1,39 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file under third_party_mods/chromium or at:
-// http://src.chromium.org/svn/trunk/src/LICENSE
+/*
+ *  Copyright (c) 2024 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
 
 #ifndef RTC_BASE_TRACE_EVENT_H_
 #define RTC_BASE_TRACE_EVENT_H_
-
-#include <string>
-
-#include "rtc_base/event_tracer.h"
-
-#if defined(TRACE_EVENT0)
-#error "Another copy of trace_event.h has already been included."
-#endif
 
 #if defined(RTC_DISABLE_TRACE_EVENTS)
 #define RTC_TRACE_EVENTS_ENABLED 0
 #else
 #define RTC_TRACE_EVENTS_ENABLED 1
 #endif
+
+#if defined(RTC_USE_PERFETTO)
+
+#include "rtc_base/trace_categories.h"  // IWYU pragma: export
+
+// TODO(webrtc:15917): Replace these events.
+#define TRACE_EVENT_ASYNC_STEP0(category_group, name, id, step) \
+  TRACE_EVENT_ASYNC_STEP_INTO0(category_group, name, id, step)
+#define TRACE_EVENT_ASYNC_STEP1(category_group, name, id, step, arg1_name, \
+                                arg1_val)                                  \
+  TRACE_EVENT_ASYNC_STEP_INTO1(category_group, name, id, step, arg1_name,  \
+                               arg1_val)
+
+#else
+
+#include <string>
+
+#include "rtc_base/event_tracer.h"
 
 // Type values for identifying types in the TraceValue union.
 #define TRACE_VALUE_TYPE_BOOL (static_cast<unsigned char>(1))
@@ -28,6 +43,10 @@
 #define TRACE_VALUE_TYPE_POINTER (static_cast<unsigned char>(5))
 #define TRACE_VALUE_TYPE_STRING (static_cast<unsigned char>(6))
 #define TRACE_VALUE_TYPE_COPY_STRING (static_cast<unsigned char>(7))
+
+#if defined(TRACE_EVENT0)
+#error "Another copy of trace_event.h has already been included."
+#endif
 
 #if RTC_TRACE_EVENTS_ENABLED
 
@@ -705,6 +724,7 @@ class TraceEndOnScopeClose {
 
 }  // namespace trace_event_internal
 }  // namespace webrtc
+
 #else
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -779,5 +799,6 @@ class TraceEndOnScopeClose {
 #define TRACE_EVENT_API_ADD_TRACE_EVENT RTC_NOOP()
 
 #endif  // RTC_TRACE_EVENTS_ENABLED
+#endif  // RTC_USE_PERFETTO
 
 #endif  // RTC_BASE_TRACE_EVENT_H_
