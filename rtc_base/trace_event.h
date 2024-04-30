@@ -17,9 +17,16 @@
 #define RTC_TRACE_EVENTS_ENABLED 1
 #endif
 
+// IWYU pragma: begin_exports
 #if defined(RTC_USE_PERFETTO)
+#include "rtc_base/trace_categories.h"
+#endif
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
+// IWYU pragma: end_exports
 
-#include "rtc_base/trace_categories.h"  // IWYU pragma: export
+#if defined(RTC_USE_PERFETTO)
 
 // TODO(webrtc:15917): Replace these events.
 #define TRACE_EVENT_ASYNC_STEP0(category_group, name, id, step) \
@@ -34,6 +41,21 @@
 #include <string>
 
 #include "rtc_base/event_tracer.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
+
+#define RTC_NOOP() \
+  do {             \
+  } while (0)
+
+// TODO(b/42226290): Add implementation for these events with Perfetto.
+#define TRACE_EVENT_BEGIN(category, name, ...) RTC_NOOP();
+#define TRACE_EVENT_END(category, ...) RTC_NOOP();
+#define TRACE_EVENT(category, name, ...) RTC_NOOP();
+#define TRACE_EVENT_INSTANT(category, name, ...) RTC_NOOP();
+#define TRACE_EVENT_CATEGORY_ENABLED(category) RTC_NOOP();
+#define TRACE_COUNTER(category, track, ...) RTC_NOOP();
 
 // Type values for identifying types in the TraceValue union.
 #define TRACE_VALUE_TYPE_BOOL (static_cast<unsigned char>(1))
@@ -730,10 +752,6 @@ class TraceEndOnScopeClose {
 ////////////////////////////////////////////////////////////////////////////////
 // This section defines no-op alternatives to the tracing macros when
 // RTC_DISABLE_TRACE_EVENTS is defined.
-
-#define RTC_NOOP() \
-  do {             \
-  } while (0)
 
 #define TRACE_DISABLED_BY_DEFAULT(name) "disabled-by-default-" name
 
