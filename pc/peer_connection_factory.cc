@@ -335,13 +335,14 @@ std::unique_ptr<Call> PeerConnectionFactory::CreateCall_w(
       network_state_predictor_factory_.get();
   call_config.neteq_factory = neteq_factory_.get();
 
-  if (injected_network_controller_factory_) {
+  if (IsTrialEnabled("WebRTC-Bwe-InjectedCongestionController")) {
     RTC_LOG(LS_INFO) << "Using injected network controller factory";
     call_config.network_controller_factory =
         injected_network_controller_factory_.get();
   } else {
     RTC_LOG(LS_INFO) << "Using default network controller factory";
   }
+
   call_config.rtp_transport_controller_send_factory =
       transport_controller_send_factory_.get();
   call_config.decode_metronome = decode_metronome_.get();
