@@ -26,24 +26,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 // IWYU pragma: end_exports
 
-#if defined(RTC_USE_PERFETTO)
-
-// TODO(webrtc:15917): Replace these events.
-#define TRACE_EVENT_ASYNC_STEP0(category_group, name, id, step) \
-  TRACE_EVENT_ASYNC_STEP_INTO0(category_group, name, id, step)
-#define TRACE_EVENT_ASYNC_STEP1(category_group, name, id, step, arg1_name, \
-                                arg1_val)                                  \
-  TRACE_EVENT_ASYNC_STEP_INTO1(category_group, name, id, step, arg1_name,  \
-                               arg1_val)
-
-#else
-
+#if !defined(RTC_USE_PERFETTO)
 #include <string>
 
 #include "rtc_base/event_tracer.h"
-#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
-#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 #define RTC_NOOP() \
   do {             \
@@ -352,13 +338,14 @@ static constexpr uint8_t TRACE_EVENT_SCOPE_THREAD = 2u << 2;
 // ASYNC_BEGIN event above. The `step` param identifies this step within the
 // async event. This should be called at the beginning of the next phase of an
 // asynchronous operation.
-#define TRACE_EVENT_ASYNC_STEP0(category, name, id, step)                   \
+#define TRACE_EVENT_ASYNC_STEP_INTO0(category, name, id, step)              \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_ASYNC_STEP, category,  \
                                    name, id, TRACE_EVENT_FLAG_NONE, "step", \
                                    step)
-#define TRACE_EVENT_ASYNC_STEP1(category, name, id, step, arg1_name, arg1_val) \
-  INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_ASYNC_STEP, category,     \
-                                   name, id, TRACE_EVENT_FLAG_NONE, "step",    \
+#define TRACE_EVENT_ASYNC_STEP_INTO1(category, name, id, step, arg1_name,   \
+                                     arg1_val)                              \
+  INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_ASYNC_STEP, category,  \
+                                   name, id, TRACE_EVENT_FLAG_NONE, "step", \
                                    step, arg1_name, arg1_val)
 
 // Records a single ASYNC_END event for "name" immediately. If the category
@@ -801,8 +788,9 @@ class TraceEndOnScopeClose {
                                  arg2_name, arg2_val)                     \
   RTC_NOOP()
 
-#define TRACE_EVENT_ASYNC_STEP0(category, name, id, step) RTC_NOOP()
-#define TRACE_EVENT_ASYNC_STEP1(category, name, id, step, arg1_name, arg1_val) \
+#define TRACE_EVENT_ASYNC_STEP_INTO0(category, name, id, step) RTC_NOOP()
+#define TRACE_EVENT_ASYNC_STEP_INTO1(category, name, id, step, arg1_name, \
+                                     arg1_val)                            \
   RTC_NOOP()
 
 #define TRACE_EVENT_ASYNC_END0(category, name, id) RTC_NOOP()
