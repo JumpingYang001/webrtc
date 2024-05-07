@@ -15,45 +15,40 @@
 #include <cstdint>
 #include <utility>
 
-#include "absl/types/optional.h"
-#include "api/test/simulated_network.h"
 #include "api/units/data_rate.h"
 #include "api/units/data_size.h"
 #include "api/units/time_delta.h"
-#include "api/units/timestamp.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {
 namespace {
 
-// Calculate the time that it takes to send N `bits` on a
+// Calculate the time (in microseconds) that takes to send N `bits` on a
 // network with link capacity equal to `capacity_kbps` starting at time
-// `start_time`.
-Timestamp CalculateArrivalTime(Timestamp start_time,
+// `start_time_us`.
+int64_t CalculateArrivalTimeUs(int64_t start_time_us,
                                int64_t bits,
                                int capacity_kbps) {
-  // If capacity is negative, the link capacity is assumed to be infinite.
-  if (capacity_kbps < 0) {
-    return start_time;
-  }
+  // If capacity is 0, the link capacity is assumed to be infinite.
   if (capacity_kbps == 0) {
-    return Timestamp::PlusInfinity();
+    return start_time_us;
   }
-
   // Adding `capacity - 1` to the numerator rounds the extra delay caused by
   // capacity constraints up to an integral microsecond. Sending 0 bits takes 0
   // extra time, while sending 1 bit gets rounded up to 1 (the multiplication by
   // 1000 is because capacity is in kbps).
   // The factor 1000 comes from 10^6 / 10^3, where 10^6 is due to the time unit
   // being us and 10^3 is due to the rate unit being kbps.
-  return start_time +
-         TimeDelta::Micros((1000 * bits + capacity_kbps - 1) / capacity_kbps);
+  return start_time_us + ((1000 * bits + capacity_kbps - 1) / capacity_kbps);
 }
 
 }  // namespace
 
 SimulatedNetwork::SimulatedNetwork(Config config, uint64_t random_seed)
-    : random_(random_seed), bursting_(false), last_enqueue_time_us_(0) {
+    : random_(random_seed),
+      bursting_(false),
+      last_enqueue_time_us_(0),
+      last_capacity_link_exit_time_(0) {
   SetConfig(config);
 }
 
@@ -81,30 +76,6 @@ void SimulatedNetwork::SetConfig(const Config& config) {
     config_state_.prob_loss_bursting = (1.0 - 1.0 / avg_burst_loss_length);
     config_state_.prob_start_bursting =
         prob_loss / (1 - prob_loss) / avg_burst_loss_length;
-  }
-}
-
-void SimulatedNetwork::SetConfig(const BuiltInNetworkBehaviorConfig& new_config,
-                                 Timestamp config_update_time) {
-  RTC_DCHECK_RUNS_SERIALIZED(&process_checker_);
-
-  if (!capacity_link_.empty()) {
-    // Calculate and update how large portion of the packet first in the
-    // capacity link is left to to send at time `config_update_time`.
-    const BuiltInNetworkBehaviorConfig& current_config =
-        GetConfigState().config;
-    TimeDelta duration_with_current_config =
-        config_update_time - capacity_link_.front().last_update_time;
-    RTC_DCHECK_GE(duration_with_current_config, TimeDelta::Zero());
-    capacity_link_.front().bits_left_to_send -= std::min(
-        duration_with_current_config.ms() * current_config.link_capacity_kbps,
-        capacity_link_.front().bits_left_to_send);
-    capacity_link_.front().last_update_time = config_update_time;
-  }
-  SetConfig(new_config);
-  UpdateCapacityQueue(GetConfigState(), config_update_time);
-  if (UpdateNextProcessTime() && next_process_time_changed_callback_) {
-    next_process_time_changed_callback_();
   }
 }
 
@@ -146,31 +117,24 @@ bool SimulatedNetwork::EnqueuePacket(PacketInFlightInfo packet) {
     return false;
   }
 
-  // Note that arrival time will be updated when previous packets are dequeued
-  // from the capacity link.
-  // A packet can not enter the narrow section before the last packet has exit.
-  Timestamp enqueue_time = Timestamp::Micros(packet.send_time_us);
-  Timestamp arrival_time =
-      capacity_link_.empty()
-          ? CalculateArrivalTime(
-                std::max(enqueue_time, last_capacity_link_exit_time_),
-                packet.size * 8, state.config.link_capacity_kbps)
-          : Timestamp::PlusInfinity();
-  capacity_link_.push(
-      {.packet = packet,
-       .last_update_time = enqueue_time,
-       .bits_left_to_send = 8 * static_cast<int64_t>(packet.size),
-       .arrival_time = arrival_time});
+  // If the packet has been sent before the previous packet in the network left
+  // the capacity queue, let's ensure the new packet will start its trip in the
+  // network after the last bit of the previous packet has left it.
+  int64_t packet_send_time_us = packet.send_time_us;
+  if (!capacity_link_.empty()) {
+    packet_send_time_us =
+        std::max(packet_send_time_us, capacity_link_.back().arrival_time_us);
+  }
+  capacity_link_.push({.packet = packet,
+                       .arrival_time_us = CalculateArrivalTimeUs(
+                           packet_send_time_us, packet.size * 8,
+                           state.config.link_capacity_kbps)});
 
-  // Only update `next_process_time_` if not already set. Otherwise,
-  // next_process_time_ is calculated when a packet is dequeued. Note that this
-  // means that the newly enqueud packet risk having an arrival time before
-  // `next_process_time_` if packet reordering is allowed and
-  // config.delay_standard_deviation_ms is set.
-  // TODO(bugs.webrtc.org/14525): Consider preventing this.
-  if (next_process_time_.IsInfinite()) {
+  // Only update `next_process_time_us_` if not already set (if set, there is no
+  // way that a new packet will make the `next_process_time_us_` change).
+  if (!next_process_time_us_) {
     RTC_DCHECK_EQ(capacity_link_.size(), 1);
-    next_process_time_ = arrival_time;
+    next_process_time_us_ = capacity_link_.front().arrival_time_us;
   }
 
   last_enqueue_time_us_ = packet.send_time_us;
@@ -179,82 +143,74 @@ bool SimulatedNetwork::EnqueuePacket(PacketInFlightInfo packet) {
 
 absl::optional<int64_t> SimulatedNetwork::NextDeliveryTimeUs() const {
   RTC_DCHECK_RUNS_SERIALIZED(&process_checker_);
-  if (next_process_time_.IsFinite()) {
-    return next_process_time_.us();
-  }
-  return absl::nullopt;
+  return next_process_time_us_;
 }
 
 void SimulatedNetwork::UpdateCapacityQueue(ConfigState state,
-                                           Timestamp time_now) {
-  // Only the first packet in capacity_link_ have a calculated arrival time
-  // (when packet leave the narrow section), and time when it entered the narrow
-  // section. Also, the configuration may have changed. Thus we need to
-  // calculate the arrival time again before maybe moving the packet to the
-  // delay link.
+                                           int64_t time_now_us) {
+  // If there is at least one packet in the `capacity_link_`, let's update its
+  // arrival time to take into account changes in the network configuration
+  // since the last call to UpdateCapacityQueue.
   if (!capacity_link_.empty()) {
-    capacity_link_.front().last_update_time = std::max(
-        capacity_link_.front().last_update_time, last_capacity_link_exit_time_);
-    capacity_link_.front().arrival_time =
-        CalculateArrivalTime(capacity_link_.front().last_update_time,
-                             capacity_link_.front().bits_left_to_send,
-                             state.config.link_capacity_kbps);
+    capacity_link_.front().arrival_time_us = CalculateArrivalTimeUs(
+        std::max(capacity_link_.front().packet.send_time_us,
+                 last_capacity_link_exit_time_),
+        capacity_link_.front().packet.size * 8,
+        state.config.link_capacity_kbps);
   }
 
   // The capacity link is empty or the first packet is not expected to exit yet.
   if (capacity_link_.empty() ||
-      time_now < capacity_link_.front().arrival_time) {
+      time_now_us < capacity_link_.front().arrival_time_us) {
     return;
   }
   bool reorder_packets = false;
 
   do {
-    // Time to get this packet (the original or just updated arrival_time is
+    // Time to get this packet (the original or just updated arrival_time_us is
     // smaller or equal to time_now_us).
     PacketInfo packet = capacity_link_.front();
-    RTC_DCHECK(packet.arrival_time.IsFinite());
     capacity_link_.pop();
 
     // If the network is paused, the pause will be implemented as an extra delay
     // to be spent in the `delay_link_` queue.
-    if (state.pause_transmission_until_us > packet.arrival_time.us()) {
-      packet.arrival_time =
-          Timestamp::Micros(state.pause_transmission_until_us);
+    if (state.pause_transmission_until_us > packet.arrival_time_us) {
+      packet.arrival_time_us = state.pause_transmission_until_us;
     }
 
     // Store the original arrival time, before applying packet loss or extra
     // delay. This is needed to know when it is the first available time the
     // next packet in the `capacity_link_` queue can start transmitting.
-    last_capacity_link_exit_time_ = packet.arrival_time;
+    last_capacity_link_exit_time_ = packet.arrival_time_us;
 
     // Drop packets at an average rate of `state.config.loss_percent` with
     // and average loss burst length of `state.config.avg_burst_loss_length`.
     if ((bursting_ && random_.Rand<double>() < state.prob_loss_bursting) ||
         (!bursting_ && random_.Rand<double>() < state.prob_start_bursting)) {
       bursting_ = true;
-      packet.arrival_time = Timestamp::MinusInfinity();
+      packet.arrival_time_us = PacketDeliveryInfo::kNotReceived;
     } else {
       // If packets are not dropped, apply extra delay as configured.
       bursting_ = false;
-      TimeDelta arrival_time_jitter = TimeDelta::Micros(std::max(
+      int64_t arrival_time_jitter_us = std::max(
           random_.Gaussian(state.config.queue_delay_ms * 1000,
                            state.config.delay_standard_deviation_ms * 1000),
-          0.0));
+          0.0);
 
       // If reordering is not allowed then adjust arrival_time_jitter
       // to make sure all packets are sent in order.
-      Timestamp last_arrival_time = delay_link_.empty()
-                                        ? Timestamp::MinusInfinity()
-                                        : delay_link_.back().arrival_time;
+      int64_t last_arrival_time_us =
+          delay_link_.empty() ? -1 : delay_link_.back().arrival_time_us;
       if (!state.config.allow_reordering && !delay_link_.empty() &&
-          packet.arrival_time + arrival_time_jitter < last_arrival_time) {
-        arrival_time_jitter = last_arrival_time - packet.arrival_time;
+          packet.arrival_time_us + arrival_time_jitter_us <
+              last_arrival_time_us) {
+        arrival_time_jitter_us = last_arrival_time_us - packet.arrival_time_us;
       }
-      packet.arrival_time += arrival_time_jitter;
+      packet.arrival_time_us += arrival_time_jitter_us;
 
       // Optimization: Schedule a reorder only when a packet will exit before
       // the one in front.
-      if (last_arrival_time > packet.arrival_time) {
+      if (last_arrival_time_us > packet.arrival_time_us) {
         reorder_packets = true;
       }
     }
@@ -265,23 +221,23 @@ void SimulatedNetwork::UpdateCapacityQueue(ConfigState state,
       break;
     }
     // If instead there is another packet in the `capacity_link_` queue, let's
-    // calculate its arrival_time based on the latest config (which might
+    // calculate its arrival_time_us based on the latest config (which might
     // have been changed since it was enqueued).
-    Timestamp next_start = std::max(last_capacity_link_exit_time_,
-                                    capacity_link_.front().last_update_time);
-    capacity_link_.front().arrival_time =
-        CalculateArrivalTime(next_start, capacity_link_.front().packet.size * 8,
-                             state.config.link_capacity_kbps);
+    int64_t next_start = std::max(last_capacity_link_exit_time_,
+                                  capacity_link_.front().packet.send_time_us);
+    capacity_link_.front().arrival_time_us = CalculateArrivalTimeUs(
+        next_start, capacity_link_.front().packet.size * 8,
+        state.config.link_capacity_kbps);
     // And if the next packet in the queue needs to exit, let's dequeue it.
-  } while (capacity_link_.front().arrival_time <= time_now);
+  } while (capacity_link_.front().arrival_time_us <= time_now_us);
 
   if (state.config.allow_reordering && reorder_packets) {
     // Packets arrived out of order and since the network config allows
-    // reordering, let's sort them per arrival_time to make so they will also
+    // reordering, let's sort them per arrival_time_us to make so they will also
     // be delivered out of order.
     std::stable_sort(delay_link_.begin(), delay_link_.end(),
                      [](const PacketInfo& p1, const PacketInfo& p2) {
-                       return p1.arrival_time < p2.arrival_time;
+                       return p1.arrival_time_us < p2.arrival_time_us;
                      });
   }
 }
@@ -294,49 +250,27 @@ SimulatedNetwork::ConfigState SimulatedNetwork::GetConfigState() const {
 std::vector<PacketDeliveryInfo> SimulatedNetwork::DequeueDeliverablePackets(
     int64_t receive_time_us) {
   RTC_DCHECK_RUNS_SERIALIZED(&process_checker_);
-  Timestamp receive_time = Timestamp::Micros(receive_time_us);
 
-  UpdateCapacityQueue(GetConfigState(), receive_time);
+  UpdateCapacityQueue(GetConfigState(), receive_time_us);
   std::vector<PacketDeliveryInfo> packets_to_deliver;
 
   // Check the extra delay queue.
   while (!delay_link_.empty() &&
-         receive_time >= delay_link_.front().arrival_time) {
+         receive_time_us >= delay_link_.front().arrival_time_us) {
     PacketInfo packet_info = delay_link_.front();
-    packets_to_deliver.emplace_back(PacketDeliveryInfo(
-        packet_info.packet, packet_info.arrival_time.IsFinite()
-                                ? packet_info.arrival_time.us()
-                                : PacketDeliveryInfo::kNotReceived));
+    packets_to_deliver.emplace_back(
+        PacketDeliveryInfo(packet_info.packet, packet_info.arrival_time_us));
     delay_link_.pop_front();
   }
-  // There is no need to invoke `next_process_time_changed_callback_` here since
-  // it is expected that the user of NetworkBehaviorInterface calls
-  // NextDeliveryTimeUs after DequeueDeliverablePackets. See
-  // NetworkBehaviorInterface.
-  UpdateNextProcessTime();
+
+  if (!delay_link_.empty()) {
+    next_process_time_us_ = delay_link_.front().arrival_time_us;
+  } else if (!capacity_link_.empty()) {
+    next_process_time_us_ = capacity_link_.front().arrival_time_us;
+  } else {
+    next_process_time_us_.reset();
+  }
   return packets_to_deliver;
-}
-
-bool SimulatedNetwork::UpdateNextProcessTime() {
-  Timestamp next_process_time = next_process_time_;
-
-  next_process_time_ = Timestamp::PlusInfinity();
-  for (const PacketInfo& packet : delay_link_) {
-    if (packet.arrival_time.IsFinite()) {
-      next_process_time_ = packet.arrival_time;
-      break;
-    }
-  }
-  if (next_process_time_.IsInfinite() && !capacity_link_.empty()) {
-    next_process_time_ = capacity_link_.front().arrival_time;
-  }
-  return next_process_time != next_process_time_;
-}
-
-void SimulatedNetwork::RegisterDeliveryTimeChangedCallback(
-    absl::AnyInvocable<void()> callback) {
-  RTC_DCHECK_RUNS_SERIALIZED(&process_checker_);
-  next_process_time_changed_callback_ = std::move(callback);
 }
 
 }  // namespace webrtc
