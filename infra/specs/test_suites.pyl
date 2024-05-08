@@ -119,15 +119,13 @@
       # 'rtc_unittests': {},
       'rtc_pc_unittests': {},
       'svc_tests': {
-        # TODO: b/338087169 - Re-enable sharding.
-        # 'mixins': ['shards-4'],
+        'mixins': ['shards-4'],
       },
       'system_wrappers_unittests': {},
       # TODO(bugs.webrtc.org/14712):  Enable once network issue is fixed.
       # 'peerconnection_unittests': {},
       'video_engine_tests': {
-        # TODO: b/338087169 - Re-enable sharding.
-        # 'mixins': ['shards-4'],
+        'mixins': ['shards-4'],
       },
       'voip_unittests': {},
       'webrtc_nonparallel_tests': {},

@@ -2009,7 +2009,8 @@
           "dimensions": {
             "cpu": "x86-64",
             "os": "Ubuntu-22.04"
-          }
+          },
+          "shards": 4
         },
         "test": "svc_tests",
         "test_id_prefix": "ninja://pc:svc_tests/"
@@ -2057,7 +2058,8 @@
           "dimensions": {
             "cpu": "x86-64",
             "os": "Ubuntu-22.04"
-          }
+          },
+          "shards": 4
         },
         "test": "video_engine_tests",
         "test_id_prefix": "ninja://:video_engine_tests/"
