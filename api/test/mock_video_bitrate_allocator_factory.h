@@ -18,12 +18,13 @@
 
 namespace webrtc {
 
-class MockVideoBitrateAllocatorFactory : public VideoBitrateAllocatorFactory {
+class MockVideoBitrateAllocatorFactory
+    : public webrtc::VideoBitrateAllocatorFactory {
  public:
   ~MockVideoBitrateAllocatorFactory() override { Die(); }
   MOCK_METHOD(std::unique_ptr<VideoBitrateAllocator>,
-              Create,
-              (const Environment&, const VideoCodec&),
+              CreateVideoBitrateAllocator,
+              (const VideoCodec&),
               (override));
   MOCK_METHOD(void, Die, ());
 };

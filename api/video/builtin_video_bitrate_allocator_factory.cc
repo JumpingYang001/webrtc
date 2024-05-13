@@ -29,10 +29,7 @@ class BuiltinVideoBitrateAllocatorFactory
   BuiltinVideoBitrateAllocatorFactory() = default;
   ~BuiltinVideoBitrateAllocatorFactory() override = default;
 
-  // TODO: bugs.webrtc.org/42220378 - propagate Environment into RateAllocators
-  // so that they wouldn't use global field trials string to query field trials.
-  std::unique_ptr<VideoBitrateAllocator> Create(
-      const Environment& /*env*/,
+  std::unique_ptr<VideoBitrateAllocator> CreateVideoBitrateAllocator(
       const VideoCodec& codec) override {
     // TODO(https://crbug.com/webrtc/14884): Update SvcRateAllocator to
     // support simulcast and use it for VP9/AV1 simulcast as well.

@@ -1267,7 +1267,8 @@ void VideoStreamEncoder::ReconfigureEncoder() {
         }
       }));
 
-  rate_allocator_ = settings_.bitrate_allocator_factory->Create(env_, codec);
+  rate_allocator_ =
+      settings_.bitrate_allocator_factory->CreateVideoBitrateAllocator(codec);
   rate_allocator_->SetLegacyConferenceMode(
       encoder_config_.legacy_conference_mode);
 

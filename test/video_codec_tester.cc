@@ -1300,8 +1300,7 @@ void SetDefaultCodecSpecificSettings(VideoCodec* vc, int num_temporal_layers) {
 }
 
 std::tuple<std::vector<DataRate>, ScalabilityMode>
-SplitBitrateAndUpdateScalabilityMode(const Environment& env,
-                                     std::string codec_type,
+SplitBitrateAndUpdateScalabilityMode(std::string codec_type,
                                      ScalabilityMode scalability_mode,
                                      int width,
                                      int height,
@@ -1408,7 +1407,8 @@ SplitBitrateAndUpdateScalabilityMode(const Environment& env,
   }
 
   std::unique_ptr<VideoBitrateAllocator> bitrate_allocator =
-      CreateBuiltinVideoBitrateAllocatorFactory()->Create(env, vc);
+      CreateBuiltinVideoBitrateAllocatorFactory()->CreateVideoBitrateAllocator(
+          vc);
   VideoBitrateAllocation bitrate_allocation =
       bitrate_allocator->Allocate(VideoBitrateAllocationParameters(
           total_bitrate.bps(), framerate.hertz<double>()));
@@ -1486,7 +1486,6 @@ void VideoCodecStats::Stream::LogMetrics(
 }
 
 EncodingSettings VideoCodecTester::CreateEncodingSettings(
-    const Environment& env,
     std::string codec_type,
     std::string scalability_name,
     int width,
@@ -1500,7 +1499,7 @@ EncodingSettings VideoCodecTester::CreateEncodingSettings(
 
   auto [adjusted_bitrate, scalability_mode] =
       SplitBitrateAndUpdateScalabilityMode(
-          env, codec_type, *ScalabilityModeFromString(scalability_name), width,
+          codec_type, *ScalabilityModeFromString(scalability_name), width,
           height, bitrate, framerate, content_type);
 
   int num_spatial_layers = ScalabilityModeToNumSpatialLayers(scalability_mode);
