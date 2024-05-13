@@ -117,6 +117,7 @@ class AudioReceiveStreamInterface : public MediaReceiveStreamInterface {
 
       // See NackConfig for description.
       NackConfig nack;
+      RtcpMode rtcp_mode = RtcpMode::kCompound;
     } rtp;
 
     // Receive-side RTT.
