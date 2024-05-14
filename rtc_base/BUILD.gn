@@ -1487,6 +1487,14 @@ rtc_library("rtc_certificate_generator") {
   ]
 }
 
+rtc_source_set("ssl_header") {
+  public_deps += [ ":ssl" ]  # no-presubmit-check TODO(webrtc:8603)
+}
+
+rtc_source_set("digest") {
+  public_deps += [ ":ssl" ]  # no-presubmit-check TODO(webrtc:8603)
+}
+
 rtc_library("ssl") {
   visibility = [ "*" ]
   sources = [
@@ -1689,6 +1697,7 @@ rtc_library("rtc_base_tests_utils") {
     ":buffer",
     ":byte_buffer",
     ":checks",
+    ":digest",
     ":ip_address",
     ":logging",
     ":macromagic",
@@ -2071,6 +2080,7 @@ if (rtc_include_tests) {
         ":checks",
         ":crc32",
         ":data_rate_limiter",
+        ":digest",
         ":gunit_helpers",
         ":ifaddrs_converter",
         ":ip_address",
@@ -2093,6 +2103,7 @@ if (rtc_include_tests) {
         ":socket_factory",
         ":socket_server",
         ":ssl",
+        ":ssl_header",
         ":stream",
         ":stringutils",
         ":testclient",
