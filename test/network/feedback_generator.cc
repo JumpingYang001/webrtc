@@ -63,7 +63,7 @@ void FeedbackGeneratorImpl::SetReturnConfig(
 }
 
 void FeedbackGeneratorImpl::SetSendLinkCapacity(DataRate capacity) {
-  conf_.send_link.link_capacity = capacity;
+  conf_.send_link.link_capacity_kbps = capacity.kbps<int>();
   send_link_->SetConfig(conf_.send_link);
 }
 

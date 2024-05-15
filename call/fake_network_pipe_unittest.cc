@@ -13,7 +13,6 @@
 #include <memory>
 #include <utility>
 
-#include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
@@ -76,8 +75,8 @@ class FakeNetworkPipeTest : public ::testing::Test {
     }
   }
 
-  int PacketTimeMs(DataRate capacity, int packet_size) const {
-    return 8 * packet_size / capacity.kbps();
+  int PacketTimeMs(int capacity_kbps, int packet_size) const {
+    return 8 * packet_size / capacity_kbps;
   }
 
   SimulatedClock fake_clock_;
@@ -87,7 +86,7 @@ class FakeNetworkPipeTest : public ::testing::Test {
 TEST_F(FakeNetworkPipeTest, CapacityTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 20;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   auto simulated_network = std::make_unique<SimulatedNetwork>(config);
   std::unique_ptr<FakeNetworkPipe> pipe(new FakeNetworkPipe(
@@ -100,7 +99,8 @@ TEST_F(FakeNetworkPipeTest, CapacityTest) {
   SendPackets(pipe.get(), kNumPackets, kPacketSize);
 
   // Time to get one packet through the link.
-  const int kPacketTimeMs = PacketTimeMs(config.link_capacity, kPacketSize);
+  const int kPacketTimeMs =
+      PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Time haven't increased yet, so we souldn't get any packets.
   EXPECT_CALL(receiver, DeliverRtpPacket).Times(0);
@@ -127,7 +127,7 @@ TEST_F(FakeNetworkPipeTest, ExtraDelayTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 20;
   config.queue_delay_ms = 100;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   auto simulated_network = std::make_unique<SimulatedNetwork>(config);
   std::unique_ptr<FakeNetworkPipe> pipe(new FakeNetworkPipe(
@@ -138,7 +138,8 @@ TEST_F(FakeNetworkPipeTest, ExtraDelayTest) {
   SendPackets(pipe.get(), kNumPackets, kPacketSize);
 
   // Time to get one packet through the link.
-  const int kPacketTimeMs = PacketTimeMs(config.link_capacity, kPacketSize);
+  const int kPacketTimeMs =
+      PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Increase more than kPacketTimeMs, but not more than the extra delay.
   fake_clock_.AdvanceTimeMilliseconds(kPacketTimeMs);
@@ -161,14 +162,15 @@ TEST_F(FakeNetworkPipeTest, ExtraDelayTest) {
 TEST_F(FakeNetworkPipeTest, QueueLengthTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 2;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   auto simulated_network = std::make_unique<SimulatedNetwork>(config);
   std::unique_ptr<FakeNetworkPipe> pipe(new FakeNetworkPipe(
       &fake_clock_, std::move(simulated_network), &receiver));
 
   const int kPacketSize = 1000;
-  const int kPacketTimeMs = PacketTimeMs(config.link_capacity, kPacketSize);
+  const int kPacketTimeMs =
+      PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Send three packets and verify only 2 are delivered.
   SendPackets(pipe.get(), 3, kPacketSize);
@@ -185,14 +187,15 @@ TEST_F(FakeNetworkPipeTest, StatisticsTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 2;
   config.queue_delay_ms = 20;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   auto simulated_network = std::make_unique<SimulatedNetwork>(config);
   std::unique_ptr<FakeNetworkPipe> pipe(new FakeNetworkPipe(
       &fake_clock_, std::move(simulated_network), &receiver));
 
   const int kPacketSize = 1000;
-  const int kPacketTimeMs = PacketTimeMs(config.link_capacity, kPacketSize);
+  const int kPacketTimeMs =
+      PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Send three packets and verify only 2 are delivered.
   SendPackets(pipe.get(), 3, kPacketSize);
@@ -215,7 +218,7 @@ TEST_F(FakeNetworkPipeTest, StatisticsTest) {
 TEST_F(FakeNetworkPipeTest, ChangingCapacityWithEmptyPipeTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 20;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   std::unique_ptr<SimulatedNetwork> network(new SimulatedNetwork(config));
   SimulatedNetwork* simulated_network = network.get();
@@ -229,7 +232,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithEmptyPipeTest) {
   SendPackets(pipe.get(), kNumPackets, kPacketSize);
 
   // Time to get one packet through the link.
-  int packet_time_ms = PacketTimeMs(config.link_capacity, kPacketSize);
+  int packet_time_ms = PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Time hasn't increased yet, so we souldn't get any packets.
   EXPECT_CALL(receiver, DeliverRtpPacket).Times(0);
@@ -243,7 +246,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithEmptyPipeTest) {
   }
 
   // Change the capacity.
-  config.link_capacity = config.link_capacity / 2;  // Reduce to 50%.
+  config.link_capacity_kbps /= 2;  // Reduce to 50%.
   simulated_network->SetConfig(config);
 
   // Add another 10 packets of 1000 bytes, = 80 kb, and verify it takes two
@@ -251,7 +254,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithEmptyPipeTest) {
   SendPackets(pipe.get(), kNumPackets, kPacketSize);
 
   // Time to get one packet through the link.
-  packet_time_ms = PacketTimeMs(config.link_capacity, kPacketSize);
+  packet_time_ms = PacketTimeMs(config.link_capacity_kbps, kPacketSize);
 
   // Time hasn't increased yet, so we souldn't get any packets.
   EXPECT_CALL(receiver, DeliverRtpPacket).Times(0);
@@ -277,7 +280,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithEmptyPipeTest) {
 TEST_F(FakeNetworkPipeTest, ChangingCapacityWithPacketsInPipeTest) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 20;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 80;
   MockReceiver receiver;
   std::unique_ptr<SimulatedNetwork> network(new SimulatedNetwork(config));
   SimulatedNetwork* simulated_network = network.get();
@@ -294,7 +297,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithPacketsInPipeTest) {
   pipe->Process();
 
   // Advance time in steps to release half of the packets one at a time.
-  int step_ms = PacketTimeMs(config.link_capacity, kPacketSize);
+  int step_ms = PacketTimeMs(config.link_capacity_kbps, kPacketSize);
   for (int i = 0; i < kNumPackets / 2; ++i) {
     fake_clock_.AdvanceTimeMilliseconds(step_ms);
     EXPECT_CALL(receiver, DeliverRtpPacket).Times(1);
@@ -302,11 +305,11 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithPacketsInPipeTest) {
   }
 
   // Change the capacity.
-  config.link_capacity = 2 * config.link_capacity;
+  config.link_capacity_kbps *= 2;  // Double the capacity.
   simulated_network->SetConfig(config);
 
   // Advance time in steps to release remaining packets one at a time.
-  step_ms = PacketTimeMs(config.link_capacity, kPacketSize);
+  step_ms = PacketTimeMs(config.link_capacity_kbps, kPacketSize);
   for (int i = 0; i < kNumPackets / 2; ++i) {
     fake_clock_.AdvanceTimeMilliseconds(step_ms);
     EXPECT_CALL(receiver, DeliverRtpPacket).Times(1);
@@ -325,7 +328,7 @@ TEST_F(FakeNetworkPipeTest, ChangingCapacityWithPacketsInPipeTest) {
 TEST_F(FakeNetworkPipeTest, DisallowReorderingThenAllowReordering) {
   BuiltInNetworkBehaviorConfig config;
   config.queue_length_packets = 1000;
-  config.link_capacity = DataRate::KilobitsPerSec(80);
+  config.link_capacity_kbps = 800;
   config.queue_delay_ms = 100;
   config.delay_standard_deviation_ms = 10;
   ReorderTestReceiver receiver;
@@ -412,14 +415,15 @@ TEST_F(FakeNetworkPipeTest, BurstLoss) {
 
 TEST_F(FakeNetworkPipeTest, SetReceiver) {
   BuiltInNetworkBehaviorConfig config;
-  config.link_capacity = DataRate::KilobitsPerSec(800);
+  config.link_capacity_kbps = 800;
   MockReceiver receiver;
   auto simulated_network = std::make_unique<SimulatedNetwork>(config);
   std::unique_ptr<FakeNetworkPipe> pipe(new FakeNetworkPipe(
       &fake_clock_, std::move(simulated_network), &receiver));
 
   const int kPacketSize = 1000;
-  const int kPacketTimeMs = PacketTimeMs(config.link_capacity, kPacketSize);
+  const int kPacketTimeMs =
+      PacketTimeMs(config.link_capacity_kbps, kPacketSize);
   SendPackets(pipe.get(), 1, kPacketSize);
   fake_clock_.AdvanceTimeMilliseconds(kPacketTimeMs);
   EXPECT_CALL(receiver, DeliverRtpPacket).Times(1);
