@@ -28,6 +28,7 @@ namespace {
 // estimate of the RTT of the link,so 10ms should be a reasonable estimate for
 // frames being re-transmitted to a peer, probably on the same network.
 const TimeDelta kDefaultRetransmissionsTime = TimeDelta::Millis(10);
+}  // namespace
 
 class TransformableVideoSenderFrame : public TransformableVideoFrameInterface {
  public:
@@ -39,7 +40,8 @@ class TransformableVideoSenderFrame : public TransformableVideoFrameInterface {
                                 TimeDelta expected_retransmission_time,
                                 uint32_t ssrc,
                                 std::vector<uint32_t> csrcs)
-      : encoded_data_(encoded_image.GetEncodedData()),
+      : TransformableVideoFrameInterface(Passkey()),
+        encoded_data_(encoded_image.GetEncodedData()),
         pre_transform_payload_size_(encoded_image.size()),
         header_(video_header),
         frame_type_(encoded_image._frameType),
@@ -128,7 +130,6 @@ class TransformableVideoSenderFrame : public TransformableVideoFrameInterface {
   uint32_t ssrc_;
   std::vector<uint32_t> csrcs_;
 };
-}  // namespace
 
 RTPSenderVideoFrameTransformerDelegate::RTPSenderVideoFrameTransformerDelegate(
     RTPVideoFrameSenderInterface* sender,
