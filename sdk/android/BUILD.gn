@@ -140,7 +140,7 @@ if (is_android) {
       ":native_api_jni",
       ":video_egl_jni",
       "../../pc:libjingle_peerconnection",
-      "../../rtc_base:ssl",
+      "../../rtc_base:ssl_adapter",
       "//third_party/jni_zero",
     ]
     output_extension = "so"
@@ -1581,7 +1581,7 @@ if (is_android) {
       ":libjingle_peerconnection_metrics_default_jni",
       ":native_api_jni",
       "../../pc:libjingle_peerconnection",
-      "../../rtc_base:ssl",
+      "../../rtc_base:ssl_adapter",
     ]
     output_extension = "so"
   }
