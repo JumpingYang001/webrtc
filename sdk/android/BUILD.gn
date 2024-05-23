@@ -585,9 +585,7 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:threading",
       "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
-    ]
-    absl_deps = [
-      "//third_party/abseil-cpp/absl/strings",
+      "//third_party/abseil-cpp/absl/strings:string_view",
       "//third_party/abseil-cpp/absl/types:optional",
     ]
   }
@@ -688,11 +686,9 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:timestamp_aligner",
       "../../rtc_base:timeutils",
       "../../rtc_base/synchronization:mutex",
-      "//third_party/libyuv",
-    ]
-    absl_deps = [
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/types:optional",
+      "//third_party/libyuv",
     ]
   }
 
@@ -808,8 +804,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:threading",
       "../../stats:rtc_stats",
       "../../system_wrappers:field_trial",
-    ]
-    absl_deps = [
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/types:optional",
     ]
@@ -956,9 +950,9 @@ if (current_os == "linux" || is_android) {
       "../../api:sequence_checker",
       "//api:array_view",
       "//rtc_base:checks",
+      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
   }
 
   rtc_library("native_api_base") {
@@ -1067,8 +1061,8 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:logging",
       "../../rtc_base:stringutils",
       "../../rtc_base/synchronization:mutex",
+      "//third_party/abseil-cpp/absl/base:core_headers",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/base:core_headers" ]
   }
 
   # API for creating C++ wrapper implementations of api/mediastreaminterface.h
@@ -1157,9 +1151,8 @@ if (current_os == "linux" || is_android) {
       ":generated_logging_jni",
       ":native_api_jni",
       "../../rtc_base:logging",
+      "//third_party/abseil-cpp/absl/strings:string_view",
     ]
-
-    absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
   }
 
   rtc_library("audio_device_module_base") {
@@ -1184,8 +1177,8 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../system_wrappers:metrics",
+      "//third_party/abseil-cpp/absl/types:optional",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
   }
 
   rtc_library("java_audio_device_module") {
@@ -1211,8 +1204,8 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:timeutils",
       "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
+      "//third_party/abseil-cpp/absl/types:optional",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
   }
 
   if (rtc_enable_android_aaudio) {
@@ -1243,7 +1236,6 @@ if (current_os == "linux" || is_android) {
         "../../rtc_base:timeutils",
         "../../system_wrappers",
       ]
-      absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
     }
   }
 
@@ -1272,8 +1264,8 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:macromagic",
       "../../rtc_base:platform_thread",
       "../../rtc_base:timeutils",
+      "//third_party/abseil-cpp/absl/types:optional",
     ]
-    absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
   }
 
   #########################
@@ -1683,10 +1675,8 @@ if (is_android) {
       "../../test:scoped_key_value_config",
       "../../test:test_support",
       "../../testing/gtest",
-    ]
-    absl_deps = [
       "//third_party/abseil-cpp/absl/memory",
-      "//third_party/abseil-cpp/absl/strings",
+      "//third_party/abseil-cpp/absl/strings:string_view",
     ]
   }
 
