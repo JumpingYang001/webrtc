@@ -13,7 +13,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +24,6 @@
 #include "api/neteq/neteq_controller_factory.h"
 #include "api/neteq/tick_timer.h"
 #include "api/rtp_packet_info.h"
-#include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/audio_multi_vector.h"
 #include "modules/audio_coding/neteq/expand_uma_logger.h"
 #include "modules/audio_coding/neteq/packet.h"
@@ -128,10 +126,8 @@ class NetEqImpl : public webrtc::NetEq {
   NetEqImpl& operator=(const NetEqImpl&) = delete;
 
   // Inserts a new packet into NetEq. Returns 0 on success, -1 on failure.
-  int InsertPacket(
-      const RTPHeader& rtp_header,
-      rtc::ArrayView<const uint8_t> payload,
-      Timestamp receive_time = Timestamp::MinusInfinity()) override;
+  int InsertPacket(const RTPHeader& rtp_header,
+                   rtc::ArrayView<const uint8_t> payload) override;
 
   void InsertEmptyPacket(const RTPHeader& rtp_header) override;
 
@@ -208,8 +204,7 @@ class NetEqImpl : public webrtc::NetEq {
   // above. Returns 0 on success, otherwise an error code.
   // TODO(hlundin): Merge this with InsertPacket above?
   int InsertPacketInternal(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload,
-                           Timestamp receive_time)
+                           rtc::ArrayView<const uint8_t> payload)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   // Returns true if the payload type changed (this should be followed by

@@ -196,8 +196,8 @@ class ChannelReceive : public ChannelReceiveInterface,
  private:
   void ReceivePacket(const uint8_t* packet,
                      size_t packet_length,
-                     const RTPHeader& header,
-                     Timestamp receive_time) RTC_RUN_ON(worker_thread_checker_);
+                     const RTPHeader& header)
+      RTC_RUN_ON(worker_thread_checker_);
   int ResendPackets(const uint16_t* sequence_numbers, int length);
   void UpdatePlayoutTimestamp(bool rtcp, int64_t now_ms)
       RTC_RUN_ON(worker_thread_checker_);
@@ -205,8 +205,7 @@ class ChannelReceive : public ChannelReceiveInterface,
   int GetRtpTimestampRateHz() const;
 
   void OnReceivedPayloadData(rtc::ArrayView<const uint8_t> payload,
-                             const RTPHeader& rtpHeader,
-                             Timestamp receive_time)
+                             const RTPHeader& rtpHeader)
       RTC_RUN_ON(worker_thread_checker_);
 
   void InitFrameTransformerDelegate(
@@ -255,6 +254,7 @@ class ChannelReceive : public ChannelReceiveInterface,
   AudioSinkInterface* audio_sink_ = nullptr;
   AudioLevel _outputAudioLevel;
 
+  Clock* const clock_;
   RemoteNtpTimeEstimator ntp_estimator_ RTC_GUARDED_BY(ts_stats_lock_);
 
   // Timestamp of the audio pulled from NetEq.
@@ -320,8 +320,7 @@ class ChannelReceive : public ChannelReceiveInterface,
 
 void ChannelReceive::OnReceivedPayloadData(
     rtc::ArrayView<const uint8_t> payload,
-    const RTPHeader& rtpHeader,
-    Timestamp receive_time) {
+    const RTPHeader& rtpHeader) {
   if (!playing_) {
     // Avoid inserting into NetEQ when we are not playing. Count the
     // packet as discarded.
@@ -336,7 +335,7 @@ void ChannelReceive::OnReceivedPayloadData(
     // the SourceTracker from updating RtpSource information.
     if (source_tracker_) {
       RtpPacketInfos::vector_type packet_vector = {
-          RtpPacketInfo(rtpHeader, receive_time)};
+          RtpPacketInfo(rtpHeader, clock_->CurrentTime())};
       source_tracker_->OnFrameDelivered(RtpPacketInfos(packet_vector));
     }
 
@@ -344,7 +343,7 @@ void ChannelReceive::OnReceivedPayloadData(
   }
 
   // Push the incoming payload (parsed and ready for decoding) into the ACM
-  if (acm_receiver_.InsertPacket(rtpHeader, payload, receive_time) != 0) {
+  if (acm_receiver_.InsertPacket(rtpHeader, payload) != 0) {
     RTC_DLOG(LS_ERROR) << "ChannelReceive::OnReceivedPayloadData() unable to "
                           "push data to the ACM";
     return;
@@ -373,9 +372,7 @@ void ChannelReceive::InitFrameTransformerDelegate(
       receive_audio_callback = [this](rtc::ArrayView<const uint8_t> packet,
                                       const RTPHeader& header) {
         RTC_DCHECK_RUN_ON(&worker_thread_checker_);
-        // TODO(lionelk): Get the receive time.
-        OnReceivedPayloadData(packet, header,
-                              /*receive_time=*/Timestamp::MinusInfinity());
+        OnReceivedPayloadData(packet, header);
       };
   frame_transformer_delegate_ =
       rtc::make_ref_counted<ChannelReceiveFrameTransformerDelegate>(
@@ -548,6 +545,7 @@ ChannelReceive::ChannelReceive(
                               jitter_buffer_fast_playout,
                               jitter_buffer_min_delay_ms)),
       _outputAudioLevel(),
+      clock_(clock),
       ntp_estimator_(clock),
       playout_timestamp_rtp_(0),
       playout_delay_ms_(0),
@@ -665,14 +663,12 @@ void ChannelReceive::OnRtpPacket(const RtpPacketReceived& packet) {
           rtc::saturated_cast<uint32_t>(packet_copy.payload_type_frequency()),
           header.extension.absolute_capture_time);
 
-  ReceivePacket(packet_copy.data(), packet_copy.size(), header,
-                packet.arrival_time());
+  ReceivePacket(packet_copy.data(), packet_copy.size(), header);
 }
 
 void ChannelReceive::ReceivePacket(const uint8_t* packet,
                                    size_t packet_length,
-                                   const RTPHeader& header,
-                                   Timestamp receive_time) {
+                                   const RTPHeader& header) {
   const uint8_t* payload = packet + header.headerLength;
   RTC_DCHECK_GE(packet_length, header.headerLength);
   size_t payload_length = packet_length - header.headerLength;
@@ -692,8 +688,7 @@ void ChannelReceive::ReceivePacket(const uint8_t* packet,
     const FrameDecryptorInterface::Result decrypt_result =
         frame_decryptor_->Decrypt(
             cricket::MEDIA_TYPE_AUDIO, csrcs,
-            /*additional_data=*/
-            nullptr,
+            /*additional_data=*/nullptr,
             rtc::ArrayView<const uint8_t>(payload, payload_data_length),
             decrypted_audio_payload);
 
@@ -725,7 +720,7 @@ void ChannelReceive::ReceivePacket(const uint8_t* packet,
     frame_transformer_delegate_->Transform(payload_data, header, remote_ssrc_,
                                            mime_type.str());
   } else {
-    OnReceivedPayloadData(payload_data, header, receive_time);
+    OnReceivedPayloadData(payload_data, header);
   }
 }
 
