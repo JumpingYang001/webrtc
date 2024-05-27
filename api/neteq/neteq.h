@@ -23,6 +23,7 @@
 #include "api/audio_codecs/audio_format.h"
 #include "api/rtp_headers.h"
 #include "api/scoped_refptr.h"
+#include "api/units/timestamp.h"
 
 namespace webrtc {
 
@@ -183,10 +184,18 @@ class NetEq {
 
   virtual ~NetEq() {}
 
+  ABSL_DEPRECATED("Use the overload with receive time")
+  virtual int InsertPacket(const RTPHeader& rtp_header,
+                           rtc::ArrayView<const uint8_t> payload) {
+    // TODO: webrtc:xxxxx - removed unused method.
+    return InsertPacket(rtp_header, payload,
+                        /*receive_time=*/Timestamp::MinusInfinity());
+  }
   // Inserts a new packet into NetEq.
   // Returns 0 on success, -1 on failure.
   virtual int InsertPacket(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload) = 0;
+                           rtc::ArrayView<const uint8_t> payload,
+                           Timestamp receive_time) = 0;
 
   // Lets NetEq know that a packet arrived with an empty payload. This typically
   // happens when empty packets are used for probing the network channel, and
