@@ -80,17 +80,20 @@ class TurnPort : public Port {
       return nullptr;
     }
     // Using `new` to access a non-public constructor.
-    return absl::WrapUnique(
-        new TurnPort({.network_thread = args.network_thread,
-                      .socket_factory = args.socket_factory,
-                      .network = args.network,
-                      .ice_username_fragment = args.username,
-                      .ice_password = args.password,
-                      .field_trials = args.field_trials},
-                     socket, *args.server_address, args.config->credentials,
-                     args.relative_priority, args.config->tls_alpn_protocols,
-                     args.config->tls_elliptic_curves, args.turn_customizer,
-                     args.config->tls_cert_verifier));
+    return absl::WrapUnique(new TurnPort(
+        {
+            .network_thread = args.network_thread,
+            .socket_factory = args.socket_factory,
+            .network = args.network,
+            .ice_username_fragment = args.username,
+            .ice_password = args.password,
+            .field_trials = args.field_trials,
+            .ice_tiebreaker = args.ice_tiebreaker,
+        },
+        socket, *args.server_address, args.config->credentials,
+        args.relative_priority, args.config->tls_alpn_protocols,
+        args.config->tls_elliptic_curves, args.turn_customizer,
+        args.config->tls_cert_verifier));
   }
 
   // Create a TURN port that will use a new socket, bound to `network` and

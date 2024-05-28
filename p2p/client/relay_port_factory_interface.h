@@ -49,6 +49,7 @@ struct CreateRelayPortArgs {
   // to the candidates from other servers. Required because ICE priorities
   // need to be unique.
   int relative_priority = 0;
+  uint64_t ice_tiebreaker = 0;
 };
 
 // A factory for creating RelayPort's.

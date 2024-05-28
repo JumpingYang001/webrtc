@@ -295,6 +295,7 @@ class TurnPortTest : public ::testing::Test,
     args.config = &config;
     args.turn_customizer = turn_customizer_.get();
     args.field_trials = &field_trials_;
+    args.ice_tiebreaker = kTiebreakerDefault;
 
     turn_port_ = TurnPort::Create(args, 0, 0);
     if (!turn_port_) {
@@ -302,7 +303,6 @@ class TurnPortTest : public ::testing::Test,
     }
     // This TURN port will be the controlling.
     turn_port_->SetIceRole(ICEROLE_CONTROLLING);
-    turn_port_->SetIceTiebreaker(kTiebreakerDefault);
     ConnectSignals();
 
     if (server_address.proto == cricket::PROTO_TLS) {
@@ -343,10 +343,10 @@ class TurnPortTest : public ::testing::Test,
     args.config = &config;
     args.turn_customizer = turn_customizer_.get();
     args.field_trials = &field_trials_;
+    args.ice_tiebreaker = kTiebreakerDefault;
     turn_port_ = TurnPort::Create(args, socket_.get());
     // This TURN port will be the controlling.
     turn_port_->SetIceRole(ICEROLE_CONTROLLING);
-    turn_port_->SetIceTiebreaker(kTiebreakerDefault);
     ConnectSignals();
   }
 
@@ -371,11 +371,11 @@ class TurnPortTest : public ::testing::Test,
                                  .network = MakeNetwork(address),
                                  .ice_username_fragment = kIceUfrag2,
                                  .ice_password = kIcePwd2,
-                                 .field_trials = &field_trials_},
+                                 .field_trials = &field_trials_,
+                                 .ice_tiebreaker = kTiebreakerDefault},
                                 0, 0, false, absl::nullopt);
     // UDP port will be controlled.
     udp_port_->SetIceRole(ICEROLE_CONTROLLED);
-    udp_port_->SetIceTiebreaker(kTiebreakerDefault);
     udp_port_->SignalPortComplete.connect(this,
                                           &TurnPortTest::OnUdpPortComplete);
   }

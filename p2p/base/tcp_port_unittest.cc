@@ -83,29 +83,28 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
   }
 
   std::unique_ptr<TCPPort> CreateTCPPort(const SocketAddress& addr) {
-    auto port = std::unique_ptr<TCPPort>(
-        TCPPort::Create({.network_thread = &main_,
-                         .socket_factory = &socket_factory_,
-                         .network = MakeNetwork(addr),
-                         .ice_username_fragment = username_,
-                         .ice_password = password_,
-                         .field_trials = &field_trials_},
-                        0, 0, true));
-    port->SetIceTiebreaker(kTiebreakerDefault);
-    return port;
+    return TCPPort::Create(
+        {
+            .network_thread = &main_,
+            .socket_factory = &socket_factory_,
+            .network = MakeNetwork(addr),
+            .ice_username_fragment = username_,
+            .ice_password = password_,
+            .field_trials = &field_trials_,
+            .ice_tiebreaker = kTiebreakerDefault,
+        },
+        0, 0, true);
   }
 
   std::unique_ptr<TCPPort> CreateTCPPort(const rtc::Network* network) {
-    auto port = std::unique_ptr<TCPPort>(
-        TCPPort::Create({.network_thread = &main_,
-                         .socket_factory = &socket_factory_,
-                         .network = network,
-                         .ice_username_fragment = username_,
-                         .ice_password = password_,
-                         .field_trials = &field_trials_},
-                        0, 0, true));
-    port->SetIceTiebreaker(kTiebreakerDefault);
-    return port;
+    return TCPPort::Create({.network_thread = &main_,
+                            .socket_factory = &socket_factory_,
+                            .network = network,
+                            .ice_username_fragment = username_,
+                            .ice_password = password_,
+                            .field_trials = &field_trials_,
+                            .ice_tiebreaker = kTiebreakerDefault},
+                           0, 0, true);
   }
 
  protected:

@@ -1475,7 +1475,8 @@ void AllocationSequence::CreateUDPPorts() {
          .network = network_,
          .ice_username_fragment = session_->username(),
          .ice_password = session_->password(),
-         .field_trials = session_->allocator()->field_trials()},
+         .field_trials = session_->allocator()->field_trials(),
+         .ice_tiebreaker = session_->allocator()->ice_tiebreaker()},
         udp_socket_.get(), emit_local_candidate_for_anyaddress,
         session_->allocator()->stun_candidate_keepalive_interval());
   } else {
@@ -1485,14 +1486,14 @@ void AllocationSequence::CreateUDPPorts() {
          .network = network_,
          .ice_username_fragment = session_->username(),
          .ice_password = session_->password(),
-         .field_trials = session_->allocator()->field_trials()},
+         .field_trials = session_->allocator()->field_trials(),
+         .ice_tiebreaker = session_->allocator()->ice_tiebreaker()},
         session_->allocator()->min_port(), session_->allocator()->max_port(),
         emit_local_candidate_for_anyaddress,
         session_->allocator()->stun_candidate_keepalive_interval());
   }
 
   if (port) {
-    port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
     // If shared socket is enabled, STUN candidate will be allocated by the
     // UDPPort.
     if (IsFlagSet(PORTALLOCATOR_ENABLE_SHARED_SOCKET)) {
@@ -1527,12 +1528,12 @@ void AllocationSequence::CreateTCPPorts() {
        .network = network_,
        .ice_username_fragment = session_->username(),
        .ice_password = session_->password(),
-       .field_trials = session_->allocator()->field_trials()},
+       .field_trials = session_->allocator()->field_trials(),
+       .ice_tiebreaker = session_->allocator()->ice_tiebreaker()},
       session_->allocator()->min_port(), session_->allocator()->max_port(),
 
       session_->allocator()->allow_tcp_listen());
   if (port) {
-    port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
     session_->AddAllocatedPort(port.release(), this);
     // Since TCPPort is not created using shared socket, `port` will not be
     // added to the dequeue.
@@ -1561,12 +1562,12 @@ void AllocationSequence::CreateStunPorts() {
        .network = network_,
        .ice_username_fragment = session_->username(),
        .ice_password = session_->password(),
-       .field_trials = session_->allocator()->field_trials()},
+       .field_trials = session_->allocator()->field_trials(),
+       .ice_tiebreaker = session_->allocator()->ice_tiebreaker()},
       session_->allocator()->min_port(), session_->allocator()->max_port(),
       config_->StunServers(),
       session_->allocator()->stun_candidate_keepalive_interval());
   if (port) {
-    port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
     session_->AddAllocatedPort(port.release(), this);
     // Since StunPort is not created using shared socket, `port` will not be
     // added to the dequeue.
@@ -1634,6 +1635,7 @@ void AllocationSequence::CreateTurnPort(const RelayServerConfig& config,
     args.turn_customizer = session_->allocator()->turn_customizer();
     args.field_trials = session_->allocator()->field_trials();
     args.relative_priority = relative_priority;
+    args.ice_tiebreaker = session_->allocator()->ice_tiebreaker();
 
     std::unique_ptr<cricket::Port> port;
     // Shared socket mode must be enabled only for UDP based ports. Hence
@@ -1669,7 +1671,6 @@ void AllocationSequence::CreateTurnPort(const RelayServerConfig& config,
       }
     }
     RTC_DCHECK(port != NULL);
-    port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
     session_->AddAllocatedPort(port.release(), this);
   }
 }
