@@ -678,10 +678,7 @@ if (rtc_include_tests && !build_with_chromium) {
     data = rtc_unittests_resources
 
     if (rtc_enable_protobuf) {
-      deps += [
-        "api/test/network_emulation:network_config_schedule_proto",
-        "logging:rtc_event_log_tests",
-      ]
+      deps += [ "logging:rtc_event_log_tests" ]
     }
 
     if (is_ios) {
