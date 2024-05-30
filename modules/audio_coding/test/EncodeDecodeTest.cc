@@ -170,10 +170,8 @@ bool Receiver::IncomingPacket() {
     }
 
     EXPECT_EQ(0, _acm_receiver->InsertPacket(
-                     _rtpHeader,
-                     rtc::ArrayView<const uint8_t>(_incomingPayload,
-                                                   _realPayloadSizeBytes),
-                     /*receive_time=*/Timestamp::Millis(_nextTime)));
+                     _rtpHeader, rtc::ArrayView<const uint8_t>(
+                                     _incomingPayload, _realPayloadSizeBytes)));
     _realPayloadSizeBytes = _rtpStream->Read(&_rtpHeader, _incomingPayload,
                                              _payloadSizeBytes, &_nextTime);
     if (_realPayloadSizeBytes == 0 && _rtpStream->EndOfFile()) {

@@ -18,7 +18,6 @@
 #include "api/audio/audio_frame.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/neteq/neteq.h"
-#include "api/units/timestamp.h"
 #include "modules/audio_coding/codecs/pcm16b/pcm16b.h"
 #include "modules/audio_coding/neteq/default_neteq_factory.h"
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
@@ -110,7 +109,7 @@ class NetEqStereoTest : public ::testing::TestWithParam<TestParameters> {
     if (frame_size_samples_ * 2 != payload_size_bytes_) {
       return -1;
     }
-    int next_send_time_ms = rtp_generator_mono_.GetRtpHeader(
+    int next_send_time = rtp_generator_mono_.GetRtpHeader(
         kPayloadTypeMono, frame_size_samples_, &rtp_header_mono_);
     MakeMultiChannelInput();
     multi_payload_size_bytes_ = WebRtcPcm16b_Encode(
@@ -121,7 +120,7 @@ class NetEqStereoTest : public ::testing::TestWithParam<TestParameters> {
     }
     rtp_generator_.GetRtpHeader(kPayloadTypeMulti, frame_size_samples_,
                                 &rtp_header_);
-    return next_send_time_ms;
+    return next_send_time;
   }
 
   virtual void MakeMultiChannelInput() {
@@ -152,35 +151,32 @@ class NetEqStereoTest : public ::testing::TestWithParam<TestParameters> {
 
   void RunTest(int num_loops) {
     // Get next input packets (mono and multi-channel).
-    int next_send_time_ms;
-    int next_arrival_time_ms;
+    int next_send_time;
+    int next_arrival_time;
     do {
-      next_send_time_ms = GetNewPackets();
-      ASSERT_NE(-1, next_send_time_ms);
-      next_arrival_time_ms = GetArrivalTime(next_send_time_ms);
+      next_send_time = GetNewPackets();
+      ASSERT_NE(-1, next_send_time);
+      next_arrival_time = GetArrivalTime(next_send_time);
     } while (Lost());  // If lost, immediately read the next packet.
 
-    int time_now_ms = 0;
+    int time_now = 0;
     for (int k = 0; k < num_loops; ++k) {
-      while (time_now_ms >= next_arrival_time_ms) {
+      while (time_now >= next_arrival_time) {
         // Insert packet in mono instance.
         ASSERT_EQ(NetEq::kOK,
-                  neteq_mono_->InsertPacket(rtp_header_mono_,
-                                            rtc::ArrayView<const uint8_t>(
-                                                encoded_, payload_size_bytes_),
-                                            Timestamp::Millis(time_now_ms)));
+                  neteq_mono_->InsertPacket(
+                      rtp_header_mono_, rtc::ArrayView<const uint8_t>(
+                                            encoded_, payload_size_bytes_)));
         // Insert packet in multi-channel instance.
-        ASSERT_EQ(NetEq::kOK,
-                  neteq_->InsertPacket(
-                      rtp_header_,
-                      rtc::ArrayView<const uint8_t>(encoded_multi_channel_,
-                                                    multi_payload_size_bytes_),
-                      Timestamp::Millis(time_now_ms)));
+        ASSERT_EQ(NetEq::kOK, neteq_->InsertPacket(
+                                  rtp_header_, rtc::ArrayView<const uint8_t>(
+                                                   encoded_multi_channel_,
+                                                   multi_payload_size_bytes_)));
         // Get next input packets (mono and multi-channel).
         do {
-          next_send_time_ms = GetNewPackets();
-          ASSERT_NE(-1, next_send_time_ms);
-          next_arrival_time_ms = GetArrivalTime(next_send_time_ms);
+          next_send_time = GetNewPackets();
+          ASSERT_NE(-1, next_send_time);
+          next_arrival_time = GetArrivalTime(next_send_time);
         } while (Lost());  // If lost, immediately read the next packet.
       }
       // Get audio from mono instance.
@@ -201,7 +197,7 @@ class NetEqStereoTest : public ::testing::TestWithParam<TestParameters> {
       // Compare mono and multi-channel.
       ASSERT_NO_FATAL_FAILURE(VerifyOutput(output_size_samples_));
 
-      time_now_ms += kTimeStepMs;
+      time_now += kTimeStepMs;
       clock_.AdvanceTimeMilliseconds(kTimeStepMs);
     }
   }

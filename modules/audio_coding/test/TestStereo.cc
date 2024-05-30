@@ -61,8 +61,7 @@ int32_t TestPackStereo::SendData(const AudioFrameType frame_type,
 
   if (lost_packet_ == false) {
     status = receiver_acm_->InsertPacket(
-        rtp_header, rtc::ArrayView<const uint8_t>(payload_data, payload_size),
-        /*receive_time=*/Timestamp::MinusInfinity());
+        rtp_header, rtc::ArrayView<const uint8_t>(payload_data, payload_size));
 
     if (frame_type != AudioFrameType::kAudioFrameCN) {
       payload_size_ = static_cast<int>(payload_size);

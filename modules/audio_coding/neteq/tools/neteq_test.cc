@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <iostream>
 
-#include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/default_neteq_factory.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "system_wrappers/include/clock.h"
@@ -115,8 +114,7 @@ NetEqTest::SimulationStepResult NetEqTest::RunToNextGetAudio() {
       if (payload_data_length != 0) {
         int error = neteq_->InsertPacket(
             packet_data->header,
-            rtc::ArrayView<const uint8_t>(packet_data->payload),
-            Timestamp::Millis(time_now_ms));
+            rtc::ArrayView<const uint8_t>(packet_data->payload));
         if (error != NetEq::kOK && callbacks_.error_callback) {
           callbacks_.error_callback->OnInsertPacketError(*packet_data);
         }

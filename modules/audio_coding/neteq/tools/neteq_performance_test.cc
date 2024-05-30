@@ -87,8 +87,7 @@ int64_t NetEqPerformanceTest::Run(int runtime_ms,
       }
       if (!lost) {
         // Insert packet.
-        int error = neteq->InsertPacket(rtp_header, input_payload,
-                                        Timestamp::Millis(time_now_ms));
+        int error = neteq->InsertPacket(rtp_header, input_payload);
         if (error != NetEq::kOK)
           return -1;
       }

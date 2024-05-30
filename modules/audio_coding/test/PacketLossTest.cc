@@ -14,7 +14,6 @@
 
 #include "absl/strings/string_view.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
-#include "api/units/timestamp.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
@@ -59,10 +58,9 @@ bool ReceiverWithPacketLoss::IncomingPacket() {
     }
 
     if (!PacketLost()) {
-      _acm_receiver->InsertPacket(_rtpHeader,
-                                  rtc::ArrayView<const uint8_t>(
-                                      _incomingPayload, _realPayloadSizeBytes),
-                                  Timestamp::Millis(_nextTime));
+      _acm_receiver->InsertPacket(
+          _rtpHeader, rtc::ArrayView<const uint8_t>(_incomingPayload,
+                                                    _realPayloadSizeBytes));
     }
     packet_counter_++;
     _realPayloadSizeBytes = _rtpStream->Read(&_rtpHeader, _incomingPayload,
