@@ -914,6 +914,7 @@ void P2PTransportChannel::OnPortReady(PortAllocatorSession* session,
   // if one is pending.
 
   port->SetIceRole(ice_role_);
+  port->SetIceTiebreaker(allocator_->ice_tiebreaker());
   ports_.push_back(port);
   port->SignalUnknownAddress.connect(this,
                                      &P2PTransportChannel::OnUnknownAddress);

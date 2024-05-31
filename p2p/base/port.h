@@ -180,7 +180,6 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
     absl::string_view ice_username_fragment;
     absl::string_view ice_password;
     const webrtc::FieldTrialsView* field_trials;
-    uint64_t ice_tiebreaker;
   };
 
  protected:
@@ -207,6 +206,7 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   IceRole GetIceRole() const override;
   void SetIceRole(IceRole role) override;
 
+  void SetIceTiebreaker(uint64_t tiebreaker) override;
   uint64_t IceTiebreaker() const override;
 
   bool SharedSocket() const override;
@@ -490,7 +490,7 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   int timeout_delay_;
   bool enable_port_packets_;
   IceRole ice_role_;
-  const uint64_t ice_tiebreaker_;
+  uint64_t tiebreaker_;
   bool shared_socket_;
 
   // A virtual cost perceived by the user, usually based on the network type

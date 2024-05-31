@@ -142,9 +142,9 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
          .network = &network_,
          .ice_username_fragment = rtc::CreateRandomString(16),
          .ice_password = rtc::CreateRandomString(22),
-         .field_trials = field_trials,
-         .ice_tiebreaker = kTiebreakerDefault},
+         .field_trials = field_trials},
         0, 0, stun_servers, absl::nullopt);
+    stun_port_->SetIceTiebreaker(kTiebreakerDefault);
     stun_port_->set_stun_keepalive_delay(stun_keepalive_delay_);
     // If `stun_keepalive_lifetime_` is negative, let the stun port
     // choose its lifetime from the network type.
@@ -179,10 +179,10 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
          .network = &network_,
          .ice_username_fragment = rtc::CreateRandomString(16),
          .ice_password = rtc::CreateRandomString(22),
-         .field_trials = field_trials,
-         .ice_tiebreaker = kTiebreakerDefault},
+         .field_trials = field_trials},
         socket_.get(), false, absl::nullopt);
     ASSERT_TRUE(stun_port_ != NULL);
+    stun_port_->SetIceTiebreaker(kTiebreakerDefault);
     ServerAddresses stun_servers;
     stun_servers.insert(server_addr);
     stun_port_->set_server_addresses(stun_servers);

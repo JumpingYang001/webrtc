@@ -107,16 +107,15 @@ class FakePortAllocatorSession : public PortAllocatorSession {
           (rtc::HasIPv6Enabled() && (flags() & PORTALLOCATOR_ENABLE_IPV6))
               ? ipv6_network_
               : ipv4_network_;
-      port_.reset(
-          TestUDPPort::Create({.network_thread = network_thread_,
-                               .socket_factory = factory_,
-                               .network = &network,
-                               .ice_username_fragment = username(),
-                               .ice_password = password(),
-                               .field_trials = field_trials_,
-                               .ice_tiebreaker = allocator_->ice_tiebreaker()},
-                              0, 0, false));
+      port_.reset(TestUDPPort::Create({.network_thread = network_thread_,
+                                       .socket_factory = factory_,
+                                       .network = &network,
+                                       .ice_username_fragment = username(),
+                                       .ice_password = password(),
+                                       .field_trials = field_trials_},
+                                      0, 0, false));
       RTC_DCHECK(port_);
+      port_->SetIceTiebreaker(allocator_->ice_tiebreaker());
       port_->SubscribePortDestroyed(
           [this](PortInterface* port) { OnPortDestroyed(port); });
       AddPort(port_.get());

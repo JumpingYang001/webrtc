@@ -118,7 +118,7 @@ Port::Port(const PortParametersRef& args,
       timeout_delay_(kPortTimeoutDelay),
       enable_port_packets_(false),
       ice_role_(ICEROLE_UNKNOWN),
-      ice_tiebreaker_(args.ice_tiebreaker),
+      tiebreaker_(0),
       shared_socket_(shared_socket),
       network_cost_(args.network->GetCost(*field_trials_)),
       weak_factory_(this) {
@@ -160,8 +160,12 @@ void Port::SetIceRole(IceRole role) {
   ice_role_ = role;
 }
 
+void Port::SetIceTiebreaker(uint64_t tiebreaker) {
+  tiebreaker_ = tiebreaker;
+}
+
 uint64_t Port::IceTiebreaker() const {
-  return ice_tiebreaker_;
+  return tiebreaker_;
 }
 
 bool Port::SharedSocket() const {
@@ -220,7 +224,8 @@ void Port::AddAddress(const rtc::SocketAddress& address,
               type, generation_, "", network_->id(), network_cost_);
   // Set the relay protocol before computing the foundation field.
   c.set_relay_protocol(relay_protocol);
-  c.ComputeFoundation(base_address, ice_tiebreaker_);
+  // TODO(bugs.webrtc.org/14605): ensure IceTiebreaker() is set.
+  c.ComputeFoundation(base_address, tiebreaker_);
 
   c.set_priority(
       c.GetPriority(type_preference, network_->preference(), relay_preference,
@@ -645,7 +650,7 @@ bool Port::MaybeIceRoleConflict(const rtc::SocketAddress& addr,
   switch (ice_role_) {
     case ICEROLE_CONTROLLING:
       if (ICEROLE_CONTROLLING == remote_ice_role) {
-        if (remote_tiebreaker >= ice_tiebreaker_) {
+        if (remote_tiebreaker >= tiebreaker_) {
           SignalRoleConflict(this);
         } else {
           // Send Role Conflict (487) error response.
@@ -657,7 +662,7 @@ bool Port::MaybeIceRoleConflict(const rtc::SocketAddress& addr,
       break;
     case ICEROLE_CONTROLLED:
       if (ICEROLE_CONTROLLED == remote_ice_role) {
-        if (remote_tiebreaker < ice_tiebreaker_) {
+        if (remote_tiebreaker < tiebreaker_) {
           SignalRoleConflict(this);
         } else {
           // Send Role Conflict (487) error response.
