@@ -11,17 +11,13 @@
 #ifndef API_FRAME_TRANSFORMER_INTERFACE_H_
 #define API_FRAME_TRANSFORMER_INTERFACE_H_
 
-#include <cstdint>
 #include <memory>
 #include <string>
 
-#include "absl/types/optional.h"
-#include "api/array_view.h"
 #include "api/ref_count.h"
 #include "api/scoped_refptr.h"
-#include "api/units/timestamp.h"
+#include "api/video/encoded_frame.h"
 #include "api/video/video_frame_metadata.h"
-#include "rtc_base/system/rtc_export.h"
 
 namespace webrtc {
 
@@ -108,7 +104,7 @@ class TransformableAudioFrameInterface : public TransformableFrameInterface {
 };
 
 // Objects implement this interface to be notified with the transformed frame.
-class TransformedFrameCallback : public RefCountInterface {
+class TransformedFrameCallback : public rtc::RefCountInterface {
  public:
   virtual void OnTransformedFrame(
       std::unique_ptr<TransformableFrameInterface> frame) = 0;
@@ -125,7 +121,7 @@ class TransformedFrameCallback : public RefCountInterface {
 
 // Transforms encoded frames. The transformed frame is sent in a callback using
 // the TransformedFrameCallback interface (see above).
-class FrameTransformerInterface : public RefCountInterface {
+class FrameTransformerInterface : public rtc::RefCountInterface {
  public:
   // Transforms `frame` using the implementing class' processing logic.
   virtual void Transform(
