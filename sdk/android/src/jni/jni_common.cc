@@ -17,14 +17,12 @@ namespace jni {
 
 static void JNI_JniCommon_AddRef(JNIEnv* jni,
                                  jlong j_native_ref_counted_pointer) {
-  reinterpret_cast<rtc::RefCountInterface*>(j_native_ref_counted_pointer)
-      ->AddRef();
+  reinterpret_cast<RefCountInterface*>(j_native_ref_counted_pointer)->AddRef();
 }
 
 static void JNI_JniCommon_ReleaseRef(JNIEnv* jni,
                                      jlong j_native_ref_counted_pointer) {
-  reinterpret_cast<rtc::RefCountInterface*>(j_native_ref_counted_pointer)
-      ->Release();
+  reinterpret_cast<RefCountInterface*>(j_native_ref_counted_pointer)->Release();
 }
 
 static ScopedJavaLocalRef<jobject> JNI_JniCommon_AllocateByteBuffer(JNIEnv* jni,
