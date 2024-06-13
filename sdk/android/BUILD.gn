@@ -164,6 +164,8 @@ if (is_android) {
       "src/java/org/webrtc/JniCommon.java",
       "src/java/org/webrtc/JniHelper.java",
       "src/java/org/webrtc/RefCountDelegate.java",
+      "src/java/org/webrtc/RtcError.java",
+      "src/java/org/webrtc/RtcException.java",
       "src/java/org/webrtc/WebRtcClassLoader.java",
     ]
 
@@ -765,7 +767,9 @@ if (current_os == "linux" || is_android) {
     deps = [
       ":base_jni",
       ":generated_external_classes_jni",
+      ":generated_external_classes_jni",
       ":generated_peerconnection_jni",
+      ":generated_rtcerror_jni",
       ":logging_jni",
       ":native_api_jni",
       ":native_api_stacktrace",
@@ -1385,6 +1389,12 @@ if (current_os == "linux" || is_android) {
       "api/org/webrtc/SoftwareVideoEncoderFactory.java",
     ]
 
+    namespace = "webrtc::jni"
+    jni_generator_include = "//sdk/android/src/jni/jni_generator_helper.h"
+  }
+
+  generate_jni("generated_rtcerror_jni") {
+    sources = [ "src/java/org/webrtc/RtcError.java" ]
     namespace = "webrtc::jni"
     jni_generator_include = "//sdk/android/src/jni/jni_generator_helper.h"
   }

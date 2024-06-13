@@ -158,7 +158,8 @@ public class RtpCapabilitiesTest {
 
     assertNotNull(targetCodec);
 
-    transceiver.setCodecPreferences(Arrays.asList(targetCodec));
+    RtcError result = transceiver.setCodecPreferences(Arrays.asList(targetCodec));
+    assertTrue(result.isSuccess());
 
     SdpObserverLatch sdpLatch = new SdpObserverLatch();
     pc.createOffer(sdpLatch, new MediaConstraints());
@@ -183,6 +184,18 @@ public class RtpCapabilitiesTest {
     String expected =
         "a=rtpmap:" + targetPayload + " " + targetCodec.name + "/" + targetCodec.getClockRate();
     assertEquals(expected, rtpMap);
+
+    // Set an invalid codec preference and check that an error is returned.
+    RtpCapabilities audioCapabilities =
+            factory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO);
+    assertNotNull(audioCapabilities);
+    RtpCapabilities.CodecCapability audioCodec = audioCapabilities.getCodecs().get(0);
+
+    result = transceiver.setCodecPreferences(Arrays.asList(audioCodec));
+    assertTrue(result.isError());
+    Throwable resultException = result.error();
+    assertTrue(resultException instanceof RtcException);
+    assertTrue(resultException.getMessage().startsWith("Invalid codec preferences:"));
   }
 
   private List<String> getMediaDescriptions(String[] sdpDescriptionLines) {
