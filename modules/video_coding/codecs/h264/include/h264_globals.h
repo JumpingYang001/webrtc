@@ -83,8 +83,6 @@ struct RTPVideoHeaderH264 {
   // The packetization type of this buffer - single, aggregated or fragmented.
   H264PacketizationTypes packetization_type;
   std::vector<NaluInfo> nalus;
-  // TODO - jleconte: Remove 'nalus_length' once all the code has been migrated.
-  size_t nalus_length;
   // The packetization mode of this transport. Packetization mode
   // determines which packetization types are allowed when packetizing.
   H264PacketizationMode packetization_mode;

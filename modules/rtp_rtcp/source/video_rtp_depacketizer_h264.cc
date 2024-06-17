@@ -221,7 +221,6 @@ absl::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessStapAOrSingleNalu(
     }
 
     h264_header.nalus.push_back(nalu);
-    ++h264_header.nalus_length;
   }
 
   return parsed_payload;
@@ -280,7 +279,6 @@ absl::optional<VideoRtpDepacketizer::ParsedRtpPayload> ParseFuaNalu(
   h264_header.nalu_type = original_nal_type;
   if (first_fragment) {
     h264_header.nalus = {nalu};
-    h264_header.nalus_length = 1;
   }
   return parsed_payload;
 }
