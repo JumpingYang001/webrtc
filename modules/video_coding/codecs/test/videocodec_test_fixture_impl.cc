@@ -173,7 +173,7 @@ SdpVideoFormat CreateSdpVideoFormat(
     CodecParameterMap codec_params = {
         {cricket::kH264FmtpProfileLevelId,
          *H264ProfileLevelIdToString(H264ProfileLevelId(
-             config.h264_codec_settings.profile, H264Level::kLevel3_1))},
+             config.h264_codec_settings.profile, H264Level::kLevel4_2))},
         {cricket::kH264FmtpPacketizationMode, packetization_mode},
         {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
 
