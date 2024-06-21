@@ -43,23 +43,10 @@ constexpr int kSrtpCryptoSuiteMaxValue = 0xFFFF;
 constexpr int kSslSignatureAlgorithmUnknown = 0;
 constexpr int kSslSignatureAlgorithmMaxValue = 0xFFFF;
 
-// Names of SRTP profiles listed above.
-// 128-bit AES with 80-bit SHA-1 HMAC.
-extern const char kCsAesCm128HmacSha1_80[];
-// 128-bit AES with 32-bit SHA-1 HMAC.
-extern const char kCsAesCm128HmacSha1_32[];
-// 128-bit AES GCM with 16 byte AEAD auth tag.
-extern const char kCsAeadAes128Gcm[];
-// 256-bit AES GCM with 16 byte AEAD auth tag.
-extern const char kCsAeadAes256Gcm[];
-
 // Given the DTLS-SRTP protection profile ID, as defined in
 // https://tools.ietf.org/html/rfc4568#section-6.2 , return the SRTP profile
 // name, as defined in https://tools.ietf.org/html/rfc5764#section-4.1.2.
 std::string SrtpCryptoSuiteToName(int crypto_suite);
-
-// The reverse of above conversion.
-int SrtpCryptoSuiteFromName(absl::string_view crypto_suite);
 
 // Get key length and salt length for given crypto suite. Returns true for
 // valid suites, otherwise false.
@@ -69,9 +56,6 @@ bool GetSrtpKeyAndSaltLengths(int crypto_suite,
 
 // Returns true if the given crypto suite id uses a GCM cipher.
 bool IsGcmCryptoSuite(int crypto_suite);
-
-// Returns true if the given crypto suite name uses a GCM cipher.
-bool IsGcmCryptoSuiteName(absl::string_view crypto_suite);
 
 // SSLStreamAdapter : A StreamInterfaceAdapter that does SSL/TLS.
 // After SSL has been started, the stream will only open on successful
