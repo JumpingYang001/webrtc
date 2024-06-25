@@ -17,12 +17,17 @@
 #include <openssl/tls1.h>
 #include <openssl/x509v3.h>
 
+#include "absl/strings/string_view.h"
+#ifndef OPENSSL_IS_BORINGSSL
+#include <openssl/dtls1.h>
+#include <openssl/ssl.h>
+#endif
+
 #include <atomic>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
@@ -31,9 +36,6 @@
 #include "rtc_base/openssl_adapter.h"
 #include "rtc_base/openssl_digest.h"
 #ifdef OPENSSL_IS_BORINGSSL
-#include <openssl/dtls1.h>
-#include <openssl/ssl.h>
-
 #include "rtc_base/boringssl_identity.h"
 #else
 #include "rtc_base/openssl_identity.h"
