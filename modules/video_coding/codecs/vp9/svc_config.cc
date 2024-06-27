@@ -246,4 +246,46 @@ std::vector<SpatialLayer> GetSvcConfig(
   }
 }
 
+void ConvertSimulcastConfigToSvc(VideoCodec& codec) {
+  if (codec.IsSinglecast()) {
+    return;
+  }
+  for (size_t i = 0; i < codec.numberOfSimulcastStreams; ++i) {
+    codec.spatialLayers[i] = codec.simulcastStream[i];
+  }
+  codec.simulcastStream[0] =
+      codec.simulcastStream[codec.numberOfSimulcastStreams - 1];
+  codec.VP9()->numberOfSpatialLayers = codec.numberOfSimulcastStreams;
+  codec.VP9()->numberOfTemporalLayers =
+      codec.spatialLayers[0].numberOfTemporalLayers;
+  codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+  codec.numberOfSimulcastStreams = 1;
+  codec.UnsetScalabilityMode();
+}
+
+void ConvertSvcFrameToSimulcast(EncodedImage& encoded_image,
+                                CodecSpecificInfo& codec_specific) {
+  int sid = encoded_image.SpatialIndex().value_or(0);
+  encoded_image.SetSimulcastIndex(sid);
+  encoded_image.SetSpatialIndex(absl::nullopt);
+  codec_specific.end_of_picture = true;
+  int num_temporal_layers =
+      ScalabilityModeToNumTemporalLayers(*codec_specific.scalability_mode);
+  RTC_DCHECK_LE(num_temporal_layers, 3);
+  if (num_temporal_layers == 1) {
+    codec_specific.scalability_mode = ScalabilityMode::kL1T1;
+  } else if (num_temporal_layers == 2) {
+    codec_specific.scalability_mode = ScalabilityMode::kL1T2;
+  } else if (num_temporal_layers == 3) {
+    codec_specific.scalability_mode = ScalabilityMode::kL1T3;
+  }
+  CodecSpecificInfoVP9& vp9_info = codec_specific.codecSpecific.VP9;
+  vp9_info.num_spatial_layers = 1;
+  vp9_info.first_active_layer = 0;
+  if (vp9_info.ss_data_available) {
+    vp9_info.width[0] = vp9_info.width[sid];
+    vp9_info.height[0] = vp9_info.height[sid];
+  }
+}
+
 }  // namespace webrtc

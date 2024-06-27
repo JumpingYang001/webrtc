@@ -151,6 +151,9 @@ class LibvpxVp9Encoder : public VideoEncoder {
   bool ss_info_needed_;
   bool force_all_active_layers_;
 
+  bool svc_for_simulcast_ = false;
+  const bool enable_svc_for_simulcast_;
+
   std::unique_ptr<ScalableVideoController> svc_controller_;
   absl::optional<ScalabilityMode> scalability_mode_;
   std::vector<FramerateControllerDeprecated> framerate_controller_;

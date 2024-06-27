@@ -14,8 +14,10 @@
 
 #include <vector>
 
+#include "api/video/encoded_image.h"
 #include "api/video_codecs/spatial_layer.h"
 #include "api/video_codecs/video_codec.h"
+#include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"
 
 namespace webrtc {
@@ -33,6 +35,11 @@ std::vector<SpatialLayer> GetSvcConfig(
     bool is_screen_sharing,
     absl::optional<ScalableVideoController::StreamLayersConfig> config =
         absl::nullopt);
+
+void ConvertSimulcastConfigToSvc(VideoCodec& codec);
+
+void ConvertSvcFrameToSimulcast(EncodedImage& encoded_image,
+                                CodecSpecificInfo& codec_specific);
 
 }  // namespace webrtc
 
