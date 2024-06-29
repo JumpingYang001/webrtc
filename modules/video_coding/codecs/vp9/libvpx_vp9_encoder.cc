@@ -29,13 +29,11 @@
 #include "common_video/libyuv/include/webrtc_libyuv.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/video_coding/codecs/vp9/libvpx_vp9_encoder.h"
-#include "modules/video_coding/codecs/vp9/svc_config.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"
 #include "modules/video_coding/svc/scalable_video_controller_no_layering.h"
 #include "modules/video_coding/svc/svc_rate_allocator.h"
-#include "modules/video_coding/utility/simulcast_utility.h"
 #include "modules/video_coding/utility/vp9_uncompressed_header_parser.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_list.h"
@@ -257,8 +255,6 @@ LibvpxVp9Encoder::LibvpxVp9Encoder(const Environment& env,
       first_frame_in_picture_(true),
       ss_info_needed_(false),
       force_all_active_layers_(false),
-      enable_svc_for_simulcast_(
-          !env.field_trials().IsDisabled("WebRTC-VP9-SvcForSimulcast")),
       is_flexible_mode_(false),
       variable_framerate_controller_(variable_framerate_screenshare::kMinFps),
       quality_scaler_experiment_(ParseQualityScalerConfig(env.field_trials())),
@@ -528,25 +524,12 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
   if (&codec_ != inst) {
     codec_ = *inst;
   }
-
-  if (enable_svc_for_simulcast_ && codec_.numberOfSimulcastStreams > 1) {
-    if (!SimulcastUtility::ValidSimulcastParameters(
-            codec_, codec_.numberOfSimulcastStreams)) {
-      return WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED;
-    }
-    RTC_LOG(LS_INFO) << "Rewriting simulcast config to SVC.";
-    svc_for_simulcast_ = true;
-    ConvertSimulcastConfigToSvc(codec_);
-  } else {
-    svc_for_simulcast_ = false;
-  }
-
   memset(&svc_params_, 0, sizeof(vpx_svc_extra_cfg_t));
 
   force_key_frame_ = true;
   pics_since_key_ = 0;
 
-  scalability_mode_ = codec_.GetScalabilityMode();
+  scalability_mode_ = inst->GetScalabilityMode();
   if (scalability_mode_.has_value()) {
     // Use settings from `ScalabilityMode` identifier.
     RTC_LOG(LS_INFO) << "Create scalability structure "
@@ -562,14 +545,14 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
     num_temporal_layers_ = info.num_temporal_layers;
     inter_layer_pred_ = ScalabilityModeToInterLayerPredMode(*scalability_mode_);
   } else {
-    num_spatial_layers_ = codec_.VP9()->numberOfSpatialLayers;
+    num_spatial_layers_ = inst->VP9().numberOfSpatialLayers;
     RTC_DCHECK_GT(num_spatial_layers_, 0);
-    num_temporal_layers_ = codec_.VP9()->numberOfTemporalLayers;
+    num_temporal_layers_ = inst->VP9().numberOfTemporalLayers;
     if (num_temporal_layers_ == 0) {
       num_temporal_layers_ = 1;
     }
-    inter_layer_pred_ = codec_.VP9()->interLayerPred;
-    svc_controller_ = CreateVp9ScalabilityStructure(codec_);
+    inter_layer_pred_ = inst->VP9().interLayerPred;
+    svc_controller_ = CreateVp9ScalabilityStructure(*inst);
   }
 
   framerate_controller_ = std::vector<FramerateControllerDeprecated>(
@@ -619,7 +602,7 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
 
   config_->g_w = codec_.width;
   config_->g_h = codec_.height;
-  config_->rc_target_bitrate = codec_.startBitrate;  // in kbit/s
+  config_->rc_target_bitrate = inst->startBitrate;  // in kbit/s
   config_->g_error_resilient = is_svc_ ? VPX_ERROR_RESILIENT_DEFAULT : 0;
   // Setting the time base of the codec.
   config_->g_timebase.num = 1;
@@ -627,7 +610,7 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
   config_->g_lag_in_frames = 0;  // 0- no frame lagging
   config_->g_threads = 1;
   // Rate control settings.
-  config_->rc_dropframe_thresh = codec_.GetFrameDropEnabled() ? 30 : 0;
+  config_->rc_dropframe_thresh = inst->GetFrameDropEnabled() ? 30 : 0;
   config_->rc_end_usage = VPX_CBR;
   config_->g_pass = VPX_RC_ONE_PASS;
   config_->rc_min_quantizer =
@@ -644,20 +627,20 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
   config_->kf_mode = VPX_KF_DISABLED;
   // TODO(webm:1592): work-around for libvpx issue, as it can still
   // put some key-frames at will even in VPX_KF_DISABLED kf_mode.
-  config_->kf_max_dist = codec_.VP9()->keyFrameInterval;
+  config_->kf_max_dist = inst->VP9().keyFrameInterval;
   config_->kf_min_dist = config_->kf_max_dist;
   if (quality_scaler_experiment_.enabled) {
     // In that experiment webrtc wide quality scaler is used instead of libvpx
     // internal scaler.
     config_->rc_resize_allowed = 0;
   } else {
-    config_->rc_resize_allowed = codec_.VP9()->automaticResizeOn ? 1 : 0;
+    config_->rc_resize_allowed = inst->VP9().automaticResizeOn ? 1 : 0;
   }
   // Determine number of threads based on the image size and #cores.
   config_->g_threads =
       NumberOfThreads(config_->g_w, config_->g_h, settings.number_of_cores);
 
-  is_flexible_mode_ = codec_.VP9()->flexibleMode;
+  is_flexible_mode_ = inst->VP9().flexibleMode;
 
   if (num_spatial_layers_ > 1 &&
       codec_.mode == VideoCodecMode::kScreensharing && !is_flexible_mode_) {
@@ -716,7 +699,7 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
   }
   ref_buf_ = {};
 
-  return InitAndSetControlSettings(&codec_);
+  return InitAndSetControlSettings(inst);
 }
 
 int LibvpxVp9Encoder::NumberOfThreads(int width,
@@ -798,7 +781,7 @@ int LibvpxVp9Encoder::InitAndSetControlSettings(const VideoCodec* inst) {
   SvcRateAllocator init_allocator(codec_);
   current_bitrate_allocation_ =
       init_allocator.Allocate(VideoBitrateAllocationParameters(
-          codec_.startBitrate * 1000, codec_.maxFramerate));
+          inst->startBitrate * 1000, inst->maxFramerate));
   if (!SetSvcRates(current_bitrate_allocation_)) {
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
@@ -819,7 +802,7 @@ int LibvpxVp9Encoder::InitAndSetControlSettings(const VideoCodec* inst) {
           performance_flags_by_spatial_index_[si].deblock_mode;
     }
     bool denoiser_on =
-        AllowDenoising() && codec_.VP9()->denoisingOn &&
+        AllowDenoising() && inst->VP9().denoisingOn &&
         performance_flags_by_spatial_index_[num_spatial_layers_ - 1]
             .allow_denoising;
     libvpx_->codec_control(encoder_, VP9E_SET_NOISE_SENSITIVITY,
@@ -829,7 +812,7 @@ int LibvpxVp9Encoder::InitAndSetControlSettings(const VideoCodec* inst) {
   libvpx_->codec_control(encoder_, VP8E_SET_MAX_INTRA_BITRATE_PCT,
                          rc_max_intra_target_);
   libvpx_->codec_control(encoder_, VP9E_SET_AQ_MODE,
-                         codec_.VP9()->adaptiveQpMode ? 3 : 0);
+                         inst->VP9().adaptiveQpMode ? 3 : 0);
 
   libvpx_->codec_control(encoder_, VP9E_SET_FRAME_PARALLEL_DECODING, 0);
   libvpx_->codec_control(encoder_, VP9E_SET_SVC_GF_TEMPORAL_REF, 0);
@@ -919,7 +902,7 @@ int LibvpxVp9Encoder::InitAndSetControlSettings(const VideoCodec* inst) {
 
   if (AllowDenoising() && !performance_flags_.use_per_layer_speed) {
     libvpx_->codec_control(encoder_, VP9E_SET_NOISE_SENSITIVITY,
-                           codec_.VP9()->denoisingOn ? 1 : 0);
+                           inst->VP9().denoisingOn ? 1 : 0);
   }
 
   if (codec_.mode == VideoCodecMode::kScreensharing) {
@@ -1741,10 +1724,6 @@ void LibvpxVp9Encoder::DeliverBufferedFrame(bool end_of_picture) {
 
     codec_specific_.end_of_picture = end_of_picture;
 
-    if (svc_for_simulcast_) {
-      ConvertSvcFrameToSimulcast(encoded_image_, codec_specific_);
-    }
-
     encoded_complete_callback_->OnEncodedImage(encoded_image_,
                                                &codec_specific_);
 
@@ -1782,7 +1761,6 @@ int LibvpxVp9Encoder::RegisterEncodeCompleteCallback(
 VideoEncoder::EncoderInfo LibvpxVp9Encoder::GetEncoderInfo() const {
   EncoderInfo info;
   info.supports_native_handle = false;
-  info.supports_simulcast = true;
   info.implementation_name = "libvpx";
   if (quality_scaler_experiment_.enabled && inited_ &&
       codec_.VP9().automaticResizeOn) {
