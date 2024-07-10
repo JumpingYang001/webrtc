@@ -14,8 +14,9 @@
 namespace webrtc {
 namespace jni {
 
-static ScopedJavaLocalRef<jobject> JNI_MediaSource_GetState(JNIEnv* jni,
-                                                            jlong j_p) {
+static jni_zero::ScopedJavaLocalRef<jobject> JNI_MediaSource_GetState(
+    JNIEnv* jni,
+    jlong j_p) {
   return Java_State_fromNativeIndex(
       jni, reinterpret_cast<MediaSourceInterface*>(j_p)->state());
 }
