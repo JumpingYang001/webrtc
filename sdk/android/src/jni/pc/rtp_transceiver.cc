@@ -38,7 +38,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtpTransceiverDirection(
 
 RtpTransceiverInit JavaToNativeRtpTransceiverInit(
     JNIEnv* jni,
-    const JavaRef<jobject>& j_init) {
+    const jni_zero::JavaRef<jobject>& j_init) {
   RtpTransceiverInit init;
 
   // Convert the direction.
@@ -46,13 +46,13 @@ RtpTransceiverInit JavaToNativeRtpTransceiverInit(
       Java_RtpTransceiverInit_getDirectionNativeIndex(jni, j_init));
 
   // Convert the stream ids.
-  ScopedJavaLocalRef<jobject> j_stream_ids =
+  jni_zero::ScopedJavaLocalRef<jobject> j_stream_ids =
       Java_RtpTransceiverInit_getStreamIds(jni, j_init);
   init.stream_ids = JavaListToNativeVector<std::string, jstring>(
       jni, j_stream_ids, &JavaToNativeString);
 
   // Convert the send encodings.
-  ScopedJavaLocalRef<jobject> j_send_encodings =
+  jni_zero::ScopedJavaLocalRef<jobject> j_send_encodings =
       Java_RtpTransceiverInit_getSendEncodings(jni, j_init);
   init.send_encodings = JavaListToNativeVector<RtpEncodingParameters, jobject>(
       jni, j_send_encodings, &JavaToNativeRtpEncodingParameters);
@@ -72,7 +72,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtpTransceiver(
 
 JavaRtpTransceiverGlobalOwner::JavaRtpTransceiverGlobalOwner(
     JNIEnv* env,
-    const JavaRef<jobject>& j_transceiver)
+    const jni_zero::JavaRef<jobject>& j_transceiver)
     : j_transceiver_(env, j_transceiver) {}
 
 JavaRtpTransceiverGlobalOwner::JavaRtpTransceiverGlobalOwner(
@@ -144,7 +144,7 @@ ScopedJavaLocalRef<jobject> JNI_RtpTransceiver_CurrentDirection(
 ScopedJavaLocalRef<jobject> JNI_RtpTransceiver_SetCodecPreferences(
     JNIEnv* jni,
     jlong j_rtp_transceiver_pointer,
-    const JavaParamRef<jobject>& j_codecs) {
+    const jni_zero::JavaParamRef<jobject>& j_codecs) {
   std::vector<RtpCodecCapability> codecs;
   if (j_codecs) {
     codecs = JavaListToNativeVector<RtpCodecCapability, jobject>(
@@ -174,7 +174,7 @@ void JNI_RtpTransceiver_StopStandard(JNIEnv* jni,
 jboolean JNI_RtpTransceiver_SetDirection(
     JNIEnv* jni,
     jlong j_rtp_transceiver_pointer,
-    const base::android::JavaParamRef<jobject>& j_rtp_transceiver_direction) {
+    const jni_zero::JavaParamRef<jobject>& j_rtp_transceiver_direction) {
   if (IsNull(jni, j_rtp_transceiver_direction)) {
     return false;
   }

@@ -21,22 +21,23 @@
 namespace webrtc {
 namespace jni {
 
-static void JNI_NV21Buffer_CropAndScale(JNIEnv* jni,
-                                        jint crop_x,
-                                        jint crop_y,
-                                        jint crop_width,
-                                        jint crop_height,
-                                        jint scale_width,
-                                        jint scale_height,
-                                        const JavaParamRef<jbyteArray>& j_src,
-                                        jint src_width,
-                                        jint src_height,
-                                        const JavaParamRef<jobject>& j_dst_y,
-                                        jint dst_stride_y,
-                                        const JavaParamRef<jobject>& j_dst_u,
-                                        jint dst_stride_u,
-                                        const JavaParamRef<jobject>& j_dst_v,
-                                        jint dst_stride_v) {
+static void JNI_NV21Buffer_CropAndScale(
+    JNIEnv* jni,
+    jint crop_x,
+    jint crop_y,
+    jint crop_width,
+    jint crop_height,
+    jint scale_width,
+    jint scale_height,
+    const jni_zero::JavaParamRef<jbyteArray>& j_src,
+    jint src_width,
+    jint src_height,
+    const jni_zero::JavaParamRef<jobject>& j_dst_y,
+    jint dst_stride_y,
+    const jni_zero::JavaParamRef<jobject>& j_dst_u,
+    jint dst_stride_u,
+    const jni_zero::JavaParamRef<jobject>& j_dst_v,
+    jint dst_stride_v) {
   const int src_stride_y = src_width;
   const int src_stride_uv = src_width;
   const int crop_chroma_x = crop_x / 2;

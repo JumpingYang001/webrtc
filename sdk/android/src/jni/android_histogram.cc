@@ -20,11 +20,12 @@
 namespace webrtc {
 namespace jni {
 
-static jlong JNI_Histogram_CreateCounts(JNIEnv* jni,
-                                        const JavaParamRef<jstring>& j_name,
-                                        jint min,
-                                        jint max,
-                                        jint buckets) {
+static jlong JNI_Histogram_CreateCounts(
+    JNIEnv* jni,
+    const jni_zero::JavaParamRef<jstring>& j_name,
+    jint min,
+    jint max,
+    jint buckets) {
   std::string name = JavaToStdString(jni, j_name);
   return jlongFromPointer(
       metrics::HistogramFactoryGetCounts(name, min, max, buckets));
@@ -32,7 +33,7 @@ static jlong JNI_Histogram_CreateCounts(JNIEnv* jni,
 
 static jlong JNI_Histogram_CreateEnumeration(
     JNIEnv* jni,
-    const JavaParamRef<jstring>& j_name,
+    const jni_zero::JavaParamRef<jstring>& j_name,
     jint max) {
   std::string name = JavaToStdString(jni, j_name);
   return jlongFromPointer(metrics::HistogramFactoryGetEnumeration(name, max));

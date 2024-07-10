@@ -23,10 +23,10 @@ namespace jni {
 
 rtc::RTCCertificatePEM JavaToNativeRTCCertificatePEM(
     JNIEnv* jni,
-    const JavaRef<jobject>& j_rtc_certificate) {
-  ScopedJavaLocalRef<jstring> privatekey_field =
+    const jni_zero::JavaRef<jobject>& j_rtc_certificate) {
+  jni_zero::ScopedJavaLocalRef<jstring> privatekey_field =
       Java_RtcCertificatePem_getPrivateKey(jni, j_rtc_certificate);
-  ScopedJavaLocalRef<jstring> certificate_field =
+  jni_zero::ScopedJavaLocalRef<jstring> certificate_field =
       Java_RtcCertificatePem_getCertificate(jni, j_rtc_certificate);
   return rtc::RTCCertificatePEM(JavaToNativeString(jni, privatekey_field),
                                 JavaToNativeString(jni, certificate_field));
@@ -40,9 +40,10 @@ ScopedJavaLocalRef<jobject> NativeToJavaRTCCertificatePEM(
       NativeToJavaString(jni, certificate.certificate()));
 }
 
-static ScopedJavaLocalRef<jobject> JNI_RtcCertificatePem_GenerateCertificate(
+static jni_zero::ScopedJavaLocalRef<jobject>
+JNI_RtcCertificatePem_GenerateCertificate(
     JNIEnv* jni,
-    const JavaParamRef<jobject>& j_key_type,
+    const jni_zero::JavaParamRef<jobject>& j_key_type,
     jlong j_expires) {
   rtc::KeyType key_type = JavaToNativeKeyType(jni, j_key_type);
   uint64_t expires = (uint64_t)j_expires;

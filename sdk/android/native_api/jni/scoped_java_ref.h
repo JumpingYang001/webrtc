@@ -28,10 +28,12 @@ using jni_zero::ScopedJavaGlobalRef;
 using jni_zero::ScopedJavaLocalRef;
 
 template <typename T>
-inline ScopedJavaLocalRef<T> static_java_ref_cast(JNIEnv* env,
-                                                  JavaRef<jobject> const& ref) {
-  ScopedJavaLocalRef<jobject> owned_ref(env, ref);
-  return ScopedJavaLocalRef<T>(env, static_cast<T>(owned_ref.Release()));
+inline jni_zero::ScopedJavaLocalRef<T> static_java_ref_cast(
+    JNIEnv* env,
+    jni_zero::JavaRef<jobject> const& ref) {
+  jni_zero::ScopedJavaLocalRef<jobject> owned_ref(env, ref);
+  return jni_zero::ScopedJavaLocalRef<T>(env,
+                                         static_cast<T>(owned_ref.Release()));
 }
 
 }  // namespace webrtc
