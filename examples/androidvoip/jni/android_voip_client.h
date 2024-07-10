@@ -49,8 +49,8 @@ class AndroidVoipClient : public webrtc::Transport {
   // they are done with it (this class provides a Delete() method).
   static AndroidVoipClient* Create(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& application_context,
-      const jni_zero::JavaParamRef<jobject>& j_voip_client);
+      const webrtc::JavaParamRef<jobject>& application_context,
+      const webrtc::JavaParamRef<jobject>& j_voip_client);
 
   ~AndroidVoipClient() override;
 
@@ -66,23 +66,22 @@ class AndroidVoipClient : public webrtc::Transport {
 
   // Sets the encoder used by the VoIP API.
   void SetEncoder(JNIEnv* env,
-                  const jni_zero::JavaParamRef<jstring>& j_encoder_string);
+                  const webrtc::JavaParamRef<jstring>& j_encoder_string);
 
   // Sets the decoders used by the VoIP API.
   void SetDecoders(JNIEnv* env,
-                   const jni_zero::JavaParamRef<jobject>& j_decoder_strings);
+                   const webrtc::JavaParamRef<jobject>& j_decoder_strings);
 
   // Sets two local/remote addresses, one for RTP packets, and another for
   // RTCP packets. The RTP address will have IP address j_ip_address_string
   // and port number j_port_number_int, the RTCP address will have IP address
   // j_ip_address_string and port number j_port_number_int+1.
-  void SetLocalAddress(
-      JNIEnv* env,
-      const jni_zero::JavaParamRef<jstring>& j_ip_address_string,
-      jint j_port_number_int);
+  void SetLocalAddress(JNIEnv* env,
+                       const webrtc::JavaParamRef<jstring>& j_ip_address_string,
+                       jint j_port_number_int);
   void SetRemoteAddress(
       JNIEnv* env,
-      const jni_zero::JavaParamRef<jstring>& j_ip_address_string,
+      const webrtc::JavaParamRef<jstring>& j_ip_address_string,
       jint j_port_number_int);
 
   // Starts a VoIP session, then calls a callback method with a boolean
@@ -129,12 +128,12 @@ class AndroidVoipClient : public webrtc::Transport {
 
  private:
   AndroidVoipClient(JNIEnv* env,
-                    const jni_zero::JavaParamRef<jobject>& j_voip_client)
+                    const webrtc::JavaParamRef<jobject>& j_voip_client)
       : voip_thread_(rtc::Thread::CreateWithSocketServer()),
         j_voip_client_(env, j_voip_client) {}
 
   void Init(JNIEnv* env,
-            const jni_zero::JavaParamRef<jobject>& application_context);
+            const webrtc::JavaParamRef<jobject>& application_context);
 
   // Overloaded methods having native C++ variables as arguments.
   void SetEncoder(const std::string& encoder);
@@ -154,7 +153,7 @@ class AndroidVoipClient : public webrtc::Transport {
   std::unique_ptr<rtc::Thread> voip_thread_;
   // Reference to the VoipClient java instance used to
   // invoke callbacks when operations are finished.
-  jni_zero::ScopedJavaGlobalRef<jobject> j_voip_client_
+  webrtc::ScopedJavaGlobalRef<jobject> j_voip_client_
       RTC_GUARDED_BY(voip_thread_);
   // A list of AudioCodecSpec supported by the built-in
   // encoder/decoder factories.

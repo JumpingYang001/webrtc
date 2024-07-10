@@ -21,8 +21,7 @@ JNI_FUNCTION_DECLARATION(jint,
                          JNIEnv* jni,
                          jclass,
                          jobject video_frame_buffer) {
-  const jni_zero::JavaParamRef<jobject> j_video_frame_buffer(
-      jni, video_frame_buffer);
+  const JavaParamRef<jobject> j_video_frame_buffer(jni, video_frame_buffer);
   rtc::scoped_refptr<VideoFrameBuffer> buffer =
       JavaToNativeFrameBuffer(jni, j_video_frame_buffer);
   return static_cast<jint>(buffer->type());
@@ -33,7 +32,7 @@ JNI_FUNCTION_DECLARATION(jobject,
                          JNIEnv* jni,
                          jclass,
                          jobject i420_buffer) {
-  const jni_zero::JavaParamRef<jobject> j_i420_buffer(jni, i420_buffer);
+  const JavaParamRef<jobject> j_i420_buffer(jni, i420_buffer);
   rtc::scoped_refptr<VideoFrameBuffer> buffer =
       JavaToNativeFrameBuffer(jni, j_i420_buffer);
   const I420BufferInterface* inputBuffer = buffer->GetI420();
