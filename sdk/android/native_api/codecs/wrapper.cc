@@ -22,28 +22,28 @@ namespace webrtc {
 
 SdpVideoFormat JavaToNativeVideoCodecInfo(JNIEnv* jni, jobject codec_info) {
   return jni::VideoCodecInfoToSdpVideoFormat(
-      jni, jni_zero::JavaParamRef<jobject>(jni, codec_info));
+      jni, JavaParamRef<jobject>(jni, codec_info));
 }
 
 std::unique_ptr<VideoDecoderFactory> JavaToNativeVideoDecoderFactory(
     JNIEnv* jni,
     jobject decoder_factory) {
   return std::make_unique<jni::VideoDecoderFactoryWrapper>(
-      jni, jni_zero::JavaParamRef<jobject>(jni, decoder_factory));
+      jni, JavaParamRef<jobject>(jni, decoder_factory));
 }
 
 std::unique_ptr<VideoEncoderFactory> JavaToNativeVideoEncoderFactory(
     JNIEnv* jni,
     jobject encoder_factory) {
   return std::make_unique<jni::VideoEncoderFactoryWrapper>(
-      jni, jni_zero::JavaParamRef<jobject>(jni, encoder_factory));
+      jni, JavaParamRef<jobject>(jni, encoder_factory));
 }
 
 std::vector<VideoEncoder::ResolutionBitrateLimits>
 JavaToNativeResolutionBitrateLimits(JNIEnv* jni,
                                     const jobjectArray j_bitrate_limits_array) {
   return jni::JavaToNativeResolutionBitrateLimits(
-      jni, jni_zero::JavaParamRef<jobjectArray>(jni, j_bitrate_limits_array));
+      jni, JavaParamRef<jobjectArray>(jni, j_bitrate_limits_array));
 }
 
 }  // namespace webrtc

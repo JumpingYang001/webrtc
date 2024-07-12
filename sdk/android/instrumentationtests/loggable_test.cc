@@ -23,7 +23,7 @@ JNI_FUNCTION_DECLARATION(void,
                          jclass,
                          jstring j_message) {
   std::string message =
-      JavaToNativeString(jni, jni_zero::JavaParamRef<jstring>(jni, j_message));
+      JavaToNativeString(jni, JavaParamRef<jstring>(jni, j_message));
   RTC_LOG(LS_INFO) << message;
 }
 

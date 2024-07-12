@@ -35,9 +35,8 @@ static void JNI_VideoTrack_RemoveSink(JNIEnv* jni,
           j_native_sink));
 }
 
-static jlong JNI_VideoTrack_WrapSink(
-    JNIEnv* jni,
-    const jni_zero::JavaParamRef<jobject>& sink) {
+static jlong JNI_VideoTrack_WrapSink(JNIEnv* jni,
+                                     const JavaParamRef<jobject>& sink) {
   return jlongFromPointer(new VideoSinkWrapper(jni, sink));
 }
 
