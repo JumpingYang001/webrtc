@@ -229,25 +229,31 @@ SimulcastFormat InterpolateSimulcastFormat(
 }
 
 std::vector<webrtc::VideoStream> GetNormalSimulcastLayers(
-    rtc::ArrayView<const webrtc::Resolution> resolutions,
+    size_t layer_count,
+    int width,
+    int height,
     bool temporal_layers_supported,
     bool base_heavy_tl3_rate_alloc,
     const webrtc::FieldTrialsView& trials,
     webrtc::VideoCodecType codec) {
+  std::vector<webrtc::VideoStream> layers(layer_count);
   const bool enable_lowres_bitrate_interpolation =
       EnableLowresBitrateInterpolation(trials);
   const int num_temporal_layers =
       temporal_layers_supported ? kDefaultNumTemporalLayers : 1;
+  // Format width and height has to be divisible by |2 ^ num_simulcast_layers -
+  // 1|.
+  width = NormalizeSimulcastSize(trials, width, layer_count);
+  height = NormalizeSimulcastSize(trials, height, layer_count);
   // Add simulcast streams, from highest resolution (`s` = num_simulcast_layers
   // -1) to lowest resolution at `s` = 0.
-  std::vector<webrtc::VideoStream> layers(resolutions.size());
-  for (size_t s = 0; s < resolutions.size(); ++s) {
-    layers[s].width = resolutions[s].width;
-    layers[s].height = resolutions[s].height;
+  for (size_t s = layer_count - 1;; --s) {
+    layers[s].width = width;
+    layers[s].height = height;
     layers[s].num_temporal_layers = num_temporal_layers;
 
     SimulcastFormat interpolated_format = InterpolateSimulcastFormat(
-        layers[s].width, layers[s].height, /*max_roundup_rate=*/absl::nullopt,
+        width, height, /*max_roundup_rate=*/absl::nullopt,
         enable_lowres_bitrate_interpolation, codec);
 
     layers[s].max_bitrate_bps = interpolated_format.max_bitrate.bps();
@@ -287,6 +293,13 @@ std::vector<webrtc::VideoStream> GetNormalSimulcastLayers(
         std::max(layers[s].min_bitrate_bps, layers[s].target_bitrate_bps);
 
     layers[s].max_framerate = kDefaultVideoMaxFramerate;
+
+    width /= 2;
+    height /= 2;
+
+    if (s == 0) {
+      break;
+    }
   }
 
   return layers;
@@ -349,12 +362,10 @@ std::vector<webrtc::VideoStream> GetScreenshareLayers(
   return layers;
 }
 
-}  // namespace
-
-size_t LimitSimulcastLayerCount(size_t min_num_layers,
-                                size_t max_num_layers,
-                                int width,
+size_t LimitSimulcastLayerCount(int width,
                                 int height,
+                                size_t need_layers,
+                                size_t layer_count,
                                 const webrtc::FieldTrialsView& trials,
                                 webrtc::VideoCodecType codec) {
   if (!absl::StartsWith(trials.Lookup(kUseLegacySimulcastLayerLimitFieldTrial),
@@ -367,19 +378,36 @@ size_t LimitSimulcastLayerCount(size_t min_num_layers,
     webrtc::ParseFieldTrial({&max_ratio},
                             trials.Lookup("WebRTC-SimulcastLayerLimitRoundUp"));
 
-    size_t reduced_num_layers =
-        std::max(min_num_layers,
-                 InterpolateSimulcastFormat(
-                     width, height, max_ratio.GetOptional(),
-                     /*enable_lowres_bitrate_interpolation=*/false, codec)
-                     .max_layers);
-    if (max_num_layers > reduced_num_layers) {
+    size_t adaptive_layer_count = std::max(
+        need_layers, InterpolateSimulcastFormat(
+                         width, height, max_ratio.GetOptional(),
+                         /*enable_lowres_bitrate_interpolation=*/false, codec)
+                         .max_layers);
+    if (layer_count > adaptive_layer_count) {
       RTC_LOG(LS_WARNING) << "Reducing simulcast layer count from "
-                          << max_num_layers << " to " << reduced_num_layers;
-      return reduced_num_layers;
+                          << layer_count << " to " << adaptive_layer_count;
+      layer_count = adaptive_layer_count;
     }
   }
-  return max_num_layers;
+  return layer_count;
+}
+
+}  // namespace
+
+// Round size to nearest simulcast-friendly size.
+// Simulcast stream width and height must both be dividable by
+// |2 ^ (simulcast_layers - 1)|.
+int NormalizeSimulcastSize(const FieldTrialsView& field_trials,
+                           int size,
+                           size_t simulcast_layers) {
+  int base2_exponent = static_cast<int>(simulcast_layers) - 1;
+  const absl::optional<int> experimental_base2_exponent =
+      webrtc::NormalizeSimulcastSizeExperiment::GetBase2Exponent(field_trials);
+  if (experimental_base2_exponent &&
+      (size > (1 << *experimental_base2_exponent))) {
+    base2_exponent = *experimental_base2_exponent;
+  }
+  return ((size >> base2_exponent) << base2_exponent);
 }
 
 void BoostMaxSimulcastLayer(webrtc::DataRate max_bitrate,
@@ -411,21 +439,32 @@ webrtc::DataRate GetTotalMaxBitrate(
 }
 
 std::vector<webrtc::VideoStream> GetSimulcastConfig(
-    rtc::ArrayView<const webrtc::Resolution> resolutions,
+    size_t min_layers,
+    size_t max_layers,
+    int width,
+    int height,
     bool is_screenshare_with_conference_mode,
     bool temporal_layers_supported,
     const webrtc::FieldTrialsView& trials,
     webrtc::VideoCodecType codec) {
-  RTC_DCHECK(!resolutions.empty());
+  RTC_DCHECK_LE(min_layers, max_layers);
+  RTC_DCHECK(max_layers > 1 || is_screenshare_with_conference_mode);
 
   const bool base_heavy_tl3_rate_alloc =
       webrtc::RateControlSettings(trials).Vp8BaseHeavyTl3RateAllocation();
   if (is_screenshare_with_conference_mode) {
-    return GetScreenshareLayers(
-        resolutions.size(), resolutions[0].width, resolutions[0].height,
-        temporal_layers_supported, base_heavy_tl3_rate_alloc, trials);
+    return GetScreenshareLayers(max_layers, width, height,
+                                temporal_layers_supported,
+                                base_heavy_tl3_rate_alloc, trials);
   } else {
-    return GetNormalSimulcastLayers(resolutions, temporal_layers_supported,
+    // Some applications rely on the old behavior limiting the simulcast layer
+    // count based on the resolution automatically, which they can get through
+    // the WebRTC-LegacySimulcastLayerLimit field trial until they update.
+    max_layers = LimitSimulcastLayerCount(width, height, min_layers, max_layers,
+                                          trials, codec);
+
+    return GetNormalSimulcastLayers(max_layers, width, height,
+                                    temporal_layers_supported,
                                     base_heavy_tl3_rate_alloc, trials, codec);
   }
 }
