@@ -133,14 +133,6 @@ DEPS_RE = re.compile(r'\bdeps \+?= \[(?P<deps>.*?)\]',
 FILE_PATH_RE = re.compile(r'"(?P<file_path>(\w|\/)+)(?P<extension>\.\w+)"')
 
 
-def FindSrcDirPath(starting_dir):
-    """Returns the abs path to the src/ dir of the project."""
-    src_dir = starting_dir
-    while os.path.basename(src_dir) != 'src':
-        src_dir = os.path.normpath(os.path.join(src_dir, os.pardir))
-    return src_dir
-
-
 @contextmanager
 def _AddToPath(*paths):
     original_sys_path = sys.path
@@ -659,7 +651,7 @@ def CheckGnGen(input_api, output_api):
             input_api.os_path.join(input_api.PresubmitLocalPath(),
                                    'tools_webrtc', 'presubmit_checks_lib')):
         from build_helpers import RunGnCheck
-    errors = RunGnCheck(FindSrcDirPath(input_api.PresubmitLocalPath()))[:5]
+    errors = RunGnCheck(input_api.change.RepositoryRoot())[:5]
     if errors:
         return [
             output_api.PresubmitPromptWarning(
@@ -681,8 +673,8 @@ def CheckUnwantedDependencies(input_api, output_api, source_file_filter):
     # We need to wait until we have an input_api object and use this
     # roundabout construct to import checkdeps because this file is
     # eval-ed and thus doesn't have __file__.
-    src_path = FindSrcDirPath(input_api.PresubmitLocalPath())
-    checkdeps_path = input_api.os_path.join(src_path, 'buildtools',
+    repo_root = input_api.change.RepositoryRoot()
+    checkdeps_path = input_api.os_path.join(repo_root, 'buildtools',
                                             'checkdeps')
     if not os.path.exists(checkdeps_path):
         return [
