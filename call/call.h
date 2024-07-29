@@ -55,7 +55,7 @@ class Call {
     int64_t rtt_ms = -1;
   };
 
-  static std::unique_ptr<Call> Create(const CallConfig& config);
+  static std::unique_ptr<Call> Create(CallConfig config);
 
   virtual AudioSendStream* CreateAudioSendStream(
       const AudioSendStream::Config& config) = 0;
