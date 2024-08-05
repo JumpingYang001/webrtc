@@ -492,8 +492,7 @@ uint32_t AudioSendStream::OnBitrateUpdated(BitrateAllocationUpdate update) {
 }
 
 absl::optional<DataRate> AudioSendStream::GetUsedRate() const {
-  // TODO(bugs.webrtc.org/35055527): Implement
-  return absl::nullopt;
+  return channel_send_->GetUsedRate();
 }
 
 void AudioSendStream::SetTransportOverhead(
@@ -518,6 +517,7 @@ void AudioSendStream::UpdateOverheadPerPacket() {
   if (registered_with_allocator_) {
     ConfigureBitrateObserver();
   }
+  channel_send_->RegisterPacketOverhead(overhead_per_packet_bytes);
 }
 
 size_t AudioSendStream::TestOnlyGetPerPacketOverheadBytes() const {
