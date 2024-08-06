@@ -38,7 +38,6 @@
 
 namespace webrtc {
 
-class Clock;
 class NetEq;
 struct RTPHeader;
 
@@ -56,9 +55,6 @@ class AcmReceiver {
     rtc::scoped_refptr<AudioDecoderFactory> decoder_factory;
     NetEqFactory* neteq_factory = nullptr;
   };
-
-  [[deprecated("bugs.webrtc.org/356878416")]] explicit AcmReceiver(
-      const Config& config);
 
   AcmReceiver(const Environment& env, Config config);
 
@@ -232,7 +228,7 @@ class AcmReceiver {
 
   uint32_t NowInTimestamp(int decoder_sampling_rate) const;
 
-  Clock& clock_;
+  const Environment env_;
   mutable Mutex mutex_;
   absl::optional<DecoderInfo> last_decoder_ RTC_GUARDED_BY(mutex_);
   ACMResampler resampler_ RTC_GUARDED_BY(mutex_);
