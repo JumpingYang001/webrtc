@@ -69,8 +69,13 @@ struct FrameStats {
   VideoFrameType pre_decoded_frame_type = VideoFrameType::kEmptyFrame;
   DataSize pre_decoded_image_size = DataSize::Bytes(0);
   uint32_t target_encode_bitrate = 0;
-  // Sender side qp values per spatial layer. In case when spatial layer is not
-  // set for `webrtc::EncodedImage`, 0 is used as default.
+  // Sender side qp value per spatial layer. In case when spatial layer is not
+  // set for `webrtc::EncodedImage`, 0 is used as default. Each spatial layer
+  // can only have 1 QP value. Reason for using `SamplesStatsCounter` is because
+  // `SamplesStatsCounter::StatsSample` not having a default ctor and
+  // `Timestamp` is of interest.
+  // TODO(webrtc:357636606): Replace `SamplesStatsCounter` with optional<int>
+  // and `Timestamp`.
   std::map<int, SamplesStatsCounter> spatial_layers_qp;
 
   absl::optional<int> decoded_frame_width = absl::nullopt;

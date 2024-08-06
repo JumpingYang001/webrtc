@@ -501,12 +501,14 @@ void DefaultVideoQualityAnalyzerFramesComparator::ProcessComparison(
         frame_stats.encoded_image_size.bytes();
     stats->target_encode_bitrate.AddSample(StatsSample(
         frame_stats.target_encode_bitrate, frame_stats.encoded_time, metadata));
-    for (const auto& [spatial_layer, qp_values] :
+    for (const auto& [spatial_layer, qp_value] :
          frame_stats.spatial_layers_qp) {
-      for (SamplesStatsCounter::StatsSample qp : qp_values.GetTimedSamples()) {
-        qp.metadata = metadata;
-        stats->spatial_layers_qp[spatial_layer].AddSample(std::move(qp));
-      }
+      // Each spatial/simulcast layer can only have one qp value.
+      RTC_CHECK_EQ(qp_value.GetTimedSamples().size(), 1)
+          << "Can only be 1 QP value per spatial layer.";
+      SamplesStatsCounter::StatsSample qp = qp_value.GetTimedSamples()[0];
+      qp.metadata = metadata;
+      stats->spatial_layers_qp[spatial_layer].AddSample(std::move(qp));
     }
 
     // Stats sliced on encoded frame type.
