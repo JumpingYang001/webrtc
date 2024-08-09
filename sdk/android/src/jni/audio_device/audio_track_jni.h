@@ -41,14 +41,14 @@ namespace jni {
 // thread is used.
 class AudioTrackJni : public AudioOutput {
  public:
-  static ScopedJavaLocalRef<jobject> CreateJavaWebRtcAudioTrack(
+  static jni_zero::ScopedJavaLocalRef<jobject> CreateJavaWebRtcAudioTrack(
       JNIEnv* env,
-      const JavaRef<jobject>& j_context,
-      const JavaRef<jobject>& j_audio_manager);
+      const jni_zero::JavaRef<jobject>& j_context,
+      const jni_zero::JavaRef<jobject>& j_audio_manager);
 
   AudioTrackJni(JNIEnv* env,
                 const AudioParameters& audio_parameters,
-                const JavaRef<jobject>& j_webrtc_audio_track);
+                const jni_zero::JavaRef<jobject>& j_webrtc_audio_track);
   ~AudioTrackJni() override;
 
   int32_t Init() override;
@@ -74,8 +74,9 @@ class AudioTrackJni : public AudioOutput {
   // `byte_buffer` in `direct_buffer_address_`. The size of the buffer
   // is also stored in `direct_buffer_capacity_in_bytes_`.
   // Called on the same thread as the creating thread.
-  void CacheDirectBufferAddress(JNIEnv* env,
-                                const JavaParamRef<jobject>& byte_buffer);
+  void CacheDirectBufferAddress(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& byte_buffer);
   // Called periodically by the Java based WebRtcAudioTrack object when
   // playout has started. Each call indicates that `length` new bytes should
   // be written to the memory area `direct_buffer_address_` for playout.
@@ -93,7 +94,7 @@ class AudioTrackJni : public AudioOutput {
 
   // Wraps the Java specific parts of the AudioTrackJni class.
   JNIEnv* env_ = nullptr;
-  ScopedJavaGlobalRef<jobject> j_audio_track_;
+  jni_zero::ScopedJavaGlobalRef<jobject> j_audio_track_;
 
   // Contains audio parameters provided to this class at construction by the
   // AudioManager.
