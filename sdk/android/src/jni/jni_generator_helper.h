@@ -32,13 +32,6 @@
 #define JNI_GENERATOR_EXPORT extern "C" JNIEXPORT JNICALL
 #endif
 
-namespace webrtc {
-using jni_zero::JavaParamRef;
-using jni_zero::JavaRef;
-using jni_zero::ScopedJavaGlobalRef;
-using jni_zero::ScopedJavaLocalRef;
-}  // namespace webrtc
-
 // Re-export helpers in the old jni_generator namespace.
 // TODO(b/319078685): Remove once all uses of the jni_generator has been
 // updated.
@@ -116,17 +109,4 @@ static_assert(sizeof(JniJavaCallContextChecked) ==
 
 }  // namespace jni_generator
 
-// Re-export helpers in the namespaces that the old jni_generator script
-// expects.
-// TODO(b/319078685): Remove once all uses of the jni_generator has been
-// updated.
-namespace base {
-namespace android {
-using jni_zero::JavaParamRef;
-using jni_zero::JavaRef;
-using jni_zero::MethodID;
-using jni_zero::ScopedJavaLocalRef;
-using jni_zero::internal::LazyGetClass;
-}  // namespace android
-}  // namespace base
 #endif  // SDK_ANDROID_SRC_JNI_JNI_GENERATOR_HELPER_H_

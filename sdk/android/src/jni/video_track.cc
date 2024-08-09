@@ -14,6 +14,7 @@
 #include "sdk/android/generated_video_jni/VideoTrack_jni.h"
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "sdk/android/src/jni/video_sink.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 namespace jni {
@@ -35,8 +36,9 @@ static void JNI_VideoTrack_RemoveSink(JNIEnv* jni,
           j_native_sink));
 }
 
-static jlong JNI_VideoTrack_WrapSink(JNIEnv* jni,
-                                     const JavaParamRef<jobject>& sink) {
+static jlong JNI_VideoTrack_WrapSink(
+    JNIEnv* jni,
+    const jni_zero::JavaParamRef<jobject>& sink) {
   return jlongFromPointer(new VideoSinkWrapper(jni, sink));
 }
 

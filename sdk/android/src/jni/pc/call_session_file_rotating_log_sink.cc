@@ -12,13 +12,14 @@
 #include "sdk/android/generated_peerconnection_jni/CallSessionFileRotatingLogSink_jni.h"
 #include "sdk/android/native_api/jni/java_types.h"
 #include "sdk/android/src/jni/jni_helpers.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 namespace jni {
 
 static jlong JNI_CallSessionFileRotatingLogSink_AddSink(
     JNIEnv* jni,
-    const JavaParamRef<jstring>& j_dirPath,
+    const jni_zero::JavaParamRef<jstring>& j_dirPath,
     jint j_maxFileSize,
     jint j_severity) {
   std::string dir_path = JavaToStdString(jni, j_dirPath);
@@ -44,25 +45,25 @@ static void JNI_CallSessionFileRotatingLogSink_DeleteSink(JNIEnv* jni,
   delete sink;
 }
 
-static ScopedJavaLocalRef<jbyteArray>
+static jni_zero::ScopedJavaLocalRef<jbyteArray>
 JNI_CallSessionFileRotatingLogSink_GetLogData(
     JNIEnv* jni,
-    const JavaParamRef<jstring>& j_dirPath) {
+    const jni_zero::JavaParamRef<jstring>& j_dirPath) {
   std::string dir_path = JavaToStdString(jni, j_dirPath);
   rtc::CallSessionFileRotatingStreamReader file_reader(dir_path);
   size_t log_size = file_reader.GetSize();
   if (log_size == 0) {
     RTC_LOG_V(rtc::LoggingSeverity::LS_WARNING)
         << "CallSessionFileRotatingStream returns 0 size for path " << dir_path;
-    return ScopedJavaLocalRef<jbyteArray>(jni, jni->NewByteArray(0));
+    return jni_zero::ScopedJavaLocalRef<jbyteArray>(jni, jni->NewByteArray(0));
   }
 
   // TODO(nisse, sakal): To avoid copying, change api to use ByteBuffer.
   std::unique_ptr<jbyte> buffer(static_cast<jbyte*>(malloc(log_size)));
   size_t read = file_reader.ReadAll(buffer.get(), log_size);
 
-  ScopedJavaLocalRef<jbyteArray> result =
-      ScopedJavaLocalRef<jbyteArray>(jni, jni->NewByteArray(read));
+  jni_zero::ScopedJavaLocalRef<jbyteArray> result =
+      jni_zero::ScopedJavaLocalRef<jbyteArray>(jni, jni->NewByteArray(read));
   jni->SetByteArrayRegion(result.obj(), 0, read, buffer.get());
 
   return result;

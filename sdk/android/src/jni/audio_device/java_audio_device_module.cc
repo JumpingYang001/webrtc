@@ -14,16 +14,17 @@
 #include "sdk/android/src/jni/audio_device/audio_record_jni.h"
 #include "sdk/android/src/jni/audio_device/audio_track_jni.h"
 #include "sdk/android/src/jni/jni_helpers.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 namespace jni {
 
 static jlong JNI_JavaAudioDeviceModule_CreateAudioDeviceModule(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_context,
-    const JavaParamRef<jobject>& j_audio_manager,
-    const JavaParamRef<jobject>& j_webrtc_audio_record,
-    const JavaParamRef<jobject>& j_webrtc_audio_track,
+    const jni_zero::JavaParamRef<jobject>& j_context,
+    const jni_zero::JavaParamRef<jobject>& j_audio_manager,
+    const jni_zero::JavaParamRef<jobject>& j_webrtc_audio_record,
+    const jni_zero::JavaParamRef<jobject>& j_webrtc_audio_track,
     int input_sample_rate,
     int output_sample_rate,
     jboolean j_use_stereo_input,

@@ -20,6 +20,7 @@
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "system_wrappers/include/field_trial.h"
 #include "system_wrappers/include/metrics.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 
@@ -27,14 +28,15 @@ namespace jni {
 
 ScopedJavaLocalRef<jobject> AudioTrackJni::CreateJavaWebRtcAudioTrack(
     JNIEnv* env,
-    const JavaRef<jobject>& j_context,
-    const JavaRef<jobject>& j_audio_manager) {
+    const jni_zero::JavaRef<jobject>& j_context,
+    const jni_zero::JavaRef<jobject>& j_audio_manager) {
   return Java_WebRtcAudioTrack_Constructor(env, j_context, j_audio_manager);
 }
 
-AudioTrackJni::AudioTrackJni(JNIEnv* env,
-                             const AudioParameters& audio_parameters,
-                             const JavaRef<jobject>& j_webrtc_audio_track)
+AudioTrackJni::AudioTrackJni(
+    JNIEnv* env,
+    const AudioParameters& audio_parameters,
+    const jni_zero::JavaRef<jobject>& j_webrtc_audio_track)
     : j_audio_track_(env, j_webrtc_audio_track),
       audio_parameters_(audio_parameters),
       direct_buffer_address_(nullptr),
@@ -229,7 +231,7 @@ void AudioTrackJni::AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) {
 
 void AudioTrackJni::CacheDirectBufferAddress(
     JNIEnv* env,
-    const JavaParamRef<jobject>& byte_buffer) {
+    const jni_zero::JavaParamRef<jobject>& byte_buffer) {
   RTC_LOG(LS_INFO) << "OnCacheDirectBufferAddress";
   RTC_DCHECK(thread_checker_.IsCurrent());
   RTC_DCHECK(!direct_buffer_address_);

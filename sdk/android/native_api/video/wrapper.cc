@@ -15,6 +15,7 @@
 #include "sdk/android/native_api/jni/scoped_java_ref.h"
 #include "sdk/android/src/jni/video_frame.h"
 #include "sdk/android/src/jni/video_sink.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 
@@ -22,7 +23,7 @@ std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>> JavaToNativeVideoSink(
     JNIEnv* jni,
     jobject video_sink) {
   return std::make_unique<jni::VideoSinkWrapper>(
-      jni, JavaParamRef<jobject>(jni, video_sink));
+      jni, jni_zero::JavaParamRef<jobject>(jni, video_sink));
 }
 
 ScopedJavaLocalRef<jobject> NativeToJavaVideoFrame(JNIEnv* jni,
