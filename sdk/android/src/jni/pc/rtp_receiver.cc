@@ -15,7 +15,6 @@
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "sdk/android/src/jni/pc/media_stream_track.h"
 #include "sdk/android/src/jni/pc/rtp_parameters.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 namespace jni {
@@ -27,8 +26,7 @@ namespace {
 // dispatches C++ callbacks to Java.
 class RtpReceiverObserverJni : public RtpReceiverObserverInterface {
  public:
-  RtpReceiverObserverJni(JNIEnv* env,
-                         const jni_zero::JavaRef<jobject>& j_observer)
+  RtpReceiverObserverJni(JNIEnv* env, const JavaRef<jobject>& j_observer)
       : j_observer_global_(env, j_observer) {}
 
   ~RtpReceiverObserverJni() override = default;
@@ -40,7 +38,7 @@ class RtpReceiverObserverJni : public RtpReceiverObserverInterface {
   }
 
  private:
-  const jni_zero::ScopedJavaGlobalRef<jobject> j_observer_global_;
+  const ScopedJavaGlobalRef<jobject> j_observer_global_;
 };
 
 }  // namespace
@@ -55,7 +53,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtpReceiver(
 
 JavaRtpReceiverGlobalOwner::JavaRtpReceiverGlobalOwner(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_receiver)
+    const JavaRef<jobject>& j_receiver)
     : j_receiver_(env, j_receiver) {}
 
 JavaRtpReceiverGlobalOwner::JavaRtpReceiverGlobalOwner(
@@ -76,7 +74,7 @@ static jlong JNI_RtpReceiver_GetTrack(JNIEnv* jni,
           .release());
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_RtpReceiver_GetParameters(
+static ScopedJavaLocalRef<jobject> JNI_RtpReceiver_GetParameters(
     JNIEnv* jni,
     jlong j_rtp_receiver_pointer) {
   RtpParameters parameters =
@@ -85,7 +83,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> JNI_RtpReceiver_GetParameters(
   return NativeToJavaRtpParameters(jni, parameters);
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring> JNI_RtpReceiver_GetId(
+static ScopedJavaLocalRef<jstring> JNI_RtpReceiver_GetId(
     JNIEnv* jni,
     jlong j_rtp_receiver_pointer) {
   return NativeToJavaString(
@@ -96,7 +94,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> JNI_RtpReceiver_GetId(
 static jlong JNI_RtpReceiver_SetObserver(
     JNIEnv* jni,
     jlong j_rtp_receiver_pointer,
-    const jni_zero::JavaParamRef<jobject>& j_observer) {
+    const JavaParamRef<jobject>& j_observer) {
   RtpReceiverObserverJni* rtpReceiverObserver =
       new RtpReceiverObserverJni(jni, j_observer);
   reinterpret_cast<RtpReceiverInterface*>(j_rtp_receiver_pointer)

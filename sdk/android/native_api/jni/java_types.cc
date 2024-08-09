@@ -25,11 +25,10 @@
 #include "sdk/android/generated_external_classes_jni/Long_jni.h"
 #include "sdk/android/generated_external_classes_jni/Map_jni.h"
 #include "sdk/android/generated_native_api_jni/JniHelper_jni.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 
-Iterable::Iterable(JNIEnv* jni, const jni_zero::JavaRef<jobject>& iterable)
+Iterable::Iterable(JNIEnv* jni, const JavaRef<jobject>& iterable)
     : jni_(jni), iterable_(jni, iterable) {}
 
 Iterable::Iterable(Iterable&& other) = default;
@@ -40,8 +39,7 @@ Iterable::~Iterable() = default;
 Iterable::Iterator::Iterator() = default;
 
 // Creates an iterator pointing to the beginning of the specified collection.
-Iterable::Iterator::Iterator(JNIEnv* jni,
-                             const jni_zero::JavaRef<jobject>& iterable)
+Iterable::Iterator::Iterator(JNIEnv* jni, const JavaRef<jobject>& iterable)
     : jni_(jni) {
   iterator_ = JNI_Iterable::Java_Iterable_iterator(jni, iterable);
   RTC_CHECK(!iterator_.is_null());
@@ -101,40 +99,36 @@ bool Iterable::Iterator::AtEnd() const {
   return jni_ == nullptr || IsNull(jni_, iterator_);
 }
 
-bool IsNull(JNIEnv* jni, const jni_zero::JavaRef<jobject>& obj) {
+bool IsNull(JNIEnv* jni, const JavaRef<jobject>& obj) {
   return jni->IsSameObject(obj.obj(), nullptr);
 }
 
-std::string GetJavaEnumName(JNIEnv* jni,
-                            const jni_zero::JavaRef<jobject>& j_enum) {
+std::string GetJavaEnumName(JNIEnv* jni, const JavaRef<jobject>& j_enum) {
   return JavaToStdString(jni, JNI_Enum::Java_Enum_name(jni, j_enum));
 }
 
-Iterable GetJavaMapEntrySet(JNIEnv* jni,
-                            const jni_zero::JavaRef<jobject>& j_map) {
+Iterable GetJavaMapEntrySet(JNIEnv* jni, const JavaRef<jobject>& j_map) {
   return Iterable(jni, JNI_Map::Java_Map_entrySet(jni, j_map));
 }
 
 ScopedJavaLocalRef<jobject> GetJavaMapEntryKey(
     JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& j_entry) {
+    const JavaRef<jobject>& j_entry) {
   return jni::Java_JniHelper_getKey(jni, j_entry);
 }
 
 ScopedJavaLocalRef<jobject> GetJavaMapEntryValue(
     JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& j_entry) {
+    const JavaRef<jobject>& j_entry) {
   return jni::Java_JniHelper_getValue(jni, j_entry);
 }
 
-int64_t JavaToNativeLong(JNIEnv* env,
-                         const jni_zero::JavaRef<jobject>& j_long) {
+int64_t JavaToNativeLong(JNIEnv* env, const JavaRef<jobject>& j_long) {
   return JNI_Long::Java_Long_longValue(env, j_long);
 }
 
-absl::optional<bool> JavaToNativeOptionalBool(
-    JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& boolean) {
+absl::optional<bool> JavaToNativeOptionalBool(JNIEnv* jni,
+                                              const JavaRef<jobject>& boolean) {
   if (IsNull(jni, boolean))
     return absl::nullopt;
   return JNI_Boolean::Java_Boolean_booleanValue(jni, boolean);
@@ -142,7 +136,7 @@ absl::optional<bool> JavaToNativeOptionalBool(
 
 absl::optional<double> JavaToNativeOptionalDouble(
     JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& j_double) {
+    const JavaRef<jobject>& j_double) {
   if (IsNull(jni, j_double))
     return absl::nullopt;
   return JNI_Double::Java_Double_doubleValue(jni, j_double);
@@ -150,16 +144,15 @@ absl::optional<double> JavaToNativeOptionalDouble(
 
 absl::optional<int32_t> JavaToNativeOptionalInt(
     JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& integer) {
+    const JavaRef<jobject>& integer) {
   if (IsNull(jni, integer))
     return absl::nullopt;
   return JNI_Integer::Java_Integer_intValue(jni, integer);
 }
 
 // Given a jstring, reinterprets it to a new native string.
-std::string JavaToNativeString(JNIEnv* jni,
-                               const jni_zero::JavaRef<jstring>& j_string) {
-  const jni_zero::ScopedJavaLocalRef<jbyteArray> j_byte_array =
+std::string JavaToNativeString(JNIEnv* jni, const JavaRef<jstring>& j_string) {
+  const ScopedJavaLocalRef<jbyteArray> j_byte_array =
       jni::Java_JniHelper_getStringBytes(jni, j_string);
 
   const size_t len = jni->GetArrayLength(j_byte_array.obj());
@@ -173,11 +166,11 @@ std::string JavaToNativeString(JNIEnv* jni,
 
 std::map<std::string, std::string> JavaToNativeStringMap(
     JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& j_map) {
+    const JavaRef<jobject>& j_map) {
   return JavaToNativeMap<std::string, std::string>(
       jni, j_map,
-      [](JNIEnv* env, jni_zero::JavaRef<jobject> const& key,
-         jni_zero::JavaRef<jobject> const& value) {
+      [](JNIEnv* env, JavaRef<jobject> const& key,
+         JavaRef<jobject> const& value) {
         return std::make_pair(
             JavaToNativeString(env, static_java_ref_cast<jstring>(env, key)),
             JavaToNativeString(env, static_java_ref_cast<jstring>(env, value)));
@@ -203,7 +196,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaLong(JNIEnv* env, int64_t u) {
 ScopedJavaLocalRef<jstring> NativeToJavaString(JNIEnv* env, const char* str) {
   jstring j_str = env->NewStringUTF(str);
   CHECK_EXCEPTION(env) << "error during NewStringUTF";
-  return jni_zero::ScopedJavaLocalRef<jstring>(env, j_str);
+  return ScopedJavaLocalRef<jstring>(env, j_str);
 }
 
 ScopedJavaLocalRef<jstring> NativeToJavaString(JNIEnv* jni,
@@ -232,8 +225,8 @@ ScopedJavaLocalRef<jstring> NativeToJavaString(
 ScopedJavaLocalRef<jbyteArray> NativeToJavaByteArray(
     JNIEnv* env,
     rtc::ArrayView<int8_t> container) {
-  jni_zero::ScopedJavaLocalRef<jbyteArray> jarray(
-      env, env->NewByteArray(container.size()));
+  ScopedJavaLocalRef<jbyteArray> jarray(env,
+                                        env->NewByteArray(container.size()));
   int8_t* array_ptr =
       env->GetByteArrayElements(jarray.obj(), /*isCopy=*/nullptr);
   memcpy(array_ptr, container.data(), container.size() * sizeof(int8_t));
@@ -244,8 +237,7 @@ ScopedJavaLocalRef<jbyteArray> NativeToJavaByteArray(
 ScopedJavaLocalRef<jintArray> NativeToJavaIntArray(
     JNIEnv* env,
     rtc::ArrayView<int32_t> container) {
-  jni_zero::ScopedJavaLocalRef<jintArray> jarray(
-      env, env->NewIntArray(container.size()));
+  ScopedJavaLocalRef<jintArray> jarray(env, env->NewIntArray(container.size()));
   int32_t* array_ptr =
       env->GetIntArrayElements(jarray.obj(), /*isCopy=*/nullptr);
   memcpy(array_ptr, container.data(), container.size() * sizeof(int32_t));
@@ -253,9 +245,8 @@ ScopedJavaLocalRef<jintArray> NativeToJavaIntArray(
   return jarray;
 }
 
-std::vector<int8_t> JavaToNativeByteArray(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jbyteArray>& jarray) {
+std::vector<int8_t> JavaToNativeByteArray(JNIEnv* env,
+                                          const JavaRef<jbyteArray>& jarray) {
   int8_t* array_ptr =
       env->GetByteArrayElements(jarray.obj(), /*isCopy=*/nullptr);
   size_t array_length = env->GetArrayLength(jarray.obj());
@@ -264,9 +255,8 @@ std::vector<int8_t> JavaToNativeByteArray(
   return container;
 }
 
-std::vector<int32_t> JavaToNativeIntArray(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jintArray>& jarray) {
+std::vector<int32_t> JavaToNativeIntArray(JNIEnv* env,
+                                          const JavaRef<jintArray>& jarray) {
   int32_t* array_ptr =
       env->GetIntArrayElements(jarray.obj(), /*isCopy=*/nullptr);
   size_t array_length = env->GetArrayLength(jarray.obj());
@@ -275,9 +265,8 @@ std::vector<int32_t> JavaToNativeIntArray(
   return container;
 }
 
-std::vector<float> JavaToNativeFloatArray(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jfloatArray>& jarray) {
+std::vector<float> JavaToNativeFloatArray(JNIEnv* env,
+                                          const JavaRef<jfloatArray>& jarray) {
   // jfloat is a "machine-dependent native type" which represents a 32-bit
   // float. C++ makes no guarantees about the size of floating point types, and
   // some exotic architectures don't even have 32-bit floats (or even binary
@@ -301,7 +290,7 @@ ScopedJavaLocalRef<jobjectArray> NativeToJavaBooleanArray(
 ScopedJavaLocalRef<jobjectArray> NativeToJavaDoubleArray(
     JNIEnv* env,
     const std::vector<double>& container) {
-  jni_zero::ScopedJavaLocalRef<jobject> (*convert_function)(JNIEnv*, double) =
+  ScopedJavaLocalRef<jobject> (*convert_function)(JNIEnv*, double) =
       &NativeToJavaDouble;
   return NativeToJavaObjectArray(env, container, java_lang_Double_clazz(env),
                                  convert_function);
@@ -310,7 +299,7 @@ ScopedJavaLocalRef<jobjectArray> NativeToJavaDoubleArray(
 ScopedJavaLocalRef<jobjectArray> NativeToJavaIntegerArray(
     JNIEnv* env,
     const std::vector<int32_t>& container) {
-  jni_zero::ScopedJavaLocalRef<jobject> (*convert_function)(JNIEnv*, int32_t) =
+  ScopedJavaLocalRef<jobject> (*convert_function)(JNIEnv*, int32_t) =
       &NativeToJavaInteger;
   return NativeToJavaObjectArray(env, container, java_lang_Integer_clazz(env),
                                  convert_function);
@@ -326,8 +315,8 @@ ScopedJavaLocalRef<jobjectArray> NativeToJavaLongArray(
 ScopedJavaLocalRef<jobjectArray> NativeToJavaStringArray(
     JNIEnv* env,
     const std::vector<std::string>& container) {
-  jni_zero::ScopedJavaLocalRef<jstring> (*convert_function)(
-      JNIEnv*, const std::string&) = &NativeToJavaString;
+  ScopedJavaLocalRef<jstring> (*convert_function)(JNIEnv*, const std::string&) =
+      &NativeToJavaString;
   return NativeToJavaObjectArray(
       env, container,
       static_cast<jclass>(jni::Java_JniHelper_getStringClass(env).obj()),
@@ -340,7 +329,7 @@ JavaListBuilder::JavaListBuilder(JNIEnv* env)
 
 JavaListBuilder::~JavaListBuilder() = default;
 
-void JavaListBuilder::add(const jni_zero::JavaRef<jobject>& element) {
+void JavaListBuilder::add(const JavaRef<jobject>& element) {
   JNI_ArrayList::Java_ArrayList_add(env_, j_list_, element);
 }
 
@@ -351,8 +340,8 @@ JavaMapBuilder::JavaMapBuilder(JNIEnv* env)
 
 JavaMapBuilder::~JavaMapBuilder() = default;
 
-void JavaMapBuilder::put(const jni_zero::JavaRef<jobject>& key,
-                         const jni_zero::JavaRef<jobject>& value) {
+void JavaMapBuilder::put(const JavaRef<jobject>& key,
+                         const JavaRef<jobject>& value) {
   JNI_Map::Java_Map_put(env_, j_map_, key, value);
 }
 
@@ -368,15 +357,13 @@ jlong NativeToJavaPointer(const void* ptr) {
 }
 
 // Given a list of jstrings, reinterprets it to a new vector of native strings.
-std::vector<std::string> JavaToStdVectorStrings(
-    JNIEnv* jni,
-    const jni_zero::JavaRef<jobject>& list) {
+std::vector<std::string> JavaToStdVectorStrings(JNIEnv* jni,
+                                                const JavaRef<jobject>& list) {
   std::vector<std::string> converted_list;
   if (!list.is_null()) {
-    for (const jni_zero::JavaRef<jobject>& str : Iterable(jni, list)) {
-      converted_list.push_back(
-          JavaToStdString(jni, jni_zero::JavaParamRef<jstring>(
-                                   jni, static_cast<jstring>(str.obj()))));
+    for (const JavaRef<jobject>& str : Iterable(jni, list)) {
+      converted_list.push_back(JavaToStdString(
+          jni, JavaParamRef<jstring>(jni, static_cast<jstring>(str.obj()))));
     }
   }
   return converted_list;

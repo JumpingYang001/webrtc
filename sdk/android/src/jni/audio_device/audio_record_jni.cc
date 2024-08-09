@@ -22,7 +22,6 @@
 #include "sdk/android/src/jni/audio_device/audio_common.h"
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "system_wrappers/include/metrics.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 
@@ -50,15 +49,15 @@ class ScopedHistogramTimer {
 
 ScopedJavaLocalRef<jobject> AudioRecordJni::CreateJavaWebRtcAudioRecord(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_context,
-    const jni_zero::JavaRef<jobject>& j_audio_manager) {
+    const JavaRef<jobject>& j_context,
+    const JavaRef<jobject>& j_audio_manager) {
   return Java_WebRtcAudioRecord_Constructor(env, j_context, j_audio_manager);
 }
 
 AudioRecordJni::AudioRecordJni(JNIEnv* env,
                                const AudioParameters& audio_parameters,
                                int total_delay_ms,
-                               const jni_zero::JavaRef<jobject>& j_audio_record)
+                               const JavaRef<jobject>& j_audio_record)
     : j_audio_record_(env, j_audio_record),
       audio_parameters_(audio_parameters),
       total_delay_ms_(total_delay_ms),
@@ -230,8 +229,8 @@ int32_t AudioRecordJni::EnableBuiltInNS(bool enable) {
 
 void AudioRecordJni::CacheDirectBufferAddress(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_caller,
-    const jni_zero::JavaParamRef<jobject>& byte_buffer) {
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& byte_buffer) {
   RTC_LOG(LS_INFO) << "OnCacheDirectBufferAddress";
   RTC_DCHECK(thread_checker_.IsCurrent());
   RTC_DCHECK(!direct_buffer_address_);
@@ -243,11 +242,10 @@ void AudioRecordJni::CacheDirectBufferAddress(
 
 // This method is called on a high-priority thread from Java. The name of
 // the thread is 'AudioRecordThread'.
-void AudioRecordJni::DataIsRecorded(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_caller,
-    int length,
-    int64_t capture_timestamp_ns) {
+void AudioRecordJni::DataIsRecorded(JNIEnv* env,
+                                    const JavaParamRef<jobject>& j_caller,
+                                    int length,
+                                    int64_t capture_timestamp_ns) {
   RTC_DCHECK(thread_checker_java_.IsCurrent());
   if (!audio_device_buffer_) {
     RTC_LOG(LS_ERROR) << "AttachAudioBuffer has not been called";

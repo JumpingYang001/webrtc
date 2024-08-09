@@ -589,7 +589,6 @@ if (current_os == "linux" || is_android) {
       "../../system_wrappers:metrics",
       "//third_party/abseil-cpp/absl/strings:string_view",
       "//third_party/abseil-cpp/absl/types:optional",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -691,7 +690,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base/synchronization:mutex",
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/types:optional",
-      "//third_party/jni_zero",
       "//third_party/libyuv",
     ]
   }
@@ -812,7 +810,6 @@ if (current_os == "linux" || is_android) {
       "../../system_wrappers:field_trial",
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/types:optional",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -825,7 +822,6 @@ if (current_os == "linux" || is_android) {
       ":base_jni",
       ":generated_java_audio_jni",
       ":java_audio_device_module",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -921,7 +917,6 @@ if (current_os == "linux" || is_android) {
       "../../api/video_codecs:builtin_video_decoder_factory",
       "../../api/video_codecs:builtin_video_encoder_factory",
       "../../api/video_codecs:video_codecs_api",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -1001,7 +996,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:refcount",
       "../../system_wrappers",
       "../../system_wrappers:metrics",
-      "//third_party/jni_zero",
     ]
     if (rtc_enable_android_aaudio) {
       deps += [ ":aaudio_audio_device_module" ]
@@ -1024,7 +1018,6 @@ if (current_os == "linux" || is_android) {
       ":video_jni",
       "//api/video_codecs:video_codecs_api",
       "//rtc_base:checks",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -1038,7 +1031,6 @@ if (current_os == "linux" || is_android) {
     deps = [
       ":base_jni",
       "../../rtc_base:threading",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -1098,7 +1090,6 @@ if (current_os == "linux" || is_android) {
       "//api:media_stream_interface",
       "//api/video:video_frame",
       "//api/video:video_rtp_headers",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -1218,7 +1209,6 @@ if (current_os == "linux" || is_android) {
       "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
       "//third_party/abseil-cpp/absl/types:optional",
-      "//third_party/jni_zero",
     ]
   }
 
@@ -1611,7 +1601,6 @@ if (is_android) {
       ":videoframe_jni",
       "../../api/video:video_frame",
       "../../rtc_base:logging",
-      "//third_party/jni_zero",
     ]
   }
 

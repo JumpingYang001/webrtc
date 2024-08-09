@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "sdk/android/src/jni/android_network_monitor.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 
@@ -21,7 +20,7 @@ std::unique_ptr<rtc::NetworkMonitorFactory> CreateAndroidNetworkMonitorFactory(
     JNIEnv* env,
     jobject application_context) {
   return std::make_unique<jni::AndroidNetworkMonitorFactory>(
-      env, jni_zero::JavaParamRef<jobject>(env, application_context));
+      env, JavaParamRef<jobject>(env, application_context));
 }
 
 std::unique_ptr<rtc::NetworkMonitorFactory>

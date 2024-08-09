@@ -18,7 +18,6 @@
 #include "sdk/android/native_api/jni/java_types.h"
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "sdk/android/src/jni/video_codec_info.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace webrtc {
 namespace jni {
@@ -31,7 +30,7 @@ static jlong JNI_SoftwareVideoDecoderFactory_CreateFactory(JNIEnv* env) {
 jboolean JNI_SoftwareVideoDecoderFactory_IsSupported(
     JNIEnv* env,
     jlong j_factory,
-    const jni_zero::JavaParamRef<jobject>& j_info) {
+    const JavaParamRef<jobject>& j_info) {
   return VideoCodecInfoToSdpVideoFormat(env, j_info)
       .IsCodecInList(reinterpret_cast<VideoDecoderFactory*>(j_factory)
                          ->GetSupportedFormats());
@@ -41,7 +40,7 @@ jlong JNI_SoftwareVideoDecoderFactory_Create(
     JNIEnv* env,
     jlong j_factory,
     jlong j_webrtc_env_ref,
-    const jni_zero::JavaParamRef<jobject>& j_info) {
+    const JavaParamRef<jobject>& j_info) {
   return NativeToJavaPointer(
       reinterpret_cast<VideoDecoderFactory*>(j_factory)
           ->Create(*reinterpret_cast<const Environment*>(j_webrtc_env_ref),
@@ -49,7 +48,7 @@ jlong JNI_SoftwareVideoDecoderFactory_Create(
           .release());
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject>
+static webrtc::ScopedJavaLocalRef<jobject>
 JNI_SoftwareVideoDecoderFactory_GetSupportedCodecs(JNIEnv* env,
                                                    jlong j_factory) {
   auto* const native_factory =
