@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/match.h"
 #include "api/rtc_error.h"
 #include "media/base/codec.h"
 
@@ -28,8 +29,8 @@ namespace {
 
 bool MatchesForSdp(const cricket::Codec& codec_1,
                    const cricket::Codec& codec_2) {
-  return codec_1.name == codec_2.name && codec_1.type == codec_2.type &&
-         codec_1.channels == codec_2.channels &&
+  return absl::EqualsIgnoreCase(codec_1.name, codec_2.name) &&
+         codec_1.type == codec_2.type && codec_1.channels == codec_2.channels &&
          codec_1.clockrate == codec_2.clockrate &&
          codec_1.params == codec_2.params;
 }
@@ -48,8 +49,12 @@ RTCError PayloadTypePicker::AddMapping(PayloadType payload_type,
 
 RTCError PayloadTypeRecorder::AddMapping(PayloadType payload_type,
                                          cricket::Codec codec) {
-  if (payload_type_to_codec_.find(payload_type) !=
-      payload_type_to_codec_.end()) {
+  auto existing_codec_it = payload_type_to_codec_.find(payload_type);
+  if (existing_codec_it != payload_type_to_codec_.end() &&
+      !MatchesForSdp(codec, existing_codec_it->second)) {
+    RTC_LOG(LS_ERROR) << "DEBUG: AddMapping invalid, PT " << int(payload_type)
+                      << " new codec " << codec.ToString() << " old codec "
+                      << existing_codec_it->second.ToString();
     return RTCError(RTCErrorType::INVALID_PARAMETER,
                     "Attempt to insert duplicate mapping for PT");
   }
