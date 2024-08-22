@@ -512,6 +512,18 @@ config("common_objc") {
   frameworks = [ "Foundation.framework" ]
 }
 
+if (!rtc_build_ssl) {
+  config("external_ssl_library") {
+    if (rtc_ssl_root != "") {
+      include_dirs = [ rtc_ssl_root ]
+    }
+    libs = [
+      "crypto",
+      "ssl",
+    ]
+  }
+}
+
 if (!build_with_chromium) {
   # Target to build all the WebRTC production code.
   rtc_static_library("webrtc") {
