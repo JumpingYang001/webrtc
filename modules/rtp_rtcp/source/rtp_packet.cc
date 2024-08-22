@@ -196,6 +196,7 @@ void RtpPacket::ZeroMutableExtensions() {
       case RTPExtensionType::kRtpExtensionCsrcAudioLevel:
       case RTPExtensionType::kRtpExtensionAbsoluteCaptureTime:
       case RTPExtensionType::kRtpExtensionColorSpace:
+      case RTPExtensionType::kRtpExtensionCorruptionDetection:
       case RTPExtensionType::kRtpExtensionGenericFrameDescriptor:
       case RTPExtensionType::kRtpExtensionDependencyDescriptor:
       case RTPExtensionType::kRtpExtensionMid:
