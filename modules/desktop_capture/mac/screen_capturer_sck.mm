@@ -370,7 +370,8 @@ std::unique_ptr<DesktopCapturer> CreateScreenCapturerSck(const DesktopCaptureOpt
 }
 
 - (instancetype)initWithCapturer:(webrtc::ScreenCapturerSck*)capturer {
-  if (self = [super init]) {
+  self = [super init];
+  if (self) {
     _capturer = capturer;
   }
   return self;
