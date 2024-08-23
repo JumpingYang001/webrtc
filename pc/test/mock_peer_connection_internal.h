@@ -334,7 +334,6 @@ class MockPeerConnectionInternal : public PeerConnectionInternal {
               GetNetworkController,
               (),
               (override));
-  MOCK_METHOD(PayloadTypePicker&, payload_type_picker, (), (override));
 };
 
 }  // namespace webrtc
