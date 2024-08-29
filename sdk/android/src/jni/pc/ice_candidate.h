@@ -79,7 +79,7 @@ PeerConnectionInterface::TlsCertPolicy JavaToNativeTlsCertPolicy(
     JNIEnv* jni,
     const JavaRef<jobject>& j_ice_server_tls_cert_policy);
 
-absl::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
+std::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
     JNIEnv* jni,
     const JavaRef<jobject>& j_network_preference);
 

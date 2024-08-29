@@ -201,10 +201,10 @@ VideoEncoderWrapper::GetScalingSettingsInternal(JNIEnv* jni) const {
   if (!isOn)
     return ScalingSettings::kOff;
 
-  absl::optional<int> low = JavaToNativeOptionalInt(
+  std::optional<int> low = JavaToNativeOptionalInt(
       jni,
       Java_VideoEncoderWrapper_getScalingSettingsLow(jni, j_scaling_settings));
-  absl::optional<int> high = JavaToNativeOptionalInt(
+  std::optional<int> high = JavaToNativeOptionalInt(
       jni,
       Java_VideoEncoderWrapper_getScalingSettingsHigh(jni, j_scaling_settings));
 

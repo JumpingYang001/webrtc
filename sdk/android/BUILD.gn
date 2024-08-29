@@ -588,7 +588,6 @@ if (current_os == "linux" || is_android) {
       "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
       "//third_party/abseil-cpp/absl/strings:string_view",
-      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
     ]
   }
@@ -690,7 +689,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:timeutils",
       "../../rtc_base/synchronization:mutex",
       "//third_party/abseil-cpp/absl/memory",
-      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
       "//third_party/libyuv",
     ]
@@ -811,7 +809,6 @@ if (current_os == "linux" || is_android) {
       "../../stats:rtc_stats",
       "../../system_wrappers:field_trial",
       "//third_party/abseil-cpp/absl/memory",
-      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
     ]
   }
@@ -959,7 +956,6 @@ if (current_os == "linux" || is_android) {
       "../../api:sequence_checker",
       "//api:array_view",
       "//rtc_base:checks",
-      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
     ]
   }
@@ -1190,7 +1186,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../system_wrappers:metrics",
-      "//third_party/abseil-cpp/absl/types:optional",
     ]
   }
 
@@ -1217,7 +1212,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:timeutils",
       "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
-      "//third_party/abseil-cpp/absl/types:optional",
       "//third_party/jni_zero",
     ]
   }
@@ -1278,7 +1272,6 @@ if (current_os == "linux" || is_android) {
       "../../rtc_base:macromagic",
       "../../rtc_base:platform_thread",
       "../../rtc_base:timeutils",
-      "//third_party/abseil-cpp/absl/types:optional",
     ]
   }
 

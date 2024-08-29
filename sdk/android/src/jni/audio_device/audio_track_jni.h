@@ -14,8 +14,8 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 
-#include "absl/types/optional.h"
 #include "api/audio/audio_device_defines.h"
 #include "api/sequence_checker.h"
 #include "modules/audio_device/audio_device_buffer.h"
@@ -63,9 +63,9 @@ class AudioTrackJni : public AudioOutput {
 
   bool SpeakerVolumeIsAvailable() override;
   int SetSpeakerVolume(uint32_t volume) override;
-  absl::optional<uint32_t> SpeakerVolume() const override;
-  absl::optional<uint32_t> MaxSpeakerVolume() const override;
-  absl::optional<uint32_t> MinSpeakerVolume() const override;
+  std::optional<uint32_t> SpeakerVolume() const override;
+  std::optional<uint32_t> MaxSpeakerVolume() const override;
+  std::optional<uint32_t> MinSpeakerVolume() const override;
   int GetPlayoutUnderrunCount() override;
 
   void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) override;

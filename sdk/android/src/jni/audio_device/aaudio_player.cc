@@ -133,16 +133,16 @@ int AAudioPlayer::SetSpeakerVolume(uint32_t volume) {
   return -1;
 }
 
-absl::optional<uint32_t> AAudioPlayer::SpeakerVolume() const {
-  return absl::nullopt;
+std::optional<uint32_t> AAudioPlayer::SpeakerVolume() const {
+  return std::nullopt;
 }
 
-absl::optional<uint32_t> AAudioPlayer::MaxSpeakerVolume() const {
-  return absl::nullopt;
+std::optional<uint32_t> AAudioPlayer::MaxSpeakerVolume() const {
+  return std::nullopt;
 }
 
-absl::optional<uint32_t> AAudioPlayer::MinSpeakerVolume() const {
-  return absl::nullopt;
+std::optional<uint32_t> AAudioPlayer::MinSpeakerVolume() const {
+  return std::nullopt;
 }
 
 void AAudioPlayer::OnErrorCallback(aaudio_result_t error) {

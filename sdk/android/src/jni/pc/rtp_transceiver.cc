@@ -96,7 +96,7 @@ ScopedJavaLocalRef<jobject> JNI_RtpTransceiver_GetMediaType(
 ScopedJavaLocalRef<jstring> JNI_RtpTransceiver_GetMid(
     JNIEnv* jni,
     jlong j_rtp_transceiver_pointer) {
-  absl::optional<std::string> mid =
+  std::optional<std::string> mid =
       reinterpret_cast<RtpTransceiverInterface*>(j_rtp_transceiver_pointer)
           ->mid();
   return NativeToJavaString(jni, mid);
@@ -135,7 +135,7 @@ ScopedJavaLocalRef<jobject> JNI_RtpTransceiver_Direction(
 ScopedJavaLocalRef<jobject> JNI_RtpTransceiver_CurrentDirection(
     JNIEnv* jni,
     jlong j_rtp_transceiver_pointer) {
-  absl::optional<RtpTransceiverDirection> direction =
+  std::optional<RtpTransceiverDirection> direction =
       reinterpret_cast<RtpTransceiverInterface*>(j_rtp_transceiver_pointer)
           ->current_direction();
   return direction ? NativeToJavaRtpTransceiverDirection(jni, *direction)

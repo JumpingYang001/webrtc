@@ -194,17 +194,17 @@ int AudioTrackJni::SetSpeakerVolume(uint32_t volume) {
              : -1;
 }
 
-absl::optional<uint32_t> AudioTrackJni::MaxSpeakerVolume() const {
+std::optional<uint32_t> AudioTrackJni::MaxSpeakerVolume() const {
   RTC_DCHECK(thread_checker_.IsCurrent());
   return Java_WebRtcAudioTrack_getStreamMaxVolume(env_, j_audio_track_);
 }
 
-absl::optional<uint32_t> AudioTrackJni::MinSpeakerVolume() const {
+std::optional<uint32_t> AudioTrackJni::MinSpeakerVolume() const {
   RTC_DCHECK(thread_checker_.IsCurrent());
   return 0;
 }
 
-absl::optional<uint32_t> AudioTrackJni::SpeakerVolume() const {
+std::optional<uint32_t> AudioTrackJni::SpeakerVolume() const {
   RTC_DCHECK(thread_checker_.IsCurrent());
   const uint32_t volume =
       Java_WebRtcAudioTrack_getStreamVolume(env_, j_audio_track_);

@@ -317,7 +317,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
   }
 
-  absl::optional<NetworkHandle> network_handle =
+  std::optional<NetworkHandle> network_handle =
       FindNetworkHandleFromAddressOrName(address, if_name);
   if (!network_handle) {
     RTC_LOG(LS_WARNING)
@@ -445,7 +445,7 @@ void AndroidNetworkMonitor::OnNetworkConnected_n(
   InvokeNetworksChangedCallback();
 }
 
-absl::optional<NetworkHandle>
+std::optional<NetworkHandle>
 AndroidNetworkMonitor::FindNetworkHandleFromAddressOrName(
     const rtc::IPAddress& ip_address,
     absl::string_view if_name) const {
@@ -458,21 +458,20 @@ AndroidNetworkMonitor::FindNetworkHandleFromAddressOrName(
                                        return AddressMatch(ip_address, address);
                                      });
       if (address_it != addresses.end()) {
-        return absl::make_optional(iter.first);
+        return std::make_optional(iter.first);
       }
     }
   } else {
     auto iter = network_handle_by_address_.find(ip_address);
     if (iter != network_handle_by_address_.end()) {
-      return absl::make_optional(iter->second);
+      return std::make_optional(iter->second);
     }
   }
 
   return FindNetworkHandleFromIfname(if_name);
 }
 
-absl::optional<NetworkHandle>
-AndroidNetworkMonitor::FindNetworkHandleFromIfname(
+std::optional<NetworkHandle> AndroidNetworkMonitor::FindNetworkHandleFromIfname(
     absl::string_view if_name) const {
   RTC_DCHECK_RUN_ON(network_thread_);
 
@@ -486,12 +485,12 @@ AndroidNetworkMonitor::FindNetworkHandleFromIfname(
       // Use substring match so that e.g if_name="v4-wlan0" is matched
       // agains iter="wlan0"
       if (if_name.find(iter.first) != absl::string_view::npos) {
-        return absl::make_optional(iter.second);
+        return std::make_optional(iter.second);
       }
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AndroidNetworkMonitor::OnNetworkDisconnected_n(NetworkHandle handle) {

@@ -11,8 +11,8 @@
 #include "modules/video_coding/timing/timestamp_extrapolator.h"
 
 #include <algorithm>
+#include <optional>
 
-#include "absl/types/optional.h"
 #include "rtc_base/numerics/sequence_number_unwrapper.h"
 
 namespace webrtc {
@@ -41,8 +41,8 @@ TimestampExtrapolator::TimestampExtrapolator(Timestamp start)
 void TimestampExtrapolator::Reset(Timestamp start) {
   start_ = start;
   prev_ = start_;
-  first_unwrapped_timestamp_ = absl::nullopt;
-  prev_unwrapped_timestamp_ = absl::nullopt;
+  first_unwrapped_timestamp_ = std::nullopt;
+  prev_unwrapped_timestamp_ = std::nullopt;
   w_[0] = 90.0;
   w_[1] = 0;
   p_[0][0] = 1;
@@ -123,12 +123,12 @@ void TimestampExtrapolator::Update(Timestamp now, uint32_t ts90khz) {
   }
 }
 
-absl::optional<Timestamp> TimestampExtrapolator::ExtrapolateLocalTime(
+std::optional<Timestamp> TimestampExtrapolator::ExtrapolateLocalTime(
     uint32_t timestamp90khz) const {
   int64_t unwrapped_ts90khz = unwrapper_.PeekUnwrap(timestamp90khz);
 
   if (!first_unwrapped_timestamp_) {
-    return absl::nullopt;
+    return std::nullopt;
   } else if (packet_count_ < kStartUpFilterDelayInPackets) {
     constexpr double kRtpTicksPerMs = 90;
     TimeDelta diff = TimeDelta::Millis(
@@ -136,7 +136,7 @@ absl::optional<Timestamp> TimestampExtrapolator::ExtrapolateLocalTime(
     if (prev_.us() + diff.us() < 0) {
       // Prevent the construction of a negative Timestamp.
       // This scenario can occur when the RTP timestamp wraps around.
-      return absl::nullopt;
+      return std::nullopt;
     }
     return prev_ + diff;
   } else if (w_[0] < 1e-3) {
@@ -148,7 +148,7 @@ absl::optional<Timestamp> TimestampExtrapolator::ExtrapolateLocalTime(
     if (start_.us() + diff.us() < 0) {
       // Prevent the construction of a negative Timestamp.
       // This scenario can occur when the RTP timestamp wraps around.
-      return absl::nullopt;
+      return std::nullopt;
     }
     return start_ + diff;
   }

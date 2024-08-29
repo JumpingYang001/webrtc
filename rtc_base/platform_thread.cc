@@ -113,14 +113,14 @@ PlatformThread::PlatformThread(Handle handle, bool joinable)
 
 PlatformThread::PlatformThread(PlatformThread&& rhs)
     : handle_(rhs.handle_), joinable_(rhs.joinable_) {
-  rhs.handle_ = absl::nullopt;
+  rhs.handle_ = std::nullopt;
 }
 
 PlatformThread& PlatformThread::operator=(PlatformThread&& rhs) {
   Finalize();
   handle_ = rhs.handle_;
   joinable_ = rhs.joinable_;
-  rhs.handle_ = absl::nullopt;
+  rhs.handle_ = std::nullopt;
   return *this;
 }
 
@@ -144,7 +144,7 @@ PlatformThread PlatformThread::SpawnDetached(
                      /*joinable=*/false);
 }
 
-absl::optional<PlatformThread::Handle> PlatformThread::GetHandle() const {
+std::optional<PlatformThread::Handle> PlatformThread::GetHandle() const {
   return handle_;
 }
 
@@ -167,7 +167,7 @@ void PlatformThread::Finalize() {
   if (joinable_)
     RTC_CHECK_EQ(0, pthread_join(*handle_, nullptr));
 #endif
-  handle_ = absl::nullopt;
+  handle_ = std::nullopt;
 }
 
 PlatformThread PlatformThread::SpawnThread(

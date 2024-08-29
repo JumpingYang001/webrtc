@@ -228,13 +228,13 @@ PeerConnectionInterface::TlsCertPolicy JavaToNativeTlsCertPolicy(
   return PeerConnectionInterface::kTlsCertPolicySecure;
 }
 
-absl::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
+std::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
     JNIEnv* jni,
     const JavaRef<jobject>& j_network_preference) {
   std::string enum_name = GetJavaEnumName(jni, j_network_preference);
 
   if (enum_name == "UNKNOWN")
-    return absl::nullopt;
+    return std::nullopt;
 
   if (enum_name == "ETHERNET")
     return rtc::ADAPTER_TYPE_ETHERNET;
@@ -252,7 +252,7 @@ absl::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
     return rtc::ADAPTER_TYPE_LOOPBACK;
 
   RTC_CHECK(false) << "Unexpected NetworkPreference enum_name " << enum_name;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace jni

@@ -12,8 +12,8 @@
 #define SDK_ANDROID_SRC_JNI_AUDIO_DEVICE_AUDIO_DEVICE_MODULE_H_
 
 #include <memory>
+#include <optional>
 
-#include "absl/types/optional.h"
 #include "api/audio/audio_device.h"
 #include "sdk/android/native_api/jni/scoped_java_ref.h"
 
@@ -61,13 +61,13 @@ class AudioOutput {
   virtual bool Playing() const = 0;
   virtual bool SpeakerVolumeIsAvailable() = 0;
   virtual int SetSpeakerVolume(uint32_t volume) = 0;
-  virtual absl::optional<uint32_t> SpeakerVolume() const = 0;
-  virtual absl::optional<uint32_t> MaxSpeakerVolume() const = 0;
-  virtual absl::optional<uint32_t> MinSpeakerVolume() const = 0;
+  virtual std::optional<uint32_t> SpeakerVolume() const = 0;
+  virtual std::optional<uint32_t> MaxSpeakerVolume() const = 0;
+  virtual std::optional<uint32_t> MinSpeakerVolume() const = 0;
   virtual void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) = 0;
   virtual int GetPlayoutUnderrunCount() = 0;
-  virtual absl::optional<AudioDeviceModule::Stats> GetStats() const {
-    return absl::nullopt;
+  virtual std::optional<AudioDeviceModule::Stats> GetStats() const {
+    return std::nullopt;
   }
 };
 

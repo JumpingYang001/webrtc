@@ -37,36 +37,36 @@ class VideoEncoderSelectorWrapper
                                                j_codec_info);
   }
 
-  absl::optional<SdpVideoFormat> OnAvailableBitrate(
+  std::optional<SdpVideoFormat> OnAvailableBitrate(
       const DataRate& rate) override {
     JNIEnv* jni = AttachCurrentThreadIfNeeded();
     ScopedJavaLocalRef<jobject> codec_info =
         Java_VideoEncoderSelector_onAvailableBitrate(jni, encoder_selector_,
                                                      rate.kbps<int>());
     if (codec_info.is_null()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return VideoCodecInfoToSdpVideoFormat(jni, codec_info);
   }
 
-  absl::optional<SdpVideoFormat> OnResolutionChange(
+  std::optional<SdpVideoFormat> OnResolutionChange(
       const RenderResolution& resolution) override {
     JNIEnv* jni = AttachCurrentThreadIfNeeded();
     ScopedJavaLocalRef<jobject> codec_info =
         Java_VideoEncoderSelector_onResolutionChange(
             jni, encoder_selector_, resolution.Width(), resolution.Height());
     if (codec_info.is_null()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return VideoCodecInfoToSdpVideoFormat(jni, codec_info);
   }
 
-  absl::optional<SdpVideoFormat> OnEncoderBroken() override {
+  std::optional<SdpVideoFormat> OnEncoderBroken() override {
     JNIEnv* jni = AttachCurrentThreadIfNeeded();
     ScopedJavaLocalRef<jobject> codec_info =
         Java_VideoEncoderSelector_onEncoderBroken(jni, encoder_selector_);
     if (codec_info.is_null()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return VideoCodecInfoToSdpVideoFormat(jni, codec_info);
   }

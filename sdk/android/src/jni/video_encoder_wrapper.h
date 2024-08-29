@@ -15,10 +15,10 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "absl/types/optional.h"
 #include "api/video_codecs/video_encoder.h"
 #include "common_video/h264/h264_bitstream_parser.h"
 #ifdef RTC_ENABLE_H265
@@ -101,7 +101,7 @@ class VideoEncoderWrapper : public VideoEncoder {
   EncodedImageCallback* callback_;
   bool initialized_;
   int num_resets_;
-  absl::optional<VideoEncoder::Capabilities> capabilities_;
+  std::optional<VideoEncoder::Capabilities> capabilities_;
   int number_of_cores_;
   VideoCodec codec_settings_;
   EncoderInfo encoder_info_;

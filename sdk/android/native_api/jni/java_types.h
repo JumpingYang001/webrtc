@@ -21,10 +21,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "absl/types/optional.h"
 #include "api/array_view.h"
 #include "api/sequence_checker.h"
 #include "rtc_base/checks.h"
@@ -134,13 +134,13 @@ ScopedJavaLocalRef<jobject> GetJavaMapEntryValue(
 
 int64_t JavaToNativeLong(JNIEnv* env, const jni_zero::JavaRef<jobject>& j_long);
 
-absl::optional<bool> JavaToNativeOptionalBool(
+std::optional<bool> JavaToNativeOptionalBool(
     JNIEnv* jni,
     const jni_zero::JavaRef<jobject>& boolean);
-absl::optional<double> JavaToNativeOptionalDouble(
+std::optional<double> JavaToNativeOptionalDouble(
     JNIEnv* jni,
     const jni_zero::JavaRef<jobject>& j_double);
-absl::optional<int32_t> JavaToNativeOptionalInt(
+std::optional<int32_t> JavaToNativeOptionalInt(
     JNIEnv* jni,
     const jni_zero::JavaRef<jobject>& integer);
 
@@ -211,13 +211,13 @@ ScopedJavaLocalRef<jstring> NativeToJavaString(JNIEnv* jni,
 
 ScopedJavaLocalRef<jobject> NativeToJavaDouble(
     JNIEnv* jni,
-    const absl::optional<double>& optional_double);
+    const std::optional<double>& optional_double);
 ScopedJavaLocalRef<jobject> NativeToJavaInteger(
     JNIEnv* jni,
-    const absl::optional<int32_t>& optional_int);
+    const std::optional<int32_t>& optional_int);
 ScopedJavaLocalRef<jstring> NativeToJavaString(
     JNIEnv* jni,
-    const absl::optional<std::string>& str);
+    const std::optional<std::string>& str);
 
 // Helper function for converting std::vector<T> into a Java array.
 template <typename T, typename Convert>

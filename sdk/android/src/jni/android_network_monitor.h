@@ -14,11 +14,11 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
 #include "api/field_trials_view.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "rtc_base/network_monitor.h"
@@ -118,7 +118,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
   void OnNetworkConnected_n(const NetworkInformation& network_info);
 
   // Visible for testing.
-  absl::optional<NetworkHandle> FindNetworkHandleFromAddressOrName(
+  std::optional<NetworkHandle> FindNetworkHandleFromAddressOrName(
       const rtc::IPAddress& address,
       absl::string_view ifname) const;
 
@@ -129,7 +129,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
                              rtc::NetworkPreference preference);
 
   rtc::NetworkPreference GetNetworkPreference(rtc::AdapterType) const;
-  absl::optional<NetworkHandle> FindNetworkHandleFromIfname(
+  std::optional<NetworkHandle> FindNetworkHandleFromIfname(
       absl::string_view ifname) const;
 
   const int android_sdk_int_;

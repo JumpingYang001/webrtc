@@ -76,7 +76,7 @@ class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
     return android_video_track_source_->is_screencast();
   }
 
-  absl::optional<bool> needs_denoising() const override {
+  std::optional<bool> needs_denoising() const override {
     return android_video_track_source_->needs_denoising();
   }
 

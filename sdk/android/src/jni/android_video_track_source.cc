@@ -29,11 +29,11 @@ VideoRotation jintToVideoRotation(jint rotation) {
   return static_cast<VideoRotation>(rotation);
 }
 
-absl::optional<std::pair<int, int>> OptionalAspectRatio(jint j_width,
-                                                        jint j_height) {
+std::optional<std::pair<int, int>> OptionalAspectRatio(jint j_width,
+                                                       jint j_height) {
   if (j_width > 0 && j_height > 0)
     return std::pair<int, int>(j_width, j_height);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -54,7 +54,7 @@ bool AndroidVideoTrackSource::is_screencast() const {
   return is_screencast_.load();
 }
 
-absl::optional<bool> AndroidVideoTrackSource::needs_denoising() const {
+std::optional<bool> AndroidVideoTrackSource::needs_denoising() const {
   return false;
 }
 

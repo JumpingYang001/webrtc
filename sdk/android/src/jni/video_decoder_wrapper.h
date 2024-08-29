@@ -65,7 +65,7 @@ class VideoDecoderWrapper : public VideoDecoder {
 
     uint32_t timestamp_rtp;
     int64_t timestamp_ntp;
-    absl::optional<uint8_t> qp;
+    std::optional<uint8_t> qp;
 
     FrameExtraInfo();
     FrameExtraInfo(const FrameExtraInfo&);
@@ -81,7 +81,7 @@ class VideoDecoderWrapper : public VideoDecoder {
                            const char* method_name)
       RTC_RUN_ON(decoder_thread_checker_);
 
-  absl::optional<uint8_t> ParseQP(const EncodedImage& input_image)
+  std::optional<uint8_t> ParseQP(const EncodedImage& input_image)
       RTC_RUN_ON(decoder_thread_checker_);
 
   const ScopedJavaGlobalRef<jobject> decoder_;
