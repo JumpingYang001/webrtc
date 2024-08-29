@@ -1047,6 +1047,9 @@ def CommonChecks(input_api, output_api):
         CheckBannedAbslMakeUnique(input_api, output_api,
                                   non_third_party_sources))
     results.extend(
+        CheckBannedAbslOptional(input_api, output_api,
+                                non_third_party_sources))
+    results.extend(
         CheckObjcApiSymbols(input_api, output_api, non_third_party_sources))
     return results
 
@@ -1123,6 +1126,32 @@ def CheckBannedAbslMakeUnique(input_api, output_api, source_file_filter):
         return [
             output_api.PresubmitError(
                 'Please use std::make_unique instead of absl::make_unique.\n'
+                'Affected files:', files)
+        ]
+    return []
+
+
+def CheckBannedAbslOptional(input_api, output_api, source_file_filter):
+    absl_optional = re.compile(r'absl::(optional|make_optional|nullopt)',
+                               re.MULTILINE)
+    absl_optional_include = re.compile(r'^#include\s*"absl/types/optional\.h"',
+                                       input_api.re.MULTILINE)
+    file_filter = lambda f: (f.LocalPath().endswith(
+        ('.cc', '.h')) and source_file_filter(f))
+
+    files = []
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=file_filter):
+        for _, line in f.ChangedContents():
+            if absl_optional.search(line) or absl_optional_include.search(
+                    line):
+                files.append(f.LocalPath())
+                break
+
+    if files:
+        return [
+            output_api.PresubmitError(
+                'Please use std::optional instead of absl::optional.\n'
                 'Affected files:', files)
         ]
     return []
