@@ -199,8 +199,8 @@ VideoReceiveStream2::VideoReceiveStream2(
       rtp_receive_statistics_(ReceiveStatistics::Create(&env_.clock())),
       timing_(std::move(timing)),
       video_receiver_(&env_.clock(), timing_.get(), env_.field_trials()),
-      rtp_video_stream_receiver_(call->worker_thread(),
-                                 &env_.clock(),
+      rtp_video_stream_receiver_(env_,
+                                 call->worker_thread(),
                                  &transport_adapter_,
                                  call_stats->AsRtcpRttStats(),
                                  packet_router,
@@ -211,9 +211,7 @@ VideoReceiveStream2::VideoReceiveStream2(
                                  nack_periodic_processor,
                                  this,  // OnCompleteFrameCallback
                                  std::move(config_.frame_decryptor),
-                                 std::move(config_.frame_transformer),
-                                 env_.field_trials(),
-                                 &env_.event_log()),
+                                 std::move(config_.frame_transformer)),
       rtp_stream_sync_(call->worker_thread(), this),
       max_wait_for_keyframe_(DetermineMaxWaitForFrame(
           TimeDelta::Millis(config_.rtp.nack.rtp_history_ms),
