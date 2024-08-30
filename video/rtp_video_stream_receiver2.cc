@@ -84,7 +84,6 @@ std::unique_ptr<ModuleRtpRtcpImpl2> CreateRtpRtcpModule(
     bool non_sender_rtt_measurement,
     uint32_t local_ssrc) {
   RtpRtcpInterface::Configuration configuration;
-  configuration.clock = &env.clock();
   configuration.audio = false;
   configuration.receiver_only = true;
   configuration.receive_statistics = receive_statistics;
@@ -95,11 +94,8 @@ std::unique_ptr<ModuleRtpRtcpImpl2> CreateRtpRtcpModule(
   configuration.rtcp_cname_callback = rtcp_cname_callback;
   configuration.local_media_ssrc = local_ssrc;
   configuration.non_sender_rtt_measurement = non_sender_rtt_measurement;
-  configuration.event_log = &env.event_log();
-  configuration.field_trials = &env.field_trials();
 
-  std::unique_ptr<ModuleRtpRtcpImpl2> rtp_rtcp =
-      ModuleRtpRtcpImpl2::Create(configuration);
+  auto rtp_rtcp = std::make_unique<ModuleRtpRtcpImpl2>(env, configuration);
   rtp_rtcp->SetRTCPStatus(RtcpMode::kCompound);
 
   return rtp_rtcp;
