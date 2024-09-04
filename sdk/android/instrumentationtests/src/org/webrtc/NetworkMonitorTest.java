@@ -354,7 +354,8 @@ public class NetworkMonitorTest {
   @Test
   @SmallTest
   public void testConnectivityManager_includeOtherUidNetworks_disabled() {
-    NetworkRequest request = getNetworkRequestForFieldTrials("includeOtherUidNetworks:false");
+    NetworkRequest request = getNetworkRequestForFieldTrials(
+        "requestVPN:false,includeOtherUidNetworks:false");
     assertTrue(request.equals(new NetworkRequest.Builder()
                                   .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                                   .build()));
@@ -363,7 +364,8 @@ public class NetworkMonitorTest {
   @Test
   @SmallTest
   public void testConnectivityManager_includeOtherUidNetworks_enabled() {
-    NetworkRequest request = getNetworkRequestForFieldTrials("includeOtherUidNetworks:true");
+    NetworkRequest request = getNetworkRequestForFieldTrials(
+        "requestVPN:false,includeOtherUidNetworks:true");
     NetworkRequest.Builder builder =
         new NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
