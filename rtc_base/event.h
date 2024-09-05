@@ -58,8 +58,6 @@ class Event {
   // TODO(bugs.webrtc.org/14366): Consider removing this redundant alias.
   static constexpr webrtc::TimeDelta kForever =
       webrtc::TimeDelta::PlusInfinity();
-  static constexpr webrtc::TimeDelta kDefaultWarnDuration =
-      webrtc::TimeDelta::Seconds(3);
 
   Event();
   Event(bool manual_reset, bool initially_signaled);
@@ -85,7 +83,7 @@ class Event {
   // Waits with the given timeout and a reasonable default warning timeout.
   bool Wait(webrtc::TimeDelta give_up_after) {
     return Wait(give_up_after, give_up_after.IsPlusInfinity()
-                                   ? kDefaultWarnDuration
+                                   ? webrtc::TimeDelta::Seconds(3)
                                    : kForever);
   }
 
