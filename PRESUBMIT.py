@@ -1051,6 +1051,8 @@ def CommonChecks(input_api, output_api):
                                 non_third_party_sources))
     results.extend(
         CheckObjcApiSymbols(input_api, output_api, non_third_party_sources))
+    results.extend(
+        CheckSysSocketInclude(input_api, output_api, non_third_party_sources))
     return results
 
 
@@ -1153,6 +1155,29 @@ def CheckBannedAbslOptional(input_api, output_api, source_file_filter):
             output_api.PresubmitError(
                 'Please use std::optional instead of absl::optional.\n'
                 'Affected files:', files)
+        ]
+    return []
+
+
+def CheckSysSocketInclude(input_api, output_api, source_file_filter):
+    sys_socket = re.compile(
+        '^#include <sys/socket.h>((?!IWYU pragma|no-presubmit-check).)*$')
+    file_filter = lambda f: (f.LocalPath().endswith(
+        ('.cc', '.h')) and source_file_filter(f))
+
+    files = []
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=file_filter):
+        for _, line in f.ChangedContents():
+            if sys_socket.search(line):
+                files.append(f.LocalPath())
+                break
+
+    if files:
+        return [
+            output_api.PresubmitError(
+                'PleaseInclude "rtc_base/net_helpers.h" instead of '
+                '<sys/socket.h>.\nAffected files:', files)
         ]
     return []
 
