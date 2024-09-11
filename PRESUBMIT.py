@@ -1052,7 +1052,8 @@ def CommonChecks(input_api, output_api):
     results.extend(
         CheckObjcApiSymbols(input_api, output_api, non_third_party_sources))
     results.extend(
-        CheckSysSocketInclude(input_api, output_api, non_third_party_sources))
+        CheckConditionalIncludes(input_api, output_api,
+                                 non_third_party_sources))
     return results
 
 
@@ -1159,27 +1160,31 @@ def CheckBannedAbslOptional(input_api, output_api, source_file_filter):
     return []
 
 
-def CheckSysSocketInclude(input_api, output_api, source_file_filter):
-    sys_socket = re.compile(
-        '^#include <sys/socket.h>((?!IWYU pragma|no-presubmit-check).)*$')
+def CheckConditionalIncludes(input_api, output_api, source_file_filter):
+    conditional_includes = {
+        '<netinet/in.h>': '"rtc_base/ip_address.h"',
+        '<sys/socket.h>': '"rtc_base/net_helpers.h"',
+    }
     file_filter = lambda f: (f.LocalPath().endswith(
         ('.cc', '.h')) and source_file_filter(f))
+    results = []
+    for key, value in conditional_includes.items():
+        include_regex = re.compile('^#include ' + key +
+                                   '((?!IWYU pragma|no-presubmit-check).)*$')
+        files = []
+        for f in input_api.AffectedFiles(include_deletes=False,
+                                         file_filter=file_filter):
+            for _, line in f.ChangedContents():
+                if include_regex.search(line):
+                    files.append(f.LocalPath())
+                    break
 
-    files = []
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=file_filter):
-        for _, line in f.ChangedContents():
-            if sys_socket.search(line):
-                files.append(f.LocalPath())
-                break
-
-    if files:
-        return [
-            output_api.PresubmitError(
-                'PleaseInclude "rtc_base/net_helpers.h" instead of '
-                '<sys/socket.h>.\nAffected files:', files)
-        ]
-    return []
+        if files:
+            results.append(
+                output_api.PresubmitError(
+                    'Please include ' + value + ' instead of ' + key +
+                    '.\nAffected files:', files))
+    return results
 
 
 def CheckObjcApiSymbols(input_api, output_api, source_file_filter):
