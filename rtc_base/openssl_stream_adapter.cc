@@ -306,9 +306,7 @@ OpenSSLStreamAdapter::OpenSSLStreamAdapter(
           !webrtc::field_trial::IsDisabled("WebRTC-PermuteTlsClientHello")),
 #endif
       ssl_mode_(SSL_MODE_DTLS),
-      ssl_max_version_(SSL_PROTOCOL_DTLS_12),
-      disable_handshake_ticket_(!webrtc::field_trial::IsDisabled(
-          "WebRTC-DisableTlsSessionTicketKillswitch")) {
+      ssl_max_version_(SSL_PROTOCOL_TLS_12) {
   stream_->SetEventCallback(
       [this](int events, int err) { OnEvent(events, err); });
 }
@@ -1082,9 +1080,6 @@ SSL_CTX* OpenSSLStreamAdapter::SetupSSLContext() {
   SSL_CTX_set_permute_extensions(ctx, permute_extension_);
 #endif
 
-  if (disable_handshake_ticket_) {
-    SSL_CTX_set_options(ctx, SSL_OP_NO_TICKET);
-  }
   return ctx;
 }
 
