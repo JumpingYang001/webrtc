@@ -109,7 +109,7 @@ ProbeControllerConfig::ProbeControllerConfig(
       probe_on_max_allocated_bitrate_change("probe_max_allocation", true),
       first_allocation_probe_scale("alloc_p1", 1),
       second_allocation_probe_scale("alloc_p2", 2),
-      allocation_probe_limit_by_current_scale("alloc_current_bwe_limit"),
+      allocation_probe_limit_by_current_scale("alloc_current_bwe_limit", 2.0),
       min_probe_packets_sent("min_probe_packets_sent", 5),
       min_probe_duration("min_probe_duration", TimeDelta::Millis(15)),
       min_probe_delta("min_probe_delta", TimeDelta::Millis(2)),
