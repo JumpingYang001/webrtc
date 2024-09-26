@@ -420,8 +420,8 @@ TEST(LibaomAv1Encoder, InputResolutionSwitching) {
   EXPECT_THAT(Resolution(f2), ResolutionIs(160, 90));
   EXPECT_THAT(Psnr(in2, f2), Gt(40));
 }
-
-TEST(LibaomAv1Encoder, TempoSpatial) {
+// TODO(webrtc:369633254): Re-enable after the libaom issue is fixed.
+TEST(LibaomAv1Encoder, DISABLED_TempoSpatial) {
   auto frame_reader = CreateFrameReader();
   auto enc = LibaomAv1EncoderFactory().CreateEncoder(kCbrEncoderSettings, {});
 
@@ -507,7 +507,8 @@ TEST(DISABLED_LibaomAv1Encoder, InvertedTempoSpatial) {
   EXPECT_THAT(Resolution(dec.Decode(tu2_s1.bitstream)), ResolutionIs(640, 360));
 }
 
-TEST(LibaomAv1Encoder, SkipMidLayer) {
+// TODO(webrtc:369633254): Re-enable after the libaom issue is fixed.
+TEST(LibaomAv1Encoder, DISABLED_SkipMidLayer) {
   auto frame_reader = CreateFrameReader();
   auto enc = LibaomAv1EncoderFactory().CreateEncoder(kCbrEncoderSettings, {});
 
