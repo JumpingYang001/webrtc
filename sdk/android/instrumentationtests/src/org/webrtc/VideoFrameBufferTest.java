@@ -391,7 +391,7 @@ public class VideoFrameBufferTest {
     final List<Integer> pixelDiffs = getPixelDiffs(bufferA, bufferB);
     long sse = 0;
     for (int pixelDiff : pixelDiffs) {
-      sse += pixelDiff * pixelDiff;
+      sse += pixelDiff * ((long) pixelDiff);
     }
     return sseToPsnr(sse, pixelDiffs.size());
   }

@@ -518,13 +518,13 @@ public class PeerConnectionEndToEndTest {
       //   stall a wait).  Use callbacks to fire off dependent steps instead of
       //   explicitly waiting, so there can be just a single wait at the end of
       //   the test.
-      long endTime = System.currentTimeMillis() + 1000 * timeoutSeconds;
+      long endTime = System.currentTimeMillis() + 1000L * timeoutSeconds;
       TreeSet<String> prev = null;
       TreeSet<String> stillWaitingForExpectations = unsatisfiedExpectations();
       while (!stillWaitingForExpectations.isEmpty()) {
         if (!stillWaitingForExpectations.equals(prev)) {
           Logging.d(TAG,
-              name + " still waiting at\n    " + (new Throwable()).getStackTrace()[1]
+              name + " still waiting at\n    " + new Throwable().getStackTrace()[1]
                   + "\n    for: " + Arrays.toString(stillWaitingForExpectations.toArray()));
         }
         if (endTime < System.currentTimeMillis()) {
@@ -543,7 +543,7 @@ public class PeerConnectionEndToEndTest {
       }
       if (prev == null) {
         Logging.d(
-            TAG, name + " didn't need to wait at\n    " + (new Throwable()).getStackTrace()[1]);
+            TAG, name + " didn't need to wait at\n    " + new Throwable().getStackTrace()[1]);
       }
       return true;
     }
@@ -1645,7 +1645,7 @@ public class PeerConnectionEndToEndTest {
     Logging.d(TAG, "FYI stats: ");
     int reportIndex = -1;
     for (StatsReport[] reports : expectations.takeStatsReports()) {
-      Logging.d(TAG, " Report #" + (++reportIndex));
+      Logging.d(TAG, " Report #" + ++reportIndex);
       for (int i = 0; i < reports.length; ++i) {
         Logging.d(TAG, "  " + reports[i].toString());
       }

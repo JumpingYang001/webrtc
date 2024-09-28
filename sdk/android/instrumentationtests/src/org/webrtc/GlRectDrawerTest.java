@@ -51,8 +51,8 @@ public class GlRectDrawerTest {
       int width, int height, ByteBuffer actual, ByteBuffer expected) {
     actual.rewind();
     expected.rewind();
-    assertEquals(actual.remaining(), width * height * 3);
-    assertEquals(expected.remaining(), width * height * 3);
+    assertEquals(actual.remaining(), width * ((long) height) * 3L);
+    assertEquals(expected.remaining(), width * ((long) height) * 3L);
     for (int y = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x) {
         final int actualR = actual.get() & 0xFF;
