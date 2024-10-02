@@ -1426,6 +1426,7 @@ rtc_library("stream") {
     ":buffer",
     ":checks",
     ":logging",
+    ":macromagic",
     ":threading",
     "../api:array_view",
     "../api:sequence_checker",
