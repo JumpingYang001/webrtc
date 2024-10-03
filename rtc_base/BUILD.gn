@@ -437,6 +437,7 @@ rtc_library("logging") {
     ":platform_thread_types",
     ":stringutils",
     ":timeutils",
+    ":type_traits",
     "../api/units:timestamp",
     "synchronization:mutex",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -486,6 +487,7 @@ rtc_library("checks") {
   ]
   deps = [
     ":safe_compare",
+    ":type_traits",
     "../api:scoped_refptr",
     "system:inline",
     "system:rtc_export",
