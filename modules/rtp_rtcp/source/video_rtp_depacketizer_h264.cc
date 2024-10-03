@@ -24,7 +24,6 @@
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_format_h264.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
-#include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
@@ -35,32 +34,34 @@ namespace {
 constexpr size_t kNalHeaderSize = 1;
 constexpr size_t kFuAHeaderSize = 2;
 constexpr size_t kLengthFieldSize = 2;
+constexpr size_t kStapAHeaderSize = kNalHeaderSize + kLengthFieldSize;
 
-std::vector<rtc::ArrayView<const uint8_t>> ParseStapA(
-    rtc::ArrayView<const uint8_t> data) {
-  std::vector<rtc::ArrayView<const uint8_t>> nal_units;
-  rtc::ByteBufferReader reader(data);
-  if (!reader.Consume(kNalHeaderSize)) {
-    return nal_units;
-  }
+// TODO(pbos): Avoid parsing this here as well as inside the jitter buffer.
+bool ParseStapAStartOffsets(const uint8_t* nalu_ptr,
+                            size_t length_remaining,
+                            std::vector<size_t>* offsets) {
+  size_t offset = 0;
+  while (length_remaining > 0) {
+    // Buffer doesn't contain room for additional nalu length.
+    if (length_remaining < sizeof(uint16_t))
+      return false;
+    uint16_t nalu_size = ByteReader<uint16_t>::ReadBigEndian(nalu_ptr);
+    nalu_ptr += sizeof(uint16_t);
+    length_remaining -= sizeof(uint16_t);
+    if (nalu_size > length_remaining)
+      return false;
+    nalu_ptr += nalu_size;
+    length_remaining -= nalu_size;
 
-  while (reader.Length() > 0) {
-    uint16_t nalu_size;
-    if (!reader.ReadUInt16(&nalu_size)) {
-      return {};
-    }
-    if (nalu_size == 0 || nalu_size > reader.Length()) {
-      return {};
-    }
-    nal_units.emplace_back(reader.Data(), nalu_size);
-    reader.Consume(nalu_size);
+    offsets->push_back(offset + kStapAHeaderSize);
+    offset += kLengthFieldSize + nalu_size;
   }
-  return nal_units;
+  return true;
 }
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessStapAOrSingleNalu(
     rtc::CopyOnWriteBuffer rtp_payload) {
-  rtc::ArrayView<const uint8_t> payload_data(rtp_payload);
+  const uint8_t* const payload_data = rtp_payload.cdata();
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed_payload(
       std::in_place);
   bool modified_buffer = false;
@@ -73,32 +74,50 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessStapAOrSingleNalu(
   auto& h264_header = parsed_payload->video_header.video_type_header
                           .emplace<RTPVideoHeaderH264>();
 
+  const uint8_t* nalu_start = payload_data + kNalHeaderSize;
+  const size_t nalu_length = rtp_payload.size() - kNalHeaderSize;
   uint8_t nal_type = payload_data[0] & kH264TypeMask;
-  std::vector<rtc::ArrayView<const uint8_t>> nal_units;
+  std::vector<size_t> nalu_start_offsets;
   if (nal_type == H264::NaluType::kStapA) {
-    nal_units = ParseStapA(payload_data);
-    if (nal_units.empty()) {
-      RTC_LOG(LS_ERROR) << "Incorrect StapA packet.";
+    // Skip the StapA header (StapA NAL type + length).
+    if (rtp_payload.size() <= kStapAHeaderSize) {
+      RTC_LOG(LS_ERROR) << "StapA header truncated.";
       return std::nullopt;
     }
+
+    if (!ParseStapAStartOffsets(nalu_start, nalu_length, &nalu_start_offsets)) {
+      RTC_LOG(LS_ERROR) << "StapA packet with incorrect NALU packet lengths.";
+      return std::nullopt;
+    }
+
     h264_header.packetization_type = kH264StapA;
-    h264_header.nalu_type = nal_units[0][0] & kH264TypeMask;
+    nal_type = payload_data[kStapAHeaderSize] & kH264TypeMask;
   } else {
     h264_header.packetization_type = kH264SingleNalu;
-    h264_header.nalu_type = nal_type;
-    nal_units.push_back(payload_data);
+    nalu_start_offsets.push_back(0);
   }
-
+  h264_header.nalu_type = nal_type;
   parsed_payload->video_header.frame_type = VideoFrameType::kVideoFrameDelta;
 
-  for (const rtc::ArrayView<const uint8_t>& nal_unit : nal_units) {
+  nalu_start_offsets.push_back(rtp_payload.size() +
+                               kLengthFieldSize);  // End offset.
+  for (size_t i = 0; i < nalu_start_offsets.size() - 1; ++i) {
+    size_t start_offset = nalu_start_offsets[i];
+    // End offset is actually start offset for next unit, excluding length field
+    // so remove that from this units length.
+    size_t end_offset = nalu_start_offsets[i + 1] - kLengthFieldSize;
+    if (end_offset - start_offset < H264::kNaluTypeSize) {
+      RTC_LOG(LS_ERROR) << "STAP-A packet too short";
+      return std::nullopt;
+    }
+
     NaluInfo nalu;
-    nalu.type = nal_unit[0] & kH264TypeMask;
+    nalu.type = payload_data[start_offset] & kH264TypeMask;
     nalu.sps_id = -1;
     nalu.pps_id = -1;
-    rtc::ArrayView<const uint8_t> nalu_data =
-        nal_unit.subview(H264::kNaluTypeSize);
-
+    start_offset += H264::kNaluTypeSize;
+    rtc::ArrayView<const uint8_t> nalu_data(&payload_data[start_offset],
+                                            end_offset - start_offset);
     switch (nalu.type) {
       case H264::NaluType::kSps: {
         // Check if VUI is present in SPS and if it needs to be modified to
@@ -106,10 +125,8 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessStapAOrSingleNalu(
 
         // Copy any previous data first (likely just the first header).
         rtc::Buffer output_buffer;
-        size_t start_offset = nalu_data.data() - payload_data.data();
-        size_t end_offset = start_offset + nalu_data.size();
         if (start_offset)
-          output_buffer.AppendData(payload_data.data(), start_offset);
+          output_buffer.AppendData(payload_data, start_offset);
 
         std::optional<SpsParser::SpsState> sps;
 
@@ -143,7 +160,8 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessStapAOrSingleNalu(
                                                   output_buffer.size());
             // Append rest of packet.
             parsed_payload->video_payload.AppendData(
-                payload_data.subview(end_offset));
+                &payload_data[end_offset],
+                nalu_length + kNalHeaderSize - end_offset);
 
             modified_buffer = true;
             [[fallthrough]];
