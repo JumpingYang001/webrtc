@@ -109,12 +109,8 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
       const override;
   bool GetSslVersionBytes(int* version) const override;
   // Key Extractor interface
-  bool ExportKeyingMaterial(absl::string_view label,
-                            const uint8_t* context,
-                            size_t context_len,
-                            bool use_context,
-                            uint8_t* result,
-                            size_t result_len) override;
+  bool ExportSrtpKeyingMaterial(
+      rtc::ZeroOnFreeBuffer<unsigned char>& keying_material) override;
 
   uint16_t GetPeerSignatureAlgorithm() const override;
 
