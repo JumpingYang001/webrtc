@@ -51,9 +51,9 @@
 // Ask ASan to mark the memory range [ptr, ptr + element_size * num_elements)
 // as being unaddressable, so that reads and writes are not allowed. ASan may
 // narrow the range to the nearest alignment boundaries.
-static inline void rtc_AsanPoison([[maybe_unused]] const volatile void* ptr,
-                                  [[maybe_unused]] size_t element_size,
-                                  [[maybe_unused]] size_t num_elements) {
+static inline void rtc_AsanPoison(const volatile void* ptr,
+                                  size_t element_size,
+                                  size_t num_elements) {
 #if RTC_HAS_ASAN
   ASAN_POISON_MEMORY_REGION(ptr, element_size * num_elements);
 #endif
@@ -62,9 +62,9 @@ static inline void rtc_AsanPoison([[maybe_unused]] const volatile void* ptr,
 // Ask ASan to mark the memory range [ptr, ptr + element_size * num_elements)
 // as being addressable, so that reads and writes are allowed. ASan may widen
 // the range to the nearest alignment boundaries.
-static inline void rtc_AsanUnpoison([[maybe_unused]] const volatile void* ptr,
-                                    [[maybe_unused]] size_t element_size,
-                                    [[maybe_unused]] size_t num_elements) {
+static inline void rtc_AsanUnpoison(const volatile void* ptr,
+                                    size_t element_size,
+                                    size_t num_elements) {
 #if RTC_HAS_ASAN
   ASAN_UNPOISON_MEMORY_REGION(ptr, element_size * num_elements);
 #endif
@@ -72,10 +72,9 @@ static inline void rtc_AsanUnpoison([[maybe_unused]] const volatile void* ptr,
 
 // Ask MSan to mark the memory range [ptr, ptr + element_size * num_elements)
 // as being uninitialized.
-static inline void rtc_MsanMarkUninitialized(
-    [[maybe_unused]] const volatile void* ptr,
-    [[maybe_unused]] size_t element_size,
-    [[maybe_unused]] size_t num_elements) {
+static inline void rtc_MsanMarkUninitialized(const volatile void* ptr,
+                                             size_t element_size,
+                                             size_t num_elements) {
 #if RTC_HAS_MSAN
   __msan_poison(ptr, element_size * num_elements);
 #endif
@@ -84,10 +83,9 @@ static inline void rtc_MsanMarkUninitialized(
 // Force an MSan check (if any bits in the memory range [ptr, ptr +
 // element_size * num_elements) are uninitialized the call will crash with an
 // MSan report).
-static inline void rtc_MsanCheckInitialized(
-    [[maybe_unused]] const volatile void* ptr,
-    [[maybe_unused]] size_t element_size,
-    [[maybe_unused]] size_t num_elements) {
+static inline void rtc_MsanCheckInitialized(const volatile void* ptr,
+                                            size_t element_size,
+                                            size_t num_elements) {
 #if RTC_HAS_MSAN
   __msan_check_mem_is_initialized(ptr, element_size * num_elements);
 #endif
