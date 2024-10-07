@@ -16,8 +16,10 @@
 
 #include <optional>
 
+#include "api/units/time_delta.h"
 #include "api/video/video_content_type.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
 #include "api/video/video_timing.h"
 #include "api/video_codecs/video_decoder.h"
 
@@ -51,11 +53,25 @@ enum VCMVideoProtection {
 // rendered.
 class VCMReceiveCallback {
  public:
+  struct FrameToRender {
+    VideoFrame& video_frame;
+    std::optional<uint8_t> qp;
+    TimeDelta decode_time;
+    VideoContentType content_type;
+    VideoFrameType frame_type;
+  };
+
+  // TODO: bugs.webrtc.org/358039777 - Delete this function.
+  [[deprecated("Use FrameToRender(FrameToRender) instead.")]]
   virtual int32_t FrameToRender(VideoFrame& videoFrame,  // NOLINT
                                 std::optional<uint8_t> qp,
                                 TimeDelta decode_time,
                                 VideoContentType content_type,
                                 VideoFrameType frame_type) = 0;
+  // TODO: bugs.webrtc.org/358039777 - Make this pure virtual.
+  virtual int32_t FrameToRender(const struct FrameToRender& arguments) {
+    return 0;
+  }
 
   virtual void OnDroppedFrames(uint32_t frames_dropped);
 
