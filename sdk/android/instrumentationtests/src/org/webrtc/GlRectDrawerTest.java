@@ -227,9 +227,7 @@ public class GlRectDrawerTest {
   @Test
   @MediumTest
   public void testOesRendering() throws InterruptedException {
-    /**
-     * Stub class to convert RGB ByteBuffers to OES textures by drawing onto a SurfaceTexture.
-     */
+    // Stub class to convert RGB ByteBuffers to OES textures by drawing onto a SurfaceTexture.
     class StubOesTextureProducer {
       private final EglBase eglBase;
       private final GlRectDrawer drawer;
