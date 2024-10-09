@@ -63,11 +63,6 @@
 #error "webrtc requires at least OpenSSL version 1.1.0, to support DTLS-SRTP"
 #endif
 
-namespace {
-// Value specified in RFC 5764.
-static const char kDtlsSrtpExporterLabel[] = "EXTRACTOR-dtls_srtp";
-}  // namespace
-
 namespace rtc {
 namespace {
 using ::webrtc::SafeTask;
@@ -382,19 +377,16 @@ bool OpenSSLStreamAdapter::GetSslVersionBytes(int* version) const {
   return true;
 }
 
-bool OpenSSLStreamAdapter::ExportSrtpKeyingMaterial(
-    rtc::ZeroOnFreeBuffer<unsigned char>& keying_material) {
-  // Arguments are:
-  // keying material/len -- a buffer to hold the keying material.
-  // label               -- the exporter label.
-  //                        part of the RFC defining each exporter
-  //                        usage. We only use RFC 5764 for DTLS-SRTP.
-  // context/context_len -- a context to bind to for this connection;
-  // use_context            optional, can be null, 0 (IN). Not used by WebRTC.
-  if (SSL_export_keying_material(ssl_, keying_material.data(),
-                                 keying_material.size(), kDtlsSrtpExporterLabel,
-                                 sizeof(kDtlsSrtpExporterLabel), nullptr, 0,
-                                 false) != 1) {
+// Key Extractor interface
+bool OpenSSLStreamAdapter::ExportKeyingMaterial(absl::string_view label,
+                                                const uint8_t* context,
+                                                size_t context_len,
+                                                bool use_context,
+                                                uint8_t* result,
+                                                size_t result_len) {
+  if (SSL_export_keying_material(ssl_, result, result_len, label.data(),
+                                 label.length(), context, context_len,
+                                 use_context) != 1) {
     return false;
   }
   return true;
