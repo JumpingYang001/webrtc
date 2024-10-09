@@ -470,14 +470,12 @@ RtpVideoSender::RtpVideoSender(
   }
 
   bool fec_enabled = false;
-  for (size_t i = 0; i < rtp_streams_.size(); i++) {
-    const RtpStreamSender& stream = rtp_streams_[i];
+  for (const RtpStreamSender& stream : rtp_streams_) {
     // Simulcast has one module for each layer. Set the CNAME on all modules.
     stream.rtp_rtcp->SetCNAME(rtp_config_.c_name.c_str());
     stream.rtp_rtcp->SetMaxRtpPacketSize(rtp_config_.max_packet_size);
-    stream.rtp_rtcp->RegisterSendPayloadFrequency(
-        rtp_config_.GetStreamConfig(i).payload_type,
-        kVideoPayloadTypeFrequency);
+    stream.rtp_rtcp->RegisterSendPayloadFrequency(rtp_config_.payload_type,
+                                                  kVideoPayloadTypeFrequency);
     if (stream.fec_generator != nullptr) {
       fec_enabled = true;
     }
@@ -578,7 +576,7 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
   // knowledge of the offset to a single place.
   if (!rtp_streams_[simulcast_index].rtp_rtcp->OnSendingRtpFrame(
           encoded_image.RtpTimestamp(), encoded_image.capture_time_ms_,
-          rtp_config_.GetStreamConfig(simulcast_index).payload_type,
+          rtp_config_.payload_type,
           encoded_image._frameType == VideoFrameType::kVideoFrameKey)) {
     // The payload router could be active but this module isn't sending.
     return Result(Result::ERROR_SEND_FAILED);
@@ -618,8 +616,7 @@ EncodedImageCallback::Result RtpVideoSender::OnEncodedImage(
 
   bool send_result =
       rtp_streams_[simulcast_index].sender_video->SendEncodedImage(
-          rtp_config_.GetStreamConfig(simulcast_index).payload_type,
-          codec_type_, rtp_timestamp, encoded_image,
+          rtp_config_.payload_type, codec_type_, rtp_timestamp, encoded_image,
           params_[simulcast_index].GetRtpVideoHeader(
               encoded_image, codec_specific_info, frame_id),
           expected_retransmission_time);
@@ -757,12 +754,9 @@ void RtpVideoSender::ConfigureSsrcs(
 
   // Configure RTX payload types.
   RTC_DCHECK_GE(rtp_config_.rtx.payload_type, 0);
-  for (size_t i = 0; i < rtp_streams_.size(); ++i) {
-    const RtpStreamSender& stream = rtp_streams_[i];
-    RtpStreamConfig stream_config = rtp_config_.GetStreamConfig(i);
-    RTC_DCHECK(stream_config.rtx);
-    stream.rtp_rtcp->SetRtxSendPayloadType(stream_config.rtx->payload_type,
-                                           stream_config.payload_type);
+  for (const RtpStreamSender& stream : rtp_streams_) {
+    stream.rtp_rtcp->SetRtxSendPayloadType(rtp_config_.rtx.payload_type,
+                                           rtp_config_.payload_type);
     stream.rtp_rtcp->SetRtxSendStatus(kRtxRetransmitted |
                                       kRtxRedundantPayloads);
   }
