@@ -140,10 +140,11 @@ RTCErrorOr<PayloadType> PayloadTypePicker::SuggestMapping(
   // The first matching entry is returned, unless excluder
   // maps it to something different.
   for (auto entry : entries_) {
-    if (MatchesWithCodecRules(entry.codec(), codec)) {
+    if (MatchesWithReferenceAttributes(entry.codec(), codec)) {
       if (excluder) {
         auto result = excluder->LookupCodec(entry.payload_type());
-        if (result.ok() && !MatchesWithCodecRules(result.value(), codec)) {
+        if (result.ok() &&
+            !MatchesWithReferenceAttributes(result.value(), codec)) {
           continue;
         }
       }
@@ -164,7 +165,7 @@ RTCError PayloadTypePicker::AddMapping(PayloadType payload_type,
   // Multiple mappings for the same codec and the same PT are legal;
   for (auto entry : entries_) {
     if (payload_type == entry.payload_type() &&
-        MatchesWithCodecRules(codec, entry.codec())) {
+        MatchesWithReferenceAttributes(codec, entry.codec())) {
       return RTCError::OK();
     }
   }
@@ -177,7 +178,7 @@ RTCError PayloadTypeRecorder::AddMapping(PayloadType payload_type,
                                          cricket::Codec codec) {
   auto existing_codec_it = payload_type_to_codec_.find(payload_type);
   if (existing_codec_it != payload_type_to_codec_.end() &&
-      !MatchesWithCodecRules(codec, existing_codec_it->second)) {
+      !MatchesWithReferenceAttributes(codec, existing_codec_it->second)) {
     if (absl::EqualsIgnoreCase(codec.name, existing_codec_it->second.name)) {
       // The difference is in clock rate, channels or FMTP parameters.
       RTC_LOG(LS_INFO) << "Warning: Attempt to change a codec's parameters";
@@ -185,8 +186,8 @@ RTCError PayloadTypeRecorder::AddMapping(PayloadType payload_type,
       // This is done in production today, so we can't return an error.
     } else {
       RTC_LOG(LS_WARNING) << "Warning: You attempted to redefine a codec from "
-                          << existing_codec_it->second.ToString() << " to "
-                          << " new codec " << codec.ToString();
+                          << existing_codec_it->second << " to "
+                          << " new codec " << codec;
       // This is a spec violation.
       // TODO: https://issues.webrtc.org/41480892 - return an error.
     }
@@ -211,7 +212,7 @@ RTCErrorOr<PayloadType> PayloadTypeRecorder::LookupPayloadType(
   auto result =
       std::find_if(payload_type_to_codec_.begin(), payload_type_to_codec_.end(),
                    [codec](const auto& iter) {
-                     return MatchesWithCodecRules(iter.second, codec);
+                     return MatchesWithReferenceAttributes(iter.second, codec);
                    });
   if (result == payload_type_to_codec_.end()) {
     return RTCError(RTCErrorType::INVALID_PARAMETER,
