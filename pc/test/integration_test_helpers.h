@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -26,44 +27,66 @@
 #include <utility>
 #include <vector>
 
-#include "absl/functional/any_invocable.h"
+#include "absl/algorithm/container.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
+#include "api/audio/audio_device.h"
+#include "api/audio/audio_processing.h"
 #include "api/audio_options.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
 #include "api/data_channel_interface.h"
+#include "api/enable_media_with_defaults.h"
 #include "api/field_trials_view.h"
 #include "api/ice_transport_interface.h"
 #include "api/jsep.h"
-#include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
 #include "api/media_types.h"
-#include "api/metronome/metronome.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_error.h"
+#include "api/rtc_event_log/rtc_event_log_factory.h"
+#include "api/rtc_event_log/rtc_event_log_factory_interface.h"
 #include "api/rtc_event_log_output.h"
 #include "api/rtp_receiver_interface.h"
 #include "api/rtp_sender_interface.h"
 #include "api/rtp_transceiver_interface.h"
 #include "api/scoped_refptr.h"
-#include "api/sequence_checker.h"
+#include "api/stats/rtc_stats.h"
 #include "api/stats/rtc_stats_report.h"
 #include "api/stats/rtcstats_objects.h"
+#include "api/task_queue/default_task_queue_factory.h"
 #include "api/task_queue/pending_task_safety_flag.h"
+#include "api/task_queue/task_queue_factory.h"
 #include "api/test/mock_async_dns_resolver.h"
+#include "api/transport/field_trial_based_config.h"
+#include "api/uma_metrics.h"
 #include "api/units/time_delta.h"
 #include "api/video/video_rotation.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/video_decoder_factory.h"
+#include "api/video_codecs/video_encoder_factory.h"
+#include "call/call.h"
 #include "logging/rtc_event_log/fake_rtc_event_log_factory.h"
+#include "media/base/media_engine.h"
 #include "media/base/stream_params.h"
+#include "media/engine/fake_webrtc_video_engine.h"
 #include "p2p/base/fake_ice_transport.h"
 #include "p2p/base/ice_transport_internal.h"
+#include "p2p/base/p2p_constants.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
+#include "p2p/base/test_stun_server.h"
 #include "p2p/base/test_turn_customizer.h"
 #include "p2p/base/test_turn_server.h"
+#include "p2p/client/basic_port_allocator.h"
+#include "pc/dtmf_sender.h"
+#include "pc/local_audio_source.h"
+#include "pc/media_session.h"
+#include "pc/peer_connection.h"
 #include "pc/peer_connection_factory.h"
+#include "pc/peer_connection_proxy.h"
+#include "pc/rtp_media_utils.h"
 #include "pc/session_description.h"
 #include "pc/test/fake_audio_capture_module.h"
 #include "pc/test/fake_periodic_video_source.h"
@@ -74,23 +97,28 @@
 #include "pc/video_track_source.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/crypto_random.h"
+#include "rtc_base/event.h"
+#include "rtc_base/fake_clock.h"
 #include "rtc_base/fake_mdns_responder.h"
 #include "rtc_base/fake_network.h"
 #include "rtc_base/firewall_socket_server.h"
 #include "rtc_base/gunit.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/mdns_responder_interface.h"
+#include "rtc_base/numerics/safe_conversions.h"
+#include "rtc_base/rtc_certificate_generator.h"
 #include "rtc_base/socket_address.h"
-#include "rtc_base/socket_factory.h"
-#include "rtc_base/socket_server.h"
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/task_utils/repeating_task.h"
+#include "rtc_base/test_certificate_verifier.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/virtual_socket_server.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
-#include "test/gtest.h"
 #include "test/scoped_key_value_config.h"
 
 namespace webrtc {
@@ -638,7 +666,9 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
 
   bool SetRemoteDescription(std::unique_ptr<SessionDescriptionInterface> desc) {
     auto observer = rtc::make_ref_counted<FakeSetRemoteDescriptionObserver>();
-    RTC_LOG(LS_INFO) << debug_name_ << ": SetRemoteDescription SDP:" << desc;
+    std::string str;
+    desc->ToString(&str);
+    RTC_LOG(LS_INFO) << debug_name_ << ": SetRemoteDescription SDP:\n" << str;
     pc()->SetRemoteDescription(std::move(desc), observer);  // desc.release());
     RemoveUnusedVideoRenderers();
     EXPECT_TRUE_WAIT(observer->called(), kDefaultTimeout);

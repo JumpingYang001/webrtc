@@ -14,46 +14,28 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <functional>
 #include <initializer_list>
-#include <map>
-#include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "absl/algorithm/container.h"
+#include "absl/container/inlined_vector.h"
 #include "absl/functional/bind_front.h"
 #include "absl/strings/match.h"
-#include "absl/strings/string_view.h"
-#include "api/array_view.h"
-#include "api/crypto/crypto_options.h"
-#include "api/crypto/frame_decryptor_interface.h"
-#include "api/field_trials_view.h"
-#include "api/frame_transformer_interface.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
 #include "api/media_types.h"
 #include "api/priority.h"
 #include "api/rtc_error.h"
-#include "api/rtp_headers.h"
 #include "api/rtp_parameters.h"
-#include "api/rtp_sender_interface.h"
 #include "api/rtp_transceiver_direction.h"
-#include "api/scoped_refptr.h"
-#include "api/sequence_checker.h"
-#include "api/task_queue/pending_task_safety_flag.h"
-#include "api/task_queue/task_queue_base.h"
-#include "api/transport/rtp/rtp_source.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
-#include "api/video/recordable_encoded_frame.h"
-#include "api/video/video_bitrate_allocator_factory.h"
+#include "api/video/resolution.h"
 #include "api/video/video_codec_type.h"
-#include "api/video/video_sink_interface.h"
-#include "api/video/video_source_interface.h"
 #include "api/video_codecs/scalability_mode.h"
 #include "api/video_codecs/sdp_video_format.h"
 #include "api/video_codecs/video_codec.h"
@@ -61,30 +43,24 @@
 #include "api/video_codecs/video_encoder.h"
 #include "api/video_codecs/video_encoder_factory.h"
 #include "call/call.h"
-#include "call/flexfec_receive_stream.h"
 #include "call/packet_receiver.h"
 #include "call/receive_stream.h"
 #include "call/rtp_config.h"
 #include "call/rtp_transport_controller_send_interface.h"
-#include "call/video_receive_stream.h"
 #include "call/video_send_stream.h"
 #include "common_video/frame_counts.h"
+#include "common_video/include/quality_limitation_reason.h"
 #include "media/base/codec.h"
 #include "media/base/codec_comparators.h"
 #include "media/base/media_channel.h"
-#include "media/base/media_channel_impl.h"
-#include "media/base/media_config.h"
 #include "media/base/media_constants.h"
-#include "media/base/media_engine.h"
 #include "media/base/rid_description.h"
 #include "media/base/rtp_utils.h"
-#include "media/base/stream_params.h"
 #include "media/engine/webrtc_media_engine.h"
 #include "modules/rtp_rtcp/include/receive_statistics.h"
+#include "modules/rtp_rtcp/include/report_block_data.h"
 #include "modules/rtp_rtcp/include/rtcp_statistics.h"
-#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
-#include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "rtc_base/checks.h"
@@ -93,10 +69,8 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/socket.h"
 #include "rtc_base/strings/string_builder.h"
-#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
-#include "video/config/video_encoder_config.h"
 
 namespace cricket {
 
@@ -610,7 +584,8 @@ std::vector<VideoCodecSettings> MapCodecs(const std::vector<Codec>& codecs) {
     const int payload_type = in_codec.id;
 
     if (payload_codec_type.find(payload_type) != payload_codec_type.end()) {
-      RTC_LOG(LS_ERROR) << "Payload type already registered: " << in_codec;
+      RTC_LOG(LS_ERROR) << "Payload type already registered: "
+                        << in_codec.ToString();
       return {};
     }
     payload_codec_type[payload_type] = in_codec.GetResiliencyType();
