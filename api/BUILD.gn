@@ -99,7 +99,7 @@ if (!build_with_chromium) {
       "audio:audio_device",
       "audio:audio_mixer_api",
       "audio:audio_processing",
-      "audio:builtin_audio_processing_factory",
+      "audio:builtin_audio_processing_builder",
       "audio_codecs:audio_codecs_api",
       "video_codecs:video_codecs_api",
     ]
