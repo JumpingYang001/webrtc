@@ -332,26 +332,26 @@ TEST(VideoBroadcasterTest, ForwardsConstraintsToSink) {
   broadcaster.ProcessConstraints(webrtc::VideoTrackSourceConstraints{2, 3});
 }
 
-TEST(VideoBroadcasterTest, AppliesMaxOfSinkWantsRequestedResolution) {
+TEST(VideoBroadcasterTest, AppliesMaxOfSinkWantsScaleResolutionDownTo) {
   VideoBroadcaster broadcaster;
 
   FakeVideoRenderer sink1;
   VideoSinkWants wants1;
   wants1.is_active = true;
-  wants1.requested_resolution = FrameSize(640, 360);
+  wants1.scale_resolution_down_to = FrameSize(640, 360);
 
   broadcaster.AddOrUpdateSink(&sink1, wants1);
-  EXPECT_EQ(FrameSize(640, 360), *broadcaster.wants().requested_resolution);
+  EXPECT_EQ(FrameSize(640, 360), *broadcaster.wants().scale_resolution_down_to);
 
   FakeVideoRenderer sink2;
   VideoSinkWants wants2;
   wants2.is_active = true;
-  wants2.requested_resolution = FrameSize(650, 350);
+  wants2.scale_resolution_down_to = FrameSize(650, 350);
   broadcaster.AddOrUpdateSink(&sink2, wants2);
-  EXPECT_EQ(FrameSize(650, 360), *broadcaster.wants().requested_resolution);
+  EXPECT_EQ(FrameSize(650, 360), *broadcaster.wants().scale_resolution_down_to);
 
   broadcaster.RemoveSink(&sink2);
-  EXPECT_EQ(FrameSize(640, 360), *broadcaster.wants().requested_resolution);
+  EXPECT_EQ(FrameSize(640, 360), *broadcaster.wants().scale_resolution_down_to);
 }
 
 TEST(VideoBroadcasterTest, AnyActive) {
@@ -374,43 +374,42 @@ TEST(VideoBroadcasterTest, AnyActive) {
   EXPECT_EQ(false, broadcaster.wants().is_active);
 }
 
-TEST(VideoBroadcasterTest, AnyActiveWithoutRequestedResolution) {
+TEST(VideoBroadcasterTest, AnyActiveWithoutScaleResolutionDownTo) {
   VideoBroadcaster broadcaster;
 
   FakeVideoRenderer sink1;
   VideoSinkWants wants1;
   wants1.is_active = true;
-  wants1.requested_resolution = FrameSize(640, 360);
+  wants1.scale_resolution_down_to = FrameSize(640, 360);
 
   broadcaster.AddOrUpdateSink(&sink1, wants1);
-  EXPECT_EQ(
-      false,
-      broadcaster.wants().aggregates->any_active_without_requested_resolution);
+  EXPECT_EQ(false,
+            broadcaster.wants()
+                .aggregates->any_active_without_scale_resolution_down_to);
 
   FakeVideoRenderer sink2;
   VideoSinkWants wants2;
   wants2.is_active = true;
   broadcaster.AddOrUpdateSink(&sink2, wants2);
-  EXPECT_EQ(
-      true,
-      broadcaster.wants().aggregates->any_active_without_requested_resolution);
+  EXPECT_EQ(true, broadcaster.wants()
+                      .aggregates->any_active_without_scale_resolution_down_to);
 
   broadcaster.RemoveSink(&sink2);
-  EXPECT_EQ(
-      false,
-      broadcaster.wants().aggregates->any_active_without_requested_resolution);
+  EXPECT_EQ(false,
+            broadcaster.wants()
+                .aggregates->any_active_without_scale_resolution_down_to);
 }
 
 // This verifies that the VideoSinkWants from a Sink that is_active = false
-// is ignored IF there is an active sink using new api (Requested_Resolution).
-// The uses resolution_alignment for verification.
+// is ignored IF there is an active sink using new api
+// (scale_resolution_down_to). The uses resolution_alignment for verification.
 TEST(VideoBroadcasterTest, IgnoreInactiveSinkIfNewApiUsed) {
   VideoBroadcaster broadcaster;
 
   FakeVideoRenderer sink1;
   VideoSinkWants wants1;
   wants1.is_active = true;
-  wants1.requested_resolution = FrameSize(640, 360);
+  wants1.scale_resolution_down_to = FrameSize(640, 360);
   wants1.resolution_alignment = 2;
   broadcaster.AddOrUpdateSink(&sink1, wants1);
   EXPECT_EQ(broadcaster.wants().resolution_alignment, 2);

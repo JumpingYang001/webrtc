@@ -83,11 +83,11 @@ struct RTC_EXPORT VideoSinkWants {
   std::vector<FrameSize> resolutions;
 
   // This is the resolution requested by the user using RtpEncodingParameters.
-  std::optional<FrameSize> requested_resolution;
+  std::optional<FrameSize> scale_resolution_down_to;
 
   // `is_active` : Is this VideoSinkWants from an encoder that is encoding any
   // layer. IF YES, it will affect how the VideoAdapter will choose to
-  // prioritize the OnOutputFormatRequest vs. requested_resolution. IF NO,
+  // prioritize the OnOutputFormatRequest vs. scale_resolution_down_to. IF NO,
   // VideoAdapter consider this VideoSinkWants as a passive listener (e.g a
   // VideoRenderer or a VideoEncoder that is not currently actively encoding).
   bool is_active = false;
@@ -96,11 +96,11 @@ struct RTC_EXPORT VideoSinkWants {
   // that aggregates several VideoSinkWants (and sends them to
   // AdaptedVideoTrackSource).
   struct Aggregates {
-    // `active_without_requested_resolution` is set by VideoBroadcaster
+    // `any_active_without_scale_resolution_down_to` is set by VideoBroadcaster
     // when aggregating sink wants if there exists any sink (encoder) that is
-    // active but has not set the `requested_resolution`, i.e is relying on
+    // active but has not set the `scale_resolution_down_to`, i.e is relying on
     // OnOutputFormatRequest to handle encode resolution.
-    bool any_active_without_requested_resolution = false;
+    bool any_active_without_scale_resolution_down_to = false;
   };
   std::optional<Aggregates> aggregates;
 };
