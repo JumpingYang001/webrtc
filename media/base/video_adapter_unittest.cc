@@ -47,24 +47,24 @@ rtc::VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
   wants.resolution_alignment = sink_alignment;
   wants.is_active = true;
   wants.aggregates.emplace(rtc::VideoSinkWants::Aggregates());
-  wants.aggregates->any_active_without_scale_resolution_down_to = false;
+  wants.aggregates->any_active_without_requested_resolution = false;
   return wants;
 }
 
 rtc::VideoSinkWants BuildSinkWants(
-    std::optional<webrtc::Resolution> scale_resolution_down_to,
-    bool any_active_without_scale_resolution_down_to) {
+    std::optional<webrtc::Resolution> requested_resolution,
+    bool any_active_without_requested_resolution) {
   rtc::VideoSinkWants wants;
   wants.max_framerate_fps = kDefaultFps;
   wants.resolution_alignment = 1;
   wants.is_active = true;
-  if (scale_resolution_down_to) {
-    wants.scale_resolution_down_to.emplace(rtc::VideoSinkWants::FrameSize(
-        scale_resolution_down_to->width, scale_resolution_down_to->height));
+  if (requested_resolution) {
+    wants.requested_resolution.emplace(rtc::VideoSinkWants::FrameSize(
+        requested_resolution->width, requested_resolution->height));
   }
   wants.aggregates.emplace(rtc::VideoSinkWants::Aggregates());
-  wants.aggregates->any_active_without_scale_resolution_down_to =
-      any_active_without_scale_resolution_down_to;
+  wants.aggregates->any_active_without_requested_resolution =
+      any_active_without_requested_resolution;
   return wants;
 }
 
@@ -1202,15 +1202,14 @@ TEST_P(VideoAdapterTest, AdaptResolutionWithSinkAlignment) {
 }
 
 // Verify the cases the OnOutputFormatRequest is ignored and
-// scale_resolution_down_to is used instead.
-TEST_P(VideoAdapterTest,
-       UseScaleResolutionDownToInsteadOfOnOutputFormatRequest) {
+// requested_resolution is used instead.
+TEST_P(VideoAdapterTest, UseRequestedResolutionInsteadOfOnOutputFormatRequest) {
   {
     // Both new and old API active => Use OnOutputFormatRequest
     OnOutputFormatRequest(640, 360, kDefaultFps);
-    adapter_.OnSinkWants(BuildSinkWants(
-        Resolution{.width = 960, .height = 540},
-        /* any_active_without_scale_resolution_down_to= */ true));
+    adapter_.OnSinkWants(
+        BuildSinkWants(Resolution{.width = 960, .height = 540},
+                       /* any_active_without_requested_resolution= */ true));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1219,11 +1218,11 @@ TEST_P(VideoAdapterTest,
   }
   {
     // New API active, old API inactive, ignore OnOutputFormatRequest and use
-    // scale_resolution_down_to.
+    // requested_resolution.
     OnOutputFormatRequest(640, 360, kDefaultFps);
-    adapter_.OnSinkWants(BuildSinkWants(
-        Resolution{.width = 960, .height = 540},
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(Resolution{.width = 960, .height = 540},
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1234,9 +1233,9 @@ TEST_P(VideoAdapterTest,
   {
     // New API inactive, old API inactive, use OnOutputFormatRequest.
     OnOutputFormatRequest(640, 360, kDefaultFps);
-    adapter_.OnSinkWants(BuildSinkWants(
-        std::nullopt,
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(std::nullopt,
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1247,9 +1246,9 @@ TEST_P(VideoAdapterTest,
   {
     // New API active, old API inactive, remember OnOutputFormatRequest.
     OnOutputFormatRequest(640, 360, kDefaultFps);
-    adapter_.OnSinkWants(BuildSinkWants(
-        Resolution{.width = 960, .height = 540},
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(Resolution{.width = 960, .height = 540},
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1257,7 +1256,7 @@ TEST_P(VideoAdapterTest,
         Eq(Resolution{.width = 960, .height = 540}));
 
     // This is ignored since there is not any active NOT using
-    // scale_resolution_down_to.
+    // requested_resolution.
     OnOutputFormatRequest(320, 180, kDefaultFps);
 
     EXPECT_THAT(
@@ -1266,9 +1265,9 @@ TEST_P(VideoAdapterTest,
         Eq(Resolution{.width = 960, .height = 540}));
 
     // Disable new API => fallback to last OnOutputFormatRequest.
-    adapter_.OnSinkWants(BuildSinkWants(
-        std::nullopt,
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(std::nullopt,
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1277,12 +1276,12 @@ TEST_P(VideoAdapterTest,
   }
 }
 
-TEST_P(VideoAdapterTest, ScaleResolutionDownToIsOrientationAgnostic) {
+TEST_P(VideoAdapterTest, RequestedResolutionIsOrientationAgnostic) {
   // Request 1280x720 when frame is 720x1280.
   {
-    adapter_.OnSinkWants(BuildSinkWants(
-        Resolution{.width = 1280, .height = 720},
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(Resolution{.width = 1280, .height = 720},
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 720, .height = 1280})
@@ -1291,9 +1290,9 @@ TEST_P(VideoAdapterTest, ScaleResolutionDownToIsOrientationAgnostic) {
   }
   // Request 720x1280 when frame is 1280x720.
   {
-    adapter_.OnSinkWants(BuildSinkWants(
-        Resolution{.width = 720, .height = 1280},
-        /* any_active_without_scale_resolution_down_to= */ false));
+    adapter_.OnSinkWants(
+        BuildSinkWants(Resolution{.width = 720, .height = 1280},
+                       /* any_active_without_requested_resolution= */ false));
 
     EXPECT_THAT(
         AdaptFrameResolution(/* input frame */ {.width = 1280, .height = 720})
@@ -1302,11 +1301,11 @@ TEST_P(VideoAdapterTest, ScaleResolutionDownToIsOrientationAgnostic) {
   }
 }
 
-TEST_P(VideoAdapterTest, ScaleResolutionDownToMaintainsAspectRatio) {
+TEST_P(VideoAdapterTest, RequestedResolutionMaintainsAspectRatio) {
   // Request 720x720.
   adapter_.OnSinkWants(
       BuildSinkWants(Resolution{.width = 720, .height = 720},
-                     /* any_active_without_scale_resolution_down_to= */ false));
+                     /* any_active_without_requested_resolution= */ false));
 
   // A 1280x720 frame restricted to 720x720 produces 720x405.
   EXPECT_TRUE(adapter_.AdaptFrameResolution(1280, 720, /*in_timestamp_ns=*/0,
@@ -1367,11 +1366,11 @@ TEST_P(VideoAdapterWithSourceAlignmentTest, AdaptResolutionWithSinkAlignment) {
 }
 
 TEST_P(VideoAdapterWithSourceAlignmentTest,
-       ScaleResolutionDownToMaintainsAspectRatioWithAlignment) {
+       RequestedResolutionMaintainsAspectRatioWithAlignment) {
   // Request 720x720.
   adapter_.OnSinkWants(
       BuildSinkWants(Resolution{.width = 720, .height = 720},
-                     /* any_active_without_scale_resolution_down_to= */ false));
+                     /* any_active_without_requested_resolution= */ false));
 
   // A 1280x720 frame restricted to 720x720 produces 720x405 but this is not a
   // multiple of `kSourceResolutionAlignment` (= 7), the rounded up multiple of

@@ -105,9 +105,9 @@ bool VideoSourceSinkController::active() const {
 }
 
 std::optional<rtc::VideoSinkWants::FrameSize>
-VideoSourceSinkController::scale_resolution_down_to() const {
+VideoSourceSinkController::requested_resolution() const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  return scale_resolution_down_to_;
+  return requested_resolution_;
 }
 
 void VideoSourceSinkController::SetRestrictions(
@@ -150,10 +150,10 @@ void VideoSourceSinkController::SetActive(bool active) {
   active_ = active;
 }
 
-void VideoSourceSinkController::SetScaleResolutionDownTo(
-    std::optional<rtc::VideoSinkWants::FrameSize> scale_resolution_down_to) {
+void VideoSourceSinkController::SetRequestedResolution(
+    std::optional<rtc::VideoSinkWants::FrameSize> requested_resolution) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  scale_resolution_down_to_ = std::move(scale_resolution_down_to);
+  requested_resolution_ = std::move(requested_resolution);
 }
 
 // RTC_EXCLUSIVE_LOCKS_REQUIRED(sequence_checker_)
@@ -186,7 +186,7 @@ rtc::VideoSinkWants VideoSourceSinkController::CurrentSettingsToSinkWants()
                    : std::numeric_limits<int>::max());
   wants.resolutions = resolutions_;
   wants.is_active = active_;
-  wants.scale_resolution_down_to = scale_resolution_down_to_;
+  wants.requested_resolution = requested_resolution_;
   return wants;
 }
 

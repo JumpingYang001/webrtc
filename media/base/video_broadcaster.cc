@@ -131,21 +131,20 @@ void VideoBroadcaster::UpdateWants() {
   // "ignore" encoders that are not active. But that would
   // probably require a controlled roll out with a field trials?
   // To play it safe, only ignore inactive encoders is there is an
-  // active encoder using the new api (scale_resolution_down_to),
+  // active encoder using the new api (requested_resolution),
   // this means that there is only a behavioural change when using new
   // api.
   bool ignore_inactive_encoders_old_api = false;
   for (auto& sink : sink_pairs()) {
-    if (sink.wants.is_active &&
-        sink.wants.scale_resolution_down_to.has_value()) {
+    if (sink.wants.is_active && sink.wants.requested_resolution.has_value()) {
       ignore_inactive_encoders_old_api = true;
       break;
     }
   }
 
   for (auto& sink : sink_pairs()) {
-    if (!sink.wants.is_active && (sink.wants.scale_resolution_down_to ||
-                                  ignore_inactive_encoders_old_api)) {
+    if (!sink.wants.is_active &&
+        (sink.wants.requested_resolution || ignore_inactive_encoders_old_api)) {
       continue;
     }
     // wants.rotation_applied == ANY(sink.wants.rotation_applied)
@@ -172,21 +171,21 @@ void VideoBroadcaster::UpdateWants() {
     wants.resolution_alignment = cricket::LeastCommonMultiple(
         wants.resolution_alignment, sink.wants.resolution_alignment);
 
-    // Pick MAX(scale_resolution_down_to) since the actual can be downscaled
+    // Pick MAX(requested_resolution) since the actual can be downscaled
     // in encoder instead.
-    if (sink.wants.scale_resolution_down_to) {
-      if (!wants.scale_resolution_down_to) {
-        wants.scale_resolution_down_to = sink.wants.scale_resolution_down_to;
+    if (sink.wants.requested_resolution) {
+      if (!wants.requested_resolution) {
+        wants.requested_resolution = sink.wants.requested_resolution;
       } else {
-        wants.scale_resolution_down_to->width =
-            std::max(wants.scale_resolution_down_to->width,
-                     sink.wants.scale_resolution_down_to->width);
-        wants.scale_resolution_down_to->height =
-            std::max(wants.scale_resolution_down_to->height,
-                     sink.wants.scale_resolution_down_to->height);
+        wants.requested_resolution->width =
+            std::max(wants.requested_resolution->width,
+                     sink.wants.requested_resolution->width);
+        wants.requested_resolution->height =
+            std::max(wants.requested_resolution->height,
+                     sink.wants.requested_resolution->height);
       }
     } else if (sink.wants.is_active) {
-      wants.aggregates->any_active_without_scale_resolution_down_to = true;
+      wants.aggregates->any_active_without_requested_resolution = true;
     }
 
     wants.is_active |= sink.wants.is_active;

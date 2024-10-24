@@ -79,23 +79,23 @@ std::vector<VideoStream> CreateEncoderStreams(
 
 }  // namespace
 
-TEST(EncoderStreamFactory, SinglecastScaleResolutionDownTo) {
+TEST(EncoderStreamFactory, SinglecastRequestedResolution) {
   ExplicitKeyValueConfig field_trials("");
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 1;
   encoder_config.simulcast_layers.resize(1);
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 640,
+                                                             .height = 360};
   auto streams = CreateEncoderStreams(
       field_trials, {.width = 1280, .height = 720}, encoder_config);
-  EXPECT_EQ(streams[0].scale_resolution_down_to,
+  EXPECT_EQ(streams[0].requested_resolution,
             (Resolution{.width = 640, .height = 360}));
   EXPECT_EQ(GetStreamResolutions(streams), (std::vector<Resolution>{
                                                {.width = 640, .height = 360},
                                            }));
 }
 
-TEST(EncoderStreamFactory, SinglecastScaleResolutionDownToWithAdaptation) {
+TEST(EncoderStreamFactory, SinglecastRequestedResolutionWithAdaptation) {
   ExplicitKeyValueConfig field_trials("");
   VideoSourceRestrictions restrictions(
       /* max_pixels_per_frame= */ (320 * 320),
@@ -104,29 +104,29 @@ TEST(EncoderStreamFactory, SinglecastScaleResolutionDownToWithAdaptation) {
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 1;
   encoder_config.simulcast_layers.resize(1);
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 640,
+                                                             .height = 360};
   auto streams =
       CreateEncoderStreams(field_trials, {.width = 1280, .height = 720},
                            encoder_config, restrictions);
-  EXPECT_EQ(streams[0].scale_resolution_down_to,
+  EXPECT_EQ(streams[0].requested_resolution,
             (Resolution{.width = 640, .height = 360}));
   EXPECT_EQ(GetStreamResolutions(streams), (std::vector<Resolution>{
                                                {.width = 320, .height = 180},
                                            }));
 }
 
-TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToUnrestricted) {
+TEST(EncoderStreamFactory, SimulcastRequestedResolutionUnrestricted) {
   ExplicitKeyValueConfig field_trials("");
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 3;
   encoder_config.simulcast_layers.resize(3);
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 320,
-                                                                 .height = 180};
-  encoder_config.simulcast_layers[1].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
-  encoder_config.simulcast_layers[2].scale_resolution_down_to = {.width = 1280,
-                                                                 .height = 720};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 320,
+                                                             .height = 180};
+  encoder_config.simulcast_layers[1].requested_resolution = {.width = 640,
+                                                             .height = 360};
+  encoder_config.simulcast_layers[2].requested_resolution = {.width = 1280,
+                                                             .height = 720};
   auto streams = CreateEncoderStreams(
       field_trials, {.width = 1280, .height = 720}, encoder_config);
   std::vector<Resolution> stream_resolutions = GetStreamResolutions(streams);
@@ -136,7 +136,7 @@ TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToUnrestricted) {
   EXPECT_EQ(stream_resolutions[2], (Resolution{.width = 1280, .height = 720}));
 }
 
-TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith360pRestriction) {
+TEST(EncoderStreamFactory, SimulcastRequestedResolutionWith360pRestriction) {
   ExplicitKeyValueConfig field_trials("");
   VideoSourceRestrictions restrictions(
       /* max_pixels_per_frame= */ (640 * 360),
@@ -145,12 +145,12 @@ TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith360pRestriction) {
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 3;
   encoder_config.simulcast_layers.resize(3);
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 320,
-                                                                 .height = 180};
-  encoder_config.simulcast_layers[1].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
-  encoder_config.simulcast_layers[2].scale_resolution_down_to = {.width = 1280,
-                                                                 .height = 720};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 320,
+                                                             .height = 180};
+  encoder_config.simulcast_layers[1].requested_resolution = {.width = 640,
+                                                             .height = 360};
+  encoder_config.simulcast_layers[2].requested_resolution = {.width = 1280,
+                                                             .height = 720};
   auto streams =
       CreateEncoderStreams(field_trials, {.width = 1280, .height = 720},
                            encoder_config, restrictions);
@@ -161,7 +161,7 @@ TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith360pRestriction) {
   EXPECT_EQ(stream_resolutions[1], (Resolution{.width = 640, .height = 360}));
 }
 
-TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith90pRestriction) {
+TEST(EncoderStreamFactory, SimulcastRequestedResolutionWith90pRestriction) {
   ExplicitKeyValueConfig field_trials("");
   VideoSourceRestrictions restrictions(
       /* max_pixels_per_frame= */ (160 * 90),
@@ -170,12 +170,12 @@ TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith90pRestriction) {
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 3;
   encoder_config.simulcast_layers.resize(3);
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 320,
-                                                                 .height = 180};
-  encoder_config.simulcast_layers[1].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
-  encoder_config.simulcast_layers[2].scale_resolution_down_to = {.width = 1280,
-                                                                 .height = 720};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 320,
+                                                             .height = 180};
+  encoder_config.simulcast_layers[1].requested_resolution = {.width = 640,
+                                                             .height = 360};
+  encoder_config.simulcast_layers[2].requested_resolution = {.width = 1280,
+                                                             .height = 720};
   auto streams =
       CreateEncoderStreams(field_trials, {.width = 1280, .height = 720},
                            encoder_config, restrictions);
@@ -186,8 +186,7 @@ TEST(EncoderStreamFactory, SimulcastScaleResolutionDownToWith90pRestriction) {
   EXPECT_EQ(stream_resolutions[0], (Resolution{.width = 160, .height = 90}));
 }
 
-TEST(EncoderStreamFactory,
-     ReverseSimulcastScaleResolutionDownToWithRestriction) {
+TEST(EncoderStreamFactory, ReverseSimulcastRequestedResolutionWithRestriction) {
   ExplicitKeyValueConfig field_trials("");
   VideoSourceRestrictions restrictions(
       /* max_pixels_per_frame= */ (640 * 360),
@@ -197,12 +196,12 @@ TEST(EncoderStreamFactory,
   encoder_config.number_of_streams = 3;
   encoder_config.simulcast_layers.resize(3);
   // 720p, 360p, 180p (instead of the usual 180p, 360p, 720p).
-  encoder_config.simulcast_layers[0].scale_resolution_down_to = {.width = 1280,
-                                                                 .height = 720};
-  encoder_config.simulcast_layers[1].scale_resolution_down_to = {.width = 640,
-                                                                 .height = 360};
-  encoder_config.simulcast_layers[2].scale_resolution_down_to = {.width = 320,
-                                                                 .height = 180};
+  encoder_config.simulcast_layers[0].requested_resolution = {.width = 1280,
+                                                             .height = 720};
+  encoder_config.simulcast_layers[1].requested_resolution = {.width = 640,
+                                                             .height = 360};
+  encoder_config.simulcast_layers[2].requested_resolution = {.width = 320,
+                                                             .height = 180};
   auto streams =
       CreateEncoderStreams(field_trials, {.width = 1280, .height = 720},
                            encoder_config, restrictions);

@@ -2588,7 +2588,7 @@ TEST_F(VideoStreamEncoderTest, FrameRateLimitCanBeReset) {
 }
 
 TEST_F(VideoStreamEncoderTest, RequestInSinkWantsBeforeFirstFrame) {
-  // Use a real video stream factory or else `scale_resolution_down_to` is not
+  // Use a real video stream factory or else `requested_resolution` is not
   // applied correctly.
   video_encoder_config_.video_stream_factory = nullptr;
   ConfigureEncoder(video_encoder_config_.Copy());
@@ -2596,30 +2596,28 @@ TEST_F(VideoStreamEncoderTest, RequestInSinkWantsBeforeFirstFrame) {
       kTargetBitrate, kTargetBitrate, kTargetBitrate, 0, 0, 0);
 
   ASSERT_THAT(video_encoder_config_.simulcast_layers, SizeIs(1));
-  video_encoder_config_.simulcast_layers[0].scale_resolution_down_to.emplace(
+  video_encoder_config_.simulcast_layers[0].requested_resolution.emplace(
       Resolution({.width = 320, .height = 160}));
 
   video_stream_encoder_->ConfigureEncoder(video_encoder_config_.Copy(),
                                           kMaxPayloadLength);
 
-  EXPECT_EQ(video_source_.sink_wants().scale_resolution_down_to,
+  EXPECT_EQ(video_source_.sink_wants().requested_resolution,
             rtc::VideoSinkWants::FrameSize(320, 160));
 
-  video_encoder_config_.simulcast_layers[0].scale_resolution_down_to->height =
-      320;
-  video_encoder_config_.simulcast_layers[0].scale_resolution_down_to->width =
-      640;
+  video_encoder_config_.simulcast_layers[0].requested_resolution->height = 320;
+  video_encoder_config_.simulcast_layers[0].requested_resolution->width = 640;
   video_stream_encoder_->ConfigureEncoder(video_encoder_config_.Copy(),
                                           kMaxPayloadLength);
 
-  EXPECT_EQ(video_source_.sink_wants().scale_resolution_down_to,
+  EXPECT_EQ(video_source_.sink_wants().requested_resolution,
             rtc::VideoSinkWants::FrameSize(640, 320));
 
   video_stream_encoder_->Stop();
 }
 
 TEST_F(VideoStreamEncoderTest, RequestInWrongAspectRatioWithAdapter) {
-  // Use a real video stream factory or else `scale_resolution_down_to` is not
+  // Use a real video stream factory or else `requested_resolution` is not
   // applied correctly.
   video_encoder_config_.video_stream_factory = nullptr;
   ConfigureEncoder(video_encoder_config_.Copy());
@@ -2633,7 +2631,7 @@ TEST_F(VideoStreamEncoderTest, RequestInWrongAspectRatioWithAdapter) {
       &source, webrtc::DegradationPreference::MAINTAIN_FRAMERATE);
 
   ASSERT_THAT(video_encoder_config_.simulcast_layers, SizeIs(1));
-  video_encoder_config_.simulcast_layers[0].scale_resolution_down_to = {
+  video_encoder_config_.simulcast_layers[0].requested_resolution = {
       .width = 30, .height = 30};
   video_stream_encoder_->ConfigureEncoder(video_encoder_config_.Copy(),
                                           kMaxPayloadLength);
@@ -6316,8 +6314,8 @@ TEST_F(VideoStreamEncoderTest,
 
 enum class FrameResolutionChangeMethod {
   MODIFY_SOURCE,
-  MODIFY_SCALE_RESOLUTION_DOWN_TO,
-  MODIFY_SCALE_RESOLUTION_DOWN_BY,
+  MODIFY_REQUESTED_RESOLUTION,
+  MODIFY_SCALE_RESOLUTION_BY,
 };
 class VideoStreamEncoderInitialFrameDropperTest
     : public VideoStreamEncoderTest,
@@ -6331,12 +6329,12 @@ class VideoStreamEncoderInitialFrameDropperTest
     switch (frame_resolution_change_method_) {
       case FrameResolutionChangeMethod::MODIFY_SOURCE:
         break;
-      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_TO:
+      case FrameResolutionChangeMethod::MODIFY_REQUESTED_RESOLUTION:
         video_encoder_config_.video_stream_factory = nullptr;
         captureWidth = kWidth;
         captureHeight = kHeight;
         break;
-      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_BY:
+      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_BY:
         captureWidth = kWidth;
         captureHeight = kHeight;
         break;
@@ -6349,15 +6347,14 @@ class VideoStreamEncoderInitialFrameDropperTest
         captureWidth = width;
         captureHeight = height;
         break;
-      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_TO:
+      case FrameResolutionChangeMethod::MODIFY_REQUESTED_RESOLUTION:
         ASSERT_THAT(video_encoder_config_.simulcast_layers, SizeIs(1));
-        video_encoder_config_.simulcast_layers[0]
-            .scale_resolution_down_to.emplace(
-                Resolution({.width = width, .height = height}));
+        video_encoder_config_.simulcast_layers[0].requested_resolution.emplace(
+            Resolution({.width = width, .height = height}));
         video_stream_encoder_->ConfigureEncoder(video_encoder_config_.Copy(),
                                                 kMaxPayloadLength);
         break;
-      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_BY:
+      case FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_BY:
         ASSERT_THAT(video_encoder_config_.simulcast_layers, SizeIs(1));
         double scale_height =
             static_cast<double>(kHeight) / static_cast<double>(height);
@@ -6384,10 +6381,9 @@ class VideoStreamEncoderInitialFrameDropperTest
 INSTANTIATE_TEST_SUITE_P(
     VideoStreamEncoderInitialFrameDropperTest,
     VideoStreamEncoderInitialFrameDropperTest,
-    ::testing::Values(
-        FrameResolutionChangeMethod::MODIFY_SOURCE,
-        FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_TO,
-        FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_DOWN_BY));
+    ::testing::Values(FrameResolutionChangeMethod::MODIFY_SOURCE,
+                      FrameResolutionChangeMethod::MODIFY_REQUESTED_RESOLUTION,
+                      FrameResolutionChangeMethod::MODIFY_SCALE_RESOLUTION_BY));
 
 TEST_P(VideoStreamEncoderInitialFrameDropperTest,
        InitialFrameDropActivatesWhenResolutionIncreases) {
@@ -6435,7 +6431,7 @@ TEST_P(VideoStreamEncoderInitialFrameDropperTest,
 
   int timestamp = 1;
 
-  // By using the `scale_resolution_down_to` API, ReconfigureEncoder() gets
+  // By using the `requested_resolution` API, ReconfigureEncoder() gets
   // triggered from VideoStreamEncoder::OnVideoSourceRestrictionsUpdated().
   SetEncoderFrameSize(kWidth, kHeight);
 

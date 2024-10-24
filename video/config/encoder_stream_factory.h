@@ -49,10 +49,10 @@ class EncoderStreamFactory
       const webrtc::VideoEncoderConfig& encoder_config,
       const std::optional<webrtc::DataRate>& experimental_min_bitrate) const;
 
-  webrtc::Resolution GetLayerResolutionFromScaleResolutionDownTo(
+  webrtc::Resolution GetLayerResolutionFromRequestedResolution(
       int in_frame_width,
       int in_frame_height,
-      webrtc::Resolution scale_resolution_down_to) const;
+      webrtc::Resolution requested_resolution) const;
 
   std::vector<webrtc::Resolution> GetStreamResolutions(
       const webrtc::FieldTrialsView& trials,
