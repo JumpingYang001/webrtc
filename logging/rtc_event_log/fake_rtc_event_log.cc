@@ -20,9 +20,8 @@
 
 namespace webrtc {
 
-bool FakeRtcEventLog::StartLogging(
-    std::unique_ptr<RtcEventLogOutput> /* output */,
-    int64_t /* output_period_ms */) {
+bool FakeRtcEventLog::StartLogging(std::unique_ptr<RtcEventLogOutput> output,
+                                   int64_t output_period_ms) {
   return true;
 }
 
