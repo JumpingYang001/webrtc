@@ -16,6 +16,7 @@
 #include "absl/memory/memory.h"
 #include "api/audio/audio_device.h"
 #include "api/audio/audio_processing.h"
+#include "api/audio/builtin_audio_processing_builder.h"
 #include "api/enable_media.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/task_queue/default_task_queue_factory.h"
@@ -31,7 +32,6 @@
 #include "sdk/android/src/jni/jni_helpers.h"
 #include "sdk/android/src/jni/logging/log_sink.h"
 #include "sdk/android/src/jni/pc/android_network_monitor.h"
-#include "sdk/android/src/jni/pc/audio.h"
 #include "sdk/android/src/jni/pc/ice_candidate.h"
 #include "sdk/android/src/jni/pc/media_stream_track.h"
 #include "sdk/android/src/jni/pc/owned_factory_and_threads.h"
@@ -287,7 +287,15 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
   dependencies.adm = std::move(audio_device_module);
   dependencies.audio_encoder_factory = std::move(audio_encoder_factory);
   dependencies.audio_decoder_factory = std::move(audio_decoder_factory);
-  dependencies.audio_processing = std::move(audio_processor);
+  if (audio_processor != nullptr) {
+    dependencies.audio_processing_builder =
+        CustomAudioProcessing(std::move(audio_processor));
+#ifndef WEBRTC_EXCLUDE_AUDIO_PROCESSING_MODULE
+  } else {
+    dependencies.audio_processing_builder =
+        std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
+#endif
+  }
   dependencies.video_encoder_factory =
       absl::WrapUnique(CreateVideoEncoderFactory(jni, jencoder_factory));
   dependencies.video_decoder_factory =
@@ -332,8 +340,7 @@ JNI_PeerConnectionFactory_CreatePeerConnectionFactory(
           reinterpret_cast<AudioDeviceModule*>(native_audio_device_module)),
       TakeOwnershipOfRefPtr<AudioEncoderFactory>(native_audio_encoder_factory),
       TakeOwnershipOfRefPtr<AudioDecoderFactory>(native_audio_decoder_factory),
-      jencoder_factory, jdecoder_factory,
-      audio_processor ? audio_processor : CreateAudioProcessing(),
+      jencoder_factory, jdecoder_factory, std::move(audio_processor),
       TakeOwnershipOfUniquePtr<FecControllerFactoryInterface>(
           native_fec_controller_factory),
       TakeOwnershipOfUniquePtr<NetworkControllerFactoryInterface>(
