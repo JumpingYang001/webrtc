@@ -16,28 +16,18 @@
 #include <list>
 #include <map>
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
-#include "api/array_view.h"
 #include "api/audio_codecs/audio_decoder.h"
-#include "api/audio_codecs/audio_decoder_factory.h"
-#include "api/audio_codecs/audio_format.h"
-#include "api/environment/environment.h"
-#include "api/neteq/neteq.h"
 #include "api/neteq/neteq_controller.h"
-#include "api/neteq/neteq_controller_factory.h"
 #include "api/neteq/tick_timer.h"
-#include "api/rtp_headers.h"
-#include "api/rtp_packet_info.h"
-#include "api/rtp_packet_infos.h"
-#include "api/scoped_refptr.h"
-#include "api/units/time_delta.h"
+#include "common_audio/signal_processing/include/signal_processing_library.h"
 #include "modules/audio_coding/codecs/cng/webrtc_cng.h"
 #include "modules/audio_coding/neteq/accelerate.h"
 #include "modules/audio_coding/neteq/background_noise.h"
 #include "modules/audio_coding/neteq/comfort_noise.h"
+#include "modules/audio_coding/neteq/decision_logic.h"
 #include "modules/audio_coding/neteq/decoder_database.h"
 #include "modules/audio_coding/neteq/dtmf_buffer.h"
 #include "modules/audio_coding/neteq/dtmf_tone_generator.h"
@@ -58,7 +48,6 @@
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/sanitizer.h"
 #include "rtc_base/strings/audio_format_to_string.h"
-#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/clock.h"
 
@@ -184,11 +173,11 @@ NetEqImpl::~NetEqImpl() = default;
 
 int NetEqImpl::InsertPacket(const RTPHeader& rtp_header,
                             rtc::ArrayView<const uint8_t> payload,
-                            const RtpPacketInfo& packet_info) {
+                            Timestamp receive_time) {
   rtc::MsanCheckInitialized(payload);
   TRACE_EVENT0("webrtc", "NetEqImpl::InsertPacket");
   MutexLock lock(&mutex_);
-  if (InsertPacketInternal(rtp_header, payload, packet_info) != 0) {
+  if (InsertPacketInternal(rtp_header, payload, receive_time) != 0) {
     return kFail;
   }
   return kOK;
@@ -455,7 +444,7 @@ NetEq::Operation NetEqImpl::last_operation_for_test() const {
 
 int NetEqImpl::InsertPacketInternal(const RTPHeader& rtp_header,
                                     rtc::ArrayView<const uint8_t> payload,
-                                    const RtpPacketInfo& packet_info) {
+                                    Timestamp receive_time) {
   if (payload.empty()) {
     RTC_LOG_F(LS_ERROR) << "payload is empty";
     return kInvalidPointer;
@@ -596,8 +585,8 @@ int NetEqImpl::InsertPacketInternal(const RTPHeader& rtp_header,
         new_packet.priority.codec_level = result.priority;
         new_packet.priority.red_level = original_priority.red_level;
         // Only associate the header information with the primary packet.
-        if (new_packet.timestamp == packet_info.rtp_timestamp()) {
-          new_packet.packet_info = packet_info;
+        if (new_packet.timestamp == rtp_header.timestamp) {
+          new_packet.packet_info = RtpPacketInfo(rtp_header, receive_time);
         }
         new_packet.frame = std::move(result.frame);
         return new_packet;
