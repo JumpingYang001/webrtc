@@ -100,6 +100,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":generated_metrics_jni_java",
       ":libjingle_peerconnection_java",
       "../../rtc_base:base_java",
     ]
@@ -169,6 +170,9 @@ if (is_android) {
     ]
 
     deps = [
+      ":generated_base_jni_java",
+      ":generated_native_api_jni_java",
+      ":generated_rtcerror_jni_java",
       "//rtc_base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -205,6 +209,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":generated_video_jni_java",
       "//rtc_base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -250,6 +255,8 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":generated_video_egl_jni_java",
+      ":generated_video_jni_java",
       ":video_api_java",
       "//rtc_base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -319,6 +326,8 @@ if (is_android) {
       ":base_java",
       ":builtin_audio_codecs_java",
       ":default_video_codec_factory_java",
+      ":generated_base_jni_java",
+      ":generated_peerconnection_jni_java",
 
       #TODO(bugs.webrtc.org/7452): Make injection mandatory and remove this dep.
       ":java_audio_device_module_java",
@@ -438,6 +447,9 @@ if (is_android) {
     deps = [
       ":audio_api_java",
       ":base_java",
+      ":generated_audio_device_module_base_jni_java",
+      ":generated_java_audio_device_module_native_jni_java",
+      ":generated_java_audio_jni_java",
       "//rtc_base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -450,7 +462,10 @@ if (is_android) {
       "api/org/webrtc/BuiltinAudioEncoderFactoryFactory.java",
     ]
 
-    deps = [ ":audio_api_java" ]
+    deps = [
+      ":audio_api_java",
+      ":generated_builtin_audio_codecs_jni_java",
+    ]
   }
 
   rtc_android_library("screencapturer_java") {
@@ -488,6 +503,7 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
+      ":generated_libvpx_vp8_jni_java",
       ":video_api_java",
       ":video_java",
       "//rtc_base:base_java",
@@ -502,6 +518,7 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
+      ":generated_libvpx_vp9_jni_java",
       ":video_api_java",
       ":video_java",
       "//rtc_base:base_java",
@@ -513,6 +530,7 @@ if (is_android) {
     sources = [ "api/org/webrtc/LibaomAv1Encoder.java" ]
     deps = [
       ":base_java",
+      ":generated_libaom_av1_encoder_jni_java",
       ":video_api_java",
       ":video_java",
       "//rtc_base:base_java",
@@ -522,7 +540,10 @@ if (is_android) {
   rtc_android_library("dav1d_java") {
     visibility = [ "*" ]
     sources = [ "api/org/webrtc/Dav1dDecoder.java" ]
-    deps = [ ":video_java" ]
+    deps = [
+      ":generated_dav1d_jni_java",
+      ":video_java",
+    ]
   }
 
   rtc_android_library("swcodecs_java") {
@@ -535,6 +556,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":dav1d_java",
+      ":generated_swcodecs_jni_java",
       ":libvpx_vp8_java",
       ":libvpx_vp9_java",
       ":video_api_java",
@@ -1102,6 +1124,7 @@ if (current_os == "linux" || is_android) {
 
     deps = [
       ":base_java",
+      ":generated_logging_jni_java",
       "//rtc_base:base_java",
     ]
   }
@@ -1701,6 +1724,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":generated_native_unittests_jni_java",
       ":java_audio_device_module_java",
       ":peerconnection_java",
       ":video_api_java",
