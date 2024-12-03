@@ -26,18 +26,11 @@ class PayloadType : public StrongAlias<class PayloadTypeTag, uint8_t> {
   // removed once calling code is upgraded.
   PayloadType(uint8_t pt) { value_ = pt; }                // NOLINT: explicit
   constexpr operator uint8_t() const& { return value_; }  // NOLINT: Explicit
-  static bool IsValid(PayloadType id, bool rtcp_mux) {
-    if (rtcp_mux && (id > 63 && id < 96)) {
-      return false;
-    }
-    return id >= 0 && id <= 127;
-  }
 };
 
 class PayloadTypeSuggester {
  public:
   virtual ~PayloadTypeSuggester() = default;
-
   // Suggest a payload type for a given codec on a given media section.
   // Media section is indicated by MID.
   // The function will either return a PT already in use on the connection
