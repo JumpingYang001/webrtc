@@ -12,6 +12,7 @@
 #undef JNIEXPORT
 #define JNIEXPORT __attribute__((visibility("default")))
 
+#include "rtc_base/logging.h"
 #include "rtc_base/ssl_adapter.h"
 #include "sdk/android/native_api/jni/class_loader.h"
 #include "sdk/android/src/jni/jni_helpers.h"
@@ -20,6 +21,7 @@ namespace webrtc {
 namespace jni {
 
 extern "C" jint JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
+  RTC_LOG(LS_INFO) << "Entering JNI_OnLoad in jni_onload.cc";
   jint ret = InitGlobalJniVariables(jvm);
   RTC_DCHECK_GE(ret, 0);
   if (ret < 0)
