@@ -650,6 +650,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "api/video_codecs/test:video_codecs_api_unittests",
       "api/voip:compile_all_headers",
       "call:fake_network_pipe_unittests",
+      "p2p:libstunprober_unittests",
       "p2p:rtc_p2p_unittests",
       "rtc_base:async_dns_resolver_unittests",
       "rtc_base:async_packet_socket_unittest",
