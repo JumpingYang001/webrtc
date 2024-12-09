@@ -128,18 +128,6 @@ public class NetworkMonitorTest {
     public void setNetworkType(int networkType) {
       this.networkType = networkType;
     }
-
-    public void setNetworkSubtype(int networkSubtype) {
-      this.networkSubtype = networkSubtype;
-    }
-
-    public void setUnderlyingNetworkType(int underlyingNetworkTypeForVpn) {
-      this.underlyingNetworkTypeForVpn = underlyingNetworkTypeForVpn;
-    }
-
-    public void setUnderlyingNetworkSubype(int underlyingNetworkSubtypeForVpn) {
-      this.underlyingNetworkSubtypeForVpn = underlyingNetworkSubtypeForVpn;
-    }
   }
 
   /**
@@ -217,11 +205,6 @@ public class NetworkMonitorTest {
     wifiDelegate = new MockWifiManagerDelegate();
     receiver.setWifiManagerDelegateForTests(wifiDelegate);
     wifiDelegate.setWifiSSID("foo");
-  }
-
-  private NetworkMonitorAutoDetect.ConnectionType getCurrentConnectionType() {
-    final NetworkMonitorAutoDetect.NetworkState networkState = receiver.getCurrentNetworkState();
-    return NetworkMonitorAutoDetect.getConnectionType(networkState);
   }
 
   @Before
