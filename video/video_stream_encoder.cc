@@ -80,6 +80,10 @@ constexpr char kFrameDropperFieldTrial[] = "WebRTC-FrameDropper";
 constexpr char kSwitchEncoderOnInitializationFailuresFieldTrial[] =
     "WebRTC-SwitchEncoderOnInitializationFailures";
 
+// TODO(crbugs.com/378566918): Remove this kill switch after rollout.
+constexpr char kSwitchEncoderFollowCodecPreferenceOrderFieldTrial[] =
+    "WebRTC-SwitchEncoderFollowCodecPreferenceOrder";
+
 const size_t kDefaultPayloadSize = 1440;
 
 const int64_t kParameterUpdateIntervalMs = 1000;
@@ -1481,15 +1485,21 @@ void VideoStreamEncoder::RequestEncoderSwitch() {
   }
 
   // If encoder selector is available, switch to the encoder it prefers.
-  // Otherwise try switching to VP8 (default WebRTC codec).
   std::optional<SdpVideoFormat> preferred_fallback_encoder;
   if (is_encoder_selector_available) {
     preferred_fallback_encoder = encoder_selector_->OnEncoderBroken();
   }
 
   if (!preferred_fallback_encoder) {
-    preferred_fallback_encoder =
-        SdpVideoFormat(CodecTypeToPayloadString(kVideoCodecVP8));
+    if (!env_.field_trials().IsDisabled(
+            kSwitchEncoderFollowCodecPreferenceOrderFieldTrial)) {
+      encoder_fallback_requested_ = true;
+      settings_.encoder_switch_request_callback->RequestEncoderFallback();
+      return;
+    } else {
+      preferred_fallback_encoder =
+          SdpVideoFormat(CodecTypeToPayloadString(kVideoCodecVP8));
+    }
   }
 
   settings_.encoder_switch_request_callback->RequestEncoderSwitch(
@@ -1892,11 +1902,15 @@ void VideoStreamEncoder::EncodeVideoFrame(const VideoFrame& video_frame,
   RTC_LOG(LS_VERBOSE) << __func__ << " posted " << time_when_posted_us
                       << " ntp time " << video_frame.ntp_time_ms();
 
-  // If the encoder fail we can't continue to encode frames. When this happens
-  // the WebrtcVideoSender is notified and the whole VideoSendStream is
-  // recreated.
-  if (encoder_failed_ || !encoder_initialized_)
+  // If encoder fallback is requested, but WebRtcVideoEngine cannot switch codec
+  // due to negotatied codec list is already exhausted, we don't continue to
+  // encode frames, and WebRtcVideoEngine will destroy the VideoSendStreams
+  // along with current VideoStreamEncoder. If the encoder fallback is requested
+  // and WebRtcVideoEngine responds to the fallback request, the VideoSendStream
+  // is recreated and current VideoStreamEncoder will no longer be used.
+  if (encoder_fallback_requested_ || !encoder_initialized_) {
     return;
+  }
 
   // It's possible that EncodeVideoFrame can be called after we've completed
   // a Stop() operation. Check if the encoder_ is set before continuing.
