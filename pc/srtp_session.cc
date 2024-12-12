@@ -249,7 +249,7 @@ bool SrtpSession::ProtectRtcp(void* p, int in_len, int max_len, int* out_len) {
   // SRTP_MAX_TRAILER_LEN bytes of free space after the data. WebRTC
   // never includes a MKI, therefore the amount of bytes added by the
   // srtp_protect_rtp call is known in advance and depends on the cipher suite.
-  int need_len = in_len + SRTP_SRCTP_INDEX_LEN + rtcp_auth_tag_len_;
+  int need_len = in_len + sizeof(uint32_t) + rtcp_auth_tag_len_;  // NOLINT
   if (max_len < need_len) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTCP packet: The buffer length "
                         << max_len << " is less than the needed " << need_len;
