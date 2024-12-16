@@ -381,6 +381,17 @@ rtc_library("codec") {
   ]
 }
 
+rtc_library("codec_list") {
+  sources = [
+    "base/codec_list.cc",
+    "base/codec_list.h",
+  ]
+  deps = [
+    ":codec",
+    "../rtc_base:checks",
+  ]
+}
+
 rtc_library("rtp_utils") {
   sources = [
     "base/rtp_utils.cc",
