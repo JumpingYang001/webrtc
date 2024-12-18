@@ -1233,10 +1233,6 @@ void WebRtcVideoSendChannel::RequestEncoderFallback() {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   if (negotiated_codecs_.size() <= 1) {
     RTC_LOG(LS_WARNING) << "Encoder failed but no fallback codec is available";
-    // Remove all the send streams since we cannot encode any more.
-    while (!send_streams_.empty()) {
-      RemoveSendStream(send_streams_.begin()->first);
-    }
     return;
   }
 
