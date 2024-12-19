@@ -17,9 +17,9 @@
 #include <vector>
 
 #include "api/field_trials_view.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "rtc_base/buffer.h"
-#include "rtc_base/copy_on_write_buffer.h"
 
 // Forward declaration to avoid pulling in libsrtp headers here
 struct srtp_event_data_t;
@@ -62,34 +62,18 @@ class SrtpSession {
 
   // Encrypts/signs an individual RTP/RTCP packet, in-place.
   // If an HMAC is used, this will increase the packet size.
-  [[deprecated("Pass CopyOnWriteBuffer")]] bool ProtectRtp(void* data,
-                                                           int in_len,
-                                                           int max_len,
-                                                           int* out_len);
-  bool ProtectRtp(rtc::CopyOnWriteBuffer& buffer);
+  bool ProtectRtp(void* data, int in_len, int max_len, int* out_len);
   // Overloaded version, outputs packet index.
-  [[deprecated("Pass CopyOnWriteBuffer")]] bool ProtectRtp(void* data,
-                                                           int in_len,
-                                                           int max_len,
-                                                           int* out_len,
-                                                           int64_t* index);
-  bool ProtectRtp(rtc::CopyOnWriteBuffer& buffer, int64_t* index);
-
-  [[deprecated("Pass CopyOnWriteBuffer")]] bool ProtectRtcp(void* data,
-                                                            int in_len,
-                                                            int max_len,
-                                                            int* out_len);
-  bool ProtectRtcp(rtc::CopyOnWriteBuffer& buffer);
+  bool ProtectRtp(void* data,
+                  int in_len,
+                  int max_len,
+                  int* out_len,
+                  int64_t* index);
+  bool ProtectRtcp(void* data, int in_len, int max_len, int* out_len);
   // Decrypts/verifies an invidiual RTP/RTCP packet.
   // If an HMAC is used, this will decrease the packet size.
-  [[deprecated("Pass CopyOnWriteBuffer")]] bool UnprotectRtp(void* data,
-                                                             int in_len,
-                                                             int* out_len);
-  bool UnprotectRtp(rtc::CopyOnWriteBuffer& buffer);
-  [[deprecated("Pass CopyOnWriteBuffer")]] bool UnprotectRtcp(void* data,
-                                                              int in_len,
-                                                              int* out_len);
-  bool UnprotectRtcp(rtc::CopyOnWriteBuffer& buffer);
+  bool UnprotectRtp(void* data, int in_len, int* out_len);
+  bool UnprotectRtcp(void* data, int in_len, int* out_len);
 
   // Helper method to get authentication params.
   bool GetRtpAuthParams(uint8_t** key, int* key_len, int* tag_len);
@@ -131,11 +115,11 @@ class SrtpSession {
                  const rtc::ZeroOnFreeBuffer<uint8_t>& key,
                  const std::vector<int>& extension_ids);
   // Returns send stream current packet index from srtp db.
-  bool GetSendStreamPacketIndex(rtc::CopyOnWriteBuffer& buffer, int64_t* index);
+  bool GetSendStreamPacketIndex(void* data, int in_len, int64_t* index);
 
   // Writes unencrypted packets in text2pcap format to the log file
   // for debugging.
-  void DumpPacket(const rtc::CopyOnWriteBuffer& buffer, bool outbound);
+  void DumpPacket(const void* buf, int len, bool outbound);
 
   void HandleEvent(const srtp_event_data_t* ev);
   static void HandleEventThunk(srtp_event_data_t* ev);

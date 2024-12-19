@@ -20,14 +20,13 @@
 #include <vector>
 
 #include "api/field_trials_view.h"
-#include "call/rtp_demuxer.h"
+#include "api/rtc_error.h"
 #include "p2p/base/packet_transport_internal.h"
 #include "pc/rtp_transport.h"
 #include "pc/srtp_session.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/copy_on_write_buffer.h"
-#include "rtc_base/network/received_packet.h"
 #include "rtc_base/network_route.h"
 
 namespace webrtc {
@@ -122,15 +121,21 @@ class SrtpTransport : public RtpTransport {
   // Override the RtpTransport::OnWritableState.
   void OnWritableState(rtc::PacketTransportInternal* packet_transport) override;
 
-  bool ProtectRtp(rtc::CopyOnWriteBuffer& buffer);
+  bool ProtectRtp(void* data, int in_len, int max_len, int* out_len);
+
   // Overloaded version, outputs packet index.
-  bool ProtectRtp(rtc::CopyOnWriteBuffer& buffer, int64_t* index);
-  bool ProtectRtcp(rtc::CopyOnWriteBuffer& buffer);
+  bool ProtectRtp(void* data,
+                  int in_len,
+                  int max_len,
+                  int* out_len,
+                  int64_t* index);
+  bool ProtectRtcp(void* data, int in_len, int max_len, int* out_len);
 
   // Decrypts/verifies an invidiual RTP/RTCP packet.
   // If an HMAC is used, this will decrease the packet size.
-  bool UnprotectRtp(rtc::CopyOnWriteBuffer& buffer);
-  bool UnprotectRtcp(rtc::CopyOnWriteBuffer& buffer);
+  bool UnprotectRtp(void* data, int in_len, int* out_len);
+
+  bool UnprotectRtcp(void* data, int in_len, int* out_len);
 
   const std::string content_name_;
 
