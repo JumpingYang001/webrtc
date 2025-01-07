@@ -948,7 +948,7 @@ int RtpVideoSender::ProtectionRequest(const FecProtectionParams* delta_params,
 void RtpVideoSender::SetRetransmissionMode(int retransmission_mode) {
   MutexLock lock(&mutex_);
   for (const RtpStreamSender& stream : rtp_streams_) {
-      stream.sender_video->SetRetransmissionSetting(retransmission_mode);
+    stream.sender_video->SetRetransmissionSetting(retransmission_mode);
   }
 }
 
