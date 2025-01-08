@@ -23,7 +23,8 @@ std::unique_ptr<DesktopFrameIOSurface> DesktopFrameIOSurface::Wrap(
   }
 
   IOSurfaceIncrementUseCount(io_surface.get());
-  IOReturn status = IOSurfaceLock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
+  IOReturn status =
+      IOSurfaceLock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
   if (status != kIOReturnSuccess) {
     RTC_LOG(LS_ERROR) << "Failed to lock the IOSurface with status " << status;
     IOSurfaceDecrementUseCount(io_surface.get());
@@ -33,19 +34,23 @@ std::unique_ptr<DesktopFrameIOSurface> DesktopFrameIOSurface::Wrap(
   // Verify that the image has 32-bit depth.
   int bytes_per_pixel = IOSurfaceGetBytesPerElement(io_surface.get());
   if (bytes_per_pixel != DesktopFrame::kBytesPerPixel) {
-    RTC_LOG(LS_ERROR) << "CGDisplayStream handler returned IOSurface with " << (8 * bytes_per_pixel)
+    RTC_LOG(LS_ERROR) << "CGDisplayStream handler returned IOSurface with "
+                      << (8 * bytes_per_pixel)
                       << " bits per pixel. Only 32-bit depth is supported.";
     IOSurfaceUnlock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
     IOSurfaceDecrementUseCount(io_surface.get());
     return nullptr;
   }
 
-  return std::unique_ptr<DesktopFrameIOSurface>(new DesktopFrameIOSurface(io_surface));
+  return std::unique_ptr<DesktopFrameIOSurface>(
+      new DesktopFrameIOSurface(io_surface));
 }
 
-DesktopFrameIOSurface::DesktopFrameIOSurface(rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+DesktopFrameIOSurface::DesktopFrameIOSurface(
+    rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface)
     : DesktopFrame(
-          DesktopSize(IOSurfaceGetWidth(io_surface.get()), IOSurfaceGetHeight(io_surface.get())),
+          DesktopSize(IOSurfaceGetWidth(io_surface.get()),
+                      IOSurfaceGetHeight(io_surface.get())),
           IOSurfaceGetBytesPerRow(io_surface.get()),
           static_cast<uint8_t*>(IOSurfaceGetBaseAddress(io_surface.get())),
           nullptr),

@@ -68,7 +68,7 @@ class AbsoluteSendTime {
 
   static constexpr Timestamp ToTimestamp(uint32_t time_24bits) {
     RTC_DCHECK_LT(time_24bits, (1 << 24));
-    return Timestamp::Micros((time_24bits* int64_t{1'000'000}) >> 18);
+    return Timestamp::Micros((time_24bits * int64_t{1'000'000}) >> 18);
   }
 };
 
