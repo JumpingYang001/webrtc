@@ -424,8 +424,7 @@ void AndroidNetworkMonitor::OnNetworkConnected_n(
   if (iter != network_info_by_handle_.end()) {
     // Remove old if_name for this handle if they don't match.
     if (network_info.interface_name != iter->second.interface_name) {
-      RTC_LOG(LS_INFO) << "Network"
-                       << " handle " << network_info.handle
+      RTC_LOG(LS_INFO) << "Network" << " handle " << network_info.handle
                        << " change if_name from: "
                        << iter->second.interface_name
                        << " to: " << network_info.interface_name;

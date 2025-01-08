@@ -217,16 +217,16 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
       // Java audio for input and OpenSL ES for output audio (i.e. mixed APIs).
       // This combination provides low-latency output audio and at the same
       // time support for HW AEC using the AudioRecord Java API.
-      return CreateJavaInputAndOpenSLESOutputAudioDeviceModule(
-        env, j_context.obj());
+      return CreateJavaInputAndOpenSLESOutputAudioDeviceModule(env,
+                                                               j_context.obj());
 #if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
     case AudioDeviceModule::kAndroidAAudioAudio:
       // AAudio based audio for both input and output.
       return CreateAAudioAudioDeviceModule(env, j_context.obj());
     case AudioDeviceModule::kAndroidJavaInputAndAAudioOutputAudio:
       // Java audio for input and AAudio for output audio (i.e. mixed APIs).
-      return CreateJavaInputAndAAudioOutputAudioDeviceModule(
-        env, j_context.obj());
+      return CreateJavaInputAndAAudioOutputAudioDeviceModule(env,
+                                                             j_context.obj());
 #endif
     default:
       return nullptr;

@@ -285,7 +285,7 @@ void JavaToNativeRTCConfiguration(
   }
 
   rtc_config->port_allocator_config.flags =
-    Java_RTCConfiguration_getPortAllocatorFlags(jni, j_rtc_config);
+      Java_RTCConfiguration_getPortAllocatorFlags(jni, j_rtc_config);
 }
 
 rtc::KeyType GetRtcConfigKeyType(

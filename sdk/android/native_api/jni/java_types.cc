@@ -335,8 +335,7 @@ ScopedJavaLocalRef<jobjectArray> NativeToJavaStringArray(
 }
 
 JavaListBuilder::JavaListBuilder(JNIEnv* env)
-    : env_(env), j_list_(JNI_ArrayList::Java_ArrayList_Constructor(env)) {
-}
+    : env_(env), j_list_(JNI_ArrayList::Java_ArrayList_Constructor(env)) {}
 
 JavaListBuilder::~JavaListBuilder() = default;
 
@@ -346,8 +345,7 @@ void JavaListBuilder::add(const jni_zero::JavaRef<jobject>& element) {
 
 JavaMapBuilder::JavaMapBuilder(JNIEnv* env)
     : env_(env),
-      j_map_(JNI_LinkedHashMap::Java_LinkedHashMap_Constructor(env)) {
-}
+      j_map_(JNI_LinkedHashMap::Java_LinkedHashMap_Constructor(env)) {}
 
 JavaMapBuilder::~JavaMapBuilder() = default;
 
