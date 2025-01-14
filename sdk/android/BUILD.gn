@@ -33,7 +33,6 @@ if (is_android) {
     direct_deps_only = true
     use_unprocessed_jars = true
     requires_android = true
-    no_build_hooks = true
 
     deps = [
       ":audio_api_java",
