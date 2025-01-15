@@ -20,6 +20,7 @@
 #include "absl/functional/any_invocable.h"
 #include "api/audio/builtin_audio_processing_builder.h"
 #include "api/enable_media_with_defaults.h"
+#include "api/field_trials_view.h"
 #include "api/jsep.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"

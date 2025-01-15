@@ -14,9 +14,7 @@
 #include <vector>
 
 #include "api/rtp_parameters.h"
-#include "media/base/codec.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
 
 namespace cricket {
 template <typename IdStruct>
@@ -86,41 +84,6 @@ class UsedIds {
   }
   int next_id_;
   std::set<int> id_set_;
-};
-
-// Helper class used for finding duplicate RTP payload types among audio, video
-// and data codecs. When bundle is used the payload types may not collide.
-class UsedPayloadTypes : public UsedIds<Codec> {
- public:
-  UsedPayloadTypes()
-      : UsedIds<Codec>(kFirstDynamicPayloadTypeLowerRange,
-                       kLastDynamicPayloadTypeUpperRange) {}
-
-  // Check if a payload type is valid. The range [64-95] is forbidden
-  // when rtcp-mux is used.
-  static bool IsIdValid(Codec codec, bool rtcp_mux) {
-    if (rtcp_mux && (codec.id > kLastDynamicPayloadTypeLowerRange &&
-                     codec.id < kFirstDynamicPayloadTypeUpperRange)) {
-      return false;
-    }
-    return codec.id >= 0 && codec.id <= kLastDynamicPayloadTypeUpperRange;
-  }
-
- protected:
-  bool IsIdUsed(int new_id) override {
-    // Range marked for RTCP avoidance is "used".
-    if (new_id > kLastDynamicPayloadTypeLowerRange &&
-        new_id < kFirstDynamicPayloadTypeUpperRange)
-      return true;
-    return UsedIds<Codec>::IsIdUsed(new_id);
-  }
-
- private:
-  static const int kFirstDynamicPayloadTypeLowerRange = 35;
-  static const int kLastDynamicPayloadTypeLowerRange = 63;
-
-  static const int kFirstDynamicPayloadTypeUpperRange = 96;
-  static const int kLastDynamicPayloadTypeUpperRange = 127;
 };
 
 // Helper class used for finding duplicate RTP Header extension ids among
