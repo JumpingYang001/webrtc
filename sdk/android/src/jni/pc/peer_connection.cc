@@ -284,6 +284,10 @@ void JavaToNativeRTCConfiguration(
     rtc_config->turn_logging_id = JavaToNativeString(jni, j_turn_logging_id);
   }
 
+  rtc_config->port_allocator_config.min_port =
+      Java_RTCConfiguration_getPortAllocatorMinPort(jni, j_rtc_config);
+  rtc_config->port_allocator_config.max_port =
+      Java_RTCConfiguration_getPortAllocatorMaxPort(jni, j_rtc_config);
   rtc_config->port_allocator_config.flags =
       Java_RTCConfiguration_getPortAllocatorFlags(jni, j_rtc_config);
 }
