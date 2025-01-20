@@ -1210,21 +1210,11 @@ if (is_android) {
                                "visibility",
                              ])
 
-      errorprone_args = []
-
-      # Treat warnings as errors.
-      errorprone_args += [ "-Werror" ]
-
       # Add any arguments defined by the invoker.
       if (defined(invoker.errorprone_args)) {
-        errorprone_args += invoker.errorprone_args
+        errorprone_args = invoker.errorprone_args
       }
 
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      no_build_hooks = true
       not_needed([ "android_manifest" ])
     }
   }
@@ -1239,16 +1229,6 @@ if (is_android) {
                                "suppressed_configs",
                                "visibility",
                              ])
-
-      # Treat warnings as errors.
-      errorprone_args = []
-      errorprone_args += [ "-Werror" ]
-
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      no_build_hooks = true
     }
   }
 
@@ -1262,16 +1242,6 @@ if (is_android) {
                                "suppressed_configs",
                                "visibility",
                              ])
-
-      # Treat warnings as errors.
-      errorprone_args = []
-      errorprone_args += [ "-Werror" ]
-
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      no_build_hooks = true
     }
   }
 }
