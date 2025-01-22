@@ -75,7 +75,7 @@ public class GlRectDrawerTest {
   // Convert RGBA ByteBuffer to RGB ByteBuffer.
   private static ByteBuffer stripAlphaChannel(ByteBuffer rgbaBuffer) {
     rgbaBuffer.rewind();
-    assertEquals(rgbaBuffer.remaining() % 4, 0);
+    assertEquals(0, rgbaBuffer.remaining() % 4);
     final int numberOfPixels = rgbaBuffer.remaining() / 4;
     final ByteBuffer rgbBuffer = ByteBuffer.allocateDirect(numberOfPixels * 3);
     while (rgbaBuffer.hasRemaining()) {
@@ -199,7 +199,7 @@ public class GlRectDrawerTest {
         assertTrue(Math.abs(actualRed - expectedRed) < MAX_DIFF);
         assertTrue(Math.abs(actualGreen - expectedGreen) < MAX_DIFF);
         assertTrue(Math.abs(actualBlue - expectedBlue) < MAX_DIFF);
-        assertEquals(actualAlpha, 255);
+        assertEquals(255, actualAlpha);
       }
     }
 
