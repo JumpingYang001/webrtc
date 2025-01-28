@@ -22,7 +22,6 @@
 
 #include "absl/flags/flag.h"
 #include "absl/strings/string_view.h"
-#include "api/field_trials.h"
 #include "api/jsep.h"
 #include "api/media_stream_interface.h"
 #include "api/media_types.h"
@@ -53,13 +52,18 @@
 #include "pc/test/mock_peer_connection_observers.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "system_wrappers/include/cpu_info.h"
+#include "system_wrappers/include/field_trial.h"
+#include "test/field_trial.h"
 #include "test/gtest.h"
 #include "test/pc/e2e/analyzer/audio/default_audio_quality_analyzer.h"
 #include "test/pc/e2e/analyzer/video/default_video_quality_analyzer.h"
+#include "test/pc/e2e/analyzer/video/single_process_encoded_image_data_injector.h"
+#include "test/pc/e2e/analyzer/video/video_frame_tracking_id_injector.h"
 #include "test/pc/e2e/analyzer/video/video_quality_analyzer_injection_helper.h"
 #include "test/pc/e2e/analyzer/video/video_quality_metrics_reporter.h"
 #include "test/pc/e2e/cross_media_metrics_reporter.h"
@@ -185,10 +189,18 @@ PeerConnectionE2EQualityTest::PeerConnectionE2EQualityTest(
     video_quality_analyzer = std::make_unique<DefaultVideoQualityAnalyzer>(
         time_controller_.GetClock(), metrics_logger_);
   }
+  if (field_trial::IsEnabled("WebRTC-VideoFrameTrackingIdAdvertised")) {
+    encoded_image_data_propagator_ =
+        std::make_unique<VideoFrameTrackingIdInjector>();
+  } else {
+    encoded_image_data_propagator_ =
+        std::make_unique<SingleProcessEncodedImageDataInjector>();
+  }
   video_quality_analyzer_injection_helper_ =
       std::make_unique<VideoQualityAnalyzerInjectionHelper>(
           time_controller_.GetClock(), std::move(video_quality_analyzer),
-          &encoded_image_data_propagator_, &encoded_image_data_propagator_);
+          encoded_image_data_propagator_.get(),
+          encoded_image_data_propagator_.get());
 
   if (audio_quality_analyzer == nullptr) {
     audio_quality_analyzer =
@@ -247,9 +259,7 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
         << "Only simulcast stream from first peer is supported";
   }
 
-  std::string field_trials = GetFieldTrials(run_params);
-  alice_configurer->SetFieldTrials(FieldTrials::CreateNoGlobal(field_trials));
-  bob_configurer->SetFieldTrials(FieldTrials::CreateNoGlobal(field_trials));
+  test::ScopedFieldTrials field_trials(GetFieldTrials(run_params));
 
   // Print test summary
   RTC_LOG(LS_INFO)
@@ -270,8 +280,9 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
       time_controller_.GetClock());
 
   // Create a `task_queue_`.
-  task_queue_ = time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
-      "pc_e2e_quality_test", webrtc::TaskQueueFactory::Priority::NORMAL);
+  task_queue_ = std::make_unique<webrtc::TaskQueueForTest>(
+      time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
+          "pc_e2e_quality_test", webrtc::TaskQueueFactory::Priority::NORMAL));
 
   // Create call participants: Alice and Bob.
   // Audio streams are intercepted in AudioDeviceModule, so if it is required to
@@ -361,8 +372,8 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
 
   // Setup alive logging. It is done to prevent test infra to think that test is
   // dead.
-  RepeatingTaskHandle::DelayedStart(task_queue_.get(), kAliveMessageLogInterval,
-                                    []() {
+  RepeatingTaskHandle::DelayedStart(task_queue_->Get(),
+                                    kAliveMessageLogInterval, []() {
                                       std::printf("Test is still running...\n");
                                       return kAliveMessageLogInterval;
                                     });
@@ -420,7 +431,7 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
   // There is no guarantee, that last stats collection will happen at the end
   // of the call, so we force it after executor, which is among others is doing
   // stats collection, was stopped.
-  SendTask(task_queue_.get(), [&stats_poller]() {
+  task_queue_->SendTask([&stats_poller]() {
     // Get final end-of-call stats.
     stats_poller.PollStatsAndNotifyObservers();
   });
@@ -458,10 +469,16 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
 
 std::string PeerConnectionE2EQualityTest::GetFieldTrials(
     const RunParams& run_params) {
+  std::vector<absl::string_view> default_field_trials = {};
   if (run_params.enable_flex_fec_support) {
-    return kFlexFecEnabledFieldTrials;
+    default_field_trials.push_back(kFlexFecEnabledFieldTrials);
   }
-  return "";
+  rtc::StringBuilder sb;
+  sb << field_trial::GetFieldTrialString();
+  for (const absl::string_view& field_trial : default_field_trials) {
+    sb << field_trial;
+  }
+  return sb.Release();
 }
 
 void PeerConnectionE2EQualityTest::OnTrackCallback(
