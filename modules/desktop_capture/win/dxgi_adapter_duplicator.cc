@@ -148,13 +148,6 @@ bool DxgiAdapterDuplicator::DuplicateMonitor(Context* context,
                                             DesktopVector(), target);
 }
 
-std::optional<int32_t> DxgiAdapterDuplicator::GetDeviceScaleFactor(
-    int screen_id) const {
-  RTC_DCHECK_GE(screen_id, 0);
-  RTC_DCHECK_LT(screen_id, duplicators_.size());
-  return duplicators_[screen_id].device_scale_factor();
-}
-
 DesktopRect DxgiAdapterDuplicator::ScreenRect(int id) const {
   RTC_DCHECK_GE(id, 0);
   RTC_DCHECK_LT(id, duplicators_.size());
