@@ -169,7 +169,7 @@ public class PeerConnectionEndToEndTest {
     // TODO(bugs.webrtc.org/8491): Remove NoSynchronizedMethodCheck suppression.
     @SuppressWarnings("NoSynchronizedMethodCheck")
     public synchronized void onSignalingChange(SignalingState newState) {
-      assertEquals(expectedSignalingChanges.remove(), newState);
+      assertEquals(newState, expectedSignalingChanges.remove());
     }
 
     // TODO(bugs.webrtc.org/8491): Remove NoSynchronizedMethodCheck suppression.
@@ -199,7 +199,7 @@ public class PeerConnectionEndToEndTest {
         return;
       }
 
-      assertEquals(expectedIceConnectionChanges.remove(), newState);
+      assertEquals(newState, expectedIceConnectionChanges.remove());
     }
 
     @Override
@@ -215,7 +215,7 @@ public class PeerConnectionEndToEndTest {
         return;
       }
 
-      assertEquals(expectedStandardizedIceConnectionChanges.remove(), newState);
+      assertEquals(newState, expectedStandardizedIceConnectionChanges.remove());
     }
 
     // TODO(bugs.webrtc.org/8491): Remove NoSynchronizedMethodCheck suppression.
@@ -233,7 +233,7 @@ public class PeerConnectionEndToEndTest {
         return;
       }
 
-      assertEquals(expectedConnectionChanges.remove(), newState);
+      assertEquals(newState, expectedConnectionChanges.remove());
     }
 
     @Override
@@ -262,7 +262,7 @@ public class PeerConnectionEndToEndTest {
       if (expectedIceGatheringChanges.isEmpty()) {
         Logging.d(TAG, name + "Got an unexpected ICE gathering change " + newState);
       }
-      assertEquals(expectedIceGatheringChanges.remove(), newState);
+      assertEquals(newState, expectedIceGatheringChanges.remove());
     }
 
     // TODO(bugs.webrtc.org/8491): Remove NoSynchronizedMethodCheck suppression.
