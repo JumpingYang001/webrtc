@@ -4731,6 +4731,37 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   EXPECT_LT(metrics::MinSample("WebRTC.Call.AbsCapture.Offset"), 2);
 }
 
+// Test that when SDP is munged to use a PT for a different codec,
+// the old codec is added to a subsequent offer with a different PT
+// Regression test for https://issues.chromium.org/395077824
+TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
+       MungeOfferCodecAndReOfferWorks) {
+  ASSERT_TRUE(CreatePeerConnectionWrappers());
+  ConnectFakeSignaling();
+  caller()->AddVideoTrack();
+  auto munger = [](std::unique_ptr<SessionDescriptionInterface>& sdp) {
+    auto video = GetFirstVideoContentDescription(sdp->description());
+    auto codecs = video->codecs();
+    for (auto&& codec : codecs) {
+      if (codec.name == "VP9") {
+        RTC_LOG(LS_ERROR) << "Remapping VP9 codec " << codec << " to AV1";
+        codec.name = "AV1";
+      }
+    }
+    video->set_codecs(codecs);
+  };
+  caller()->SetGeneratedSdpMunger(munger);
+  caller()->CreateAndSetAndSignalOffer();
+  ASSERT_THAT(
+      WaitUntil([&] { return SignalingStateStable(); }, ::testing::IsTrue()),
+      IsRtcOk());
+  caller()->SetGeneratedSdpMunger(nullptr);
+  auto offer = caller()->CreateOfferAndWait();
+  ASSERT_NE(nullptr, offer);
+  // The offer should be acceptable.
+  EXPECT_TRUE(caller()->SetLocalDescriptionAndSendSdpMessage(std::move(offer)));
+}
+
 }  // namespace
 
 }  // namespace webrtc
