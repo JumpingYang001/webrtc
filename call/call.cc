@@ -516,7 +516,7 @@ class Call final : public webrtc::Call,
 
 std::string Call::Stats::ToString(int64_t time_ms) const {
   char buf[1024];
-  rtc::SimpleStringBuilder ss(buf);
+  SimpleStringBuilder ss(buf);
   ss << "Call stats: " << time_ms << ", {";
   ss << "send_bw_bps: " << send_bandwidth_bps << ", ";
   ss << "recv_bw_bps: " << recv_bandwidth_bps << ", ";

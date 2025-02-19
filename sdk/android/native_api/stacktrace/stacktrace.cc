@@ -266,7 +266,7 @@ std::vector<StackTraceElement> GetStackTrace() {
 
 std::string StackTraceToString(
     const std::vector<StackTraceElement>& stack_trace) {
-  rtc::StringBuilder string_builder;
+  StringBuilder string_builder;
 
   for (size_t i = 0; i < stack_trace.size(); ++i) {
     const StackTraceElement& stack_trace_element = stack_trace[i];

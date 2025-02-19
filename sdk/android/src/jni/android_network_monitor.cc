@@ -216,7 +216,7 @@ NetworkInformation& NetworkInformation::operator=(NetworkInformation&&) =
     default;
 
 std::string NetworkInformation::ToString() const {
-  rtc::StringBuilder ss;
+  StringBuilder ss;
   ss << "NetInfo[name " << interface_name << "; handle " << handle << "; type "
      << type;
   if (type == NETWORK_VPN) {
