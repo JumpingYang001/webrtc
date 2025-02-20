@@ -298,8 +298,6 @@ class AndroidAudioDeviceModule : public AudioDeviceModule {
     RTC_DLOG(LS_INFO) << __FUNCTION__;
     if (!initialized_)
       return -1;
-    if (!Recording())
-      return 0;
     audio_device_buffer_->StopRecording();
     int32_t result = input_->StopRecording();
     RTC_DLOG(LS_INFO) << "output: " << result;
