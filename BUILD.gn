@@ -617,16 +617,6 @@ if (use_libfuzzer || use_afl) {
 }
 
 if (rtc_include_tests && !build_with_chromium) {
-  rtc_unittests_resources = [ "resources/reference_video_640x360_30fps.y4m" ]
-
-  if (is_ios) {
-    bundle_data("rtc_unittests_bundle_data") {
-      testonly = true
-      sources = rtc_unittests_resources
-      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
-    }
-  }
-
   rtc_test("rtc_unittests") {
     testonly = true
 
@@ -672,7 +662,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "test/network:network_emulation_unittests",
     ]
 
-    data = rtc_unittests_resources
+    data_deps = [ "resources:rtc_unittests_data" ]
 
     if (rtc_enable_protobuf) {
       deps += [
@@ -682,7 +672,7 @@ if (rtc_include_tests && !build_with_chromium) {
     }
 
     if (is_ios) {
-      deps += [ ":rtc_unittests_bundle_data" ]
+      deps += [ "resources:rtc_unittests_bundle_data" ]
     }
 
     if (is_android) {

@@ -8,6 +8,25 @@
 
 import("../webrtc.gni")
 
+audio_codec_speed_tests_resources = [
+  "audio_coding/music_stereo_48kHz.pcm",
+  "audio_coding/speech_mono_16kHz.pcm",
+  "audio_coding/speech_mono_32_48kHz.pcm",
+]
+group("audio_codec_speed_tests_data") {
+  data = audio_codec_speed_tests_resources
+}
+
+audio_decoder_unittests_resources = [ "audio_coding/testfile32kHz.pcm" ]
+group("audio_decoder_unittests_data") {
+  data = audio_decoder_unittests_resources
+}
+
+common_video_resources = [ "foreman_cif.yuv" ]
+group("common_video_data") {
+  data = common_video_resources
+}
+
 modules_tests_resources = [
   "audio_coding/testfile16kHz.pcm",
   "audio_coding/testfile32kHz.pcm",
@@ -16,13 +35,6 @@ modules_tests_resources = [
 ]
 group("modules_tests_data") {
   data = modules_tests_resources
-}
-if (is_ios) {
-  bundle_data("modules_tests_bundle_data") {
-    testonly = true
-    sources = modules_tests_resources
-    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
-  }
 }
 
 modules_unittests_resources = [
@@ -131,12 +143,116 @@ modules_unittests_resources = [
 group("modules_unittests_data") {
   data = modules_unittests_resources
 }
-if (is_ios) {
-  bundle_data("modules_unittests_bundle_data") {
-    testonly = true
-    sources = modules_unittests_resources
-    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
-  }
+
+network_tester_unittests_resources = [
+  "network_tester/client_config.dat",
+  "network_tester/server_config.dat",
+]
+group("network_tester_unittests_data") {
+  data = network_tester_unittests_resources
+}
+
+peer_connection_e2e_smoke_test_resources = [
+  "pc_quality_smoke_test_alice_source.wav",
+  "pc_quality_smoke_test_bob_source.wav",
+]
+group("peer_connection_e2e_smoke_test_data") {
+  data = peer_connection_e2e_smoke_test_resources
+}
+
+rtc_media_unittests_resources = [
+  "media/captured-320x240-2s-48.frames",
+  "media/faces.1280x720_P420.yuv",
+  "media/faces_I400.jpg",
+  "media/faces_I411.jpg",
+  "media/faces_I420.jpg",
+  "media/faces_I422.jpg",
+  "media/faces_I444.jpg",
+]
+group("rtc_media_unittests_data") {
+  data = rtc_media_unittests_resources
+}
+
+rtc_unittests_resources = [ "reference_video_640x360_30fps.y4m" ]
+group("rtc_unittests_data") {
+  data = rtc_unittests_resources
+}
+
+scenario_resources = [
+  "difficult_photo_1850_1110.yuv",
+  "photo_1850_1110.yuv",
+  "presentation_1850_1110.yuv",
+  "web_screenshot_1850_1110.yuv",
+]
+group("scenario_data") {
+  data = scenario_resources
+}
+
+scenario_unittest_resources = [ "foreman_cif.yuv" ]
+group("scenario_unittest_data") {
+  data = scenario_unittest_resources
+}
+
+svc_tests_resources = [
+  "difficult_photo_1850_1110.yuv",
+  "photo_1850_1110.yuv",
+  "presentation_1850_1110.yuv",
+  "web_screenshot_1850_1110.yuv",
+]
+group("svc_tests_data") {
+  data = svc_tests_resources
+}
+
+test_support_unittests_resources = [
+  "foreman_cif_short.yuv",
+  "video_coding/frame-ethernet-ii.pcap",
+  "video_coding/frame-loopback.pcap",
+  "video_coding/pltype103.rtp",
+  "video_coding/pltype103_header_only.rtp",
+  "video_coding/ssrcs-2.pcap",
+  "video_coding/ssrcs-3.pcap",
+]
+group("test_support_unittests_data") {
+  data = test_support_unittests_resources
+}
+
+tools_unittests_resources = [
+  "foreman_128x96.yuv",
+  "foreman_cif.yuv",
+  "reference_less_video_test_file.y4m",
+  "rtc_event_log/rtc_event_log_500kbps.binarypb",
+]
+group("tools_unittests_data") {
+  data = tools_unittests_resources
+}
+
+video_coding_modules_tests_resources = []
+if (is_android) {
+  video_coding_modules_tests_resources += [
+    "foreman_128x96.yuv",
+    "foreman_160x120.yuv",
+    "foreman_176x144.yuv",
+    "foreman_240x136.yuv",
+    "foreman_320x240.yuv",
+    "foreman_480x272.yuv",
+  ]
+} else {
+  video_coding_modules_tests_resources += [
+    "ConferenceMotion_1280_720_50.yuv",
+    "FourPeople_1280x720_30.yuv",
+  ]
+}
+group("video_coding_modules_tests_data") {
+  data = video_coding_modules_tests_resources
+}
+
+video_engine_tests_resources = [
+  "ConferenceMotion_1280_720_50.yuv",
+  "foreman_cif_short.yuv",
+  "voice_engine/audio_long16.pcm",
+]
+group("video_engine_tests_data") {
+  data = video_engine_tests_resources
 }
 
 webrtc_perf_tests_resources = [
@@ -155,26 +271,91 @@ webrtc_perf_tests_resources = [
 group("webrtc_perf_tests_data") {
   data = webrtc_perf_tests_resources
 }
+
 if (is_ios) {
-  bundle_data("webrtc_perf_tests_bundle_data") {
+  bundle_data("audio_codec_speed_tests_bundle_data") {
     testonly = true
-    sources = webrtc_perf_tests_resources
+    sources = audio_codec_speed_tests_resources
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
-}
-
-video_engine_tests_resources = [
-  "ConferenceMotion_1280_720_50.yuv",
-  "foreman_cif_short.yuv",
-  "voice_engine/audio_long16.pcm",
-]
-group("video_engine_tests_data") {
-  data = video_engine_tests_resources
-}
-if (is_ios) {
+  bundle_data("audio_decoder_unittests_bundle_data") {
+    testonly = true
+    sources = audio_decoder_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("common_video_unittests_bundle_data") {
+    testonly = true
+    sources = common_video_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("modules_tests_bundle_data") {
+    testonly = true
+    sources = modules_tests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("modules_unittests_bundle_data") {
+    testonly = true
+    sources = modules_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("network_tester_unittests_bundle_data") {
+    testonly = true
+    sources = network_tester_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("peer_connection_e2e_smoke_test_resources_bundle_data") {
+    testonly = true
+    sources = peer_connection_e2e_smoke_test_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("rtc_media_unittests_bundle_data") {
+    testonly = true
+    sources = rtc_media_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("rtc_unittests_bundle_data") {
+    testonly = true
+    sources = rtc_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("scenario_resources_bundle_data") {
+    testonly = true
+    sources = scenario_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("scenario_unittest_resources_bundle_data") {
+    testonly = true
+    sources = scenario_unittest_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("svc_tests_bundle_data") {
+    testonly = true
+    sources = svc_tests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("test_support_unittests_bundle_data") {
+    testonly = true
+    sources = test_support_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("tools_unittests_bundle_data") {
+    testonly = true
+    sources = tools_unittests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("video_coding_modules_tests_resources_bundle_data") {
+    testonly = true
+    sources = video_coding_modules_tests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
   bundle_data("video_engine_tests_bundle_data") {
     testonly = true
     sources = video_engine_tests_resources
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+  bundle_data("webrtc_perf_tests_bundle_data") {
+    testonly = true
+    sources = webrtc_perf_tests_resources
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }

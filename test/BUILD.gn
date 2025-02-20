@@ -653,24 +653,6 @@ if (rtc_include_tests) {
       ]
     }
 
-    test_support_unittests_resources = [
-      "../resources/foreman_cif_short.yuv",
-      "../resources/video_coding/frame-ethernet-ii.pcap",
-      "../resources/video_coding/frame-loopback.pcap",
-      "../resources/video_coding/pltype103.rtp",
-      "../resources/video_coding/pltype103_header_only.rtp",
-      "../resources/video_coding/ssrcs-2.pcap",
-      "../resources/video_coding/ssrcs-3.pcap",
-    ]
-
-    if (is_ios) {
-      bundle_data("test_support_unittests_bundle_data") {
-        testonly = true
-        sources = test_support_unittests_resources
-        outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
-      }
-    }
-
     rtc_library("fixed_fps_video_frame_writer_adapter_test") {
       testonly = true
       sources = [ "testsupport/fixed_fps_video_frame_writer_adapter_test.cc" ]
@@ -800,13 +782,13 @@ if (rtc_include_tests) {
         deps += [ "//third_party/catapult/tracing/tracing:histogram" ]
       }
 
-      data = test_support_unittests_resources
+      data_deps = [ "../resources:test_support_unittests_data" ]
       if (is_android) {
         shard_timeout = 900
       }
 
       if (is_ios) {
-        deps += [ ":test_support_unittests_bundle_data" ]
+        deps += [ "../resources:test_support_unittests_bundle_data" ]
       }
 
       if (!is_android) {
