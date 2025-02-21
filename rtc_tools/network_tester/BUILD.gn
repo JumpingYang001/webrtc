@@ -62,6 +62,19 @@ if (rtc_enable_protobuf) {
     ]
   }
 
+  network_tester_unittests_resources = [
+    "../../resources/network_tester/client_config.dat",
+    "../../resources/network_tester/server_config.dat",
+  ]
+
+  if (is_ios) {
+    bundle_data("network_tester_unittests_bundle_data") {
+      testonly = true
+      sources = network_tester_unittests_resources
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    }
+  }
+
   rtc_library("network_tester_unittests") {
     testonly = true
 
@@ -79,13 +92,13 @@ if (rtc_enable_protobuf) {
       "//testing/gtest",
     ]
 
+    if (is_ios) {
+      deps += [ ":network_tester_unittests_bundle_data" ]
+    }
+
     defines = [ "WEBRTC_NETWORK_TESTER_TEST_ENABLED" ]
 
-    data_deps = [ "../../resources:network_tester_unittests_data" ]
-
-    if (is_ios) {
-      deps += [ "../../resources:network_tester_unittests_bundle_data" ]
-    }
+    data = network_tester_unittests_resources
   }
 
   rtc_executable("network_tester_server") {

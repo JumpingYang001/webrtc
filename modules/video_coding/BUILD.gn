@@ -863,6 +863,39 @@ if (rtc_include_tests) {
     ]
   }
 
+  video_coding_modules_tests_resources = []
+  if (is_android) {
+    video_coding_modules_tests_resources += [
+      "../../resources/foreman_128x96.yuv",
+      "../../resources/foreman_160x120.yuv",
+      "../../resources/foreman_176x144.yuv",
+      "../../resources/foreman_240x136.yuv",
+      "../../resources/foreman_320x240.yuv",
+      "../../resources/foreman_480x272.yuv",
+    ]
+  }
+  if (!is_android) {
+    video_coding_modules_tests_resources += [
+      "../../resources/ConferenceMotion_1280_720_50.yuv",
+      "../../resources/FourPeople_1280x720_30.yuv",
+    ]
+  }
+
+  num_video_coding_modules_tests_resources = 0
+  foreach(i, video_coding_modules_tests_resources) {
+    num_video_coding_modules_tests_resources += 1
+  }
+
+  if (num_video_coding_modules_tests_resources > 0) {
+    if (is_ios || is_mac) {
+      bundle_data("video_coding_modules_tests_resources_bundle_data") {
+        testonly = true
+        sources = video_coding_modules_tests_resources
+        outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+      }
+    }
+  }
+
   rtc_library("videocodec_test_impl") {
     testonly = true
     sources = [
@@ -1050,7 +1083,7 @@ if (rtc_include_tests) {
       "//third_party/libyuv",
     ]
 
-    data_deps = [ "../../resources:video_coding_modules_tests_data" ]
+    data = video_coding_modules_tests_resources
 
     if (is_android) {
       sources += [ "codecs/test/videocodec_test_mediacodec.cc" ]
@@ -1065,10 +1098,10 @@ if (rtc_include_tests) {
       sources += [ "codecs/test/videocodec_test_videotoolbox.cc" ]
 
       deps += [ ":objc_codec_factory_helper" ]
-    }
-    if (is_ios) {
-      deps +=
-          [ "../../resources:video_coding_modules_tests_resources_bundle_data" ]
+
+      if (num_video_coding_modules_tests_resources > 0) {
+        deps += [ ":video_coding_modules_tests_resources_bundle_data" ]
+      }
     }
 
     if (rtc_build_libvpx) {

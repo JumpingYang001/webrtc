@@ -905,6 +905,24 @@ if (rtc_include_tests) {
   }
 
   if (!build_with_chromium) {
+    rtc_media_unittests_resources = [
+      "../resources/media/captured-320x240-2s-48.frames",
+      "../resources/media/faces.1280x720_P420.yuv",
+      "../resources/media/faces_I400.jpg",
+      "../resources/media/faces_I411.jpg",
+      "../resources/media/faces_I420.jpg",
+      "../resources/media/faces_I422.jpg",
+      "../resources/media/faces_I444.jpg",
+    ]
+
+    if (is_ios) {
+      bundle_data("rtc_media_unittests_bundle_data") {
+        testonly = true
+        sources = rtc_media_unittests_resources
+        outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+      }
+    }
+
     rtc_test("rtc_media_unittests") {
       testonly = true
 
@@ -1075,14 +1093,14 @@ if (rtc_include_tests) {
         defines += [ "WEBRTC_OPUS_SUPPORT_120MS_PTIME=0" ]
       }
 
-      data_deps = [ "../resources:rtc_media_unittests_data" ]
+      data = rtc_media_unittests_resources
 
       if (is_android) {
         shard_timeout = 900
       }
 
       if (is_ios) {
-        deps += [ "../resources:rtc_media_unittests_bundle_data" ]
+        deps += [ ":rtc_media_unittests_bundle_data" ]
       }
 
       if (rtc_build_dcsctp) {

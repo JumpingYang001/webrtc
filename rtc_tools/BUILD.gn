@@ -550,6 +550,21 @@ if (rtc_include_tests) {
       }
     }
 
+    tools_unittests_resources = [
+      "../resources/foreman_128x96.yuv",
+      "../resources/foreman_cif.yuv",
+      "../resources/reference_less_video_test_file.y4m",
+      "../resources/rtc_event_log/rtc_event_log_500kbps.binarypb",
+    ]
+
+    if (is_ios) {
+      bundle_data("tools_unittests_bundle_data") {
+        testonly = true
+        sources = tools_unittests_resources
+        outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+      }
+    }
+
     rtc_test("tools_unittests") {
       testonly = true
 
@@ -597,12 +612,12 @@ if (rtc_include_tests) {
         ]
       }
 
-      data_deps = [ "../resources:tools_unittests_data" ]
+      data = tools_unittests_resources
       if (is_android) {
         shard_timeout = 900
       }
       if (is_ios) {
-        deps += [ "../resources:tools_unittests_bundle_data" ]
+        deps += [ ":tools_unittests_bundle_data" ]
       }
     }
 
