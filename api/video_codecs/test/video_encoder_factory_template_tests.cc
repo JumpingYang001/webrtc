@@ -152,6 +152,7 @@ TEST(VideoEncoderFactoryTemplate, LibvpxVp8) {
   EXPECT_THAT(factory.Create(env, formats[0]), NotNull());
 }
 
+#if defined(RTC_ENABLE_VP9)
 TEST(VideoEncoderFactoryTemplate, LibvpxVp9) {
   const Environment env = CreateEnvironment();
   VideoEncoderFactoryTemplate<LibvpxVp9EncoderTemplateAdapter> factory;
@@ -162,6 +163,7 @@ TEST(VideoEncoderFactoryTemplate, LibvpxVp9) {
                                   Contains(ScalabilityMode::kL3T3_KEY))));
   EXPECT_THAT(factory.Create(env, formats[0]), NotNull());
 }
+#endif  // defined(RTC_ENABLE_VP9)
 
 // TODO(bugs.webrtc.org/13573): When OpenH264 is no longer a conditional build
 //                              target remove this #ifdef.

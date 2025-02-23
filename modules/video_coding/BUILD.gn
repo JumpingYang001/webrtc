@@ -1067,6 +1067,7 @@ if (rtc_include_tests) {
       "../../media:media_constants",
       "../../media:rtc_internal_video_codecs",
       "../../media:rtc_simulcast_encoder_adapter",
+      "../../rtc_base:checks",
       "../../rtc_base:refcount",
       "../../rtc_base:stringutils",
       "../../rtc_base:timeutils",

@@ -8,12 +8,24 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 #include <atomic>
+#include <cstdio>
+#include <deque>
+#include <vector>
 
+#if defined(RTC_ENABLE_VP9)
 #include "api/test/network_emulation/create_cross_traffic.h"
 #include "api/test/network_emulation/cross_traffic.h"
-#include "test/field_trial.h"
+#endif  // defined(RTC_ENABLE_VP9)
+#include "api/units/data_rate.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video_codecs/scalability_mode.h"
+#include "call/video_send_stream.h"
+#include "rtc_base/checks.h"
 #include "test/gtest.h"
+#include "test/scenario/performance_stats.h"
 #include "test/scenario/scenario.h"
+#include "test/scenario/scenario_config.h"
 
 namespace webrtc {
 namespace test {
@@ -179,6 +191,7 @@ TEST(VideoStreamTest, SendsFecWithFlexFec) {
   EXPECT_GT(video_stats.substreams.begin()->second.rtp_stats.fec.packets, 0u);
 }
 
+#if defined(RTC_ENABLE_VP9)
 TEST(VideoStreamTest, ResolutionAdaptsToAvailableBandwidth) {
   // Declared before scenario to avoid use after free.
   std::atomic<size_t> num_qvga_frames_(0);
@@ -252,6 +265,7 @@ TEST(VideoStreamTest, ResolutionAdaptsToAvailableBandwidth) {
   EXPECT_GT(num_qvga_frames_, 0u);
   EXPECT_GT(num_vga_frames_, 0u);
 }
+#endif  // defined(RTC_ENABLE_VP9)
 
 TEST(VideoStreamTest, SuspendsBelowMinBitrate) {
   const DataRate kMinVideoBitrate = DataRate::KilobitsPerSec(30);

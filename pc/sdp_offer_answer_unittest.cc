@@ -654,6 +654,7 @@ TEST_F(SdpOfferAnswerTest, SimulcastAnswerWithNoRidsIsRejected) {
   EXPECT_TRUE(pc->SetRemoteDescription(std::move(rejected_answer)));
 }
 
+#if defined(RTC_ENABLE_VP9)
 // TODO: bugs.webrtc.org/362277533 - reenable before launch.
 TEST_F(SdpOfferAnswerTest, DISABLED_SimulcastOfferWithMixedCodec) {
   auto pc = CreatePeerConnection(
@@ -754,6 +755,7 @@ TEST_F(SdpOfferAnswerTest, SimulcastAnswerWithPayloadType) {
 
   EXPECT_TRUE(pc->SetLocalDescription(std::move(answer)));
 }
+#endif  // defined(RTC_ENABLE_VP9)
 
 TEST_F(SdpOfferAnswerTest, ExpectAllSsrcsSpecifiedInSsrcGroupFid) {
   auto pc = CreatePeerConnection();

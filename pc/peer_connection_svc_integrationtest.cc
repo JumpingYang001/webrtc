@@ -150,6 +150,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
   EXPECT_TRUE(result.ok());
 }
 
+#if defined(RTC_ENABLE_VP9)
 TEST_F(PeerConnectionSVCIntegrationTest,
        SetParametersAcceptsL3T3WithVP9AfterNegotiation) {
   ASSERT_TRUE(CreatePeerConnectionWrappers());
@@ -175,6 +176,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
   auto result = transceiver->sender()->SetParameters(parameters);
   EXPECT_TRUE(result.ok());
 }
+#endif  // defined(RTC_ENABLE_VP9)
 
 TEST_F(PeerConnectionSVCIntegrationTest,
        SetParametersRejectsL3T3WithVP8AfterNegotiation) {
@@ -246,17 +248,17 @@ TEST_F(PeerConnectionSVCIntegrationTest, FallbackToL1Tx) {
       caller()->pc_factory()->GetRtpReceiverCapabilities(
           cricket::MEDIA_TYPE_VIDEO);
   std::vector<RtpCodecCapability> send_codecs = capabilities.codecs;
-  // Only keep VP9 in the caller
+  // Only keep AV1 in the caller
   send_codecs.erase(std::partition(send_codecs.begin(), send_codecs.end(),
                                    [](const auto& codec) -> bool {
                                      return codec.name ==
-                                            cricket::kVp9CodecName;
+                                            cricket::kAv1CodecName;
                                    }),
                     send_codecs.end());
   ASSERT_FALSE(send_codecs.empty());
   caller_transceiver->SetCodecPreferences(send_codecs);
 
-  // L3T3 should be supported by VP9
+  // L3T3 should be supported by AV1
   RtpParameters parameters = caller_transceiver->sender()->GetParameters();
   ASSERT_EQ(parameters.encodings.size(), 1u);
   parameters.encodings[0].scalability_mode = "L3T3";

@@ -102,6 +102,7 @@ TEST(VideoDecoderFactoryTemplate, LibvpxVp8) {
   EXPECT_THAT(factory.Create(env, formats[0]), NotNull());
 }
 
+#if defined(RTC_ENABLE_VP9)
 TEST(VideoDecoderFactoryTemplate, LibvpxVp9) {
   const Environment env = CreateEnvironment();
   VideoDecoderFactoryTemplate<LibvpxVp9DecoderTemplateAdapter> factory;
@@ -110,6 +111,7 @@ TEST(VideoDecoderFactoryTemplate, LibvpxVp9) {
   EXPECT_THAT(formats, Each(Field(&SdpVideoFormat::name, "VP9")));
   EXPECT_THAT(factory.Create(env, formats[0]), NotNull());
 }
+#endif  // defined(RTC_ENABLE_VP9)
 
 // TODO(bugs.webrtc.org/13573): When OpenH264 is no longer a conditional build
 //                              target remove this #ifdef.
