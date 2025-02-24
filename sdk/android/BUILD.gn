@@ -56,6 +56,7 @@ if (is_android) {
       ":video_api_java",
       ":video_java",
       "../../rtc_base:base_java",
+      "../../third_party/jni_zero:jni_zero_java",
     ]
   }
 
