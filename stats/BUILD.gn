@@ -24,6 +24,8 @@ rtc_library("rtc_stats") {
 
   deps = [
     "../api:rtc_stats_api",
+    "../api:scoped_refptr",
+    "../api/units:timestamp",
     "../rtc_base:checks",
     "../rtc_base:macromagic",
     "../rtc_base:stringutils",
@@ -67,6 +69,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../rtc_base:rtc_json",
       "../test:test_main",
       "../test:test_support",
+      "//third_party/jsoncpp",
     ]
 
     if (is_android) {
