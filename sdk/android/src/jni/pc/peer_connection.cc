@@ -903,7 +903,7 @@ static jboolean JNI_PeerConnection_StartRtcEventLog(
   // TODO(eladalon): It would be better to not allow negative values into PC.
   const size_t max_size = (max_size_bytes < 0)
                               ? RtcEventLog::kUnlimitedOutput
-                              : rtc::saturated_cast<size_t>(max_size_bytes);
+                              : saturated_cast<size_t>(max_size_bytes);
   FILE* f = fdopen(file_descriptor, "wb");
   if (!f) {
     close(file_descriptor);
