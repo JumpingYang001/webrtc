@@ -25,6 +25,7 @@
 *_proto.xml
 *_proto_cpp.xml
 *~
+\#*#
 .*.sw?
 .cache
 .cipd
