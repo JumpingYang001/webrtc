@@ -8,44 +8,19 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <limits>
-#include <memory>
-#include <optional>
 #include <string>
-#include <vector>
 
-#include "api/array_view.h"
-#include "api/environment/environment.h"
-#include "api/make_ref_counted.h"
-#include "api/rtp_parameters.h"
 #include "api/test/video/function_video_encoder_factory.h"
-#include "api/transport/bitrate_settings.h"
-#include "api/units/time_delta.h"
-#include "api/video/video_codec_type.h"
-#include "api/video/video_frame.h"
-#include "api/video/video_sink_interface.h"
-#include "api/video/video_source_interface.h"
-#include "api/video_codecs/scalability_mode.h"
-#include "api/video_codecs/sdp_video_format.h"
-#include "api/video_codecs/video_codec.h"
-#include "api/video_codecs/video_encoder.h"
-#include "call/video_receive_stream.h"
-#include "call/video_send_stream.h"
+#include "media/engine/internal_encoder_factory.h"
 #include "modules/video_coding/codecs/h264/include/h264.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
 #include "modules/video_coding/codecs/vp9/include/vp9.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/experiments/encoder_info_settings.h"
 #include "test/call_test.h"
+#include "test/field_trial.h"
 #include "test/frame_generator_capturer.h"
-#include "test/gtest.h"
-#include "test/rtp_rtcp_observer.h"
-#include "test/scoped_key_value_config.h"
 #include "test/video_test_constants.h"
-#include "video/config/video_encoder_config.h"
+#include "video/config/encoder_stream_factory.h"
 
 namespace webrtc {
 namespace {
@@ -476,7 +451,6 @@ TEST_F(QualityScalingTest, NoAdaptDownForLowStartBitrateIfScalingOff_Vp8) {
   RunBaseTest(&test);
 }
 
-#if defined(RTC_ENABLE_VP9)
 TEST_F(QualityScalingTest, AdaptsDownForHighQp_Vp9) {
   // qp_low:1, qp_high:1 -> kHighQp
   test::ScopedKeyValueConfig field_trials(field_trials_,
@@ -618,7 +592,6 @@ TEST_F(QualityScalingTest,
       /*expect_downscale=*/false);
   RunBaseTest(&test);
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 #if defined(WEBRTC_USE_H264)
 TEST_F(QualityScalingTest, AdaptsDownForHighQp_H264) {

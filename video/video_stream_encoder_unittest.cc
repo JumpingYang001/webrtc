@@ -94,6 +94,7 @@
 #include "rtc_base/event.h"
 #include "rtc_base/experiments/encoder_info_settings.h"
 #include "rtc_base/experiments/rate_control_settings.h"
+#include "rtc_base/gunit.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ref_counted_object.h"
 #include "rtc_base/strings/string_builder.h"
@@ -9592,10 +9593,8 @@ std::string TestParametersVideoCodecAndAllowI420ConversionToString(
 
 constexpr std::pair<VideoCodecType, bool> kVP8DisallowConversion =
     std::make_pair(kVideoCodecVP8, /*allow_i420_conversion=*/false);
-#if defined(RTC_ENABLE_VP9)
 constexpr std::pair<VideoCodecType, bool> kVP9DisallowConversion =
     std::make_pair(kVideoCodecVP9, /*allow_i420_conversion=*/false);
-#endif  // defined(RTC_ENABLE_VP9)
 constexpr std::pair<VideoCodecType, bool> kAV1AllowConversion =
     std::make_pair(kVideoCodecAV1, /*allow_i420_conversion=*/false);
 #if defined(WEBRTC_USE_H264)
@@ -9609,9 +9608,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     VideoStreamEncoderWithRealEncoderTest,
     ::testing::Values(kVP8DisallowConversion,
-#if defined(RTC_ENABLE_VP9)
                       kVP9DisallowConversion,
-#endif  // defined(RTC_ENABLE_VP9)
                       kAV1AllowConversion,
                       kH264AllowConversion),
     TestParametersVideoCodecAndAllowI420ConversionToString);
@@ -9620,9 +9617,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     VideoStreamEncoderWithRealEncoderTest,
     ::testing::Values(kVP8DisallowConversion,
-#if defined(RTC_ENABLE_VP9)
                       kVP9DisallowConversion,
-#endif  // defined(RTC_ENABLE_VP9)
                       kAV1AllowConversion),
     TestParametersVideoCodecAndAllowI420ConversionToString);
 #endif

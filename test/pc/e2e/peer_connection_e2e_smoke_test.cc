@@ -9,31 +9,25 @@
  */
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <string>
-#include <utility>
-#include <vector>
 
-#include "api/function_view.h"
 #include "api/media_stream_interface.h"
-#include "api/rtp_parameters.h"
 #include "api/test/create_network_emulation_manager.h"
 #include "api/test/create_peer_connection_quality_test_frame_generator.h"
 #include "api/test/create_peerconnection_quality_test_fixture.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
-#include "api/test/network_emulation/network_emulation_interfaces.h"
 #include "api/test/network_emulation_manager.h"
 #include "api/test/pclf/media_configuration.h"
 #include "api/test/pclf/media_quality_test_params.h"
 #include "api/test/pclf/peer_configurer.h"
 #include "api/test/peerconnection_quality_test_fixture.h"
-#include "api/test/simulated_network.h"
-#include "api/transport/bitrate_settings.h"
-#include "api/units/time_delta.h"
 #include "media/base/media_constants.h"
+#include "system_wrappers/include/field_trial.h"
+#include "test/field_trial.h"
 #include "test/gtest.h"
 #include "test/network/simulated_network.h"
+#include "test/pc/e2e/analyzer/audio/default_audio_quality_analyzer.h"
 #include "test/pc/e2e/analyzer/video/default_video_quality_analyzer.h"
 #include "test/pc/e2e/analyzer/video/default_video_quality_analyzer_shared_objects.h"
 #include "test/pc/e2e/stats_based_network_quality_metrics_reporter.h"
@@ -149,12 +143,9 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Smoke) {
     audio.sampling_frequency_in_hz = 48000;
     audio.sync_group = "alice-media";
     alice->SetAudioConfig(std::move(audio));
-#if defined(RTC_ENABLE_VP9)
     alice->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    alice->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
+
     alice->SetUseFlexFEC(true);
     alice->SetUseUlpFEC(true);
     alice->SetVideoEncoderBitrateMultiplier(1.1);
@@ -171,12 +162,9 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Smoke) {
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
     charlie->SetAudioConfig(std::move(audio));
-#if defined(RTC_ENABLE_VP9)
     charlie->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    charlie->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
+
     charlie->SetUseFlexFEC(true);
     charlie->SetUseUlpFEC(true);
     charlie->SetVideoEncoderBitrateMultiplier(1.1);
@@ -283,26 +271,16 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_ChangeNetworkConditions) {
     video.stream_label = "alice-video";
     video.sync_group = "alice-media";
     alice->AddVideoConfig(std::move(video));
-#if defined(RTC_ENABLE_VP9)
     alice->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    alice->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
 
     alice->SetUseFlexFEC(true);
     alice->SetUseUlpFEC(true);
     alice->SetVideoEncoderBitrateMultiplier(1.1);
   });
   AddPeer(bob_network, [](PeerConfigurer* bob) {
-  // clang-format off
-#if defined(RTC_ENABLE_VP9)
     bob->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    bob->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
-    // clang-format on
 
     bob->SetUseFlexFEC(true);
     bob->SetUseUlpFEC(true);
@@ -430,20 +408,10 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_Svc) {
         .input_file_name =
             test::ResourcePath("pc_quality_smoke_test_alice_source", "wav"),
     });
-#if defined(RTC_ENABLE_VP9)
     alice->SetVideoCodecs({VideoCodecConfig(cricket::kVp9CodecName)});
-#else
-    alice->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName)});
-#endif
   });
   AddPeer(network_links.second, [](PeerConfigurer* bob) {
-  // clang-format off
-#if defined(RTC_ENABLE_VP9)
     bob->SetVideoCodecs({VideoCodecConfig(cricket::kVp9CodecName)});
-#else
-    bob->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName)});
-#endif
-    // clang-format on
   });
   RunParams run_params(TimeDelta::Seconds(2));
   RunAndCheckEachVideoStreamReceivedFrames(run_params);
@@ -477,22 +445,12 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, MAYBE_HighBitrate) {
         test::ResourcePath("pc_quality_smoke_test_alice_source", "wav");
     audio.sampling_frequency_in_hz = 48000;
     alice->SetAudioConfig(std::move(audio));
-#if defined(RTC_ENABLE_VP9)
     alice->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    alice->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
   });
   AddPeer(network_links.second, [](PeerConfigurer* bob) {
-  // clang-format off
-#if defined(RTC_ENABLE_VP9)
     bob->SetVideoCodecs(
         {VideoCodecConfig(cricket::kVp9CodecName, {{"profile-id", "0"}})});
-#else
-    bob->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName, {})});
-#endif
-    // clang-format on
   });
   RunParams run_params(TimeDelta::Seconds(2));
   RunAndCheckEachVideoStreamReceivedFrames(run_params);

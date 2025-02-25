@@ -15,6 +15,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -40,7 +41,6 @@
 #include "api/transport/bitrate_settings.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
-#include "api/units/timestamp.h"
 #include "api/video/builtin_video_bitrate_allocator_factory.h"
 #include "api/video/encoded_image.h"
 #include "api/video/video_bitrate_allocation.h"
@@ -78,26 +78,22 @@
 #include "modules/rtp_rtcp/source/rtp_rtcp_interface.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
-#include "modules/video_coding/svc/scalable_video_controller.h"
-#include "rtc_base/strings/string_builder.h"
-#if defined(RTC_ENABLE_VP9)
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer_vp9.h"
-#endif  // defined(RTC_ENABLE_VP9)
 #include "modules/video_coding/codecs/interface/common_constants.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
 #include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
-#if defined(RTC_ENABLE_VP9)
 #include "modules/video_coding/codecs/vp9/include/vp9.h"
 #include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
-#endif  // defined(RTC_ENABLE_VP9)
 #include "modules/video_coding/svc/scalability_mode_util.h"
+#include "modules/video_coding/svc/scalable_video_controller.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/event.h"
 #include "rtc_base/experiments/alr_experiment.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/network_route.h"
 #include "rtc_base/rate_limiter.h"
+#include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/thread.h"
@@ -174,7 +170,6 @@ struct Vp9TestParams {
 
 using ParameterizationType = std::tuple<Vp9TestParams, bool>;
 
-#if defined(RTC_ENABLE_VP9)
 std::string ParamInfoToStr(
     const testing::TestParamInfo<ParameterizationType>& info) {
   StringBuilder sb;
@@ -182,7 +177,6 @@ std::string ParamInfoToStr(
      << (std::get<1>(info.param) ? "WithIdentifier" : "WithoutIdentifier");
   return sb.str();
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 }  // namespace
 
@@ -4361,7 +4355,6 @@ TEST_F(VideoSendStreamTest, TestScalabilityModeVp8SimulcastWithoutSimAdapter) {
                      {ScalabilityMode::kL1T2, ScalabilityMode::kL1T2});
 }
 
-#if defined(RTC_ENABLE_VP9)
 TEST_F(VideoSendStreamTest, TestTemporalLayersVp9) {
   test::FunctionVideoEncoderFactory encoder_factory(
       [](const Environment& env, const SdpVideoFormat& format) {
@@ -4372,6 +4365,5 @@ TEST_F(VideoSendStreamTest, TestTemporalLayersVp9) {
                      /*num_temporal_layers=*/{2},
                      /*scalability_mode=*/{});
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 }  // namespace webrtc

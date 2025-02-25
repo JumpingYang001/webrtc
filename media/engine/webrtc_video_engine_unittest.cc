@@ -10104,11 +10104,11 @@ TEST_F(WebRtcVideoChannelTest, SetsRidsOnSendStream) {
 }
 
 TEST_F(WebRtcVideoChannelBaseTest, EncoderSelectorSwitchCodec) {
-  Codec av1 = GetEngineCodec("AV1");
+  Codec vp9 = GetEngineCodec("VP9");
 
   cricket::VideoSenderParameters parameters;
   parameters.codecs.push_back(GetEngineCodec("VP8"));
-  parameters.codecs.push_back(av1);
+  parameters.codecs.push_back(vp9);
   EXPECT_TRUE(send_channel_->SetSenderParameters(parameters));
   send_channel_->SetSend(true);
 
@@ -10118,14 +10118,14 @@ TEST_F(WebRtcVideoChannelBaseTest, EncoderSelectorSwitchCodec) {
 
   webrtc::MockEncoderSelector encoder_selector;
   EXPECT_CALL(encoder_selector, OnAvailableBitrate)
-      .WillRepeatedly(Return(webrtc::SdpVideoFormat::AV1Profile0()));
+      .WillRepeatedly(Return(webrtc::SdpVideoFormat::VP9Profile0()));
 
   send_channel_->SetEncoderSelector(kSsrc, &encoder_selector);
   time_controller_.AdvanceTime(kFrameDuration);
 
   codec = send_channel_->GetSendCodec();
   ASSERT_TRUE(codec);
-  EXPECT_EQ("AV1", codec->name);
+  EXPECT_EQ("VP9", codec->name);
 
   // Deregister the encoder selector in case it's called during test tear-down.
   send_channel_->SetEncoderSelector(kSsrc, nullptr);

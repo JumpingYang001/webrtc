@@ -16,6 +16,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/audio_options.h"
 #include "api/field_trials.h"
-#include "api/field_trials_view.h"
 #include "api/jsep.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
@@ -42,8 +42,6 @@
 #include "api/test/rtc_error_matchers.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
-#include "api/video_codecs/scalability_mode.h"
-#include "api/video_codecs/sdp_video_format.h"
 #include "media/base/codec.h"
 #include "media/engine/fake_webrtc_video_engine.h"
 #include "pc/sdp_utils.h"
@@ -96,7 +94,6 @@ namespace {
 // by using simulated time.
 constexpr TimeDelta kLongTimeoutForRampingUp = TimeDelta::Minutes(1);
 
-#ifdef RTC_ENABLE_VP9
 // The max bitrate 1500 kbps may be subject to change in the future. What we're
 // interested in here is that all code paths that result in L1T3 result in the
 // same target bitrate which does not exceed this limit.
@@ -108,7 +105,7 @@ auto EncoderImplementationIs(absl::string_view impl) {
                &RTCOutboundRtpStreamStats::encoder_implementation,
                Optional(StrEq(impl)));
 }
-#endif  // defined(RTC_ENABLE_VP9)
+
 template <typename M>
 auto ScalabilityModeIs(M matcher) {
   return Field("scalability_mode", &RTCOutboundRtpStreamStats::scalability_mode,
@@ -210,7 +207,6 @@ std::string GetCurrentCodecMimeType(
              : "";
 }
 
-#if defined(RTC_ENABLE_VP9)
 const RTCOutboundRtpStreamStats* FindOutboundRtpByRid(
     const std::vector<const RTCOutboundRtpStreamStats*>& outbound_rtps,
     const absl::string_view& rid) {
@@ -221,7 +217,6 @@ const RTCOutboundRtpStreamStats* FindOutboundRtpByRid(
   }
   return nullptr;
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 }  // namespace
 
@@ -647,7 +642,6 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
 // TODO(https://crbug.com/webrtc/14889): When legacy VP9 SVC path has been
 // deprecated and removed, update this test to assert that simulcast is used
 // (i.e. VP9 is not treated differently than VP8).
-#ifdef RTC_ENABLE_VP9
 TEST_F(PeerConnectionEncodingsIntegrationTest,
        VP9_LegacySvcWhenScalabilityModeNotSpecified) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper = CreatePc();
@@ -1320,7 +1314,6 @@ TEST_F(PeerConnectionEncodingsIntegrationTest, VP9_TargetBitrate_StandardL1T3) {
   DataRate target_bitrate = DataRate::BitsPerSec(*outbound_rtp->target_bitrate);
   EXPECT_LE(target_bitrate.kbps(), kVp9ExpectedMaxBitrateForL1T3.kbps());
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 TEST_F(PeerConnectionEncodingsIntegrationTest,
        SimulcastProducesUniqueSsrcAndRtxSsrcs) {
@@ -1440,15 +1433,15 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
           /*audio=*/false, {}, /*video=*/true, {.width = 1280, .height = 720});
   rtc::scoped_refptr<VideoTrackInterface> track = stream->GetVideoTracks()[0];
 
-  std::optional<RtpCodecCapability> av1 =
+  std::optional<RtpCodecCapability> vp9 =
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
-                                                   "av1");
-  ASSERT_TRUE(av1);
+                                                   "vp9");
+  ASSERT_TRUE(vp9);
 
   RtpTransceiverInit init;
   init.direction = RtpTransceiverDirection::kSendOnly;
   RtpEncodingParameters encoding_parameters;
-  encoding_parameters.codec = av1;
+  encoding_parameters.codec = vp9;
   encoding_parameters.scalability_mode = "L3T3";
   init.send_encodings.push_back(encoding_parameters);
 
@@ -1457,7 +1450,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<RtpTransceiverInterface> audio_transceiver =
       transceiver_or_error.MoveValue();
   RtpParameters parameters = audio_transceiver->sender()->GetParameters();
-  EXPECT_EQ(*parameters.encodings[0].codec, *av1);
+  EXPECT_EQ(*parameters.encodings[0].codec, *vp9);
 
   NegotiateWithSimulcastTweaks(local_pc_wrapper, remote_pc_wrapper);
   local_pc_wrapper->WaitForConnection();
@@ -1472,7 +1465,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
       report->GetStatsOfType<RTCOutboundRtpStreamStats>();
   ASSERT_EQ(outbound_rtps.size(), 1u);
   std::string codec_name = GetCurrentCodecMimeType(report, *outbound_rtps[0]);
-  EXPECT_STRCASEEQ(("video/" + av1->name).c_str(), codec_name.c_str());
+  EXPECT_STRCASEEQ(("video/" + vp9->name).c_str(), codec_name.c_str());
   EXPECT_EQ(outbound_rtps[0]->scalability_mode.value(), "L3T3");
 }
 
@@ -1573,20 +1566,20 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
           /*audio=*/false, {}, /*video=*/true, {.width = 1280, .height = 720});
   rtc::scoped_refptr<VideoTrackInterface> track = stream->GetVideoTracks()[0];
 
-  std::optional<RtpCodecCapability> av1 =
+  std::optional<RtpCodecCapability> vp9 =
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
-                                                   "av1");
+                                                   "vp9");
 
   auto transceiver_or_error = local_pc_wrapper->pc()->AddTransceiver(track);
   rtc::scoped_refptr<RtpTransceiverInterface> video_transceiver =
       transceiver_or_error.MoveValue();
   RtpParameters parameters = video_transceiver->sender()->GetParameters();
-  parameters.encodings[0].codec = av1;
+  parameters.encodings[0].codec = vp9;
   parameters.encodings[0].scalability_mode = "L3T3";
   EXPECT_TRUE(video_transceiver->sender()->SetParameters(parameters).ok());
 
   parameters = video_transceiver->sender()->GetParameters();
-  EXPECT_EQ(parameters.encodings[0].codec, av1);
+  EXPECT_EQ(parameters.encodings[0].codec, vp9);
   EXPECT_EQ(parameters.encodings[0].scalability_mode, "L3T3");
 
   NegotiateWithSimulcastTweaks(local_pc_wrapper, remote_pc_wrapper);
@@ -1602,7 +1595,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
       report->GetStatsOfType<RTCOutboundRtpStreamStats>();
   ASSERT_EQ(outbound_rtps.size(), 1u);
   std::string codec_name = GetCurrentCodecMimeType(report, *outbound_rtps[0]);
-  EXPECT_STRCASEEQ(("video/" + av1->name).c_str(), codec_name.c_str());
+  EXPECT_STRCASEEQ(("video/" + vp9->name).c_str(), codec_name.c_str());
   EXPECT_EQ(outbound_rtps[0]->scalability_mode.value_or(""), "L3T3");
 }
 
@@ -1617,9 +1610,9 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
           /*audio=*/false, {}, /*video=*/true, {.width = 1280, .height = 720});
   rtc::scoped_refptr<VideoTrackInterface> track = stream->GetVideoTracks()[0];
 
-  std::optional<RtpCodecCapability> av1 =
+  std::optional<RtpCodecCapability> vp9 =
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
-                                                   "av1");
+                                                   "vp9");
 
   auto transceiver_or_error = local_pc_wrapper->pc()->AddTransceiver(track);
   rtc::scoped_refptr<RtpTransceiverInterface> video_transceiver =
@@ -1634,16 +1627,16 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
       report->GetStatsOfType<RTCOutboundRtpStreamStats>();
   ASSERT_EQ(outbound_rtps.size(), 1u);
   std::string codec_name = GetCurrentCodecMimeType(report, *outbound_rtps[0]);
-  EXPECT_STRCASENE(("audio/" + av1->name).c_str(), codec_name.c_str());
+  EXPECT_STRCASENE(("audio/" + vp9->name).c_str(), codec_name.c_str());
   std::string last_codec_id = outbound_rtps[0]->codec_id.value();
 
   RtpParameters parameters = video_transceiver->sender()->GetParameters();
-  parameters.encodings[0].codec = av1;
+  parameters.encodings[0].codec = vp9;
   parameters.encodings[0].scalability_mode = "L3T3";
   EXPECT_TRUE(video_transceiver->sender()->SetParameters(parameters).ok());
 
   parameters = video_transceiver->sender()->GetParameters();
-  EXPECT_EQ(parameters.encodings[0].codec, av1);
+  EXPECT_EQ(parameters.encodings[0].codec, vp9);
   EXPECT_EQ(parameters.encodings[0].scalability_mode, "L3T3");
 
   auto error_or_stats = GetStatsUntil(
@@ -1655,7 +1648,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   outbound_rtps = report->GetStatsOfType<RTCOutboundRtpStreamStats>();
   ASSERT_EQ(outbound_rtps.size(), 1u);
   codec_name = GetCurrentCodecMimeType(report, *outbound_rtps[0]);
-  EXPECT_STRCASEEQ(("video/" + av1->name).c_str(), codec_name.c_str());
+  EXPECT_STRCASEEQ(("video/" + vp9->name).c_str(), codec_name.c_str());
   EXPECT_EQ(outbound_rtps[0]->scalability_mode.value(), "L3T3");
 }
 
@@ -2217,10 +2210,10 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
                                                    "vp8");
   ASSERT_TRUE(vp8);
-  std::optional<RtpCodecCapability> av1 =
+  std::optional<RtpCodecCapability> vp9 =
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
-                                                   "av1");
-  ASSERT_TRUE(av1);
+                                                   "vp9");
+  ASSERT_TRUE(vp9);
 
   RtpTransceiverInit init;
   init.direction = RtpTransceiverDirection::kSendOnly;
@@ -2230,7 +2223,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   encoding_parameters.scale_resolution_down_by = 2;
   init.send_encodings.push_back(encoding_parameters);
   encoding_parameters.rid = "f";
-  encoding_parameters.codec = av1;
+  encoding_parameters.codec = vp9;
   encoding_parameters.scale_resolution_down_by = 1;
   init.send_encodings.push_back(encoding_parameters);
 
@@ -2255,10 +2248,10 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
                                                    "vp8");
   ASSERT_TRUE(vp8);
-  std::optional<RtpCodecCapability> av1 =
+  std::optional<RtpCodecCapability> vp9 =
       local_pc_wrapper->FindFirstSendCodecWithName(cricket::MEDIA_TYPE_VIDEO,
-                                                   "av1");
-  ASSERT_TRUE(av1);
+                                                   "vp9");
+  ASSERT_TRUE(vp9);
 
   RtpTransceiverInit init;
   init.direction = RtpTransceiverDirection::kSendOnly;
@@ -2268,7 +2261,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   encoding_parameters.scale_resolution_down_by = 2;
   init.send_encodings.push_back(encoding_parameters);
   encoding_parameters.rid = "f";
-  encoding_parameters.codec = av1;
+  encoding_parameters.codec = vp9;
   encoding_parameters.scale_resolution_down_by = 1;
   init.send_encodings.push_back(encoding_parameters);
 
@@ -3066,9 +3059,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
 INSTANTIATE_TEST_SUITE_P(StandardPath,
                          PeerConnectionEncodingsIntegrationParameterizedTest,
                          ::testing::Values("VP8",
-#ifdef RTC_ENABLE_VP9
                                            "VP9",
-#endif  // defined(RTC_ENABLE_VP9)
 #if defined(WEBRTC_USE_H264)
                                            "H264",
 #endif  // defined(WEBRTC_USE_H264)

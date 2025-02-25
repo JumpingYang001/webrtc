@@ -10,38 +10,27 @@
 
 #include "test/testsupport/ivf_video_frame_generator.h"
 
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
-#include "api/scoped_refptr.h"
 #include "api/test/create_frame_generator.h"
-#include "api/test/frame_generator_interface.h"
 #include "api/units/time_delta.h"
 #include "api/video/encoded_image.h"
-#include "api/video/video_bitrate_allocation.h"
 #include "api/video/video_codec_type.h"
-#include "api/video/video_frame.h"
-#include "api/video/video_frame_buffer.h"
 #include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
+#include "media/base/codec.h"
+#include "media/base/media_constants.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
-#ifdef RTC_ENABLE_VP9
 #include "modules/video_coding/codecs/vp9/include/vp9.h"
-#endif  // defined(RTC_ENABLE_VP9)
 #include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/utility/ivf_file_writer.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/event.h"
-#include "rtc_base/system/file_wrapper.h"
-#include "rtc_base/thread_annotations.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 #include "test/video_codec_settings.h"
@@ -210,7 +199,6 @@ TEST_F(IvfVideoFrameGeneratorTest, Vp8DoubleRead) {
   }
 }
 
-#ifdef RTC_ENABLE_VP9
 TEST_F(IvfVideoFrameGeneratorTest, Vp9) {
   CreateTestVideoFile(VideoCodecType::kVideoCodecVP9, CreateVp9Encoder(env_));
   IvfVideoFrameGenerator generator(env_, file_name_, /*fps_hint=*/std::nullopt);
@@ -220,7 +208,6 @@ TEST_F(IvfVideoFrameGeneratorTest, Vp9) {
     EXPECT_GT(I420PSNR(&expected_frame, &actual_frame), kExpectedMinPsnr);
   }
 }
-#endif  // defined(RTC_ENABLE_VP9)
 
 #if defined(WEBRTC_USE_H264)
 TEST_F(IvfVideoFrameGeneratorTest, H264) {
