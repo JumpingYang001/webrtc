@@ -1431,6 +1431,7 @@ if (rtc_include_tests) {
       ":array_view",
       ":frame_transformer_interface",
       "../test:test_support",
+      "units:time_delta",
       "units:timestamp",
       "video:video_frame_metadata",
     ]
