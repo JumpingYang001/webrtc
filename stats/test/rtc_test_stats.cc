@@ -10,11 +10,8 @@
 
 #include "stats/test/rtc_test_stats.h"
 
-#include <string>
-
 #include "api/stats/attribute.h"
-#include "api/stats/rtc_stats.h"
-#include "api/units/timestamp.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 
