@@ -146,9 +146,8 @@ static rtc::AdapterType AdapterTypeFromNetworkType(
   return rtc::ADAPTER_TYPE_UNKNOWN;
 }
 
-static rtc::IPAddress JavaToNativeIpAddress(
-    JNIEnv* jni,
-    const JavaRef<jobject>& j_ip_address) {
+static IPAddress JavaToNativeIpAddress(JNIEnv* jni,
+                                       const JavaRef<jobject>& j_ip_address) {
   std::vector<int8_t> address =
       JavaToNativeByteArray(jni, Java_IPAddress_getAddress(jni, j_ip_address));
   size_t address_length = address.size();
@@ -156,13 +155,13 @@ static rtc::IPAddress JavaToNativeIpAddress(
     // IP4
     struct in_addr ip4_addr;
     memcpy(&ip4_addr.s_addr, address.data(), 4);
-    return rtc::IPAddress(ip4_addr);
+    return IPAddress(ip4_addr);
   }
   // IP6
   RTC_CHECK(address_length == 16);
   struct in6_addr ip6_addr;
   memcpy(ip6_addr.s6_addr, address.data(), address_length);
-  return rtc::IPAddress(ip6_addr);
+  return IPAddress(ip6_addr);
 }
 
 static NetworkInformation GetNetworkInformationFromJava(
@@ -180,12 +179,12 @@ static NetworkInformation GetNetworkInformationFromJava(
                jni, j_network_info));
   ScopedJavaLocalRef<jobjectArray> j_ip_addresses =
       Java_NetworkInformation_getIpAddresses(jni, j_network_info);
-  network_info.ip_addresses = JavaToNativeVector<rtc::IPAddress>(
+  network_info.ip_addresses = JavaToNativeVector<IPAddress>(
       jni, j_ip_addresses, &JavaToNativeIpAddress);
   return network_info;
 }
 
-static bool AddressMatch(const rtc::IPAddress& ip1, const rtc::IPAddress& ip2) {
+static bool AddressMatch(const IPAddress& ip1, const IPAddress& ip2) {
   if (ip1.family() != ip2.family()) {
     return false;
   }
@@ -299,7 +298,7 @@ void AndroidNetworkMonitor::Stop() {
 // https://cs.chromium.org/chromium/src/net/udp/udp_socket_posix.cc
 rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     int socket_fd,
-    const rtc::IPAddress& address,
+    const IPAddress& address,
     absl::string_view if_name) {
   RTC_DCHECK_RUN_ON(network_thread_);
 
@@ -446,12 +445,12 @@ void AndroidNetworkMonitor::OnNetworkConnected_n(
 
 std::optional<NetworkHandle>
 AndroidNetworkMonitor::FindNetworkHandleFromAddressOrName(
-    const rtc::IPAddress& ip_address,
+    const IPAddress& ip_address,
     absl::string_view if_name) const {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (find_network_handle_without_ipv6_temporary_part_) {
     for (auto const& iter : network_info_by_handle_) {
-      const std::vector<rtc::IPAddress>& addresses = iter.second.ip_addresses;
+      const std::vector<IPAddress>& addresses = iter.second.ip_addresses;
       auto address_it = std::find_if(addresses.begin(), addresses.end(),
                                      [ip_address](rtc::IPAddress address) {
                                        return AddressMatch(ip_address, address);

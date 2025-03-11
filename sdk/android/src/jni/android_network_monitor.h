@@ -59,7 +59,7 @@ struct NetworkInformation {
   NetworkHandle handle;
   NetworkType type;
   NetworkType underlying_type_for_vpn;
-  std::vector<rtc::IPAddress> ip_addresses;
+  std::vector<IPAddress> ip_addresses;
 
   NetworkInformation();
   NetworkInformation(const NetworkInformation&);
@@ -90,7 +90,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
 
   rtc::NetworkBindingResult BindSocketToNetwork(
       int socket_fd,
-      const rtc::IPAddress& address,
+      const IPAddress& address,
       absl::string_view if_name) override;
 
   InterfaceInfo GetInterfaceInfo(absl::string_view if_name) override;
@@ -119,7 +119,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
 
   // Visible for testing.
   std::optional<NetworkHandle> FindNetworkHandleFromAddressOrName(
-      const rtc::IPAddress& address,
+      const IPAddress& address,
       absl::string_view ifname) const;
 
  private:
@@ -139,7 +139,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
   bool started_ RTC_GUARDED_BY(network_thread_) = false;
   std::map<std::string, NetworkHandle, rtc::AbslStringViewCmp>
       network_handle_by_if_name_ RTC_GUARDED_BY(network_thread_);
-  std::map<rtc::IPAddress, NetworkHandle> network_handle_by_address_
+  std::map<IPAddress, NetworkHandle> network_handle_by_address_
       RTC_GUARDED_BY(network_thread_);
   std::map<NetworkHandle, NetworkInformation> network_info_by_handle_
       RTC_GUARDED_BY(network_thread_);
