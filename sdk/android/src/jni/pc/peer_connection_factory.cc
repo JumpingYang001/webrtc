@@ -452,9 +452,9 @@ static jlong JNI_PeerConnectionFactory_CreatePeerConnection(
     // Generate non-default certificate.
     rtc::KeyType key_type = GetRtcConfigKeyType(jni, j_rtc_config);
     if (key_type != rtc::KT_DEFAULT) {
-      rtc::scoped_refptr<rtc::RTCCertificate> certificate =
-          rtc::RTCCertificateGenerator::GenerateCertificate(
-              rtc::KeyParams(key_type), std::nullopt);
+      rtc::scoped_refptr<RTCCertificate> certificate =
+          RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(key_type),
+                                                       std::nullopt);
       if (!certificate) {
         RTC_LOG(LS_ERROR) << "Failed to generate certificate. KeyType: "
                           << key_type;

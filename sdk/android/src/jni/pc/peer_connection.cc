@@ -181,9 +181,8 @@ void JavaToNativeRTCConfiguration(
   rtc_config->rtcp_mux_policy =
       JavaToNativeRtcpMuxPolicy(jni, j_rtcp_mux_policy);
   if (!j_rtc_certificate.is_null()) {
-    rtc::scoped_refptr<rtc::RTCCertificate> certificate =
-        rtc::RTCCertificate::FromPEM(
-            JavaToNativeRTCCertificatePEM(jni, j_rtc_certificate));
+    rtc::scoped_refptr<RTCCertificate> certificate = RTCCertificate::FromPEM(
+        JavaToNativeRTCCertificatePEM(jni, j_rtc_certificate));
     RTC_CHECK(certificate != nullptr) << "supplied certificate is malformed.";
     rtc_config->certificates.push_back(certificate);
   }
@@ -560,8 +559,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> JNI_PeerConnection_GetCertificate(
     const jni_zero::JavaParamRef<jobject>& j_pc) {
   const PeerConnectionInterface::RTCConfiguration rtc_config =
       ExtractNativePC(jni, j_pc)->GetConfiguration();
-  rtc::scoped_refptr<rtc::RTCCertificate> certificate =
-      rtc_config.certificates[0];
+  rtc::scoped_refptr<RTCCertificate> certificate = rtc_config.certificates[0];
   return NativeToJavaRTCCertificatePEM(jni, certificate->ToPEM());
 }
 
