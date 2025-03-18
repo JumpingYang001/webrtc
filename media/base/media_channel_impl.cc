@@ -82,7 +82,7 @@ bool MediaChannelUtil::SendRtcp(rtc::CopyOnWriteBuffer* packet,
 }
 
 int MediaChannelUtil::SetOption(MediaChannelNetworkInterface::SocketType type,
-                                rtc::Socket::Option opt,
+                                webrtc::Socket::Option opt,
                                 int option) {
   return transport_.SetOption(type, opt, option);
 }
@@ -249,10 +249,10 @@ void MediaChannelUtil::TransportForMediaChannels::UpdateDscp() {
   rtc::DiffServCodePoint value =
       enable_dscp_ ? preferred_dscp_ : rtc::DSCP_DEFAULT;
   int ret = SetOptionLocked(MediaChannelNetworkInterface::ST_RTP,
-                            rtc::Socket::OPT_DSCP, value);
+                            webrtc::Socket::OPT_DSCP, value);
   if (ret == 0)
     SetOptionLocked(MediaChannelNetworkInterface::ST_RTCP,
-                    rtc::Socket::OPT_DSCP, value);
+                    webrtc::Socket::OPT_DSCP, value);
 }
 
 bool MediaChannelUtil::TransportForMediaChannels::DoSendPacket(
@@ -269,7 +269,7 @@ bool MediaChannelUtil::TransportForMediaChannels::DoSendPacket(
 
 int MediaChannelUtil::TransportForMediaChannels::SetOption(
     MediaChannelNetworkInterface::SocketType type,
-    rtc::Socket::Option opt,
+    webrtc::Socket::Option opt,
     int option) {
   RTC_DCHECK_RUN_ON(network_thread_);
   return SetOptionLocked(type, opt, option);
@@ -277,7 +277,7 @@ int MediaChannelUtil::TransportForMediaChannels::SetOption(
 
 int MediaChannelUtil::TransportForMediaChannels::SetOptionLocked(
     MediaChannelNetworkInterface::SocketType type,
-    rtc::Socket::Option opt,
+    webrtc::Socket::Option opt,
     int option) {
   if (!network_interface_)
     return -1;

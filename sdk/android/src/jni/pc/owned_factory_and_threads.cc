@@ -16,7 +16,7 @@ namespace webrtc {
 namespace jni {
 
 OwnedFactoryAndThreads::OwnedFactoryAndThreads(
-    std::unique_ptr<rtc::SocketFactory> socket_factory,
+    std::unique_ptr<SocketFactory> socket_factory,
     std::unique_ptr<rtc::Thread> network_thread,
     std::unique_ptr<rtc::Thread> worker_thread,
     std::unique_ptr<rtc::Thread> signaling_thread,
