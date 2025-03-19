@@ -21,7 +21,7 @@ namespace jni {
 ScopedJavaLocalRef<jobject> NativeToJavaMediaType(
     JNIEnv* jni,
     cricket::MediaType media_type) {
-  return Java_MediaType_fromNativeIndex(jni, media_type);
+  return Java_MediaType_fromNativeIndex(jni, static_cast<int>(media_type));
 }
 
 cricket::MediaType JavaToNativeMediaType(JNIEnv* jni,
