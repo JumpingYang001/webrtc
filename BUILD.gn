@@ -575,14 +575,6 @@ if (!build_with_chromium) {
         "api/video:video_frame",
         "api/video:video_rtp_headers",
       ]
-    } else {
-      deps += [
-        "api",
-        "logging",
-        "p2p",
-        "pc",
-        "stats",
-      ]
     }
 
     if (rtc_enable_protobuf) {
