@@ -62,10 +62,9 @@ vars = {
 }
 
 deps = {
-  'src/base': {
-    'url': 'https://chromium.googlesource.com/chromium/src/base@bf4cc197a277e3949b650c8f6f4f329bf261d700',
-    'condition': 'checkout_fuzzer'
-  },
+  # TODO(kjellander): Move this to be Android-only.
+  'src/base':
+    'https://chromium.googlesource.com/chromium/src/base@bf4cc197a277e3949b650c8f6f4f329bf261d700',
   'src/build':
     'https://chromium.googlesource.com/chromium/src/build@e7031cc6a0df7cf30e22f51b630b5f467b9fd7e2',
   'src/buildtools':
