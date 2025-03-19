@@ -731,9 +731,6 @@ absl::string_view GetDefaultMidForPlanB(cricket::MediaType media_type) {
       return cricket::CN_DATA;
     case cricket::MEDIA_TYPE_UNSUPPORTED:
       return "not supported";
-    default:
-      // Fall through to RTC_CHECK_NOTREACHED
-      break;
   }
   RTC_DCHECK_NOTREACHED();
   return "";

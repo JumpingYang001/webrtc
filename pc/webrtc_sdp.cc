@@ -43,6 +43,7 @@
 #include "media/base/rtp_utils.h"
 #include "media/base/stream_params.h"
 #include "media/sctp/sctp_transport_internal.h"
+#include "p2p/base/candidate_pair_interface.h"
 #include "p2p/base/ice_transport_internal.h"
 #include "p2p/base/p2p_constants.h"
 #include "p2p/base/port.h"
@@ -235,9 +236,9 @@ static const char kAttrGroup[] = "a=group:BUNDLE";
 static const char kConnectionNettype[] = "IN";
 static const char kConnectionIpv4Addrtype[] = "IP4";
 static const char kConnectionIpv6Addrtype[] = "IP6";
-static const char kSdpMediaTypeVideo[] = "video";
-static const char kSdpMediaTypeAudio[] = "audio";
-static const char kSdpMediaTypeData[] = "application";
+static const char kMediaTypeVideo[] = "video";
+static const char kMediaTypeAudio[] = "audio";
+static const char kMediaTypeData[] = "application";
 static const char kMediaPortRejected[] = "0";
 // draft-ietf-mmusic-trickle-ice-01
 // When no candidates have been gathered, set the connection
@@ -1413,14 +1414,14 @@ void BuildMediaLine(const cricket::MediaType media_type,
   std::string fmt;
   if (media_type == cricket::MEDIA_TYPE_AUDIO ||
       media_type == cricket::MEDIA_TYPE_VIDEO) {
-    type = media_type == cricket::MEDIA_TYPE_AUDIO ? kSdpMediaTypeAudio
-                                                   : kSdpMediaTypeVideo;
+    type = media_type == cricket::MEDIA_TYPE_AUDIO ? kMediaTypeAudio
+                                                   : kMediaTypeVideo;
     for (const cricket::Codec& codec : media_desc->codecs()) {
       fmt.append(" ");
       fmt.append(rtc::ToString(codec.id));
     }
   } else if (media_type == cricket::MEDIA_TYPE_DATA) {
-    type = kSdpMediaTypeData;
+    type = kMediaTypeData;
     const cricket::SctpDataContentDescription* sctp_data_desc =
         media_desc->as_sctp();
     if (sctp_data_desc) {
@@ -2716,23 +2717,21 @@ bool ParseMediaDescription(
     bool bundle_only = false;
     int section_msid_signaling = cricket::kMsidSignalingNotUsed;
     absl::string_view media_type = fields[0];
-    if ((media_type == kSdpMediaTypeVideo ||
-         media_type == kSdpMediaTypeAudio) &&
+    if ((media_type == kMediaTypeVideo || media_type == kMediaTypeAudio) &&
         !cricket::IsRtpProtocol(protocol)) {
       return ParseFailed(*mline, "Unsupported protocol for media type", error);
     }
-    if (media_type == kSdpMediaTypeVideo) {
+    if (media_type == kMediaTypeVideo) {
       content = ParseContentDescription(
           message, cricket::MEDIA_TYPE_VIDEO, mline_index, protocol,
           payload_types, pos, &content_name, &bundle_only,
           &section_msid_signaling, &transport, candidates, error);
-    } else if (media_type == kSdpMediaTypeAudio) {
+    } else if (media_type == kMediaTypeAudio) {
       content = ParseContentDescription(
           message, cricket::MEDIA_TYPE_AUDIO, mline_index, protocol,
           payload_types, pos, &content_name, &bundle_only,
           &section_msid_signaling, &transport, candidates, error);
-    } else if (media_type == kSdpMediaTypeData &&
-               cricket::IsDtlsSctp(protocol)) {
+    } else if (media_type == kMediaTypeData && cricket::IsDtlsSctp(protocol)) {
       // The draft-03 format is:
       // m=application <port> DTLS/SCTP <sctp-port>...
       // use_sctpmap should be false.

@@ -59,7 +59,10 @@ const NSString *const kRTCH264CodecName = @(cricket::kH264CodecName);
       case cricket::MEDIA_TYPE_VIDEO:
         _kind = kRTCMediaStreamTrackKindVideo;
         break;
-      default:
+      case cricket::MEDIA_TYPE_DATA:
+        RTC_DCHECK_NOTREACHED();
+        break;
+      case cricket::MEDIA_TYPE_UNSUPPORTED:
         RTC_DCHECK_NOTREACHED();
         break;
     }

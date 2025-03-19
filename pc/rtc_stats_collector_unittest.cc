@@ -3222,7 +3222,8 @@ class RTCStatsCollectorTestWithParamKind
         return "A";
       case cricket::MEDIA_TYPE_VIDEO:
         return "V";
-      default:
+      case cricket::MEDIA_TYPE_DATA:
+      case cricket::MEDIA_TYPE_UNSUPPORTED:
         RTC_DCHECK_NOTREACHED();
         return "?";
     }
@@ -3234,7 +3235,8 @@ class RTCStatsCollectorTestWithParamKind
         return "audio";
       case cricket::MEDIA_TYPE_VIDEO:
         return "video";
-      default:
+      case cricket::MEDIA_TYPE_DATA:
+      case cricket::MEDIA_TYPE_UNSUPPORTED:
         RTC_DCHECK_NOTREACHED();
         return "";
     }
@@ -3283,7 +3285,7 @@ class RTCStatsCollectorTestWithParamKind
         return;
       }
       case cricket::MEDIA_TYPE_DATA:
-      default:
+      case cricket::MEDIA_TYPE_UNSUPPORTED:
         RTC_DCHECK_NOTREACHED();
     }
   }

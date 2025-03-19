@@ -17,30 +17,7 @@
 
 namespace webrtc {
 
-enum class MediaType {
-  AUDIO,
-  VIDEO,
-  DATA,
-  UNSUPPORTED,
-  ANY,
-  // Backwards compatibility values for cricket::MediaType users
-  // TODO: https://issues.webrtc.org/42222911 - deprecate and remove
-  MEDIA_TYPE_AUDIO = AUDIO,
-  MEDIA_TYPE_VIDEO = VIDEO,
-  MEDIA_TYPE_DATA = DATA,
-  MEDIA_TYPE_UNSUPPORTED = UNSUPPORTED,
-};
-
-RTC_EXPORT std::string MediaTypeToString(MediaType type);
-
-template <typename Sink>
-void AbslStringify(Sink& sink, MediaType type) {
-  sink.Append(MediaTypeToString(type));
-}
-
-extern const char kMediaTypeAudio[];
-extern const char kMediaTypeVideo[];
-extern const char kMediaTypeData[];
+enum class MediaType { AUDIO, VIDEO, DATA, UNSUPPORTED, ANY };
 
 }  // namespace webrtc
 
@@ -50,18 +27,18 @@ extern const char kMediaTypeData[];
 
 namespace cricket {
 
-using MediaType = webrtc::MediaType;
-using webrtc::kMediaTypeAudio;
-using webrtc::kMediaTypeData;
-using webrtc::kMediaTypeVideo;
-using webrtc::MediaTypeToString;
+enum MediaType {
+  MEDIA_TYPE_AUDIO = static_cast<int>(webrtc::MediaType::AUDIO),
+  MEDIA_TYPE_VIDEO = static_cast<int>(webrtc::MediaType::VIDEO),
+  MEDIA_TYPE_DATA = static_cast<int>(webrtc::MediaType::DATA),
+  MEDIA_TYPE_UNSUPPORTED = static_cast<int>(webrtc::MediaType::UNSUPPORTED),
+};
 
-// Backwards compatibility values for cricket::MediaType users
-// TODO: https://issues.webrtc.org/42222911 - deprecate and remove
-constexpr MediaType MEDIA_TYPE_AUDIO = webrtc::MediaType::AUDIO;
-constexpr MediaType MEDIA_TYPE_VIDEO = webrtc::MediaType::VIDEO;
-constexpr MediaType MEDIA_TYPE_DATA = webrtc::MediaType::DATA;
-constexpr MediaType MEDIA_TYPE_UNSUPPORTED = webrtc::MediaType::UNSUPPORTED;
+extern const char kMediaTypeAudio[];
+extern const char kMediaTypeVideo[];
+extern const char kMediaTypeData[];
+
+RTC_EXPORT std::string MediaTypeToString(MediaType type);
 
 }  // namespace cricket
 
