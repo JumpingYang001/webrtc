@@ -128,7 +128,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
   void OnNetworkPreference_n(NetworkType type,
                              rtc::NetworkPreference preference);
 
-  rtc::NetworkPreference GetNetworkPreference(rtc::AdapterType) const;
+  rtc::NetworkPreference GetNetworkPreference(AdapterType) const;
   std::optional<NetworkHandle> FindNetworkHandleFromIfname(
       absl::string_view ifname) const;
 
@@ -143,7 +143,7 @@ class AndroidNetworkMonitor : public rtc::NetworkMonitorInterface {
       RTC_GUARDED_BY(network_thread_);
   std::map<NetworkHandle, NetworkInformation> network_info_by_handle_
       RTC_GUARDED_BY(network_thread_);
-  std::map<rtc::AdapterType, rtc::NetworkPreference>
+  std::map<AdapterType, rtc::NetworkPreference>
       network_preference_by_adapter_type_ RTC_GUARDED_BY(network_thread_);
   bool find_network_handle_without_ipv6_temporary_part_
       RTC_GUARDED_BY(network_thread_) = false;

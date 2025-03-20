@@ -37,22 +37,21 @@ ScopedJavaLocalRef<jobject> CreateJavaIceCandidate(JNIEnv* env,
 
 }  // namespace
 
-cricket::Candidate JavaToNativeCandidate(JNIEnv* jni,
-                                         const JavaRef<jobject>& j_candidate) {
+Candidate JavaToNativeCandidate(JNIEnv* jni,
+                                const JavaRef<jobject>& j_candidate) {
   std::string sdp_mid =
       JavaToStdString(jni, Java_IceCandidate_getSdpMid(jni, j_candidate));
   std::string sdp =
       JavaToStdString(jni, Java_IceCandidate_getSdp(jni, j_candidate));
-  cricket::Candidate candidate;
+  Candidate candidate;
   if (!SdpDeserializeCandidate(sdp_mid, sdp, &candidate, NULL)) {
     RTC_LOG(LS_ERROR) << "SdpDescrializeCandidate failed with sdp " << sdp;
   }
   return candidate;
 }
 
-ScopedJavaLocalRef<jobject> NativeToJavaCandidate(
-    JNIEnv* env,
-    const cricket::Candidate& candidate) {
+ScopedJavaLocalRef<jobject> NativeToJavaCandidate(JNIEnv* env,
+                                                  const Candidate& candidate) {
   std::string sdp = SdpSerializeCandidate(candidate);
   RTC_CHECK(!sdp.empty()) << "got an empty ICE candidate";
   // sdp_mline_index is not used, pass an invalid value -1.
@@ -73,7 +72,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaIceCandidate(
 
 ScopedJavaLocalRef<jobjectArray> NativeToJavaCandidateArray(
     JNIEnv* jni,
-    const std::vector<cricket::Candidate>& candidates) {
+    const std::vector<Candidate>& candidates) {
   return NativeToJavaObjectArray(jni, candidates,
                                  org_webrtc_IceCandidate_clazz(jni),
                                  &NativeToJavaCandidate);
@@ -228,7 +227,7 @@ PeerConnectionInterface::TlsCertPolicy JavaToNativeTlsCertPolicy(
   return PeerConnectionInterface::kTlsCertPolicySecure;
 }
 
-std::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
+std::optional<AdapterType> JavaToNativeNetworkPreference(
     JNIEnv* jni,
     const JavaRef<jobject>& j_network_preference) {
   std::string enum_name = GetJavaEnumName(jni, j_network_preference);
@@ -237,19 +236,19 @@ std::optional<rtc::AdapterType> JavaToNativeNetworkPreference(
     return std::nullopt;
 
   if (enum_name == "ETHERNET")
-    return rtc::ADAPTER_TYPE_ETHERNET;
+    return ADAPTER_TYPE_ETHERNET;
 
   if (enum_name == "WIFI")
-    return rtc::ADAPTER_TYPE_WIFI;
+    return ADAPTER_TYPE_WIFI;
 
   if (enum_name == "CELLULAR")
-    return rtc::ADAPTER_TYPE_CELLULAR;
+    return ADAPTER_TYPE_CELLULAR;
 
   if (enum_name == "VPN")
-    return rtc::ADAPTER_TYPE_VPN;
+    return ADAPTER_TYPE_VPN;
 
   if (enum_name == "LOOPBACK")
-    return rtc::ADAPTER_TYPE_LOOPBACK;
+    return ADAPTER_TYPE_LOOPBACK;
 
   RTC_CHECK(false) << "Unexpected NetworkPreference enum_name " << enum_name;
   return std::nullopt;

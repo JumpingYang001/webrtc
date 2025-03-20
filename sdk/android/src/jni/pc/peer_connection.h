@@ -55,7 +55,7 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
                            const std::string& error_text) override;
 
   void OnIceCandidatesRemoved(
-      const std::vector<cricket::Candidate>& candidates) override;
+      const std::vector<Candidate>& candidates) override;
   void OnSignalingChange(
       PeerConnectionInterface::SignalingState new_state) override;
   void OnIceConnectionChange(

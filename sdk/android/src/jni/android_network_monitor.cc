@@ -108,42 +108,41 @@ static NetworkType GetNetworkTypeFromJava(
   return NetworkType::NETWORK_UNKNOWN;
 }
 
-static rtc::AdapterType AdapterTypeFromNetworkType(
-    NetworkType network_type,
-    bool surface_cellular_types) {
+static AdapterType AdapterTypeFromNetworkType(NetworkType network_type,
+                                              bool surface_cellular_types) {
   switch (network_type) {
     case NETWORK_UNKNOWN:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return ADAPTER_TYPE_UNKNOWN;
     case NETWORK_ETHERNET:
-      return rtc::ADAPTER_TYPE_ETHERNET;
+      return ADAPTER_TYPE_ETHERNET;
     case NETWORK_WIFI:
-      return rtc::ADAPTER_TYPE_WIFI;
+      return ADAPTER_TYPE_WIFI;
     case NETWORK_5G:
-      return surface_cellular_types ? rtc::ADAPTER_TYPE_CELLULAR_5G
-                                    : rtc::ADAPTER_TYPE_CELLULAR;
+      return surface_cellular_types ? ADAPTER_TYPE_CELLULAR_5G
+                                    : ADAPTER_TYPE_CELLULAR;
     case NETWORK_4G:
-      return surface_cellular_types ? rtc::ADAPTER_TYPE_CELLULAR_4G
-                                    : rtc::ADAPTER_TYPE_CELLULAR;
+      return surface_cellular_types ? ADAPTER_TYPE_CELLULAR_4G
+                                    : ADAPTER_TYPE_CELLULAR;
     case NETWORK_3G:
-      return surface_cellular_types ? rtc::ADAPTER_TYPE_CELLULAR_3G
-                                    : rtc::ADAPTER_TYPE_CELLULAR;
+      return surface_cellular_types ? ADAPTER_TYPE_CELLULAR_3G
+                                    : ADAPTER_TYPE_CELLULAR;
     case NETWORK_2G:
-      return surface_cellular_types ? rtc::ADAPTER_TYPE_CELLULAR_2G
-                                    : rtc::ADAPTER_TYPE_CELLULAR;
+      return surface_cellular_types ? ADAPTER_TYPE_CELLULAR_2G
+                                    : ADAPTER_TYPE_CELLULAR;
     case NETWORK_UNKNOWN_CELLULAR:
-      return rtc::ADAPTER_TYPE_CELLULAR;
+      return ADAPTER_TYPE_CELLULAR;
     case NETWORK_VPN:
-      return rtc::ADAPTER_TYPE_VPN;
+      return ADAPTER_TYPE_VPN;
     case NETWORK_BLUETOOTH:
       // There is no corresponding mapping for bluetooth networks.
       // Map it to UNKNOWN for now.
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return ADAPTER_TYPE_UNKNOWN;
     case NETWORK_NONE:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return ADAPTER_TYPE_UNKNOWN;
   }
 
   RTC_DCHECK_NOTREACHED() << "Invalid network type " << network_type;
-  return rtc::ADAPTER_TYPE_UNKNOWN;
+  return ADAPTER_TYPE_UNKNOWN;
 }
 
 static IPAddress JavaToNativeIpAddress(JNIEnv* jni,
@@ -587,7 +586,7 @@ AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
   auto handle = FindNetworkHandleFromIfname(if_name);
   if (!handle) {
     return {
-        .adapter_type = rtc::ADAPTER_TYPE_UNKNOWN,
+        .adapter_type = ADAPTER_TYPE_UNKNOWN,
         .available = (disable_is_adapter_available_ ? true : false),
     };
   }
@@ -595,7 +594,7 @@ AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
   RTC_DCHECK(iter != network_info_by_handle_.end());
   if (iter == network_info_by_handle_.end()) {
     return {
-        .adapter_type = rtc::ADAPTER_TYPE_UNKNOWN,
+        .adapter_type = ADAPTER_TYPE_UNKNOWN,
         .available = (disable_is_adapter_available_ ? true : false),
     };
   }
@@ -603,10 +602,10 @@ AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
   auto type =
       AdapterTypeFromNetworkType(iter->second.type, surface_cellular_types_);
   auto vpn_type =
-      (type == rtc::ADAPTER_TYPE_VPN)
+      (type == ADAPTER_TYPE_VPN)
           ? AdapterTypeFromNetworkType(iter->second.underlying_type_for_vpn,
                                        surface_cellular_types_)
-          : rtc::ADAPTER_TYPE_UNKNOWN;
+          : ADAPTER_TYPE_UNKNOWN;
   return {
       .adapter_type = type,
       .underlying_type_for_vpn = vpn_type,
@@ -616,7 +615,7 @@ AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
 }
 
 rtc::NetworkPreference AndroidNetworkMonitor::GetNetworkPreference(
-    rtc::AdapterType adapter_type) const {
+    AdapterType adapter_type) const {
   RTC_DCHECK_RUN_ON(network_thread_);
   auto preference_iter = network_preference_by_adapter_type_.find(adapter_type);
   if (preference_iter == network_preference_by_adapter_type_.end()) {
