@@ -231,7 +231,7 @@ AndroidNetworkMonitor::AndroidNetworkMonitor(
     : android_sdk_int_(Java_NetworkMonitor_androidSdkInt(env)),
       j_application_context_(env, j_application_context),
       j_network_monitor_(env, Java_NetworkMonitor_getInstance(env)),
-      network_thread_(rtc::Thread::Current()),
+      network_thread_(Thread::Current()),
       field_trials_(field_trials) {}
 
 AndroidNetworkMonitor::~AndroidNetworkMonitor() {
@@ -295,7 +295,7 @@ void AndroidNetworkMonitor::Stop() {
 
 // The implementation is largely taken from UDPSocketPosix::BindToNetwork in
 // https://cs.chromium.org/chromium/src/net/udp/udp_socket_posix.cc
-rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
+NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     int socket_fd,
     const IPAddress& address,
     absl::string_view if_name) {
@@ -312,7 +312,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
         << "BindSocketToNetwork is not supported on this platform "
            "(Android SDK: "
         << android_sdk_int_ << ")";
-    return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+    return NetworkBindingResult::NOT_IMPLEMENTED;
   }
 
   std::optional<NetworkHandle> network_handle =
@@ -321,14 +321,14 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     RTC_LOG(LS_WARNING)
         << "BindSocketToNetwork unable to find network handle for"
         << " addr: " << address.ToSensitiveString() << " ifname: " << if_name;
-    return rtc::NetworkBindingResult::ADDRESS_NOT_FOUND;
+    return NetworkBindingResult::ADDRESS_NOT_FOUND;
   }
 
   if (*network_handle == 0 /* NETWORK_UNSPECIFIED */) {
     RTC_LOG(LS_WARNING) << "BindSocketToNetwork 0 network handle for"
                         << " addr: " << address.ToSensitiveString()
                         << " ifname: " << if_name;
-    return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+    return NetworkBindingResult::NOT_IMPLEMENTED;
   }
 
   int rv = 0;
@@ -348,7 +348,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
       if (lib == nullptr) {
         RTC_LOG(LS_ERROR) << "Library " << android_native_lib_path
                           << " not found!";
-        return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+        return NetworkBindingResult::NOT_IMPLEMENTED;
       }
       marshmallowSetNetworkForSocket =
           reinterpret_cast<MarshmallowSetNetworkForSocket>(
@@ -356,7 +356,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     }
     if (!marshmallowSetNetworkForSocket) {
       RTC_LOG(LS_ERROR) << "Symbol marshmallowSetNetworkForSocket is not found";
-      return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+      return NetworkBindingResult::NOT_IMPLEMENTED;
     }
     rv = marshmallowSetNetworkForSocket(*network_handle, socket_fd);
   } else {
@@ -377,7 +377,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
       void* lib = dlopen(net_library_path.c_str(), RTLD_NOW | RTLD_NOLOAD);
       if (lib == nullptr) {
         RTC_LOG(LS_ERROR) << "Library " << net_library_path << " not found!";
-        return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+        return NetworkBindingResult::NOT_IMPLEMENTED;
       }
       lollipopSetNetworkForSocket =
           reinterpret_cast<LollipopSetNetworkForSocket>(
@@ -385,7 +385,7 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     }
     if (!lollipopSetNetworkForSocket) {
       RTC_LOG(LS_ERROR) << "Symbol lollipopSetNetworkForSocket is not found ";
-      return rtc::NetworkBindingResult::NOT_IMPLEMENTED;
+      return NetworkBindingResult::NOT_IMPLEMENTED;
     }
     rv = lollipopSetNetworkForSocket(*network_handle, socket_fd);
   }
@@ -397,17 +397,17 @@ rtc::NetworkBindingResult AndroidNetworkMonitor::BindSocketToNetwork(
     RTC_LOG(LS_VERBOSE) << "BindSocketToNetwork bound network handle for"
                         << " addr: " << address.ToSensitiveString()
                         << " ifname: " << if_name;
-    return rtc::NetworkBindingResult::SUCCESS;
+    return NetworkBindingResult::SUCCESS;
   }
 
   RTC_LOG(LS_WARNING) << "BindSocketToNetwork got error: " << rv
                       << " addr: " << address.ToSensitiveString()
                       << " ifname: " << if_name;
   if (rv == ENONET) {
-    return rtc::NetworkBindingResult::NETWORK_CHANGED;
+    return NetworkBindingResult::NETWORK_CHANGED;
   }
 
-  return rtc::NetworkBindingResult::FAILURE;
+  return NetworkBindingResult::FAILURE;
 }
 
 void AndroidNetworkMonitor::OnNetworkConnected_n(
@@ -550,11 +550,11 @@ void AndroidNetworkMonitor::OnNetworkDisconnected_n(NetworkHandle handle) {
 
 void AndroidNetworkMonitor::OnNetworkPreference_n(
     NetworkType type,
-    rtc::NetworkPreference preference) {
+    NetworkPreference preference) {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_LOG(LS_INFO) << "Android network monitor preference for "
                    << NetworkTypeToString(type) << " changed to "
-                   << rtc::NetworkPreferenceToString(preference);
+                   << NetworkPreferenceToString(preference);
   auto adapter_type = AdapterTypeFromNetworkType(type, surface_cellular_types_);
   network_preference_by_adapter_type_[adapter_type] = preference;
   InvokeNetworksChangedCallback();
@@ -580,8 +580,8 @@ void AndroidNetworkMonitor::SetNetworkInfos(
   }
 }
 
-rtc::NetworkMonitorInterface::InterfaceInfo
-AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
+NetworkMonitorInterface::InterfaceInfo AndroidNetworkMonitor::GetInterfaceInfo(
+    absl::string_view if_name) {
   RTC_DCHECK_RUN_ON(network_thread_);
   auto handle = FindNetworkHandleFromIfname(if_name);
   if (!handle) {
@@ -614,12 +614,12 @@ AndroidNetworkMonitor::GetInterfaceInfo(absl::string_view if_name) {
   };
 }
 
-rtc::NetworkPreference AndroidNetworkMonitor::GetNetworkPreference(
+NetworkPreference AndroidNetworkMonitor::GetNetworkPreference(
     AdapterType adapter_type) const {
   RTC_DCHECK_RUN_ON(network_thread_);
   auto preference_iter = network_preference_by_adapter_type_.find(adapter_type);
   if (preference_iter == network_preference_by_adapter_type_.end()) {
-    return rtc::NetworkPreference::NEUTRAL;
+    return NetworkPreference::NEUTRAL;
   }
 
   return preference_iter->second;
@@ -635,8 +635,7 @@ AndroidNetworkMonitorFactory::AndroidNetworkMonitorFactory(
 
 AndroidNetworkMonitorFactory::~AndroidNetworkMonitorFactory() = default;
 
-rtc::NetworkMonitorInterface*
-AndroidNetworkMonitorFactory::CreateNetworkMonitor(
+NetworkMonitorInterface* AndroidNetworkMonitorFactory::CreateNetworkMonitor(
     const FieldTrialsView& field_trials) {
   return new AndroidNetworkMonitor(AttachCurrentThreadIfNeeded(),
                                    j_application_context_, field_trials);
@@ -689,8 +688,7 @@ void AndroidNetworkMonitor::NotifyOfNetworkPreference(
     const JavaRef<jobject>& j_connection_type,
     jint jpreference) {
   NetworkType type = GetNetworkTypeFromJava(env, j_connection_type);
-  rtc::NetworkPreference preference =
-      static_cast<rtc::NetworkPreference>(jpreference);
+  NetworkPreference preference = static_cast<NetworkPreference>(jpreference);
 
   network_thread_->PostTask(SafeTask(safety_flag_, [this, type, preference] {
     OnNetworkPreference_n(type, preference);

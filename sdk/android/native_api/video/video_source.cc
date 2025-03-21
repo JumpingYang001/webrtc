@@ -24,7 +24,7 @@ namespace {
 class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
  public:
   JavaVideoTrackSourceImpl(JNIEnv* env,
-                           rtc::Thread* signaling_thread,
+                           Thread* signaling_thread,
                            bool is_screencast,
                            bool align_timestamps)
       : android_video_track_source_(
@@ -105,7 +105,7 @@ class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
 
 rtc::scoped_refptr<JavaVideoTrackSourceInterface> CreateJavaVideoSource(
     JNIEnv* jni,
-    rtc::Thread* signaling_thread,
+    Thread* signaling_thread,
     bool is_screencast,
     bool align_timestamps) {
   return rtc::make_ref_counted<JavaVideoTrackSourceImpl>(

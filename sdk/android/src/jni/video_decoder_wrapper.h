@@ -90,7 +90,7 @@ class VideoDecoderWrapper : public VideoDecoder {
   SequenceChecker decoder_thread_checker_;
   // Callbacks must be executed sequentially on an arbitrary thread. We do not
   // own this thread so a thread checker cannot be used.
-  rtc::RaceChecker callback_race_checker_;
+  RaceChecker callback_race_checker_;
 
   // Initialized on Configure and immutable after that.
   VideoDecoder::Settings decoder_settings_

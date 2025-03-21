@@ -17,9 +17,9 @@ namespace jni {
 
 OwnedFactoryAndThreads::OwnedFactoryAndThreads(
     std::unique_ptr<SocketFactory> socket_factory,
-    std::unique_ptr<rtc::Thread> network_thread,
-    std::unique_ptr<rtc::Thread> worker_thread,
-    std::unique_ptr<rtc::Thread> signaling_thread,
+    std::unique_ptr<Thread> network_thread,
+    std::unique_ptr<Thread> worker_thread,
+    std::unique_ptr<Thread> signaling_thread,
     const rtc::scoped_refptr<PeerConnectionFactoryInterface>& factory)
     : socket_factory_(std::move(socket_factory)),
       network_thread_(std::move(network_thread)),

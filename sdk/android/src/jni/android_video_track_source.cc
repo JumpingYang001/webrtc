@@ -38,7 +38,7 @@ std::optional<std::pair<int, int>> OptionalAspectRatio(jint j_width,
 
 }  // namespace
 
-AndroidVideoTrackSource::AndroidVideoTrackSource(rtc::Thread* signaling_thread,
+AndroidVideoTrackSource::AndroidVideoTrackSource(Thread* signaling_thread,
                                                  JNIEnv* jni,
                                                  bool is_screencast,
                                                  bool align_timestamps)
@@ -61,7 +61,7 @@ std::optional<bool> AndroidVideoTrackSource::needs_denoising() const {
 void AndroidVideoTrackSource::SetState(JNIEnv* env, jboolean j_is_live) {
   const SourceState state = j_is_live ? kLive : kEnded;
   if (state_.exchange(state) != state) {
-    if (rtc::Thread::Current() == signaling_thread_) {
+    if (Thread::Current() == signaling_thread_) {
       FireOnChanged();
     } else {
       signaling_thread_->PostTask([this] { FireOnChanged(); });

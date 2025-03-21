@@ -22,7 +22,7 @@
 #include "absl/strings/string_view.h"
 #include "rtc_base/platform_thread_types.h"
 
-namespace rtc {
+namespace webrtc {
 
 enum class ThreadPriority {
   kLow = 1,
@@ -116,6 +116,14 @@ class PlatformThread final {
   bool joinable_ = false;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::PlatformThread;
+using ::webrtc::ThreadAttributes;
+using ::webrtc::ThreadPriority;
 }  // namespace rtc
 
 #endif  // RTC_BASE_PLATFORM_THREAD_H_

@@ -67,7 +67,7 @@ typedef void (*JavaMethodPointer)(JNIEnv*, const jni_zero::JavaRef<jobject>&);
 // Post a message on the given thread that will call the Java method on the
 // given Java object.
 void PostJavaCallback(JNIEnv* env,
-                      rtc::Thread* queue,
+                      Thread* queue,
                       const jni_zero::JavaRef<jobject>& j_object,
                       JavaMethodPointer java_method_pointer) {
   jni_zero::ScopedJavaGlobalRef<jobject> object(env, j_object);
@@ -115,9 +115,9 @@ ScopedJavaLocalRef<jobject> NativeToScopedJavaPeerConnectionFactory(
     JNIEnv* env,
     rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
-    std::unique_ptr<rtc::Thread> network_thread,
-    std::unique_ptr<rtc::Thread> worker_thread,
-    std::unique_ptr<rtc::Thread> signaling_thread) {
+    std::unique_ptr<Thread> network_thread,
+    std::unique_ptr<Thread> worker_thread,
+    std::unique_ptr<Thread> signaling_thread) {
   OwnedFactoryAndThreads* owned_factory = new OwnedFactoryAndThreads(
       std::move(socket_factory), std::move(network_thread),
       std::move(worker_thread), std::move(signaling_thread), pcf);
@@ -155,9 +155,9 @@ jobject NativeToJavaPeerConnectionFactory(
     JNIEnv* jni,
     rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
-    std::unique_ptr<rtc::Thread> network_thread,
-    std::unique_ptr<rtc::Thread> worker_thread,
-    std::unique_ptr<rtc::Thread> signaling_thread) {
+    std::unique_ptr<Thread> network_thread,
+    std::unique_ptr<Thread> worker_thread,
+    std::unique_ptr<Thread> signaling_thread) {
   return NativeToScopedJavaPeerConnectionFactory(
              jni, pcf, std::move(socket_factory), std::move(network_thread),
              std::move(worker_thread), std::move(signaling_thread))
@@ -247,18 +247,18 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
   // created.  Since the semantics around when auto-wrapping happens in
   // webrtc/rtc_base/ are convoluted, we simply wrap here to avoid having to
   // think about ramifications of auto-wrapping there.
-  rtc::ThreadManager::Instance()->WrapCurrentThread();
+  ThreadManager::Instance()->WrapCurrentThread();
 
   auto socket_server = std::make_unique<PhysicalSocketServer>();
-  auto network_thread = std::make_unique<rtc::Thread>(socket_server.get());
+  auto network_thread = std::make_unique<Thread>(socket_server.get());
   network_thread->SetName("network_thread", nullptr);
   RTC_CHECK(network_thread->Start()) << "Failed to start thread";
 
-  std::unique_ptr<rtc::Thread> worker_thread = rtc::Thread::Create();
+  std::unique_ptr<Thread> worker_thread = Thread::Create();
   worker_thread->SetName("worker_thread", nullptr);
   RTC_CHECK(worker_thread->Start()) << "Failed to start thread";
 
-  std::unique_ptr<rtc::Thread> signaling_thread = rtc::Thread::Create();
+  std::unique_ptr<Thread> signaling_thread = Thread::Create();
   signaling_thread->SetName("signaling_thread", NULL);
   RTC_CHECK(signaling_thread->Start()) << "Failed to start thread";
 
