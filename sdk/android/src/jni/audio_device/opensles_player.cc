@@ -131,7 +131,7 @@ int OpenSLESPlayer::StartPlayout() {
   // starts when mode is later changed to SL_PLAYSTATE_PLAYING.
   // TODO(henrika): we can save some delay by only making one call to
   // EnqueuePlayoutData. Most likely not worth the risk of adding a glitch.
-  last_play_time_ = rtc::Time();
+  last_play_time_ = Time();
   for (int i = 0; i < kNumOfOpenSLESBuffers; ++i) {
     EnqueuePlayoutData(true);
   }
@@ -395,7 +395,7 @@ void OpenSLESPlayer::EnqueuePlayoutData(bool silence) {
   // Check delta time between two successive callbacks and provide a warning
   // if it becomes very large.
   // TODO(henrika): using 150ms as upper limit but this value is rather random.
-  const uint32_t current_time = rtc::Time();
+  const uint32_t current_time = Time();
   const uint32_t diff = current_time - last_play_time_;
   if (diff > 150) {
     ALOGW("Bad OpenSL ES playout timing, dT=%u [ms]", diff);

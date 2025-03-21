@@ -34,9 +34,9 @@ namespace {
 class ScopedHistogramTimer {
  public:
   explicit ScopedHistogramTimer(const std::string& name)
-      : histogram_name_(name), start_time_ms_(rtc::TimeMillis()) {}
+      : histogram_name_(name), start_time_ms_(TimeMillis()) {}
   ~ScopedHistogramTimer() {
-    const int64_t life_time_ms = rtc::TimeSince(start_time_ms_);
+    const int64_t life_time_ms = TimeSince(start_time_ms_);
     RTC_HISTOGRAM_COUNTS_1000(histogram_name_, life_time_ms);
     RTC_LOG(LS_INFO) << histogram_name_ << ": " << life_time_ms;
   }

@@ -68,7 +68,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaEncodedImage(
       /*releaseCallback=*/ScopedJavaGlobalRef<jobject>(nullptr),
       static_cast<int>(image._encodedWidth),
       static_cast<int>(image._encodedHeight),
-      image.capture_time_ms_ * rtc::kNumNanosecsPerMillisec, frame_type,
+      image.capture_time_ms_ * kNumNanosecsPerMillisec, frame_type,
       static_cast<jint>(image.rotation_), qp);
 }
 

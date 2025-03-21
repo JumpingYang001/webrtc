@@ -90,12 +90,12 @@ ScopedJavaLocalRef<jobject> AndroidVideoTrackSource::AdaptFrame(
     jlong j_timestamp_ns) {
   const VideoRotation rotation = jintToVideoRotation(j_rotation);
 
-  const int64_t camera_time_us = j_timestamp_ns / rtc::kNumNanosecsPerMicrosec;
+  const int64_t camera_time_us = j_timestamp_ns / kNumNanosecsPerMicrosec;
   const int64_t aligned_timestamp_ns =
-      align_timestamps_ ? rtc::kNumNanosecsPerMicrosec *
-                              timestamp_aligner_.TranslateTimestamp(
-                                  camera_time_us, rtc::TimeMicros())
-                        : j_timestamp_ns;
+      align_timestamps_
+          ? kNumNanosecsPerMicrosec * timestamp_aligner_.TranslateTimestamp(
+                                          camera_time_us, TimeMicros())
+          : j_timestamp_ns;
 
   int adapted_width = 0;
   int adapted_height = 0;
@@ -139,7 +139,7 @@ void AndroidVideoTrackSource::OnFrameCaptured(
   OnFrame(VideoFrame::Builder()
               .set_video_frame_buffer(buffer)
               .set_rotation(rotation)
-              .set_timestamp_us(j_timestamp_ns / rtc::kNumNanosecsPerMicrosec)
+              .set_timestamp_us(j_timestamp_ns / kNumNanosecsPerMicrosec)
               .build());
 }
 

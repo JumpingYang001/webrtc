@@ -283,7 +283,7 @@ VideoFrame JavaToNativeFrame(JNIEnv* jni,
   return VideoFrame::Builder()
       .set_video_frame_buffer(buffer)
       .set_rtp_timestamp(timestamp_rtp)
-      .set_timestamp_ms(timestamp_ns / rtc::kNumNanosecsPerMillisec)
+      .set_timestamp_ms(timestamp_ns / kNumNanosecsPerMillisec)
       .set_rotation(static_cast<VideoRotation>(rotation))
       .build();
 }
@@ -300,14 +300,12 @@ ScopedJavaLocalRef<jobject> NativeToJavaVideoFrame(JNIEnv* jni,
     Java_Buffer_retain(jni, j_video_frame_buffer);
     return Java_VideoFrame_Constructor(
         jni, j_video_frame_buffer, static_cast<jint>(frame.rotation()),
-        static_cast<jlong>(frame.timestamp_us() *
-                           rtc::kNumNanosecsPerMicrosec));
+        static_cast<jlong>(frame.timestamp_us() * kNumNanosecsPerMicrosec));
   } else {
     return Java_VideoFrame_Constructor(
         jni, WrapI420Buffer(jni, buffer->ToI420()),
         static_cast<jint>(frame.rotation()),
-        static_cast<jlong>(frame.timestamp_us() *
-                           rtc::kNumNanosecsPerMicrosec));
+        static_cast<jlong>(frame.timestamp_us() * kNumNanosecsPerMicrosec));
   }
 }
 

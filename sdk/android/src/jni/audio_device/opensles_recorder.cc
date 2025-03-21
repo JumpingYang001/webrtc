@@ -140,7 +140,7 @@ int OpenSLESRecorder::StartRecording() {
   // Start audio recording by changing the state to SL_RECORDSTATE_RECORDING.
   // Given that buffers are already enqueued, recording should start at once.
   // The macro returns -1 if recording fails to start.
-  last_rec_time_ = rtc::Time();
+  last_rec_time_ = Time();
   if (LOG_ON_ERROR(
           (*recorder_)->SetRecordState(recorder_, SL_RECORDSTATE_RECORDING))) {
     return -1;
@@ -371,7 +371,7 @@ void OpenSLESRecorder::ReadBufferQueue() {
   // Check delta time between two successive callbacks and provide a warning
   // if it becomes very large.
   // TODO(henrika): using 150ms as upper limit but this value is rather random.
-  const uint32_t current_time = rtc::Time();
+  const uint32_t current_time = Time();
   const uint32_t diff = current_time - last_rec_time_;
   if (diff > 150) {
     ALOGW("Bad OpenSL ES record timing, dT=%u [ms]", diff);

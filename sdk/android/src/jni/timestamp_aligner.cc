@@ -20,7 +20,7 @@ namespace webrtc {
 namespace jni {
 
 static jlong JNI_TimestampAligner_RtcTimeNanos(JNIEnv* env) {
-  return rtc::TimeNanos();
+  return TimeNanos();
 }
 
 static jlong JNI_TimestampAligner_CreateTimestampAligner(JNIEnv* env) {
@@ -37,9 +37,9 @@ static jlong JNI_TimestampAligner_TranslateTimestamp(JNIEnv* env,
                                                      jlong timestamp_aligner,
                                                      jlong camera_time_ns) {
   return reinterpret_cast<TimestampAligner*>(timestamp_aligner)
-             ->TranslateTimestamp(camera_time_ns / rtc::kNumNanosecsPerMicrosec,
-                                  rtc::TimeMicros()) *
-         rtc::kNumNanosecsPerMicrosec;
+             ->TranslateTimestamp(camera_time_ns / kNumNanosecsPerMicrosec,
+                                  TimeMicros()) *
+         kNumNanosecsPerMicrosec;
 }
 
 }  // namespace jni

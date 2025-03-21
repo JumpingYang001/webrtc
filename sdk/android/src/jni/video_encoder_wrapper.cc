@@ -163,7 +163,7 @@ int32_t VideoEncoderWrapper::Encode(
       Java_EncodeInfo_Constructor(jni, j_frame_types);
 
   FrameExtraInfo info;
-  info.capture_time_ns = frame.timestamp_us() * rtc::kNumNanosecsPerMicrosec;
+  info.capture_time_ns = frame.timestamp_us() * kNumNanosecsPerMicrosec;
   info.timestamp_rtp = frame.rtp_timestamp();
   {
     MutexLock lock(&frame_extra_infos_lock_);
@@ -307,7 +307,7 @@ void VideoEncoderWrapper::OnEncodedFrame(
   EncodedImage frame_copy = frame;
 
   frame_copy.SetRtpTimestamp(frame_extra_info.timestamp_rtp);
-  frame_copy.capture_time_ms_ = capture_time_ns / rtc::kNumNanosecsPerMillisec;
+  frame_copy.capture_time_ms_ = capture_time_ns / kNumNanosecsPerMillisec;
 
   if (frame_copy.qp_ < 0)
     frame_copy.qp_ = ParseQp(frame);
