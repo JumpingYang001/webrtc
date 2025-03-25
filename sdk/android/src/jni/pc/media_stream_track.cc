@@ -20,13 +20,13 @@ namespace jni {
 
 ScopedJavaLocalRef<jobject> NativeToJavaMediaType(
     JNIEnv* jni,
-    cricket::MediaType media_type) {
+    webrtc::MediaType media_type) {
   return Java_MediaType_fromNativeIndex(jni, static_cast<int>(media_type));
 }
 
-cricket::MediaType JavaToNativeMediaType(JNIEnv* jni,
-                                         const JavaRef<jobject>& j_media_type) {
-  return static_cast<cricket::MediaType>(
+webrtc::MediaType JavaToNativeMediaType(JNIEnv* jni,
+                                        const JavaRef<jobject>& j_media_type) {
+  return static_cast<webrtc::MediaType>(
       Java_MediaType_getNative(jni, j_media_type));
 }
 

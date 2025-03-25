@@ -33,7 +33,7 @@ class RtpReceiverObserverJni : public RtpReceiverObserverInterface {
 
   ~RtpReceiverObserverJni() override = default;
 
-  void OnFirstPacketReceived(cricket::MediaType media_type) override {
+  void OnFirstPacketReceived(webrtc::MediaType media_type) override {
     JNIEnv* const env = AttachCurrentThreadIfNeeded();
     Java_Observer_onFirstPacketReceived(env, j_observer_global_,
                                         NativeToJavaMediaType(env, media_type));
