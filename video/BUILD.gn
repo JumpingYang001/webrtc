@@ -1018,6 +1018,7 @@ if (rtc_include_tests) {
       "config:streams_config",
       "config:video_config_tests",
       "corruption_detection:corruption_detection_tests",
+      "corruption_detection/evaluation:corruption_detection_eval_tests",
       "//third_party/abseil-cpp/absl/algorithm:container",
       "//third_party/abseil-cpp/absl/container:inlined_vector",
       "//third_party/abseil-cpp/absl/functional:any_invocable",
