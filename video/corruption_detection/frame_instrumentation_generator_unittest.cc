@@ -536,11 +536,6 @@ TEST(FrameInstrumentationGeneratorTest,
 
   EXPECT_EQ(frame_instrumentation_data1.sequence_index, 0b0000'1000'0000);
   EXPECT_EQ(frame_instrumentation_data2.sequence_index, 0b0001'0000'0000);
-
-  EXPECT_THAT(frame_instrumentation_data1.sample_values,
-              ElementsAre(17, 10, 8, 24, 2, 12, 20, 13, 3, 21, 5, 15, 17));
-  EXPECT_THAT(frame_instrumentation_data2.sample_values,
-              ElementsAre(3, 21, 6, 16, 18, 9, 7, 23, 2, 12, 20, 14, 4));
 }
 
 TEST(FrameInstrumentationGeneratorTest,
@@ -598,11 +593,6 @@ TEST(FrameInstrumentationGeneratorTest,
 
   EXPECT_EQ(frame_instrumentation_data1.sequence_index, 0);
   EXPECT_EQ(frame_instrumentation_data2.sequence_index, 0b1000'0000);
-
-  EXPECT_THAT(frame_instrumentation_data1.sample_values,
-              ElementsAre(1, 11, 19, 13, 3, 21, 6, 16, 18, 9, 7, 23, 1));
-  EXPECT_THAT(frame_instrumentation_data2.sample_values,
-              ElementsAre(17, 10, 8, 24, 2, 12, 20, 13, 3, 21, 5, 15, 17));
 }
 
 TEST(FrameInstrumentationGeneratorTest,

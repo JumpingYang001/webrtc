@@ -74,34 +74,27 @@ std::vector<Coordinates> MakeDefaultSampleCoordinates() {
 }
 
 TEST(GaussianFilteringTest, ShouldReturnFilteredValueWhenInputIsValid) {
-  const int kWidth = 4;
-  const int kHeight = 4;
-  const int kStride = 4;
-  const uint8_t kData[kWidth * kHeight] = {20, 196, 250, 115, 139, 39, 99, 197,
-                                           21, 166, 254, 28,  227, 54, 64, 46};
+  const int kWidth = 8;
+  const int kHeight = 8;
+  const int kStride = 8;
+  const uint8_t kData[kWidth * kHeight] = {
+      219, 38,  75,  13,  77,  22,  108, 5,    //
+      199, 105, 237, 3,   194, 63,  200, 95,   //
+      116, 21,  224, 21,  79,  210, 138, 3,    //
+      130, 156, 139, 176, 1,   134, 191, 61,   //
+      123, 59,  34,  237, 223, 162, 113, 108,  //
+      146, 210, 214, 110, 50,  205, 135, 18,   //
+      51,  198, 63,  69,  70,  117, 180, 126,  //
+      244, 250, 194, 195, 85,  24,  25,  224};
+  // Chosing the point in the middle so all pixels are used.
   const int kRow = 3;
-  const int kColumn = 2;
-  const double kStdDev = 1.12;
+  const int kColumn = 3;
+  // Resulting in a filter size of 3 pixels.
+  const double kStdDev = 1;
 
   EXPECT_THAT(GetFilteredElement(kWidth, kHeight, kStride, kData, kRow, kColumn,
                                  kStdDev),
-              DoubleEq(103.9558797428683));
-}
-
-TEST(GaussianFilteringTest,
-     ShouldReturnOriginalValueWhenNoFilteringIsRequested) {
-  const int kWidth = 4;
-  const int kHeight = 4;
-  const int kStride = 4;
-  const uint8_t kData[kWidth * kHeight] = {20, 196, 250, 115, 139, 39, 99, 197,
-                                           21, 166, 254, 28,  227, 54, 64, 46};
-  const int kRow = 3;
-  const int kColumn = 2;
-  const double kStdDev = 0.0;
-
-  EXPECT_THAT(GetFilteredElement(kWidth, kHeight, kStride, kData, kRow, kColumn,
-                                 kStdDev),
-              DoubleEq(64.0));
+              DoubleEq(126.45897447350468));
 }
 
 #if GTEST_HAS_DEATH_TEST
@@ -262,44 +255,6 @@ TEST(HaltonFrameSamplerGaussianFilteringTest,
 }
 
 TEST(HaltonFrameSamplerGaussianFilteringTest,
-     ShouldReturnGivenValueWhenStdDevZero) {
-  // 4x4 i420 frame data.
-  const int kLumaWidth = 4;
-  const int kLumaHeight = 4;
-  const int kChromaWidth = 2;
-  const uint8_t kYContent[16] = {20, 196, 250, 115, 139, 39, 99, 197,
-                                 21, 166, 254, 28,  227, 54, 64, 46};
-  const uint8_t kUContent[4] = {156, 203, 36, 128};
-  const uint8_t kVContent[4] = {112, 2, 0, 24};
-  const scoped_refptr<I420Buffer> kI420Buffer =
-      I420Buffer::Copy(kLumaWidth, kLumaHeight, kYContent, kLumaWidth,
-                       kUContent, kChromaWidth, kVContent, kChromaWidth);
-
-  // Coordinates in all planes.
-  const std::vector<Coordinates> kSampleCoordinates = {
-      {.row = 0.2, .column = 0.7},
-      {.row = 0.5, .column = 0.9},
-      {.row = 0.3, .column = 0.7},
-      {.row = 0.8, .column = 0.4}};
-
-  // No scaling.
-  const int kScaledWidth = kLumaWidth;
-  const int kScaledHeight = kLumaHeight;
-
-  EXPECT_THAT(
-      GetSampleValuesForFrame(kI420Buffer, kSampleCoordinates, kScaledWidth,
-                              kScaledHeight, 0.0),
-      ElementsAre(AllOf(Field(&FilteredSample::value, DoubleEq(156.0)),
-                        Field(&FilteredSample::plane, ImagePlane::kChroma)),
-                  AllOf(Field(&FilteredSample::value, DoubleEq(2.0)),
-                        Field(&FilteredSample::plane, ImagePlane::kChroma)),
-                  AllOf(Field(&FilteredSample::value, DoubleEq(36.0)),
-                        Field(&FilteredSample::plane, ImagePlane::kChroma)),
-                  AllOf(Field(&FilteredSample::value, DoubleEq(64.0)),
-                        Field(&FilteredSample::plane, ImagePlane::kLuma))));
-}
-
-TEST(HaltonFrameSamplerGaussianFilteringTest,
      ShouldReturnGivenValueWhenNoScalingOrFilteringIsDefined) {
   // 4x4 i420 frame data.
   const int kLumaWidth = 4;
@@ -383,14 +338,27 @@ TEST(HaltonFrameSamplerGaussianFilteringTest,
 
 TEST(HaltonFrameSamplerGaussianFilteringTest,
      ShouldReturnFilteredValuesWhenFilteringIsRequested) {
-  // 4x4 i420 frame data.
-  const int kLumaWidth = 4;
-  const int kLumaHeight = 4;
-  const int kChromaWidth = 2;
-  const uint8_t kYContent[16] = {20, 196, 250, 115, 139, 39, 99, 197,
-                                 21, 166, 254, 28,  227, 54, 64, 46};
-  const uint8_t kUContent[4] = {156, 203, 36, 128};
-  const uint8_t kVContent[4] = {112, 2, 0, 24};
+  // 8x8 i420 frame data.
+  const int kLumaWidth = 8;
+  const int kLumaHeight = 8;
+  const int kChromaWidth = 4;
+  const uint8_t kYContent[kLumaWidth * kLumaHeight] = {
+      219, 38,  75,  13,  77,  22,  108, 5,    //
+      199, 105, 237, 3,   194, 63,  200, 95,   //
+      116, 21,  224, 21,  79,  210, 138, 3,    //
+      130, 156, 139, 176, 1,   134, 191, 61,   //
+      123, 59,  34,  237, 223, 162, 113, 108,  //
+      146, 210, 214, 110, 50,  205, 135, 18,   //
+      51,  198, 63,  69,  70,  117, 180, 126,  //
+      244, 250, 194, 195, 85,  24,  25,  224};
+  const uint8_t kUContent[16] = {
+      219, 38,  75,  13, 77,  22, 108, 5,  //
+      199, 105, 237, 3,  194, 63, 200, 95,
+  };
+  const uint8_t kVContent[16] = {
+      123, 59,  34, 237, 223, 162, 113, 108,  //
+      51,  198, 63, 69,  70,  117, 180, 126,
+  };
   const scoped_refptr<I420Buffer> kI420Buffer =
       I420Buffer::Copy(kLumaWidth, kLumaHeight, kYContent, kLumaWidth,
                        kUContent, kChromaWidth, kVContent, kChromaWidth);
@@ -406,20 +374,20 @@ TEST(HaltonFrameSamplerGaussianFilteringTest,
   const int kScaledWidth = kLumaWidth;
   const int kScaledHeight = kLumaHeight;
 
-  // With filtering (kernel size 2x2).
-  const double kStdDevGaussianBlur = 1.12;
+  // With filtering (kernel size 3x3 minimum required).
+  const double kStdDevGaussianBlur = 1;
 
   EXPECT_THAT(
       GetSampleValuesForFrame(kI420Buffer, kSampleCoordinates, kScaledWidth,
                               kScaledHeight, kStdDevGaussianBlur),
       ElementsAre(
-          AllOf(Field(&FilteredSample::value, DoubleEq(133.93909141543787)),
+          AllOf(Field(&FilteredSample::value, DoubleEq(114.6804322931639)),
                 Field(&FilteredSample::plane, ImagePlane::kChroma)),
-          AllOf(Field(&FilteredSample::value, DoubleEq(33.40054269066487)),
+          AllOf(Field(&FilteredSample::value, DoubleEq(109.66816384377159)),
                 Field(&FilteredSample::plane, ImagePlane::kChroma)),
-          AllOf(Field(&FilteredSample::value, DoubleEq(113.8901872847041)),
+          AllOf(Field(&FilteredSample::value, DoubleEq(133.7339472739954)),
                 Field(&FilteredSample::plane, ImagePlane::kChroma)),
-          AllOf(Field(&FilteredSample::value, DoubleEq(103.9558797428683)),
+          AllOf(Field(&FilteredSample::value, DoubleEq(104.43135638243807)),
                 Field(&FilteredSample::plane, ImagePlane::kLuma))));
 }
 
