@@ -115,7 +115,7 @@ std::optional<std::string> ProjectRootPath() {
   if (GetModuleFileNameW(NULL, buf, MAX_PATH) == 0)
     return std::nullopt;
 
-  std::string exe_path = rtc::ToUtf8(std::wstring(buf));
+  std::string exe_path = webrtc::ToUtf8(std::wstring(buf));
   std::string exe_dir = DirName(exe_path);
   return DirName(DirName(exe_dir)) + std::string(kPathDelimiter);
 #endif

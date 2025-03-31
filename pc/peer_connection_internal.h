@@ -47,6 +47,7 @@
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 
@@ -197,7 +198,7 @@ class PeerConnectionInternal : public PeerConnectionInterface,
   virtual bool GetLocalCertificate(
       const std::string& transport_name,
       rtc::scoped_refptr<RTCCertificate>* certificate) = 0;
-  virtual std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain(
+  virtual std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& transport_name) = 0;
 
   // Returns true if there was an ICE restart initiated by the remote offer.

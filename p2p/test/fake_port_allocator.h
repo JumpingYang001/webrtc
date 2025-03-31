@@ -128,10 +128,10 @@ class FakePortAllocatorSession : public webrtc::PortAllocatorSession {
 
   void StartGettingPorts() override {
     if (!port_) {
-      rtc::Network& network = (rtc::HasIPv6Enabled() &&
-                               (flags() & webrtc::PORTALLOCATOR_ENABLE_IPV6))
-                                  ? ipv6_network_
-                                  : ipv4_network_;
+      webrtc::Network& network = (webrtc::HasIPv6Enabled() &&
+                                  (flags() & webrtc::PORTALLOCATOR_ENABLE_IPV6))
+                                     ? ipv6_network_
+                                     : ipv4_network_;
       port_.reset(TestUDPPort::Create({.network_thread = network_thread_,
                                        .socket_factory = factory_,
                                        .network = &network,
@@ -216,8 +216,8 @@ class FakePortAllocatorSession : public webrtc::PortAllocatorSession {
   webrtc::PortAllocator* allocator_;
   webrtc::TaskQueueBase* network_thread_;
   webrtc::PacketSocketFactory* factory_;
-  rtc::Network ipv4_network_;
-  rtc::Network ipv6_network_;
+  webrtc::Network ipv4_network_;
+  webrtc::Network ipv6_network_;
   std::unique_ptr<cricket::Port> port_;
   int port_config_count_;
   std::vector<webrtc::Candidate> candidates_;

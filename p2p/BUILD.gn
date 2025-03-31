@@ -639,6 +639,8 @@ rtc_library("port_interface") {
     "../rtc_base:async_packet_socket",
     "../rtc_base:callback_list",
     "../rtc_base:dscp",
+    "../rtc_base:network",
+    "../rtc_base:network",
     "../rtc_base:socket",
     "../rtc_base:socket_address",
     "../rtc_base/network:sent_packet",
@@ -960,6 +962,7 @@ rtc_source_set("relay_port_factory_interface") {
     ":port_interface",
     "../api:packet_socket_factory",
     "../rtc_base:async_packet_socket",
+    "../rtc_base:network",
     "../rtc_base:refcount",
     "../rtc_base:threading",
   ]

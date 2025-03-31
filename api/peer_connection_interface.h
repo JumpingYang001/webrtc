@@ -683,7 +683,7 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
 
     // List of address/length subnets that should be treated like
     // VPN (in case webrtc fails to auto detect them).
-    std::vector<rtc::NetworkMask> vpn_list;
+    std::vector<NetworkMask> vpn_list;
 
     PortAllocatorConfig port_allocator_config;
 
@@ -1398,7 +1398,7 @@ struct RTC_EXPORT PeerConnectionDependencies final {
       async_dns_resolver_factory;
   std::unique_ptr<webrtc::IceTransportFactory> ice_transport_factory;
   std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator;
-  std::unique_ptr<rtc::SSLCertificateVerifier> tls_cert_verifier;
+  std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier;
   std::unique_ptr<webrtc::VideoBitrateAllocatorFactory>
       video_bitrate_allocator_factory;
   // Optional network controller factory to use.
@@ -1446,10 +1446,10 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   // The `network_manager` will only be used if CreatePeerConnection is called
   // without a `port_allocator`, causing the default allocator and network
   // manager to be used.
-  std::unique_ptr<rtc::NetworkManager> network_manager;
+  std::unique_ptr<NetworkManager> network_manager;
   // The `network_monitor_factory` will only be used if CreatePeerConnection is
   // called without a `port_allocator`, and the above `network_manager' is null.
-  std::unique_ptr<rtc::NetworkMonitorFactory> network_monitor_factory;
+  std::unique_ptr<NetworkMonitorFactory> network_monitor_factory;
   std::unique_ptr<NetEqFactory> neteq_factory;
   std::unique_ptr<SctpTransportFactoryInterface> sctp_factory;
   std::unique_ptr<FieldTrialsView> trials;
@@ -1518,7 +1518,7 @@ class RTC_EXPORT PeerConnectionFactoryInterface
     // Sets the network types to ignore. For instance, calling this with
     // ADAPTER_TYPE_ETHERNET | ADAPTER_TYPE_LOOPBACK will ignore Ethernet and
     // loopback interfaces.
-    int network_ignore_mask = rtc::kDefaultNetworkIgnoreMask;
+    int network_ignore_mask = kDefaultNetworkIgnoreMask;
 
     // Sets the maximum supported protocol version. The highest version
     // supported by both ends will be used for the connection, i.e. if one

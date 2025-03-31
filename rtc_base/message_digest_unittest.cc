@@ -17,7 +17,7 @@
 #include "rtc_base/string_encode.h"
 #include "test/gtest.h"
 
-namespace rtc {
+namespace webrtc {
 
 // Test vectors from RFC 1321.
 TEST(MessageDigestTest, TestMd5Digest) {
@@ -33,7 +33,7 @@ TEST(MessageDigestTest, TestMd5Digest) {
   EXPECT_EQ(sizeof(output),
             ComputeDigest(DIGEST_MD5, "abc", 3, output, sizeof(output)));
   EXPECT_EQ("900150983cd24fb0d6963f7d28e17f72",
-            hex_encode(absl::string_view(output, sizeof(output))));
+            rtc::hex_encode(absl::string_view(output, sizeof(output))));
   EXPECT_EQ(0U,
             ComputeDigest(DIGEST_MD5, "abc", 3, output, sizeof(output) - 1));
 }
@@ -55,7 +55,7 @@ TEST(MessageDigestTest, TestSha1Digest) {
   EXPECT_EQ(static_cast<size_t>(SHA_DIGEST_LENGTH),
             ComputeDigest(DIGEST_SHA_1, "abc", 3, output, SHA_DIGEST_LENGTH));
   EXPECT_EQ("a9993e364706816aba3e25717850c26c9cd0d89d",
-            hex_encode(absl::string_view(output, SHA_DIGEST_LENGTH)));
+            rtc::hex_encode(absl::string_view(output, SHA_DIGEST_LENGTH)));
   EXPECT_EQ(
       0U, ComputeDigest(DIGEST_SHA_1, "abc", 3, output, SHA_DIGEST_LENGTH - 1));
 }
@@ -103,7 +103,7 @@ TEST(MessageDigestTest, TestMd5Hmac) {
             ComputeHmac(DIGEST_MD5, key.c_str(), key.size(), input.c_str(),
                         input.size(), output, sizeof(output)));
   EXPECT_EQ("9294727a3638bb1c13f48ef8158bfc9d",
-            hex_encode(absl::string_view(output, sizeof(output))));
+            rtc::hex_encode(absl::string_view(output, sizeof(output))));
   EXPECT_EQ(0U, ComputeHmac(DIGEST_MD5, key.c_str(), key.size(), input.c_str(),
                             input.size(), output, sizeof(output) - 1));
 }
@@ -144,7 +144,7 @@ TEST(MessageDigestTest, TestSha1Hmac) {
             ComputeHmac(DIGEST_SHA_1, key.c_str(), key.size(), input.c_str(),
                         input.size(), output, SHA_DIGEST_LENGTH));
   EXPECT_EQ("b617318655057264e28bc0b6fb378c8ef146be00",
-            hex_encode(absl::string_view(output, SHA_DIGEST_LENGTH)));
+            rtc::hex_encode(absl::string_view(output, SHA_DIGEST_LENGTH)));
   EXPECT_EQ(0U,
             ComputeHmac(DIGEST_SHA_1, key.c_str(), key.size(), input.c_str(),
                         input.size(), output, SHA_DIGEST_LENGTH - 1));
@@ -174,7 +174,7 @@ TEST(MessageDigestTest, TestSha2Hmac) {
   EXPECT_EQ(
       "896fb1128abbdf196832107cd49df33f"
       "47b4b1169912ba4f53684b22",
-      hex_encode(absl::string_view(output, SHA224_DIGEST_LENGTH)));
+      rtc::hex_encode(absl::string_view(output, SHA224_DIGEST_LENGTH)));
   EXPECT_EQ(0U,
             ComputeHmac(DIGEST_SHA_224, key.c_str(), key.size(), input.c_str(),
                         input.size(), output, SHA224_DIGEST_LENGTH - 1));
@@ -186,7 +186,7 @@ TEST(MessageDigestTest, TestSha2Hmac) {
   EXPECT_EQ(
       "b0344c61d8db38535ca8afceaf0bf12b"
       "881dc200c9833da726e9376c2e32cff7",
-      hex_encode(absl::string_view(output, SHA256_DIGEST_LENGTH)));
+      rtc::hex_encode(absl::string_view(output, SHA256_DIGEST_LENGTH)));
   EXPECT_EQ(0U,
             ComputeHmac(DIGEST_SHA_256, key.c_str(), key.size(), input.c_str(),
                         input.size(), output, SHA256_DIGEST_LENGTH - 1));
@@ -198,4 +198,4 @@ TEST(MessageDigestTest, TestBadHmac) {
   EXPECT_EQ("", ComputeHmac("sha-9000", "key", "abc"));
 }
 
-}  // namespace rtc
+}  // namespace webrtc

@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
@@ -25,21 +26,32 @@
 #include "absl/strings/str_replace.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
-#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
+#include "api/rtp_parameters.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
 #include "api/test/metrics/metric.h"
+#include "api/test/videocodec_test_fixture.h"
+#include "api/test/videocodec_test_stats.h"
 #include "api/transport/field_trial_based_config.h"
-#include "api/video/video_bitrate_allocation.h"
+#include "api/video/encoded_image.h"
+#include "api/video/resolution.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "api/video_codecs/h264_profile_level_id.h"
 #include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/simulcast_stream.h"
+#include "api/video_codecs/spatial_layer.h"
 #include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_decoder.h"
+#include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_decoder_factory_template.h"
 #include "api/video_codecs/video_decoder_factory_template_dav1d_adapter.h"
 #include "api/video_codecs/video_decoder_factory_template_libvpx_vp8_adapter.h"
 #include "api/video_codecs/video_decoder_factory_template_libvpx_vp9_adapter.h"
 #include "api/video_codecs/video_decoder_factory_template_open_h264_adapter.h"
+#include "api/video_codecs/video_encoder.h"
 #include "api/video_codecs/video_encoder_factory.h"
 #include "api/video_codecs/video_encoder_factory_template.h"
 #include "api/video_codecs/video_encoder_factory_template_libaom_av1_adapter.h"
@@ -49,17 +61,22 @@
 #include "common_video/h264/h264_common.h"
 #include "media/base/media_constants.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "modules/video_coding/codecs/test/videoprocessor.h"
 #include "modules/video_coding/codecs/vp9/svc_config.h"
 #include "modules/video_coding/utility/ivf_file_writer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/cpu_time.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
+#include "rtc_base/system/file_wrapper.h"
+#include "rtc_base/system_time.h"
+#include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/cpu_info.h"
 #include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
+#include "test/testsupport/frame_reader.h"
 #include "test/testsupport/frame_writer.h"
 #include "test/video_codec_settings.h"
 #include "video/config/encoder_stream_factory.h"
@@ -413,13 +430,13 @@ class VideoCodecTestFixtureImpl::CpuProcessTime final {
 
   void Start() {
     if (config_.measure_cpu) {
-      cpu_time_ -= rtc::GetProcessCpuTimeNanos();
+      cpu_time_ -= GetProcessCpuTimeNanos();
       wallclock_time_ -= rtc::SystemTimeNanos();
     }
   }
   void Stop() {
     if (config_.measure_cpu) {
-      cpu_time_ += rtc::GetProcessCpuTimeNanos();
+      cpu_time_ += GetProcessCpuTimeNanos();
       wallclock_time_ += rtc::SystemTimeNanos();
     }
   }

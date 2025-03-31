@@ -113,9 +113,9 @@ std::string WorkingDir() {
 std::string TempFilename(absl::string_view dir, absl::string_view prefix) {
 #ifdef WIN32
   wchar_t filename[MAX_PATH];
-  if (::GetTempFileNameW(rtc::ToUtf16(dir).c_str(),
-                         rtc::ToUtf16(prefix).c_str(), 0, filename) != 0)
-    return rtc::ToUtf8(filename);
+  if (::GetTempFileNameW(webrtc::ToUtf16(dir).c_str(),
+                         webrtc::ToUtf16(prefix).c_str(), 0, filename) != 0)
+    return webrtc::ToUtf8(filename);
   RTC_DCHECK_NOTREACHED();
   return "";
 #else
@@ -154,14 +154,15 @@ std::optional<std::vector<std::string>> ReadDirectory(absl::string_view path) {
 
   // Init.
   WIN32_FIND_DATAW data;
-  HANDLE handle = ::FindFirstFileW(rtc::ToUtf16(path_str + '*').c_str(), &data);
+  HANDLE handle =
+      ::FindFirstFileW(webrtc::ToUtf16(path_str + '*').c_str(), &data);
   if (handle == INVALID_HANDLE_VALUE)
     return std::optional<std::vector<std::string>>();
 
   // Populate output.
   std::vector<std::string> found_entries;
   do {
-    const std::string name = rtc::ToUtf8(data.cFileName);
+    const std::string name = webrtc::ToUtf8(data.cFileName);
     if (name != "." && name != "..")
       found_entries.emplace_back(path_str + name);
   } while (::FindNextFileW(handle, &data) == TRUE);

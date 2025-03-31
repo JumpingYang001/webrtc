@@ -20,7 +20,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/string_utils.h"
 
-namespace rtc {
+namespace webrtc {
 
 // Helper function declarations for inet_ntop/inet_pton.
 static const char* inet_ntop_v4(const void* src, char* dst, socklen_t size);
@@ -310,4 +310,4 @@ int inet_pton_v6(const char* src, void* dst) {
   return 1;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

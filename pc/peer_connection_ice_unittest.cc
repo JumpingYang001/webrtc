@@ -211,7 +211,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
     Candidate candidate;
     RTC_DCHECK_EQ(candidate.type(), IceCandidateType::kHost);
     candidate.set_component(cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
-    candidate.set_protocol(cricket::UDP_PROTOCOL_NAME);
+    candidate.set_protocol(UDP_PROTOCOL_NAME);
     candidate.set_address(address);
     return candidate;
   }
@@ -1449,7 +1449,7 @@ INSTANTIATE_TEST_SUITE_P(PeerConnectionIceTest,
 class PeerConnectionIceConfigTest : public ::testing::Test {
  public:
   PeerConnectionIceConfigTest()
-      : socket_server_(rtc::CreateDefaultSocketServer()),
+      : socket_server_(CreateDefaultSocketServer()),
         main_thread_(socket_server_.get()) {}
 
  protected:

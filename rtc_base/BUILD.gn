@@ -835,7 +835,10 @@ rtc_library("net_test_helpers") {
     "net_test_helpers.cc",
     "net_test_helpers.h",
   ]
-  deps = [ "system:rtc_export" ]
+  deps = [
+    ":net_helpers",
+    "system:rtc_export",
+  ]
   if (is_android) {
     deps += [ ":ifaddrs_android" ]
   }
@@ -990,7 +993,9 @@ rtc_library("threading") {
     "../api:sequence_checker",
     "../api/task_queue",
     "../api/task_queue:pending_task_safety_flag",
+    "../api/transport:ecn_marking",
     "../api/units:time_delta",
+    "../api/units:timestamp",
     "../system_wrappers:field_trial",
     "./network:ecn_marking",
     "synchronization:mutex",
@@ -1170,6 +1175,7 @@ rtc_library("network") {
     ":logging",
     ":macromagic",
     ":mdns_responder_interface",
+    ":net_helpers",
     ":network_constants",
     ":socket",
     ":socket_address",
@@ -1233,6 +1239,8 @@ rtc_library("socket_adapters") {
     ":byte_buffer",
     ":checks",
     ":logging",
+    ":socket",
+    ":socket_address",
     ":stringutils",
     ":zero_memory",
     "../api:array_view",
@@ -1729,7 +1737,9 @@ rtc_library("rtc_base_tests_utils") {
     ":logging",
     ":macromagic",
     ":mdns_responder_interface",
+    ":net_helpers",
     ":network",
+    ":network_constants",
     ":rtc_event",
     ":socket",
     ":socket_adapters",
@@ -1873,6 +1883,7 @@ if (rtc_include_tests) {
         ":threading",
         ":timeutils",
         "../api:rtc_error_matchers",
+        "../api/transport:ecn_marking",
         "../api/units:time_delta",
         "../api/units:timestamp",
         "../system_wrappers",
@@ -1882,6 +1893,7 @@ if (rtc_include_tests) {
         "../test:test_support",
         "../test:wait_until",
         "network:ecn_marking",
+        "system:file_wrapper",
         "third_party/sigslot",
         "//testing/gtest",
         "//third_party/abseil-cpp/absl/memory",

@@ -61,7 +61,7 @@ WindowsCommandLineArguments::WindowsCommandLineArguments() {
 
   // iterate over the returned wide strings;
   for (int i = 0; i < argc; ++i) {
-    args_.push_back(rtc::ToUtf8(wide_argv[i], wcslen(wide_argv[i])));
+    args_.push_back(webrtc::ToUtf8(wide_argv[i], wcslen(wide_argv[i])));
     // make sure the argv array points to the string data.
     argv_.push_back(const_cast<char*>(args_.back().c_str()));
   }

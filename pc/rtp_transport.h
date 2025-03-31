@@ -27,7 +27,9 @@
 #include "pc/rtp_transport_internal.h"
 #include "pc/session_description.h"
 #include "rtc_base/async_packet_socket.h"
+#include "rtc_base/containers/flat_set.h"
 #include "rtc_base/copy_on_write_buffer.h"
+#include "rtc_base/network/ecn_marking.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
@@ -107,8 +109,7 @@ class RtpTransport : public RtpTransportInternal {
   flat_set<uint32_t> GetSsrcsForSink(RtpPacketSinkInterface* sink);
 
   // Overridden by SrtpTransport.
-  virtual void OnNetworkRouteChanged(
-      std::optional<rtc::NetworkRoute> network_route);
+  virtual void OnNetworkRouteChanged(std::optional<NetworkRoute> network_route);
   virtual void OnRtpPacketReceived(const rtc::ReceivedPacket& packet);
   virtual void OnRtcpPacketReceived(const rtc::ReceivedPacket& packet);
   // Overridden by SrtpTransport and DtlsSrtpTransport.

@@ -15,10 +15,16 @@
 
 #include "rtc_base/socket_server.h"
 
+namespace webrtc {
+
+std::unique_ptr<SocketServer> CreateDefaultSocketServer();
+
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
 namespace rtc {
-
-std::unique_ptr<webrtc::SocketServer> CreateDefaultSocketServer();
-
+using ::webrtc::CreateDefaultSocketServer;
 }  // namespace rtc
 
 #endif  // RTC_BASE_INTERNAL_DEFAULT_SOCKET_SERVER_H_

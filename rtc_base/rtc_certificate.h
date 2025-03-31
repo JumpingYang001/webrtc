@@ -16,16 +16,12 @@
 #include <memory>
 #include <string>
 
-#include "absl/base/attributes.h"
 #include "absl/strings/string_view.h"
 #include "api/ref_counted_base.h"
 #include "api/scoped_refptr.h"
+#include "rtc_base/ssl_certificate.h"
+#include "rtc_base/ssl_identity.h"
 #include "rtc_base/system/rtc_export.h"
-namespace rtc {
-class SSLCertChain;
-class SSLCertificate;
-class SSLIdentity;
-}  // namespace rtc
 
 namespace webrtc {
 

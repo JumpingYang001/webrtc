@@ -18,18 +18,36 @@
  *  transport. No TURN server is configured, so both peers need to be reachable
  *  using STUN only.
  */
-#include <inttypes.h>
 
+#include <algorithm>
 #include <charconv>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "absl/cleanup/cleanup.h"
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
+#include "absl/strings/string_view.h"
+#include "api/data_channel_interface.h"
+#include "api/peer_connection_interface.h"
+#include "api/rtc_error.h"
+#include "api/scoped_refptr.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/event.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/ssl_adapter.h"
+#include "rtc_base/string_encode.h"
+#include "rtc_base/strings/string_builder.h"
 #include "rtc_base/thread.h"
 #include "rtc_tools/data_channel_benchmark/grpc_signaling.h"
 #include "rtc_tools/data_channel_benchmark/peer_connection_client.h"
+#include "rtc_tools/data_channel_benchmark/signaling_interface.h"
+#include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/field_trial.h"
 
 ABSL_FLAG(int, verbose, 0, "verbosity level (0-5)");
@@ -360,7 +378,7 @@ int RunClient() {
 }
 
 int main(int argc, char** argv) {
-  rtc::InitializeSSL();
+  webrtc::InitializeSSL();
   absl::ParseCommandLine(argc, argv);
 
   // Make sure that higher severity number means more logs by reversing the

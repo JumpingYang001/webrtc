@@ -11,16 +11,13 @@
 #ifndef RTC_BASE_SOCKET_ADAPTERS_H_
 #define RTC_BASE_SOCKET_ADAPTERS_H_
 
-#include <string>
+#include <cstddef>
+#include <cstdint>
 
-#include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "rtc_base/async_socket.h"
-namespace rtc {
-struct HttpAuthContext;
-class ByteBufferReader;
-class ByteBufferWriter;
-}  // namespace rtc
+#include "rtc_base/socket.h"
+#include "rtc_base/socket_address.h"
 
 namespace webrtc {
 

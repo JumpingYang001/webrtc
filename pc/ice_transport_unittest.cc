@@ -30,7 +30,7 @@ namespace webrtc {
 class IceTransportTest : public ::testing::Test {
  protected:
   IceTransportTest()
-      : socket_server_(rtc::CreateDefaultSocketServer()),
+      : socket_server_(CreateDefaultSocketServer()),
         main_thread_(socket_server_.get()) {}
 
   SocketServer* socket_server() const { return socket_server_.get(); }

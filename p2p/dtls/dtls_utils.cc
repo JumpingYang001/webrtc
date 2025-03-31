@@ -61,7 +61,7 @@ bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload) {
 std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
     rtc::ArrayView<const uint8_t> dtls_packet) {
   std::vector<uint16_t> acks;
-  rtc::ByteBufferReader record_buf(dtls_packet);
+  webrtc::ByteBufferReader record_buf(dtls_packet);
   // https://datatracker.ietf.org/doc/html/rfc6347#section-4.1
   while (record_buf.Length() >= kDtlsRecordHeaderLen) {
     uint8_t content_type;
@@ -113,7 +113,8 @@ std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
     }
 
     // https://www.rfc-editor.org/rfc/rfc6347.html#section-4.2.2
-    rtc::ByteBufferReader handshake_buf(record_buf.DataView().subview(0, len));
+    webrtc::ByteBufferReader handshake_buf(
+        record_buf.DataView().subview(0, len));
     while (handshake_buf.Length() > 0) {
       uint16_t msg_seq;
       uint32_t fragment_len;

@@ -95,7 +95,7 @@ class PeerConfigurer {
   PeerConfigurer* SetRTCCertificateGenerator(
       std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator);
   PeerConfigurer* SetSSLCertificateVerifier(
-      std::unique_ptr<rtc::SSLCertificateVerifier> tls_cert_verifier);
+      std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier);
   PeerConfigurer* SetIceTransportFactory(
       std::unique_ptr<IceTransportFactory> factory);
   // Flags to set on `cricket::PortAllocator`. These flags will be added

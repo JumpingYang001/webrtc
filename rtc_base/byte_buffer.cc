@@ -12,7 +12,14 @@
 
 #include <string.h>
 
-namespace rtc {
+#include <cstdint>
+#include <string>
+
+#include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "rtc_base/byte_order.h"
+
+namespace webrtc {
 
 ByteBufferWriter::ByteBufferWriter() : ByteBufferWriterT() {}
 
@@ -167,4 +174,4 @@ bool ByteBufferReader::Consume(size_t size) {
   return true;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

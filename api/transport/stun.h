@@ -270,11 +270,11 @@ class StunMessage {
 
   // Parses the STUN packet in the given buffer and records it here. The
   // return value indicates whether this was successful.
-  bool Read(rtc::ByteBufferReader* buf);
+  bool Read(webrtc::ByteBufferReader* buf);
 
   // Writes this object into a STUN packet. The return value indicates whether
   // this was successful.
-  bool Write(rtc::ByteBufferWriter* buf) const;
+  bool Write(webrtc::ByteBufferWriter* buf) const;
 
   // Creates an empty message. Overridable by derived classes.
   virtual StunMessage* CreateNew() const;
@@ -349,11 +349,11 @@ class StunAttribute {
 
   // Reads the body (not the type or length) for this type of attribute from
   // the given buffer.  Return value is true if successful.
-  virtual bool Read(rtc::ByteBufferReader* buf) = 0;
+  virtual bool Read(webrtc::ByteBufferReader* buf) = 0;
 
   // Writes the body (not the type or length) to the given buffer.  Return
   // value is true if successful.
-  virtual bool Write(rtc::ByteBufferWriter* buf) const = 0;
+  virtual bool Write(webrtc::ByteBufferWriter* buf) const = 0;
 
   // Creates an attribute object with the given type and smallest length.
   static StunAttribute* Create(StunAttributeValueType value_type,
@@ -377,8 +377,8 @@ class StunAttribute {
  protected:
   StunAttribute(uint16_t type, uint16_t length);
   void SetLength(uint16_t length) { length_ = length; }
-  void WritePadding(rtc::ByteBufferWriter* buf) const;
-  void ConsumePadding(rtc::ByteBufferReader* buf) const;
+  void WritePadding(webrtc::ByteBufferWriter* buf) const;
+  void ConsumePadding(webrtc::ByteBufferReader* buf) const;
 
  private:
   uint16_t type_;
@@ -420,8 +420,8 @@ class StunAddressAttribute : public StunAttribute {
   }
   void SetPort(uint16_t port) { address_.SetPort(port); }
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   void EnsureAddressLength() {
@@ -453,8 +453,8 @@ class StunXorAddressAttribute : public StunAddressAttribute {
 
   StunAttributeValueType value_type() const override;
   void SetOwner(StunMessage* owner) override;
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   webrtc::IPAddress GetXoredIP() const;
@@ -476,8 +476,8 @@ class StunUInt32Attribute : public StunAttribute {
   bool GetBit(size_t index) const;
   void SetBit(size_t index, bool value);
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   uint32_t bits_;
@@ -494,8 +494,8 @@ class StunUInt64Attribute : public StunAttribute {
   uint64_t value() const { return bits_; }
   void SetValue(uint64_t bits) { bits_ = bits; }
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   uint64_t bits_;
@@ -536,8 +536,8 @@ class StunByteStringAttribute : public StunAttribute {
   uint8_t GetByte(size_t index) const;
   void SetByte(size_t index, uint8_t value);
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   void SetBytes(uint8_t* bytes, size_t length);
@@ -567,8 +567,8 @@ class StunErrorCodeAttribute : public StunAttribute {
   void SetNumber(uint8_t number) { number_ = number; }
   void SetReason(const std::string& reason);
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   uint8_t class_;
@@ -590,8 +590,8 @@ class StunUInt16ListAttribute : public StunAttribute {
   void AddType(uint16_t value);
   void AddTypeAtIndex(uint16_t index, uint16_t value);
 
-  bool Read(rtc::ByteBufferReader* buf) override;
-  bool Write(rtc::ByteBufferWriter* buf) const override;
+  bool Read(webrtc::ByteBufferReader* buf) override;
+  bool Write(webrtc::ByteBufferWriter* buf) const override;
 
  private:
   std::vector<uint16_t>* attr_types_;
@@ -636,7 +636,7 @@ bool ComputeStunCredentialHash(const std::string& username,
 // a buffer will created in the method.
 std::unique_ptr<StunAttribute> CopyStunAttribute(
     const StunAttribute& attribute,
-    rtc::ByteBufferWriter* tmp_buffer_ptr = 0);
+    webrtc::ByteBufferWriter* tmp_buffer_ptr = 0);
 
 // Defined in TURN RFC 5766.
 enum TurnMessageType : uint16_t {

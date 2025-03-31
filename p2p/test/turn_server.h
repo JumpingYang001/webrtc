@@ -28,6 +28,7 @@
 #include "api/units/time_delta.h"
 #include "p2p/base/port_interface.h"
 #include "rtc_base/async_packet_socket.h"
+#include "rtc_base/byte_buffer.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/socket.h"
@@ -36,10 +37,6 @@
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace rtc {
-class ByteBufferWriter;
-
-}  // namespace rtc
 namespace cricket {
 class StunMessage;
 class TurnMessage;
@@ -258,7 +255,7 @@ class TurnServer : public sigslot::has_slots<> {
   void AddInternalServerSocket(
       Socket* socket,
       ProtocolType proto,
-      std::unique_ptr<rtc::SSLAdapterFactory> ssl_adapter_factory = nullptr);
+      std::unique_ptr<SSLAdapterFactory> ssl_adapter_factory = nullptr);
   // Specifies the factory to use for creating external sockets.
   void SetExternalSocketFactory(PacketSocketFactory* factory,
                                 const SocketAddress& address);
@@ -330,7 +327,7 @@ class TurnServer : public sigslot::has_slots<> {
       RTC_RUN_ON(thread_);
 
   void SendStun(TurnServerConnection* conn, cricket::StunMessage* msg);
-  void Send(TurnServerConnection* conn, const rtc::ByteBufferWriter& buf);
+  void Send(TurnServerConnection* conn, const ByteBufferWriter& buf);
 
   void DestroyAllocation(TurnServerAllocation* allocation) RTC_RUN_ON(thread_);
   void DestroyInternalSocket(AsyncPacketSocket* socket) RTC_RUN_ON(thread_);
@@ -339,7 +336,7 @@ class TurnServer : public sigslot::has_slots<> {
   struct ServerSocketInfo {
     ProtocolType proto;
     // If non-null, used to wrap accepted sockets.
-    std::unique_ptr<rtc::SSLAdapterFactory> ssl_adapter_factory;
+    std::unique_ptr<SSLAdapterFactory> ssl_adapter_factory;
   };
   typedef std::map<Socket*, ServerSocketInfo> ServerSocketMap;
 

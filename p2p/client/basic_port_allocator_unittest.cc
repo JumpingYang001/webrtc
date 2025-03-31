@@ -72,7 +72,7 @@ using ::webrtc::IceCandidateType;
 using ::webrtc::SocketAddress;
 
 #define MAYBE_SKIP_IPV4                        \
-  if (!::rtc::HasIPv4Enabled()) {              \
+  if (!::webrtc::HasIPv4Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv4... skipping"; \
     return;                                    \
   }
@@ -375,8 +375,8 @@ class BasicPortAllocatorTestBase : public ::testing::Test,
     return (addr.port() >= min_port && addr.port() <= max_port);
   }
 
-  static bool HasNetwork(const std::vector<const rtc::Network*>& networks,
-                         const rtc::Network& to_be_found) {
+  static bool HasNetwork(const std::vector<const webrtc::Network*>& networks,
+                         const webrtc::Network& to_be_found) {
     auto it =
         absl::c_find_if(networks, [to_be_found](const rtc::Network* network) {
           return network->description() == to_be_found.description() &&
@@ -1566,7 +1566,7 @@ TEST_F(BasicPortAllocatorTest, TestDisableUdpTurn) {
   EXPECT_TRUE(FindCandidate(candidates_, IceCandidateType::kRelay, "udp",
                             kTurnUdpExtAddr, &turn_candidate));
   // The TURN candidate should use TCP to contact the TURN server.
-  EXPECT_EQ(TCP_PROTOCOL_NAME, turn_candidate.relay_protocol());
+  EXPECT_EQ(webrtc::TCP_PROTOCOL_NAME, turn_candidate.relay_protocol());
   EXPECT_TRUE(
       HasCandidate(candidates_, IceCandidateType::kHost, "tcp", kClientAddr));
 }
@@ -2313,7 +2313,7 @@ TEST_F(BasicPortAllocatorTest, TestNetworkPermissionBlocked) {
   network_manager_.set_default_local_addresses(kPrivateAddr.ipaddr(),
                                                webrtc::IPAddress());
   network_manager_.set_enumeration_permission(
-      rtc::NetworkManager::ENUMERATION_BLOCKED);
+      webrtc::NetworkManager::ENUMERATION_BLOCKED);
   allocator().set_flags(allocator().flags() |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
                         webrtc::PORTALLOCATOR_DISABLE_TCP |
@@ -2805,7 +2805,7 @@ TEST_F(BasicPortAllocatorTest, HostCandidateAddressIsReplacedByHostname) {
     if (candidate.is_local()) {
       EXPECT_FALSE(candidate.address().hostname().empty());
       EXPECT_TRUE(raddr.IsNil());
-      if (candidate.protocol() == UDP_PROTOCOL_NAME) {
+      if (candidate.protocol() == webrtc::UDP_PROTOCOL_NAME) {
         ++num_host_udp_candidates;
       } else {
         ++num_host_tcp_candidates;
@@ -2886,13 +2886,14 @@ TEST_F(BasicPortAllocatorTest, AssignsUniqueLocalPreferencetoRelayCandidates) {
 // Test that no more than allocator.max_ipv6_networks() IPv6 networks are used
 // to gather candidates.
 TEST_F(BasicPortAllocatorTest, TwoIPv6AreSelectedBecauseOfMaxIpv6Limit) {
-  rtc::Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_WIFI);
-  rtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  rtc::Network wifi2("wifi2", "Test NetworkAdapter 3",
-                     kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
-  std::vector<const rtc::Network*> networks = {&wifi1, &ethe1, &wifi2};
+  webrtc::Network wifi1("wifi1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  webrtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  webrtc::Network wifi2("wifi2", "Test NetworkAdapter 3",
+                        kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  std::vector<const webrtc::Network*> networks = {&wifi1, &ethe1, &wifi2};
 
   // Ensure that only 2 interfaces were selected.
   EXPECT_EQ(2U, BasicPortAllocatorSession::SelectIPv6Networks(
@@ -2903,11 +2904,12 @@ TEST_F(BasicPortAllocatorTest, TwoIPv6AreSelectedBecauseOfMaxIpv6Limit) {
 // Test that if the number of available IPv6 networks is less than
 // allocator.max_ipv6_networks(), all IPv6 networks will be selected.
 TEST_F(BasicPortAllocatorTest, AllIPv6AreSelected) {
-  rtc::Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_WIFI);
-  rtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  std::vector<const rtc::Network*> networks = {&wifi1, &ethe1};
+  webrtc::Network wifi1("wifi1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  webrtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  std::vector<const webrtc::Network*> networks = {&wifi1, &ethe1};
 
   // Ensure that all 2 interfaces were selected.
   EXPECT_EQ(2U, BasicPortAllocatorSession::SelectIPv6Networks(
@@ -2918,20 +2920,22 @@ TEST_F(BasicPortAllocatorTest, AllIPv6AreSelected) {
 // If there are some IPv6 networks with different types, diversify IPv6
 // networks.
 TEST_F(BasicPortAllocatorTest, TwoIPv6WifiAreSelectedIfThereAreTwo) {
-  rtc::Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_WIFI);
-  rtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  rtc::Network ethe2("ethe2", "Test NetworkAdapter 3",
-                     kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  rtc::Network unknown1("unknown1", "Test NetworkAdapter 4",
+  webrtc::Network wifi1("wifi1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  webrtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
                         kClientIPv6Addr2.ipaddr(), 64,
-                        rtc::ADAPTER_TYPE_UNKNOWN);
-  rtc::Network cell1("cell1", "Test NetworkAdapter 5",
-                     kClientIPv6Addr3.ipaddr(), 64,
-                     rtc::ADAPTER_TYPE_CELLULAR_4G);
-  std::vector<const rtc::Network*> networks = {&wifi1, &ethe1, &ethe2,
-                                               &unknown1, &cell1};
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  webrtc::Network ethe2("ethe2", "Test NetworkAdapter 3",
+                        kClientIPv6Addr3.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  webrtc::Network unknown1("unknown1", "Test NetworkAdapter 4",
+                           kClientIPv6Addr2.ipaddr(), 64,
+                           rtc::ADAPTER_TYPE_UNKNOWN);
+  webrtc::Network cell1("cell1", "Test NetworkAdapter 5",
+                        kClientIPv6Addr3.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_4G);
+  std::vector<const webrtc::Network*> networks = {&wifi1, &ethe1, &ethe2,
+                                                  &unknown1, &cell1};
 
   networks = BasicPortAllocatorSession::SelectIPv6Networks(
       networks, /*max_ipv6_networks=*/4);
@@ -2949,22 +2953,23 @@ TEST_F(BasicPortAllocatorTest, TwoIPv6WifiAreSelectedIfThereAreTwo) {
 // is no other option.
 TEST_F(BasicPortAllocatorTest, IPv6WithSameTypeAreSelectedIfNoOtherOption) {
   // Add 5 cellular interfaces
-  rtc::Network cell1("cell1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_CELLULAR_2G);
-  rtc::Network cell2("cell2", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64,
-                     rtc::ADAPTER_TYPE_CELLULAR_3G);
-  rtc::Network cell3("cell3", "Test NetworkAdapter 3",
-                     kClientIPv6Addr3.ipaddr(), 64,
-                     rtc::ADAPTER_TYPE_CELLULAR_4G);
-  rtc::Network cell4("cell4", "Test NetworkAdapter 4",
-                     kClientIPv6Addr2.ipaddr(), 64,
-                     rtc::ADAPTER_TYPE_CELLULAR_5G);
-  rtc::Network cell5("cell5", "Test NetworkAdapter 5",
-                     kClientIPv6Addr3.ipaddr(), 64,
-                     rtc::ADAPTER_TYPE_CELLULAR_3G);
-  std::vector<const rtc::Network*> networks = {&cell1, &cell2, &cell3, &cell4,
-                                               &cell5};
+  webrtc::Network cell1("cell1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_2G);
+  webrtc::Network cell2("cell2", "Test NetworkAdapter 2",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_3G);
+  webrtc::Network cell3("cell3", "Test NetworkAdapter 3",
+                        kClientIPv6Addr3.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_4G);
+  webrtc::Network cell4("cell4", "Test NetworkAdapter 4",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_5G);
+  webrtc::Network cell5("cell5", "Test NetworkAdapter 5",
+                        kClientIPv6Addr3.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_3G);
+  std::vector<const webrtc::Network*> networks = {&cell1, &cell2, &cell3,
+                                                  &cell4, &cell5};
 
   // Ensure that 4 interfaces were selected.
   EXPECT_EQ(4U, BasicPortAllocatorSession::SelectIPv6Networks(
@@ -2973,13 +2978,14 @@ TEST_F(BasicPortAllocatorTest, IPv6WithSameTypeAreSelectedIfNoOtherOption) {
 }
 
 TEST_F(BasicPortAllocatorTest, IPv6EthernetHasHigherPriorityThanWifi) {
-  rtc::Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_WIFI);
-  rtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  rtc::Network wifi2("wifi2", "Test NetworkAdapter 3",
-                     kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
-  std::vector<const rtc::Network*> networks = {&wifi1, &ethe1, &wifi2};
+  webrtc::Network wifi1("wifi1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  webrtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  webrtc::Network wifi2("wifi2", "Test NetworkAdapter 3",
+                        kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  std::vector<const webrtc::Network*> networks = {&wifi1, &ethe1, &wifi2};
 
   networks = BasicPortAllocatorSession::SelectIPv6Networks(
       networks, /*max_ipv6_networks=*/1);
@@ -2990,19 +2996,21 @@ TEST_F(BasicPortAllocatorTest, IPv6EthernetHasHigherPriorityThanWifi) {
 }
 
 TEST_F(BasicPortAllocatorTest, IPv6EtherAndWifiHaveHigherPriorityThanOthers) {
-  rtc::Network cell1("cell1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(),
-                     64, rtc::ADAPTER_TYPE_CELLULAR_3G);
-  rtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
-                     kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_ETHERNET);
-  rtc::Network wifi1("wifi1", "Test NetworkAdapter 3",
-                     kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
-  rtc::Network unknown("unknown", "Test NetworkAdapter 4",
-                       kClientIPv6Addr2.ipaddr(), 64,
-                       rtc::ADAPTER_TYPE_UNKNOWN);
-  rtc::Network vpn1("vpn1", "Test NetworkAdapter 5", kClientIPv6Addr3.ipaddr(),
-                    64, rtc::ADAPTER_TYPE_VPN);
-  std::vector<const rtc::Network*> networks = {&cell1, &ethe1, &wifi1, &unknown,
-                                               &vpn1};
+  webrtc::Network cell1("cell1", "Test NetworkAdapter 1",
+                        kClientIPv6Addr.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_CELLULAR_3G);
+  webrtc::Network ethe1("ethe1", "Test NetworkAdapter 2",
+                        kClientIPv6Addr2.ipaddr(), 64,
+                        rtc::ADAPTER_TYPE_ETHERNET);
+  webrtc::Network wifi1("wifi1", "Test NetworkAdapter 3",
+                        kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_WIFI);
+  webrtc::Network unknown("unknown", "Test NetworkAdapter 4",
+                          kClientIPv6Addr2.ipaddr(), 64,
+                          rtc::ADAPTER_TYPE_UNKNOWN);
+  webrtc::Network vpn1("vpn1", "Test NetworkAdapter 5",
+                       kClientIPv6Addr3.ipaddr(), 64, rtc::ADAPTER_TYPE_VPN);
+  std::vector<const webrtc::Network*> networks = {&cell1, &ethe1, &wifi1,
+                                                  &unknown, &vpn1};
 
   networks = BasicPortAllocatorSession::SelectIPv6Networks(
       networks, /*max_ipv6_networks=*/2);

@@ -199,7 +199,7 @@ void CroppingWindowCapturerWin::CaptureFrame() {
 }
 
 bool CroppingWindowCapturerWin::ShouldUseScreenCapturer() {
-  if (rtc::rtc_win::GetVersion() < rtc::rtc_win::Version::VERSION_WIN8 &&
+  if (webrtc::rtc_win::GetVersion() < webrtc::rtc_win::Version::VERSION_WIN8 &&
       window_capture_helper_.IsAeroEnabled()) {
     return false;
   }

@@ -77,7 +77,7 @@ class MediaChannelUtil {
  protected:
   bool DscpEnabled() const;
 
-  void SetPreferredDscp(rtc::DiffServCodePoint new_dscp);
+  void SetPreferredDscp(webrtc::DiffServCodePoint new_dscp);
 
  private:
   // Implementation of the webrtc::Transport interface required
@@ -111,12 +111,12 @@ class MediaChannelUtil {
     }
     bool DscpEnabled() const { return enable_dscp_; }
 
-    void SetPreferredDscp(rtc::DiffServCodePoint new_dscp);
+    void SetPreferredDscp(webrtc::DiffServCodePoint new_dscp);
 
    private:
     // This is the DSCP value used for both RTP and RTCP channels if DSCP is
     // enabled. It can be changed at any time via `SetPreferredDscp`.
-    rtc::DiffServCodePoint PreferredDscp() const {
+    webrtc::DiffServCodePoint PreferredDscp() const {
       RTC_DCHECK_RUN_ON(network_thread_);
       return preferred_dscp_;
     }
@@ -136,8 +136,8 @@ class MediaChannelUtil {
     const bool enable_dscp_;
     MediaChannelNetworkInterface* network_interface_
         RTC_GUARDED_BY(network_thread_) = nullptr;
-    rtc::DiffServCodePoint preferred_dscp_ RTC_GUARDED_BY(network_thread_) =
-        rtc::DSCP_DEFAULT;
+    webrtc::DiffServCodePoint preferred_dscp_ RTC_GUARDED_BY(network_thread_) =
+        webrtc::DSCP_DEFAULT;
   };
 
   bool extmap_allow_mixed_ = false;

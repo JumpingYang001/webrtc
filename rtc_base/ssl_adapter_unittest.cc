@@ -50,10 +50,10 @@ static webrtc::Socket* CreateSocket() {
 }
 
 // Simple mock for the certificate verifier.
-class MockCertVerifier : public rtc::SSLCertificateVerifier {
+class MockCertVerifier : public webrtc::SSLCertificateVerifier {
  public:
   virtual ~MockCertVerifier() = default;
-  MOCK_METHOD(bool, Verify, (const rtc::SSLCertificate&), (override));
+  MOCK_METHOD(bool, Verify, (const webrtc::SSLCertificate&), (override));
 };
 
 // TODO(benwright) - Move to using INSTANTIATE_TEST_SUITE_P instead of using
@@ -64,7 +64,7 @@ class SSLAdapterTestDummy : public sigslot::has_slots<> {
   virtual ~SSLAdapterTestDummy() = default;
 
   void CreateSSLAdapter(webrtc::Socket* socket, webrtc::SSLRole role) {
-    ssl_adapter_.reset(rtc::SSLAdapter::Create(socket));
+    ssl_adapter_.reset(webrtc::SSLAdapter::Create(socket));
 
     // Ignore any certificate errors for the purpose of testing.
     // Note: We do this only because we don't have a real certificate.
@@ -82,7 +82,7 @@ class SSLAdapterTestDummy : public sigslot::has_slots<> {
     ssl_adapter_->SetIgnoreBadCert(ignore_bad_cert);
   }
 
-  void SetCertVerifier(rtc::SSLCertificateVerifier* ssl_cert_verifier) {
+  void SetCertVerifier(webrtc::SSLCertificateVerifier* ssl_cert_verifier) {
     ssl_adapter_->SetCertVerifier(ssl_cert_verifier);
   }
 
@@ -136,7 +136,7 @@ class SSLAdapterTestDummy : public sigslot::has_slots<> {
   }
 
  protected:
-  std::unique_ptr<rtc::SSLAdapter> ssl_adapter_;
+  std::unique_ptr<webrtc::SSLAdapter> ssl_adapter_;
   std::unique_ptr<webrtc::Socket> socket_;
 
  private:
@@ -219,7 +219,7 @@ class SSLAdapterTestBase : public ::testing::Test, public sigslot::has_slots<> {
     client_->SetIgnoreBadCert(ignore_bad_cert);
   }
 
-  void SetCertVerifier(rtc::SSLCertificateVerifier* ssl_cert_verifier) {
+  void SetCertVerifier(webrtc::SSLCertificateVerifier* ssl_cert_verifier) {
     client_->SetCertVerifier(ssl_cert_verifier);
   }
 
@@ -234,8 +234,8 @@ class SSLAdapterTestBase : public ::testing::Test, public sigslot::has_slots<> {
   void SetMockCertVerifier(bool return_value) {
     auto mock_verifier = std::make_unique<MockCertVerifier>();
     EXPECT_CALL(*mock_verifier, Verify(_)).WillRepeatedly(Return(return_value));
-    cert_verifier_ =
-        std::unique_ptr<rtc::SSLCertificateVerifier>(std::move(mock_verifier));
+    cert_verifier_ = std::unique_ptr<webrtc::SSLCertificateVerifier>(
+        std::move(mock_verifier));
 
     SetIgnoreBadCert(false);
     SetCertVerifier(cert_verifier_.get());
@@ -303,7 +303,7 @@ class SSLAdapterTestBase : public ::testing::Test, public sigslot::has_slots<> {
   webrtc::AutoSocketServerThread thread_;
   std::unique_ptr<SSLAdapterTestDummyServer> server_;
   std::unique_ptr<SSLAdapterTestDummyClient> client_;
-  std::unique_ptr<rtc::SSLCertificateVerifier> cert_verifier_;
+  std::unique_ptr<webrtc::SSLCertificateVerifier> cert_verifier_;
 
   webrtc::TimeDelta handshake_wait_;
 };

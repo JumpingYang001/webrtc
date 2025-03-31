@@ -16,15 +16,9 @@
 
 #include "api/packet_socket_factory.h"
 #include "p2p/base/port_allocator.h"
-#include "p2p/base/port_interface.h"
 #include "rtc_base/async_packet_socket.h"
+#include "rtc_base/network.h"
 #include "rtc_base/thread.h"
-
-namespace rtc {
-
-class Network;
-
-}  // namespace rtc
 
 namespace webrtc {
 class TurnCustomizer;
@@ -39,7 +33,7 @@ struct ProtocolAddress;
 struct CreateRelayPortArgs {
   webrtc::Thread* network_thread;
   webrtc::PacketSocketFactory* socket_factory;
-  const rtc::Network* network;
+  const webrtc::Network* network;
   const ProtocolAddress* server_address;
   const webrtc::RelayServerConfig* config;
   std::string username;

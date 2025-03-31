@@ -48,7 +48,6 @@
 #include "pc/media_options.h"
 #include "pc/media_session.h"
 #include "pc/media_stream_observer.h"
-#include "pc/peer_connection_internal.h"
 #include "pc/rtp_receiver.h"
 #include "pc/rtp_transceiver.h"
 #include "pc/rtp_transmission_manager.h"
@@ -630,7 +629,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // SetRemoteDescription() is invoked while CreateOffer() is still pending, the
   // SRD operation will not start until CreateOffer() has completed. See
   // https://w3c.github.io/webrtc-pc/#dfn-operations-chain.
-  rtc::scoped_refptr<rtc::OperationsChain> operations_chain_
+  rtc::scoped_refptr<OperationsChain> operations_chain_
       RTC_GUARDED_BY(signaling_thread());
 
   // One PeerConnection has only one RTCP CNAME.

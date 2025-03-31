@@ -31,8 +31,9 @@ bool PacketTransportInternal::GetOption(webrtc::Socket::Option /* opt */,
   return false;
 }
 
-std::optional<NetworkRoute> PacketTransportInternal::network_route() const {
-  return std::optional<NetworkRoute>();
+std::optional<webrtc::NetworkRoute> PacketTransportInternal::network_route()
+    const {
+  return std::optional<webrtc::NetworkRoute>();
 }
 
 void PacketTransportInternal::RegisterReceivedPacketCallback(

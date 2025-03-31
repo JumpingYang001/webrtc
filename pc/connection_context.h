@@ -12,21 +12,18 @@
 #define PC_CONNECTION_CONTEXT_H_
 
 #include <memory>
-#include <string>
 
 #include "api/environment/environment.h"
-#include "api/media_stream_interface.h"
+#include "api/packet_socket_factory.h"
 #include "api/peer_connection_interface.h"
 #include "api/ref_counted_base.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/transport/sctp_transport_factory_interface.h"
 #include "media/base/media_engine.h"
-#include "p2p/base/basic_packet_socket_factory.h"
-#include "rtc_base/checks.h"
+#include "rtc_base/memory/always_valid_pointer.h"
 #include "rtc_base/network.h"
 #include "rtc_base/network_monitor_factory.h"
-#include "rtc_base/rtc_certificate_generator.h"
 #include "rtc_base/socket_factory.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
@@ -75,7 +72,7 @@ class ConnectionContext final : public RefCountedNonVirtual<ConnectionContext> {
   const Environment& env() const { return env_; }
 
   // Accessors only used from the PeerConnectionFactory class
-  rtc::NetworkManager* default_network_manager() {
+  NetworkManager* default_network_manager() {
     RTC_DCHECK_RUN_ON(signaling_thread_);
     return default_network_manager_.get();
   }
@@ -126,9 +123,9 @@ class ConnectionContext final : public RefCountedNonVirtual<ConnectionContext> {
   // TODO(bugs.webrtc.org/12666): This variable is used from both the signaling
   // and worker threads. See if we can't restrict usage to a single thread.
   UniqueRandomIdGenerator ssrc_generator_;
-  std::unique_ptr<rtc::NetworkMonitorFactory> const network_monitor_factory_
+  std::unique_ptr<NetworkMonitorFactory> const network_monitor_factory_
       RTC_GUARDED_BY(signaling_thread_);
-  std::unique_ptr<rtc::NetworkManager> default_network_manager_
+  std::unique_ptr<NetworkManager> default_network_manager_
       RTC_GUARDED_BY(signaling_thread_);
   std::unique_ptr<MediaFactory> const call_factory_
       RTC_GUARDED_BY(worker_thread());

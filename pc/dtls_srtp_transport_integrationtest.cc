@@ -101,8 +101,8 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
   void SetRemoteFingerprintFromCert(
       cricket::DtlsTransport* transport,
       const rtc::scoped_refptr<webrtc::RTCCertificate>& cert) {
-    std::unique_ptr<rtc::SSLFingerprint> fingerprint =
-        rtc::SSLFingerprint::CreateFromCertificate(*cert);
+    std::unique_ptr<webrtc::SSLFingerprint> fingerprint =
+        webrtc::SSLFingerprint::CreateFromCertificate(*cert);
 
     transport->SetRemoteParameters(
         fingerprint->algorithm,

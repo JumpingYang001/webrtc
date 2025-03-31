@@ -67,7 +67,7 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
 
   // Returns the current network route with transport overhead.
   // TODO(zhihuang): Make it pure virtual once the Chrome/remoting is updated.
-  virtual std::optional<NetworkRoute> network_route() const;
+  virtual std::optional<webrtc::NetworkRoute> network_route() const;
 
   // Emitted when the writable state, represented by `writable()`, changes.
   sigslot::signal1<PacketTransportInternal*> SignalWritableState;
@@ -95,7 +95,8 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
       SignalSentPacket;
 
   // Signalled when the current network route has changed.
-  sigslot::signal1<std::optional<rtc::NetworkRoute>> SignalNetworkRouteChanged;
+  sigslot::signal1<std::optional<webrtc::NetworkRoute>>
+      SignalNetworkRouteChanged;
 
   // Signalled when the transport is closed.
   void SetOnCloseCallback(absl::AnyInvocable<void() &&> callback);

@@ -99,10 +99,10 @@ class FakePacketTransport : public rtc::PacketTransportInternal {
 
   const CopyOnWriteBuffer* last_sent_packet() { return &last_sent_packet_; }
 
-  std::optional<rtc::NetworkRoute> network_route() const override {
+  std::optional<NetworkRoute> network_route() const override {
     return network_route_;
   }
-  void SetNetworkRoute(std::optional<rtc::NetworkRoute> network_route) {
+  void SetNetworkRoute(std::optional<NetworkRoute> network_route) {
     network_route_ = network_route;
     SignalNetworkRouteChanged(network_route);
   }
@@ -149,7 +149,7 @@ class FakePacketTransport : public rtc::PacketTransportInternal {
   std::map<Socket::Option, int> options_;
   int error_ = 0;
 
-  std::optional<rtc::NetworkRoute> network_route_;
+  std::optional<NetworkRoute> network_route_;
 };
 
 }  //  namespace webrtc

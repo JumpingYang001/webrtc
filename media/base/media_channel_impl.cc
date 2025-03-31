@@ -112,7 +112,7 @@ bool MediaChannelUtil::DscpEnabled() const {
   return transport_.DscpEnabled();
 }
 
-void MediaChannelUtil::SetPreferredDscp(rtc::DiffServCodePoint new_dscp) {
+void MediaChannelUtil::SetPreferredDscp(webrtc::DiffServCodePoint new_dscp) {
   transport_.SetPreferredDscp(new_dscp);
 }
 
@@ -251,8 +251,8 @@ void MediaChannelUtil::TransportForMediaChannels::SetInterface(
 }
 
 void MediaChannelUtil::TransportForMediaChannels::UpdateDscp() {
-  rtc::DiffServCodePoint value =
-      enable_dscp_ ? preferred_dscp_ : rtc::DSCP_DEFAULT;
+  webrtc::DiffServCodePoint value =
+      enable_dscp_ ? preferred_dscp_ : webrtc::DSCP_DEFAULT;
   int ret = SetOptionLocked(MediaChannelNetworkInterface::ST_RTP,
                             webrtc::Socket::OPT_DSCP, value);
   if (ret == 0)
@@ -290,7 +290,7 @@ int MediaChannelUtil::TransportForMediaChannels::SetOptionLocked(
 }
 
 void MediaChannelUtil::TransportForMediaChannels::SetPreferredDscp(
-    rtc::DiffServCodePoint new_dscp) {
+    webrtc::DiffServCodePoint new_dscp) {
   if (!network_thread_->IsCurrent()) {
     // This is currently the common path as the derived channel classes
     // get called on the worker thread. There are still some tests though

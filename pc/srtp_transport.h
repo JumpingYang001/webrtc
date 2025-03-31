@@ -117,7 +117,7 @@ class SrtpTransport : public RtpTransport {
   void OnRtpPacketReceived(const rtc::ReceivedPacket& packet) override;
   void OnRtcpPacketReceived(const rtc::ReceivedPacket& packet) override;
   void OnNetworkRouteChanged(
-      std::optional<rtc::NetworkRoute> network_route) override;
+      std::optional<NetworkRoute> network_route) override;
 
   // Override the RtpTransport::OnWritableState.
   void OnWritableState(rtc::PacketTransportInternal* packet_transport) override;

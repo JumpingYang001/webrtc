@@ -22,29 +22,28 @@
 
 #include "api/audio/audio_device.h"
 #include "api/data_channel_interface.h"
+#include "api/environment/environment.h"
 #include "api/media_types.h"
+#include "api/ref_count.h"
+#include "api/rtp_transceiver_direction.h"
 #include "api/scoped_refptr.h"
 #include "api/stats/rtc_stats_collector_callback.h"
 #include "api/stats/rtc_stats_report.h"
-#include "api/stats/rtcstats_objects.h"
+#include "api/units/timestamp.h"
 #include "call/call.h"
-#include "media/base/media_channel.h"
-#include "pc/data_channel_utils.h"
 #include "pc/peer_connection_internal.h"
 #include "pc/rtp_receiver.h"
 #include "pc/rtp_sender.h"
 #include "pc/rtp_transceiver.h"
-#include "pc/sctp_data_channel.h"
 #include "pc/track_media_info_map.h"
 #include "pc/transport_stats.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/containers/flat_set.h"
 #include "rtc_base/event.h"
-#include "rtc_base/ref_count.h"
 #include "rtc_base/ssl_certificate.h"
-#include "rtc_base/ssl_identity.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
 
 namespace webrtc {
@@ -102,8 +101,8 @@ class RTCStatsCollector : public RefCountInterface {
   ~RTCStatsCollector();
 
   struct CertificateStatsPair {
-    std::unique_ptr<rtc::SSLCertificateStats> local;
-    std::unique_ptr<rtc::SSLCertificateStats> remote;
+    std::unique_ptr<SSLCertificateStats> local;
+    std::unique_ptr<SSLCertificateStats> remote;
 
     CertificateStatsPair Copy() const;
   };

@@ -40,7 +40,6 @@
 #include "rtc_base/message_digest.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/socket.h"
-#include "rtc_base/socket_adapters.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_adapter.h"
 #include "rtc_base/string_encode.h"
@@ -125,7 +124,7 @@ void TurnServer::AddInternalSocket(AsyncPacketSocket* socket,
 void TurnServer::AddInternalServerSocket(
     Socket* socket,
     ProtocolType proto,
-    std::unique_ptr<rtc::SSLAdapterFactory> ssl_adapter_factory) {
+    std::unique_ptr<SSLAdapterFactory> ssl_adapter_factory) {
   RTC_DCHECK_RUN_ON(thread_);
 
   RTC_DCHECK(server_listen_sockets_.end() ==
@@ -157,7 +156,7 @@ void TurnServer::AcceptConnection(Socket* server_socket) {
   if (accepted_socket != NULL) {
     const ServerSocketInfo& info = server_listen_sockets_[server_socket];
     if (info.ssl_adapter_factory) {
-      rtc::SSLAdapter* ssl_adapter =
+      SSLAdapter* ssl_adapter =
           info.ssl_adapter_factory->CreateAdapter(accepted_socket);
       ssl_adapter->StartSSL("");
       accepted_socket = ssl_adapter;
@@ -208,7 +207,7 @@ void TurnServer::HandleStunMessage(TurnServerConnection* conn,
                                    rtc::ArrayView<const uint8_t> payload) {
   RTC_DCHECK_RUN_ON(thread_);
   cricket::TurnMessage msg;
-  rtc::ByteBufferReader buf(payload);
+  ByteBufferReader buf(payload);
   if (!msg.Read(&buf) || (buf.Length() > 0)) {
     RTC_LOG(LS_WARNING) << "Received invalid STUN message";
     return;
@@ -393,7 +392,7 @@ std::string TurnServer::GenerateNonce(int64_t now) const {
   // Generate a nonce of the form hex(now + HMAC-MD5(nonce_key_, now))
   std::string input(reinterpret_cast<const char*>(&now), sizeof(now));
   std::string nonce = rtc::hex_encode(input);
-  nonce += rtc::ComputeHmac(rtc::DIGEST_MD5, nonce_key_, input);
+  nonce += ComputeHmac(DIGEST_MD5, nonce_key_, input);
   RTC_DCHECK(nonce.size() == kNonceSize);
 
   return nonce;
@@ -416,8 +415,7 @@ bool TurnServer::ValidateNonce(absl::string_view nonce) const {
 
   // Verify the HMAC.
   if (nonce.substr(sizeof(then) * 2) !=
-      rtc::ComputeHmac(rtc::DIGEST_MD5, nonce_key_,
-                       std::string(p, sizeof(then)))) {
+      ComputeHmac(DIGEST_MD5, nonce_key_, std::string(p, sizeof(then)))) {
     return false;
   }
 
@@ -499,7 +497,7 @@ void TurnServer::SendErrorResponseWithAlternateServer(
 void TurnServer::SendStun(TurnServerConnection* conn,
                           cricket::StunMessage* msg) {
   RTC_DCHECK_RUN_ON(thread_);
-  rtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
   // Add a SOFTWARE attribute if one is set.
   if (!software_.empty()) {
     msg->AddAttribute(std::make_unique<cricket::StunByteStringAttribute>(
@@ -509,8 +507,7 @@ void TurnServer::SendStun(TurnServerConnection* conn,
   Send(conn, buf);
 }
 
-void TurnServer::Send(TurnServerConnection* conn,
-                      const rtc::ByteBufferWriter& buf) {
+void TurnServer::Send(TurnServerConnection* conn, const ByteBufferWriter& buf) {
   RTC_DCHECK_RUN_ON(thread_);
   rtc::PacketOptions options;
   conn->socket()->SendTo(buf.Data(), buf.Length(), conn->src(), options);
@@ -820,7 +817,7 @@ void TurnServerAllocation::OnExternalPacket(AsyncPacketSocket* socket,
   auto channel = FindChannel(packet.source_address());
   if (channel != channels_.end()) {
     // There is a channel bound to this address. Send as a channel message.
-    rtc::ByteBufferWriter buf;
+    ByteBufferWriter buf;
     buf.WriteUInt16(channel->id);
     buf.WriteUInt16(static_cast<uint16_t>(packet.payload().size()));
     buf.Write(ArrayView<const uint8_t>(packet.payload()));

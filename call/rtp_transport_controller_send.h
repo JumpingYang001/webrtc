@@ -103,7 +103,7 @@ class RtpTransportControllerSend final
   void RegisterTargetTransferRateObserver(
       TargetTransferRateObserver* observer) override;
   void OnNetworkRouteChanged(absl::string_view transport_name,
-                             const rtc::NetworkRoute& network_route) override;
+                             const NetworkRoute& network_route) override;
   void OnNetworkAvailability(bool network_available) override;
   NetworkLinkRtcpObserver* GetRtcpObserver() override;
   int64_t GetPacerQueuingDelayMs() const override;
@@ -166,8 +166,8 @@ class RtpTransportControllerSend final
   void UpdateControllerWithTimeInterval() RTC_RUN_ON(sequence_checker_);
 
   std::optional<BitrateConstraints> ApplyOrLiftRelayCap(bool is_relayed);
-  bool IsRelevantRouteChange(const rtc::NetworkRoute& old_route,
-                             const rtc::NetworkRoute& new_route) const;
+  bool IsRelevantRouteChange(const NetworkRoute& old_route,
+                             const NetworkRoute& new_route) const;
   void UpdateBitrateConstraints(const BitrateConstraints& updated);
   void UpdateStreamsConfig() RTC_RUN_ON(sequence_checker_);
   void PostUpdates(NetworkControlUpdate update) RTC_RUN_ON(sequence_checker_);
@@ -192,7 +192,7 @@ class RtpTransportControllerSend final
   std::vector<std::unique_ptr<RtpVideoSenderInterface>> video_rtp_senders_
       RTC_GUARDED_BY(&sequence_checker_);
   RtpBitrateConfigurator bitrate_configurator_;
-  std::map<std::string, rtc::NetworkRoute> network_routes_
+  std::map<std::string, NetworkRoute> network_routes_
       RTC_GUARDED_BY(sequence_checker_);
   BandwidthEstimationSettings bwe_settings_ RTC_GUARDED_BY(sequence_checker_);
   bool pacer_started_ RTC_GUARDED_BY(sequence_checker_);

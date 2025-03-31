@@ -50,6 +50,7 @@ if (rtc_enable_protobuf) {
       "../../rtc_base:ip_address",
       "../../rtc_base:logging",
       "../../rtc_base:macromagic",
+      "../../rtc_base:net_helpers",
       "../../rtc_base:protobuf_utils",
       "../../rtc_base:socket_address",
       "../../rtc_base:socket_server",

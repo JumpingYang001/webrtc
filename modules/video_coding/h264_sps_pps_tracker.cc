@@ -10,14 +10,18 @@
 
 #include "modules/video_coding/h264_sps_pps_tracker.h"
 
-#include <memory>
-#include <string>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <utility>
-#include <variant>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/video/video_codec_type.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/h264/pps_parser.h"
 #include "common_video/h264/sps_parser.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
@@ -111,7 +115,7 @@ H264SpsPpsTracker::FixedBitstream H264SpsPpsTracker::CopyAndFixBitstream(
   }
 
   if (h264_header.packetization_type == kH264StapA) {
-    rtc::ByteBufferReader nalu(bitstream.subview(1));
+    ByteBufferReader nalu(bitstream.subview(1));
     while (nalu.Length() > 0) {
       required_size += sizeof(start_code_h264);
 
@@ -155,7 +159,7 @@ H264SpsPpsTracker::FixedBitstream H264SpsPpsTracker::CopyAndFixBitstream(
 
   // Copy the rest of the bitstream and insert start codes.
   if (h264_header.packetization_type == kH264StapA) {
-    rtc::ByteBufferReader nalu(bitstream.subview(1));
+    ByteBufferReader nalu(bitstream.subview(1));
     while (nalu.Length() > 0) {
       fixed.bitstream.AppendData(start_code_h264);
 

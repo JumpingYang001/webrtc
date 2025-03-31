@@ -272,7 +272,7 @@ class TurnPortTest : public ::testing::Test,
     return socket;
   }
 
-  rtc::Network* MakeNetwork(const SocketAddress& addr) {
+  webrtc::Network* MakeNetwork(const SocketAddress& addr) {
     networks_.emplace_back("unittest", "unittest", addr.ipaddr(), 32);
     networks_.back().AddIP(addr.ipaddr());
     return &networks_.back();
@@ -292,7 +292,7 @@ class TurnPortTest : public ::testing::Test,
                                        password, server_address);
   }
 
-  bool CreateTurnPortWithNetwork(const rtc::Network* network,
+  bool CreateTurnPortWithNetwork(const webrtc::Network* network,
                                  absl::string_view username,
                                  absl::string_view password,
                                  const ProtocolAddress& server_address) {
@@ -303,7 +303,7 @@ class TurnPortTest : public ::testing::Test,
   // Version of CreateTurnPort that takes all possible parameters; all other
   // helper methods call this, such that "SetIceRole" and "ConnectSignals" (and
   // possibly other things in the future) only happen in one place.
-  bool CreateTurnPortWithAllParams(const rtc::Network* network,
+  bool CreateTurnPortWithAllParams(const webrtc::Network* network,
                                    absl::string_view username,
                                    absl::string_view password,
                                    const ProtocolAddress& server_address) {
@@ -777,7 +777,7 @@ class TurnPortTest : public ::testing::Test,
     conn1->set_remote_password_for_test("bad");
     auto msg = conn1->BuildPingRequestForTest();
 
-    rtc::ByteBufferWriter buf;
+    webrtc::ByteBufferWriter buf;
     msg->Write(&buf);
     conn1->Send(buf.Data(), buf.Length(), options);
 
@@ -950,7 +950,7 @@ class TurnPortTest : public ::testing::Test,
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.
-  std::list<rtc::Network> networks_;
+  std::list<webrtc::Network> networks_;
   std::unique_ptr<TurnPortTestVirtualSocketServer> ss_;
   webrtc::AutoSocketServerThread main_;
   std::unique_ptr<webrtc::AsyncPacketSocket> socket_;
@@ -1198,7 +1198,7 @@ TEST_F(TurnPortTest, TurnTcpAllocationNotDiscardedIfNotBoundToBestIP) {
 
   // Set up a network with kLocalAddr1 as the "best" IP, and kLocalAddr2 as an
   // alternate.
-  rtc::Network* network = MakeNetwork(kLocalAddr1);
+  webrtc::Network* network = MakeNetwork(kLocalAddr1);
   network->AddIP(kLocalAddr2.ipaddr());
   ASSERT_EQ(kLocalAddr1.ipaddr(), network->GetBestIP());
 
@@ -1800,7 +1800,8 @@ TEST_F(TurnPortTest, TestTurnSendDataTurnUdpToUdp) {
   // Create ports and prepare addresses.
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnUdpProtoAddr);
   TestTurnSendData(webrtc::PROTO_UDP);
-  EXPECT_EQ(UDP_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::UDP_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 }
 
 // Do a TURN allocation, establish a TCP connection, and send some data.
@@ -1809,7 +1810,8 @@ TEST_F(TurnPortTest, TestTurnSendDataTurnTcpToUdp) {
   // Create ports and prepare addresses.
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnTcpProtoAddr);
   TestTurnSendData(webrtc::PROTO_TCP);
-  EXPECT_EQ(TCP_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::TCP_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 }
 
 // Do a TURN allocation, establish a TLS connection, and send some data.
@@ -1817,7 +1819,8 @@ TEST_F(TurnPortTest, TestTurnSendDataTurnTlsToUdp) {
   turn_server_.AddInternalSocket(kTurnTcpIntAddr, webrtc::PROTO_TLS);
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnTlsProtoAddr);
   TestTurnSendData(webrtc::PROTO_TLS);
-  EXPECT_EQ(TLS_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::TLS_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 }
 
 // Test TURN fails to make a connection from IPv6 address to a server which has
@@ -2016,7 +2019,7 @@ class MessageObserver : public webrtc::StunMessageObserver {
     const StunByteStringAttribute* attr =
         msg->GetByteString(webrtc::TestTurnCustomizer::STUN_ATTR_COUNTER);
     if (attr != nullptr && attr_counter_ != nullptr) {
-      rtc::ByteBufferReader buf(attr->array_view());
+      webrtc::ByteBufferReader buf(attr->array_view());
       unsigned int val = ~0u;
       buf.ReadUInt32(&val);
       (*attr_counter_)++;
@@ -2056,7 +2059,8 @@ TEST_F(TurnPortTest, TestTurnCustomizerCount) {
 
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnTlsProtoAddr);
   TestTurnSendData(webrtc::PROTO_TLS);
-  EXPECT_EQ(TLS_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::TLS_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 
   // There should have been at least turn_packets_.size() calls to `customizer`.
   EXPECT_GE(customizer->modify_cnt_ + customizer->allow_channel_data_cnt_,
@@ -2086,7 +2090,8 @@ TEST_F(TurnPortTest, TestTurnCustomizerDisallowChannelData) {
 
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnTlsProtoAddr);
   TestTurnSendData(webrtc::PROTO_TLS);
-  EXPECT_EQ(TLS_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::TLS_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 
   // There should have been at least turn_packets_.size() calls to `customizer`.
   EXPECT_GE(customizer->modify_cnt_, turn_packets_.size());
@@ -2116,7 +2121,8 @@ TEST_F(TurnPortTest, TestTurnCustomizerAddAttribute) {
 
   CreateTurnPort(kTurnUsername, kTurnPassword, kTurnTlsProtoAddr);
   TestTurnSendData(webrtc::PROTO_TLS);
-  EXPECT_EQ(TLS_PROTOCOL_NAME, turn_port_->Candidates()[0].relay_protocol());
+  EXPECT_EQ(webrtc::TLS_PROTOCOL_NAME,
+            turn_port_->Candidates()[0].relay_protocol());
 
   // There should have been at least turn_packets_.size() calls to `customizer`.
   EXPECT_GE(customizer->modify_cnt_, turn_packets_.size());

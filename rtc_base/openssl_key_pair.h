@@ -20,7 +20,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/ssl_identity.h"
 
-namespace rtc {
+namespace webrtc {
 
 // OpenSSLKeyPair encapsulates an OpenSSL EVP_PKEY* keypair object,
 // which is reference counted inside the OpenSSL library.
@@ -31,7 +31,8 @@ class OpenSSLKeyPair final {
     RTC_DCHECK(pkey_ != nullptr);
   }
 
-  static std::unique_ptr<OpenSSLKeyPair> Generate(const KeyParams& key_params);
+  static std::unique_ptr<OpenSSLKeyPair> Generate(
+      const rtc::KeyParams& key_params);
   // Constructs a key pair from the private key PEM string. This must not result
   // in missing public key parameters. Returns null on error.
   static std::unique_ptr<OpenSSLKeyPair> FromPrivateKeyPEMString(
@@ -56,6 +57,12 @@ class OpenSSLKeyPair final {
   EVP_PKEY* pkey_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::OpenSSLKeyPair;
 }  // namespace rtc
 
 #endif  // RTC_BASE_OPENSSL_KEY_PAIR_H_

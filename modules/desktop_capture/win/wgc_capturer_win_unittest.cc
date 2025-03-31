@@ -366,7 +366,7 @@ TEST(WgcCapturerNoMonitorTest, NoMonitors) {
 
   // A bug in the DWM (Desktop Window Manager) prevents it from providing image
   // data if there are no displays attached. This was fixed in Windows 11.
-  if (rtc::rtc_win::GetVersion() < rtc::rtc_win::Version::VERSION_WIN11)
+  if (webrtc::rtc_win::GetVersion() < webrtc::rtc_win::Version::VERSION_WIN11)
     EXPECT_FALSE(IsWgcSupported(CaptureType::kWindow));
   else
     EXPECT_TRUE(IsWgcSupported(CaptureType::kWindow));

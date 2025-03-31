@@ -10,7 +10,13 @@
 
 #include "rtc_base/boringssl_certificate.h"
 
+#include <cstdint>
+#include <string>
+
 #include "absl/strings/string_view.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/ssl_certificate.h"
+#include "rtc_base/ssl_identity.h"
 
 #if defined(WEBRTC_WIN)
 // Must be included first before openssl headers.
@@ -29,7 +35,6 @@
 #include <cstring>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "rtc_base/checks.h"
 #include "rtc_base/crypto_random.h"
@@ -39,7 +44,7 @@
 #include "rtc_base/openssl_key_pair.h"
 #include "rtc_base/openssl_utility.h"
 
-namespace rtc {
+namespace webrtc {
 namespace {
 
 // List of OIDs of signature algorithms accepted by WebRTC.
@@ -86,7 +91,7 @@ static void PrintCert(BoringSSLCertificate* cert) {
 }
 #endif
 
-bool AddSHA256SignatureAlgorithm(CBB* cbb, KeyType key_type) {
+bool AddSHA256SignatureAlgorithm(CBB* cbb, rtc::KeyType key_type) {
   // An AlgorithmIdentifier is described in RFC 5280, 4.1.1.2.
   CBB sequence, oid, params;
   if (!CBB_add_asn1(cbb, &sequence, CBS_ASN1_SEQUENCE) ||
@@ -95,14 +100,14 @@ bool AddSHA256SignatureAlgorithm(CBB* cbb, KeyType key_type) {
   }
 
   switch (key_type) {
-    case KT_RSA:
+    case rtc::KT_RSA:
       if (!CBB_add_bytes(&oid, kSHA256WithRSAEncryption,
                          sizeof(kSHA256WithRSAEncryption)) ||
           !CBB_add_asn1(&sequence, &params, CBS_ASN1_NULL)) {
         return false;
       }
       break;
-    case KT_ECDSA:
+    case rtc::KT_ECDSA:
       if (!CBB_add_bytes(&oid, kECDSAWithSHA256, sizeof(kECDSAWithSHA256))) {
         return false;
       }
@@ -185,7 +190,7 @@ bool AddTime(CBB* cbb, time_t time) {
 // given key pair. Caller is responsible for freeing the returned object.
 static bssl::UniquePtr<CRYPTO_BUFFER> MakeCertificate(
     EVP_PKEY* pkey,
-    const SSLIdentityParams& params) {
+    const rtc::SSLIdentityParams& params) {
   RTC_LOG(LS_INFO) << "Making certificate for " << params.common_name;
 
   // See RFC 5280, section 4.1. First, construct the TBSCertificate.
@@ -244,7 +249,7 @@ static bssl::UniquePtr<CRYPTO_BUFFER> MakeCertificate(
 
   RTC_LOG(LS_INFO) << "Returning certificate";
   return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(cert_bytes, cert_len, openssl::GetBufferPool()));
+      CRYPTO_BUFFER_new(cert_bytes, cert_len, rtc::openssl::GetBufferPool()));
 }
 
 }  // namespace
@@ -257,8 +262,8 @@ BoringSSLCertificate::BoringSSLCertificate(
 
 std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
     OpenSSLKeyPair* key_pair,
-    const SSLIdentityParams& params) {
-  SSLIdentityParams actual_params(params);
+    const rtc::SSLIdentityParams& params) {
+  rtc::SSLIdentityParams actual_params(params);
   if (actual_params.common_name.empty()) {
     // Use a random string, arbitrarily 8 chars long.
     actual_params.common_name = webrtc::CreateRandomString(8);
@@ -266,7 +271,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
       MakeCertificate(key_pair->pkey(), actual_params);
   if (!cert_buffer) {
-    openssl::LogSSLErrors("Generating certificate");
+    rtc::openssl::LogSSLErrors("Generating certificate");
     return nullptr;
   }
   auto ret = std::make_unique<BoringSSLCertificate>(std::move(cert_buffer));
@@ -279,12 +284,12 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
 std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::FromPEMString(
     absl::string_view pem_string) {
   std::string der;
-  if (!SSLIdentity::PemToDer(kPemTypeCertificate, pem_string, &der)) {
+  if (!rtc::SSLIdentity::PemToDer(rtc::kPemTypeCertificate, pem_string, &der)) {
     return nullptr;
   }
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer(
       CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(der.c_str()),
-                        der.length(), openssl::GetBufferPool()));
+                        der.length(), rtc::openssl::GetBufferPool()));
   if (!cert_buffer) {
     return nullptr;
   }
@@ -298,7 +303,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::FromPEMString(
 bool BoringSSLCertificate::GetSignatureDigestAlgorithm(
     std::string* algorithm) const {
   CBS oid;
-  if (!openssl::ParseCertificate(cert_buffer_.get(), &oid, nullptr)) {
+  if (!rtc::openssl::ParseCertificate(cert_buffer_.get(), &oid, nullptr)) {
     RTC_LOG(LS_ERROR) << "Failed to parse certificate.";
     return false;
   }
@@ -378,9 +383,9 @@ std::unique_ptr<SSLCertificate> BoringSSLCertificate::Clone() const {
 }
 
 std::string BoringSSLCertificate::ToPEMString() const {
-  return SSLIdentity::DerToPem(kPemTypeCertificate,
-                               CRYPTO_BUFFER_data(cert_buffer_.get()),
-                               CRYPTO_BUFFER_len(cert_buffer_.get()));
+  return rtc::SSLIdentity::DerToPem(rtc::kPemTypeCertificate,
+                                    CRYPTO_BUFFER_data(cert_buffer_.get()),
+                                    CRYPTO_BUFFER_len(cert_buffer_.get()));
 }
 
 void BoringSSLCertificate::ToDER(Buffer* der_buffer) const {
@@ -402,11 +407,11 @@ bool BoringSSLCertificate::operator!=(const BoringSSLCertificate& other) const {
 
 int64_t BoringSSLCertificate::CertificateExpirationTime() const {
   int64_t ret;
-  if (!openssl::ParseCertificate(cert_buffer_.get(), nullptr, &ret)) {
+  if (!rtc::openssl::ParseCertificate(cert_buffer_.get(), nullptr, &ret)) {
     RTC_LOG(LS_ERROR) << "Failed to parse certificate.";
     return -1;
   }
   return ret;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

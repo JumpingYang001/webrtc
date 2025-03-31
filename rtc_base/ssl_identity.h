@@ -20,12 +20,10 @@
 #include <string>
 
 #include "absl/strings/string_view.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/system/rtc_export.h"
 
 namespace rtc {
-
-class SSLCertChain;
-class SSLCertificate;
 
 // KT_LAST is intended for vector declarations and loops over all key types;
 // it does not represent any key type in itself.

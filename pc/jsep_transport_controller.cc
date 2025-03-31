@@ -361,8 +361,7 @@ rtc::scoped_refptr<RTCCertificate> JsepTransportController::GetLocalCertificate(
   return t->GetLocalCertificate();
 }
 
-std::unique_ptr<rtc::SSLCertChain>
-JsepTransportController::GetRemoteSSLCertChain(
+std::unique_ptr<SSLCertChain> JsepTransportController::GetRemoteSSLCertChain(
     const std::string& transport_name) const {
   RTC_DCHECK_RUN_ON(network_thread_);
 

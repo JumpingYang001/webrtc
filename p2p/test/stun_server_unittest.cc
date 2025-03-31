@@ -43,7 +43,7 @@ class StunServerTest : public ::testing::Test {
   }
 
   void Send(const cricket::StunMessage& msg) {
-    rtc::ByteBufferWriter buf;
+    ByteBufferWriter buf;
     msg.Write(&buf);
     Send(reinterpret_cast<const char*>(buf.Data()),
          static_cast<int>(buf.Length()));
@@ -57,7 +57,7 @@ class StunServerTest : public ::testing::Test {
     std::unique_ptr<TestClient::Packet> packet =
         client_->NextPacket(TestClient::kTimeoutMs);
     if (packet) {
-      rtc::ByteBufferReader buf(packet->buf);
+      ByteBufferReader buf(packet->buf);
       msg = new cricket::StunMessage();
       msg->Read(&buf);
     }

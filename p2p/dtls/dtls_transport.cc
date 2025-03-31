@@ -48,6 +48,7 @@
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/socket.h"
 #include "rtc_base/socket_address.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/stream.h"
 #include "rtc_base/thread.h"
@@ -404,7 +405,7 @@ bool DtlsTransport::SetRemoteFingerprint(absl::string_view digest_alg,
   return true;
 }
 
-std::unique_ptr<rtc::SSLCertChain> DtlsTransport::GetRemoteSSLCertChain()
+std::unique_ptr<webrtc::SSLCertChain> DtlsTransport::GetRemoteSSLCertChain()
     const {
   if (!dtls_) {
     return nullptr;
@@ -572,7 +573,7 @@ int DtlsTransport::GetError() {
   return ice_transport_->GetError();
 }
 
-std::optional<rtc::NetworkRoute> DtlsTransport::network_route() const {
+std::optional<webrtc::NetworkRoute> DtlsTransport::network_route() const {
   return ice_transport_->network_route();
 }
 
@@ -887,7 +888,7 @@ void DtlsTransport::OnDtlsEvent(int sig, int err) {
 }
 
 void DtlsTransport::OnNetworkRouteChanged(
-    std::optional<rtc::NetworkRoute> network_route) {
+    std::optional<webrtc::NetworkRoute> network_route) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   SignalNetworkRouteChanged(network_route);
 }

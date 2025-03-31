@@ -12,13 +12,17 @@
 #define RTC_BASE_FAKE_NETWORK_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"
+#include "absl/strings/string_view.h"
+#include "rtc_base/ip_address.h"
 #include "rtc_base/mdns_responder_interface.h"
+#include "rtc_base/net_helpers.h"
 #include "rtc_base/network.h"
+#include "rtc_base/network_constants.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/string_encode.h"
 #include "rtc_base/thread.h"
@@ -29,7 +33,7 @@ const int kFakeIPv4NetworkPrefixLength = 24;
 const int kFakeIPv6NetworkPrefixLength = 64;
 
 // Fake network manager that allows us to manually specify the IPs to use.
-class FakeNetworkManager : public rtc::NetworkManagerBase {
+class FakeNetworkManager : public NetworkManagerBase {
  public:
   FakeNetworkManager() {}
 
@@ -82,8 +86,8 @@ class FakeNetworkManager : public rtc::NetworkManagerBase {
 
   void StopUpdating() override { --start_count_; }
 
-  using rtc::NetworkManagerBase::set_default_local_addresses;
-  using rtc::NetworkManagerBase::set_enumeration_permission;
+  using NetworkManagerBase::set_default_local_addresses;
+  using NetworkManagerBase::set_enumeration_permission;
 
   // rtc::NetworkManager override.
   MdnsResponderInterface* GetMdnsResponder() const override {
@@ -99,7 +103,7 @@ class FakeNetworkManager : public rtc::NetworkManagerBase {
   void DoUpdateNetworks() {
     if (start_count_ == 0)
       return;
-    std::vector<std::unique_ptr<rtc::Network>> networks;
+    std::vector<std::unique_ptr<Network>> networks;
     for (IfaceList::iterator it = ifaces_.begin(); it != ifaces_.end(); ++it) {
       int prefix_length = 0;
       if (it->socket_address.ipaddr().family() == AF_INET) {
@@ -109,7 +113,7 @@ class FakeNetworkManager : public rtc::NetworkManagerBase {
       }
       IPAddress prefix =
           webrtc::TruncateIP(it->socket_address.ipaddr(), prefix_length);
-      auto net = std::make_unique<rtc::Network>(
+      auto net = std::make_unique<Network>(
           it->socket_address.hostname(), it->socket_address.hostname(), prefix,
           prefix_length, it->adapter_type);
       if (it->underlying_vpn_adapter_type.has_value()) {

@@ -45,6 +45,7 @@
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/rtc_certificate.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
@@ -81,8 +82,8 @@ void SetRemoteFingerprintFromCert(
     DtlsTransport* transport,
     const rtc::scoped_refptr<webrtc::RTCCertificate>& cert,
     bool modify_digest = false) {
-  std::unique_ptr<rtc::SSLFingerprint> fingerprint =
-      rtc::SSLFingerprint::CreateFromCertificate(*cert);
+  std::unique_ptr<webrtc::SSLFingerprint> fingerprint =
+      webrtc::SSLFingerprint::CreateFromCertificate(*cert);
   if (modify_digest) {
     ++fingerprint->digest.MutableData()[0];
   }
@@ -764,8 +765,9 @@ class DtlsTransportVersionTest
     client1_.fake_ice_transport()->set_packet_send_filter(
         [&](auto data, auto len, auto options, auto flags) {
           auto packet_type = options.info_signaled_after_sent.packet_type;
-          if (packet_type == rtc::PacketType::kIceConnectivityCheck ||
-              packet_type == rtc::PacketType::kIceConnectivityCheckResponse) {
+          if (packet_type == webrtc::PacketType::kIceConnectivityCheck ||
+              packet_type ==
+                  webrtc::PacketType::kIceConnectivityCheckResponse) {
             // Ignore stun pings for now.
             return LogSend("client-stun", /* drop= */ false, data, len);
           }
@@ -781,8 +783,9 @@ class DtlsTransportVersionTest
     client2_.fake_ice_transport()->set_packet_send_filter(
         [&](auto data, auto len, auto options, auto flags) {
           auto packet_type = options.info_signaled_after_sent.packet_type;
-          if (packet_type == rtc::PacketType::kIceConnectivityCheck ||
-              packet_type == rtc::PacketType::kIceConnectivityCheckResponse) {
+          if (packet_type == webrtc::PacketType::kIceConnectivityCheck ||
+              packet_type ==
+                  webrtc::PacketType::kIceConnectivityCheckResponse) {
             // Ignore stun pings for now.
             return LogSend("server-stun", /* drop= */ false, data, len);
           }
@@ -1058,13 +1061,13 @@ TEST_F(DtlsTransportTest, TestCertificatesAfterConnect) {
             certificate2->GetSSLCertificate().ToPEMString());
 
   // Each side's remote certificate is the other side's local certificate.
-  std::unique_ptr<rtc::SSLCertChain> remote_cert1 =
+  std::unique_ptr<webrtc::SSLCertChain> remote_cert1 =
       client1_.dtls_transport()->GetRemoteSSLCertChain();
   ASSERT_TRUE(remote_cert1);
   ASSERT_EQ(1u, remote_cert1->GetSize());
   ASSERT_EQ(remote_cert1->Get(0).ToPEMString(),
             certificate2->GetSSLCertificate().ToPEMString());
-  std::unique_ptr<rtc::SSLCertChain> remote_cert2 =
+  std::unique_ptr<webrtc::SSLCertChain> remote_cert2 =
       client2_.dtls_transport()->GetRemoteSSLCertChain();
   ASSERT_TRUE(remote_cert2);
   ASSERT_EQ(1u, remote_cert2->GetSize());

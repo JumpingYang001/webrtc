@@ -17,7 +17,7 @@
 
 typedef void* HANDLE;
 
-namespace rtc {
+namespace webrtc {
 namespace rtc_win {
 
 // The running version of Windows.  This is declared outside OSInfo for
@@ -151,6 +151,6 @@ class OSInfo {
 Version GetVersion();
 
 }  // namespace rtc_win
-}  // namespace rtc
+}  // namespace webrtc
 
 #endif  // RTC_BASE_WIN_WINDOWS_VERSION_H_

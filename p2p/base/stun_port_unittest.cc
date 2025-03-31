@@ -115,7 +115,7 @@ class FakeMdnsResponder : public webrtc::MdnsResponderInterface {
                             NameRemovedCallback callback) override {}
 };
 
-class FakeMdnsResponderProvider : public rtc::MdnsResponderProvider {
+class FakeMdnsResponderProvider : public webrtc::MdnsResponderProvider {
  public:
   FakeMdnsResponderProvider() : mdns_responder_(new FakeMdnsResponder()) {}
 
@@ -289,7 +289,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
     stun_keepalive_lifetime_ = lifetime;
   }
 
-  rtc::Network* MakeNetwork(const webrtc::IPAddress& addr) {
+  webrtc::Network* MakeNetwork(const webrtc::IPAddress& addr) {
     networks_.emplace_back("unittest", "unittest", addr, 32);
     networks_.back().AddIP(addr);
     return &networks_.back();
@@ -302,8 +302,8 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   webrtc::SocketFactory* nat_factory() { return &nat_factory_; }
 
  private:
-  std::vector<rtc::Network> networks_;
-  rtc::Network* network_;
+  std::vector<webrtc::Network> networks_;
+  webrtc::Network* network_;
 
   std::unique_ptr<webrtc::VirtualSocketServer> ss_;
   webrtc::AutoSocketServerThread thread_;
@@ -312,7 +312,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   std::unique_ptr<cricket::UDPPort> stun_port_;
   std::vector<webrtc::TestStunServer::StunServerPtr> stun_servers_;
   std::unique_ptr<webrtc::AsyncPacketSocket> socket_;
-  std::unique_ptr<rtc::MdnsResponderProvider> mdns_responder_provider_;
+  std::unique_ptr<webrtc::MdnsResponderProvider> mdns_responder_provider_;
   std::unique_ptr<webrtc::NATServer> nat_server_;
   bool done_;
   bool error_;

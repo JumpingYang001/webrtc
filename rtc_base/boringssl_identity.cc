@@ -17,19 +17,24 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <ctime>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
+#include "rtc_base/boringssl_certificate.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "rtc_base/openssl.h"
+#include "rtc_base/openssl_key_pair.h"
 #include "rtc_base/openssl_utility.h"
+#include "rtc_base/ssl_certificate.h"
+#include "rtc_base/ssl_identity.h"
 
-namespace rtc {
+namespace webrtc {
 
 BoringSSLIdentity::BoringSSLIdentity(
     std::unique_ptr<OpenSSLKeyPair> key_pair,
@@ -52,7 +57,7 @@ BoringSSLIdentity::BoringSSLIdentity(std::unique_ptr<OpenSSLKeyPair> key_pair,
 BoringSSLIdentity::~BoringSSLIdentity() = default;
 
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateInternal(
-    const SSLIdentityParams& params) {
+    const rtc::SSLIdentityParams& params) {
   auto key_pair = OpenSSLKeyPair::Generate(params.key_params);
   if (key_pair) {
     std::unique_ptr<BoringSSLCertificate> certificate(
@@ -69,13 +74,13 @@ std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateInternal(
 // static
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateWithExpiration(
     absl::string_view common_name,
-    const KeyParams& key_params,
+    const rtc::KeyParams& key_params,
     time_t certificate_lifetime) {
-  SSLIdentityParams params;
+  rtc::SSLIdentityParams params;
   params.key_params = key_params;
   params.common_name = std::string(common_name);
   time_t now = time(nullptr);
-  params.not_before = now + kCertificateWindowInSeconds;
+  params.not_before = now + rtc::kCertificateWindowInSeconds;
   params.not_after = now + certificate_lifetime;
   if (params.not_before > params.not_after)
     return nullptr;
@@ -83,11 +88,11 @@ std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateWithExpiration(
 }
 
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateForTest(
-    const SSLIdentityParams& params) {
+    const rtc::SSLIdentityParams& params) {
   return CreateInternal(params);
 }
 
-std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
+std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
     absl::string_view private_key,
     absl::string_view certificate) {
   std::unique_ptr<BoringSSLCertificate> cert(
@@ -108,7 +113,7 @@ std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
       new BoringSSLIdentity(std::move(key_pair), std::move(cert)));
 }
 
-std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
+std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
     absl::string_view private_key,
     absl::string_view certificate_chain) {
   bssl::UniquePtr<BIO> bio(
@@ -145,7 +150,7 @@ std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
       return nullptr;
     }
     bssl::UniquePtr<CRYPTO_BUFFER> crypto_buffer(
-        CRYPTO_BUFFER_new(data, len, openssl::GetBufferPool()));
+        CRYPTO_BUFFER_new(data, len, rtc::openssl::GetBufferPool()));
     if (!crypto_buffer) {
       return nullptr;
     }
@@ -174,7 +179,7 @@ const SSLCertChain& BoringSSLIdentity::cert_chain() const {
   return *cert_chain_.get();
 }
 
-std::unique_ptr<SSLIdentity> BoringSSLIdentity::CloneInternal() const {
+std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CloneInternal() const {
   // We cannot use std::make_unique here because the referenced
   // BoringSSLIdentity constructor is private.
   return absl::WrapUnique(
@@ -191,7 +196,7 @@ bool BoringSSLIdentity::ConfigureIdentity(SSL_CTX* ctx) {
   // 1 is the documented success return code.
   if (1 != SSL_CTX_set_chain_and_key(ctx, &cert_buffers[0], cert_buffers.size(),
                                      key_pair_->pkey(), nullptr)) {
-    openssl::LogSSLErrors("Configuring key and certificate");
+    rtc::openssl::LogSSLErrors("Configuring key and certificate");
     return false;
   }
   return true;
@@ -214,4 +219,4 @@ bool BoringSSLIdentity::operator!=(const BoringSSLIdentity& other) const {
   return !(*this == other);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

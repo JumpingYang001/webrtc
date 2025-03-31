@@ -10,16 +10,26 @@
 
 #include "rtc_tools/network_tester/test_controller.h"
 
+#include <cstddef>
 #include <limits>
+#include <memory>
 #include <optional>
+#include <string>
 
+#include "api/sequence_checker.h"
+#include "api/task_queue/pending_task_safety_flag.h"
 #include "api/units/timestamp.h"
+#include "rtc_base/async_packet_socket.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/internal/default_socket_server.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/net_helpers.h"
 #include "rtc_base/network/received_packet.h"
+#include "rtc_base/socket_address.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread.h"
+#include "rtc_tools/network_tester/packet_sender.h"
 
 namespace webrtc {
 
@@ -27,7 +37,7 @@ TestController::TestController(int min_port,
                                int max_port,
                                const std::string& config_file_path,
                                const std::string& log_file_path)
-    : socket_server_(rtc::CreateDefaultSocketServer()),
+    : socket_server_(CreateDefaultSocketServer()),
       packet_sender_thread_(std::make_unique<Thread>(socket_server_.get())),
       socket_factory_(socket_server_.get()),
       config_file_path_(config_file_path),

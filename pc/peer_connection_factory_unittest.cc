@@ -124,15 +124,12 @@ class NullPeerConnectionObserver : public PeerConnectionObserver {
   void OnIceCandidate(const IceCandidateInterface* candidate) override {}
 };
 
-class MockNetworkManager : public rtc::NetworkManager {
+class MockNetworkManager : public NetworkManager {
  public:
   MOCK_METHOD(void, StartUpdating, (), (override));
   MOCK_METHOD(void, StopUpdating, (), (override));
-  MOCK_METHOD(std::vector<const rtc::Network*>,
-              GetNetworks,
-              (),
-              (const, override));
-  MOCK_METHOD(std::vector<const rtc::Network*>,
+  MOCK_METHOD(std::vector<const Network*>, GetNetworks, (), (const, override));
+  MOCK_METHOD(std::vector<const Network*>,
               GetAnyAddressNetworks,
               (),
               (override));
@@ -141,7 +138,7 @@ class MockNetworkManager : public rtc::NetworkManager {
 class PeerConnectionFactoryTest : public ::testing::Test {
  public:
   PeerConnectionFactoryTest()
-      : socket_server_(rtc::CreateDefaultSocketServer()),
+      : socket_server_(CreateDefaultSocketServer()),
         main_thread_(socket_server_.get()) {}
 
  private:

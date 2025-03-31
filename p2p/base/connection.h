@@ -86,7 +86,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   const webrtc::Candidate& remote_candidate() const override;
 
   // Return local network for this connection.
-  virtual const rtc::Network* network() const;
+  virtual const webrtc::Network* network() const;
   // Return generation for this connection.
   virtual int generation() const;
 
@@ -418,8 +418,8 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   webrtc::Candidate remote_candidate_;
 
   ConnectionInfo stats_;
-  rtc::RateTracker recv_rate_tracker_;
-  rtc::RateTracker send_rate_tracker_;
+  webrtc::RateTracker recv_rate_tracker_;
+  webrtc::RateTracker send_rate_tracker_;
   int64_t last_send_data_ = 0;
 
  private:

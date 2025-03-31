@@ -103,10 +103,10 @@ void UpdateRtpAuthTag(
   size_t auth_required_length = length - tag_length + kRocLength;
 
   uint8_t output[64];
-  size_t result =
-      rtc::ComputeHmac(rtc::DIGEST_SHA_1, &packet_time_params.srtp_auth_key[0],
-                       packet_time_params.srtp_auth_key.size(), rtp,
-                       auth_required_length, output, sizeof(output));
+  size_t result = webrtc::ComputeHmac(
+      webrtc::DIGEST_SHA_1, &packet_time_params.srtp_auth_key[0],
+      packet_time_params.srtp_auth_key.size(), rtp, auth_required_length,
+      output, sizeof(output));
 
   if (result < tag_length) {
     RTC_DCHECK_NOTREACHED();

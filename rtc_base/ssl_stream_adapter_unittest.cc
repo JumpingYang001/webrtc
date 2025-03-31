@@ -10,6 +10,8 @@
 
 #include "rtc_base/ssl_stream_adapter.h"
 
+#include "rtc_base/ssl_certificate.h"
+
 #ifdef OPENSSL_IS_BORINGSSL
 #include <openssl/digest.h>
 #else
@@ -393,7 +395,7 @@ class BufferQueueStream : public webrtc::StreamInterface {
 
   webrtc::Thread* const thread_ = webrtc::Thread::Current();
   webrtc::ScopedTaskSafety task_safety_;
-  rtc::BufferQueue buffer_;
+  webrtc::BufferQueue buffer_;
 };
 
 static const int kBufferCapacity = 1;
@@ -409,7 +411,7 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       rtc::KeyParams client_key_type = rtc::KeyParams(rtc::KT_DEFAULT),
       rtc::KeyParams server_key_type = rtc::KeyParams(rtc::KT_DEFAULT),
       std::pair<std::string, size_t> digest =
-          std::make_pair(rtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH))
+          std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH))
       : client_cert_pem_(client_cert_pem),
         client_private_key_pem_(client_private_key_pem),
         client_key_type_(client_key_type),
@@ -812,8 +814,8 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       return server_ssl_->GetDtlsSrtpCryptoSuite(retval);
   }
 
-  std::unique_ptr<rtc::SSLCertificate> GetPeerCertificate(bool client) {
-    std::unique_ptr<rtc::SSLCertChain> chain;
+  std::unique_ptr<webrtc::SSLCertificate> GetPeerCertificate(bool client) {
+    std::unique_ptr<webrtc::SSLCertChain> chain;
     if (client)
       chain = client_ssl_->GetPeerSSLCertChain();
     else
@@ -1076,7 +1078,7 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshake) {
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kCACert);
   server_ssl_->SetIdentity(std::move(server_identity));
   TestHandshake();
-  std::unique_ptr<rtc::SSLCertChain> peer_cert_chain =
+  std::unique_ptr<webrtc::SSLCertChain> peer_cert_chain =
       client_ssl_->GetPeerSSLCertChain();
   ASSERT_NE(nullptr, peer_cert_chain);
   EXPECT_EQ(kCERT_PEM, peer_cert_chain->Get(0).ToPEMString());
@@ -1092,7 +1094,7 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshakeWithCopy) {
   server_ssl_->SetIdentity(rtc::SSLIdentity::CreateFromPEMChainStrings(
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kCACert));
   TestHandshake();
-  std::unique_ptr<rtc::SSLCertChain> peer_cert_chain =
+  std::unique_ptr<webrtc::SSLCertChain> peer_cert_chain =
       client_ssl_->GetPeerSSLCertChain();
   ASSERT_NE(nullptr, peer_cert_chain);
   EXPECT_EQ(kCERT_PEM, peer_cert_chain->Get(0).ToPEMString());
@@ -1108,7 +1110,7 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, ThreeCertHandshake) {
   server_ssl_->SetIdentity(rtc::SSLIdentity::CreateFromPEMChainStrings(
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kIntCert1 + kCACert));
   TestHandshake();
-  std::unique_ptr<rtc::SSLCertChain> peer_cert_chain =
+  std::unique_ptr<webrtc::SSLCertChain> peer_cert_chain =
       client_ssl_->GetPeerSSLCertChain();
   ASSERT_NE(nullptr, peer_cert_chain);
   EXPECT_EQ(kCERT_PEM, peer_cert_chain->Get(0).ToPEMString());
@@ -1166,11 +1168,11 @@ INSTANTIATE_TEST_SUITE_P(
     Values(std::make_tuple(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
                            rtc::KeyParams::RSA(rtc::kRsaDefaultModSize,
                                                rtc::kRsaDefaultExponent),
-                           std::make_pair(rtc::DIGEST_SHA_256,
+                           std::make_pair(webrtc::DIGEST_SHA_256,
                                           SHA256_DIGEST_LENGTH)),
            std::make_tuple(rtc::KeyParams::RSA(1152, rtc::kRsaDefaultExponent),
                            rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
-                           std::make_pair(rtc::DIGEST_SHA_256,
+                           std::make_pair(webrtc::DIGEST_SHA_256,
                                           SHA256_DIGEST_LENGTH))));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1178,11 +1180,12 @@ INSTANTIATE_TEST_SUITE_P(
     SSLStreamAdapterTestDTLSHandshake,
     Combine(Values(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256)),
             Values(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256)),
-            Values(std::make_pair(rtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH),
-                   std::make_pair(rtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH),
-                   std::make_pair(rtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH),
-                   std::make_pair(rtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH),
-                   std::make_pair(rtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH))));
+            Values(std::make_pair(webrtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH),
+                   std::make_pair(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH),
+                   std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH),
+                   std::make_pair(webrtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH),
+                   std::make_pair(webrtc::DIGEST_SHA_512,
+                                  SHA512_DIGEST_LENGTH))));
 
 // Basic tests done with ECDSA certificates and SHA-256.
 class SSLStreamAdapterTestDTLS : public SSLStreamAdapterTestDTLSBase {
@@ -1191,7 +1194,7 @@ class SSLStreamAdapterTestDTLS : public SSLStreamAdapterTestDTLSBase {
       : SSLStreamAdapterTestDTLSBase(
             rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
             rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
-            std::make_pair(rtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH)) {}
+            std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH)) {}
 };
 
 #ifdef OPENSSL_IS_BORINGSSL
@@ -1484,7 +1487,7 @@ TEST_F(SSLStreamAdapterTestDTLSFromPEMStrings, TestDTLSGetPeerCertificate) {
   TestHandshake();
 
   // The client should have a peer certificate after the handshake.
-  std::unique_ptr<rtc::SSLCertificate> client_peer_cert =
+  std::unique_ptr<webrtc::SSLCertificate> client_peer_cert =
       GetPeerCertificate(true);
   ASSERT_TRUE(client_peer_cert);
 
@@ -1493,7 +1496,7 @@ TEST_F(SSLStreamAdapterTestDTLSFromPEMStrings, TestDTLSGetPeerCertificate) {
   ASSERT_NE(kCERT_PEM, client_peer_string);
 
   // The server should have a peer certificate after the handshake.
-  std::unique_ptr<rtc::SSLCertificate> server_peer_cert =
+  std::unique_ptr<webrtc::SSLCertificate> server_peer_cert =
       GetPeerCertificate(false);
   ASSERT_TRUE(server_peer_cert);
 
@@ -1507,7 +1510,7 @@ TEST_F(SSLStreamAdapterTestDTLSFromPEMStrings,
        DeprecatedSetPeerCertificateDigest) {
   webrtc::SSLPeerCertificateDigestError error;
   // Pass in a wrong length to trigger an error.
-  bool ret = client_ssl_->SetPeerCertificateDigest(rtc::DIGEST_SHA_256, {},
+  bool ret = client_ssl_->SetPeerCertificateDigest(webrtc::DIGEST_SHA_256, {},
                                                    /*length=*/0, &error);
   EXPECT_FALSE(ret);
   EXPECT_EQ(error, webrtc::SSLPeerCertificateDigestError::INVALID_LENGTH);

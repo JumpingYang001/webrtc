@@ -15,6 +15,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include "absl/strings/string_view.h"
 #include "rtc_base/checks.h"
 #ifdef OPENSSL_IS_BORINGSSL
@@ -22,7 +26,6 @@
 #else
 #include "rtc_base/openssl_identity.h"
 #endif
-#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/third_party/base64/base64.h"
 #include "rtc_base/time_utils.h"
@@ -217,8 +220,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::Create(absl::string_view common_name,
                                                  const KeyParams& key_param,
                                                  time_t certificate_lifetime) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return BoringSSLIdentity::CreateWithExpiration(common_name, key_param,
-                                                 certificate_lifetime);
+  return webrtc::BoringSSLIdentity::CreateWithExpiration(common_name, key_param,
+                                                         certificate_lifetime);
 #else
   return OpenSSLIdentity::CreateWithExpiration(common_name, key_param,
                                                certificate_lifetime);
@@ -242,7 +245,7 @@ std::unique_ptr<SSLIdentity> SSLIdentity::Create(absl::string_view common_name,
 std::unique_ptr<SSLIdentity> SSLIdentity::CreateForTest(
     const SSLIdentityParams& params) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return BoringSSLIdentity::CreateForTest(params);
+  return webrtc::BoringSSLIdentity::CreateForTest(params);
 #else
   return OpenSSLIdentity::CreateForTest(params);
 #endif
@@ -254,7 +257,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMStrings(
     absl::string_view private_key,
     absl::string_view certificate) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return BoringSSLIdentity::CreateFromPEMStrings(private_key, certificate);
+  return webrtc::BoringSSLIdentity::CreateFromPEMStrings(private_key,
+                                                         certificate);
 #else
   return OpenSSLIdentity::CreateFromPEMStrings(private_key, certificate);
 #endif
@@ -266,8 +270,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMChainStrings(
     absl::string_view private_key,
     absl::string_view certificate_chain) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return BoringSSLIdentity::CreateFromPEMChainStrings(private_key,
-                                                      certificate_chain);
+  return webrtc::BoringSSLIdentity::CreateFromPEMChainStrings(
+      private_key, certificate_chain);
 #else
   return OpenSSLIdentity::CreateFromPEMChainStrings(private_key,
                                                     certificate_chain);
@@ -276,8 +280,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMChainStrings(
 
 bool operator==(const SSLIdentity& a, const SSLIdentity& b) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return static_cast<const BoringSSLIdentity&>(a) ==
-         static_cast<const BoringSSLIdentity&>(b);
+  return static_cast<const webrtc::BoringSSLIdentity&>(a) ==
+         static_cast<const webrtc::BoringSSLIdentity&>(b);
 #else
   return static_cast<const OpenSSLIdentity&>(a) ==
          static_cast<const OpenSSLIdentity&>(b);

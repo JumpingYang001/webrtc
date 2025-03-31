@@ -23,23 +23,23 @@
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 
-namespace rtc {
+namespace webrtc {
 
 // Holds a keypair and certificate together, and a method to generate them
 // consistently. Uses CRYPTO_BUFFER instead of X509, which offers binary size
 // and memory improvements.
-class BoringSSLIdentity final : public SSLIdentity {
+class BoringSSLIdentity final : public rtc::SSLIdentity {
  public:
   static std::unique_ptr<BoringSSLIdentity> CreateWithExpiration(
       absl::string_view common_name,
-      const KeyParams& key_params,
+      const rtc::KeyParams& key_params,
       time_t certificate_lifetime);
   static std::unique_ptr<BoringSSLIdentity> CreateForTest(
-      const SSLIdentityParams& params);
-  static std::unique_ptr<SSLIdentity> CreateFromPEMStrings(
+      const rtc::SSLIdentityParams& params);
+  static std::unique_ptr<rtc::SSLIdentity> CreateFromPEMStrings(
       absl::string_view private_key,
       absl::string_view certificate);
-  static std::unique_ptr<SSLIdentity> CreateFromPEMChainStrings(
+  static std::unique_ptr<rtc::SSLIdentity> CreateFromPEMChainStrings(
       absl::string_view private_key,
       absl::string_view certificate_chain);
   ~BoringSSLIdentity() override;
@@ -63,15 +63,21 @@ class BoringSSLIdentity final : public SSLIdentity {
                     std::unique_ptr<BoringSSLCertificate> certificate);
   BoringSSLIdentity(std::unique_ptr<OpenSSLKeyPair> key_pair,
                     std::unique_ptr<SSLCertChain> cert_chain);
-  std::unique_ptr<SSLIdentity> CloneInternal() const override;
+  std::unique_ptr<rtc::SSLIdentity> CloneInternal() const override;
 
   static std::unique_ptr<BoringSSLIdentity> CreateInternal(
-      const SSLIdentityParams& params);
+      const rtc::SSLIdentityParams& params);
 
   std::unique_ptr<OpenSSLKeyPair> key_pair_;
   std::unique_ptr<SSLCertChain> cert_chain_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::BoringSSLIdentity;
 }  // namespace rtc
 
 #endif  // RTC_BASE_BORINGSSL_IDENTITY_H_

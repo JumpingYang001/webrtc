@@ -9,14 +9,36 @@
  */
 #include "test/scenario/network_node.h"
 
-#include <algorithm>
+#include <cstdint>
+#include <functional>
 #include <memory>
-#include <vector>
+#include <utility>
 
 #include "absl/cleanup/cleanup.h"
+#include "api/array_view.h"
+#include "api/call/transport.h"
 #include "api/sequence_checker.h"
+#include "api/test/network_emulation/network_emulation_interfaces.h"
+#include "api/units/data_size.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "call/call.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
+#include "rtc_base/event.h"
 #include "rtc_base/net_helper.h"
-#include "rtc_base/numerics/safe_minmax.h"
+#include "rtc_base/net_helpers.h"
+#include "rtc_base/network/sent_packet.h"
+#include "rtc_base/network_constants.h"
+#include "rtc_base/network_route.h"
+#include "rtc_base/socket_address.h"
+#include "rtc_base/strings/string_builder.h"
+#include "rtc_base/synchronization/mutex.h"
+#include "system_wrappers/include/clock.h"
+#include "test/network/network_emulation.h"
+#include "test/network/simulated_network.h"
+#include "test/scenario/column_printer.h"
+#include "test/scenario/scenario_config.h"
 
 namespace webrtc {
 namespace test {
@@ -35,10 +57,9 @@ SimulatedNetwork::Config CreateSimulationConfig(
   return sim_config;
 }
 
-rtc::RouteEndpoint CreateRouteEndpoint(uint16_t network_id,
-                                       uint16_t adapter_id) {
-  return rtc::RouteEndpoint(rtc::ADAPTER_TYPE_UNKNOWN, adapter_id, network_id,
-                            /* uses_turn = */ false);
+RouteEndpoint CreateRouteEndpoint(uint16_t network_id, uint16_t adapter_id) {
+  return RouteEndpoint(rtc::ADAPTER_TYPE_UNKNOWN, adapter_id, network_id,
+                       /* uses_turn = */ false);
 }
 }  // namespace
 
@@ -90,7 +111,7 @@ bool NetworkNodeTransport::SendRtp(rtc::ArrayView<const uint8_t> packet,
   sent_packet.info.included_in_allocation = options.included_in_allocation;
   sent_packet.send_time_ms = send_time_ms;
   sent_packet.info.packet_size_bytes = packet.size();
-  sent_packet.info.packet_type = rtc::PacketType::kData;
+  sent_packet.info.packet_type = PacketType::kData;
   sender_call_->OnSentPacket(sent_packet);
 
   MutexLock lock(&mutex_);
@@ -121,7 +142,7 @@ void NetworkNodeTransport::Connect(EmulatedEndpoint* endpoint,
                                    const SocketAddress& receiver_address,
                                    DataSize packet_overhead) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  rtc::NetworkRoute route;
+  NetworkRoute route;
   route.connected = true;
   // We assume that the address will be unique in the lower bytes.
   route.local = CreateRouteEndpoint(
@@ -133,8 +154,7 @@ void NetworkNodeTransport::Connect(EmulatedEndpoint* endpoint,
           receiver_address.ipaddr().v4AddressAsHostOrderInteger()),
       adapter_id_);
   route.packet_overhead = packet_overhead.bytes() +
-                          receiver_address.ipaddr().overhead() +
-                          cricket::kUdpHeaderSize;
+                          receiver_address.ipaddr().overhead() + kUdpHeaderSize;
   {
     // Only IPv4 address is supported.
     RTC_CHECK_EQ(receiver_address.family(), AF_INET);

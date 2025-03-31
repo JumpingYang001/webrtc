@@ -92,7 +92,7 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
         username_(webrtc::CreateRandomString(ICE_UFRAG_LENGTH)),
         password_(webrtc::CreateRandomString(ICE_PWD_LENGTH)) {}
 
-  rtc::Network* MakeNetwork(const SocketAddress& addr) {
+  webrtc::Network* MakeNetwork(const SocketAddress& addr) {
     networks_.emplace_back("unittest", "unittest", addr.ipaddr(), 32);
     networks_.back().AddIP(addr.ipaddr());
     return &networks_.back();
@@ -113,7 +113,7 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
     return port;
   }
 
-  std::unique_ptr<TCPPort> CreateTCPPort(const rtc::Network* network) {
+  std::unique_ptr<TCPPort> CreateTCPPort(const webrtc::Network* network) {
     auto port = std::unique_ptr<TCPPort>(
         TCPPort::Create({.network_thread = &main_,
                          .socket_factory = &socket_factory_,
@@ -130,7 +130,7 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.
-  std::list<rtc::Network> networks_;
+  std::list<webrtc::Network> networks_;
   std::unique_ptr<webrtc::VirtualSocketServer> ss_;
   webrtc::AutoSocketServerThread main_;
   webrtc::BasicPacketSocketFactory socket_factory_;
@@ -197,7 +197,7 @@ TEST_F(TCPPortTest, TCPPortNotDiscardedIfNotBoundToBestIP) {
 
   // Set up a network with kLocalAddr1 as the "best" IP, and kAlternateLocalAddr
   // as an alternate.
-  rtc::Network* network = MakeNetwork(kLocalAddr);
+  webrtc::Network* network = MakeNetwork(kLocalAddr);
   network->AddIP(kAlternateLocalAddr.ipaddr());
   ASSERT_EQ(kLocalAddr.ipaddr(), network->GetBestIP());
 

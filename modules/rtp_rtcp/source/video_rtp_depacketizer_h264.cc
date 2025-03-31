@@ -16,6 +16,9 @@
 #include <utility>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/h264/pps_parser.h"
 #include "common_video/h264/sps_parser.h"
@@ -23,6 +26,8 @@
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_format_h264.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
@@ -38,7 +43,7 @@ constexpr size_t kLengthFieldSize = 2;
 std::vector<rtc::ArrayView<const uint8_t>> ParseStapA(
     rtc::ArrayView<const uint8_t> data) {
   std::vector<rtc::ArrayView<const uint8_t>> nal_units;
-  rtc::ByteBufferReader reader(data);
+  ByteBufferReader reader(data);
   if (!reader.Consume(kNalHeaderSize)) {
     return nal_units;
   }

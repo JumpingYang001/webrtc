@@ -11,7 +11,13 @@
 #include "rtc_base/platform_thread.h"
 
 #include <algorithm>
-#include <memory>
+#include <functional>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "absl/strings/string_view.h"
+#include "rtc_base/platform_thread_types.h"
 
 #if !defined(WEBRTC_WIN)
 #include <sched.h>
@@ -182,7 +188,7 @@ PlatformThread PlatformThread::SpawnThread(
   auto start_thread_function_ptr =
       new std::function<void()>([thread_function = std::move(thread_function),
                                  name = std::string(name), attributes] {
-        rtc::SetCurrentThreadName(name.c_str());
+        SetCurrentThreadName(name.c_str());
         SetPriority(attributes.priority);
         thread_function();
       });

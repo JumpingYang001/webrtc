@@ -114,7 +114,7 @@ PeerConfigurer* PeerConfigurer::SetRTCCertificateGenerator(
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetSSLCertificateVerifier(
-    std::unique_ptr<rtc::SSLCertificateVerifier> tls_cert_verifier) {
+    std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier) {
   components_->pc_dependencies->tls_cert_verifier =
       std::move(tls_cert_verifier);
   return this;

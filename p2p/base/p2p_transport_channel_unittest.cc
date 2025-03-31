@@ -199,7 +199,7 @@ webrtc::Candidate CreateUdpCandidate(IceCandidateType type,
   webrtc::Candidate c;
   c.set_address(webrtc::SocketAddress(ip, port));
   c.set_component(cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
-  c.set_protocol(cricket::UDP_PROTOCOL_NAME);
+  c.set_protocol(webrtc::UDP_PROTOCOL_NAME);
   c.set_priority(priority);
   c.set_username(ufrag);
   c.set_type(type);
@@ -208,7 +208,7 @@ webrtc::Candidate CreateUdpCandidate(IceCandidateType type,
 
 std::unique_ptr<cricket::BasicPortAllocator> CreateBasicPortAllocator(
     const Environment& env,
-    rtc::NetworkManager* network_manager,
+    webrtc::NetworkManager* network_manager,
     webrtc::PacketSocketFactory* socket_factory,
     const cricket::ServerAddresses& stun_servers,
     const webrtc::SocketAddress& turn_server_udp,
@@ -858,9 +858,9 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     EXPECT_EQ(1u, RemoteCandidate(ep1_ch1())->generation());
   }
 
-  void TestPacketInfoIsSet(rtc::PacketInfo info) {
-    EXPECT_NE(info.packet_type, rtc::PacketType::kUnknown);
-    EXPECT_NE(info.protocol, rtc::PacketInfoProtocolType::kUnknown);
+  void TestPacketInfoIsSet(webrtc::PacketInfo info) {
+    EXPECT_NE(info.packet_type, webrtc::PacketType::kUnknown);
+    EXPECT_NE(info.protocol, webrtc::PacketInfoProtocolType::kUnknown);
     EXPECT_TRUE(info.network_id.has_value());
   }
 
@@ -920,7 +920,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
   // Tcp candidate verification has to be done when they are generated.
   void VerifySavedTcpCandidates(int endpoint, absl::string_view tcptype) {
     for (auto& data : GetEndpoint(endpoint)->saved_candidates_) {
-      EXPECT_EQ(data.candidate.protocol(), TCP_PROTOCOL_NAME);
+      EXPECT_EQ(data.candidate.protocol(), webrtc::TCP_PROTOCOL_NAME);
       EXPECT_EQ(data.candidate.tcptype(), tcptype);
       if (data.candidate.tcptype() == TCPTYPE_ACTIVE_STR) {
         EXPECT_EQ(data.candidate.address().port(), DISCARD_PORT);
@@ -4070,7 +4070,7 @@ class P2PTransportChannelPingTest : public ::testing::Test,
     }
     msg.AddMessageIntegrity(conn->local_candidate().password());
     msg.AddFingerprint();
-    rtc::ByteBufferWriter buf;
+    webrtc::ByteBufferWriter buf;
     msg.Write(&buf);
     conn->OnReadPacket(rtc::ReceivedPacket::CreateFromLegacy(
         reinterpret_cast<const char*>(buf.Data()), buf.Length(),
@@ -5754,7 +5754,7 @@ class P2PTransportChannelMostLikelyToWorkFirstTest
   void VerifyNextPingableConnection(
       IceCandidateType local_candidate_type,
       IceCandidateType remote_candidate_type,
-      absl::string_view relay_protocol_type = UDP_PROTOCOL_NAME) {
+      absl::string_view relay_protocol_type = webrtc::UDP_PROTOCOL_NAME) {
     Connection* conn = FindNextPingableConnectionAndPingIt(channel_.get());
     ASSERT_TRUE(conn != nullptr);
     EXPECT_EQ(conn->local_candidate().type(), local_candidate_type);
@@ -6009,7 +6009,8 @@ TEST_F(P2PTransportChannelMostLikelyToWorkFirstTest, TestTcpTurn) {
 
   // TCP Relay/Relay is the next.
   VerifyNextPingableConnection(IceCandidateType::kRelay,
-                               IceCandidateType::kRelay, TCP_PROTOCOL_NAME);
+                               IceCandidateType::kRelay,
+                               webrtc::TCP_PROTOCOL_NAME);
 
   // Finally, Local/Relay will be pinged.
   VerifyNextPingableConnection(IceCandidateType::kHost,
@@ -6023,7 +6024,7 @@ TEST(P2PTransportChannelResolverTest, HostnameCandidateIsResolved) {
   const Environment env = CreateEnvironment();
   ResolverFactoryFixture resolver_fixture;
   std::unique_ptr<webrtc::SocketServer> socket_server =
-      rtc::CreateDefaultSocketServer();
+      webrtc::CreateDefaultSocketServer();
   webrtc::AutoSocketServerThread main_thread(socket_server.get());
   FakePortAllocator allocator(env, socket_server.get());
   webrtc::IceTransportInit init;
@@ -7163,7 +7164,7 @@ TEST_F(P2PTransportChannelPingTest, TestInitialSelectDampeningBoth) {
 TEST(P2PTransportChannelIceControllerTest, InjectIceController) {
   const Environment env = CreateEnvironment();
   std::unique_ptr<webrtc::SocketServer> socket_server =
-      rtc::CreateDefaultSocketServer();
+      webrtc::CreateDefaultSocketServer();
   webrtc::AutoSocketServerThread main_thread(socket_server.get());
   webrtc::MockIceControllerFactory factory;
   FakePortAllocator pa(env, socket_server.get());
@@ -7180,7 +7181,7 @@ TEST(P2PTransportChannelIceControllerTest, InjectIceController) {
 TEST(P2PTransportChannel, InjectActiveIceController) {
   const Environment env = CreateEnvironment();
   std::unique_ptr<webrtc::SocketServer> socket_server =
-      rtc::CreateDefaultSocketServer();
+      webrtc::CreateDefaultSocketServer();
   webrtc::AutoSocketServerThread main_thread(socket_server.get());
   webrtc::MockActiveIceControllerFactory factory;
   FakePortAllocator pa(env, socket_server.get());

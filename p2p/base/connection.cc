@@ -112,13 +112,13 @@ IceCandidateType GetRtcEventLogCandidateType(const webrtc::Candidate& c) {
 
 webrtc::IceCandidatePairProtocol GetProtocolByString(
     absl::string_view protocol) {
-  if (protocol == UDP_PROTOCOL_NAME) {
+  if (protocol == webrtc::UDP_PROTOCOL_NAME) {
     return webrtc::IceCandidatePairProtocol::kUdp;
-  } else if (protocol == TCP_PROTOCOL_NAME) {
+  } else if (protocol == webrtc::TCP_PROTOCOL_NAME) {
     return webrtc::IceCandidatePairProtocol::kTcp;
-  } else if (protocol == SSLTCP_PROTOCOL_NAME) {
+  } else if (protocol == webrtc::SSLTCP_PROTOCOL_NAME) {
     return webrtc::IceCandidatePairProtocol::kSsltcp;
-  } else if (protocol == TLS_PROTOCOL_NAME) {
+  } else if (protocol == webrtc::TLS_PROTOCOL_NAME) {
     return webrtc::IceCandidatePairProtocol::kTls;
   }
   return webrtc::IceCandidatePairProtocol::kUnknown;
@@ -284,7 +284,7 @@ const webrtc::Candidate& Connection::remote_candidate() const {
   return remote_candidate_;
 }
 
-const rtc::Network* Connection::network() const {
+const webrtc::Network* Connection::network() const {
   RTC_DCHECK(port_) << ToDebugId() << ": port_ null in network()";
   return port()->Network();
 }
@@ -457,7 +457,7 @@ void Connection::OnSendStunPacket(const void* data,
   RTC_DCHECK_RUN_ON(network_thread_);
   rtc::PacketOptions options(port_->StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      rtc::PacketType::kIceConnectivityCheck;
+      webrtc::PacketType::kIceConnectivityCheck;
   auto err =
       port_->SendTo(data, size, remote_candidate_.address(), options, false);
   if (err < 0) {
@@ -824,11 +824,11 @@ void Connection::SendResponseMessage(const StunMessage& response) {
   const webrtc::SocketAddress& addr = remote_candidate_.address();
 
   // Send the response.
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   response.Write(&buf);
   rtc::PacketOptions options(port_->StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      rtc::PacketType::kIceConnectivityCheckResponse;
+      webrtc::PacketType::kIceConnectivityCheckResponse;
   auto err = port_->SendTo(buf.Data(), buf.Length(), addr, options, false);
   if (err < 0) {
     RTC_LOG(LS_ERROR) << ToString() << ": Failed to send "
@@ -1334,7 +1334,7 @@ bool Connection::stable(int64_t now) const {
 }
 
 std::string Connection::ToDebugId() const {
-  return rtc::ToHex(reinterpret_cast<uintptr_t>(this));
+  return webrtc::ToHex(reinterpret_cast<uintptr_t>(this));
 }
 
 uint32_t Connection::ComputeNetworkCost() const {
@@ -1419,7 +1419,7 @@ const webrtc::IceCandidatePairDescription& Connection::ToLogDescription() {
   }
   const webrtc::Candidate& local = local_candidate();
   const webrtc::Candidate& remote = remote_candidate();
-  const rtc::Network* network = port()->Network();
+  const webrtc::Network* network = port()->Network();
   log_description_ = webrtc::IceCandidatePairDescription(
       GetRtcEventLogCandidateType(local), GetRtcEventLogCandidateType(remote));
   log_description_->local_relay_protocol =
@@ -1675,7 +1675,7 @@ uint32_t Connection::prflx_priority() const {
   //           (2^8)*(local preference) +
   //           (2^0)*(256 - component ID)
   IcePriorityValue type_preference =
-      (local_candidate_.protocol() == TCP_PROTOCOL_NAME)
+      (local_candidate_.protocol() == webrtc::TCP_PROTOCOL_NAME)
           ? ICE_TYPE_PREFERENCE_PRFLX_TCP
           : ICE_TYPE_PREFERENCE_PRFLX;
   return type_preference << 24 | (local_candidate_.priority() & 0x00FFFFFF);

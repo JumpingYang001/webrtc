@@ -26,7 +26,7 @@
 #include "rtc_base/buffer.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
 struct RTC_EXPORT SSLCertificateStats {
   SSLCertificateStats(std::string&& fingerprint,
@@ -137,6 +137,15 @@ class SSLCertificateVerifier {
   virtual bool Verify(const SSLCertificate& certificate) = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::SSLCertChain;
+using ::webrtc::SSLCertificate;
+using ::webrtc::SSLCertificateStats;
+using ::webrtc::SSLCertificateVerifier;
 }  // namespace rtc
 
 #endif  // RTC_BASE_SSL_CERTIFICATE_H_

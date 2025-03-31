@@ -38,6 +38,7 @@
 #include "rtc_base/dscp.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/network.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/socket.h"
@@ -228,7 +229,7 @@ class TurnPort : public Port {
            const std::vector<std::string>& tls_alpn_protocols,
            const std::vector<std::string>& tls_elliptic_curves,
            webrtc::TurnCustomizer* customizer,
-           rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr);
+           webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr);
 
   TurnPort(const PortParametersRef& args,
            uint16_t min_port,
@@ -239,12 +240,12 @@ class TurnPort : public Port {
            const std::vector<std::string>& tls_alpn_protocols,
            const std::vector<std::string>& tls_elliptic_curves,
            webrtc::TurnCustomizer* customizer,
-           rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr);
+           webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr);
 
   [[deprecated("Pass arguments using PortParametersRef")]] TurnPort(
       webrtc::TaskQueueBase* thread,
       webrtc::PacketSocketFactory* factory,
-      const rtc::Network* network,
+      const webrtc::Network* network,
       webrtc::AsyncPacketSocket* socket,
       absl::string_view username,
       absl::string_view password,
@@ -254,13 +255,13 @@ class TurnPort : public Port {
       const std::vector<std::string>& tls_alpn_protocols,
       const std::vector<std::string>& tls_elliptic_curves,
       webrtc::TurnCustomizer* customizer,
-      rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
+      webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
       const webrtc::FieldTrialsView* field_trials = nullptr);
 
   [[deprecated("Pass arguments using PortParametersRef")]] TurnPort(
       webrtc::TaskQueueBase* thread,
       webrtc::PacketSocketFactory* factory,
-      const rtc::Network* network,
+      const webrtc::Network* network,
       uint16_t min_port,
       uint16_t max_port,
       absl::string_view username,
@@ -271,14 +272,14 @@ class TurnPort : public Port {
       const std::vector<std::string>& tls_alpn_protocols,
       const std::vector<std::string>& tls_elliptic_curves,
       webrtc::TurnCustomizer* customizer,
-      rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
+      webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
       const webrtc::FieldTrialsView* field_trials = nullptr);
 
   // NOTE: This method needs to be accessible for StunPort
   // return true if entry was created (i.e channel_number consumed).
   bool CreateOrRefreshEntry(Connection* conn, int channel_number);
 
-  rtc::DiffServCodePoint StunDscpValue() const override;
+  webrtc::DiffServCodePoint StunDscpValue() const override;
 
   // Shuts down the turn port, frees requests and deletes connections.
   void Close();
@@ -358,7 +359,7 @@ class TurnPort : public Port {
       webrtc::TlsCertPolicy::TLS_CERT_POLICY_SECURE;
   std::vector<std::string> tls_alpn_protocols_;
   std::vector<std::string> tls_elliptic_curves_;
-  rtc::SSLCertificateVerifier* tls_cert_verifier_;
+  webrtc::SSLCertificateVerifier* tls_cert_verifier_;
   webrtc::RelayCredentials credentials_;
   AttemptedServerSet attempted_server_addresses_;
 
@@ -366,7 +367,7 @@ class TurnPort : public Port {
   SocketOptionsMap socket_options_;
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> resolver_;
   int error_;
-  rtc::DiffServCodePoint stun_dscp_value_;
+  webrtc::DiffServCodePoint stun_dscp_value_;
 
   StunRequestManager request_manager_;
   std::string realm_;  // From 401/438 response message.

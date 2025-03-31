@@ -13,25 +13,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <set>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
-#include "absl/base/attributes.h"
+#include "api/units/time_delta.h"
 #include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/event.h"
 #include "rtc_base/platform_thread.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
 #include "test/gtest.h"
 
-namespace rtc {
+namespace webrtc {
 
 namespace {
 
-constexpr webrtc::TimeDelta kLongTime = webrtc::TimeDelta::Seconds(10);
+constexpr TimeDelta kLongTime = TimeDelta::Seconds(10);
 constexpr int kNumThreads = 16;
 constexpr int kOperationsToRun = 1000;
 
@@ -44,7 +45,7 @@ class UniqueValueVerifier {
       // Each value should only be taken by one thread, so if this value
       // has already been added, something went wrong.
       EXPECT_TRUE(result.second)
-          << " Thread=" << webrtc::Thread::Current() << " value=" << values[i];
+          << " Thread=" << Thread::Current() << " value=" << values[i];
     }
   }
 
@@ -61,10 +62,10 @@ class CompareAndSwapVerifier {
   void Verify(const std::vector<int>& values) {
     for (auto v : values) {
       if (v == 0) {
-        EXPECT_EQ(0, zero_count_) << "Thread=" << webrtc::Thread::Current();
+        EXPECT_EQ(0, zero_count_) << "Thread=" << Thread::Current();
         ++zero_count_;
       } else {
-        EXPECT_EQ(1, v) << " Thread=" << webrtc::Thread::Current();
+        EXPECT_EQ(1, v) << " Thread=" << Thread::Current();
       }
     }
   }
@@ -108,8 +109,8 @@ class RunnerBase {
   }
 
   std::atomic<int> threads_active_;
-  webrtc::Event start_event_;
-  webrtc::Event done_event_;
+  Event start_event_;
+  Event done_event_;
   int shared_value_;
 };
 
@@ -155,7 +156,7 @@ template <typename Runner>
 void StartThreads(std::vector<std::unique_ptr<Thread>>* threads,
                   Runner* handler) {
   for (int i = 0; i < kNumThreads; ++i) {
-    std::unique_ptr<webrtc::Thread> thread(webrtc::Thread::Create());
+    std::unique_ptr<Thread> thread(Thread::Create());
     thread->Start();
     thread->PostTask([handler] { handler->Loop(); });
     threads->push_back(std::move(thread));
@@ -167,7 +168,7 @@ void StartThreads(std::vector<std::unique_ptr<Thread>>* threads,
 TEST(RecursiveCriticalSectionTest, Basic) {
   // Create and start lots of threads.
   LockRunner<CriticalSectionLock> runner;
-  std::vector<std::unique_ptr<webrtc::Thread>> threads;
+  std::vector<std::unique_ptr<Thread>> threads;
   StartThreads(&threads, &runner);
   runner.SetExpectedThreadCount(kNumThreads);
 
@@ -178,7 +179,7 @@ TEST(RecursiveCriticalSectionTest, Basic) {
 
 class PerfTestData {
  public:
-  PerfTestData(int expected_count, webrtc::Event* event)
+  PerfTestData(int expected_count, Event* event)
       : cache_line_barrier_1_(),
         cache_line_barrier_2_(),
         expected_count_(expected_count),
@@ -189,7 +190,7 @@ class PerfTestData {
   ~PerfTestData() {}
 
   void AddToCounter(int add) {
-    rtc::CritScope cs(&lock_);
+    CritScope cs(&lock_);
     my_counter_ += add;
     if (my_counter_ == expected_count_)
       event_->Set();
@@ -206,7 +207,7 @@ class PerfTestData {
   uint8_t cache_line_barrier_2_[64];
   int64_t my_counter_ = 0;
   const int expected_count_;
-  webrtc::Event* const event_;
+  Event* const event_;
 };
 
 class PerfTestThread {
@@ -216,7 +217,7 @@ class PerfTestThread {
     data_ = data;
     repeats_ = repeats;
     my_id_ = id;
-    thread_ = webrtc::PlatformThread::SpawnJoinable(
+    thread_ = PlatformThread::SpawnJoinable(
         [this] {
           for (int i = 0; i < repeats_; ++i)
             data_->AddToCounter(my_id_);
@@ -233,7 +234,7 @@ class PerfTestThread {
   }
 
  private:
-  webrtc::PlatformThread thread_;
+  PlatformThread thread_;
   PerfTestData* data_ = nullptr;
   int repeats_ = 0;
   int my_id_ = 0;
@@ -270,7 +271,7 @@ class PerfTestThread {
 // The test is disabled by default to avoid unecessarily loading the bots.
 TEST(RecursiveCriticalSectionTest, DISABLED_Performance) {
   PerfTestThread threads[8];
-  webrtc::Event event;
+  Event event;
 
   static const int kThreadRepeats = 10000000;
   static const int kExpectedCount = kThreadRepeats * arraysize(threads);
@@ -279,10 +280,10 @@ TEST(RecursiveCriticalSectionTest, DISABLED_Performance) {
   for (auto& t : threads)
     t.Start(&test_data, kThreadRepeats, 1);
 
-  event.Wait(webrtc::Event::kForever);
+  event.Wait(Event::kForever);
 
   for (auto& t : threads)
     t.Stop();
 }
 
-}  // namespace rtc
+}  // namespace webrtc

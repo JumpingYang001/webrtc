@@ -64,7 +64,7 @@ class TCPPort : public Port {
       unique_ptr<TCPPort>
       Create(webrtc::TaskQueueBase* thread,
              webrtc::PacketSocketFactory* factory,
-             const rtc::Network* network,
+             const webrtc::Network* network,
              uint16_t min_port,
              uint16_t max_port,
              absl::string_view username,

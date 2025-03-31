@@ -182,7 +182,7 @@ struct RTC_EXPORT RelayServerConfig {
   TlsCertPolicy tls_cert_policy = TlsCertPolicy::TLS_CERT_POLICY_SECURE;
   std::vector<std::string> tls_alpn_protocols;
   std::vector<std::string> tls_elliptic_curves;
-  rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr;
+  SSLCertificateVerifier* tls_cert_verifier = nullptr;
   std::string turn_logging_id;
 };
 
@@ -410,8 +410,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
 
   // Set list of <ipaddress, mask> that shall be categorized as VPN.
   // Implemented by BasicPortAllocator.
-  virtual void SetVpnList(const std::vector<rtc::NetworkMask>& /* vpn_list */) {
-  }
+  virtual void SetVpnList(const std::vector<NetworkMask>& /* vpn_list */) {}
 
   std::unique_ptr<PortAllocatorSession> CreateSession(
       absl::string_view content_name,

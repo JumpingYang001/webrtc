@@ -51,7 +51,7 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
  public:
   BasicPortAllocator(
       const webrtc::Environment& env,
-      absl::Nonnull<rtc::NetworkManager*> network_manager,
+      absl::Nonnull<webrtc::NetworkManager*> network_manager,
       absl::Nonnull<rtc::PacketSocketFactory*> socket_factory,
       absl::Nullable<webrtc::TurnCustomizer*> turn_customizer = nullptr,
       absl::Nullable<RelayPortFactoryInterface*> relay_port_factory = nullptr);
@@ -62,7 +62,7 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
   // Deprecated, prefer constructor above.
   // TODO: bugs.webrtc.org/405883462 - mark [[deprecated]] or remove when
   // chromium migrated not to use this constructor.
-  BasicPortAllocator(rtc::NetworkManager* network_manager,
+  BasicPortAllocator(webrtc::NetworkManager* network_manager,
                      webrtc::PacketSocketFactory* socket_factory,
                      webrtc::TurnCustomizer* customizer = nullptr,
                      RelayPortFactoryInterface* relay_port_factory = nullptr,
@@ -77,7 +77,7 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
   void SetNetworkIgnoreMask(int network_ignore_mask) override;
   int GetNetworkIgnoreMask() const;
 
-  rtc::NetworkManager* network_manager() const {
+  webrtc::NetworkManager* network_manager() const {
     CheckRunOnValidThreadIfInitialized();
     return network_manager_;
   }
@@ -103,7 +103,7 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
     return relay_port_factory_.get();
   }
 
-  void SetVpnList(const std::vector<rtc::NetworkMask>& vpn_list) override;
+  void SetVpnList(const std::vector<webrtc::NetworkMask>& vpn_list) override;
 
   const webrtc::FieldTrialsView* field_trials() const {
     return field_trials_.get();
@@ -119,10 +119,10 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
   webrtc::AlwaysValidPointer<const webrtc::FieldTrialsView,
                              webrtc::FieldTrialBasedConfig>
       field_trials_;
-  rtc::NetworkManager* network_manager_;
+  webrtc::NetworkManager* network_manager_;
   // Always externally-owned pointer to a socket factory.
   webrtc::PacketSocketFactory* const socket_factory_;
-  int network_ignore_mask_ = rtc::kDefaultNetworkIgnoreMask;
+  int network_ignore_mask_ = webrtc::kDefaultNetworkIgnoreMask;
 
   webrtc::AlwaysValidPointer<RelayPortFactoryInterface, TurnPortFactory>
       relay_port_factory_;
@@ -181,8 +181,8 @@ class RTC_EXPORT BasicPortAllocatorSession
   void SetStunKeepaliveIntervalForReadyPorts(
       const std::optional<int>& stun_keepalive_interval) override;
   void PruneAllPorts() override;
-  static std::vector<const rtc::Network*> SelectIPv6Networks(
-      std::vector<const rtc::Network*>& all_ipv6_networks,
+  static std::vector<const webrtc::Network*> SelectIPv6Networks(
+      std::vector<const webrtc::Network*>& all_ipv6_networks,
       int max_ipv6_networks);
 
  protected:
@@ -259,7 +259,7 @@ class RTC_EXPORT BasicPortAllocatorSession
   void DoAllocate(bool disable_equivalent_phases);
   void OnNetworksChanged();
   void OnAllocationSequenceObjectsCreated();
-  void DisableEquivalentPhases(const rtc::Network* network,
+  void DisableEquivalentPhases(const webrtc::Network* network,
                                PortConfiguration* config,
                                uint32_t* flags);
   void AddAllocatedPort(Port* port, AllocationSequence* seq);
@@ -272,9 +272,9 @@ class RTC_EXPORT BasicPortAllocatorSession
   void MaybeSignalCandidatesAllocationDone();
   void OnPortAllocationComplete();
   PortData* FindPort(Port* port);
-  std::vector<const rtc::Network*> GetNetworks();
-  std::vector<const rtc::Network*> GetFailedNetworks();
-  void Regather(const std::vector<const rtc::Network*>& networks,
+  std::vector<const webrtc::Network*> GetNetworks();
+  std::vector<const webrtc::Network*> GetFailedNetworks();
+  void Regather(const std::vector<const webrtc::Network*>& networks,
                 bool disable_equivalent_phases,
                 webrtc::IceRegatheringReason reason);
 
@@ -282,7 +282,7 @@ class RTC_EXPORT BasicPortAllocatorSession
   bool CandidatePairable(const webrtc::Candidate& c, const Port* port) const;
 
   std::vector<PortData*> GetUnprunedPorts(
-      const std::vector<const rtc::Network*>& networks);
+      const std::vector<const webrtc::Network*>& networks);
   // Prunes ports and signal the remote side to remove the candidates that
   // were previously signaled from these ports.
   void PrunePortsAndRemoveCandidates(
@@ -374,7 +374,7 @@ class AllocationSequence {
   // event to trigger signal. This can also be achieved by starting a timer in
   // BPAS, but this is less deterministic.
   AllocationSequence(BasicPortAllocatorSession* session,
-                     const rtc::Network* network,
+                     const webrtc::Network* network,
                      PortConfiguration* config,
                      uint32_t flags,
                      std::function<void()> port_allocation_complete_callback);
@@ -383,14 +383,14 @@ class AllocationSequence {
   void OnNetworkFailed();
 
   State state() const { return state_; }
-  const rtc::Network* network() const { return network_; }
+  const webrtc::Network* network() const { return network_; }
 
   bool network_failed() const { return network_failed_; }
   void set_network_failed() { network_failed_ = true; }
 
   // Disables the phases for a new sequence that this one already covers for an
   // equivalent network setup.
-  void DisableEquivalentPhases(const rtc::Network* network,
+  void DisableEquivalentPhases(const webrtc::Network* network,
                                PortConfiguration* config,
                                uint32_t* flags);
 
@@ -419,7 +419,7 @@ class AllocationSequence {
 
   BasicPortAllocatorSession* session_;
   bool network_failed_ = false;
-  const rtc::Network* network_;
+  const webrtc::Network* network_;
   // Compared with the new best IP in DisableEquivalentPhases.
   webrtc::IPAddress previous_best_ip_;
   PortConfiguration* config_;

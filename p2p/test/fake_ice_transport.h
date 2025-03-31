@@ -383,11 +383,11 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     return last_sent_packet_;
   }
 
-  std::optional<rtc::NetworkRoute> network_route() const override {
+  std::optional<webrtc::NetworkRoute> network_route() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     return network_route_;
   }
-  void SetNetworkRoute(std::optional<rtc::NetworkRoute> network_route) {
+  void SetNetworkRoute(std::optional<webrtc::NetworkRoute> network_route) {
     RTC_DCHECK_RUN_ON(network_thread_);
     network_route_ = network_route;
     SendTask(network_thread_, [this] {
@@ -442,11 +442,11 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     auto msg = std::make_unique<IceMessage>(STUN_BINDING_REQUEST);
     MaybeAddDtlsPiggybackingAttributes(msg.get());
     msg->AddFingerprint();
-    rtc::ByteBufferWriter buf;
+    webrtc::ByteBufferWriter buf;
     msg->Write(&buf);
     rtc::PacketOptions options;
     options.info_signaled_after_sent.packet_type =
-        rtc::PacketType::kIceConnectivityCheck;
+        webrtc::PacketType::kIceConnectivityCheck;
     SendPacketInternal(rtc::CopyOnWriteBuffer(buf.DataView()), options, 0);
     return true;
   }
@@ -479,11 +479,11 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     auto msg = std::make_unique<IceMessage>(STUN_BINDING_RESPONSE);
     MaybeAddDtlsPiggybackingAttributes(msg.get());
     msg->AddFingerprint();
-    rtc::ByteBufferWriter buf;
+    webrtc::ByteBufferWriter buf;
     msg->Write(&buf);
     rtc::PacketOptions options;
     options.info_signaled_after_sent.packet_type =
-        rtc::PacketType::kIceConnectivityCheckResponse;
+        webrtc::PacketType::kIceConnectivityCheckResponse;
     SendPacketInternal(rtc::CopyOnWriteBuffer(buf.DataView()), options, 0);
     return true;
   }
@@ -615,7 +615,8 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     }
 
     std::unique_ptr<IceMessage> stun_msg(new IceMessage());
-    rtc::ByteBufferReader buf(rtc::MakeArrayView(packet.data(), packet.size()));
+    webrtc::ByteBufferReader buf(
+        rtc::MakeArrayView(packet.data(), packet.size()));
     RTC_CHECK(stun_msg->Read(&buf));
     return stun_msg;
   }
@@ -643,7 +644,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
   bool receiving_ RTC_GUARDED_BY(network_thread_) = false;
   bool combine_outgoing_packets_ RTC_GUARDED_BY(network_thread_) = false;
   rtc::CopyOnWriteBuffer send_packet_ RTC_GUARDED_BY(network_thread_);
-  std::optional<rtc::NetworkRoute> network_route_
+  std::optional<webrtc::NetworkRoute> network_route_
       RTC_GUARDED_BY(network_thread_);
   std::map<webrtc::Socket::Option, int> socket_options_
       RTC_GUARDED_BY(network_thread_);

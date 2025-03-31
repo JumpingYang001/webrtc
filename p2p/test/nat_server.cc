@@ -129,13 +129,13 @@ class NATProxyServerSocket : public AsyncProxyServerSocket {
   }
 };
 
-class NATProxyServer : public rtc::ProxyServer {
+class NATProxyServer : public ProxyServer {
  public:
   NATProxyServer(SocketFactory* int_factory,
                  const SocketAddress& int_addr,
                  SocketFactory* ext_factory,
                  const SocketAddress& ext_ip)
-      : rtc::ProxyServer(int_factory, int_addr, ext_factory, ext_ip) {}
+      : ProxyServer(int_factory, int_addr, ext_factory, ext_ip) {}
 
  protected:
   AsyncProxyServerSocket* WrapSocket(Socket* socket) override {

@@ -49,7 +49,7 @@ bool IsRelayRelay(const cricket::Connection* conn) {
 }
 
 bool IsUdp(const cricket::Connection* conn) {
-  return conn->local_candidate().relay_protocol() == cricket::UDP_PROTOCOL_NAME;
+  return conn->local_candidate().relay_protocol() == webrtc::UDP_PROTOCOL_NAME;
 }
 
 // TODO(qingsi) Use an enum to replace the following constants for all
@@ -411,19 +411,20 @@ const Connection* BasicIceController::LeastRecentlyPinged(
   return nullptr;
 }
 
-std::map<const rtc::Network*, const Connection*>
+std::map<const webrtc::Network*, const Connection*>
 BasicIceController::GetBestConnectionByNetwork() const {
   // `connections_` has been sorted, so the first one in the list on a given
   // network is the best connection on the network, except that the selected
   // connection is always the best connection on the network.
-  std::map<const rtc::Network*, const Connection*> best_connection_by_network;
+  std::map<const webrtc::Network*, const Connection*>
+      best_connection_by_network;
   if (selected_connection_) {
     best_connection_by_network[selected_connection_->network()] =
         selected_connection_;
   }
   // TODO(honghaiz): Need to update this if `connections_` are not sorted.
   for (const Connection* conn : connections_) {
-    const rtc::Network* network = conn->network();
+    const webrtc::Network* network = conn->network();
     // This only inserts when the network does not exist in the map.
     best_connection_by_network.insert(std::make_pair(network, conn));
   }

@@ -41,8 +41,7 @@ Thread* MaybeStartNetworkThread(
   if (old_thread) {
     return old_thread;
   }
-  std::unique_ptr<SocketServer> socket_server =
-      rtc::CreateDefaultSocketServer();
+  std::unique_ptr<SocketServer> socket_server = CreateDefaultSocketServer();
   thread_holder = std::make_unique<Thread>(socket_server.get());
   socket_factory_holder = std::move(socket_server);
 
@@ -159,7 +158,7 @@ ConnectionContext::ConnectionContext(
   if (!default_network_manager_) {
     // If network_monitor_factory_ is non-null, it will be used to create a
     // network monitor while on the network thread.
-    default_network_manager_ = std::make_unique<rtc::BasicNetworkManager>(
+    default_network_manager_ = std::make_unique<BasicNetworkManager>(
         env, socket_factory, network_monitor_factory_.get());
   }
   if (!default_socket_factory_) {

@@ -211,7 +211,7 @@ bool StunRequestManager::CheckResponse(const char* data, size_t size) {
 
   // Parse the STUN message and continue processing as usual.
 
-  rtc::ByteBufferReader buf(
+  webrtc::ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   std::unique_ptr<StunMessage> response(iter->second->msg_->CreateNew());
   if (!response->Read(&buf)) {
@@ -281,7 +281,7 @@ void StunRequest::SendInternal() {
 
   tstamp_ = webrtc::TimeMillis();
 
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   msg_->Write(&buf);
   manager_.SendPacket(buf.Data(), buf.Length(), this);
 

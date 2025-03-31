@@ -191,7 +191,7 @@ UDPPort::UDPPort(const PortParametersRef& args,
       error_(0),
       ready_(false),
       stun_keepalive_delay_(STUN_KEEPALIVE_INTERVAL),
-      dscp_(rtc::DSCP_NO_CHANGE),
+      dscp_(webrtc::DSCP_NO_CHANGE),
       emit_local_for_anyaddress_(emit_local_for_anyaddress) {}
 
 UDPPort::UDPPort(const PortParametersRef& args,
@@ -209,7 +209,7 @@ UDPPort::UDPPort(const PortParametersRef& args,
       error_(0),
       ready_(false),
       stun_keepalive_delay_(STUN_KEEPALIVE_INTERVAL),
-      dscp_(rtc::DSCP_NO_CHANGE),
+      dscp_(webrtc::DSCP_NO_CHANGE),
       emit_local_for_anyaddress_(emit_local_for_anyaddress) {}
 
 bool UDPPort::Init() {
@@ -325,14 +325,14 @@ void UDPPort::UpdateNetworkCost() {
   stun_keepalive_lifetime_ = GetStunKeepaliveLifetime();
 }
 
-rtc::DiffServCodePoint UDPPort::StunDscpValue() const {
+webrtc::DiffServCodePoint UDPPort::StunDscpValue() const {
   return dscp_;
 }
 
 int UDPPort::SetOption(webrtc::Socket::Option opt, int value) {
   if (opt == webrtc::Socket::OPT_DSCP) {
     // Save value for future packets we instantiate.
-    dscp_ = static_cast<rtc::DiffServCodePoint>(value);
+    dscp_ = static_cast<webrtc::DiffServCodePoint>(value);
   }
   return socket_->SetOption(opt, value);
 }
@@ -353,7 +353,7 @@ bool UDPPort::HandleIncomingPacket(webrtc::AsyncPacketSocket* socket,
 }
 
 bool UDPPort::SupportsProtocol(absl::string_view protocol) const {
-  return protocol == UDP_PROTOCOL_NAME;
+  return protocol == webrtc::UDP_PROTOCOL_NAME;
 }
 
 webrtc::ProtocolType UDPPort::GetProtocol() const {
@@ -380,9 +380,9 @@ void UDPPort::OnLocalAddressReady(webrtc::AsyncPacketSocket* /* socket */,
   // least the port is listening.
   MaybeSetDefaultLocalAddress(&addr);
 
-  AddAddress(addr, addr, webrtc::SocketAddress(), UDP_PROTOCOL_NAME, "", "",
-             webrtc::IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST, 0, "",
-             false);
+  AddAddress(addr, addr, webrtc::SocketAddress(), webrtc::UDP_PROTOCOL_NAME, "",
+             "", webrtc::IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST, 0,
+             "", false);
   MaybePrepareStunCandidate();
 }
 
@@ -545,8 +545,9 @@ void UDPPort::OnStunBindingRequestSucceeded(
     url << "stun:" << stun_server_addr.hostname() << ":"
         << stun_server_addr.port();
     AddAddress(stun_reflected_addr, socket_->GetLocalAddress(), related_address,
-               UDP_PROTOCOL_NAME, "", "", webrtc::IceCandidateType::kSrflx,
-               ICE_TYPE_PREFERENCE_SRFLX, 0, url.str(), false);
+               webrtc::UDP_PROTOCOL_NAME, "", "",
+               webrtc::IceCandidateType::kSrflx, ICE_TYPE_PREFERENCE_SRFLX, 0,
+               url.str(), false);
   }
   MaybeSetPortCompleteOrError();
 }
@@ -606,7 +607,8 @@ void UDPPort::MaybeSetPortCompleteOrError() {
 void UDPPort::OnSendPacket(const void* data, size_t size, StunRequest* req) {
   StunBindingRequest* sreq = static_cast<StunBindingRequest*>(req);
   rtc::PacketOptions options(StunDscpValue());
-  options.info_signaled_after_sent.packet_type = rtc::PacketType::kStunMessage;
+  options.info_signaled_after_sent.packet_type =
+      webrtc::PacketType::kStunMessage;
   CopyPortInformationToPacketInfo(&options.info_signaled_after_sent);
   if (socket_->SendTo(data, size, sreq->server_addr(), options) < 0) {
     RTC_LOG_ERR_EX(LS_ERROR, socket_->GetError())
@@ -647,7 +649,7 @@ std::unique_ptr<StunPort> StunPort::Create(
 std::unique_ptr<StunPort> StunPort::Create(
     webrtc::TaskQueueBase* thread,
     webrtc::PacketSocketFactory* factory,
-    const rtc::Network* network,
+    const webrtc::Network* network,
     uint16_t min_port,
     uint16_t max_port,
     absl::string_view username,

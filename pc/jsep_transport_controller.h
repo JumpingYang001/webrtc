@@ -229,7 +229,7 @@ class JsepTransportController : public PayloadTypeSuggester,
       const std::string& mid) const;
   // Caller owns returned certificate chain. This method mainly exists for
   // stats reporting.
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain(
+  std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& mid) const;
   // Get negotiated role, if one has been negotiated.
   std::optional<SSLRole> GetDtlsRole(const std::string& mid) const;

@@ -16,18 +16,15 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "api/candidate.h"
-#include "api/field_trials_view.h"
 #include "api/legacy_stats_types.h"
 #include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
@@ -127,8 +124,8 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
 
     std::string name;
     cricket::TransportStats stats;
-    std::unique_ptr<rtc::SSLCertificateStats> local_cert_stats;
-    std::unique_ptr<rtc::SSLCertificateStats> remote_cert_stats;
+    std::unique_ptr<SSLCertificateStats> local_cert_stats;
+    std::unique_ptr<SSLCertificateStats> remote_cert_stats;
   };
 
   struct SessionStats {
@@ -158,7 +155,7 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
   // Adds a report for this certificate and every certificate in its chain, and
   // returns the leaf certificate's report (`cert_stats`'s report).
   StatsReport* AddCertificateReports(
-      std::unique_ptr<rtc::SSLCertificateStats> cert_stats);
+      std::unique_ptr<SSLCertificateStats> cert_stats);
 
   StatsReport* AddConnectionInfoReport(const std::string& content_name,
                                        int component,

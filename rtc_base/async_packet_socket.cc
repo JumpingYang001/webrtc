@@ -10,12 +10,21 @@
 
 #include "rtc_base/async_packet_socket.h"
 
+#include <cstddef>
+#include <functional>
+#include <utility>
+
+#include "absl/functional/any_invocable.h"
+#include "api/sequence_checker.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/dscp.h"
+#include "rtc_base/network/received_packet.h"
+#include "rtc_base/network/sent_packet.h"
 
 namespace rtc {
 
 PacketOptions::PacketOptions() = default;
-PacketOptions::PacketOptions(DiffServCodePoint dscp) : dscp(dscp) {}
+PacketOptions::PacketOptions(webrtc::DiffServCodePoint dscp) : dscp(dscp) {}
 PacketOptions::PacketOptions(const PacketOptions& other) = default;
 PacketOptions::~PacketOptions() = default;
 
@@ -69,7 +78,7 @@ void AsyncPacketSocket::NotifyPacketReceived(
 
 void CopySocketInformationToPacketInfo(size_t packet_size_bytes,
                                        const AsyncPacketSocket& socket_from,
-                                       rtc::PacketInfo* info) {
+                                       PacketInfo* info) {
   info->packet_size_bytes = packet_size_bytes;
   info->ip_overhead_bytes = socket_from.GetLocalAddress().ipaddr().overhead();
 }

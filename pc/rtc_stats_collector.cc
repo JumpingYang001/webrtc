@@ -942,10 +942,10 @@ ProduceRemoteInboundRtpStreamStatsFromReportBlockData(
 
 void ProduceCertificateStatsFromSSLCertificateStats(
     Timestamp timestamp,
-    const rtc::SSLCertificateStats& certificate_stats,
+    const SSLCertificateStats& certificate_stats,
     RTCStatsReport* report) {
   RTCCertificateStats* prev_certificate_stats = nullptr;
-  for (const rtc::SSLCertificateStats* s = &certificate_stats; s;
+  for (const SSLCertificateStats* s = &certificate_stats; s;
        s = s->issuer.get()) {
     std::string certificate_stats_id =
         RTCCertificateIDFromFingerprint(s->fingerprint);

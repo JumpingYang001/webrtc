@@ -49,7 +49,7 @@ class PeerConnectionFieldTrialTest : public ::testing::Test {
 
   PeerConnectionFieldTrialTest()
       : clock_(Clock::GetRealTimeClock()),
-        socket_server_(rtc::CreateDefaultSocketServer()),
+        socket_server_(CreateDefaultSocketServer()),
         main_thread_(socket_server_.get()) {
 #ifdef WEBRTC_ANDROID
     InitializeAndroidObjects();

@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -21,7 +23,6 @@
 #include "api/jsep_ice_candidate.h"
 #include "media/base/codec.h"
 #include "p2p/base/p2p_constants.h"
-#include "p2p/base/port.h"
 #include "p2p/base/transport_description.h"
 #include "p2p/base/transport_info.h"
 #include "pc/session_description.h"
@@ -265,7 +266,7 @@ TEST_F(JsepSessionDescriptionTest, AddCandidateDuplicates) {
 TEST_F(JsepSessionDescriptionTest, AddHostnameCandidate) {
   webrtc::Candidate c;
   c.set_component(cricket::ICE_CANDIDATE_COMPONENT_RTP);
-  c.set_protocol(cricket::UDP_PROTOCOL_NAME);
+  c.set_protocol(webrtc::UDP_PROTOCOL_NAME);
   c.set_address(webrtc::SocketAddress("example.local", 1234));
   c.set_type(IceCandidateType::kHost);
   const size_t audio_index = 0;
@@ -296,7 +297,7 @@ TEST_F(JsepSessionDescriptionTest, SerializeDeserialize) {
 TEST_F(JsepSessionDescriptionTest, SerializeDeserializeWithHostnameCandidate) {
   webrtc::Candidate c;
   c.set_component(cricket::ICE_CANDIDATE_COMPONENT_RTP);
-  c.set_protocol(cricket::UDP_PROTOCOL_NAME);
+  c.set_protocol(webrtc::UDP_PROTOCOL_NAME);
   c.set_address(webrtc::SocketAddress("example.local", 1234));
   c.set_type(IceCandidateType::kHost);
   const size_t audio_index = 0;

@@ -82,7 +82,7 @@ class StreamInterfaceChannel : public rtc::StreamInterface {
   DtlsStunPiggybackController* dtls_stun_piggyback_controller_ =
       nullptr;  // owned by DtlsTransport
   rtc::StreamState state_ RTC_GUARDED_BY(callback_sequence_);
-  rtc::BufferQueue packets_ RTC_GUARDED_BY(callback_sequence_);
+  webrtc::BufferQueue packets_ RTC_GUARDED_BY(callback_sequence_);
 };
 
 // This class provides a DTLS SSLStreamAdapter inside a TransportChannel-style
@@ -197,7 +197,7 @@ class DtlsTransport : public DtlsTransportInternal {
   // Once DTLS has been established, this method retrieves the certificate
   // chain in use by the remote peer, for use in external identity
   // verification.
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain() const override;
+  std::unique_ptr<webrtc::SSLCertChain> GetRemoteSSLCertChain() const override;
 
   // Once DTLS has established (i.e., this ice_transport is writable), this
   // method extracts the keys negotiated during the DTLS handshake, for use in
@@ -217,7 +217,7 @@ class DtlsTransport : public DtlsTransportInternal {
 
   int GetError() override;
 
-  std::optional<rtc::NetworkRoute> network_route() const override;
+  std::optional<webrtc::NetworkRoute> network_route() const override;
 
   int SetOption(webrtc::Socket::Option opt, int value) override;
 
@@ -253,7 +253,7 @@ class DtlsTransport : public DtlsTransportInternal {
   void OnReadyToSend(rtc::PacketTransportInternal* transport);
   void OnReceivingState(rtc::PacketTransportInternal* transport);
   void OnDtlsEvent(int sig, int err);
-  void OnNetworkRouteChanged(std::optional<rtc::NetworkRoute> network_route);
+  void OnNetworkRouteChanged(std::optional<webrtc::NetworkRoute> network_route);
   bool SetupDtls();
   void MaybeStartDtls();
   bool HandleDtlsPacket(rtc::ArrayView<const uint8_t> payload);

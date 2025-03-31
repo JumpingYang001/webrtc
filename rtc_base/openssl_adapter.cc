@@ -14,6 +14,7 @@
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <openssl/ssl3.h>
 
 #include <cstdint>
 #include <string>
@@ -32,10 +33,10 @@
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/strings/string_builder.h"
 #ifdef OPENSSL_IS_BORINGSSL
-#include <openssl/base.h>
 #include <openssl/pool.h>
 
 #include "rtc_base/boringssl_certificate.h"
+#include "rtc_base/openssl.h"
 #endif
 #include <openssl/x509.h>
 #include <string.h>
@@ -181,7 +182,7 @@ static void LogSslError() {
 // OpenSSLAdapter
 /////////////////////////////////////////////////////////////////////////////
 
-namespace rtc {
+namespace webrtc {
 
 using ::webrtc::TimeDelta;
 
@@ -198,7 +199,7 @@ bool OpenSSLAdapter::CleanupSSL() {
   return true;
 }
 
-OpenSSLAdapter::OpenSSLAdapter(webrtc::Socket* socket,
+OpenSSLAdapter::OpenSSLAdapter(Socket* socket,
                                OpenSSLSessionCache* ssl_session_cache,
                                SSLCertificateVerifier* ssl_cert_verifier)
     : SSLAdapter(socket),
@@ -240,7 +241,7 @@ void OpenSSLAdapter::SetEllipticCurves(const std::vector<std::string>& curves) {
   elliptic_curves_ = curves;
 }
 
-void OpenSSLAdapter::SetMode(webrtc::SSLMode mode) {
+void OpenSSLAdapter::SetMode(SSLMode mode) {
   RTC_DCHECK(!ssl_ctx_);
   RTC_DCHECK(state_ == SSL_NONE);
   ssl_mode_ = mode;
@@ -252,18 +253,18 @@ void OpenSSLAdapter::SetCertVerifier(
   ssl_cert_verifier_ = ssl_cert_verifier;
 }
 
-void OpenSSLAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
+void OpenSSLAdapter::SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) {
   RTC_DCHECK(!identity_);
 #ifdef OPENSSL_IS_BORINGSSL
   identity_ =
       absl::WrapUnique(static_cast<BoringSSLIdentity*>(identity.release()));
 #else
   identity_ =
-      absl::WrapUnique(static_cast<OpenSSLIdentity*>(identity.release()));
+      absl::WrapUnique(static_cast<rtc::OpenSSLIdentity*>(identity.release()));
 #endif
 }
 
-void OpenSSLAdapter::SetRole(webrtc::SSLRole role) {
+void OpenSSLAdapter::SetRole(SSLRole role) {
   role_ = role;
 }
 
@@ -273,7 +274,7 @@ int OpenSSLAdapter::StartSSL(absl::string_view hostname) {
 
   ssl_host_name_.assign(hostname.data(), hostname.size());
 
-  if (GetSocket()->GetState() != webrtc::Socket::CS_CONNECTED) {
+  if (GetSocket()->GetState() != Socket::CS_CONNECTED) {
     state_ = SSL_WAIT;
     return 0;
   }
@@ -405,7 +406,7 @@ int OpenSSLAdapter::ContinueSSL() {
       }
 
       state_ = SSL_CONNECTED;
-      webrtc::AsyncSocketAdapter::OnConnectEvent(this);
+      AsyncSocketAdapter::OnConnectEvent(this);
       // TODO(benwright): Refactor this code path.
       // Don't let ourselves go away during the callbacks
       // PRefPtr<OpenSSLAdapter> lock(this);
@@ -421,7 +422,7 @@ int OpenSSLAdapter::ContinueSSL() {
       if (DTLSv1_get_timeout(ssl_, &timeout)) {
         TimeDelta delay = TimeDelta::Seconds(timeout.tv_sec) +
                           TimeDelta::Micros(timeout.tv_usec);
-        webrtc::Thread::Current()->PostDelayedTask(
+        Thread::Current()->PostDelayedTask(
             SafeTask(timer_.flag(), [this] { OnTimeout(); }), delay);
       }
       break;
@@ -444,7 +445,7 @@ void OpenSSLAdapter::Error(absl::string_view context, int err, bool signal) {
   state_ = SSL_ERROR;
   SetError(err);
   if (signal) {
-    webrtc::AsyncSocketAdapter::OnCloseEvent(this, err);
+    AsyncSocketAdapter::OnCloseEvent(this, err);
   }
 }
 
@@ -517,7 +518,7 @@ int OpenSSLAdapter::DoSslWrite(const void* pv, size_t cb, int* error) {
 int OpenSSLAdapter::Send(const void* pv, size_t cb) {
   switch (state_) {
     case SSL_NONE:
-      return webrtc::AsyncSocketAdapter::Send(pv, cb);
+      return AsyncSocketAdapter::Send(pv, cb);
     case SSL_WAIT:
     case SSL_CONNECTING:
       SetError(ENOTCONN);
@@ -580,8 +581,8 @@ int OpenSSLAdapter::Send(const void* pv, size_t cb) {
 
 int OpenSSLAdapter::SendTo(const void* pv,
                            size_t cb,
-                           const webrtc::SocketAddress& addr) {
-  if (GetSocket()->GetState() == webrtc::Socket::CS_CONNECTED &&
+                           const SocketAddress& addr) {
+  if (GetSocket()->GetState() == Socket::CS_CONNECTED &&
       addr == GetSocket()->GetRemoteAddress()) {
     return Send(pv, cb);
   }
@@ -593,7 +594,7 @@ int OpenSSLAdapter::SendTo(const void* pv,
 int OpenSSLAdapter::Recv(void* pv, size_t cb, int64_t* timestamp) {
   switch (state_) {
     case SSL_NONE:
-      return webrtc::AsyncSocketAdapter::Recv(pv, cb, timestamp);
+      return AsyncSocketAdapter::Recv(pv, cb, timestamp);
     case SSL_WAIT:
     case SSL_CONNECTING:
       SetError(ENOTCONN);
@@ -641,9 +642,9 @@ int OpenSSLAdapter::Recv(void* pv, size_t cb, int64_t* timestamp) {
 
 int OpenSSLAdapter::RecvFrom(void* pv,
                              size_t cb,
-                             webrtc::SocketAddress* paddr,
+                             SocketAddress* paddr,
                              int64_t* timestamp) {
-  if (GetSocket()->GetState() == webrtc::Socket::CS_CONNECTED) {
+  if (GetSocket()->GetState() == Socket::CS_CONNECTED) {
     int ret = Recv(pv, cb, timestamp);
     *paddr = GetRemoteAddress();
     return ret;
@@ -656,10 +657,10 @@ int OpenSSLAdapter::RecvFrom(void* pv,
 int OpenSSLAdapter::Close() {
   Cleanup();
   state_ = SSL_NONE;
-  return webrtc::AsyncSocketAdapter::Close();
+  return AsyncSocketAdapter::Close();
 }
 
-webrtc::Socket::ConnState OpenSSLAdapter::GetState() const {
+Socket::ConnState OpenSSLAdapter::GetState() const {
   ConnState state = GetSocket()->GetState();
   if ((state == CS_CONNECTED) &&
       ((state_ == SSL_WAIT) || (state_ == SSL_CONNECTING))) {
@@ -678,23 +679,23 @@ void OpenSSLAdapter::OnTimeout() {
   ContinueSSL();
 }
 
-void OpenSSLAdapter::OnConnectEvent(webrtc::Socket* socket) {
+void OpenSSLAdapter::OnConnectEvent(Socket* socket) {
   RTC_LOG(LS_INFO) << "OpenSSLAdapter::OnConnectEvent";
   if (state_ != SSL_WAIT) {
     RTC_DCHECK(state_ == SSL_NONE);
-    webrtc::AsyncSocketAdapter::OnConnectEvent(socket);
+    AsyncSocketAdapter::OnConnectEvent(socket);
     return;
   }
 
   state_ = SSL_CONNECTING;
   if (int err = BeginSSL()) {
-    webrtc::AsyncSocketAdapter::OnCloseEvent(socket, err);
+    AsyncSocketAdapter::OnCloseEvent(socket, err);
   }
 }
 
-void OpenSSLAdapter::OnReadEvent(webrtc::Socket* socket) {
+void OpenSSLAdapter::OnReadEvent(Socket* socket) {
   if (state_ == SSL_NONE) {
-    webrtc::AsyncSocketAdapter::OnReadEvent(socket);
+    AsyncSocketAdapter::OnReadEvent(socket);
     return;
   }
 
@@ -712,15 +713,15 @@ void OpenSSLAdapter::OnReadEvent(webrtc::Socket* socket) {
   // Don't let ourselves go away during the callbacks
   // PRefPtr<OpenSSLAdapter> lock(this); // TODO(benwright): fix this
   if (ssl_write_needs_read_) {
-    webrtc::AsyncSocketAdapter::OnWriteEvent(socket);
+    AsyncSocketAdapter::OnWriteEvent(socket);
   }
 
-  webrtc::AsyncSocketAdapter::OnReadEvent(socket);
+  AsyncSocketAdapter::OnReadEvent(socket);
 }
 
-void OpenSSLAdapter::OnWriteEvent(webrtc::Socket* socket) {
+void OpenSSLAdapter::OnWriteEvent(Socket* socket) {
   if (state_ == SSL_NONE) {
-    webrtc::AsyncSocketAdapter::OnWriteEvent(socket);
+    AsyncSocketAdapter::OnWriteEvent(socket);
     return;
   }
 
@@ -739,7 +740,7 @@ void OpenSSLAdapter::OnWriteEvent(webrtc::Socket* socket) {
   // PRefPtr<OpenSSLAdapter> lock(this); // TODO(benwright): fix this
 
   if (ssl_read_needs_write_) {
-    webrtc::AsyncSocketAdapter::OnReadEvent(socket);
+    AsyncSocketAdapter::OnReadEvent(socket);
   }
 
   // If a previous SSL_write failed due to the underlying socket being blocked,
@@ -752,17 +753,17 @@ void OpenSSLAdapter::OnWriteEvent(webrtc::Socket* socket) {
     }
   }
 
-  webrtc::AsyncSocketAdapter::OnWriteEvent(socket);
+  AsyncSocketAdapter::OnWriteEvent(socket);
 }
 
-void OpenSSLAdapter::OnCloseEvent(webrtc::Socket* socket, int err) {
+void OpenSSLAdapter::OnCloseEvent(Socket* socket, int err) {
   RTC_LOG(LS_INFO) << "OpenSSLAdapter::OnCloseEvent(" << err << ")";
-  webrtc::AsyncSocketAdapter::OnCloseEvent(socket, err);
+  AsyncSocketAdapter::OnCloseEvent(socket, err);
 }
 
 bool OpenSSLAdapter::SSLPostConnectionCheck(SSL* ssl, absl::string_view host) {
   bool is_valid_cert_name =
-      openssl::VerifyPeerCertMatchesHost(ssl, host) &&
+      rtc::openssl::VerifyPeerCertMatchesHost(ssl, host) &&
       (SSL_get_verify_result(ssl) == X509_V_OK || custom_cert_verifier_status_);
 
   if (!is_valid_cert_name && ignore_bad_cert_) {
@@ -784,7 +785,7 @@ void OpenSSLAdapter::SSLInfoCallback(const SSL* ssl, int where, int ret) {
       break;
   }
   char buf[1024];
-  webrtc::SimpleStringBuilder ss(buf);
+  SimpleStringBuilder ss(buf);
   ss << SSL_state_string_long(ssl);
   if (ret == 0) {
     RTC_LOG(LS_ERROR) << "Error during " << ss.str() << "\n";
@@ -906,14 +907,14 @@ int OpenSSLAdapter::SSLVerifyInternal(int previous_status,
   }
   bssl::UniquePtr<uint8_t> owned_data(data);
   bssl::UniquePtr<CRYPTO_BUFFER> crypto_buffer(
-      CRYPTO_BUFFER_new(data, length, openssl::GetBufferPool()));
+      CRYPTO_BUFFER_new(data, length, rtc::openssl::GetBufferPool()));
   if (!crypto_buffer) {
     RTC_LOG(LS_ERROR) << "Failed to allocate CRYPTO_BUFFER.";
     return previous_status;
   }
   const BoringSSLCertificate cert(std::move(crypto_buffer));
 #else
-  const OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
+  const rtc::OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
 #endif
   if (!ssl_cert_verifier_->Verify(cert)) {
     RTC_LOG(LS_INFO) << "Failed to verify certificate using custom callback";
@@ -935,8 +936,7 @@ int OpenSSLAdapter::NewSSLSessionCallback(SSL* ssl, SSL_SESSION* session) {
   return 1;  // We've taken ownership of the session; OpenSSL shouldn't free it.
 }
 
-SSL_CTX* OpenSSLAdapter::CreateContext(webrtc::SSLMode mode,
-                                       bool enable_cache) {
+SSL_CTX* OpenSSLAdapter::CreateContext(SSLMode mode, bool enable_cache) {
 #ifdef WEBRTC_USE_CRYPTO_BUFFER_CALLBACK
   // If X509 objects aren't used, we can use these methods to avoid
   // linking the sizable crypto/x509 code.
@@ -957,7 +957,7 @@ SSL_CTX* OpenSSLAdapter::CreateContext(webrtc::SSLMode mode,
   }
 
 #ifndef WEBRTC_EXCLUDE_BUILT_IN_SSL_ROOT_CERTS
-  if (!openssl::LoadBuiltinSSLRootCertificates(ctx)) {
+  if (!rtc::openssl::LoadBuiltinSSLRootCertificates(ctx)) {
     RTC_LOG(LS_ERROR) << "SSL_CTX creation failed: Failed to load any trusted "
                          "ssl root certificates.";
     SSL_CTX_free(ctx);
@@ -970,7 +970,7 @@ SSL_CTX* OpenSSLAdapter::CreateContext(webrtc::SSLMode mode,
 #endif
 
 #ifdef OPENSSL_IS_BORINGSSL
-  SSL_CTX_set0_buffer_pool(ctx, openssl::GetBufferPool());
+  SSL_CTX_set0_buffer_pool(ctx, rtc::openssl::GetBufferPool());
 #endif
 
 #ifdef WEBRTC_USE_CRYPTO_BUFFER_CALLBACK
@@ -1029,7 +1029,7 @@ OpenSSLAdapterFactory::OpenSSLAdapterFactory() = default;
 
 OpenSSLAdapterFactory::~OpenSSLAdapterFactory() = default;
 
-void OpenSSLAdapterFactory::SetMode(webrtc::SSLMode mode) {
+void OpenSSLAdapterFactory::SetMode(SSLMode mode) {
   RTC_DCHECK(!ssl_session_cache_);
   ssl_mode_ = mode;
 }
@@ -1040,12 +1040,13 @@ void OpenSSLAdapterFactory::SetCertVerifier(
   ssl_cert_verifier_ = ssl_cert_verifier;
 }
 
-void OpenSSLAdapterFactory::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
+void OpenSSLAdapterFactory::SetIdentity(
+    std::unique_ptr<rtc::SSLIdentity> identity) {
   RTC_DCHECK(!ssl_session_cache_);
   identity_ = std::move(identity);
 }
 
-void OpenSSLAdapterFactory::SetRole(webrtc::SSLRole role) {
+void OpenSSLAdapterFactory::SetRole(SSLRole role) {
   RTC_DCHECK(!ssl_session_cache_);
   ssl_role_ = role;
 }
@@ -1055,7 +1056,7 @@ void OpenSSLAdapterFactory::SetIgnoreBadCert(bool ignore) {
   ignore_bad_cert_ = ignore;
 }
 
-OpenSSLAdapter* OpenSSLAdapterFactory::CreateAdapter(webrtc::Socket* socket) {
+OpenSSLAdapter* OpenSSLAdapterFactory::CreateAdapter(Socket* socket) {
   if (ssl_session_cache_ == nullptr) {
     SSL_CTX* ssl_ctx = OpenSSLAdapter::CreateContext(ssl_mode_, true);
     if (ssl_ctx == nullptr) {
@@ -1089,4 +1090,4 @@ OpenSSLAdapter::EarlyExitCatcher::~EarlyExitCatcher() {
   }
 }
 
-}  // namespace rtc
+}  // namespace webrtc

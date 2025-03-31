@@ -306,7 +306,7 @@ void CheckCertChainReports(const StatsReports& reports,
                          StatsReport::kStatsValueNameFingerprintAlgorithm,
                          &fingerprint_algorithm));
     // The digest algorithm for a FakeSSLCertificate is always SHA-1.
-    std::string sha_1_str = rtc::DIGEST_SHA_1;
+    std::string sha_1_str = DIGEST_SHA_1;
     EXPECT_EQ(sha_1_str, fingerprint_algorithm);
 
     std::string fingerprint;
@@ -1344,7 +1344,7 @@ TEST_F(LegacyStatsCollectorTest, IceCandidateReport) {
   Candidate local;
   EXPECT_GT(local.id().length(), 0u);
   RTC_DCHECK_EQ(local.type(), IceCandidateType::kHost);
-  local.set_protocol(cricket::UDP_PROTOCOL_NAME);
+  local.set_protocol(UDP_PROTOCOL_NAME);
   local.set_address(kLocalAddress);
   local.set_priority(kPriority);
   local.set_network_type(kNetworkType);
@@ -1352,7 +1352,7 @@ TEST_F(LegacyStatsCollectorTest, IceCandidateReport) {
   Candidate remote;
   EXPECT_GT(remote.id().length(), 0u);
   remote.set_type(IceCandidateType::kPrflx);
-  remote.set_protocol(cricket::UDP_PROTOCOL_NAME);
+  remote.set_protocol(UDP_PROTOCOL_NAME);
   remote.set_address(kRemoteAddress);
   remote.set_priority(kPriority);
   remote.set_network_type(kNetworkType);
@@ -1384,7 +1384,7 @@ TEST_F(LegacyStatsCollectorTest, IceCandidateReport) {
       ExtractStatsValue(StatsReport::kStatsReportTypeIceLocalCandidate, reports,
                         StatsReport::kStatsValueNameCandidatePortNumber));
   EXPECT_EQ(
-      cricket::UDP_PROTOCOL_NAME,
+      UDP_PROTOCOL_NAME,
       ExtractStatsValue(StatsReport::kStatsReportTypeIceLocalCandidate, reports,
                         StatsReport::kStatsValueNameCandidateTransportType));
   EXPECT_EQ(
@@ -1413,7 +1413,7 @@ TEST_F(LegacyStatsCollectorTest, IceCandidateReport) {
             ExtractStatsValue(StatsReport::kStatsReportTypeIceRemoteCandidate,
                               reports,
                               StatsReport::kStatsValueNameCandidatePortNumber));
-  EXPECT_EQ(cricket::UDP_PROTOCOL_NAME,
+  EXPECT_EQ(UDP_PROTOCOL_NAME,
             ExtractStatsValue(
                 StatsReport::kStatsReportTypeIceRemoteCandidate, reports,
                 StatsReport::kStatsValueNameCandidateTransportType));

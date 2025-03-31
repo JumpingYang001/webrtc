@@ -66,7 +66,6 @@
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_constants.h"
 #include "rtc_base/socket.h"
-#include "rtc_base/socket_adapters.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread.h"
@@ -537,14 +536,15 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
                      std::move(port2), false, false, true, true);
   }
 
-  rtc::Network* MakeNetwork(const SocketAddress& addr) {
+  webrtc::Network* MakeNetwork(const SocketAddress& addr) {
     networks_.emplace_back("unittest", "unittest", addr.ipaddr(), 32);
     networks_.back().AddIP(addr.ipaddr());
     return &networks_.back();
   }
 
-  rtc::Network* MakeNetworkMultipleAddrs(const SocketAddress& global_addr,
-                                         const SocketAddress& link_local_addr) {
+  webrtc::Network* MakeNetworkMultipleAddrs(
+      const SocketAddress& global_addr,
+      const SocketAddress& link_local_addr) {
     networks_.emplace_back("unittest", "unittest", global_addr.ipaddr(), 32,
                            webrtc::ADAPTER_TYPE_UNKNOWN);
     networks_.back().AddIP(link_local_addr.ipaddr());
@@ -910,7 +910,7 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
     return port;
   }
   // Overload to create a test port given an rtc::Network directly.
-  std::unique_ptr<TestPort> CreateTestPort(const rtc::Network* network,
+  std::unique_ptr<TestPort> CreateTestPort(const webrtc::Network* network,
                                            absl::string_view username,
                                            absl::string_view password) {
     Port::PortParametersRef args = {.network_thread = &main_,
@@ -945,7 +945,7 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.
-  std::list<rtc::Network> networks_;
+  std::list<webrtc::Network> networks_;
   std::unique_ptr<webrtc::VirtualSocketServer> ss_;
   webrtc::AutoSocketServerThread main_;
   webrtc::BasicPacketSocketFactory socket_factory_;
@@ -2327,7 +2327,7 @@ TEST_F(PortTest, TestUseCandidateAttribute) {
 // change, the network cost of the local candidates will change. Also tests that
 // the remote network costs are updated with the stun binding requests.
 TEST_F(PortTest, TestNetworkCostChange) {
-  rtc::Network* test_network = MakeNetwork(kLocalAddr1);
+  webrtc::Network* test_network = MakeNetwork(kLocalAddr1);
   auto lport = CreateTestPort(test_network, "lfrag", "lpass");
   auto rport = CreateTestPort(test_network, "rfrag", "rpass");
   lport->SetIceRole(cricket::ICEROLE_CONTROLLING);
@@ -2390,7 +2390,7 @@ TEST_F(PortTest, TestNetworkCostChange) {
 }
 
 TEST_F(PortTest, TestNetworkInfoAttribute) {
-  rtc::Network* test_network = MakeNetwork(kLocalAddr1);
+  webrtc::Network* test_network = MakeNetwork(kLocalAddr1);
   auto lport = CreateTestPort(test_network, "lfrag", "lpass");
   auto rport = CreateTestPort(test_network, "rfrag", "rpass");
   lport->SetIceRole(cricket::ICEROLE_CONTROLLING);
@@ -3722,7 +3722,7 @@ TEST_F(PortTest, TestGoogPingUnsupportedVersionInStunBindingResponse) {
     modified_response->AddFingerprint();
   }
 
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   modified_response->Write(&buf);
 
   // Feeding the modified respone message back.
@@ -3932,7 +3932,7 @@ TEST_F(PortTest, TestErrorResponseMakesGoogPingFallBackToStunBinding) {
   StunMessage error_response(GOOG_PING_ERROR_RESPONSE);
   error_response.SetTransactionIdForTesting(response2->transaction_id());
   error_response.AddMessageIntegrity32("rpass");
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   error_response.Write(&buf);
 
   ch1.conn()->OnReadPacket(rtc::ReceivedPacket::CreateFromLegacy(
@@ -4074,22 +4074,22 @@ TEST_F(PortTest, TestPortNotTimeoutUntilPruned) {
 
 TEST_F(PortTest, TestSupportsProtocol) {
   auto udp_port = CreateUdpPort(kLocalAddr1);
-  EXPECT_TRUE(udp_port->SupportsProtocol(UDP_PROTOCOL_NAME));
-  EXPECT_FALSE(udp_port->SupportsProtocol(TCP_PROTOCOL_NAME));
+  EXPECT_TRUE(udp_port->SupportsProtocol(webrtc::UDP_PROTOCOL_NAME));
+  EXPECT_FALSE(udp_port->SupportsProtocol(webrtc::TCP_PROTOCOL_NAME));
 
   auto stun_port = CreateStunPort(kLocalAddr1, nat_socket_factory1());
-  EXPECT_TRUE(stun_port->SupportsProtocol(UDP_PROTOCOL_NAME));
-  EXPECT_FALSE(stun_port->SupportsProtocol(TCP_PROTOCOL_NAME));
+  EXPECT_TRUE(stun_port->SupportsProtocol(webrtc::UDP_PROTOCOL_NAME));
+  EXPECT_FALSE(stun_port->SupportsProtocol(webrtc::TCP_PROTOCOL_NAME));
 
   auto tcp_port = CreateTcpPort(kLocalAddr1);
-  EXPECT_TRUE(tcp_port->SupportsProtocol(TCP_PROTOCOL_NAME));
-  EXPECT_TRUE(tcp_port->SupportsProtocol(SSLTCP_PROTOCOL_NAME));
-  EXPECT_FALSE(tcp_port->SupportsProtocol(UDP_PROTOCOL_NAME));
+  EXPECT_TRUE(tcp_port->SupportsProtocol(webrtc::TCP_PROTOCOL_NAME));
+  EXPECT_TRUE(tcp_port->SupportsProtocol(webrtc::SSLTCP_PROTOCOL_NAME));
+  EXPECT_FALSE(tcp_port->SupportsProtocol(webrtc::UDP_PROTOCOL_NAME));
 
   auto turn_port = CreateTurnPort(kLocalAddr1, nat_socket_factory1(),
                                   webrtc::PROTO_UDP, webrtc::PROTO_UDP);
-  EXPECT_TRUE(turn_port->SupportsProtocol(UDP_PROTOCOL_NAME));
-  EXPECT_FALSE(turn_port->SupportsProtocol(TCP_PROTOCOL_NAME));
+  EXPECT_TRUE(turn_port->SupportsProtocol(webrtc::UDP_PROTOCOL_NAME));
+  EXPECT_FALSE(turn_port->SupportsProtocol(webrtc::TCP_PROTOCOL_NAME));
 }
 
 // Test that SetIceParameters updates the component, ufrag and password

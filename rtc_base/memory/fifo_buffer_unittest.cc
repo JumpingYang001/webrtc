@@ -12,12 +12,17 @@
 
 #include <string.h>
 
+#include <cstdint>
+
+#include "api/array_view.h"
+#include "rtc_base/stream.h"
+#include "rtc_base/thread.h"
 #include "test/gtest.h"
 
-namespace rtc {
+namespace webrtc {
 
 TEST(FifoBufferTest, TestAll) {
-  webrtc::AutoThread main_thread;
+  AutoThread main_thread;
   const size_t kSize = 16;
   const uint8_t in[kSize * 2 + 1] = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
   uint8_t out[kSize * 2];
@@ -237,7 +242,7 @@ TEST(FifoBufferTest, TestAll) {
 }
 
 TEST(FifoBufferTest, FullBufferCheck) {
-  webrtc::AutoThread main_thread;
+  AutoThread main_thread;
   FifoBuffer buff(10);
   buff.ConsumeWriteBuffer(10);
 
@@ -246,4 +251,4 @@ TEST(FifoBufferTest, FullBufferCheck) {
   EXPECT_EQ(0U, free);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

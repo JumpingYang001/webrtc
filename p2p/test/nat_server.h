@@ -123,7 +123,7 @@ class NATServer {
   SocketFactory* external_;
   SocketAddress external_ip_;
   AsyncUDPSocket* udp_server_socket_;
-  rtc::ProxyServer* tcp_proxy_server_;
+  ProxyServer* tcp_proxy_server_;
   InternalMap* int_map_;
   ExternalMap* ext_map_;
 };

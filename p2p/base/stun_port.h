@@ -68,7 +68,7 @@ class RTC_EXPORT UDPPort : public Port {
       unique_ptr<UDPPort>
       Create(webrtc::TaskQueueBase* thread,
              webrtc::PacketSocketFactory* factory,
-             const rtc::Network* network,
+             const webrtc::Network* network,
              webrtc::AsyncPacketSocket* socket,
              absl::string_view username,
              absl::string_view password,
@@ -104,7 +104,7 @@ class RTC_EXPORT UDPPort : public Port {
       unique_ptr<UDPPort>
       Create(webrtc::TaskQueueBase* thread,
              webrtc::PacketSocketFactory* factory,
-             const rtc::Network* network,
+             const webrtc::Network* network,
              uint16_t min_port,
              uint16_t max_port,
              absl::string_view username,
@@ -180,7 +180,7 @@ class RTC_EXPORT UDPPort : public Port {
 
   void UpdateNetworkCost() override;
 
-  rtc::DiffServCodePoint StunDscpValue() const override;
+  webrtc::DiffServCodePoint StunDscpValue() const override;
 
   void OnLocalAddressReady(webrtc::AsyncPacketSocket* socket,
                            const webrtc::SocketAddress& address);
@@ -286,7 +286,7 @@ class RTC_EXPORT UDPPort : public Port {
   bool ready_;
   int stun_keepalive_delay_;
   int stun_keepalive_lifetime_ = INFINITE_LIFETIME;
-  rtc::DiffServCodePoint dscp_;
+  webrtc::DiffServCodePoint dscp_;
 
   StunStats stats_;
 
@@ -309,7 +309,7 @@ class StunPort : public UDPPort {
       unique_ptr<StunPort>
       Create(webrtc::TaskQueueBase* thread,
              webrtc::PacketSocketFactory* factory,
-             const rtc::Network* network,
+             const webrtc::Network* network,
              uint16_t min_port,
              uint16_t max_port,
              absl::string_view username,

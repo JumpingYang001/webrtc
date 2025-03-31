@@ -12,13 +12,19 @@
 
 #include <stdint.h>
 
-namespace rtc {
+namespace webrtc {
 
 // Returns current memory used by the process in bytes (working set size on
 // Windows and resident set size on other platforms).
 // Returns -1 on failure.
 int64_t GetProcessResidentSizeBytes();
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::GetProcessResidentSizeBytes;
 }  // namespace rtc
 
 #endif  // RTC_BASE_MEMORY_USAGE_H_

@@ -320,7 +320,7 @@ class EmulatedEndpointImpl : public EmulatedEndpoint {
   void Disable();
   bool Enabled() const;
 
-  const rtc::Network& network() const { return *network_.get(); }
+  const Network& network() const { return *network_.get(); }
 
   EmulatedNetworkStats stats() const;
 
@@ -345,7 +345,7 @@ class EmulatedEndpointImpl : public EmulatedEndpoint {
   bool is_enabled_ RTC_GUARDED_BY(enable_state_mutex_);
   Clock* const clock_;
   const absl::Nonnull<TaskQueueBase*> task_queue_;
-  std::unique_ptr<rtc::Network> network_;
+  std::unique_ptr<Network> network_;
   NetworkRouterNode router_;
 
   uint16_t next_port_ RTC_GUARDED_BY(receiver_lock_);
@@ -386,7 +386,7 @@ class EndpointsContainer {
   bool HasEndpoint(EmulatedEndpointImpl* endpoint) const;
   // Returns list of networks for enabled endpoints. Caller takes ownership of
   // returned rtc::Network objects.
-  std::vector<std::unique_ptr<rtc::Network>> GetEnabledNetworks() const;
+  std::vector<std::unique_ptr<Network>> GetEnabledNetworks() const;
   std::vector<EmulatedEndpoint*> GetEndpoints() const;
   EmulatedNetworkStats GetStats() const;
 

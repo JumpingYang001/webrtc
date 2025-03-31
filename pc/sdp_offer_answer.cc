@@ -1405,7 +1405,7 @@ SdpOfferAnswerHandler::SdpOfferAnswerHandler(PeerConnectionSdpMethods* pc,
       context_(context),
       local_streams_(StreamCollection::Create()),
       remote_streams_(StreamCollection::Create()),
-      operations_chain_(rtc::OperationsChain::Create()),
+      operations_chain_(OperationsChain::Create()),
       rtcp_cname_(GenerateRtcpCname()),
       local_ice_credentials_to_replace_(new LocalIceCredentialsToReplace()),
       weak_ptr_factory_(this) {

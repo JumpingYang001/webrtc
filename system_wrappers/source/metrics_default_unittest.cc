@@ -13,7 +13,7 @@
 #include <string>
 #include <utility>
 
-#include "rtc_base/checks.h"
+#include "absl/strings/string_view.h"
 #include "rtc_base/string_utils.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gtest.h"
@@ -28,7 +28,7 @@ const char kName[] = "Name";
 int NumSamples(absl::string_view name,
                const std::map<std::string,
                               std::unique_ptr<metrics::SampleInfo>,
-                              rtc::AbslStringViewCmp>& histograms) {
+                              AbslStringViewCmp>& histograms) {
   const auto it = histograms.find(name);
   if (it == histograms.end())
     return 0;
@@ -44,7 +44,7 @@ int NumEvents(absl::string_view name,
               int sample,
               const std::map<std::string,
                              std::unique_ptr<metrics::SampleInfo>,
-                             rtc::AbslStringViewCmp>& histograms) {
+                             AbslStringViewCmp>& histograms) {
   const auto it = histograms.find(name);
   if (it == histograms.end())
     return 0;
@@ -120,8 +120,7 @@ TEST_F(MetricsDefaultTest, Underflow) {
 }
 
 TEST_F(MetricsDefaultTest, GetAndReset) {
-  std::map<std::string, std::unique_ptr<metrics::SampleInfo>,
-           rtc::AbslStringViewCmp>
+  std::map<std::string, std::unique_ptr<metrics::SampleInfo>, AbslStringViewCmp>
       histograms;
   metrics::GetAndReset(&histograms);
   EXPECT_EQ(0u, histograms.size());
@@ -158,8 +157,7 @@ TEST_F(MetricsDefaultTest, TestMinMaxBucket) {
   const std::string kMinMaxName = "MinMaxCounts100";
   RTC_HISTOGRAM_COUNTS_100(kMinMaxName, 4);
 
-  std::map<std::string, std::unique_ptr<metrics::SampleInfo>,
-           rtc::AbslStringViewCmp>
+  std::map<std::string, std::unique_ptr<metrics::SampleInfo>, AbslStringViewCmp>
       histograms;
   metrics::GetAndReset(&histograms);
   EXPECT_EQ(1u, histograms.size());

@@ -24,8 +24,7 @@ SSLCertificateVerifierWrapper::SSLCertificateVerifierWrapper(
 
 SSLCertificateVerifierWrapper::~SSLCertificateVerifierWrapper() = default;
 
-bool SSLCertificateVerifierWrapper::Verify(
-    const rtc::SSLCertificate& certificate) {
+bool SSLCertificateVerifierWrapper::Verify(const SSLCertificate& certificate) {
   JNIEnv* jni = AttachCurrentThreadIfNeeded();
 
   // Serialize the der encoding of the cert into a jbyteArray

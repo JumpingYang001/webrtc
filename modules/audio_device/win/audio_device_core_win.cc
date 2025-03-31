@@ -19,7 +19,7 @@
 #pragma message(">> INFO: Windows Core Audio is not supported in VS 2003")
 #endif
 
-#include "modules/audio_device/audio_device_config.h"
+#include "modules/audio_device/audio_device_config.h"  // IWYU pragma: keep
 
 #ifdef WEBRTC_WINDOWS_CORE_AUDIO_BUILD
 
@@ -4162,7 +4162,7 @@ void AudioDeviceWindowsCore::_TraceCOMError(HRESULT hr) const {
   RTC_LOG(LS_ERROR) << "Core Audio method failed (hr=" << hr << ")";
   StringCchPrintfW(buf, MAXERRORLENGTH, L"Error details: ");
   StringCchCatW(buf, MAXERRORLENGTH, errorText);
-  RTC_LOG(LS_ERROR) << rtc::ToUtf8(buf);
+  RTC_LOG(LS_ERROR) << ToUtf8(buf);
 }
 
 bool AudioDeviceWindowsCore::KeyPressed() const {

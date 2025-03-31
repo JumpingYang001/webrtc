@@ -516,7 +516,7 @@ static void DelayedPostsWithIdenticalTimesAreProcessedInFifoOrder(
 
 TEST(ThreadTest, DelayedPostsWithIdenticalTimesAreProcessedInFifoOrder) {
   ScopedBaseFakeClock clock;
-  Thread q(rtc::CreateDefaultSocketServer(), true);
+  Thread q(CreateDefaultSocketServer(), true);
   q.Start();
   DelayedPostsWithIdenticalTimesAreProcessedInFifoOrder(clock, q);
 

@@ -168,7 +168,7 @@ class RegKey {
 
 #endif  // !defined(WINUWP)
 
-namespace rtc {
+namespace webrtc {
 namespace rtc_win {
 namespace {
 
@@ -301,7 +301,7 @@ OSInfo::OSInfo()
       version_number_.major, version_number_.minor, version_number_.build);
   service_pack_.major = version_info.wServicePackMajor;
   service_pack_.minor = version_info.wServicePackMinor;
-  service_pack_str_ = rtc::ToUtf8(version_info.szCSDVersion);
+  service_pack_str_ = webrtc::ToUtf8(version_info.szCSDVersion);
 
   SYSTEM_INFO system_info = {};
   ::GetNativeSystemInfo(&system_info);
@@ -413,7 +413,7 @@ std::string OSInfo::processor_model_name() {
     RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_READ);
     std::wstring value;
     key.ReadValue(L"ProcessorNameString", &value);
-    processor_model_name_ = rtc::ToUtf8(value);
+    processor_model_name_ = webrtc::ToUtf8(value);
   }
   return processor_model_name_;
 #endif  // defined(WINUWP)
@@ -442,4 +442,4 @@ Version GetVersion() {
 }
 
 }  // namespace rtc_win
-}  // namespace rtc
+}  // namespace webrtc

@@ -160,7 +160,7 @@ TransportDescription::TransportDescription(
     absl::string_view ice_pwd,
     IceMode ice_mode,
     ConnectionRole role,
-    const rtc::SSLFingerprint* identity_fingerprint)
+    const webrtc::SSLFingerprint* identity_fingerprint)
     : transport_options(transport_options),
       ice_ufrag(ice_ufrag),
       ice_pwd(ice_pwd),

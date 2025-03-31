@@ -18,12 +18,11 @@
 #include <string>
 
 #include "rtc_base/buffer.h"
+#include "rtc_base/openssl_key_pair.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 
 namespace rtc {
-
-class OpenSSLKeyPair;
 
 // OpenSSLCertificate encapsulates an OpenSSL X509* certificate object,
 // which is also reference counted inside the OpenSSL library.

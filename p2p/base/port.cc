@@ -66,19 +66,19 @@ using ::webrtc::RTCErrorType;
 using ::webrtc::TaskQueueBase;
 using ::webrtc::TimeDelta;
 
-rtc::PacketInfoProtocolType ConvertProtocolTypeToPacketInfoProtocolType(
+webrtc::PacketInfoProtocolType ConvertProtocolTypeToPacketInfoProtocolType(
     webrtc::ProtocolType type) {
   switch (type) {
     case webrtc::ProtocolType::PROTO_UDP:
-      return rtc::PacketInfoProtocolType::kUdp;
+      return webrtc::PacketInfoProtocolType::kUdp;
     case webrtc::ProtocolType::PROTO_TCP:
-      return rtc::PacketInfoProtocolType::kTcp;
+      return webrtc::PacketInfoProtocolType::kTcp;
     case webrtc::ProtocolType::PROTO_SSLTCP:
-      return rtc::PacketInfoProtocolType::kSsltcp;
+      return webrtc::PacketInfoProtocolType::kSsltcp;
     case webrtc::ProtocolType::PROTO_TLS:
-      return rtc::PacketInfoProtocolType::kTls;
+      return webrtc::PacketInfoProtocolType::kTls;
     default:
-      return rtc::PacketInfoProtocolType::kUnknown;
+      return webrtc::PacketInfoProtocolType::kUnknown;
   }
 }
 
@@ -88,9 +88,9 @@ const int kPortTimeoutDelay = cricket::STUN_TOTAL_TIMEOUT + 5000;
 
 }  // namespace
 
-static const char* const PROTO_NAMES[] = {UDP_PROTOCOL_NAME, TCP_PROTOCOL_NAME,
-                                          SSLTCP_PROTOCOL_NAME,
-                                          TLS_PROTOCOL_NAME};
+static const char* const PROTO_NAMES[] = {
+    webrtc::UDP_PROTOCOL_NAME, webrtc::TCP_PROTOCOL_NAME,
+    webrtc::SSLTCP_PROTOCOL_NAME, webrtc::TLS_PROTOCOL_NAME};
 
 const char* ProtoToString(webrtc::ProtocolType proto) {
   return PROTO_NAMES[proto];
@@ -165,7 +165,7 @@ Port::~Port() {
 IceCandidateType Port::Type() const {
   return type_;
 }
-const rtc::Network* Port::Network() const {
+const webrtc::Network* Port::Network() const {
   return network_;
 }
 
@@ -429,7 +429,7 @@ bool Port::GetStunMessage(const char* data,
   // Parse the request message.  If the packet is not a complete and correct
   // STUN message, then ignore it.
   std::unique_ptr<IceMessage> stun_msg(new IceMessage());
-  rtc::ByteBufferReader buf(
+  webrtc::ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   if (!stun_msg->Read(&buf) || (buf.Length() > 0)) {
     return false;
@@ -586,9 +586,9 @@ bool Port::IsCompatibleAddress(const webrtc::SocketAddress& addr) {
   return true;
 }
 
-rtc::DiffServCodePoint Port::StunDscpValue() const {
+webrtc::DiffServCodePoint Port::StunDscpValue() const {
   // By default, inherit from whatever the MediaChannel sends.
-  return rtc::DSCP_NO_CHANGE;
+  return webrtc::DSCP_NO_CHANGE;
 }
 
 void Port::DestroyAllConnections() {
@@ -750,11 +750,11 @@ void Port::SendBindingErrorResponse(StunMessage* message,
   }
 
   // Send the response message.
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   response.Write(&buf);
   rtc::PacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      rtc::PacketType::kIceConnectivityCheckResponse;
+      webrtc::PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
   RTC_LOG(LS_INFO) << ToString() << ": Sending STUN "
                    << StunMethodToString(response.type())
@@ -788,11 +788,11 @@ void Port::SendUnknownAttributesErrorResponse(
   response.AddFingerprint();
 
   // Send the response message.
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   response.Write(&buf);
   rtc::PacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      rtc::PacketType::kIceConnectivityCheckResponse;
+      webrtc::PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
   RTC_LOG(LS_ERROR) << ToString() << ": Sending STUN binding error: reason="
                     << STUN_ERROR_UNKNOWN_ATTRIBUTE << " to "
@@ -852,7 +852,7 @@ void Port::SubscribePortDestroyed(
 void Port::SendPortDestroyed(Port* port) {
   port_destroyed_callback_list_.Send(port);
 }
-void Port::OnNetworkTypeChanged(const rtc::Network* network) {
+void Port::OnNetworkTypeChanged(const webrtc::Network* network) {
   RTC_DCHECK(network == network_);
 
   UpdateNetworkCost();
@@ -860,7 +860,7 @@ void Port::OnNetworkTypeChanged(const rtc::Network* network) {
 
 std::string Port::ToString() const {
   rtc::StringBuilder ss;
-  ss << "Port[" << rtc::ToHex(reinterpret_cast<uintptr_t>(this)) << ":"
+  ss << "Port[" << webrtc::ToHex(reinterpret_cast<uintptr_t>(this)) << ":"
      << content_name_ << ":" << component_ << ":" << generation_ << ":"
      << webrtc::IceCandidateTypeToString(type_) << ":" << network_->ToString()
      << "]";
@@ -946,7 +946,7 @@ const std::string& Port::username_fragment() const {
   return ice_username_fragment_;
 }
 
-void Port::CopyPortInformationToPacketInfo(rtc::PacketInfo* info) const {
+void Port::CopyPortInformationToPacketInfo(webrtc::PacketInfo* info) const {
   info->protocol = ConvertProtocolTypeToPacketInfoProtocolType(GetProtocol());
   info->network_id = Network()->id();
 }

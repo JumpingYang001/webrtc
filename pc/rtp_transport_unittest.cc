@@ -21,6 +21,7 @@
 #include "pc/test/rtp_transport_test_util.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/containers/flat_set.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/network/ecn_marking.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
@@ -66,8 +67,8 @@ class SignalObserver : public sigslot::has_slots<> {
   bool ready() const { return ready_; }
   void OnReadyToSend(bool ready) { ready_ = ready; }
 
-  std::optional<rtc::NetworkRoute> network_route() { return network_route_; }
-  void OnNetworkRouteChanged(std::optional<rtc::NetworkRoute> network_route) {
+  std::optional<NetworkRoute> network_route() { return network_route_; }
+  void OnNetworkRouteChanged(std::optional<NetworkRoute> network_route) {
     network_route_ = network_route;
   }
 
@@ -90,7 +91,7 @@ class SignalObserver : public sigslot::has_slots<> {
   int rtcp_transport_sent_count_ = 0;
   RtpTransport* transport_ = nullptr;
   bool ready_ = false;
-  std::optional<rtc::NetworkRoute> network_route_;
+  std::optional<NetworkRoute> network_route_;
 };
 
 TEST(RtpTransportTest, SettingRtcpAndRtpSignalsReady) {
@@ -166,14 +167,14 @@ TEST(RtpTransportTest, SetRtpTransportWithNetworkRouteChanged) {
 
   EXPECT_FALSE(observer.network_route());
 
-  rtc::NetworkRoute network_route;
+  NetworkRoute network_route;
   // Set a non-null RTP transport with a new network route.
   network_route.connected = true;
-  network_route.local = rtc::RouteEndpoint::CreateWithNetworkId(kLocalNetId);
-  network_route.remote = rtc::RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
+  network_route.local = RouteEndpoint::CreateWithNetworkId(kLocalNetId);
+  network_route.remote = RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
   network_route.last_sent_packet_id = kLastPacketId;
   network_route.packet_overhead = kTransportOverheadPerPacket;
-  fake_rtp.SetNetworkRoute(std::optional<rtc::NetworkRoute>(network_route));
+  fake_rtp.SetNetworkRoute(std::optional<NetworkRoute>(network_route));
   transport.SetRtpPacketTransport(&fake_rtp);
   ASSERT_TRUE(observer.network_route());
   EXPECT_TRUE(observer.network_route()->connected);
@@ -195,14 +196,14 @@ TEST(RtpTransportTest, SetRtcpTransportWithNetworkRouteChanged) {
 
   EXPECT_FALSE(observer.network_route());
 
-  rtc::NetworkRoute network_route;
+  NetworkRoute network_route;
   // Set a non-null RTCP transport with a new network route.
   network_route.connected = true;
-  network_route.local = rtc::RouteEndpoint::CreateWithNetworkId(kLocalNetId);
-  network_route.remote = rtc::RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
+  network_route.local = RouteEndpoint::CreateWithNetworkId(kLocalNetId);
+  network_route.remote = RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
   network_route.last_sent_packet_id = kLastPacketId;
   network_route.packet_overhead = kTransportOverheadPerPacket;
-  fake_rtcp.SetNetworkRoute(std::optional<rtc::NetworkRoute>(network_route));
+  fake_rtcp.SetNetworkRoute(std::optional<NetworkRoute>(network_route));
   transport.SetRtcpPacketTransport(&fake_rtcp);
   ASSERT_TRUE(observer.network_route());
   EXPECT_TRUE(observer.network_route()->connected);

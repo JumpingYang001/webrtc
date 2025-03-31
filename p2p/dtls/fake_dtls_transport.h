@@ -36,6 +36,7 @@
 #include "rtc_base/network_route.h"
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/socket.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/thread.h"
@@ -163,9 +164,7 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
   DtlsTransportState dtls_state() const override { return dtls_state_; }
   const std::string& transport_name() const override { return transport_name_; }
   int component() const override { return component_; }
-  const rtc::SSLFingerprint& dtls_fingerprint() const {
-    return dtls_fingerprint_;
-  }
+  const SSLFingerprint& dtls_fingerprint() const { return dtls_fingerprint_; }
   RTCError SetRemoteParameters(absl::string_view alg,
                                const uint8_t* digest,
                                size_t digest_len,
@@ -180,7 +179,7 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
                             const uint8_t* digest,
                             size_t digest_len) {
     dtls_fingerprint_ =
-        rtc::SSLFingerprint(alg, rtc::MakeArrayView(digest, digest_len));
+        SSLFingerprint(alg, rtc::MakeArrayView(digest, digest_len));
     return true;
   }
   bool SetDtlsRole(SSLRole role) override {
@@ -238,11 +237,11 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
   scoped_refptr<RTCCertificate> GetLocalCertificate() const override {
     return local_cert_;
   }
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain() const override {
+  std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain() const override {
     if (!remote_cert_) {
       return nullptr;
     }
-    return std::make_unique<rtc::SSLCertChain>(remote_cert_->Clone());
+    return std::make_unique<SSLCertChain>(remote_cert_->Clone());
   }
   bool ExportSrtpKeyingMaterial(
       rtc::ZeroOnFreeBuffer<uint8_t>& keying_material) override {
@@ -282,7 +281,7 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
   }
   int GetError() override { return ice_transport_->GetError(); }
 
-  std::optional<rtc::NetworkRoute> network_route() const override {
+  std::optional<NetworkRoute> network_route() const override {
     return ice_transport_->network_route();
   }
 
@@ -311,7 +310,7 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
     SignalWritableState(this);
   }
 
-  void OnNetworkRouteChanged(std::optional<rtc::NetworkRoute> network_route) {
+  void OnNetworkRouteChanged(std::optional<NetworkRoute> network_route) {
     SignalNetworkRouteChanged(network_route);
   }
 
@@ -324,7 +323,7 @@ class FakeDtlsTransport : public cricket::DtlsTransportInternal {
   FakeSSLCertificate* remote_cert_ = nullptr;
   bool do_dtls_ = false;
   SSLProtocolVersion ssl_max_version_ = webrtc::SSL_PROTOCOL_DTLS_12;
-  rtc::SSLFingerprint dtls_fingerprint_;
+  SSLFingerprint dtls_fingerprint_;
   std::optional<SSLRole> dtls_role_;
   int crypto_suite_ = webrtc::kSrtpAes128CmSha1_80;
   std::optional<int> ssl_cipher_suite_;

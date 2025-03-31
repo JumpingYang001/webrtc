@@ -314,8 +314,8 @@ TEST_F(CoreAudioUtilityWinTest, GetOutputDeviceNames) {
 }
 
 TEST_F(CoreAudioUtilityWinTest, CreateSessionManager2) {
-  ABORT_TEST_IF_NOT(DevicesAvailable() &&
-                    rtc::rtc_win::GetVersion() >= rtc::rtc_win::VERSION_WIN7);
+  ABORT_TEST_IF_NOT(DevicesAvailable() && webrtc::rtc_win::GetVersion() >=
+                                              webrtc::rtc_win::VERSION_WIN7);
 
   EDataFlow data_flow[] = {eRender, eCapture};
 
@@ -333,8 +333,8 @@ TEST_F(CoreAudioUtilityWinTest, CreateSessionManager2) {
 }
 
 TEST_F(CoreAudioUtilityWinTest, CreateSessionEnumerator) {
-  ABORT_TEST_IF_NOT(DevicesAvailable() &&
-                    rtc::rtc_win::GetVersion() >= rtc::rtc_win::VERSION_WIN7);
+  ABORT_TEST_IF_NOT(DevicesAvailable() && webrtc::rtc_win::GetVersion() >=
+                                              webrtc::rtc_win::VERSION_WIN7);
 
   EDataFlow data_flow[] = {eRender, eCapture};
 
@@ -359,8 +359,8 @@ TEST_F(CoreAudioUtilityWinTest, CreateSessionEnumerator) {
 }
 
 TEST_F(CoreAudioUtilityWinTest, NumberOfActiveSessions) {
-  ABORT_TEST_IF_NOT(DevicesAvailable() &&
-                    rtc::rtc_win::GetVersion() >= rtc::rtc_win::VERSION_WIN7);
+  ABORT_TEST_IF_NOT(DevicesAvailable() && webrtc::rtc_win::GetVersion() >=
+                                              webrtc::rtc_win::VERSION_WIN7);
 
   EDataFlow data_flow[] = {eRender, eCapture};
 

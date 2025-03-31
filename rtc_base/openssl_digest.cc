@@ -14,7 +14,7 @@
 #include "rtc_base/checks.h"  // RTC_DCHECK, RTC_CHECK
 #include "rtc_base/openssl.h"
 
-namespace rtc {
+namespace webrtc {
 
 OpenSSLDigest::OpenSSLDigest(absl::string_view algorithm) {
   ctx_ = EVP_MD_CTX_new();
@@ -59,17 +59,17 @@ size_t OpenSSLDigest::Finish(void* buf, size_t len) {
 bool OpenSSLDigest::GetDigestEVP(absl::string_view algorithm,
                                  const EVP_MD** mdp) {
   const EVP_MD* md;
-  if (algorithm == DIGEST_MD5) {
+  if (algorithm == webrtc::DIGEST_MD5) {
     md = EVP_md5();
-  } else if (algorithm == DIGEST_SHA_1) {
+  } else if (algorithm == webrtc::DIGEST_SHA_1) {
     md = EVP_sha1();
-  } else if (algorithm == DIGEST_SHA_224) {
+  } else if (algorithm == webrtc::DIGEST_SHA_224) {
     md = EVP_sha224();
-  } else if (algorithm == DIGEST_SHA_256) {
+  } else if (algorithm == webrtc::DIGEST_SHA_256) {
     md = EVP_sha256();
-  } else if (algorithm == DIGEST_SHA_384) {
+  } else if (algorithm == webrtc::DIGEST_SHA_384) {
     md = EVP_sha384();
-  } else if (algorithm == DIGEST_SHA_512) {
+  } else if (algorithm == webrtc::DIGEST_SHA_512) {
     md = EVP_sha512();
   } else {
     return false;
@@ -87,17 +87,17 @@ bool OpenSSLDigest::GetDigestName(const EVP_MD* md, std::string* algorithm) {
 
   int md_type = EVP_MD_type(md);
   if (md_type == NID_md5) {
-    *algorithm = DIGEST_MD5;
+    *algorithm = webrtc::DIGEST_MD5;
   } else if (md_type == NID_sha1) {
-    *algorithm = DIGEST_SHA_1;
+    *algorithm = webrtc::DIGEST_SHA_1;
   } else if (md_type == NID_sha224) {
-    *algorithm = DIGEST_SHA_224;
+    *algorithm = webrtc::DIGEST_SHA_224;
   } else if (md_type == NID_sha256) {
-    *algorithm = DIGEST_SHA_256;
+    *algorithm = webrtc::DIGEST_SHA_256;
   } else if (md_type == NID_sha384) {
-    *algorithm = DIGEST_SHA_384;
+    *algorithm = webrtc::DIGEST_SHA_384;
   } else if (md_type == NID_sha512) {
-    *algorithm = DIGEST_SHA_512;
+    *algorithm = webrtc::DIGEST_SHA_512;
   } else {
     algorithm->clear();
     return false;
@@ -115,4 +115,4 @@ bool OpenSSLDigest::GetDigestSize(absl::string_view algorithm, size_t* length) {
   return true;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

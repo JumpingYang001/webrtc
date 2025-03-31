@@ -38,6 +38,7 @@
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/net_helpers.h"
 #include "rtc_base/network.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/synchronization/mutex.h"
@@ -614,7 +615,7 @@ EmulatedEndpointImpl::EmulatedEndpointImpl(
     prefix_length = kIPv6NetworkPrefixLength;
   }
   IPAddress prefix = TruncateIP(options_.ip, prefix_length);
-  network_ = std::make_unique<rtc::Network>(
+  network_ = std::make_unique<Network>(
       options_.ip.ToString(), "Endpoint id=" + std::to_string(options_.id),
       prefix, prefix_length, options_.type);
   network_->AddIP(options_.ip);
@@ -819,13 +820,12 @@ bool EndpointsContainer::HasEndpoint(EmulatedEndpointImpl* endpoint) const {
   return false;
 }
 
-std::vector<std::unique_ptr<rtc::Network>>
-EndpointsContainer::GetEnabledNetworks() const {
-  std::vector<std::unique_ptr<rtc::Network>> networks;
+std::vector<std::unique_ptr<Network>> EndpointsContainer::GetEnabledNetworks()
+    const {
+  std::vector<std::unique_ptr<Network>> networks;
   for (auto* endpoint : endpoints_) {
     if (endpoint->Enabled()) {
-      networks.emplace_back(
-          std::make_unique<rtc::Network>(endpoint->network()));
+      networks.emplace_back(std::make_unique<Network>(endpoint->network()));
     }
   }
   return networks;

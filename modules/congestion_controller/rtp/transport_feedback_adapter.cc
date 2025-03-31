@@ -63,7 +63,7 @@ void InFlightBytesTracker::RemoveInFlightPacketBytes(
 }
 
 DataSize InFlightBytesTracker::GetOutstandingData(
-    const rtc::NetworkRoute& network_route) const {
+    const NetworkRoute& network_route) const {
   auto it = in_flight_data_.find(network_route);
   if (it != in_flight_data_.end()) {
     return it->second;
@@ -74,8 +74,8 @@ DataSize InFlightBytesTracker::GetOutstandingData(
 
 // Comparator for consistent map with NetworkRoute as key.
 bool InFlightBytesTracker::NetworkRouteComparator::operator()(
-    const rtc::NetworkRoute& a,
-    const rtc::NetworkRoute& b) const {
+    const NetworkRoute& a,
+    const NetworkRoute& b) const {
   if (a.local.network_id() != b.local.network_id())
     return a.local.network_id() < b.local.network_id();
   if (a.remote.network_id() != b.remote.network_id())
@@ -342,7 +342,7 @@ TransportFeedbackAdapter::ToTransportFeedback(
 }
 
 void TransportFeedbackAdapter::SetNetworkRoute(
-    const rtc::NetworkRoute& network_route) {
+    const NetworkRoute& network_route) {
   network_route_ = network_route;
 }
 

@@ -112,8 +112,8 @@ class BasicIceController : public IceControllerInterface {
   int CalculateActiveWritablePingInterval(const Connection* conn,
                                           int64_t now) const;
 
-  std::map<const rtc::Network*, const Connection*> GetBestConnectionByNetwork()
-      const;
+  std::map<const webrtc::Network*, const Connection*>
+  GetBestConnectionByNetwork() const;
   std::vector<const Connection*> GetBestWritableConnectionPerNetwork() const;
 
   bool ReadyToSend(const Connection* connection) const;

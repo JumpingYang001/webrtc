@@ -43,7 +43,7 @@ void StunServer::OnPacket(AsyncPacketSocket* socket,
                           const rtc::ReceivedPacket& packet) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // Parse the STUN message; eat any messages that fail to parse.
-  rtc::ByteBufferReader bbuf(packet.payload());
+  ByteBufferReader bbuf(packet.payload());
   cricket::StunMessage msg;
   if (!msg.Read(&bbuf)) {
     return;
@@ -90,7 +90,7 @@ void StunServer::SendErrorResponse(const cricket::StunMessage& msg,
 
 void StunServer::SendResponse(const cricket::StunMessage& msg,
                               const SocketAddress& addr) {
-  rtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
   msg.Write(&buf);
   rtc::PacketOptions options;
   if (socket_->SendTo(buf.Data(), buf.Length(), addr, options) < 0)

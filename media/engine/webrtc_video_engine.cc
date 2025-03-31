@@ -94,6 +94,7 @@
 #include "rtc_base/dscp.h"
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/network_route.h"
 #include "rtc_base/socket.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
@@ -1465,19 +1466,19 @@ webrtc::RTCError WebRtcVideoSendChannel::SetRtpSendParameters(
     // https://tools.ietf.org/html/draft-ietf-tsvwg-rtcweb-qos-16#section-5
     // TODO(deadbeef): Change values depending on whether we are sending a
     // keyframe or non-keyframe.
-    rtc::DiffServCodePoint new_dscp = rtc::DSCP_DEFAULT;
+    webrtc::DiffServCodePoint new_dscp = webrtc::DSCP_DEFAULT;
     switch (parameters.encodings[0].network_priority) {
       case webrtc::Priority::kVeryLow:
-        new_dscp = rtc::DSCP_CS1;
+        new_dscp = webrtc::DSCP_CS1;
         break;
       case webrtc::Priority::kLow:
-        new_dscp = rtc::DSCP_DEFAULT;
+        new_dscp = webrtc::DSCP_DEFAULT;
         break;
       case webrtc::Priority::kMedium:
-        new_dscp = rtc::DSCP_AF42;
+        new_dscp = webrtc::DSCP_AF42;
         break;
       case webrtc::Priority::kHigh:
-        new_dscp = rtc::DSCP_AF41;
+        new_dscp = webrtc::DSCP_AF41;
         break;
     }
 
@@ -1742,7 +1743,7 @@ void WebRtcVideoSendChannel::OnReadyToSend(bool ready) {
 
 void WebRtcVideoSendChannel::OnNetworkRouteChanged(
     absl::string_view transport_name,
-    const rtc::NetworkRoute& network_route) {
+    const webrtc::NetworkRoute& network_route) {
   RTC_DCHECK_RUN_ON(&network_thread_checker_);
   worker_thread_->PostTask(SafeTask(
       task_safety_.flag(),

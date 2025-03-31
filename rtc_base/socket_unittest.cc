@@ -23,7 +23,7 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/test/rtc_error_matchers.h"
-#include "api/units/time_delta.h"
+#include "api/transport/ecn_marking.h"
 #include "rtc_base/arraysize.h"
 #include "rtc_base/async_udp_socket.h"
 #include "rtc_base/buffer.h"
@@ -32,7 +32,6 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/net_helpers.h"
 #include "rtc_base/net_test_helpers.h"
-#include "rtc_base/network/ecn_marking.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/socket_server.h"
 #include "rtc_base/socket_unittest.h"
@@ -46,7 +45,7 @@
 #include "test/wait_until.h"
 
 #define MAYBE_SKIP_IPV6                        \
-  if (!::rtc::HasIPv6Enabled()) {              \
+  if (!::webrtc::HasIPv6Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv6... skipping"; \
     return;                                    \
   }

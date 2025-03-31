@@ -29,7 +29,6 @@
 #include "rtc_base/system/rtc_export.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread_annotations.h"
-#include "rtc_base/time_utils.h"
 
 namespace webrtc {
 
@@ -206,7 +205,7 @@ class RTC_EXPORT AsyncListenSocket : public sigslot::has_slots<> {
 
 void CopySocketInformationToPacketInfo(size_t packet_size_bytes,
                                        const AsyncPacketSocket& socket_from,
-                                       rtc::PacketInfo* info);
+                                       PacketInfo* info);
 
 }  //  namespace webrtc
 

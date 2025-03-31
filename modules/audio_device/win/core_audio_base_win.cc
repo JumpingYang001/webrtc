@@ -165,7 +165,7 @@ CoreAudioBase::CoreAudioBase(Direction direction,
   RTC_DLOG(LS_INFO) << __FUNCTION__ << "[" << DirectionToString(direction)
                     << "]";
   RTC_DLOG(LS_INFO) << "Automatic restart: " << automatic_restart;
-  RTC_DLOG(LS_INFO) << "Windows version: " << rtc::rtc_win::GetVersion();
+  RTC_DLOG(LS_INFO) << "Windows version: " << webrtc::rtc_win::GetVersion();
 
   // Create the event which the audio engine will signal each time a buffer
   // becomes ready to be processed by the client.

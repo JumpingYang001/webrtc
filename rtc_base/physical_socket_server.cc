@@ -9,9 +9,20 @@
  */
 #include "rtc_base/physical_socket_server.h"
 
+#include <array>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <utility>
+
+#include "api/async_dns_resolver.h"
+#include "api/transport/ecn_marking.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "rtc_base/deprecated/recursive_critical_section.h"
+#include "rtc_base/socket.h"
+#include "rtc_base/socket_address.h"
+#include "rtc_base/thread_annotations.h"
 
 #if defined(_MSC_VER) && _MSC_VER < 1300
 #pragma warning(disable : 4786)
@@ -53,7 +64,6 @@
 #include "rtc_base/network_monitor.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/field_trial.h"
 
 #if defined(WEBRTC_LINUX)
 #include <linux/sockios.h>
@@ -1314,7 +1324,7 @@ Socket* PhysicalSocketServer::WrapSocket(SOCKET s) {
 }
 
 void PhysicalSocketServer::Add(Dispatcher* pdispatcher) {
-  rtc::CritScope cs(&crit_);
+  CritScope cs(&crit_);
   if (key_by_dispatcher_.count(pdispatcher)) {
     RTC_LOG(LS_WARNING)
         << "PhysicalSocketServer asked to add a duplicate dispatcher.";
@@ -1331,7 +1341,7 @@ void PhysicalSocketServer::Add(Dispatcher* pdispatcher) {
 }
 
 void PhysicalSocketServer::Remove(Dispatcher* pdispatcher) {
-  rtc::CritScope cs(&crit_);
+  CritScope cs(&crit_);
   if (!key_by_dispatcher_.count(pdispatcher)) {
     RTC_LOG(LS_WARNING)
         << "PhysicalSocketServer asked to remove a unknown "
@@ -1355,7 +1365,7 @@ void PhysicalSocketServer::Update([[maybe_unused]] Dispatcher* pdispatcher) {
   }
 
   // Don't update dispatchers that haven't yet been added.
-  rtc::CritScope cs(&crit_);
+  CritScope cs(&crit_);
   if (!key_by_dispatcher_.count(pdispatcher)) {
     return;
   }
@@ -1534,7 +1544,7 @@ bool PhysicalSocketServer::WaitSelect(int cmsWait, bool process_io) {
     FD_ZERO(&fdsWrite);
     int fdmax = -1;
     {
-      rtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       current_dispatcher_keys_.clear();
       for (auto const& kv : dispatcher_by_key_) {
         uint64_t key = kv.first;
@@ -1578,7 +1588,7 @@ bool PhysicalSocketServer::WaitSelect(int cmsWait, bool process_io) {
       return true;
     } else {
       // We have signaled descriptors
-      rtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       // Iterate only on the dispatchers whose file descriptors were passed into
       // select; this avoids the ABA problem (a socket being destroyed and a new
       // one created with the same file descriptor).
@@ -1727,7 +1737,7 @@ bool PhysicalSocketServer::WaitEpoll(int cmsWait) {
       return true;
     } else {
       // We have signaled descriptors
-      rtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       for (int i = 0; i < n; ++i) {
         const epoll_event& event = epoll_events_[i];
         uint64_t key = event.data.u64;

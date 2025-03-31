@@ -23,7 +23,7 @@
 #include "rtc_base/byte_order.h"
 
 // Reads/Writes from/to buffer using network byte order (big endian)
-namespace rtc {
+namespace webrtc {
 
 template <class BufferClassT>
 class ByteBufferWriterT {
@@ -102,7 +102,7 @@ class ByteBufferWriterT {
     WriteBytesInternal(reinterpret_cast<const value_type*>(val), len);
   }
 
-  void Write(ArrayView<const value_type> data) {
+  void Write(rtc::ArrayView<const value_type> data) {
     WriteBytesInternal(data.data(), data.size());
   }
 
@@ -143,7 +143,7 @@ class ByteBufferWriterT {
   // base.
 };
 
-class ByteBufferWriter : public ByteBufferWriterT<BufferT<uint8_t>> {
+class ByteBufferWriter : public ByteBufferWriterT<rtc::BufferT<uint8_t>> {
  public:
   ByteBufferWriter();
   ByteBufferWriter(const uint8_t* bytes, size_t len);
@@ -205,6 +205,14 @@ class ByteBufferReader {
   size_t end_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::ByteBufferReader;
+using ::webrtc::ByteBufferWriter;
+using ::webrtc::ByteBufferWriterT;
 }  // namespace rtc
 
 #endif  // RTC_BASE_BYTE_BUFFER_H_

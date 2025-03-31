@@ -14,18 +14,21 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cstdint>
 
+#include "api/array_view.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/stream.h"
 
-namespace rtc {
+namespace webrtc {
 
-webrtc::StreamState MemoryStream::GetState() const {
+StreamState MemoryStream::GetState() const {
   return webrtc::SS_OPEN;
 }
 
-webrtc::StreamResult MemoryStream::Read(rtc::ArrayView<uint8_t> buffer,
-                                        size_t& bytes_read,
-                                        int& error) {
+StreamResult MemoryStream::Read(rtc::ArrayView<uint8_t> buffer,
+                                size_t& bytes_read,
+                                int& error) {
   if (seek_position_ >= data_length_) {
     return webrtc::SR_EOS;
   }
@@ -43,9 +46,9 @@ webrtc::StreamResult MemoryStream::Read(rtc::ArrayView<uint8_t> buffer,
   return webrtc::SR_SUCCESS;
 }
 
-webrtc::StreamResult MemoryStream::Write(rtc::ArrayView<const uint8_t> buffer,
-                                         size_t& bytes_written,
-                                         int& error) {
+StreamResult MemoryStream::Write(rtc::ArrayView<const uint8_t> buffer,
+                                 size_t& bytes_written,
+                                 int& error) {
   size_t available = buffer_length_ - seek_position_;
   if (0 == available) {
     // Increase buffer size to the larger of:
@@ -53,7 +56,7 @@ webrtc::StreamResult MemoryStream::Write(rtc::ArrayView<const uint8_t> buffer,
     // b) double the previous length
     size_t new_buffer_length = std::max(
         ((seek_position_ + buffer.size()) | 0xFF) + 1, buffer_length_ * 2);
-    webrtc::StreamResult result = DoReserve(new_buffer_length, &error);
+    StreamResult result = DoReserve(new_buffer_length, &error);
     if (webrtc::SR_SUCCESS != result) {
       return result;
     }
@@ -121,7 +124,7 @@ void MemoryStream::SetData(const void* data, size_t length) {
   seek_position_ = 0;
 }
 
-webrtc::StreamResult MemoryStream::DoReserve(size_t size, int* error) {
+StreamResult MemoryStream::DoReserve(size_t size, int* error) {
   if (buffer_length_ >= size)
     return webrtc::SR_SUCCESS;
 
@@ -141,4 +144,4 @@ webrtc::StreamResult MemoryStream::DoReserve(size_t size, int* error) {
   return webrtc::SR_ERROR;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

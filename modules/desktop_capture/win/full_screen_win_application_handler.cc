@@ -55,7 +55,7 @@ std::string WindowText(HWND window) {
   size_t copied = ::GetWindowTextW(window, buffer.data(), buffer.size());
   if (copied == 0)
     return std::string();
-  return rtc::ToUtf8(buffer.data(), copied);
+  return webrtc::ToUtf8(buffer.data(), copied);
 }
 
 DWORD WindowProcessId(HWND window) {

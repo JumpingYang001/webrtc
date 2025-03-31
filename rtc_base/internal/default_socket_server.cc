@@ -20,15 +20,14 @@
 #include "rtc_base/physical_socket_server.h"
 #endif
 
-namespace rtc {
+namespace webrtc {
 
-std::unique_ptr<webrtc::SocketServer> CreateDefaultSocketServer() {
+std::unique_ptr<SocketServer> CreateDefaultSocketServer() {
 #if defined(__native_client__)
   return std::unique_ptr<SocketServer>(new rtc::NullSocketServer);
 #else
-  return std::unique_ptr<webrtc::SocketServer>(
-      new webrtc::PhysicalSocketServer);
+  return std::unique_ptr<SocketServer>(new PhysicalSocketServer);
 #endif
 }
 
-}  // namespace rtc
+}  // namespace webrtc

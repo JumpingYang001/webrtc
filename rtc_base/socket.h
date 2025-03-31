@@ -17,11 +17,13 @@
 #include <cstdint>
 #include <optional>
 
+// IWYU pragma: begin_exports
 #if defined(WEBRTC_POSIX)
 #include <arpa/inet.h>
 #include <sys/types.h>
 #define SOCKET_EACCES EACCES
 #endif
+// IWYU pragma: end_exports
 
 #include "api/units/timestamp.h"
 #include "rtc_base/buffer.h"

@@ -21,6 +21,7 @@
 #include "api/test/network_emulation_manager.h"
 #include "api/test/time_controller.h"
 #include "rtc_base/network.h"
+#include "rtc_base/socket_factory.h"
 #include "rtc_base/socket_server.h"
 #include "rtc_base/thread.h"
 #include "test/network/network_emulation.h"
@@ -44,7 +45,7 @@ class EmulatedNetworkManager : public EmulatedNetworkManagerInterface {
   absl::Nonnull<rtc::SocketFactory*> socket_factory() override {
     return socket_server_;
   }
-  absl::Nonnull<std::unique_ptr<rtc::NetworkManager>> ReleaseNetworkManager()
+  absl::Nonnull<std::unique_ptr<NetworkManager>> ReleaseNetworkManager()
       override;
 
   std::vector<EmulatedEndpoint*> endpoints() const override {

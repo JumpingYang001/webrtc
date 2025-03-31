@@ -158,7 +158,7 @@ class MockOnCompleteFrameCallback
   void AppendExpectedBitstream(const uint8_t data[], size_t size_in_bytes) {
     buffer_.Write(ArrayView<const uint8_t>(data, size_in_bytes));
   }
-  rtc::ByteBufferWriter buffer_;
+  ByteBufferWriter buffer_;
 };
 
 constexpr uint32_t kSsrc = 111;

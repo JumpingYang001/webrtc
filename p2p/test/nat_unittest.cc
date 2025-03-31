@@ -250,15 +250,16 @@ bool TestConnectivity(const webrtc::SocketAddress& src,
 void TestPhysicalInternal(const webrtc::SocketAddress& int_addr) {
   webrtc::AutoThread main_thread;
   webrtc::PhysicalSocketServer socket_server;
-  BasicNetworkManager network_manager(CreateEnvironment(), &socket_server);
+  webrtc::BasicNetworkManager network_manager(CreateEnvironment(),
+                                              &socket_server);
   network_manager.StartUpdating();
   // Process pending messages so the network list is updated.
   webrtc::Thread::Current()->ProcessMessages(0);
 
-  std::vector<const Network*> networks = network_manager.GetNetworks();
+  std::vector<const webrtc::Network*> networks = network_manager.GetNetworks();
   networks.erase(std::remove_if(networks.begin(), networks.end(),
-                                [](const rtc::Network* network) {
-                                  return rtc::kDefaultNetworkIgnoreMask &
+                                [](const webrtc::Network* network) {
+                                  return webrtc::kDefaultNetworkIgnoreMask &
                                          network->type();
                                 }),
                  networks.end());
@@ -304,7 +305,7 @@ TEST(NatTest, TestPhysicalIPv4) {
 }
 
 TEST(NatTest, TestPhysicalIPv6) {
-  if (HasIPv6Enabled()) {
+  if (webrtc::HasIPv6Enabled()) {
     TestPhysicalInternal(webrtc::SocketAddress("::1", 0));
   } else {
     RTC_LOG(LS_WARNING) << "No IPv6, skipping";
@@ -347,7 +348,7 @@ TEST(NatTest, TestVirtualIPv4) {
 }
 
 TEST(NatTest, TestVirtualIPv6) {
-  if (HasIPv6Enabled()) {
+  if (webrtc::HasIPv6Enabled()) {
     TestVirtualInternal(AF_INET6);
   } else {
     RTC_LOG(LS_WARNING) << "No IPv6, skipping";

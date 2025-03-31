@@ -12,6 +12,7 @@
 
 #include <ctype.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -26,7 +27,7 @@
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/string_encode.h"
 
-namespace rtc {
+namespace webrtc {
 
 SSLFingerprint* SSLFingerprint::Create(absl::string_view algorithm,
                                        const rtc::SSLIdentity* identity) {
@@ -41,7 +42,7 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUnique(
 
 std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(
     absl::string_view algorithm,
-    const rtc::SSLCertificate& cert) {
+    const SSLCertificate& cert) {
   uint8_t digest_val[64];
   size_t digest_len;
   bool ret = cert.ComputeDigest(algorithm, digest_val, sizeof(digest_val),
@@ -50,7 +51,7 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(
     return nullptr;
   }
   return std::make_unique<SSLFingerprint>(
-      algorithm, ArrayView<const uint8_t>(digest_val, digest_len));
+      algorithm, rtc::ArrayView<const uint8_t>(digest_val, digest_len));
 }
 
 SSLFingerprint* SSLFingerprint::CreateFromRfc4572(
@@ -62,25 +63,25 @@ SSLFingerprint* SSLFingerprint::CreateFromRfc4572(
 std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUniqueFromRfc4572(
     absl::string_view algorithm,
     absl::string_view fingerprint) {
-  if (algorithm.empty() || !rtc::IsFips180DigestAlgorithm(algorithm))
+  if (algorithm.empty() || !webrtc::IsFips180DigestAlgorithm(algorithm))
     return nullptr;
 
   if (fingerprint.empty())
     return nullptr;
 
-  char value[rtc::MessageDigest::kMaxSize];
-  size_t value_len =
-      rtc::hex_decode_with_delimiter(ArrayView<char>(value), fingerprint, ':');
+  char value[MessageDigest::kMaxSize];
+  size_t value_len = rtc::hex_decode_with_delimiter(rtc::ArrayView<char>(value),
+                                                    fingerprint, ':');
   if (!value_len)
     return nullptr;
 
   return std::make_unique<SSLFingerprint>(
-      algorithm,
-      ArrayView<const uint8_t>(reinterpret_cast<uint8_t*>(value), value_len));
+      algorithm, rtc::ArrayView<const uint8_t>(
+                     reinterpret_cast<uint8_t*>(value), value_len));
 }
 
 std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateFromCertificate(
-    const webrtc::RTCCertificate& cert) {
+    const RTCCertificate& cert) {
   std::string digest_alg;
   if (!cert.GetSSLCertificate().GetSignatureDigestAlgorithm(&digest_alg)) {
     RTC_LOG(LS_ERROR)
@@ -98,7 +99,7 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateFromCertificate(
 }
 
 SSLFingerprint::SSLFingerprint(absl::string_view algorithm,
-                               ArrayView<const uint8_t> digest_view)
+                               rtc::ArrayView<const uint8_t> digest_view)
     : algorithm(algorithm), digest(digest_view.data(), digest_view.size()) {}
 
 SSLFingerprint::SSLFingerprint(absl::string_view algorithm,
@@ -124,4 +125,4 @@ std::string SSLFingerprint::ToString() const {
   return fp_str;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

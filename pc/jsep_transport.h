@@ -225,7 +225,7 @@ class JsepTransport {
   // fingerprint, or either is NULL.
   webrtc::RTCError VerifyCertificateFingerprint(
       const webrtc::RTCCertificate* certificate,
-      const rtc::SSLFingerprint* fingerprint) const;
+      const webrtc::SSLFingerprint* fingerprint) const;
 
   void SetActiveResetSrtpParams(bool active_reset_srtp_params);
 
@@ -282,7 +282,7 @@ class JsepTransport {
   static webrtc::RTCError SetNegotiatedDtlsParameters(
       DtlsTransportInternal* dtls_transport,
       std::optional<webrtc::SSLRole> dtls_role,
-      rtc::SSLFingerprint* remote_fingerprint);
+      webrtc::SSLFingerprint* remote_fingerprint);
 
   bool GetTransportStats(DtlsTransportInternal* dtls_transport,
                          int component,

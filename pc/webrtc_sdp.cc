@@ -363,7 +363,7 @@ static bool ParseExtmap(absl::string_view line,
                         SdpParseError* error);
 static bool ParseFingerprintAttribute(
     absl::string_view line,
-    std::unique_ptr<rtc::SSLFingerprint>* fingerprint,
+    std::unique_ptr<SSLFingerprint>* fingerprint,
     SdpParseError* error);
 static bool ParseDtlsSetup(absl::string_view line,
                            cricket::ConnectionRole* role,
@@ -776,7 +776,7 @@ static void GetDefaultDestination(const std::vector<Candidate>& candidates,
       continue;
     }
     // Default destination should be UDP only.
-    if (candidate.protocol() != cricket::UDP_PROTOCOL_NAME) {
+    if (candidate.protocol() != UDP_PROTOCOL_NAME) {
       continue;
     }
     const int preference = candidate.type_preference();
@@ -2000,7 +2000,7 @@ void BuildCandidate(const std::vector<Candidate>& candidates,
     // Note that we allow the tcptype to be missing, for backwards
     // compatibility; the implementation treats this as a passive candidate.
     // TODO(bugs.webrtc.org/11466): Treat a missing tcptype as an error?
-    if (candidate.protocol() == cricket::TCP_PROTOCOL_NAME &&
+    if (candidate.protocol() == TCP_PROTOCOL_NAME &&
         !candidate.tcptype().empty()) {
       os << kTcpCandidateType << " " << candidate.tcptype() << " ";
     }
@@ -2226,7 +2226,7 @@ bool ParseSessionDescription(absl::string_view message,
             "Can't have multiple fingerprint attributes at the same level.",
             error);
       }
-      std::unique_ptr<rtc::SSLFingerprint> fingerprint;
+      std::unique_ptr<SSLFingerprint> fingerprint;
       if (!ParseFingerprintAttribute(*aline, &fingerprint, error)) {
         return false;
       }
@@ -2279,7 +2279,7 @@ bool ParseGroupAttribute(absl::string_view line,
 
 static bool ParseFingerprintAttribute(
     absl::string_view line,
-    std::unique_ptr<rtc::SSLFingerprint>* fingerprint,
+    std::unique_ptr<SSLFingerprint>* fingerprint,
     SdpParseError* error) {
   std::vector<absl::string_view> fields =
       rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
@@ -2299,8 +2299,7 @@ static bool ParseFingerprintAttribute(
   absl::c_transform(algorithm, algorithm.begin(), ::tolower);
 
   // The second field is the digest value. De-hexify it.
-  *fingerprint =
-      rtc::SSLFingerprint::CreateUniqueFromRfc4572(algorithm, fields[1]);
+  *fingerprint = SSLFingerprint::CreateUniqueFromRfc4572(algorithm, fields[1]);
   if (!*fingerprint) {
     return ParseFailed(line, "Failed to create fingerprint from the digest.",
                        error);
@@ -3144,7 +3143,7 @@ bool ParseContent(absl::string_view message,
         return false;
       }
     } else if (HasAttribute(*line, kAttributeFingerprint)) {
-      std::unique_ptr<rtc::SSLFingerprint> fingerprint;
+      std::unique_ptr<SSLFingerprint> fingerprint;
       if (!ParseFingerprintAttribute(*line, &fingerprint, error)) {
         return false;
       }

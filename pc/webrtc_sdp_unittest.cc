@@ -951,7 +951,7 @@ static void ReplaceRejected(bool audio_rejected,
 
 static TransportDescription MakeTransportDescription(std::string ufrag,
                                                      std::string pwd) {
-  rtc::SSLFingerprint fingerprint(rtc::DIGEST_SHA_1, kIdentityDigest);
+  webrtc::SSLFingerprint fingerprint(webrtc::DIGEST_SHA_1, kIdentityDigest);
   return TransportDescription(std::vector<std::string>(), ufrag, pwd,
                               cricket::ICEMODE_FULL,
                               cricket::CONNECTIONROLE_NONE, &fingerprint);
@@ -995,7 +995,7 @@ class WebRtcSdpTest : public ::testing::Test {
                      absl::WrapUnique(video_desc_));
 
     // TransportInfo, with fingerprint
-    rtc::SSLFingerprint fingerprint(rtc::DIGEST_SHA_1, kIdentityDigest);
+    webrtc::SSLFingerprint fingerprint(webrtc::DIGEST_SHA_1, kIdentityDigest);
     desc_.AddTransportInfo(TransportInfo(
         kAudioContentName, MakeTransportDescription(kUfragVoice, kPwdVoice)));
     desc_.AddTransportInfo(TransportInfo(

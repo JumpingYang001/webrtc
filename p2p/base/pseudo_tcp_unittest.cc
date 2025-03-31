@@ -217,8 +217,8 @@ class PseudoTcpTestBase : public ::testing::Test,
   PseudoTcpForTest remote_;
   ScopedTaskSafety local_timer_;
   ScopedTaskSafety remote_timer_;
-  rtc::MemoryStream send_stream_;
-  rtc::MemoryStream recv_stream_;
+  webrtc::MemoryStream send_stream_;
+  webrtc::MemoryStream recv_stream_;
   bool have_connected_;
   bool have_disconnected_;
   int local_mtu_;
@@ -348,8 +348,8 @@ class PseudoTcpTest : public PseudoTcpTestBase {
   }
 
  private:
-  rtc::MemoryStream send_stream_;
-  rtc::MemoryStream recv_stream_;
+  webrtc::MemoryStream send_stream_;
+  webrtc::MemoryStream recv_stream_;
 };
 
 class PseudoTcpTestPingPong : public PseudoTcpTestBase {
@@ -623,8 +623,8 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
   }
 
  private:
-  rtc::MemoryStream send_stream_;
-  rtc::MemoryStream recv_stream_;
+  webrtc::MemoryStream send_stream_;
+  webrtc::MemoryStream recv_stream_;
 
   std::vector<size_t> send_position_;
   std::vector<size_t> recv_position_;

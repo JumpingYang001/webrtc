@@ -15,17 +15,40 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
 #include "api/candidate.h"
+#include "api/ice_transport_interface.h"
+#include "api/jsep.h"
+#include "api/make_ref_counted.h"
+#include "api/rtc_error.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "call/payload_type_picker.h"
+#include "media/sctp/sctp_transport_internal.h"
+#include "p2p/base/ice_transport_internal.h"
 #include "p2p/base/p2p_constants.h"
 #include "p2p/base/p2p_transport_channel.h"
+#include "p2p/base/transport_description.h"
+#include "pc/dtls_srtp_transport.h"
+#include "pc/dtls_transport.h"
+#include "pc/rtp_transport.h"
+#include "pc/sctp_transport.h"
+#include "pc/session_description.h"
+#include "pc/srtp_transport.h"
+#include "pc/transport_stats.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/rtc_certificate.h"
+#include "rtc_base/ssl_fingerprint.h"
+#include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/strings/string_builder.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/trace_event.h"
 
 using webrtc::SdpType;
@@ -176,7 +199,7 @@ webrtc::RTCError JsepTransport::SetLocalJsepTransportDescription(
                             ice_parameters.ufrag, ice_parameters.pwd);
   local_description_.reset(new JsepTransportDescription(jsep_description));
 
-  rtc::SSLFingerprint* local_fp =
+  webrtc::SSLFingerprint* local_fp =
       local_description_->transport_desc.identity_fingerprint.get();
 
   if (!local_fp) {
@@ -336,7 +359,7 @@ bool JsepTransport::GetStats(TransportStats* stats) const {
 
 webrtc::RTCError JsepTransport::VerifyCertificateFingerprint(
     const webrtc::RTCCertificate* certificate,
-    const rtc::SSLFingerprint* fingerprint) const {
+    const webrtc::SSLFingerprint* fingerprint) const {
   TRACE_EVENT0("webrtc", "JsepTransport::VerifyCertificateFingerprint");
   RTC_DCHECK_RUN_ON(network_thread_);
   if (!fingerprint) {
@@ -347,9 +370,9 @@ webrtc::RTCError JsepTransport::VerifyCertificateFingerprint(
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER,
                             "Fingerprint provided but no identity available.");
   }
-  std::unique_ptr<rtc::SSLFingerprint> fp_tmp =
-      rtc::SSLFingerprint::CreateUnique(fingerprint->algorithm,
-                                        *certificate->identity());
+  std::unique_ptr<webrtc::SSLFingerprint> fp_tmp =
+      webrtc::SSLFingerprint::CreateUnique(fingerprint->algorithm,
+                                           *certificate->identity());
   RTC_DCHECK(fp_tmp.get() != NULL);
   if (*fp_tmp == *fingerprint) {
     return webrtc::RTCError::OK();
@@ -416,7 +439,7 @@ void JsepTransport::SetRemoteIceParameters(
 webrtc::RTCError JsepTransport::SetNegotiatedDtlsParameters(
     DtlsTransportInternal* dtls_transport,
     std::optional<webrtc::SSLRole> dtls_role,
-    rtc::SSLFingerprint* remote_fingerprint) {
+    webrtc::SSLFingerprint* remote_fingerprint) {
   RTC_DCHECK(dtls_transport);
   return dtls_transport->SetRemoteParameters(
       remote_fingerprint->algorithm, remote_fingerprint->digest.cdata(),
@@ -485,15 +508,15 @@ webrtc::RTCError JsepTransport::NegotiateAndSetDtlsParameters(
                             "Applying an answer transport description "
                             "without applying any offer.");
   }
-  std::unique_ptr<rtc::SSLFingerprint> remote_fingerprint;
+  std::unique_ptr<webrtc::SSLFingerprint> remote_fingerprint;
   std::optional<webrtc::SSLRole> negotiated_dtls_role;
 
-  rtc::SSLFingerprint* local_fp =
+  webrtc::SSLFingerprint* local_fp =
       local_description_->transport_desc.identity_fingerprint.get();
-  rtc::SSLFingerprint* remote_fp =
+  webrtc::SSLFingerprint* remote_fp =
       remote_description_->transport_desc.identity_fingerprint.get();
   if (remote_fp && local_fp) {
-    remote_fingerprint = std::make_unique<rtc::SSLFingerprint>(*remote_fp);
+    remote_fingerprint = std::make_unique<webrtc::SSLFingerprint>(*remote_fp);
     webrtc::RTCError error =
         NegotiateDtlsRole(local_description_type,
                           local_description_->transport_desc.connection_role,
@@ -508,7 +531,7 @@ webrtc::RTCError JsepTransport::NegotiateAndSetDtlsParameters(
         "Local fingerprint supplied when caller didn't offer DTLS.");
   } else {
     // We are not doing DTLS
-    remote_fingerprint = std::make_unique<rtc::SSLFingerprint>(
+    remote_fingerprint = std::make_unique<webrtc::SSLFingerprint>(
         "", rtc::ArrayView<const uint8_t>());
   }
   // Now that we have negotiated everything, push it downward.

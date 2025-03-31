@@ -12,15 +12,18 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/strings/string_view.h"
 #include "rtc_base/arraysize.h"
+#include "rtc_base/system/file_wrapper.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 
-namespace rtc {
+namespace webrtc {
 
 namespace {
 
@@ -96,7 +99,7 @@ class MAYBE_FileRotatingStreamTest : public ::testing::Test {
                           absl::string_view file_path) {
     size_t expected_length = expected_contents.size();
     std::unique_ptr<uint8_t[]> buffer(new uint8_t[expected_length + 1]);
-    webrtc::FileWrapper f = webrtc::FileWrapper::OpenReadOnly(file_path);
+    FileWrapper f = FileWrapper::OpenReadOnly(file_path);
     ASSERT_TRUE(f.is_open());
     size_t size_read = f.Read(buffer.get(), expected_length + 1);
     EXPECT_EQ(size_read, expected_length);
@@ -131,7 +134,7 @@ TEST_F(MAYBE_FileRotatingStreamTest, EmptyWrite) {
   WriteAndFlush("a", 0);
 
   std::string logfile_path = stream_->GetFilePath(0);
-  webrtc::FileWrapper f = webrtc::FileWrapper::OpenReadOnly(logfile_path);
+  FileWrapper f = FileWrapper::OpenReadOnly(logfile_path);
   ASSERT_TRUE(f.is_open());
   char buf[1];
   EXPECT_EQ(0u, f.Read(buf, sizeof(buf)));
@@ -391,4 +394,4 @@ TEST_F(MAYBE_CallSessionFileRotatingStreamTest, WriteAndReadFirstHalf) {
   }
 }
 
-}  // namespace rtc
+}  // namespace webrtc

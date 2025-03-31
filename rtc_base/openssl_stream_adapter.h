@@ -24,10 +24,10 @@
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "rtc_base/buffer.h"
+#include "rtc_base/ssl_certificate.h"
 #ifdef OPENSSL_IS_BORINGSSL
-#include <openssl/base.h>
-
 #include "rtc_base/boringssl_identity.h"
+#include "rtc_base/openssl.h"
 #else
 #include "rtc_base/openssl_identity.h"
 #endif
@@ -39,7 +39,7 @@
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/thread.h"
 
-namespace rtc {
+namespace webrtc {
 
 // This class was written with OpenSSLAdapter (a socket adapter) as a
 // starting point. It has similar structure and functionality, but uses a
@@ -67,20 +67,20 @@ namespace rtc {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
+class OpenSSLStreamAdapter final : public SSLStreamAdapter {
  public:
   OpenSSLStreamAdapter(
-      std::unique_ptr<webrtc::StreamInterface> stream,
-      absl::AnyInvocable<void(webrtc::SSLHandshakeError)> handshake_error,
-      const webrtc::FieldTrialsView* field_trials = nullptr);
+      std::unique_ptr<StreamInterface> stream,
+      absl::AnyInvocable<void(SSLHandshakeError)> handshake_error,
+      const FieldTrialsView* field_trials = nullptr);
   ~OpenSSLStreamAdapter() override;
 
-  void SetIdentity(std::unique_ptr<SSLIdentity> identity) override;
-  SSLIdentity* GetIdentityForTesting() const override;
+  void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) override;
+  rtc::SSLIdentity* GetIdentityForTesting() const override;
 
   // Default argument is for compatibility
-  void SetServerRole(webrtc::SSLRole role = webrtc::SSL_SERVER) override;
-  webrtc::SSLPeerCertificateDigestError SetPeerCertificateDigest(
+  void SetServerRole(SSLRole role = webrtc::SSL_SERVER) override;
+  SSLPeerCertificateDigestError SetPeerCertificateDigest(
       absl::string_view digest_alg,
       rtc::ArrayView<const uint8_t> digest_val) override;
 
@@ -89,24 +89,24 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
   // Goes from state SSL_NONE to either SSL_CONNECTING or SSL_WAIT, depending
   // on whether the underlying stream is already open or not.
   int StartSSL() override;
-  [[deprecated]] void SetMode(webrtc::SSLMode mode) override;
-  void SetMaxProtocolVersion(webrtc::SSLProtocolVersion version) override;
+  [[deprecated]] void SetMode(SSLMode mode) override;
+  void SetMaxProtocolVersion(SSLProtocolVersion version) override;
   void SetInitialRetransmissionTimeout(int timeout_ms) override;
 
-  webrtc::StreamResult Read(rtc::ArrayView<uint8_t> data,
-                            size_t& read,
-                            int& error) override;
-  webrtc::StreamResult Write(rtc::ArrayView<const uint8_t> data,
-                             size_t& written,
-                             int& error) override;
+  StreamResult Read(rtc::ArrayView<uint8_t> data,
+                    size_t& read,
+                    int& error) override;
+  StreamResult Write(rtc::ArrayView<const uint8_t> data,
+                     size_t& written,
+                     int& error) override;
   void Close() override;
-  webrtc::StreamState GetState() const override;
+  StreamState GetState() const override;
 
   std::optional<absl::string_view> GetTlsCipherSuiteName() const override;
 
   bool GetSslCipherSuite(int* cipher) const override;
-  [[deprecated("Use GetSslVersionBytes")]] webrtc::SSLProtocolVersion
-  GetSslVersion() const override;
+  [[deprecated("Use GetSslVersionBytes")]] SSLProtocolVersion GetSslVersion()
+      const override;
   bool GetSslVersionBytes(int* version) const override;
   // Key Extractor interface
   bool ExportSrtpKeyingMaterial(
@@ -123,15 +123,16 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
   // Capabilities interfaces.
   static bool IsBoringSsl();
 
-  static bool IsAcceptableCipher(int cipher, KeyType key_type);
-  static bool IsAcceptableCipher(absl::string_view cipher, KeyType key_type);
+  static bool IsAcceptableCipher(int cipher, rtc::KeyType key_type);
+  static bool IsAcceptableCipher(absl::string_view cipher,
+                                 rtc::KeyType key_type);
 
   // Use our timeutils.h source of timing in BoringSSL, allowing us to test
   // using a fake clock.
   static void EnableTimeCallbackForTesting();
 
   // Return max DTLS SSLProtocolVersion supported by implementation.
-  static webrtc::SSLProtocolVersion GetMaxSupportedDTLSProtocolVersion();
+  static SSLProtocolVersion GetMaxSupportedDTLSProtocolVersion();
 
   // Return number of times DTLS retransmission has been triggered.
   // Used for testing (and maybe put into stats?).
@@ -203,15 +204,15 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
            !peer_certificate_digest_value_.empty();
   }
 
-  const std::unique_ptr<webrtc::StreamInterface> stream_;
-  absl::AnyInvocable<void(webrtc::SSLHandshakeError)> handshake_error_;
+  const std::unique_ptr<StreamInterface> stream_;
+  absl::AnyInvocable<void(SSLHandshakeError)> handshake_error_;
 
-  webrtc::Thread* const owner_;
-  webrtc::ScopedTaskSafety task_safety_;
-  webrtc::RepeatingTaskHandle timeout_task_;
+  Thread* const owner_;
+  ScopedTaskSafety task_safety_;
+  RepeatingTaskHandle timeout_task_;
 
   SSLState state_;
-  webrtc::SSLRole role_;
+  SSLRole role_;
   int ssl_error_code_;  // valid when state_ == SSL_ERROR or SSL_CLOSED
   // Whether the SSL negotiation is blocked on needing to read or
   // write to the wrapped stream.
@@ -225,7 +226,7 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
 #ifdef OPENSSL_IS_BORINGSSL
   std::unique_ptr<BoringSSLIdentity> identity_;
 #else
-  std::unique_ptr<OpenSSLIdentity> identity_;
+  std::unique_ptr<rtc::OpenSSLIdentity> identity_;
 #endif
   // The certificate chain that the peer presented. Initially null, until the
   // connection is established.
@@ -239,10 +240,10 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
   std::string srtp_ciphers_;
 
   // Do DTLS or not
-  webrtc::SSLMode ssl_mode_;
+  SSLMode ssl_mode_;
 
   // Max. allowed protocol version
-  webrtc::SSLProtocolVersion ssl_max_version_;
+  SSLProtocolVersion ssl_max_version_;
 
   // A 50-ms initial timeout ensures rapid setup on fast connections, but may
   // be too aggressive for low bandwidth links.
@@ -258,6 +259,12 @@ class OpenSSLStreamAdapter final : public webrtc::SSLStreamAdapter {
 
 /////////////////////////////////////////////////////////////////////////////
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::OpenSSLStreamAdapter;
 }  // namespace rtc
 
 #endif  // RTC_BASE_OPENSSL_STREAM_ADAPTER_H_

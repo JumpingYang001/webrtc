@@ -66,7 +66,7 @@ RTCError VerifyCandidate(const Candidate& cand) {
 
   // Disallow all ports below 1024, except for 80 and 443 on public addresses.
   int port = cand.address().port();
-  if (cand.protocol() == cricket::TCP_PROTOCOL_NAME &&
+  if (cand.protocol() == TCP_PROTOCOL_NAME &&
       (cand.tcptype() == cricket::TCPTYPE_ACTIVE_STR || port == 0)) {
     // Expected for active-only candidates per
     // http://tools.ietf.org/html/rfc6544#section-4.5 so no error.

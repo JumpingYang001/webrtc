@@ -10,14 +10,18 @@
 
 #include "rtc_base/openssl_session_cache.h"
 
+#include <openssl/ssl.h>
+
+#include <string>
+
 #include "absl/strings/string_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/openssl.h"
+#include "rtc_base/ssl_stream_adapter.h"
 
-namespace rtc {
+namespace webrtc {
 
-OpenSSLSessionCache::OpenSSLSessionCache(webrtc::SSLMode ssl_mode,
-                                         SSL_CTX* ssl_ctx)
+OpenSSLSessionCache::OpenSSLSessionCache(SSLMode ssl_mode, SSL_CTX* ssl_ctx)
     : ssl_mode_(ssl_mode), ssl_ctx_(ssl_ctx) {
   // It is invalid to pass in a null context.
   RTC_DCHECK(ssl_ctx != nullptr);
@@ -48,8 +52,8 @@ SSL_CTX* OpenSSLSessionCache::GetSSLContext() const {
   return ssl_ctx_;
 }
 
-webrtc::SSLMode OpenSSLSessionCache::GetSSLMode() const {
+SSLMode OpenSSLSessionCache::GetSSLMode() const {
   return ssl_mode_;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

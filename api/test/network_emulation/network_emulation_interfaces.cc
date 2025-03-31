@@ -11,6 +11,7 @@
 
 #include <cstdint>
 
+#include "api/transport/ecn_marking.h"
 #include "api/units/data_rate.h"
 #include "api/units/timestamp.h"
 #include "rtc_base/checks.h"
@@ -31,7 +32,7 @@ EmulatedIpPacket::EmulatedIpPacket(const SocketAddress& from,
       to(to),
       data(data),
       headers_size(to.ipaddr().overhead() + application_overhead +
-                   cricket::kUdpHeaderSize),
+                   kUdpHeaderSize),
       arrival_time(arrival_time),
       ecn(ecn) {
   RTC_DCHECK(to.family() == AF_INET || to.family() == AF_INET6);

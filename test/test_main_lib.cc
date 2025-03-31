@@ -10,18 +10,18 @@
 
 #include "test/test_main_lib.h"
 
+#include <stdlib.h>
+
 #include <cstddef>
 #include <cstdio>
 #include <fstream>
-#include <ios>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/flags/flag.h"
-#include "absl/memory/memory.h"
-#include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
 #include "api/test/metrics/chrome_perf_dashboard_metrics_exporter.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
@@ -34,10 +34,8 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_adapter.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/thread.h"
 #include "system_wrappers/include/field_trial.h"
 #include "system_wrappers/include/metrics.h"
-#include "test/field_trial.h"
 #include "test/gtest.h"
 #include "test/test_flags.h"
 #include "test/testsupport/perf_test.h"
@@ -154,7 +152,7 @@ class TestMainImpl : public TestMain {
 #endif
 
     // Initialize SSL which are used by several tests.
-    rtc::InitializeSSL();
+    InitializeSSL();
     SSLStreamAdapter::EnableTimeCallbackForTesting();
 
     return 0;

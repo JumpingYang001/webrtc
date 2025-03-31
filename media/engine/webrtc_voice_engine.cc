@@ -90,6 +90,7 @@
 #include "rtc_base/dscp.h"
 #include "rtc_base/experiments/struct_parameters_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/network_route.h"
 #include "rtc_base/race_checker.h"
 #include "rtc_base/string_encode.h"
 #include "rtc_base/strings/audio_format_to_string.h"
@@ -1723,7 +1724,7 @@ void WebRtcVoiceSendChannel::OnPacketSent(const rtc::SentPacket& sent_packet) {
 
 void WebRtcVoiceSendChannel::OnNetworkRouteChanged(
     absl::string_view transport_name,
-    const rtc::NetworkRoute& network_route) {
+    const webrtc::NetworkRoute& network_route) {
   RTC_DCHECK_RUN_ON(&network_thread_checker_);
 
   call_->OnAudioTransportOverheadChanged(network_route.packet_overhead);
@@ -1907,19 +1908,19 @@ webrtc::RTCError WebRtcVoiceSendChannel::SetRtpSendParameters(
   if (!parameters.encodings.empty()) {
     // Note that these values come from:
     // https://tools.ietf.org/html/draft-ietf-tsvwg-rtcweb-qos-16#section-5
-    rtc::DiffServCodePoint new_dscp = rtc::DSCP_DEFAULT;
+    webrtc::DiffServCodePoint new_dscp = webrtc::DSCP_DEFAULT;
     switch (parameters.encodings[0].network_priority) {
       case webrtc::Priority::kVeryLow:
-        new_dscp = rtc::DSCP_CS1;
+        new_dscp = webrtc::DSCP_CS1;
         break;
       case webrtc::Priority::kLow:
-        new_dscp = rtc::DSCP_DEFAULT;
+        new_dscp = webrtc::DSCP_DEFAULT;
         break;
       case webrtc::Priority::kMedium:
-        new_dscp = rtc::DSCP_EF;
+        new_dscp = webrtc::DSCP_EF;
         break;
       case webrtc::Priority::kHigh:
-        new_dscp = rtc::DSCP_EF;
+        new_dscp = webrtc::DSCP_EF;
         break;
     }
     SetPreferredDscp(new_dscp);

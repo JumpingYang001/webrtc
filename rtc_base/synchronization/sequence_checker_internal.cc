@@ -11,15 +11,18 @@
 
 #include <string>
 
+#include "api/task_queue/task_queue_base.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/platform_thread_types.h"
 #include "rtc_base/strings/string_builder.h"
+#include "rtc_base/synchronization/mutex.h"
 
 namespace webrtc {
 namespace webrtc_sequence_checker_internal {
 
 SequenceCheckerImpl::SequenceCheckerImpl(bool attach_to_current_thread)
     : attached_(attach_to_current_thread),
-      valid_thread_(rtc::CurrentThreadRef()),
+      valid_thread_(CurrentThreadRef()),
       valid_queue_(TaskQueueBase::Current()) {}
 
 SequenceCheckerImpl::SequenceCheckerImpl(TaskQueueBase* attached_queue)
@@ -29,7 +32,7 @@ SequenceCheckerImpl::SequenceCheckerImpl(TaskQueueBase* attached_queue)
 
 bool SequenceCheckerImpl::IsCurrent() const {
   const TaskQueueBase* const current_queue = TaskQueueBase::Current();
-  const rtc::PlatformThreadRef current_thread = rtc::CurrentThreadRef();
+  const rtc::PlatformThreadRef current_thread = CurrentThreadRef();
   MutexLock scoped_lock(&lock_);
   if (!attached_) {  // Previously detached.
     attached_ = true;
@@ -40,7 +43,7 @@ bool SequenceCheckerImpl::IsCurrent() const {
   if (valid_queue_) {
     return valid_queue_ == current_queue;
   }
-  return rtc::IsThreadRefEqual(valid_thread_, current_thread);
+  return IsThreadRefEqual(valid_thread_, current_thread);
 }
 
 void SequenceCheckerImpl::Detach() {

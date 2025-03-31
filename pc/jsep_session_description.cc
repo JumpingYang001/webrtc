@@ -10,15 +10,22 @@
 
 #include "api/jsep_session_description.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "absl/strings/string_view.h"
+#include "api/candidate.h"
+#include "api/jsep.h"
+#include "api/jsep_ice_candidate.h"
 #include "p2p/base/p2p_constants.h"
-#include "p2p/base/port.h"
 #include "p2p/base/transport_description.h"
 #include "p2p/base/transport_info.h"
 #include "pc/media_session.h"  // IWYU pragma: keep
+#include "pc/session_description.h"
 #include "pc/webrtc_sdp.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/ip_address.h"
@@ -52,7 +59,7 @@ void UpdateConnectionAddress(
       continue;
     }
     // Default destination should be UDP only.
-    if (jsep_candidate->candidate().protocol() != cricket::UDP_PROTOCOL_NAME) {
+    if (jsep_candidate->candidate().protocol() != UDP_PROTOCOL_NAME) {
       continue;
     }
     const int preference = jsep_candidate->candidate().type_preference();

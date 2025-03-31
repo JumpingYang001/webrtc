@@ -23,6 +23,7 @@
 #include "api/test/time_controller.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/network.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "test/network/fake_network_socket_server.h"
 #include "test/network/network_emulation.h"
@@ -31,8 +32,7 @@ namespace webrtc {
 namespace test {
 
 // Framework assumes that rtc::NetworkManager is called from network thread.
-class EmulatedNetworkManager::NetworkManagerImpl
-    : public rtc::NetworkManagerBase {
+class EmulatedNetworkManager::NetworkManagerImpl : public NetworkManagerBase {
  public:
   explicit NetworkManagerImpl(
       absl::Nonnull<Thread*> network_thread,
@@ -47,9 +47,7 @@ class EmulatedNetworkManager::NetworkManagerImpl
   void MaybeSignalNetworksChanged();
 
   // We don't support any address interfaces in the network emulation framework.
-  std::vector<const rtc::Network*> GetAnyAddressNetworks() override {
-    return {};
-  }
+  std::vector<const Network*> GetAnyAddressNetworks() override { return {}; }
 
  private:
   const absl::Nonnull<Thread*> network_thread_;
@@ -75,7 +73,7 @@ EmulatedNetworkManager::EmulatedNetworkManager(
 
 EmulatedNetworkManager::~EmulatedNetworkManager() = default;
 
-absl::Nonnull<std::unique_ptr<rtc::NetworkManager>>
+absl::Nonnull<std::unique_ptr<NetworkManager>>
 EmulatedNetworkManager::ReleaseNetworkManager() {
   RTC_CHECK(network_manager_ != nullptr)
       << "ReleaseNetworkManager can be called at most once.";
@@ -124,7 +122,7 @@ void EmulatedNetworkManager::GetStats(
 void EmulatedNetworkManager::NetworkManagerImpl::UpdateNetworksOnce() {
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  std::vector<std::unique_ptr<rtc::Network>> networks;
+  std::vector<std::unique_ptr<Network>> networks;
   for (std::unique_ptr<rtc::Network>& net :
        endpoints_container_->GetEnabledNetworks()) {
     net->set_default_local_address_provider(this);

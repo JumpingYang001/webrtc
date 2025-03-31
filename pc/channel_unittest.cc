@@ -980,10 +980,10 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
     WaitForThreads();
     media_send_channel1_impl->set_num_network_route_changes(0);
     SendTask(network_thread_, [this] {
-      rtc::NetworkRoute network_route;
+      webrtc::NetworkRoute network_route;
       // The transport channel becomes disconnected.
       fake_rtp_dtls_transport1_->ice_transport()->SignalNetworkRouteChanged(
-          std::optional<rtc::NetworkRoute>(network_route));
+          std::optional<webrtc::NetworkRoute>(network_route));
     });
     WaitForThreads();
     EXPECT_EQ(1, media_send_channel1_impl->num_network_route_changes());
@@ -991,18 +991,18 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
     media_send_channel1_impl->set_num_network_route_changes(0);
 
     SendTask(network_thread_, [this] {
-      rtc::NetworkRoute network_route;
+      webrtc::NetworkRoute network_route;
       network_route.connected = true;
       network_route.local =
-          rtc::RouteEndpoint::CreateWithNetworkId(kLocalNetId);
+          webrtc::RouteEndpoint::CreateWithNetworkId(kLocalNetId);
       network_route.remote =
-          rtc::RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
+          webrtc::RouteEndpoint::CreateWithNetworkId(kRemoteNetId);
       network_route.last_sent_packet_id = kLastPacketId;
       network_route.packet_overhead = kTransportOverheadPerPacket;
       // The transport channel becomes connected.
       fake_rtp_dtls_transport1_->ice_transport()->SignalNetworkRouteChanged(
 
-          std::optional<rtc::NetworkRoute>(network_route));
+          std::optional<webrtc::NetworkRoute>(network_route));
     });
     WaitForThreads();
     EXPECT_EQ(1, media_send_channel1_impl->num_network_route_changes());

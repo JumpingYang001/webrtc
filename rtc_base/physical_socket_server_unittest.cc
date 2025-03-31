@@ -30,13 +30,13 @@
 #include "test/wait_until.h"
 
 #define MAYBE_SKIP_IPV4                        \
-  if (!::rtc::HasIPv4Enabled()) {              \
+  if (!::webrtc::HasIPv4Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv4... skipping"; \
     return;                                    \
   }
 
 #define MAYBE_SKIP_IPV6                        \
-  if (!::rtc::HasIPv6Enabled()) {              \
+  if (!::webrtc::HasIPv6Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv6... skipping"; \
     return;                                    \
   }

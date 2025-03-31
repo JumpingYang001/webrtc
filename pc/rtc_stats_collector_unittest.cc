@@ -85,6 +85,7 @@
 #include "rtc_base/ref_counted_object.h"
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/socket_address.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
@@ -159,10 +160,10 @@ std::unique_ptr<CertificateInfo> CreateFakeCertificateAndInfoFromDers(
   }
   // Fingerprints for the whole certificate chain, starting with leaf
   // certificate.
-  const rtc::SSLCertChain& chain = info->certificate->GetSSLCertificateChain();
-  std::unique_ptr<rtc::SSLFingerprint> fp;
+  const SSLCertChain& chain = info->certificate->GetSSLCertificateChain();
+  std::unique_ptr<SSLFingerprint> fp;
   for (size_t i = 0; i < chain.GetSize(); i++) {
-    fp = rtc::SSLFingerprint::Create("sha-1", chain.Get(i));
+    fp = SSLFingerprint::Create("sha-1", chain.Get(i));
     EXPECT_TRUE(fp);
     info->fingerprints.push_back(fp->GetRfc4572Fingerprint());
   }

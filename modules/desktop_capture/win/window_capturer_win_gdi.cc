@@ -298,7 +298,7 @@ WindowCapturerWinGdi::CaptureResults WindowCapturerWinGdi::CaptureFrame(
   // on Windows 8.1 and later, PrintWindow is only used when the window is
   // occluded. When the window is not occluded, it is much faster to capture
   // the screen and to crop it to the window position and size.
-  if (rtc::rtc_win::GetVersion() >= rtc::rtc_win::Version::VERSION_WIN8) {
+  if (webrtc::rtc_win::GetVersion() >= webrtc::rtc_win::Version::VERSION_WIN8) {
     // Special flag that makes PrintWindow to work on Windows 8.1 and later.
     // Indeed certain apps (e.g. those using DirectComposition rendering) can't
     // be captured using BitBlt or PrintWindow without this flag. Note that on

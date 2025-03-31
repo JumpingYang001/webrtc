@@ -11,16 +11,20 @@
 #ifndef RTC_BASE_FAKE_SSL_IDENTITY_H_
 #define RTC_BASE_FAKE_SSL_IDENTITY_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 
 namespace webrtc {
 
-class FakeSSLCertificate : public rtc::SSLCertificate {
+class FakeSSLCertificate : public SSLCertificate {
  public:
   // SHA-1 is the default digest algorithm because it is available in all build
   // configurations used for unit testing.
@@ -30,7 +34,7 @@ class FakeSSLCertificate : public rtc::SSLCertificate {
   ~FakeSSLCertificate() override;
 
   // SSLCertificate implementation.
-  std::unique_ptr<rtc::SSLCertificate> Clone() const override;
+  std::unique_ptr<SSLCertificate> Clone() const override;
   std::string ToPEMString() const override;
   void ToDER(Buffer* der_buffer) const override;
   int64_t CertificateExpirationTime() const override;
@@ -63,8 +67,8 @@ class FakeSSLIdentity : public rtc::SSLIdentity {
   ~FakeSSLIdentity() override;
 
   // SSLIdentity implementation.
-  const rtc::SSLCertificate& certificate() const override;
-  const rtc::SSLCertChain& cert_chain() const override;
+  const SSLCertificate& certificate() const override;
+  const SSLCertChain& cert_chain() const override;
   // Not implemented.
   std::string PrivateKeyToPEMString() const override;
   // Not implemented.
@@ -75,7 +79,7 @@ class FakeSSLIdentity : public rtc::SSLIdentity {
  private:
   std::unique_ptr<rtc::SSLIdentity> CloneInternal() const override;
 
-  std::unique_ptr<rtc::SSLCertChain> cert_chain_;
+  std::unique_ptr<SSLCertChain> cert_chain_;
 };
 
 }  //  namespace webrtc

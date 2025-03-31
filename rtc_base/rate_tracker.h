@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-namespace rtc {
+namespace webrtc {
 
 // Computes units per second over a given interval by tracking the units over
 // each bucket of a given size and calculating the instantaneous rate assuming
@@ -67,6 +67,12 @@ class RateTracker {
   int64_t initialization_time_milliseconds_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::RateTracker;
 }  // namespace rtc
 
 #endif  // RTC_BASE_RATE_TRACKER_H_

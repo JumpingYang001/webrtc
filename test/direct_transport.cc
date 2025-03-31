@@ -9,14 +9,32 @@
  */
 #include "test/direct_transport.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "api/array_view.h"
+#include "api/call/transport.h"
 #include "api/media_types.h"
+#include "api/rtp_headers.h"
+#include "api/rtp_parameters.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "call/call.h"
 #include "call/fake_network_pipe.h"
+#include "call/simulated_packet_receiver.h"
+#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
+#include "rtc_base/network/sent_packet.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/time_utils.h"
 
@@ -71,7 +89,7 @@ bool DirectTransport::SendRtp(rtc::ArrayView<const uint8_t> data,
     sent_packet.info.included_in_feedback = options.included_in_feedback;
     sent_packet.info.included_in_allocation = options.included_in_allocation;
     sent_packet.info.packet_size_bytes = data.size();
-    sent_packet.info.packet_type = rtc::PacketType::kData;
+    sent_packet.info.packet_type = PacketType::kData;
     send_call_->OnSentPacket(sent_packet);
   }
 

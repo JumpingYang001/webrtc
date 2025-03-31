@@ -92,7 +92,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
               dtls_in_stun ? "WebRTC-IceHandshakeDtls/Enabled/" : ""))),
           dtls_stun_piggyback(dtls_in_stun) {}
     webrtc::EmulatedNetworkManagerInterface* emulated_network_manager = nullptr;
-    std::unique_ptr<rtc::NetworkManager> network_manager;
+    std::unique_ptr<webrtc::NetworkManager> network_manager;
     std::unique_ptr<webrtc::BasicPacketSocketFactory> packet_socket_factory;
     std::unique_ptr<webrtc::PortAllocator> allocator;
     std::unique_ptr<webrtc::IceTransportInternal> ice;
@@ -101,7 +101,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
     // SetRemoteFingerprintFromCert does not actually set the fingerprint,
     // but only store it for setting later.
     bool store_but_dont_set_remote_fingerprint = false;
-    std::unique_ptr<rtc::SSLFingerprint> remote_fingerprint;
+    std::unique_ptr<webrtc::SSLFingerprint> remote_fingerprint;
 
     Environment env;
     bool dtls_stun_piggyback;
@@ -300,7 +300,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
   void SetRemoteFingerprintFromCert(
       Endpoint& ep,
       const rtc::scoped_refptr<rtc::RTCCertificate>& cert) {
-    ep.remote_fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*cert);
+    ep.remote_fingerprint =
+        webrtc::SSLFingerprint::CreateFromCertificate(*cert);
     if (ep.store_but_dont_set_remote_fingerprint) {
       return;
     }

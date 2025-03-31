@@ -41,9 +41,11 @@
 #include "test/gtest.h"
 #include "test/wait_until.h"
 
+// IWYU pragma: begin_keep
 #if defined(WEBRTC_POSIX)
 #include <net/if.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include "rtc_base/ifaddrs_converter.h"
 #endif  // defined(WEBRTC_POSIX)
@@ -51,6 +53,7 @@
 #if defined(WEBRTC_WIN)
 #include "rtc_base/logging.h"  // For RTC_LOG_GLE
 #endif
+// IWYU pragma: end_keep
 #include "test/field_trial.h"
 #include "test/scoped_key_value_config.h"
 
@@ -61,24 +64,26 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 using ::webrtc::CreateEnvironment;
 using ::webrtc::Environment;
+using ::webrtc::test::ScopedFieldTrials;
+using ::webrtc::test::ScopedKeyValueConfig;
 
 #define MAYBE_SKIP_IPV4                        \
-  if (!::rtc::HasIPv4Enabled()) {              \
+  if (!::webrtc::HasIPv4Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv4... skipping"; \
     return;                                    \
   }
 
-namespace rtc {
+namespace webrtc {
 
 namespace {
 
-webrtc::IPAddress IPFromString(absl::string_view str) {
-  webrtc::IPAddress ip;
+IPAddress IPFromString(absl::string_view str) {
+  IPAddress ip;
   RTC_CHECK(webrtc::IPFromString(str, &ip));
   return ip;
 }
 
-class FakeNetworkMonitor : public webrtc::NetworkMonitorInterface {
+class FakeNetworkMonitor : public NetworkMonitorInterface {
  public:
   void Start() override { started_ = true; }
   void Stop() override { started_ = false; }
@@ -103,23 +108,22 @@ class FakeNetworkMonitor : public webrtc::NetworkMonitorInterface {
 
   bool SupportsBindSocketToNetwork() const override { return true; }
 
-  webrtc::NetworkBindingResult BindSocketToNetwork(
-      int socket_fd,
-      const webrtc::IPAddress& address,
-      absl::string_view if_name) override {
+  NetworkBindingResult BindSocketToNetwork(int socket_fd,
+                                           const IPAddress& address,
+                                           absl::string_view if_name) override {
     if (absl::c_count(addresses_, address) > 0) {
-      return webrtc::NetworkBindingResult::SUCCESS;
+      return NetworkBindingResult::SUCCESS;
     }
 
     for (auto const& iter : adapters_) {
       if (absl::StrContains(if_name, iter)) {
-        return webrtc::NetworkBindingResult::SUCCESS;
+        return NetworkBindingResult::SUCCESS;
       }
     }
-    return webrtc::NetworkBindingResult::ADDRESS_NOT_FOUND;
+    return NetworkBindingResult::ADDRESS_NOT_FOUND;
   }
 
-  void set_ip_addresses(std::vector<webrtc::IPAddress> addresses) {
+  void set_ip_addresses(std::vector<IPAddress> addresses) {
     addresses_ = addresses;
   }
 
@@ -133,19 +137,19 @@ class FakeNetworkMonitor : public webrtc::NetworkMonitorInterface {
   bool started_ = false;
   std::vector<std::string> adapters_;
   std::vector<std::string> unavailable_adapters_;
-  std::vector<webrtc::IPAddress> addresses_;
+  std::vector<IPAddress> addresses_;
 };
 
-class FakeNetworkMonitorFactory : public NetworkMonitorFactory {
+class FakeNetworkMonitorFactory : public rtc::NetworkMonitorFactory {
  public:
   FakeNetworkMonitorFactory() {}
-  webrtc::NetworkMonitorInterface* CreateNetworkMonitor(
-      const webrtc::FieldTrialsView& field_trials) override {
+  NetworkMonitorInterface* CreateNetworkMonitor(
+      const FieldTrialsView& field_trials) override {
     return new FakeNetworkMonitor();
   }
 };
 
-bool SameNameAndPrefix(const rtc::Network& a, const rtc::Network& b) {
+bool SameNameAndPrefix(const Network& a, const Network& b) {
   if (a.name() != b.name()) {
     RTC_LOG(LS_INFO) << "Different interface names.";
     return false;
@@ -190,9 +194,8 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
     return network_manager.IsIgnoredNetwork(network);
   }
 
-  webrtc::IPAddress QueryDefaultLocalAddress(
-      BasicNetworkManager& network_manager,
-      int family) {
+  IPAddress QueryDefaultLocalAddress(BasicNetworkManager& network_manager,
+                                     int family) {
     RTC_DCHECK_RUN_ON(network_manager.thread_);
     return network_manager.QueryDefaultLocalAddress(family);
   }
@@ -216,7 +219,7 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
     network_manager.networks_map_.clear();
   }
 
-  webrtc::AdapterType GetAdapterType(BasicNetworkManager& network_manager) {
+  AdapterType GetAdapterType(BasicNetworkManager& network_manager) {
     std::vector<const Network*> list = network_manager.GetNetworks();
     RTC_CHECK_EQ(1, list.size());
     return list[0]->type();
@@ -231,7 +234,8 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
       std::vector<std::unique_ptr<Network>>* networks) {
     RTC_DCHECK_RUN_ON(network_manager.thread_);
     // Use the base IfAddrsConverter for test cases.
-    std::unique_ptr<IfAddrsConverter> ifaddrs_converter(new IfAddrsConverter());
+    std::unique_ptr<rtc::IfAddrsConverter> ifaddrs_converter(
+        new rtc::IfAddrsConverter());
     network_manager.ConvertIfAddrs(interfaces, ifaddrs_converter.get(),
                                    include_ignored, networks);
   }
@@ -243,7 +247,7 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
     memset(ipv6_addr, 0, sizeof(struct sockaddr_in6));
     ipv6_addr->sin6_family = AF_INET6;
     ipv6_addr->sin6_scope_id = scope_id;
-    webrtc::IPAddress ip;
+    IPAddress ip;
     webrtc::IPFromString(ip_string, &ip);
     ipv6_addr->sin6_addr = ip.ipv6_address();
     return ipv6_addr;
@@ -286,7 +290,7 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
         static_cast<struct sockaddr_in*>(malloc(sizeof(struct sockaddr_in)));
     memset(ipv4_addr, 0, sizeof(struct sockaddr_in));
     ipv4_addr->sin_family = AF_INET;
-    webrtc::IPAddress ip;
+    IPAddress ip;
     webrtc::IPFromString(ip_string, &ip);
     ipv4_addr->sin_addr = ip.ipv4_address();
     return ipv4_addr;
@@ -336,7 +340,8 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
 #endif  // defined(WEBRTC_POSIX)
 
  protected:
-  webrtc::AutoThread main_thread_;
+  ScopedKeyValueConfig field_trials_;
+  AutoThread main_thread_;
   bool callback_called_;
 };
 
@@ -350,10 +355,10 @@ class TestBasicNetworkManager : public BasicNetworkManager {
 // Test that the Network ctor works properly.
 TEST_F(NetworkTest, TestNetworkConstruct) {
   Network ipv4_network1("test_eth0", "Test Network Adapter 1",
-                        webrtc::IPAddress(0x12345600U), 24);
+                        IPAddress(0x12345600U), 24);
   EXPECT_EQ("test_eth0", ipv4_network1.name());
   EXPECT_EQ("Test Network Adapter 1", ipv4_network1.description());
-  EXPECT_EQ(webrtc::IPAddress(0x12345600U), ipv4_network1.prefix());
+  EXPECT_EQ(IPAddress(0x12345600U), ipv4_network1.prefix());
   EXPECT_EQ(24, ipv4_network1.prefix_length());
   EXPECT_EQ(AF_INET, ipv4_network1.family());
   EXPECT_FALSE(ipv4_network1.ignored());
@@ -361,12 +366,12 @@ TEST_F(NetworkTest, TestNetworkConstruct) {
 
 TEST_F(NetworkTest, TestIsIgnoredNetworkIgnoresIPsStartingWith0) {
   Network ipv4_network1("test_eth0", "Test Network Adapter 1",
-                        webrtc::IPAddress(0x12345600U), 24,
+                        IPAddress(0x12345600U), 24,
                         webrtc::ADAPTER_TYPE_ETHERNET);
   Network ipv4_network2("test_eth1", "Test Network Adapter 2",
-                        webrtc::IPAddress(0x010000U), 24,
+                        IPAddress(0x010000U), 24,
                         webrtc::ADAPTER_TYPE_ETHERNET);
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager network_manager(CreateEnvironment(), &socket_server);
   network_manager.StartUpdating();
   EXPECT_FALSE(IsIgnoredNetwork(network_manager, ipv4_network1));
@@ -375,12 +380,12 @@ TEST_F(NetworkTest, TestIsIgnoredNetworkIgnoresIPsStartingWith0) {
 
 // TODO(phoglund): Remove when ignore list goes away.
 TEST_F(NetworkTest, TestIgnoreList) {
-  Network ignore_me("ignore_me", "Ignore me please!",
-                    webrtc::IPAddress(0x12345600U), 24);
-  Network include_me("include_me", "Include me please!",
-                     webrtc::IPAddress(0x12345600U), 24);
+  Network ignore_me("ignore_me", "Ignore me please!", IPAddress(0x12345600U),
+                    24);
+  Network include_me("include_me", "Include me please!", IPAddress(0x12345600U),
+                     24);
   const Environment env = CreateEnvironment();
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager default_network_manager(env, &socket_server);
   default_network_manager.StartUpdating();
   EXPECT_FALSE(IsIgnoredNetwork(default_network_manager, ignore_me));
@@ -397,15 +402,15 @@ TEST_F(NetworkTest, TestIgnoreList) {
 
 // Test is failing on Windows opt: b/11288214
 TEST_F(NetworkTest, DISABLED_TestCreateNetworks) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   std::vector<std::unique_ptr<Network>> result = GetNetworks(manager, true);
   // We should be able to bind to any addresses we find.
   for (auto it = result.begin(); it != result.end(); ++it) {
     sockaddr_storage storage;
     memset(&storage, 0, sizeof(storage));
-    webrtc::IPAddress ip = (*it)->GetBestIP();
-    webrtc::SocketAddress bindaddress(ip, 0);
+    IPAddress ip = (*it)->GetBestIP();
+    SocketAddress bindaddress(ip, 0);
     bindaddress.SetScopeID((*it)->scope_id());
     // TODO(thaloun): Use rtc::Socket once it supports IPv6.
     int fd = static_cast<int>(socket(ip.family(), SOCK_STREAM, IPPROTO_TCP));
@@ -431,21 +436,21 @@ TEST_F(NetworkTest, DISABLED_TestCreateNetworks) {
 // Test StartUpdating() and StopUpdating(). network_permission_state starts with
 // ALLOWED.
 TEST_F(NetworkTest, TestUpdateNetworks) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
   EXPECT_EQ(NetworkManager::ENUMERATION_ALLOWED,
             manager.enumeration_permission());
   manager.StartUpdating();
-  webrtc::Thread::Current()->ProcessMessages(0);
+  Thread::Current()->ProcessMessages(0);
   EXPECT_TRUE(callback_called_);
   callback_called_ = false;
   // Callback should be triggered immediately when StartUpdating
   // is called, after network update signal is already sent.
   manager.StartUpdating();
   EXPECT_TRUE(manager.started());
-  webrtc::Thread::Current()->ProcessMessages(0);
+  Thread::Current()->ProcessMessages(0);
   EXPECT_TRUE(callback_called_);
   manager.StopUpdating();
   EXPECT_TRUE(manager.started());
@@ -459,19 +464,19 @@ TEST_F(NetworkTest, TestUpdateNetworks) {
   // Callback should be triggered immediately after StartUpdating is called
   // when start_count_ is reset to 0.
   manager.StartUpdating();
-  webrtc::Thread::Current()->ProcessMessages(0);
+  Thread::Current()->ProcessMessages(0);
   EXPECT_TRUE(callback_called_);
 }
 
 // Verify that MergeNetworkList() merges network lists properly.
 TEST_F(NetworkTest, TestBasicMergeNetworkList) {
   Network ipv4_network1("test_eth0", "Test Network Adapter 1",
-                        webrtc::IPAddress(0x12345600U), 24);
+                        IPAddress(0x12345600U), 24);
   Network ipv4_network2("test_eth1", "Test Network Adapter 2",
-                        webrtc::IPAddress(0x00010000U), 16);
-  ipv4_network1.AddIP(webrtc::IPAddress(0x12345678));
-  ipv4_network2.AddIP(webrtc::IPAddress(0x00010004));
-  webrtc::PhysicalSocketServer socket_server;
+                        IPAddress(0x00010000U), 16);
+  ipv4_network1.AddIP(IPAddress(0x12345678));
+  ipv4_network2.AddIP(IPAddress(0x00010004));
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
 
   // Add ipv4_network1 to the list of networks.
@@ -485,7 +490,7 @@ TEST_F(NetworkTest, TestBasicMergeNetworkList) {
   EXPECT_EQ(stats.ipv4_network_count, 1);
   list.clear();  // It is fine to call .clear() on a moved-from vector.
 
-  std::vector<const rtc::Network*> current = manager.GetNetworks();
+  std::vector<const Network*> current = manager.GetNetworks();
   EXPECT_EQ(1U, current.size());
   EXPECT_TRUE(SameNameAndPrefix(ipv4_network1, *current[0]));
   const Network* net1 = current[0];
@@ -547,8 +552,8 @@ TEST_F(NetworkTest, TestBasicMergeNetworkList) {
 // Sets up some test IPv6 networks and appends them to list.
 // Four networks are added - public and link local, for two interfaces.
 void SetupNetworks(std::vector<std::unique_ptr<Network>>* list) {
-  webrtc::IPAddress ip;
-  webrtc::IPAddress prefix;
+  IPAddress ip;
+  IPAddress prefix;
   EXPECT_TRUE(webrtc::IPFromString("abcd::1234:5678:abcd:ef12", &ip));
   EXPECT_TRUE(webrtc::IPFromString("abcd::", &prefix));
   // First, fake link-locals.
@@ -579,7 +584,7 @@ void SetupNetworks(std::vector<std::unique_ptr<Network>>* list) {
 
 // Test that the basic network merging case works.
 TEST_F(NetworkTest, TestIPv6MergeNetworkList) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
@@ -601,7 +606,7 @@ TEST_F(NetworkTest, TestIPv6MergeNetworkList) {
 // merged, that the changed callback is not called, and that the original
 // objects remain in the result list.
 TEST_F(NetworkTest, TestNoChangeMerge) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
@@ -632,22 +637,22 @@ TEST_F(NetworkTest, TestNoChangeMerge) {
 // a different IP. The original network should remain in the list, but have its
 // IP changed.
 TEST_F(NetworkTest, MergeWithChangedIP) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
   std::vector<std::unique_ptr<Network>> original_list;
   SetupNetworks(&original_list);
   // Make a network that we're going to change.
-  webrtc::IPAddress ip;
+  IPAddress ip;
   EXPECT_TRUE(webrtc::IPFromString("2401:fa01:4:1000:be30:faa:fee:faa", &ip));
-  webrtc::IPAddress prefix = webrtc::TruncateIP(ip, 64);
+  IPAddress prefix = webrtc::TruncateIP(ip, 64);
   std::unique_ptr<Network> network_to_change = std::make_unique<Network>(
       "test_eth0", "Test Network Adapter 1", prefix, 64);
   std::unique_ptr<Network> changed_network =
       std::make_unique<Network>(*network_to_change);
   network_to_change->AddIP(ip);
-  webrtc::IPAddress changed_ip;
+  IPAddress changed_ip;
   EXPECT_TRUE(
       webrtc::IPFromString("2401:fa01:4:1000:be30:f00:f00:f00", &changed_ip));
   changed_network->AddIP(changed_ip);
@@ -670,7 +675,7 @@ TEST_F(NetworkTest, MergeWithChangedIP) {
 }
 
 TEST_F(NetworkTest, TestMultipleIPMergeNetworkList) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
@@ -680,9 +685,9 @@ TEST_F(NetworkTest, TestMultipleIPMergeNetworkList) {
   bool changed = false;
   MergeNetworkList(manager, std::move(original_list), &changed);
   EXPECT_TRUE(changed);
-  webrtc::IPAddress ip;
-  webrtc::IPAddress check_ip;
-  webrtc::IPAddress prefix;
+  IPAddress ip;
+  IPAddress check_ip;
+  IPAddress prefix;
   // Add a second IP to the public network on eth0 (2401:fa00:4:1000/64).
   EXPECT_TRUE(webrtc::IPFromString("2401:fa00:4:1000:be30:5bff:fee5:c6", &ip));
   prefix = webrtc::TruncateIP(ip, 64);
@@ -714,19 +719,18 @@ TEST_F(NetworkTest, TestMultipleIPMergeNetworkList) {
       EXPECT_EQ(network, network_ptr);
       // But with two addresses now.
       EXPECT_THAT(network->GetIPs(),
-                  UnorderedElementsAre(webrtc::InterfaceAddress(check_ip),
-                                       webrtc::InterfaceAddress(ip)));
+                  UnorderedElementsAre(InterfaceAddress(check_ip),
+                                       InterfaceAddress(ip)));
     } else {
       // Check the IP didn't get added anywhere it wasn't supposed to.
-      EXPECT_THAT(network->GetIPs(),
-                  Not(Contains(webrtc::InterfaceAddress(ip))));
+      EXPECT_THAT(network->GetIPs(), Not(Contains(InterfaceAddress(ip))));
     }
   }
 }
 
 // Test that merge correctly distinguishes multiple networks on an interface.
 TEST_F(NetworkTest, TestMultiplePublicNetworksOnOneInterfaceMerge) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
@@ -735,8 +739,8 @@ TEST_F(NetworkTest, TestMultiplePublicNetworksOnOneInterfaceMerge) {
   bool changed = false;
   MergeNetworkList(manager, std::move(original_list), &changed);
   EXPECT_TRUE(changed);
-  webrtc::IPAddress ip;
-  webrtc::IPAddress prefix;
+  IPAddress ip;
+  IPAddress prefix;
   // A second network for eth0.
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:5bff:fee5:c3", &ip));
   prefix = webrtc::TruncateIP(ip, 64);
@@ -762,15 +766,14 @@ TEST_F(NetworkTest, TestMultiplePublicNetworksOnOneInterfaceMerge) {
       EXPECT_EQ(ip, network->GetIPs().at(0));
     } else {
       // Check the IP didn't get added anywhere it wasn't supposed to.
-      EXPECT_THAT(network->GetIPs(),
-                  Not(Contains(webrtc::InterfaceAddress(ip))));
+      EXPECT_THAT(network->GetIPs(), Not(Contains(InterfaceAddress(ip))));
     }
   }
 }
 
 // Test that DumpNetworks does not crash.
 TEST_F(NetworkTest, TestCreateAndDumpNetworks) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   std::vector<std::unique_ptr<Network>> list = GetNetworks(manager, true);
@@ -780,7 +783,7 @@ TEST_F(NetworkTest, TestCreateAndDumpNetworks) {
 }
 
 TEST_F(NetworkTest, TestIPv6Toggle) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   bool ipv6_found = false;
@@ -796,14 +799,14 @@ TEST_F(NetworkTest, TestIPv6Toggle) {
 // Test that when network interfaces are sorted and given preference values,
 // IPv6 comes first.
 TEST_F(NetworkTest, IPv6NetworksPreferredOverIPv4) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   Network ipv4_network1("test_eth0", "Test Network Adapter 1",
-                        webrtc::IPAddress(0x12345600U), 24);
-  ipv4_network1.AddIP(webrtc::IPAddress(0x12345600U));
+                        IPAddress(0x12345600U), 24);
+  ipv4_network1.AddIP(IPAddress(0x12345600U));
 
-  webrtc::IPAddress ip;
-  webrtc::IPAddress prefix;
+  IPAddress ip;
+  IPAddress prefix;
   EXPECT_TRUE(
       webrtc::IPFromString("2400:4030:1:2c00:be30:abcd:efab:cdef", &ip));
   prefix = webrtc::TruncateIP(ip, 64);
@@ -827,14 +830,14 @@ TEST_F(NetworkTest, IPv6NetworksPreferredOverIPv4) {
 // When two interfaces are equivalent in everything but name, they're expected
 // to be preference-ordered by name. For example, "eth0" before "eth1".
 TEST_F(NetworkTest, NetworksSortedByInterfaceName) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   auto eth0 = std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                        webrtc::IPAddress(0x65432100U), 24);
-  eth0->AddIP(webrtc::IPAddress(0x65432100U));
+                                        IPAddress(0x65432100U), 24);
+  eth0->AddIP(IPAddress(0x65432100U));
   auto eth1 = std::make_unique<Network>("test_eth1", "Test Network Adapter 2",
-                                        webrtc::IPAddress(0x12345600U), 24);
-  eth1->AddIP(webrtc::IPAddress(0x12345600U));
+                                        IPAddress(0x12345600U), 24);
+  eth1->AddIP(IPAddress(0x12345600U));
   std::vector<std::unique_ptr<Network>> list;
   const Network* eth0_ptr = eth0.get();
   const Network* eth1_ptr = eth1.get();
@@ -851,20 +854,19 @@ TEST_F(NetworkTest, NetworksSortedByInterfaceName) {
 }
 
 TEST_F(NetworkTest, TestNetworkAdapterTypes) {
-  Network wifi("wlan0", "Wireless Adapter", webrtc::IPAddress(0x12345600U), 24,
+  Network wifi("wlan0", "Wireless Adapter", IPAddress(0x12345600U), 24,
                webrtc::ADAPTER_TYPE_WIFI);
   EXPECT_EQ(webrtc::ADAPTER_TYPE_WIFI, wifi.type());
-  Network ethernet("eth0", "Ethernet", webrtc::IPAddress(0x12345600U), 24,
+  Network ethernet("eth0", "Ethernet", IPAddress(0x12345600U), 24,
                    webrtc::ADAPTER_TYPE_ETHERNET);
   EXPECT_EQ(webrtc::ADAPTER_TYPE_ETHERNET, ethernet.type());
-  Network cellular("test_cell", "Cellular Adapter",
-                   webrtc::IPAddress(0x12345600U), 24,
+  Network cellular("test_cell", "Cellular Adapter", IPAddress(0x12345600U), 24,
                    webrtc::ADAPTER_TYPE_CELLULAR);
   EXPECT_EQ(webrtc::ADAPTER_TYPE_CELLULAR, cellular.type());
-  Network vpn("bridge_test", "VPN Adapter", webrtc::IPAddress(0x12345600U), 24,
+  Network vpn("bridge_test", "VPN Adapter", IPAddress(0x12345600U), 24,
               webrtc::ADAPTER_TYPE_VPN);
   EXPECT_EQ(webrtc::ADAPTER_TYPE_VPN, vpn.type());
-  Network unknown("test", "Test Adapter", webrtc::IPAddress(0x12345600U), 24,
+  Network unknown("test", "Test Adapter", IPAddress(0x12345600U), 24,
                   webrtc::ADAPTER_TYPE_UNKNOWN);
   EXPECT_EQ(webrtc::ADAPTER_TYPE_UNKNOWN, unknown.type());
 }
@@ -877,7 +879,7 @@ TEST_F(NetworkTest, TestConvertIfAddrsNoAddress) {
   list.ifa_name = const_cast<char*>("test_iface");
 
   std::vector<std::unique_ptr<Network>> result;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, &list, true, &result);
@@ -894,7 +896,7 @@ TEST_F(NetworkTest, TestConvertIfAddrsMultiAddressesOnOneInterface) {
   list = AddIpv6Address(list, if_name, "1000:2000:3000:4000:0:0:0:2",
                         "FFFF:FFFF:FFFF:FFFF::", 0);
   std::vector<std::unique_ptr<Network>> result;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, list, true, &result);
@@ -916,7 +918,7 @@ TEST_F(NetworkTest, TestConvertIfAddrsNotRunning) {
   list.ifa_netmask = &ifa_netmask;
 
   std::vector<std::unique_ptr<Network>> result;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, &list, true, &result);
@@ -931,7 +933,7 @@ TEST_F(NetworkTest, TestConvertIfAddrsGetsNullAddr) {
   list.ifa_netmask = nullptr;
 
   std::vector<std::unique_ptr<Network>> result;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, &list, true, &result);
@@ -945,7 +947,7 @@ TEST_F(NetworkTest, TestGetAdapterTypeFromNetworkMonitor) {
   std::string ipv6_address = "1000:2000:3000:4000:0:0:0:1";
   std::string ipv6_mask = "FFFF:FFFF:FFFF:FFFF::";
   const Environment env = CreateEnvironment();
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager_without_monitor(
       env, &socket_server, /*network_monitor_factory=*/nullptr);
   manager_without_monitor.StartUpdating();
@@ -977,7 +979,7 @@ TEST_F(NetworkTest, TestGetAdapterTypeFromNameMatching) {
   std::string ipv6_address1 = "1000:2000:3000:4000:0:0:0:1";
   std::string ipv6_address2 = "1000:2000:3000:8000:0:0:0:1";
   std::string ipv6_mask = "FFFF:FFFF:FFFF:FFFF::";
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
 
@@ -1055,7 +1057,7 @@ TEST_F(NetworkTest, TestNetworkMonitorIsAdapterAvailable) {
 
   // Sanity check that both interfaces are included by default.
   FakeNetworkMonitorFactory factory;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server, &factory);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, list, /*include_ignored=*/false, &result);
@@ -1081,12 +1083,12 @@ TEST_F(NetworkTest, TestNetworkMonitorIsAdapterAvailable) {
 // Test MergeNetworkList successfully combines all IPs for the same
 // prefix/length into a single Network.
 TEST_F(NetworkTest, TestMergeNetworkList) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   std::vector<std::unique_ptr<Network>> list;
 
   // Create 2 IPAddress classes with only last digit different.
-  webrtc::IPAddress ip1, ip2;
+  IPAddress ip1, ip2;
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:1", &ip1));
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:2", &ip2));
 
@@ -1112,22 +1114,21 @@ TEST_F(NetworkTest, TestMergeNetworkList) {
   // IPAddresses.
   EXPECT_EQ(list2.size(), 1uL);
   EXPECT_EQ(list2[0]->GetIPs().size(), 2uL);
-  EXPECT_THAT(list2[0]->GetIPs(),
-              UnorderedElementsAre(webrtc::InterfaceAddress(ip1),
-                                   webrtc::InterfaceAddress(ip2)));
+  EXPECT_THAT(list2[0]->GetIPs(), UnorderedElementsAre(InterfaceAddress(ip1),
+                                                       InterfaceAddress(ip2)));
 }
 
 // Test that MergeNetworkList successfully detects the change if
 // a network becomes inactive and then active again.
 TEST_F(NetworkTest, TestMergeNetworkListWithInactiveNetworks) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   Network network1("test_wifi", "Test Network Adapter 1",
-                   webrtc::IPAddress(0x12345600U), 24);
+                   IPAddress(0x12345600U), 24);
   Network network2("test_eth0", "Test Network Adapter 2",
-                   webrtc::IPAddress(0x00010000U), 16);
-  network1.AddIP(webrtc::IPAddress(0x12345678));
-  network2.AddIP(webrtc::IPAddress(0x00010004));
+                   IPAddress(0x00010000U), 16);
+  network1.AddIP(IPAddress(0x12345678));
+  network2.AddIP(IPAddress(0x00010004));
   std::vector<std::unique_ptr<Network>> list;
   auto net1 = std::make_unique<Network>(network1);
   const Network* const net1_ptr = net1.get();
@@ -1166,7 +1167,7 @@ TEST_F(NetworkTest, TestMergeNetworkListWithInactiveNetworks) {
 
 // Test that the filtering logic follows the defined ruleset in network.h.
 TEST_F(NetworkTest, TestIPv6Selection) {
-  webrtc::InterfaceAddress ip;
+  InterfaceAddress ip;
   std::string ipstr;
 
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c3";
@@ -1180,37 +1181,37 @@ TEST_F(NetworkTest, TestIPv6Selection) {
 
   // When there is no address added, it should return an unspecified
   // address.
-  EXPECT_EQ(ipv6_network.GetBestIP(), webrtc::IPAddress());
+  EXPECT_EQ(ipv6_network.GetBestIP(), IPAddress());
   EXPECT_TRUE(webrtc::IPIsUnspec(ipv6_network.GetBestIP()));
 
   // Deprecated one should not be returned.
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), webrtc::IPAddress());
+  EXPECT_EQ(ipv6_network.GetBestIP(), IPAddress());
 
   // Add ULA one. ULA is unique local address which is starting either
   // with 0xfc or 0xfd.
   ipstr = "fd00:fa00:4:1000:be30:5bff:fee5:c4";
   ASSERT_TRUE(webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add global one.
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c5";
   ASSERT_TRUE(webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add global dynamic temporary one.
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c6";
   ASSERT_TRUE(
       webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_TEMPORARY, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 }
 
 // Test that the filtering logic follows the defined ruleset in network.h.
 TEST_F(NetworkTest, TestGetBestIPWithPreferGlobalIPv6ToLinkLocalEnabled) {
-  webrtc::InterfaceAddress ip, link_local;
+  InterfaceAddress ip, link_local;
   std::string ipstr;
 
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c3";
@@ -1224,33 +1225,32 @@ TEST_F(NetworkTest, TestGetBestIPWithPreferGlobalIPv6ToLinkLocalEnabled) {
 
   // When there is no address added, it should return an unspecified
   // address.
-  EXPECT_EQ(ipv6_network.GetBestIP(), webrtc::IPAddress());
+  EXPECT_EQ(ipv6_network.GetBestIP(), IPAddress());
   EXPECT_TRUE(webrtc::IPIsUnspec(ipv6_network.GetBestIP()));
 
   // Deprecated one should not be returned.
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), webrtc::IPAddress());
+  EXPECT_EQ(ipv6_network.GetBestIP(), IPAddress());
 
   // Add ULA one. ULA is unique local address which is starting either
   // with 0xfc or 0xfd.
   ipstr = "fd00:fa00:4:1000:be30:5bff:fee5:c4";
   ASSERT_TRUE(webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add link local one.
   ipstr = "fe80::aabb:ccff:fedd:eeff";
   ASSERT_TRUE(
       webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &link_local));
   ipv6_network.AddIP(link_local);
-  EXPECT_EQ(ipv6_network.GetBestIP(),
-            static_cast<webrtc::IPAddress>(link_local));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(link_local));
 
   // Add global one.
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c5";
   ASSERT_TRUE(webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add another link local address, then the compatible address is still global
   // one.
@@ -1258,14 +1258,14 @@ TEST_F(NetworkTest, TestGetBestIPWithPreferGlobalIPv6ToLinkLocalEnabled) {
   ASSERT_TRUE(
       webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &link_local));
   ipv6_network.AddIP(link_local);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add global dynamic temporary one.
   ipstr = "2401:fa00:4:1000:be30:5bff:fee5:c6";
   ASSERT_TRUE(
       webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_TEMPORARY, &ip));
   ipv6_network.AddIP(ip);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 
   // Add another link local address, then the compatible address is still global
   // dynamic one.
@@ -1273,12 +1273,12 @@ TEST_F(NetworkTest, TestGetBestIPWithPreferGlobalIPv6ToLinkLocalEnabled) {
   ASSERT_TRUE(
       webrtc::IPFromString(ipstr, webrtc::IPV6_ADDRESS_FLAG_NONE, &link_local));
   ipv6_network.AddIP(link_local);
-  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<webrtc::IPAddress>(ip));
+  EXPECT_EQ(ipv6_network.GetBestIP(), static_cast<IPAddress>(ip));
 }
 
 TEST_F(NetworkTest, TestNetworkMonitoring) {
   FakeNetworkMonitorFactory factory;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server, &factory);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
                                         &NetworkTest::OnNetworksChanged);
@@ -1310,9 +1310,9 @@ TEST_F(NetworkTest, TestNetworkMonitoring) {
 #endif
 TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
   MAYBE_SKIP_IPV4;
-  webrtc::IPAddress ip;
+  IPAddress ip;
   FakeNetworkMonitorFactory factory;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   TestBasicNetworkManager manager(CreateEnvironment(), &socket_server,
                                   &factory);
   manager.SignalNetworksChanged.connect(static_cast<NetworkTest*>(this),
@@ -1327,14 +1327,12 @@ TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
   EXPECT_TRUE(!networks.empty());
   for (const Network* network : networks) {
     if (network->GetBestIP().family() == AF_INET) {
-      EXPECT_TRUE(QueryDefaultLocalAddress(manager, AF_INET) !=
-                  webrtc::IPAddress());
+      EXPECT_TRUE(QueryDefaultLocalAddress(manager, AF_INET) != IPAddress());
     } else if (network->GetBestIP().family() == AF_INET6 &&
                !webrtc::IPIsLoopback(network->GetBestIP())) {
       // Existence of an IPv6 loopback address doesn't mean it has IPv6 network
       // enabled.
-      EXPECT_TRUE(QueryDefaultLocalAddress(manager, AF_INET6) !=
-                  webrtc::IPAddress());
+      EXPECT_TRUE(QueryDefaultLocalAddress(manager, AF_INET6) != IPAddress());
     }
   }
 
@@ -1348,13 +1346,13 @@ TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
 
   // More tests on GetDefaultLocalAddress with ipv6 addresses where the set
   // default address may be different from the best IP address of any network.
-  webrtc::InterfaceAddress ip1;
+  InterfaceAddress ip1;
   EXPECT_TRUE(webrtc::IPFromString("abcd::1234:5678:abcd:1111",
                                    webrtc::IPV6_ADDRESS_FLAG_TEMPORARY, &ip1));
   // Create a network with a prefix of ip1.
   Network ipv6_network("test_eth0", "Test NetworkAdapter",
                        webrtc::TruncateIP(ip1, 64), 64);
-  webrtc::IPAddress ip2;
+  IPAddress ip2;
   EXPECT_TRUE(webrtc::IPFromString("abcd::1234:5678:abcd:2222", &ip2));
   ipv6_network.AddIP(ip1);
   ipv6_network.AddIP(ip2);
@@ -1364,7 +1362,7 @@ TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
   MergeNetworkList(manager, std::move(list), &changed);
   // If the set default address is not in any network, GetDefaultLocalAddress
   // should return it.
-  webrtc::IPAddress ip3;
+  IPAddress ip3;
   EXPECT_TRUE(webrtc::IPFromString("abcd::1234:5678:abcd:3333", &ip3));
   manager.set_default_local_addresses(webrtc::GetLoopbackIP(AF_INET), ip3);
   EXPECT_TRUE(manager.GetDefaultLocalAddress(AF_INET6, &ip));
@@ -1373,7 +1371,7 @@ TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
   // return the best IP in that network.
   manager.set_default_local_addresses(webrtc::GetLoopbackIP(AF_INET), ip2);
   EXPECT_TRUE(manager.GetDefaultLocalAddress(AF_INET6, &ip));
-  EXPECT_EQ(static_cast<webrtc::IPAddress>(ip1), ip);
+  EXPECT_EQ(static_cast<IPAddress>(ip1), ip);
 
   manager.StopUpdating();
 }
@@ -1381,10 +1379,10 @@ TEST_F(NetworkTest, MAYBE_DefaultLocalAddress) {
 // Test that MergeNetworkList does not set change = true
 // when changing from cellular_X to cellular_Y.
 TEST_F(NetworkTest, TestWhenNetworkListChangeReturnsChangedFlag) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
 
-  webrtc::IPAddress ip1;
+  IPAddress ip1;
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:1", &ip1));
   auto net1 =
       std::make_unique<Network>("em1", "em1", webrtc::TruncateIP(ip1, 64), 64);
@@ -1444,7 +1442,7 @@ TEST_F(NetworkTest, TestWhenNetworkListChangeReturnsChangedFlag) {
 TEST_F(NetworkTest, IgnoresMACBasedIPv6Address) {
   std::string ipv6_address = "2607:fc20:f340:1dc8:214:22ff:fe01:2345";
   std::string ipv6_mask = "FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF";
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
 
@@ -1459,11 +1457,10 @@ TEST_F(NetworkTest, IgnoresMACBasedIPv6Address) {
 }
 
 TEST_F(NetworkTest, WebRTC_AllowMACBasedIPv6Address) {
-  webrtc::test::ScopedFieldTrials field_trials(
-      "WebRTC-AllowMACBasedIPv6/Enabled/");
+  ScopedFieldTrials field_trials("WebRTC-AllowMACBasedIPv6/Enabled/");
   std::string ipv6_address = "2607:fc20:f340:1dc8:214:22ff:fe01:2345";
   std::string ipv6_mask = "FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF";
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.StartUpdating();
 
@@ -1490,7 +1487,7 @@ TEST_F(NetworkTest, WebRTC_BindUsingInterfaceName) {
 
   // Sanity check that both interfaces are included by default.
   FakeNetworkMonitorFactory factory;
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server, &factory);
   manager.StartUpdating();
   CallConvertIfAddrs(manager, list, /*include_ignored=*/false, &result);
@@ -1503,27 +1500,27 @@ TEST_F(NetworkTest, WebRTC_BindUsingInterfaceName) {
 
   FakeNetworkMonitor* network_monitor = GetNetworkMonitor(manager);
 
-  webrtc::IPAddress ipv6;
+  IPAddress ipv6;
   EXPECT_TRUE(webrtc::IPFromString("1000:2000:3000:4000:0:0:0:1", &ipv6));
-  webrtc::IPAddress ipv4;
+  IPAddress ipv4;
   EXPECT_TRUE(webrtc::IPFromString("192.168.0.2", &ipv4));
 
   // The network monitor only knwos about the ipv6 address, interface.
   network_monitor->set_adapters({"wlan0"});
   network_monitor->set_ip_addresses({ipv6});
   EXPECT_EQ(manager.BindSocketToNetwork(/* fd */ 77, ipv6),
-            webrtc::NetworkBindingResult::SUCCESS);
+            NetworkBindingResult::SUCCESS);
 
   // But it will bind anyway using string matching...
   EXPECT_EQ(manager.BindSocketToNetwork(/* fd */ 77, ipv4),
-            webrtc::NetworkBindingResult::SUCCESS);
+            NetworkBindingResult::SUCCESS);
 }
 #endif
 
 TEST_F(NetworkTest, NetworkCostVpn_Default) {
-  webrtc::IPAddress ip1;
+  IPAddress ip1;
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:1", &ip1));
-  webrtc::test::ScopedKeyValueConfig field_trials;
+  ScopedKeyValueConfig field_trials;
 
   Network* net1 = new Network("em1", "em1", webrtc::TruncateIP(ip1, 64), 64);
   net1->set_type(webrtc::ADAPTER_TYPE_VPN);
@@ -1538,10 +1535,9 @@ TEST_F(NetworkTest, NetworkCostVpn_Default) {
 }
 
 TEST_F(NetworkTest, NetworkCostVpn_VpnMoreExpensive) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
-      "WebRTC-AddNetworkCostToVpn/Enabled/");
+  ScopedKeyValueConfig field_trials("WebRTC-AddNetworkCostToVpn/Enabled/");
 
-  webrtc::IPAddress ip1;
+  IPAddress ip1;
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:1", &ip1));
 
   Network* net1 = new Network("em1", "em1", webrtc::TruncateIP(ip1, 64), 64);
@@ -1557,11 +1553,11 @@ TEST_F(NetworkTest, NetworkCostVpn_VpnMoreExpensive) {
 }
 
 TEST_F(NetworkTest, GuessAdapterFromNetworkCost) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  ScopedKeyValueConfig field_trials(
       "WebRTC-AddNetworkCostToVpn/Enabled/"
       "WebRTC-UseDifferentiatedCellularCosts/Enabled/");
 
-  webrtc::IPAddress ip1;
+  IPAddress ip1;
   EXPECT_TRUE(webrtc::IPFromString("2400:4030:1:2c00:be30:0:0:1", &ip1));
 
   for (auto type : webrtc::kAllAdapterTypes) {
@@ -1599,7 +1595,7 @@ TEST_F(NetworkTest, GuessAdapterFromNetworkCost) {
 
 TEST_F(NetworkTest, VpnList) {
   const Environment env = CreateEnvironment();
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   {
     BasicNetworkManager manager(env, &socket_server);
     manager.set_vpn_list({NetworkMask(IPFromString("192.168.0.0"), 16)});
@@ -1624,7 +1620,7 @@ TEST_F(NetworkTest, VpnList) {
 #if defined(WEBRTC_POSIX)
 // TODO(webrtc:13114): Implement the InstallIpv4Network for windows.
 TEST_F(NetworkTest, VpnListOverrideAdapterType) {
-  webrtc::PhysicalSocketServer socket_server;
+  PhysicalSocketServer socket_server;
   BasicNetworkManager manager(CreateEnvironment(), &socket_server);
   manager.set_vpn_list({NetworkMask(IPFromString("192.168.0.0"), 16)});
   manager.StartUpdating();
@@ -1659,56 +1655,45 @@ TEST_F(NetworkTest, HardcodedVpn) {
 
 TEST(CompareNetworks, IrreflexivityTest) {
   // x < x is false
-  auto network =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
+  auto network = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network, network));
 }
 
 TEST(CompareNetworks, AsymmetryTest) {
   // x < y and y < x cannot be both true
-  auto network_a =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_b =
-      std::make_unique<Network>("test_eth1", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
+  auto network_a = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_b = std::make_unique<Network>(
+      "test_eth1", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_a, network_b));
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network_b, network_a));
 
-  auto network_c =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345500U), 24);
-  auto network_d =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
+  auto network_c = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345500U), 24);
+  auto network_d = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_c, network_d));
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network_d, network_c));
 }
 
 TEST(CompareNetworks, TransitivityTest) {
   // x < y and y < z imply x < z
-  auto network_a =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_b =
-      std::make_unique<Network>("test_eth1", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_c =
-      std::make_unique<Network>("test_eth2", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
+  auto network_a = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_b = std::make_unique<Network>(
+      "test_eth1", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_c = std::make_unique<Network>(
+      "test_eth2", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_a, network_b));
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_b, network_c));
 
-  auto network_d =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_e =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345700U), 24);
-  auto network_f =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345800U), 24);
+  auto network_d = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_e = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345700U), 24);
+  auto network_f = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345800U), 24);
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_d, network_e));
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_e, network_f));
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_d, network_f));
@@ -1718,15 +1703,12 @@ TEST(CompareNetworks, TransitivityTest) {
 TEST(CompareNetworks, TransitivityOfIncomparabilityTest) {
   // x == y and y == z imply x == z,
   // where x == y means x < y and y < x are both false
-  auto network_a =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 23);
-  auto network_b =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_c =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345700U), 24);
+  auto network_a = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 23);
+  auto network_b = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_c = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345700U), 24);
 
   // network_a < network_b
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_a, network_b));
@@ -1740,15 +1722,12 @@ TEST(CompareNetworks, TransitivityOfIncomparabilityTest) {
   EXPECT_TRUE(webrtc_network_internal::CompareNetworks(network_a, network_c));
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network_c, network_a));
 
-  auto network_d =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_e =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
-  auto network_f =
-      std::make_unique<Network>("test_eth0", "Test Network Adapter 1",
-                                webrtc::IPAddress(0x12345600U), 24);
+  auto network_d = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_e = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
+  auto network_f = std::make_unique<Network>(
+      "test_eth0", "Test Network Adapter 1", IPAddress(0x12345600U), 24);
 
   // network_d == network_e
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network_d, network_e));
@@ -1763,4 +1742,4 @@ TEST(CompareNetworks, TransitivityOfIncomparabilityTest) {
   EXPECT_FALSE(webrtc_network_internal::CompareNetworks(network_f, network_d));
 }
 
-}  // namespace rtc
+}  // namespace webrtc

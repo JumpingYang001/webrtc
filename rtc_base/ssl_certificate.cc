@@ -18,15 +18,17 @@
 #include "absl/strings/string_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/openssl.h"
+// IWYU pragma: begin_keep
 #ifdef OPENSSL_IS_BORINGSSL
 #include "rtc_base/boringssl_identity.h"
 #else
 #include "rtc_base/openssl_identity.h"
 #endif
+// IWYU pragma: end_keep
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/third_party/base64/base64.h"
 
-namespace rtc {
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // SSLCertificateStats
@@ -75,8 +77,7 @@ std::unique_ptr<SSLCertificateStats> SSLCertificate::GetStats() const {
   Buffer der_buffer;
   ToDER(&der_buffer);
   std::string der_base64;
-  webrtc::Base64::EncodeFromArray(der_buffer.data(), der_buffer.size(),
-                                  &der_base64);
+  Base64::EncodeFromArray(der_buffer.data(), der_buffer.size(), &der_base64);
 
   return std::make_unique<SSLCertificateStats>(std::move(fingerprint),
                                                std::move(digest_algorithm),
@@ -133,8 +134,8 @@ std::unique_ptr<SSLCertificate> SSLCertificate::FromPEMString(
 #ifdef OPENSSL_IS_BORINGSSL
   return BoringSSLCertificate::FromPEMString(pem_string);
 #else
-  return OpenSSLCertificate::FromPEMString(pem_string);
+  return rtc::OpenSSLCertificate::FromPEMString(pem_string);
 #endif
 }
 
-}  // namespace rtc
+}  // namespace webrtc

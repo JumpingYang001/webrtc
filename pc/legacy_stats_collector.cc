@@ -748,12 +748,12 @@ bool LegacyStatsCollector::IsValidTrack(const std::string& track_id) {
 }
 
 StatsReport* LegacyStatsCollector::AddCertificateReports(
-    std::unique_ptr<rtc::SSLCertificateStats> cert_stats) {
+    std::unique_ptr<SSLCertificateStats> cert_stats) {
   RTC_DCHECK_RUN_ON(pc_->signaling_thread());
 
   StatsReport* first_report = nullptr;
   StatsReport* prev_report = nullptr;
-  for (rtc::SSLCertificateStats* stats = cert_stats.get(); stats;
+  for (SSLCertificateStats* stats = cert_stats.get(); stats;
        stats = stats->issuer.get()) {
     StatsReport::Id id(StatsReport::NewTypedId(
         StatsReport::kStatsReportTypeCertificate, stats->fingerprint));
@@ -954,7 +954,7 @@ LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
           certificate->GetSSLCertificateChain().GetStats();
     }
 
-    std::unique_ptr<rtc::SSLCertChain> remote_cert_chain =
+    std::unique_ptr<SSLCertChain> remote_cert_chain =
         pc_->GetRemoteSSLCertChain(transport.name);
     if (remote_cert_chain) {
       transport.remote_cert_stats = remote_cert_chain->GetStats();

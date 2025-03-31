@@ -16,7 +16,7 @@ namespace webrtc {
 class FieldTrialsView;
 }  // namespace webrtc
 
-namespace rtc {
+namespace webrtc {
 
 // Forward declaring this so it's not part of the API surface; it's only
 // expected to be used by Android/iOS SDK code.
@@ -28,8 +28,8 @@ namespace rtc {
  */
 class NetworkMonitorFactory {
  public:
-  virtual webrtc::NetworkMonitorInterface* CreateNetworkMonitor(
-      const webrtc::FieldTrialsView& field_trials) = 0;
+  virtual NetworkMonitorInterface* CreateNetworkMonitor(
+      const FieldTrialsView& field_trials) = 0;
 
   virtual ~NetworkMonitorFactory();
 
@@ -37,6 +37,12 @@ class NetworkMonitorFactory {
   NetworkMonitorFactory();
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::NetworkMonitorFactory;
 }  // namespace rtc
 
 #endif  // RTC_BASE_NETWORK_MONITOR_FACTORY_H_

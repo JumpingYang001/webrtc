@@ -10,28 +10,29 @@
 
 #include "rtc_base/test_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "absl/memory/memory.h"
 #include "rtc_base/async_tcp_socket.h"
 #include "rtc_base/async_udp_socket.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/net_helpers.h"
 #include "rtc_base/net_test_helpers.h"
 #include "rtc_base/physical_socket_server.h"
 #include "rtc_base/socket.h"
+#include "rtc_base/socket_address.h"
 #include "rtc_base/test_echo_server.h"
 #include "rtc_base/thread.h"
 #include "test/gtest.h"
 
 #define MAYBE_SKIP_IPV4                        \
-  if (!::rtc::HasIPv4Enabled()) {              \
+  if (!::webrtc::HasIPv4Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv4... skipping"; \
     return;                                    \
   }
 
 #define MAYBE_SKIP_IPV6                        \
-  if (!::rtc::HasIPv6Enabled()) {              \
+  if (!::webrtc::HasIPv6Enabled()) {           \
     RTC_LOG(LS_INFO) << "No IPv6... skipping"; \
     return;                                    \
   }

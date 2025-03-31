@@ -13,13 +13,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+#include <cstring>
+#include <iterator>
 #include <optional>
 #include <utility>
 
+#include "absl/container/inlined_vector.h"
+#include "api/array_view.h"
+#include "api/scoped_refptr.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "modules/rtp_rtcp/source/leb128.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
 
@@ -189,7 +200,7 @@ VectorObuInfo ParseObus(
   VectorObuInfo obu_infos;
   bool expect_continues_obu = false;
   for (rtc::ArrayView<const uint8_t> rtp_payload : rtp_payloads) {
-    rtc::ByteBufferReader payload(rtp_payload);
+    ByteBufferReader payload(rtp_payload);
     uint8_t aggregation_header;
     if (!payload.ReadUInt8(&aggregation_header)) {
       RTC_DLOG(LS_WARNING)

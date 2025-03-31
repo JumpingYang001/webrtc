@@ -30,7 +30,7 @@ DtlsTransportInformation::DtlsTransportInformation(
     std::optional<int> tls_version,
     std::optional<int> ssl_cipher_suite,
     std::optional<int> srtp_cipher_suite,
-    std::unique_ptr<rtc::SSLCertChain> remote_ssl_certificates)
+    std::unique_ptr<SSLCertChain> remote_ssl_certificates)
     : state_(state),
       role_(role),
       tls_version_(tls_version),
@@ -44,7 +44,7 @@ DtlsTransportInformation::DtlsTransportInformation(
     std::optional<int> tls_version,
     std::optional<int> ssl_cipher_suite,
     std::optional<int> srtp_cipher_suite,
-    std::unique_ptr<rtc::SSLCertChain> remote_ssl_certificates)
+    std::unique_ptr<SSLCertChain> remote_ssl_certificates)
     : state_(state),
       role_(std::nullopt),
       tls_version_(tls_version),

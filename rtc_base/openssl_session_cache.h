@@ -24,7 +24,7 @@
 typedef struct ssl_session_st SSL_SESSION;
 #endif
 
-namespace rtc {
+namespace webrtc {
 
 // The OpenSSLSessionCache maps hostnames to SSL_SESSIONS. This cache is
 // owned by the OpenSSLAdapterFactory and is passed down to each OpenSSLAdapter
@@ -34,7 +34,7 @@ class OpenSSLSessionCache final {
   // Creates a new OpenSSLSessionCache using the provided the SSL_CTX and
   // the ssl_mode. The SSL_CTX will be up_refed. ssl_ctx cannot be nullptr,
   // the constructor immediately dchecks this.
-  OpenSSLSessionCache(webrtc::SSLMode ssl_mode, SSL_CTX* ssl_ctx);
+  OpenSSLSessionCache(SSLMode ssl_mode, SSL_CTX* ssl_ctx);
   // Frees the cached SSL_SESSIONS and then frees the SSL_CTX.
   ~OpenSSLSessionCache();
 
@@ -50,12 +50,12 @@ class OpenSSLSessionCache final {
   SSL_CTX* GetSSLContext() const;
   // The SSL Mode tht the OpenSSLSessionCache was constructed with. This cannot
   // be changed after launch.
-  webrtc::SSLMode GetSSLMode() const;
+  SSLMode GetSSLMode() const;
 
  private:
   // Holds the SSL Mode that the OpenSSLCache was initialized with. This is
   // immutable after creation and cannot change.
-  const webrtc::SSLMode ssl_mode_;
+  const SSLMode ssl_mode_;
   /// SSL Context for all shared cached sessions. This SSL_CTX is initialized
   //  with SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_CLIENT); Meaning
   //  all client sessions will be added to the cache internal to the context.
@@ -63,10 +63,16 @@ class OpenSSLSessionCache final {
   // Map of hostnames to SSL_SESSIONs; holds references to the SSL_SESSIONs,
   // which are cleaned up when the factory is destroyed.
   // TODO(juberti): Add LRU eviction to keep the cache from growing forever.
-  std::map<std::string, SSL_SESSION*, rtc::AbslStringViewCmp> sessions_;
+  std::map<std::string, SSL_SESSION*, AbslStringViewCmp> sessions_;
   // The cache should never be copied or assigned directly.
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::OpenSSLSessionCache;
 }  // namespace rtc
 
 #endif  // RTC_BASE_OPENSSL_SESSION_CACHE_H_

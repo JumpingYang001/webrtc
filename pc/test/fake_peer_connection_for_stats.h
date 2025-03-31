@@ -429,7 +429,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
   }
 
   void SetRemoteCertChain(const std::string& transport_name,
-                          std::unique_ptr<rtc::SSLCertChain> chain) {
+                          std::unique_ptr<SSLCertChain> chain) {
     remote_cert_chains_by_transport_[transport_name] = std::move(chain);
   }
 
@@ -520,7 +520,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     }
   }
 
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain(
+  std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& transport_name) override {
     auto it = remote_cert_chains_by_transport_.find(transport_name);
     if (it != remote_cert_chains_by_transport_.end()) {
@@ -594,7 +594,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   std::map<std::string, rtc::scoped_refptr<RTCCertificate>>
       local_certificates_by_transport_;
-  std::map<std::string, std::unique_ptr<rtc::SSLCertChain>>
+  std::map<std::string, std::unique_ptr<SSLCertChain>>
       remote_cert_chains_by_transport_;
   PayloadTypePicker payload_type_picker_;
   FakeCodecLookupHelper codec_lookup_helper_;

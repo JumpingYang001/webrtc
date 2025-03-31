@@ -15,7 +15,6 @@
 #include <memory>
 #include <numeric>
 #include <optional>
-#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -27,6 +26,7 @@
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/fec_controller_override.h"
+#include "api/field_trials_view.h"
 #include "api/make_ref_counted.h"
 #include "api/rtp_headers.h"
 #include "api/rtp_parameters.h"
@@ -41,6 +41,7 @@
 #include "api/transport/bitrate_settings.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/builtin_video_bitrate_allocator_factory.h"
 #include "api/video/encoded_image.h"
 #include "api/video/video_bitrate_allocation.h"
@@ -1717,10 +1718,10 @@ TEST_F(VideoSendStreamTest, ChangingNetworkRoute) {
     }
 
     void PerformTest() override {
-      rtc::NetworkRoute new_route;
+      NetworkRoute new_route;
       new_route.connected = true;
-      new_route.local = rtc::RouteEndpoint::CreateWithNetworkId(10);
-      new_route.remote = rtc::RouteEndpoint::CreateWithNetworkId(20);
+      new_route.local = RouteEndpoint::CreateWithNetworkId(10);
+      new_route.remote = RouteEndpoint::CreateWithNetworkId(20);
       BitrateConstraints bitrate_config;
 
       SendTask(task_queue_, [this, &new_route, &bitrate_config]() {
@@ -1744,7 +1745,7 @@ TEST_F(VideoSendStreamTest, ChangingNetworkRoute) {
         // TODO(holmer): We should set the last sent packet id here and
         // verify that we correctly ignore any packet loss reported prior to
         // that id.
-        new_route.local = rtc::RouteEndpoint::CreateWithNetworkId(
+        new_route.local = RouteEndpoint::CreateWithNetworkId(
             new_route.local.network_id() + 1);
         call_->GetTransportControllerSend()->OnNetworkRouteChanged("transport",
                                                                    new_route);
@@ -1820,10 +1821,10 @@ TEST_F(VideoSendStreamTest, DISABLED_RelayToDirectRoute) {
     }
 
     void PerformTest() override {
-      rtc::NetworkRoute route;
+      NetworkRoute route;
       route.connected = true;
-      route.local = rtc::RouteEndpoint::CreateWithNetworkId(10);
-      route.remote = rtc::RouteEndpoint::CreateWithNetworkId(20);
+      route.local = RouteEndpoint::CreateWithNetworkId(10);
+      route.remote = RouteEndpoint::CreateWithNetworkId(20);
 
       SendTask(task_queue_, [this, &route]() {
         RTC_DCHECK_RUN_ON(&task_queue_thread_);

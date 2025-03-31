@@ -88,7 +88,8 @@ class DtlsStunPiggybackController {
 
   std::set<uint16_t> handshake_messages_received_
       RTC_GUARDED_BY(sequence_checker_);
-  rtc::ByteBufferWriter handshake_ack_writer_ RTC_GUARDED_BY(sequence_checker_);
+  webrtc::ByteBufferWriter handshake_ack_writer_
+      RTC_GUARDED_BY(sequence_checker_);
 
   // Count of data attributes received.
   int data_recv_count_ = 0;

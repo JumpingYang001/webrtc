@@ -177,7 +177,9 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
     return transport_overhead_per_packet_;
   }
 
-  rtc::NetworkRoute last_network_route() const { return last_network_route_; }
+  webrtc::NetworkRoute last_network_route() const {
+    return last_network_route_;
+  }
   int num_network_route_changes() const { return num_network_route_changes_; }
   void set_num_network_route_changes(int changes) {
     num_network_route_changes_ = changes;
@@ -229,7 +231,7 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
   bool fail_set_recv_codecs_;
   std::string rtcp_cname_;
   int transport_overhead_per_packet_;
-  rtc::NetworkRoute last_network_route_;
+  webrtc::NetworkRoute last_network_route_;
   int num_network_route_changes_;
   MediaChannelNetworkInterface* network_interface_ = nullptr;
 };
@@ -390,7 +392,9 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
     return transport_overhead_per_packet_;
   }
 
-  rtc::NetworkRoute last_network_route() const { return last_network_route_; }
+  webrtc::NetworkRoute last_network_route() const {
+    return last_network_route_;
+  }
   int num_network_route_changes() const { return num_network_route_changes_; }
   void set_num_network_route_changes(int changes) {
     num_network_route_changes_ = changes;
@@ -444,8 +448,9 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
   }
   void OnPacketSent(const rtc::SentPacket& /* sent_packet */) override {}
   void OnReadyToSend(bool ready) override { ready_to_send_ = ready; }
-  void OnNetworkRouteChanged(absl::string_view /* transport_name */,
-                             const rtc::NetworkRoute& network_route) override {
+  void OnNetworkRouteChanged(
+      absl::string_view /* transport_name */,
+      const webrtc::NetworkRoute& network_route) override {
     last_network_route_ = network_route;
     ++num_network_route_changes_;
     transport_overhead_per_packet_ = network_route.packet_overhead;
@@ -469,7 +474,7 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
   std::string rtcp_cname_;
   bool ready_to_send_;
   int transport_overhead_per_packet_;
-  rtc::NetworkRoute last_network_route_;
+  webrtc::NetworkRoute last_network_route_;
   int num_network_route_changes_;
   MediaChannelNetworkInterface* network_interface_ = nullptr;
   absl::AnyInvocable<void(const std::set<uint32_t>&)>

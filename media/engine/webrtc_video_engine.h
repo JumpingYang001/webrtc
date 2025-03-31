@@ -212,8 +212,9 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
 
   void OnPacketSent(const rtc::SentPacket& sent_packet) override;
   void OnReadyToSend(bool ready) override;
-  void OnNetworkRouteChanged(absl::string_view transport_name,
-                             const rtc::NetworkRoute& network_route) override;
+  void OnNetworkRouteChanged(
+      absl::string_view transport_name,
+      const webrtc::NetworkRoute& network_route) override;
 
   // Set a frame encryptor to a particular ssrc that will intercept all
   // outgoing video frames and attempt to encrypt them and forward the result

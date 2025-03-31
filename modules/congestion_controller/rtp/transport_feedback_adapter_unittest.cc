@@ -405,14 +405,14 @@ TEST_P(TransportFeedbackAdapterTest, IgnoreDuplicatePacketSentCalls) {
                     TimeNow());
   std::optional<SentPacket> sent_packet = adapter.ProcessSentPacket(
       rtc::SentPacket(packet.transport_sequence_number,
-                      packet.send_timestamp.ms(), rtc::PacketInfo()));
+                      packet.send_timestamp.ms(), PacketInfo()));
   EXPECT_TRUE(sent_packet.has_value());
 
   // Call ProcessSentPacket() again with the same sequence number. This packet
   // has already been marked as sent and the call should be ignored.
   std::optional<SentPacket> duplicate_packet = adapter.ProcessSentPacket(
       rtc::SentPacket(packet.transport_sequence_number,
-                      packet.send_timestamp.ms(), rtc::PacketInfo()));
+                      packet.send_timestamp.ms(), PacketInfo()));
   EXPECT_FALSE(duplicate_packet.has_value());
 }
 

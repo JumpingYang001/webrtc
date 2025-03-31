@@ -99,7 +99,7 @@ struct TransportDescription {
                        absl::string_view ice_pwd,
                        IceMode ice_mode,
                        ConnectionRole role,
-                       const rtc::SSLFingerprint* identity_fingerprint);
+                       const webrtc::SSLFingerprint* identity_fingerprint);
   TransportDescription(absl::string_view ice_ufrag, absl::string_view ice_pwd);
   TransportDescription(const TransportDescription& from);
   ~TransportDescription();
@@ -120,11 +120,12 @@ struct TransportDescription {
                          HasOption(ICE_OPTION_RENOMINATION));
   }
 
-  static rtc::SSLFingerprint* CopyFingerprint(const rtc::SSLFingerprint* from) {
+  static webrtc::SSLFingerprint* CopyFingerprint(
+      const webrtc::SSLFingerprint* from) {
     if (!from)
       return NULL;
 
-    return new rtc::SSLFingerprint(*from);
+    return new webrtc::SSLFingerprint(*from);
   }
 
   // These are actually ICE options (appearing in the ice-options attribute in
@@ -136,7 +137,7 @@ struct TransportDescription {
   IceMode ice_mode;
   ConnectionRole connection_role;
 
-  std::unique_ptr<rtc::SSLFingerprint> identity_fingerprint;
+  std::unique_ptr<webrtc::SSLFingerprint> identity_fingerprint;
 };
 
 }  // namespace cricket

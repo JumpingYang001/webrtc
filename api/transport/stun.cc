@@ -36,8 +36,8 @@
 #include "rtc_base/socket_address.h"
 #include "system_wrappers/include/metrics.h"
 
-using rtc::ByteBufferReader;
-using rtc::ByteBufferWriter;
+using ::webrtc::ByteBufferReader;
+using ::webrtc::ByteBufferWriter;
 
 namespace cricket {
 
@@ -439,9 +439,9 @@ bool StunMessage::ValidateMessageIntegrityOfType(int mi_attr_type,
   }
 
   char hmac[kStunMessageIntegritySize];
-  size_t ret =
-      rtc::ComputeHmac(rtc::DIGEST_SHA_1, password.c_str(), password.size(),
-                       temp_data.get(), mi_pos, hmac, sizeof(hmac));
+  size_t ret = webrtc::ComputeHmac(webrtc::DIGEST_SHA_1, password.c_str(),
+                                   password.size(), temp_data.get(), mi_pos,
+                                   hmac, sizeof(hmac));
   RTC_DCHECK(ret == sizeof(hmac));
   if (ret != sizeof(hmac)) {
     return false;
@@ -482,8 +482,8 @@ bool StunMessage::AddMessageIntegrityOfType(int attr_type,
       buf.Length() - kStunAttributeHeaderSize - msg_integrity_attr->length());
   char hmac[kStunMessageIntegritySize];
   size_t ret =
-      rtc::ComputeHmac(rtc::DIGEST_SHA_1, key.data(), key.size(), buf.Data(),
-                       msg_len_for_hmac, hmac, sizeof(hmac));
+      webrtc::ComputeHmac(webrtc::DIGEST_SHA_1, key.data(), key.size(),
+                          buf.Data(), msg_len_for_hmac, hmac, sizeof(hmac));
   RTC_DCHECK(ret == sizeof(hmac));
   if (ret != sizeof(hmac)) {
     RTC_LOG(LS_ERROR) << "HMAC computation failed. Message-Integrity "
@@ -757,8 +757,8 @@ bool StunMessage::EqualAttributes(
     const StunMessage* other,
     std::function<bool(int type)> attribute_type_mask) const {
   RTC_DCHECK(other != nullptr);
-  rtc::ByteBufferWriter tmp_buffer_ptr1;
-  rtc::ByteBufferWriter tmp_buffer_ptr2;
+  webrtc::ByteBufferWriter tmp_buffer_ptr1;
+  webrtc::ByteBufferWriter tmp_buffer_ptr2;
   for (const auto& attr : attrs_) {
     if (attribute_type_mask(attr->type())) {
       const StunAttribute* other_attr = other->GetAttribute(attr->type());
@@ -1388,9 +1388,9 @@ bool ComputeStunCredentialHash(const std::string& username,
   input += ':';
   input += password;
 
-  char digest[rtc::MessageDigest::kMaxSize];
-  size_t size = rtc::ComputeDigest(rtc::DIGEST_MD5, input.c_str(), input.size(),
-                                   digest, sizeof(digest));
+  char digest[webrtc::MessageDigest::kMaxSize];
+  size_t size = webrtc::ComputeDigest(webrtc::DIGEST_MD5, input.c_str(),
+                                      input.size(), digest, sizeof(digest));
   if (size == 0) {
     return false;
   }
@@ -1401,7 +1401,7 @@ bool ComputeStunCredentialHash(const std::string& username,
 
 std::unique_ptr<StunAttribute> CopyStunAttribute(
     const StunAttribute& attribute,
-    rtc::ByteBufferWriter* tmp_buffer_ptr) {
+    webrtc::ByteBufferWriter* tmp_buffer_ptr) {
   ByteBufferWriter tmpBuffer;
   if (tmp_buffer_ptr == nullptr) {
     tmp_buffer_ptr = &tmpBuffer;
@@ -1418,7 +1418,7 @@ std::unique_ptr<StunAttribute> CopyStunAttribute(
   if (!attribute.Write(tmp_buffer_ptr)) {
     return nullptr;
   }
-  rtc::ByteBufferReader reader(*tmp_buffer_ptr);
+  webrtc::ByteBufferReader reader(*tmp_buffer_ptr);
   if (!copy->Read(&reader)) {
     return nullptr;
   }
@@ -1481,11 +1481,11 @@ std::unique_ptr<StunMessage> StunMessage::Clone() const {
   if (!copy) {
     return nullptr;
   }
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   if (!Write(&buf)) {
     return nullptr;
   }
-  rtc::ByteBufferReader reader(buf);
+  webrtc::ByteBufferReader reader(buf);
   if (!copy->Read(&reader)) {
     return nullptr;
   }

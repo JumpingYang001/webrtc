@@ -11,6 +11,8 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_AUDIO_CHECKSUM_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_AUDIO_CHECKSUM_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -26,7 +28,7 @@ namespace test {
 class AudioChecksum : public AudioSink {
  public:
   AudioChecksum()
-      : checksum_(rtc::MessageDigestFactory::Create(rtc::DIGEST_MD5)),
+      : checksum_(MessageDigestFactory::Create(DIGEST_MD5)),
         checksum_result_(checksum_->Size()),
         finished_(false) {}
 
@@ -54,7 +56,7 @@ class AudioChecksum : public AudioSink {
   }
 
  private:
-  std::unique_ptr<rtc::MessageDigest> checksum_;
+  std::unique_ptr<MessageDigest> checksum_;
   rtc::Buffer checksum_result_;
   bool finished_;
 };

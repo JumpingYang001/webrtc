@@ -11,15 +11,20 @@
 #ifndef PC_RTP_TRANSPORT_INTERNAL_H_
 #define PC_RTP_TRANSPORT_INTERNAL_H_
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "absl/functional/any_invocable.h"
 #include "call/rtp_demuxer.h"
-#include "p2p/base/ice_transport_internal.h"
 #include "pc/session_description.h"
 #include "rtc_base/callback_list.h"
+#include "rtc_base/copy_on_write_buffer.h"
+#include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
-#include "rtc_base/ssl_stream_adapter.h"
+#include "rtc_base/socket.h"
+#include "rtc_base/third_party/sigslot/sigslot.h"
 
 namespace rtc {
 struct PacketOptions;
@@ -81,7 +86,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   // The argument is an optional network route.
   void SubscribeNetworkRouteChanged(
       const void* tag,
-      absl::AnyInvocable<void(std::optional<rtc::NetworkRoute>)> callback) {
+      absl::AnyInvocable<void(std::optional<webrtc::NetworkRoute>)> callback) {
     callback_list_network_route_changed_.AddReceiver(tag, std::move(callback));
   }
   void UnsubscribeNetworkRouteChanged(const void* tag) {
@@ -147,7 +152,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   void NotifyUnDemuxableRtpPacketReceived(RtpPacketReceived& packet) {
     callback_undemuxable_rtp_packet_received_(packet);
   }
-  void SendNetworkRouteChanged(std::optional<rtc::NetworkRoute> route) {
+  void SendNetworkRouteChanged(std::optional<NetworkRoute> route) {
     callback_list_network_route_changed_.Send(route);
   }
   void SendWritableState(bool state) {
@@ -164,7 +169,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   absl::AnyInvocable<void(RtpPacketReceived&)>
       callback_undemuxable_rtp_packet_received_ =
           [](RtpPacketReceived& packet) {};
-  CallbackList<std::optional<rtc::NetworkRoute>>
+  CallbackList<std::optional<NetworkRoute>>
       callback_list_network_route_changed_;
   CallbackList<bool> callback_list_writable_state_;
   CallbackList<const rtc::SentPacket&> callback_list_sent_packet_;

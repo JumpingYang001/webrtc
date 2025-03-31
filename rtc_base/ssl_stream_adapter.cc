@@ -19,6 +19,7 @@
 #include "absl/functional/any_invocable.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/field_trials_view.h"
 #include "rtc_base/openssl_stream_adapter.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/stream.h"
@@ -84,19 +85,19 @@ std::unique_ptr<SSLStreamAdapter> SSLStreamAdapter::Create(
     std::unique_ptr<StreamInterface> stream,
     absl::AnyInvocable<void(webrtc::SSLHandshakeError)> handshake_error,
     const FieldTrialsView* field_trials) {
-  return std::make_unique<rtc::OpenSSLStreamAdapter>(
+  return std::make_unique<OpenSSLStreamAdapter>(
       std::move(stream), std::move(handshake_error), field_trials);
 }
 
 bool SSLStreamAdapter::IsBoringSsl() {
-  return rtc::OpenSSLStreamAdapter::IsBoringSsl();
+  return OpenSSLStreamAdapter::IsBoringSsl();
 }
 bool SSLStreamAdapter::IsAcceptableCipher(int cipher, rtc::KeyType key_type) {
-  return rtc::OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
+  return OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
 }
 bool SSLStreamAdapter::IsAcceptableCipher(absl::string_view cipher,
                                           rtc::KeyType key_type) {
-  return rtc::OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
+  return OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
 }
 
 // Default shim for backward compat.
@@ -118,11 +119,11 @@ bool SSLStreamAdapter::SetPeerCertificateDigest(
 ///////////////////////////////////////////////////////////////////////////////
 
 void SSLStreamAdapter::EnableTimeCallbackForTesting() {
-  rtc::OpenSSLStreamAdapter::EnableTimeCallbackForTesting();
+  OpenSSLStreamAdapter::EnableTimeCallbackForTesting();
 }
 
 SSLProtocolVersion SSLStreamAdapter::GetMaxSupportedDTLSProtocolVersion() {
-  return rtc::OpenSSLStreamAdapter::GetMaxSupportedDTLSProtocolVersion();
+  return OpenSSLStreamAdapter::GetMaxSupportedDTLSProtocolVersion();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

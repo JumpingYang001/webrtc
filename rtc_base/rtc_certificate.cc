@@ -10,8 +10,11 @@
 
 #include "rtc_base/rtc_certificate.h"
 
+#include <cstdint>
 #include <memory>
+#include <utility>
 
+#include "api/scoped_refptr.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
@@ -44,11 +47,11 @@ bool RTCCertificate::HasExpired(uint64_t now) const {
   return Expires() <= now;
 }
 
-const rtc::SSLCertificate& RTCCertificate::GetSSLCertificate() const {
+const SSLCertificate& RTCCertificate::GetSSLCertificate() const {
   return identity_->certificate();
 }
 
-const rtc::SSLCertChain& RTCCertificate::GetSSLCertificateChain() const {
+const SSLCertChain& RTCCertificate::GetSSLCertificateChain() const {
   return identity_->cert_chain();
 }
 

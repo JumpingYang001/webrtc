@@ -132,7 +132,7 @@ AsyncPacketSocket* BasicPacketSocketFactory::CreateClientTcpSocket(
   if ((tlsOpts & PacketSocketFactory::OPT_TLS) ||
       (tlsOpts & PacketSocketFactory::OPT_TLS_INSECURE)) {
     // Using TLS, wrap the socket in an SSL adapter.
-    rtc::SSLAdapter* ssl_adapter = rtc::SSLAdapter::Create(socket);
+    SSLAdapter* ssl_adapter = SSLAdapter::Create(socket);
     if (!ssl_adapter) {
       return NULL;
     }

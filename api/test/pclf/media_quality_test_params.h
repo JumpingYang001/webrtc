@@ -40,6 +40,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/network.h"
 #include "rtc_base/rtc_certificate_generator.h"
+#include "rtc_base/socket_factory.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/thread.h"
 
@@ -56,7 +57,7 @@ namespace webrtc_pc_e2e {
 // can override only some parts of media engine like video encoder/decoder
 // factories.
 struct PeerConnectionFactoryComponents {
-  std::unique_ptr<rtc::NetworkManager> network_manager;
+  std::unique_ptr<NetworkManager> network_manager;
   SocketFactory* socket_factory = nullptr;
   std::unique_ptr<RtcEventLogFactoryInterface> event_log_factory;
   std::unique_ptr<FecControllerFactoryInterface> fec_controller_factory;
@@ -86,7 +87,7 @@ struct PeerConnectionComponents {
   std::unique_ptr<webrtc::AsyncDnsResolverFactoryInterface>
       async_dns_resolver_factory;
   std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator;
-  std::unique_ptr<rtc::SSLCertificateVerifier> tls_cert_verifier;
+  std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier;
   std::unique_ptr<IceTransportFactory> ice_transport_factory;
 };
 
@@ -94,7 +95,7 @@ struct PeerConnectionComponents {
 // has a network thread, that will be used to communicate with another peers.
 struct InjectableComponents {
   InjectableComponents(Thread* network_thread,
-                       std::unique_ptr<rtc::NetworkManager> network_manager,
+                       std::unique_ptr<NetworkManager> network_manager,
                        SocketFactory* socket_factory)
       : network_thread(network_thread),
         worker_thread(nullptr),

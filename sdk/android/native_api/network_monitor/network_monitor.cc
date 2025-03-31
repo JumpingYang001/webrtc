@@ -17,15 +17,14 @@
 
 namespace webrtc {
 
-std::unique_ptr<rtc::NetworkMonitorFactory> CreateAndroidNetworkMonitorFactory(
+std::unique_ptr<NetworkMonitorFactory> CreateAndroidNetworkMonitorFactory(
     JNIEnv* env,
     jobject application_context) {
   return std::make_unique<jni::AndroidNetworkMonitorFactory>(
       env, jni_zero::JavaParamRef<jobject>(env, application_context));
 }
 
-std::unique_ptr<rtc::NetworkMonitorFactory>
-CreateAndroidNetworkMonitorFactory() {
+std::unique_ptr<NetworkMonitorFactory> CreateAndroidNetworkMonitorFactory() {
   return std::make_unique<jni::AndroidNetworkMonitorFactory>();
 }
 

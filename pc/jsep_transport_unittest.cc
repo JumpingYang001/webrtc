@@ -169,9 +169,9 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
     JsepTransportDescription jsep_description;
     jsep_description.rtcp_mux_enabled = rtcp_mux_enabled;
 
-    std::unique_ptr<rtc::SSLFingerprint> fingerprint;
+    std::unique_ptr<webrtc::SSLFingerprint> fingerprint;
     if (cert) {
-      fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*cert);
+      fingerprint = webrtc::SSLFingerprint::CreateFromCertificate(*cert);
     }
     jsep_description.transport_desc =
         TransportDescription(std::vector<std::string>(), ufrag, pwd,
@@ -183,7 +183,7 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
     webrtc::Candidate c;
     c.set_address(webrtc::SocketAddress("192.168.1.1", 8000));
     c.set_component(component);
-    c.set_protocol(UDP_PROTOCOL_NAME);
+    c.set_protocol(webrtc::UDP_PROTOCOL_NAME);
     c.set_priority(1);
     return c;
   }
@@ -436,9 +436,9 @@ TEST_P(JsepTransport2WithRtcpMux, VerifyCertificateFingerprint) {
     ASSERT_TRUE(certificate->GetSSLCertificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
     ASSERT_FALSE(digest_algorithm.empty());
-    std::unique_ptr<rtc::SSLFingerprint> good_fingerprint =
-        rtc::SSLFingerprint::CreateUnique(digest_algorithm,
-                                          *certificate->identity());
+    std::unique_ptr<webrtc::SSLFingerprint> good_fingerprint =
+        webrtc::SSLFingerprint::CreateUnique(digest_algorithm,
+                                             *certificate->identity());
     ASSERT_NE(nullptr, good_fingerprint);
 
     EXPECT_TRUE(jsep_transport_
@@ -453,7 +453,7 @@ TEST_P(JsepTransport2WithRtcpMux, VerifyCertificateFingerprint) {
             ->VerifyCertificateFingerprint(nullptr, good_fingerprint.get())
             .ok());
 
-    rtc::SSLFingerprint bad_fingerprint = *good_fingerprint;
+    webrtc::SSLFingerprint bad_fingerprint = *good_fingerprint;
     bad_fingerprint.digest.AppendData("0", 1);
     EXPECT_FALSE(
         jsep_transport_

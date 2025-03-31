@@ -204,12 +204,12 @@ class RTC_EXPORT P2PTransportChannel : public webrtc::IceTransportInternal,
 
   void PruneAllPorts();
   int check_receiving_interval() const;
-  std::optional<rtc::NetworkRoute> network_route() const override;
+  std::optional<webrtc::NetworkRoute> network_route() const override;
 
   void RemoveConnection(Connection* connection);
 
   // Helper method used only in unittest.
-  rtc::DiffServCodePoint DefaultDscpValue() const;
+  webrtc::DiffServCodePoint DefaultDscpValue() const;
 
   // Public for unit tests.
   Connection* FindNextPingableConnection();
@@ -284,7 +284,7 @@ class RTC_EXPORT P2PTransportChannel : public webrtc::IceTransportInternal,
   bool PresumedWritable(const Connection* conn) const;
   void SendPingRequestInternal(Connection* connection);
 
-  rtc::NetworkRoute ConfigureNetworkRoute(const Connection* conn);
+  webrtc::NetworkRoute ConfigureNetworkRoute(const Connection* conn);
   void SwitchSelectedConnectionInternal(Connection* conn,
                                         IceSwitchReason reason);
   void UpdateTransportState();
@@ -471,7 +471,7 @@ class RTC_EXPORT P2PTransportChannel : public webrtc::IceTransportInternal,
   bool has_been_writable_ RTC_GUARDED_BY(network_thread_) =
       false;  // if writable_ has ever been true
 
-  std::optional<rtc::NetworkRoute> network_route_
+  std::optional<webrtc::NetworkRoute> network_route_
       RTC_GUARDED_BY(network_thread_);
   webrtc::IceEventLog ice_event_log_ RTC_GUARDED_BY(network_thread_);
 

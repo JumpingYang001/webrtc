@@ -53,7 +53,7 @@ class PeerConnectionHeaderExtensionTest
           std::tuple<webrtc::MediaType, SdpSemantics>> {
  protected:
   PeerConnectionHeaderExtensionTest()
-      : socket_server_(rtc::CreateDefaultSocketServer()),
+      : socket_server_(CreateDefaultSocketServer()),
         main_thread_(socket_server_.get()),
         extensions_(
             {RtpHeaderExtensionCapability("uri1",

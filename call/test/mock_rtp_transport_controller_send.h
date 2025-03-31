@@ -87,7 +87,7 @@ class MockRtpTransportControllerSend
               (override));
   MOCK_METHOD(void,
               OnNetworkRouteChanged,
-              (absl::string_view, const rtc::NetworkRoute&),
+              (absl::string_view, const webrtc::NetworkRoute&),
               (override));
   MOCK_METHOD(void, OnNetworkAvailability, (bool), (override));
   MOCK_METHOD(NetworkLinkRtcpObserver*, GetRtcpObserver, (), (override));

@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
 #include "api/dtls_transport_interface.h"
 #include "api/environment/environment.h"
@@ -57,6 +56,7 @@
 #include "rtc_base/net_helper.h"
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/socket_address.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
@@ -258,9 +258,9 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                         cricket::IceMode ice_mode,
                         cricket::ConnectionRole conn_role,
                         rtc::scoped_refptr<RTCCertificate> cert) {
-    std::unique_ptr<rtc::SSLFingerprint> fingerprint;
+    std::unique_ptr<SSLFingerprint> fingerprint;
     if (cert) {
-      fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*cert);
+      fingerprint = SSLFingerprint::CreateFromCertificate(*cert);
     }
 
     cricket::TransportDescription transport_desc(std::vector<std::string>(),
@@ -283,7 +283,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
     c.set_transport_name(transport_name);
     c.set_address(SocketAddress("192.168.1.1", 8000));
     c.set_component(component);
-    c.set_protocol(cricket::UDP_PROTOCOL_NAME);
+    c.set_protocol(UDP_PROTOCOL_NAME);
     c.set_priority(1);
     return c;
   }
@@ -641,7 +641,7 @@ TEST_F(JsepTransportControllerTest, GetRemoteSSLCertChain) {
   auto fake_audio_dtls = static_cast<FakeDtlsTransport*>(
       transport_controller_->GetDtlsTransport(kAudioMid1));
   fake_audio_dtls->SetRemoteSSLCertificate(&fake_certificate);
-  std::unique_ptr<rtc::SSLCertChain> returned_cert_chain =
+  std::unique_ptr<SSLCertChain> returned_cert_chain =
       transport_controller_->GetRemoteSSLCertChain(kAudioMid1);
   ASSERT_TRUE(returned_cert_chain);
   ASSERT_EQ(1u, returned_cert_chain->GetSize());

@@ -354,13 +354,13 @@ void BaseChannel::OnWritableState(bool writable) {
 }
 
 void BaseChannel::OnNetworkRouteChanged(
-    std::optional<rtc::NetworkRoute> network_route) {
+    std::optional<webrtc::NetworkRoute> network_route) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK(network_initialized());
 
   RTC_LOG(LS_INFO) << "Network route changed for " << ToString();
 
-  rtc::NetworkRoute new_route;
+  webrtc::NetworkRoute new_route;
   if (network_route) {
     new_route = *(network_route);
   }

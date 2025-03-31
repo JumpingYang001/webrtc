@@ -237,7 +237,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
                    const std::vector<std::string>& tls_alpn_protocols,
                    const std::vector<std::string>& tls_elliptic_curves,
                    webrtc::TurnCustomizer* customizer,
-                   rtc::SSLCertificateVerifier* tls_cert_verifier)
+                   webrtc::SSLCertificateVerifier* tls_cert_verifier)
     : Port(args, IceCandidateType::kRelay),
       server_address_(server_address),
       server_url_(ReconstructServerUrl()),
@@ -247,7 +247,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
       credentials_(credentials),
       socket_(socket),
       error_(0),
-      stun_dscp_value_(rtc::DSCP_NO_CHANGE),
+      stun_dscp_value_(webrtc::DSCP_NO_CHANGE),
       request_manager_(
           args.network_thread,
           [this](const void* data, size_t size, StunRequest* request) {
@@ -268,7 +268,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
                    const std::vector<std::string>& tls_alpn_protocols,
                    const std::vector<std::string>& tls_elliptic_curves,
                    webrtc::TurnCustomizer* customizer,
-                   rtc::SSLCertificateVerifier* tls_cert_verifier)
+                   webrtc::SSLCertificateVerifier* tls_cert_verifier)
     : Port(args, IceCandidateType::kRelay, min_port, max_port),
       server_address_(server_address),
       server_url_(ReconstructServerUrl()),
@@ -278,7 +278,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
       credentials_(credentials),
       socket_(nullptr),
       error_(0),
-      stun_dscp_value_(rtc::DSCP_NO_CHANGE),
+      stun_dscp_value_(webrtc::DSCP_NO_CHANGE),
       request_manager_(
           args.network_thread,
           [this](const void* data, size_t size, StunRequest* request) {
@@ -292,7 +292,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
 
 TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
                    webrtc::PacketSocketFactory* factory,
-                   const rtc::Network* network,
+                   const webrtc::Network* network,
                    webrtc::AsyncPacketSocket* socket,
                    absl::string_view username,
                    absl::string_view password,
@@ -302,7 +302,7 @@ TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
                    const std::vector<std::string>& tls_alpn_protocols,
                    const std::vector<std::string>& tls_elliptic_curves,
                    webrtc::TurnCustomizer* customizer,
-                   rtc::SSLCertificateVerifier* tls_cert_verifier,
+                   webrtc::SSLCertificateVerifier* tls_cert_verifier,
                    const webrtc::FieldTrialsView* field_trials)
     : TurnPort({.network_thread = thread,
                 .socket_factory = factory,
@@ -320,7 +320,7 @@ TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
                tls_cert_verifier) {}
 TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
                    webrtc::PacketSocketFactory* factory,
-                   const rtc::Network* network,
+                   const webrtc::Network* network,
                    uint16_t min_port,
                    uint16_t max_port,
                    absl::string_view username,
@@ -331,7 +331,7 @@ TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
                    const std::vector<std::string>& tls_alpn_protocols,
                    const std::vector<std::string>& tls_elliptic_curves,
                    webrtc::TurnCustomizer* customizer,
-                   rtc::SSLCertificateVerifier* tls_cert_verifier,
+                   webrtc::SSLCertificateVerifier* tls_cert_verifier,
                    const webrtc::FieldTrialsView* field_trials)
     : TurnPort({.network_thread = thread,
                 .socket_factory = factory,
@@ -691,7 +691,7 @@ bool TurnPort::FailAndPruneConnection(const webrtc::SocketAddress& address) {
 int TurnPort::SetOption(webrtc::Socket::Option opt, int value) {
   // Remember the last requested DSCP value, for STUN traffic.
   if (opt == webrtc::Socket::OPT_DSCP)
-    stun_dscp_value_ = static_cast<rtc::DiffServCodePoint>(value);
+    stun_dscp_value_ = static_cast<webrtc::DiffServCodePoint>(value);
 
   if (!socket_) {
     // If socket is not created yet, these options will be applied during socket
@@ -846,7 +846,7 @@ void TurnPort::OnReadyToSend(webrtc::AsyncPacketSocket* socket) {
 
 bool TurnPort::SupportsProtocol(absl::string_view protocol) const {
   // Turn port only connects to UDP candidates.
-  return protocol == UDP_PROTOCOL_NAME;
+  return protocol == webrtc::UDP_PROTOCOL_NAME;
 }
 
 // Update current server address port with the alternate server address port.
@@ -935,7 +935,8 @@ void TurnPort::OnSendStunPacket(const void* data,
                                 StunRequest* request) {
   RTC_DCHECK(connected());
   rtc::PacketOptions options(StunDscpValue());
-  options.info_signaled_after_sent.packet_type = rtc::PacketType::kTurnMessage;
+  options.info_signaled_after_sent.packet_type =
+      webrtc::PacketType::kTurnMessage;
   CopyPortInformationToPacketInfo(&options.info_signaled_after_sent);
   if (Send(data, size, options) < 0) {
     RTC_LOG(LS_ERROR) << ToString() << ": Failed to send TURN message, error: "
@@ -963,7 +964,7 @@ void TurnPort::OnAllocateSuccess(const webrtc::SocketAddress& address,
   AddAddress(address,          // Candidate address.
              address,          // Base address.
              related_address,  // Related address.
-             UDP_PROTOCOL_NAME,
+             webrtc::UDP_PROTOCOL_NAME,
              ProtoToString(server_address_.proto),  // The first hop protocol.
              "",  // TCP candidate type, empty for turn candidates.
              IceCandidateType::kRelay,
@@ -1036,7 +1037,7 @@ void TurnPort::Close() {
   }
 }
 
-rtc::DiffServCodePoint TurnPort::StunDscpValue() const {
+webrtc::DiffServCodePoint TurnPort::StunDscpValue() const {
   return stun_dscp_value_;
 }
 
@@ -1078,7 +1079,7 @@ void TurnPort::HandleDataIndication(const char* data,
                                     size_t size,
                                     int64_t packet_time_us) {
   // Read in the message, and process according to RFC5766, Section 10.4.
-  rtc::ByteBufferReader buf(
+  webrtc::ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   TurnMessage msg;
   if (!msg.Read(&buf)) {
@@ -1856,7 +1857,7 @@ int TurnEntry::Send(const void* data,
                     size_t size,
                     bool payload,
                     const rtc::PacketOptions& options) {
-  rtc::ByteBufferWriter buf;
+  webrtc::ByteBufferWriter buf;
   if (state_ != STATE_BOUND ||
       !port_->TurnCustomizerAllowChannelData(data, size, payload)) {
     // If we haven't bound the channel yet, we have to use a Send Indication.

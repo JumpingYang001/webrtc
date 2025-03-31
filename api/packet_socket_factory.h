@@ -19,9 +19,10 @@
 #include "api/async_dns_resolver.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/socket_address.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/system/rtc_export.h"
 namespace rtc {
-class SSLCertificateVerifier;
+
 class AsyncResolverInterface;
 }  // namespace rtc
 
@@ -37,7 +38,7 @@ struct PacketSocketTcpOptions {
   // An optional custom SSL certificate verifier that an API user can provide to
   // inject their own certificate verification logic (not available to users
   // outside of the WebRTC repo).
-  rtc::SSLCertificateVerifier* tls_cert_verifier = nullptr;
+  SSLCertificateVerifier* tls_cert_verifier = nullptr;
 };
 
 class RTC_EXPORT PacketSocketFactory {

@@ -196,7 +196,7 @@ class SSLStreamAdapter : public StreamInterface {
 
   // Retrieves the peer's certificate chain including leaf certificate, if a
   // connection has been established.
-  virtual std::unique_ptr<rtc::SSLCertChain> GetPeerSSLCertChain() const = 0;
+  virtual std::unique_ptr<SSLCertChain> GetPeerSSLCertChain() const = 0;
 
   // Retrieves the IANA registration id of the cipher suite used for the
   // connection (e.g. 0x2F for "TLS_RSA_WITH_AES_128_CBC_SHA").

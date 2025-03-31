@@ -85,7 +85,7 @@ class NetworkNodeTransport : public Transport {
   SocketAddress local_address_ RTC_GUARDED_BY(mutex_);
   SocketAddress remote_address_ RTC_GUARDED_BY(mutex_);
   DataSize packet_overhead_ RTC_GUARDED_BY(mutex_) = DataSize::Zero();
-  rtc::NetworkRoute current_network_route_ RTC_GUARDED_BY(mutex_);
+  NetworkRoute current_network_route_ RTC_GUARDED_BY(mutex_);
 };
 }  // namespace test
 }  // namespace webrtc

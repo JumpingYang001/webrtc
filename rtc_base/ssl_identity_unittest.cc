@@ -187,10 +187,10 @@ IdentityAndInfo CreateFakeIdentityAndInfoFromDers(
   }
   // Fingerprints for the whole certificate chain, starting with leaf
   // certificate.
-  const rtc::SSLCertChain& chain = info.identity->cert_chain();
-  std::unique_ptr<rtc::SSLFingerprint> fp;
+  const webrtc::SSLCertChain& chain = info.identity->cert_chain();
+  std::unique_ptr<webrtc::SSLFingerprint> fp;
   for (size_t i = 0; i < chain.GetSize(); i++) {
-    fp = rtc::SSLFingerprint::Create("sha-1", chain.Get(i));
+    fp = webrtc::SSLFingerprint::Create("sha-1", chain.Get(i));
     EXPECT_TRUE(fp);
     info.fingerprints.push_back(fp->GetRfc4572Fingerprint());
   }
@@ -211,7 +211,7 @@ class SSLIdentityTest : public ::testing::Test {
     ASSERT_TRUE(identity_ecdsa1_);
     ASSERT_TRUE(identity_ecdsa2_);
 
-    test_cert_ = rtc::SSLCertificate::FromPEMString(kTestCertificate);
+    test_cert_ = webrtc::SSLCertificate::FromPEMString(kTestCertificate);
     ASSERT_TRUE(test_cert_);
   }
 
@@ -220,26 +220,26 @@ class SSLIdentityTest : public ::testing::Test {
 
     ASSERT_TRUE(identity_rsa1_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(rtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_rsa2_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(rtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_ecdsa1_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(rtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_ecdsa2_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(rtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
 
     // The test certificate has an MD5-based signature.
     ASSERT_TRUE(test_cert_->GetSignatureDigestAlgorithm(&digest_algorithm));
-    ASSERT_EQ(rtc::DIGEST_MD5, digest_algorithm);
+    ASSERT_EQ(webrtc::DIGEST_MD5, digest_algorithm);
   }
 
-  typedef unsigned char DigestType[rtc::MessageDigest::kMaxSize];
+  typedef unsigned char DigestType[webrtc::MessageDigest::kMaxSize];
 
   void TestDigestHelper(DigestType digest,
                         const SSLIdentity* identity,
@@ -340,49 +340,50 @@ class SSLIdentityTest : public ::testing::Test {
   std::unique_ptr<SSLIdentity> identity_rsa2_;
   std::unique_ptr<SSLIdentity> identity_ecdsa1_;
   std::unique_ptr<SSLIdentity> identity_ecdsa2_;
-  std::unique_ptr<rtc::SSLCertificate> test_cert_;
+  std::unique_ptr<webrtc::SSLCertificate> test_cert_;
 };
 
 TEST_F(SSLIdentityTest, FixedDigestSHA1) {
-  TestDigestForFixedCert(rtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH, kTestCertSha1);
+  TestDigestForFixedCert(webrtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH,
+                         kTestCertSha1);
 }
 
 // HASH_AlgSHA224 is not supported in the chromium linux build.
 TEST_F(SSLIdentityTest, FixedDigestSHA224) {
-  TestDigestForFixedCert(rtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH,
+  TestDigestForFixedCert(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH,
                          kTestCertSha224);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA256) {
-  TestDigestForFixedCert(rtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH,
+  TestDigestForFixedCert(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH,
                          kTestCertSha256);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA384) {
-  TestDigestForFixedCert(rtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH,
+  TestDigestForFixedCert(webrtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH,
                          kTestCertSha384);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA512) {
-  TestDigestForFixedCert(rtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH,
+  TestDigestForFixedCert(webrtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH,
                          kTestCertSha512);
 }
 
 // HASH_AlgSHA224 is not supported in the chromium linux build.
 TEST_F(SSLIdentityTest, DigestSHA224) {
-  TestDigestForGeneratedCert(rtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA256) {
-  TestDigestForGeneratedCert(rtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA384) {
-  TestDigestForGeneratedCert(rtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA512) {
-  TestDigestForGeneratedCert(rtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, IdentityComparison) {
@@ -460,7 +461,7 @@ TEST_F(SSLIdentityTest, GetSignatureDigestAlgorithm) {
 TEST_F(SSLIdentityTest, SSLCertificateGetStatsRSA) {
   std::unique_ptr<SSLIdentity> identity(
       SSLIdentity::CreateFromPEMStrings(kRSA_PRIVATE_KEY_PEM, kRSA_CERT_PEM));
-  std::unique_ptr<rtc::SSLCertificateStats> stats =
+  std::unique_ptr<webrtc::SSLCertificateStats> stats =
       identity->certificate().GetStats();
   EXPECT_EQ(stats->fingerprint, kRSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kRSA_FINGERPRINT_ALGORITHM);
@@ -471,7 +472,7 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsRSA) {
 TEST_F(SSLIdentityTest, SSLCertificateGetStatsECDSA) {
   std::unique_ptr<SSLIdentity> identity(SSLIdentity::CreateFromPEMStrings(
       kECDSA_PRIVATE_KEY_PEM, kECDSA_CERT_PEM));
-  std::unique_ptr<rtc::SSLCertificateStats> stats =
+  std::unique_ptr<webrtc::SSLCertificateStats> stats =
       identity->certificate().GetStats();
   EXPECT_EQ(stats->fingerprint, kECDSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kECDSA_FINGERPRINT_ALGORITHM);
@@ -490,9 +491,9 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsWithChain) {
   EXPECT_EQ(info.pems.size(), info.ders.size());
   EXPECT_EQ(info.fingerprints.size(), info.ders.size());
 
-  std::unique_ptr<rtc::SSLCertificateStats> first_stats =
+  std::unique_ptr<webrtc::SSLCertificateStats> first_stats =
       info.identity->cert_chain().GetStats();
-  rtc::SSLCertificateStats* cert_stats = first_stats.get();
+  webrtc::SSLCertificateStats* cert_stats = first_stats.get();
   for (size_t i = 0; i < info.ders.size(); ++i) {
     EXPECT_EQ(cert_stats->fingerprint, info.fingerprints[i]);
     EXPECT_EQ(cert_stats->fingerprint_algorithm, "sha-1");

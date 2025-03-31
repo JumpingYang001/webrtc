@@ -273,7 +273,7 @@ class PeerConnectionUsageHistogramTest : public ::testing::Test {
       const RTCConfiguration& config,
       const PeerConnectionFactoryInterface::Options factory_options,
       PeerConnectionDependencies deps,
-      std::unique_ptr<rtc::NetworkManager> network_manager) {
+      std::unique_ptr<NetworkManager> network_manager) {
     PeerConnectionFactoryDependencies pcf_deps;
     pcf_deps.network_thread = Thread::Current();
     pcf_deps.worker_thread = Thread::Current();

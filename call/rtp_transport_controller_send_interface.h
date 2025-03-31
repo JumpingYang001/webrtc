@@ -33,10 +33,11 @@
 #include "modules/rtp_rtcp/include/report_block_data.h"
 #include "modules/rtp_rtcp/include/rtcp_statistics.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "rtc_base/network_route.h"
 
 namespace rtc {
 struct SentPacket;
-struct NetworkRoute;
+
 }  // namespace rtc
 namespace webrtc {
 
@@ -131,9 +132,8 @@ class RtpTransportControllerSendInterface {
   virtual StreamFeedbackProvider* GetStreamFeedbackProvider() = 0;
   virtual void RegisterTargetTransferRateObserver(
       TargetTransferRateObserver* observer) = 0;
-  virtual void OnNetworkRouteChanged(
-      absl::string_view transport_name,
-      const rtc::NetworkRoute& network_route) = 0;
+  virtual void OnNetworkRouteChanged(absl::string_view transport_name,
+                                     const NetworkRoute& network_route) = 0;
   virtual void OnNetworkAvailability(bool network_available) = 0;
   virtual NetworkLinkRtcpObserver* GetRtcpObserver() = 0;
   virtual int64_t GetPacerQueuingDelayMs() const = 0;

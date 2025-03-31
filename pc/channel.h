@@ -29,10 +29,10 @@
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
+#include "api/task_queue/task_queue_base.h"
 #include "call/rtp_demuxer.h"
 #include "call/rtp_packet_sink_interface.h"
 #include "media/base/media_channel.h"
-#include "media/base/media_channel_impl.h"
 #include "media/base/stream_params.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "pc/channel_interface.h"
@@ -229,7 +229,7 @@ class BaseChannel : public ChannelInterface,
   // From RtpTransportInternal
   void OnWritableState(bool writable);
 
-  void OnNetworkRouteChanged(std::optional<rtc::NetworkRoute> network_route);
+  void OnNetworkRouteChanged(std::optional<webrtc::NetworkRoute> network_route);
 
   bool SendPacket(bool rtcp,
                   rtc::CopyOnWriteBuffer* packet,

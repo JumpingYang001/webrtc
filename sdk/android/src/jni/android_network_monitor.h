@@ -167,7 +167,7 @@ class AndroidNetworkMonitor : public NetworkMonitorInterface {
   friend class webrtc::test::AndroidNetworkMonitorTest;
 };
 
-class AndroidNetworkMonitorFactory : public rtc::NetworkMonitorFactory {
+class AndroidNetworkMonitorFactory : public NetworkMonitorFactory {
  public:
   // Deprecated. Pass in application context to this class.
   AndroidNetworkMonitorFactory();

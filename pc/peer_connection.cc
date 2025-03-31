@@ -431,7 +431,7 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
     std::optional<int> report_usage_pattern_delay_ms;
     std::optional<int> stable_writable_connection_ping_interval_ms;
     VpnPreference vpn_preference;
-    std::vector<rtc::NetworkMask> vpn_list;
+    std::vector<NetworkMask> vpn_list;
     PortAllocatorConfig port_allocator_config;
     std::optional<TimeDelta> pacer_burst_interval;
   };
@@ -2340,7 +2340,7 @@ bool PeerConnection::GetLocalCertificate(
   return *certificate != nullptr;
 }
 
-std::unique_ptr<rtc::SSLCertChain> PeerConnection::GetRemoteSSLCertChain(
+std::unique_ptr<SSLCertChain> PeerConnection::GetRemoteSSLCertChain(
     const std::string& transport_name) {
   RTC_DCHECK_RUN_ON(network_thread());
   return transport_controller_->GetRemoteSSLCertChain(transport_name);
@@ -2787,13 +2787,12 @@ void PeerConnection::ReportBestConnectionState(
       const Candidate& remote = connection_info.remote_candidate;
 
       // Increment the counter for IceCandidatePairType.
-      if (local.protocol() == cricket::TCP_PROTOCOL_NAME ||
-          (local.is_relay() &&
-           local.relay_protocol() == cricket::TCP_PROTOCOL_NAME)) {
+      if (local.protocol() == TCP_PROTOCOL_NAME ||
+          (local.is_relay() && local.relay_protocol() == TCP_PROTOCOL_NAME)) {
         RTC_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.CandidatePairType_TCP",
                                   GetIceCandidatePairCounter(local, remote),
                                   kIceCandidatePairMax);
-      } else if (local.protocol() == cricket::UDP_PROTOCOL_NAME) {
+      } else if (local.protocol() == UDP_PROTOCOL_NAME) {
         RTC_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.CandidatePairType_UDP",
                                   GetIceCandidatePairCounter(local, remote),
                                   kIceCandidatePairMax);

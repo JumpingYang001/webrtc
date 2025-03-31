@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 
 #include "api/priority.h"
 #include "rtc_base/byte_buffer.h"
@@ -64,7 +65,7 @@ bool ParseDataChannelOpenMessage(const rtc::CopyOnWriteBuffer& payload,
   // Format defined at
   // http://tools.ietf.org/html/draft-jesup-rtcweb-data-protocol-04
 
-  rtc::ByteBufferReader buffer(payload);
+  ByteBufferReader buffer(payload);
   uint8_t message_type;
   if (!buffer.ReadUInt8(&message_type)) {
     RTC_LOG(LS_WARNING) << "Could not read OPEN message type.";
@@ -196,7 +197,7 @@ bool WriteDataChannelOpenMessage(const std::string& label,
     }
   }
 
-  rtc::ByteBufferWriter buffer(NULL, 20 + label.length() + protocol.length());
+  ByteBufferWriter buffer(NULL, 20 + label.length() + protocol.length());
   // TODO(tommi): Add error handling and check resulting length.
   buffer.WriteUInt8(DATA_CHANNEL_OPEN_MESSAGE_TYPE);
   buffer.WriteUInt8(channel_type);

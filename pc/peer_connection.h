@@ -303,7 +303,7 @@ class PeerConnection : public PeerConnectionInternal,
   bool GetLocalCertificate(
       const std::string& transport_name,
       rtc::scoped_refptr<RTCCertificate>* certificate) override;
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain(
+  std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& transport_name) override;
   bool IceRestartPending(const std::string& content_name) const override;
   bool NeedsIceRestart(const std::string& content_name) const override;
@@ -655,7 +655,7 @@ class PeerConnection : public PeerConnectionInternal,
                                // pointer is given to
                                // `jsep_transport_controller_` and used on the
                                // network thread.
-  const std::unique_ptr<rtc::SSLCertificateVerifier> tls_cert_verifier_
+  const std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier_
       RTC_GUARDED_BY(network_thread());
 
   // The unique_ptr belongs to the worker thread, but the Call object manages

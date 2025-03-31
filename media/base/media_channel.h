@@ -212,7 +212,7 @@ class MediaSendChannelInterface {
   // Called when the network route used for sending packets changed.
   virtual void OnNetworkRouteChanged(
       absl::string_view transport_name,
-      const rtc::NetworkRoute& network_route) = 0;
+      const webrtc::NetworkRoute& network_route) = 0;
   // Sets the abstract interface class for sending RTP/RTCP data.
   virtual void SetInterface(MediaChannelNetworkInterface* iface) = 0;
 

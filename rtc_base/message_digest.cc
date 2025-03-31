@@ -14,12 +14,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/strings/string_view.h"
 #include "rtc_base/openssl_digest.h"
 #include "rtc_base/string_encode.h"
 
-namespace rtc {
+namespace webrtc {
 
 // From RFC 4572.
 const char DIGEST_MD5[] = "md5";
@@ -74,7 +75,7 @@ std::string ComputeDigest(MessageDigest* digest, absl::string_view input) {
   std::unique_ptr<char[]> output(new char[digest->Size()]);
   ComputeDigest(digest, input.data(), input.size(), output.get(),
                 digest->Size());
-  return hex_encode(absl::string_view(output.get(), digest->Size()));
+  return rtc::hex_encode(absl::string_view(output.get(), digest->Size()));
 }
 
 bool ComputeDigest(absl::string_view alg,
@@ -157,7 +158,7 @@ std::string ComputeHmac(MessageDigest* digest,
   std::unique_ptr<char[]> output(new char[digest->Size()]);
   ComputeHmac(digest, key.data(), key.size(), input.data(), input.size(),
               output.get(), digest->Size());
-  return hex_encode(absl::string_view(output.get(), digest->Size()));
+  return rtc::hex_encode(absl::string_view(output.get(), digest->Size()));
 }
 
 bool ComputeHmac(absl::string_view alg,
@@ -180,4 +181,4 @@ std::string ComputeHmac(absl::string_view alg,
   return output;
 }
 
-}  // namespace rtc
+}  // namespace webrtc

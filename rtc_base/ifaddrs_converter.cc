@@ -10,7 +10,9 @@
 
 #include "rtc_base/ifaddrs_converter.h"
 
-namespace rtc {
+#include "rtc_base/ip_address.h"
+
+namespace webrtc {
 
 IfAddrsConverter::IfAddrsConverter() {}
 
@@ -18,13 +20,13 @@ IfAddrsConverter::~IfAddrsConverter() {}
 
 bool IfAddrsConverter::ConvertIfAddrsToIPAddress(
     const struct ifaddrs* interface,
-    webrtc::InterfaceAddress* ip,
-    webrtc::IPAddress* mask) {
+    InterfaceAddress* ip,
+    IPAddress* mask) {
   switch (interface->ifa_addr->sa_family) {
     case AF_INET: {
-      *ip = webrtc::InterfaceAddress(webrtc::IPAddress(
+      *ip = InterfaceAddress(IPAddress(
           reinterpret_cast<sockaddr_in*>(interface->ifa_addr)->sin_addr));
-      *mask = webrtc::IPAddress(
+      *mask = IPAddress(
           reinterpret_cast<sockaddr_in*>(interface->ifa_netmask)->sin_addr);
       return true;
     }
@@ -33,10 +35,10 @@ bool IfAddrsConverter::ConvertIfAddrsToIPAddress(
       if (!ConvertNativeAttributesToIPAttributes(interface, &ip_attributes)) {
         return false;
       }
-      *ip = webrtc::InterfaceAddress(
+      *ip = InterfaceAddress(
           reinterpret_cast<sockaddr_in6*>(interface->ifa_addr)->sin6_addr,
           ip_attributes);
-      *mask = webrtc::IPAddress(
+      *mask = IPAddress(
           reinterpret_cast<sockaddr_in6*>(interface->ifa_netmask)->sin6_addr);
       return true;
     }
@@ -59,4 +61,4 @@ IfAddrsConverter* CreateIfAddrsConverter() {
   return new IfAddrsConverter();
 }
 #endif
-}  // namespace rtc
+}  // namespace webrtc

@@ -325,7 +325,7 @@ class FakePeerConnectionBase : public PeerConnectionInternal {
     return false;
   }
 
-  std::unique_ptr<rtc::SSLCertChain> GetRemoteSSLCertChain(
+  std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& transport_name) override {
     return nullptr;
   }

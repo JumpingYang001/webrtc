@@ -109,7 +109,7 @@ uint32_t GetWeakPingIntervalInFieldTrial(
   return cricket::WEAK_PING_INTERVAL;
 }
 
-rtc::RouteEndpoint CreateRouteEndpointFromCandidate(
+webrtc::RouteEndpoint CreateRouteEndpointFromCandidate(
     bool local,
     const webrtc::Candidate& candidate,
     bool uses_turn) {
@@ -117,7 +117,7 @@ rtc::RouteEndpoint CreateRouteEndpointFromCandidate(
   if (!local && adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
     bool vpn;
     std::tie(adapter_type, vpn) =
-        rtc::Network::GuessAdapterFromNetworkCost(candidate.network_cost());
+        webrtc::Network::GuessAdapterFromNetworkCost(candidate.network_cost());
   }
 
   // TODO(bugs.webrtc.org/9446) : Rewrite if information about remote network
@@ -125,8 +125,8 @@ rtc::RouteEndpoint CreateRouteEndpointFromCandidate(
   // we will only ever report 1 adapter per type. In practice this is probably
   // fine, since the endpoint also contains network-id.
   uint16_t adapter_id = static_cast<int>(adapter_type);
-  return rtc::RouteEndpoint(adapter_type, adapter_id, candidate.network_id(),
-                            uses_turn);
+  return webrtc::RouteEndpoint(adapter_type, adapter_id, candidate.network_id(),
+                               uses_turn);
 }
 
 }  // unnamed namespace
@@ -435,9 +435,9 @@ IceTransportState P2PTransportChannel::ComputeState() const {
     return IceTransportState::STATE_FAILED;
   }
 
-  std::set<const rtc::Network*> networks;
+  std::set<const webrtc::Network*> networks;
   for (Connection* connection : active_connections) {
-    const rtc::Network* network = connection->network();
+    const webrtc::Network* network = connection->network();
     if (networks.find(network) == networks.end()) {
       networks.insert(network);
     } else {
@@ -1596,7 +1596,7 @@ int P2PTransportChannel::SendPacket(const char* data,
   last_sent_packet_id_ = options.packet_id;
   rtc::PacketOptions modified_options(options);
   modified_options.info_signaled_after_sent.packet_type =
-      rtc::PacketType::kData;
+      webrtc::PacketType::kData;
   int sent = selected_connection_->Send(data, len, modified_options);
   if (sent <= 0) {
     RTC_DCHECK(sent < 0);
@@ -1644,18 +1644,18 @@ bool P2PTransportChannel::GetStats(
   return true;
 }
 
-std::optional<rtc::NetworkRoute> P2PTransportChannel::network_route() const {
+std::optional<webrtc::NetworkRoute> P2PTransportChannel::network_route() const {
   RTC_DCHECK_RUN_ON(network_thread_);
   return network_route_;
 }
 
-rtc::DiffServCodePoint P2PTransportChannel::DefaultDscpValue() const {
+webrtc::DiffServCodePoint P2PTransportChannel::DefaultDscpValue() const {
   RTC_DCHECK_RUN_ON(network_thread_);
   OptionMap::const_iterator it = options_.find(webrtc::Socket::OPT_DSCP);
   if (it == options_.end()) {
-    return rtc::DSCP_NO_CHANGE;
+    return webrtc::DSCP_NO_CHANGE;
   }
-  return static_cast<rtc::DiffServCodePoint>(it->second);
+  return static_cast<webrtc::DiffServCodePoint>(it->second);
 }
 
 rtc::ArrayView<Connection* const> P2PTransportChannel::connections() const {
@@ -1761,7 +1761,7 @@ bool P2PTransportChannel::PruneConnections(
   return true;
 }
 
-rtc::NetworkRoute P2PTransportChannel::ConfigureNetworkRoute(
+webrtc::NetworkRoute P2PTransportChannel::ConfigureNetworkRoute(
     const Connection* conn) {
   RTC_DCHECK_RUN_ON(network_thread_);
   return {.connected = ReadyToSend(conn),
@@ -1775,7 +1775,7 @@ rtc::NetworkRoute P2PTransportChannel::ConfigureNetworkRoute(
           .last_sent_packet_id = last_sent_packet_id_,
           .packet_overhead =
               conn->local_candidate().address().ipaddr().overhead() +
-              GetProtocolOverhead(conn->local_candidate().protocol())};
+              webrtc::GetProtocolOverhead(conn->local_candidate().protocol())};
 }
 
 void P2PTransportChannel::SwitchSelectedConnection(

@@ -13,15 +13,28 @@
 #include <errno.h>
 
 #include <cstdint>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "api/array_view.h"
+#include "api/task_queue/pending_task_safety_flag.h"
+#include "api/task_queue/task_queue_base.h"
 #include "api/units/timestamp.h"
+#include "call/rtp_demuxer.h"
 #include "media/base/rtp_utils.h"
+#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
+#include "pc/session_description.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/containers/flat_set.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/network/ecn_marking.h"
+#include "rtc_base/network/received_packet.h"
+#include "rtc_base/network/sent_packet.h"
+#include "rtc_base/network_route.h"
+#include "rtc_base/socket.h"
 #include "rtc_base/trace_event.h"
 
 namespace webrtc {
@@ -58,7 +71,7 @@ void RtpTransport::SetRtpPacketTransport(
     rtp_packet_transport_->SignalWritableState.disconnect(this);
     rtp_packet_transport_->SignalSentPacket.disconnect(this);
     // Reset the network route of the old transport.
-    SendNetworkRouteChanged(std::optional<rtc::NetworkRoute>());
+    SendNetworkRouteChanged(std::optional<NetworkRoute>());
   }
   if (new_packet_transport) {
     new_packet_transport->SignalReadyToSend.connect(
@@ -95,7 +108,7 @@ void RtpTransport::SetRtcpPacketTransport(
     rtcp_packet_transport_->SignalWritableState.disconnect(this);
     rtcp_packet_transport_->SignalSentPacket.disconnect(this);
     // Reset the network route of the old transport.
-    SendNetworkRouteChanged(std::optional<rtc::NetworkRoute>());
+    SendNetworkRouteChanged(std::optional<NetworkRoute>());
   }
   if (new_packet_transport) {
     new_packet_transport->SignalReadyToSend.connect(
@@ -222,7 +235,7 @@ void RtpTransport::OnReadyToSend(rtc::PacketTransportInternal* transport) {
 }
 
 void RtpTransport::OnNetworkRouteChanged(
-    std::optional<rtc::NetworkRoute> network_route) {
+    std::optional<NetworkRoute> network_route) {
   SendNetworkRouteChanged(network_route);
 }
 

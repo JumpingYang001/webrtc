@@ -12,6 +12,10 @@
 
 #include <string.h>
 
+#include <atomic>
+#include <cstdint>
+#include <string>
+
 #if RTC_LOG_ENABLED()
 
 #if defined(WEBRTC_WIN)
@@ -149,7 +153,7 @@ LogMessage::LogMessage(const char* file,
   }
 
   if (log_thread_) {
-    log_line_.set_thread_id(rtc::CurrentThreadId());
+    log_line_.set_thread_id(CurrentThreadId());
   }
 
   if (file != nullptr) {
@@ -528,8 +532,8 @@ void Log(const LogArgType* fmt, ...) {
         log_message.stream() << *va_arg(args, const absl::string_view*);
         break;
       case LogArgType::kVoidP:
-        log_message.stream() << rtc::ToHex(
-            reinterpret_cast<uintptr_t>(va_arg(args, const void*)));
+        log_message.stream()
+            << ToHex(reinterpret_cast<uintptr_t>(va_arg(args, const void*)));
         break;
       default:
         RTC_DCHECK_NOTREACHED();

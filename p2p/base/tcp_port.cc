@@ -150,7 +150,7 @@ Connection* TCPPort::CreateConnection(const webrtc::Candidate& address,
     return NULL;
 
   // We don't know how to act as an ssl server yet
-  if ((address.protocol() == SSLTCP_PROTOCOL_NAME) &&
+  if ((address.protocol() == webrtc::SSLTCP_PROTOCOL_NAME) &&
       (origin == ORIGIN_THIS_PORT)) {
     return NULL;
   }
@@ -181,10 +181,11 @@ void TCPPort::PrepareAddress() {
     // failed, we still want to add the socket address.
     RTC_LOG(LS_VERBOSE) << "Preparing TCP address, current state: "
                         << static_cast<int>(listen_socket_->GetState());
-    AddAddress(
-        listen_socket_->GetLocalAddress(), listen_socket_->GetLocalAddress(),
-        webrtc::SocketAddress(), TCP_PROTOCOL_NAME, "", TCPTYPE_PASSIVE_STR,
-        IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST_TCP, 0, "", true);
+    AddAddress(listen_socket_->GetLocalAddress(),
+               listen_socket_->GetLocalAddress(), webrtc::SocketAddress(),
+               webrtc::TCP_PROTOCOL_NAME, "", TCPTYPE_PASSIVE_STR,
+               IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST_TCP, 0, "",
+               true);
   } else {
     RTC_LOG(LS_INFO) << ToString()
                      << ": Not listening due to firewall restrictions.";
@@ -198,7 +199,7 @@ void TCPPort::PrepareAddress() {
     // see what IP we get. But that may be overkill.
     AddAddress(webrtc::SocketAddress(Network()->GetBestIP(), DISCARD_PORT),
                webrtc::SocketAddress(Network()->GetBestIP(), 0),
-               webrtc::SocketAddress(), TCP_PROTOCOL_NAME, "",
+               webrtc::SocketAddress(), webrtc::TCP_PROTOCOL_NAME, "",
                TCPTYPE_ACTIVE_STR, IceCandidateType::kHost,
                ICE_TYPE_PREFERENCE_HOST_TCP, 0, "", true);
   }
@@ -273,7 +274,8 @@ int TCPPort::GetError() {
 }
 
 bool TCPPort::SupportsProtocol(absl::string_view protocol) const {
-  return protocol == TCP_PROTOCOL_NAME || protocol == SSLTCP_PROTOCOL_NAME;
+  return protocol == webrtc::TCP_PROTOCOL_NAME ||
+         protocol == webrtc::SSLTCP_PROTOCOL_NAME;
 }
 
 webrtc::ProtocolType TCPPort::GetProtocol() const {
@@ -593,7 +595,7 @@ void TCPConnection::OnDestroyed(Connection* c) {
 
 void TCPConnection::CreateOutgoingTcpSocket() {
   RTC_DCHECK(outgoing_);
-  int opts = (remote_candidate().protocol() == SSLTCP_PROTOCOL_NAME)
+  int opts = (remote_candidate().protocol() == webrtc::SSLTCP_PROTOCOL_NAME)
                  ? webrtc::PacketSocketFactory::OPT_TLS_FAKE
                  : 0;
 

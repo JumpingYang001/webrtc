@@ -91,7 +91,7 @@ TargetRateConstraints ConvertConstraints(const BitrateConstraints& contraints,
                             contraints.start_bitrate_bps, clock);
 }
 
-bool IsRelayed(const rtc::NetworkRoute& route) {
+bool IsRelayed(const NetworkRoute& route) {
   return route.local.uses_turn() || route.remote.uses_turn();
 }
 }  // namespace
@@ -320,8 +320,8 @@ void RtpTransportControllerSend::RegisterTargetTransferRateObserver(
 }
 
 bool RtpTransportControllerSend::IsRelevantRouteChange(
-    const rtc::NetworkRoute& old_route,
-    const rtc::NetworkRoute& new_route) const {
+    const NetworkRoute& old_route,
+    const NetworkRoute& new_route) const {
   bool connected_changed = old_route.connected != new_route.connected;
   bool route_ids_changed = false;
   bool relaying_changed = false;
@@ -343,7 +343,7 @@ bool RtpTransportControllerSend::IsRelevantRouteChange(
 
 void RtpTransportControllerSend::OnNetworkRouteChanged(
     absl::string_view transport_name,
-    const rtc::NetworkRoute& network_route) {
+    const NetworkRoute& network_route) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // Check if the network route is connected.
   if (!network_route.connected) {
@@ -380,7 +380,7 @@ void RtpTransportControllerSend::OnNetworkRouteChanged(
     return;
   }
 
-  const rtc::NetworkRoute old_route = kv->second;
+  const NetworkRoute old_route = kv->second;
   kv->second = network_route;
 
   // Check if enough conditions of the new/old route has changed
