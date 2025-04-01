@@ -282,35 +282,42 @@ rtc_library("video_quality_metrics_reporter") {
   ]
 }
 
-rtc_library("default_video_quality_analyzer") {
-  testonly = true
-  sources = [
-    "default_video_quality_analyzer.cc",
-    "default_video_quality_analyzer.h",
-  ]
+if (!build_with_chromium) {
+  rtc_library("default_video_quality_analyzer") {
+    testonly = true
+    sources = [
+      "default_video_quality_analyzer.cc",
+      "default_video_quality_analyzer.h",
+    ]
 
-  deps = [
-    ":default_video_quality_analyzer_internal",
-    ":default_video_quality_analyzer_shared",
-    "../..:metric_metadata_keys",
-    "../../../../../api:array_view",
-    "../../../../../api:video_quality_analyzer_api",
-    "../../../../../api/numerics",
-    "../../../../../api/test/metrics:metric",
-    "../../../../../api/test/metrics:metrics_logger",
-    "../../../../../api/units:data_size",
-    "../../../../../api/units:time_delta",
-    "../../../../../api/units:timestamp",
-    "../../../../../api/video:encoded_image",
-    "../../../../../api/video:video_frame",
-    "../../../../../rtc_base:checks",
-    "../../../../../rtc_base:logging",
-    "../../../../../rtc_base:macromagic",
-    "../../../../../rtc_base:stringutils",
-    "../../../../../rtc_base/synchronization:mutex",
-    "../../../../../system_wrappers",
-    "dvqa:frames_storage",
-  ]
+    deps = [
+      ":default_video_quality_analyzer_internal",
+      ":default_video_quality_analyzer_shared",
+      "../..:metric_metadata_keys",
+      "../../../..:test_flags",
+      "../../../../../api:array_view",
+      "../../../../../api:rtp_packet_info",
+      "../../../../../api:video_quality_analyzer_api",
+      "../../../../../api/numerics",
+      "../../../../../api/test/metrics:metric",
+      "../../../../../api/test/metrics:metrics_logger",
+      "../../../../../api/units:data_size",
+      "../../../../../api/units:time_delta",
+      "../../../../../api/units:timestamp",
+      "../../../../../api/video:encoded_image",
+      "../../../../../api/video:video_frame",
+      "../../../../../api/video_codecs:video_codecs_api",
+      "../../../../../rtc_base:checks",
+      "../../../../../rtc_base:logging",
+      "../../../../../rtc_base:macromagic",
+      "../../../../../rtc_base:stringutils",
+      "../../../../../rtc_base/synchronization:mutex",
+      "../../../../../system_wrappers",
+      "dvqa:frames_storage",
+      "//third_party/abseil-cpp/absl/flags:flag",
+      "//third_party/abseil-cpp/absl/strings:string_view",
+    ]
+  }
 }
 
 rtc_library("default_video_quality_analyzer_shared") {
@@ -484,46 +491,56 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_library("default_video_quality_analyzer_test") {
-    testonly = true
-    sources = [ "default_video_quality_analyzer_test.cc" ]
-    deps = [
-      ":default_video_quality_analyzer",
-      ":default_video_quality_analyzer_shared",
-      "../../../..:test_support",
-      "../../../../../api:create_frame_generator",
-      "../../../../../api:rtp_packet_info",
-      "../../../../../api:time_controller",
-      "../../../../../api/test/metrics:global_metrics_logger_and_exporter",
-      "../../../../../api/units:time_delta",
-      "../../../../../api/units:timestamp",
-      "../../../../../api/video:encoded_image",
-      "../../../../../api/video:video_frame",
-      "../../../../../common_video",
-      "../../../../../rtc_base:stringutils",
-      "../../../../../rtc_tools:video_quality_analysis",
-      "../../../../../system_wrappers",
-      "../../../../time_controller",
-    ]
-  }
+  if (!build_with_chromium) {
+    rtc_library("default_video_quality_analyzer_test") {
+      testonly = true
+      sources = [ "default_video_quality_analyzer_test.cc" ]
+      deps = [
+        ":default_video_quality_analyzer",
+        ":default_video_quality_analyzer_shared",
+        "../../../..:test_support",
+        "../../../../../api:create_frame_generator",
+        "../../../../../api:rtp_packet_info",
+        "../../../../../api:time_controller",
+        "../../../../../api/test/metrics:global_metrics_logger_and_exporter",
+        "../../../../../api/units:time_delta",
+        "../../../../../api/units:timestamp",
+        "../../../../../api/video:encoded_image",
+        "../../../../../api/video:video_frame",
+        "../../../../../common_video",
+        "../../../../../rtc_base:stringutils",
+        "../../../../../rtc_tools:video_quality_analysis",
+        "../../../../../system_wrappers",
+        "../../../../time_controller",
+      ]
+    }
 
-  rtc_library("default_video_quality_analyzer_metric_names_test") {
-    testonly = true
-    sources = [ "default_video_quality_analyzer_metric_names_test.cc" ]
-    deps = [
-      ":default_video_quality_analyzer",
-      "../../../..:test_support",
-      "../../../../../api:create_frame_generator",
-      "../../../../../api:rtp_packet_info",
-      "../../../../../api/test/metrics:metric",
-      "../../../../../api/test/metrics:metrics_logger",
-      "../../../../../api/test/metrics:stdout_metrics_exporter",
-      "../../../../../api/video:encoded_image",
-      "../../../../../api/video:video_frame",
-      "../../../../../common_video",
-      "../../../../../rtc_tools:video_quality_analysis",
-      "../../../../../system_wrappers",
-    ]
+    rtc_library("default_video_quality_analyzer_metric_names_test") {
+      testonly = true
+      sources = [ "default_video_quality_analyzer_metric_names_test.cc" ]
+      deps = [
+        ":default_video_quality_analyzer",
+        ":default_video_quality_analyzer_shared",
+        "../../../..:test_flags",
+        "../../../..:test_support",
+        "../../../../../api:create_frame_generator",
+        "../../../../../api:frame_generator_api",
+        "../../../../../api:rtp_packet_info",
+        "../../../../../api:video_quality_analyzer_api",
+        "../../../../../api/test/metrics:metric",
+        "../../../../../api/test/metrics:metrics_exporter",
+        "../../../../../api/test/metrics:metrics_logger",
+        "../../../../../api/test/metrics:stdout_metrics_exporter",
+        "../../../../../api/units:timestamp",
+        "../../../../../api/video:encoded_image",
+        "../../../../../api/video:video_frame",
+        "../../../../../common_video",
+        "../../../../../rtc_tools:video_quality_analysis",
+        "../../../../../system_wrappers",
+        "//third_party/abseil-cpp/absl/flags:flag",
+        "//third_party/abseil-cpp/absl/strings:string_view",
+      ]
+    }
   }
 
   rtc_library("video_dumping_test") {
