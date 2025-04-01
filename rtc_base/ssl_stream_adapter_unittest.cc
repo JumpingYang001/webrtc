@@ -18,6 +18,7 @@
 #include <openssl/evp.h>
 #endif
 #include <openssl/sha.h>
+#include <openssl/ssl.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -50,9 +51,9 @@
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-#include "test/field_trial.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
+#include "test/scoped_key_value_config.h"
 #include "test/wait_until.h"
 
 using ::testing::Combine;
@@ -464,20 +465,23 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       absl::string_view server_experiment = "") {
     // Note: `client_ssl_` and `server_ssl_` may be non-nullptr.
 
-    // The legacy TLS protocols flag is read when the OpenSSLStreamAdapter is
-    // initialized, so we set the field trials while constructing the adapters.
-    using webrtc::test::ScopedFieldTrials;
+    // The field trials are read when the OpenSSLStreamAdapter is initialized.
+    using webrtc::test::ScopedKeyValueConfig;
     {
-      std::unique_ptr<ScopedFieldTrials> trial(
-          client_experiment.empty() ? nullptr
-                                    : new ScopedFieldTrials(client_experiment));
-      client_ssl_ = webrtc::SSLStreamAdapter::Create(CreateClientStream());
+      std::unique_ptr<ScopedKeyValueConfig> trial(
+          client_experiment.empty()
+              ? nullptr
+              : new ScopedKeyValueConfig(client_experiment));
+      client_ssl_ = webrtc::SSLStreamAdapter::Create(CreateClientStream(),
+                                                     nullptr, trial.get());
     }
     {
-      std::unique_ptr<ScopedFieldTrials> trial(
-          server_experiment.empty() ? nullptr
-                                    : new ScopedFieldTrials(server_experiment));
-      server_ssl_ = webrtc::SSLStreamAdapter::Create(CreateServerStream());
+      std::unique_ptr<ScopedKeyValueConfig> trial(
+          server_experiment.empty()
+              ? nullptr
+              : new ScopedKeyValueConfig(server_experiment));
+      server_ssl_ = webrtc::SSLStreamAdapter::Create(CreateServerStream(),
+                                                     nullptr, trial.get());
     }
     client_ssl_->SetEventCallback(
         [this](int events, int err) { OnClientEvent(events, err); });
@@ -1143,7 +1147,6 @@ TEST_P(SSLStreamAdapterTestDTLSHandshake, TestDTLSConnect) {
 // Test getting the used DTLS ciphers.
 // DTLS 1.2 has different cipher suite than 1.3.
 TEST_P(SSLStreamAdapterTestDTLSHandshake, TestGetSslCipherSuite) {
-  webrtc::test::ScopedFieldTrials trials("WebRTC-ForceDtls13/Off/");
   SetupProtocolVersions(webrtc::SSL_PROTOCOL_DTLS_12,
                         webrtc::SSL_PROTOCOL_DTLS_12);
   TestHandshake();
@@ -1555,7 +1558,6 @@ INSTANTIATE_TEST_SUITE_P(SSLStreamAdapterTestDTLSHandshakeVersion,
                                         webrtc::SSL_PROTOCOL_DTLS_13)));
 
 TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslVersionBytes) {
-  webrtc::test::ScopedFieldTrials trials("WebRTC-ForceDtls13/Off/");
   auto client = ::testing::get<0>(GetParam());
   auto server = ::testing::get<1>(GetParam());
   SetupProtocolVersions(client, server);
@@ -1576,7 +1578,6 @@ TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslVersionBytes) {
 }
 
 TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslCipherSuite) {
-  webrtc::test::ScopedFieldTrials trials("WebRTC-ForceDtls13/Off/");
   auto client = ::testing::get<0>(GetParam());
   auto server = ::testing::get<1>(GetParam());
   SetupProtocolVersions(client, server);
@@ -1591,3 +1592,35 @@ TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslCipherSuite) {
   ASSERT_TRUE(webrtc::SSLStreamAdapter::IsAcceptableCipher(server_cipher,
                                                            rtc::KT_DEFAULT));
 }
+
+#ifdef OPENSSL_IS_BORINGSSL
+class SSLStreamAdapterTestDTLSPqc : public SSLStreamAdapterTestDTLSBase {
+ public:
+  SSLStreamAdapterTestDTLSPqc() : SSLStreamAdapterTestDTLSBase("", "") {}
+
+ protected:
+  void SetUp() override {
+    std::string pqc_trial = "WebRTC-EnableDtlsPqc/Enabled/";
+
+    InitializeClientAndServerStreams(pqc_trial, pqc_trial);
+
+    auto client_identity = rtc::SSLIdentity::Create("client", client_key_type_);
+    auto server_identity = rtc::SSLIdentity::Create("server", server_key_type_);
+
+    client_ssl_->SetIdentity(std::move(client_identity));
+    server_ssl_->SetIdentity(std::move(server_identity));
+  }
+};
+
+TEST_F(SSLStreamAdapterTestDTLSPqc, TestGetSslGroupId) {
+  EXPECT_EQ(client_ssl_->GetSslGroupIdForTesting(), 0);
+  EXPECT_EQ(server_ssl_->GetSslGroupIdForTesting(), 0);
+
+  SetupProtocolVersions(webrtc::SSL_PROTOCOL_DTLS_13,
+                        webrtc::SSL_PROTOCOL_DTLS_13);
+
+  TestHandshake();
+  EXPECT_EQ(client_ssl_->GetSslGroupIdForTesting(), SSL_GROUP_X25519_MLKEM768);
+  EXPECT_EQ(server_ssl_->GetSslGroupIdForTesting(), SSL_GROUP_X25519_MLKEM768);
+}
+#endif

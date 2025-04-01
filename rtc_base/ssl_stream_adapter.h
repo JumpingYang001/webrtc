@@ -268,6 +268,10 @@ class SSLStreamAdapter : public StreamInterface {
   // Used for testing (and maybe put into stats?).
   virtual int GetRetransmissionCount() const = 0;
 
+  // Return the the ID of the group used by the adapters most recently
+  // completed handshake, or 0 if not applicable (e.g. before the handshake).
+  virtual uint16_t GetSslGroupIdForTesting() const = 0;
+
  private:
   // If true (default), the client is required to provide a certificate during
   // handshake. If no certificate is given, handshake fails. This applies to

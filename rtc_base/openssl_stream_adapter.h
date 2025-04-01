@@ -138,6 +138,10 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   // Used for testing (and maybe put into stats?).
   int GetRetransmissionCount() const override { return retransmission_count_; }
 
+  // Return the the ID of the group used by the adapters most recently
+  // completed handshake, or 0 if not applicable (e.g. before the handshake).
+  uint16_t GetSslGroupIdForTesting() const override;
+
  private:
   enum SSLState {
     // Before calling one of the StartSSL methods, data flows
@@ -255,6 +259,9 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   const int force_dtls_13_ = 0;
 
   int retransmission_count_ = 0;
+
+  // Experimental flag to enable Post-Quantum Cryptography TLS.
+  const bool enable_dtls_pqc_ = false;
 };
 
 /////////////////////////////////////////////////////////////////////////////
