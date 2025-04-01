@@ -140,7 +140,6 @@ rtc_library("basic_port_allocator") {
     "../api/environment",
     "../api/task_queue:pending_task_safety_flag",
     "../api/transport:enums",
-    "../api/transport:field_trial_based_config",
     "../api/units:time_delta",
     "../rtc_base:async_packet_socket",
     "../rtc_base:checks",

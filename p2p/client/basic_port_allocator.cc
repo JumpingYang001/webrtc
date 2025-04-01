@@ -186,11 +186,10 @@ const uint32_t DISABLE_ALL_PHASES =
 BasicPortAllocator::BasicPortAllocator(
     const webrtc::Environment& env,
     absl::Nonnull<webrtc::NetworkManager*> network_manager,
-    absl::Nonnull<rtc::PacketSocketFactory*> socket_factory,
+    absl::Nonnull<webrtc::PacketSocketFactory*> socket_factory,
     absl::Nullable<webrtc::TurnCustomizer*> turn_customizer,
     absl::Nullable<RelayPortFactoryInterface*> relay_port_factory)
     : env_(env),
-      field_trials_(&env_->field_trials()),
       network_manager_(network_manager),
       socket_factory_(socket_factory),
       relay_port_factory_(relay_port_factory) {
@@ -198,22 +197,6 @@ BasicPortAllocator::BasicPortAllocator(
   RTC_DCHECK(network_manager_);
   SetConfiguration(ServerAddresses(), std::vector<RelayServerConfig>(), 0,
                    webrtc::NO_PRUNE, turn_customizer);
-}
-
-BasicPortAllocator::BasicPortAllocator(
-    webrtc::NetworkManager* network_manager,
-    webrtc::PacketSocketFactory* socket_factory,
-    webrtc::TurnCustomizer* customizer,
-    RelayPortFactoryInterface* relay_port_factory,
-    const webrtc::FieldTrialsView* field_trials)
-    : field_trials_(field_trials),
-      network_manager_(network_manager),
-      socket_factory_(socket_factory),
-      relay_port_factory_(relay_port_factory) {
-  RTC_CHECK(socket_factory_);
-  RTC_DCHECK(network_manager_);
-  SetConfiguration(ServerAddresses(), std::vector<webrtc::RelayServerConfig>(),
-                   0, webrtc::NO_PRUNE, customizer);
 }
 
 BasicPortAllocator::~BasicPortAllocator() {
