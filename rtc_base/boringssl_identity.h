@@ -28,18 +28,18 @@ namespace webrtc {
 // Holds a keypair and certificate together, and a method to generate them
 // consistently. Uses CRYPTO_BUFFER instead of X509, which offers binary size
 // and memory improvements.
-class BoringSSLIdentity final : public rtc::SSLIdentity {
+class BoringSSLIdentity final : public SSLIdentity {
  public:
   static std::unique_ptr<BoringSSLIdentity> CreateWithExpiration(
       absl::string_view common_name,
-      const rtc::KeyParams& key_params,
+      const KeyParams& key_params,
       time_t certificate_lifetime);
   static std::unique_ptr<BoringSSLIdentity> CreateForTest(
-      const rtc::SSLIdentityParams& params);
-  static std::unique_ptr<rtc::SSLIdentity> CreateFromPEMStrings(
+      const SSLIdentityParams& params);
+  static std::unique_ptr<SSLIdentity> CreateFromPEMStrings(
       absl::string_view private_key,
       absl::string_view certificate);
-  static std::unique_ptr<rtc::SSLIdentity> CreateFromPEMChainStrings(
+  static std::unique_ptr<SSLIdentity> CreateFromPEMChainStrings(
       absl::string_view private_key,
       absl::string_view certificate_chain);
   ~BoringSSLIdentity() override;
@@ -63,10 +63,10 @@ class BoringSSLIdentity final : public rtc::SSLIdentity {
                     std::unique_ptr<BoringSSLCertificate> certificate);
   BoringSSLIdentity(std::unique_ptr<OpenSSLKeyPair> key_pair,
                     std::unique_ptr<SSLCertChain> cert_chain);
-  std::unique_ptr<rtc::SSLIdentity> CloneInternal() const override;
+  std::unique_ptr<SSLIdentity> CloneInternal() const override;
 
   static std::unique_ptr<BoringSSLIdentity> CreateInternal(
-      const rtc::SSLIdentityParams& params);
+      const SSLIdentityParams& params);
 
   std::unique_ptr<OpenSSLKeyPair> key_pair_;
   std::unique_ptr<SSLCertChain> cert_chain_;

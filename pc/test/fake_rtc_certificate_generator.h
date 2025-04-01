@@ -142,7 +142,7 @@ class FakeRTCCertificateGenerator
   int generated_certificates() { return generated_certificates_; }
   int generated_failures() { return generated_failures_; }
 
-  void GenerateCertificateAsync(const rtc::KeyParams& key_params,
+  void GenerateCertificateAsync(const webrtc::KeyParams& key_params,
                                 const std::optional<uint64_t>& expires_ms,
                                 Callback callback) override {
     // The certificates are created from constant PEM strings and use its coded
@@ -150,14 +150,14 @@ class FakeRTCCertificateGenerator
     RTC_DCHECK(!expires_ms);
 
     // Only supports RSA-1024-0x10001 and ECDSA-P256.
-    if (key_params.type() == rtc::KT_RSA) {
+    if (key_params.type() == webrtc::KT_RSA) {
       RTC_DCHECK_EQ(key_params.rsa_params().mod_size, 1024);
       RTC_DCHECK_EQ(key_params.rsa_params().pub_exp, 0x10001);
     } else {
-      RTC_DCHECK_EQ(key_params.type(), rtc::KT_ECDSA);
-      RTC_DCHECK_EQ(key_params.ec_curve(), rtc::EC_NIST_P256);
+      RTC_DCHECK_EQ(key_params.type(), webrtc::KT_ECDSA);
+      RTC_DCHECK_EQ(key_params.ec_curve(), webrtc::EC_NIST_P256);
     }
-    rtc::KeyType key_type = key_params.type();
+    webrtc::KeyType key_type = key_params.type();
     webrtc::TaskQueueBase::Current()->PostTask(
         [this, key_type, callback = std::move(callback)]() mutable {
           GenerateCertificate(key_type, std::move(callback));
@@ -165,10 +165,10 @@ class FakeRTCCertificateGenerator
   }
 
   static rtc::scoped_refptr<webrtc::RTCCertificate> GenerateCertificate() {
-    switch (rtc::KT_DEFAULT) {
-      case rtc::KT_RSA:
+    switch (webrtc::KT_DEFAULT) {
+      case webrtc::KT_RSA:
         return webrtc::RTCCertificate::FromPEM(kRsaPems[0]);
-      case rtc::KT_ECDSA:
+      case webrtc::KT_ECDSA:
         return webrtc::RTCCertificate::FromPEM(kEcdsaPems[0]);
       default:
         RTC_DCHECK_NOTREACHED();
@@ -177,25 +177,26 @@ class FakeRTCCertificateGenerator
   }
 
  private:
-  const webrtc::RTCCertificatePEM& get_pem(const rtc::KeyType& key_type) const {
+  const webrtc::RTCCertificatePEM& get_pem(
+      const webrtc::KeyType& key_type) const {
     switch (key_type) {
-      case rtc::KT_RSA:
+      case webrtc::KT_RSA:
         return kRsaPems[key_index_];
-      case rtc::KT_ECDSA:
+      case webrtc::KT_ECDSA:
         return kEcdsaPems[key_index_];
       default:
         RTC_DCHECK_NOTREACHED();
         return kEcdsaPems[key_index_];
     }
   }
-  const std::string& get_key(const rtc::KeyType& key_type) const {
+  const std::string& get_key(const webrtc::KeyType& key_type) const {
     return get_pem(key_type).private_key();
   }
-  const std::string& get_cert(const rtc::KeyType& key_type) const {
+  const std::string& get_cert(const webrtc::KeyType& key_type) const {
     return get_pem(key_type).certificate();
   }
 
-  void GenerateCertificate(rtc::KeyType key_type, Callback callback) {
+  void GenerateCertificate(webrtc::KeyType key_type, Callback callback) {
     // If the certificate generation should be stalled, re-post this same
     // message to the queue with a small delay so as to wait in a loop until
     // set_should_wait(false) is called.

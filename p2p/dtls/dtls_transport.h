@@ -29,6 +29,7 @@
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "p2p/base/ice_transport_internal.h"
+#include "p2p/base/packet_transport_internal.h"
 #include "p2p/dtls/dtls_stun_piggyback_controller.h"
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "rtc_base/async_packet_socket.h"
@@ -45,10 +46,6 @@
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
-
-namespace rtc {
-class PacketTransportInternal;
-}
 
 namespace cricket {
 
@@ -244,14 +241,14 @@ class DtlsTransport : public DtlsTransportInternal {
  private:
   void ConnectToIceTransport();
 
-  void OnWritableState(rtc::PacketTransportInternal* transport);
-  void OnReadPacket(rtc::PacketTransportInternal* transport,
+  void OnWritableState(webrtc::PacketTransportInternal* transport);
+  void OnReadPacket(webrtc::PacketTransportInternal* transport,
                     const rtc::ReceivedPacket& packet,
                     bool piggybacked);
-  void OnSentPacket(rtc::PacketTransportInternal* transport,
+  void OnSentPacket(webrtc::PacketTransportInternal* transport,
                     const rtc::SentPacket& sent_packet);
-  void OnReadyToSend(rtc::PacketTransportInternal* transport);
-  void OnReceivingState(rtc::PacketTransportInternal* transport);
+  void OnReadyToSend(webrtc::PacketTransportInternal* transport);
+  void OnReceivingState(webrtc::PacketTransportInternal* transport);
   void OnDtlsEvent(int sig, int err);
   void OnNetworkRouteChanged(std::optional<webrtc::NetworkRoute> network_route);
   bool SetupDtls();
@@ -265,7 +262,7 @@ class DtlsTransport : public DtlsTransportInternal {
   // Sets the DTLS state, signaling if necessary.
   void set_dtls_state(webrtc::DtlsTransportState state);
   void SetPiggybackDtlsDataCallback(
-      absl::AnyInvocable<void(rtc::PacketTransportInternal* transport,
+      absl::AnyInvocable<void(webrtc::PacketTransportInternal* transport,
                               const rtc::ReceivedPacket& packet)> callback);
   void PeriodicRetransmitDtlsPacketUntilDtlsConnected();
 
@@ -310,7 +307,7 @@ class DtlsTransport : public DtlsTransportInternal {
   // A controller for piggybacking DTLS in STUN.
   DtlsStunPiggybackController dtls_stun_piggyback_controller_;
 
-  absl::AnyInvocable<void(rtc::PacketTransportInternal*,
+  absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
                           const rtc::ReceivedPacket&)>
       piggybacked_dtls_callback_;
 

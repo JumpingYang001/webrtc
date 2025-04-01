@@ -45,7 +45,7 @@ std::string TestParametersMidTestConfigurationToString(
   }
 }
 
-class FrameObserver : public rtc::VideoSinkInterface<VideoFrame> {
+class FrameObserver : public VideoSinkInterface<VideoFrame> {
  public:
   FrameObserver() : frame_observed_(false) {}
   void OnFrame(const VideoFrame&) override { frame_observed_ = true; }

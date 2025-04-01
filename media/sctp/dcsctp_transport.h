@@ -105,8 +105,8 @@ class DcSctpTransport : public cricket::SctpTransportInternal,
   // Transport callbacks
   void ConnectTransportSignals();
   void DisconnectTransportSignals();
-  void OnTransportWritableState(rtc::PacketTransportInternal* transport);
-  void OnTransportReadPacket(rtc::PacketTransportInternal* transport,
+  void OnTransportWritableState(PacketTransportInternal* transport);
+  void OnTransportReadPacket(PacketTransportInternal* transport,
                              const rtc::ReceivedPacket& packet);
   void OnDtlsTransportState(cricket::DtlsTransportInternal* transport,
                             webrtc::DtlsTransportState);

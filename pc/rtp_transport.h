@@ -38,7 +38,6 @@
 namespace rtc {
 
 struct PacketOptions;
-class PacketTransportInternal;
 
 }  // namespace rtc
 
@@ -64,15 +63,15 @@ class RtpTransport : public RtpTransportInternal {
   int SetRtpOption(Socket::Option opt, int value) override;
   int SetRtcpOption(Socket::Option opt, int value) override;
 
-  rtc::PacketTransportInternal* rtp_packet_transport() const {
+  PacketTransportInternal* rtp_packet_transport() const {
     return rtp_packet_transport_;
   }
-  void SetRtpPacketTransport(rtc::PacketTransportInternal* rtp);
+  void SetRtpPacketTransport(PacketTransportInternal* rtp);
 
-  rtc::PacketTransportInternal* rtcp_packet_transport() const {
+  PacketTransportInternal* rtcp_packet_transport() const {
     return rtcp_packet_transport_;
   }
-  void SetRtcpPacketTransport(rtc::PacketTransportInternal* rtcp);
+  void SetRtcpPacketTransport(PacketTransportInternal* rtcp);
 
   bool IsReadyToSend() const override { return ready_to_send_; }
 
@@ -113,13 +112,13 @@ class RtpTransport : public RtpTransportInternal {
   virtual void OnRtpPacketReceived(const rtc::ReceivedPacket& packet);
   virtual void OnRtcpPacketReceived(const rtc::ReceivedPacket& packet);
   // Overridden by SrtpTransport and DtlsSrtpTransport.
-  virtual void OnWritableState(rtc::PacketTransportInternal* packet_transport);
+  virtual void OnWritableState(PacketTransportInternal* packet_transport);
 
  private:
-  void OnReadyToSend(rtc::PacketTransportInternal* transport);
-  void OnSentPacket(rtc::PacketTransportInternal* packet_transport,
+  void OnReadyToSend(PacketTransportInternal* transport);
+  void OnSentPacket(PacketTransportInternal* packet_transport,
                     const rtc::SentPacket& sent_packet);
-  void OnReadPacket(rtc::PacketTransportInternal* transport,
+  void OnReadPacket(PacketTransportInternal* transport,
                     const rtc::ReceivedPacket& received_packet);
 
   // Updates "ready to send" for an individual channel and fires
@@ -133,8 +132,8 @@ class RtpTransport : public RtpTransportInternal {
   const bool set_ready_to_send_false_if_send_fail_;
   bool rtcp_mux_enabled_;
 
-  rtc::PacketTransportInternal* rtp_packet_transport_ = nullptr;
-  rtc::PacketTransportInternal* rtcp_packet_transport_ = nullptr;
+  PacketTransportInternal* rtp_packet_transport_ = nullptr;
+  PacketTransportInternal* rtcp_packet_transport_ = nullptr;
 
   bool ready_to_send_ = false;
   bool rtp_ready_to_send_ = false;

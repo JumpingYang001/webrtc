@@ -173,7 +173,7 @@ std::vector<float> GetBitrateMultipliers(const FieldTrialsView& field_trials) {
     const std::string field_trial_string =
         field_trials.Lookup(kBitrateMultipliersName);
     std::vector<std::string> pieces;
-    rtc::tokenize(field_trial_string, '-', &pieces);
+    tokenize(field_trial_string, '-', &pieces);
     if (pieces.size() < 2 || pieces[0] != "Enabled") {
       RTC_LOG(LS_WARNING) << "Invalid parameters for "
                           << kBitrateMultipliersName
@@ -182,7 +182,7 @@ std::vector<float> GetBitrateMultipliers(const FieldTrialsView& field_trials) {
     }
     std::vector<float> multipliers(pieces.size() - 1);
     for (size_t i = 1; i < pieces.size(); i++) {
-      if (!rtc::FromString(pieces[i], &multipliers[i - 1])) {
+      if (!FromString(pieces[i], &multipliers[i - 1])) {
         RTC_LOG(LS_WARNING)
             << "Invalid parameters for " << kBitrateMultipliersName
             << ", not using custom values.";

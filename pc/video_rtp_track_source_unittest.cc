@@ -29,7 +29,7 @@ class MockCallback : public VideoRtpTrackSource::Callback {
   MOCK_METHOD(void, OnEncodedSinkEnabled, (bool), (override));
 };
 
-class MockSink : public rtc::VideoSinkInterface<RecordableEncodedFrame> {
+class MockSink : public VideoSinkInterface<RecordableEncodedFrame> {
  public:
   MOCK_METHOD(void, OnFrame, (const RecordableEncodedFrame&), (override));
 };

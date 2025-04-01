@@ -340,7 +340,7 @@ bool CheckRedParameters(
     return false;
   }
   std::vector<absl::string_view> redundant_payloads =
-      rtc::split(red_parameters->second, '/');
+      webrtc::split(red_parameters->second, '/');
   // 32 is chosen as a maximum upper bound for consistency with the
   // red payload splitter.
   if (redundant_payloads.size() < 2 || redundant_payloads.size() > 32) {

@@ -164,17 +164,16 @@ JavaToNativeCandidateNetworkPolicy(
   return PeerConnectionInterface::kCandidateNetworkPolicyAll;
 }
 
-rtc::KeyType JavaToNativeKeyType(JNIEnv* jni,
-                                 const JavaRef<jobject>& j_key_type) {
+KeyType JavaToNativeKeyType(JNIEnv* jni, const JavaRef<jobject>& j_key_type) {
   std::string enum_name = GetJavaEnumName(jni, j_key_type);
 
   if (enum_name == "RSA")
-    return rtc::KT_RSA;
+    return KT_RSA;
   if (enum_name == "ECDSA")
-    return rtc::KT_ECDSA;
+    return KT_ECDSA;
 
   RTC_CHECK(false) << "Unexpected KeyType enum_name " << enum_name;
-  return rtc::KT_ECDSA;
+  return KT_ECDSA;
 }
 
 PeerConnectionInterface::ContinualGatheringPolicy

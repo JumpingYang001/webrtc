@@ -33,7 +33,7 @@
 #include "rtc_base/ssl_roots.h"
 #endif  // WEBRTC_EXCLUDE_BUILT_IN_SSL_ROOT_CERTS
 
-namespace rtc {
+namespace webrtc {
 namespace openssl {
 
 // Holds various helper methods.
@@ -152,8 +152,8 @@ bool ParseCertificate(CRYPTO_BUFFER* cert_buffer,
     return false;
   }
   if (expiration_time) {
-    *expiration_time =
-        ASN1TimeToSec(CBS_data(&not_after), CBS_len(&not_after), long_format);
+    *expiration_time = webrtc::ASN1TimeToSec(CBS_data(&not_after),
+                                             CBS_len(&not_after), long_format);
   }
   //        subject              Name,
   if (!CBS_get_asn1_element(&tbs_certificate, nullptr, CBS_ASN1_SEQUENCE)) {
@@ -273,4 +273,4 @@ CRYPTO_BUFFER_POOL* GetBufferPool() {
 #endif
 
 }  // namespace openssl
-}  // namespace rtc
+}  // namespace webrtc

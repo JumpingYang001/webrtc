@@ -24,7 +24,7 @@ namespace webrtc {
 IncomingVideoStream::IncomingVideoStream(
     TaskQueueFactory* task_queue_factory,
     int32_t delay_ms,
-    rtc::VideoSinkInterface<VideoFrame>* callback)
+    VideoSinkInterface<VideoFrame>* callback)
     : render_buffers_(delay_ms),
       callback_(callback),
       incoming_render_queue_(task_queue_factory->CreateTaskQueue(

@@ -283,7 +283,7 @@ VideoReceiveStreamInterface::Config CreateVideoReceiveStreamConfig(
     Transport* feedback_transport,
     VideoDecoderFactory* decoder_factory,
     VideoReceiveStreamInterface::Decoder decoder,
-    rtc::VideoSinkInterface<VideoFrame>* renderer,
+    VideoSinkInterface<VideoFrame>* renderer,
     uint32_t local_ssrc,
     uint32_t ssrc,
     uint32_t rtx_ssrc) {
@@ -528,7 +528,7 @@ ReceiveVideoStream::ReceiveVideoStream(CallClient* receiver,
                             CodecTypeToPayloadString(config.encoder.codec));
   size_t num_streams = config.encoder.simulcast_streams.size();
   for (size_t i = 0; i < num_streams; ++i) {
-    rtc::VideoSinkInterface<VideoFrame>* renderer = &fake_renderer_;
+    VideoSinkInterface<VideoFrame>* renderer = &fake_renderer_;
     if (matcher->Active()) {
       render_taps_.emplace_back(std::make_unique<DecodedFrameTap>(
           &receiver_->env_.clock(), matcher, i));

@@ -91,7 +91,7 @@ std::unique_ptr<NetEq> CreateNetEq(
 }
 
 const std::string& GetInFilenamePath(absl::string_view file_name) {
-  std::vector<absl::string_view> name_parts = rtc::split(file_name, '.');
+  std::vector<absl::string_view> name_parts = split(file_name, '.');
   RTC_CHECK_EQ(name_parts.size(), 2);
   static const std::string path =
       ::webrtc::test::ResourcePath(name_parts[0], name_parts[1]);

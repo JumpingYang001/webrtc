@@ -517,8 +517,8 @@ TEST_P(PeerConnectionSignalingTest,
   auto later_offer = caller->CreateOffer();
 
   EXPECT_EQ(original_id, later_offer->session_id());
-  EXPECT_LT(rtc::FromString<uint64_t>(original_version),
-            rtc::FromString<uint64_t>(later_offer->session_version()));
+  EXPECT_LT(FromString<uint64_t>(original_version),
+            FromString<uint64_t>(later_offer->session_version()));
 }
 TEST_P(PeerConnectionSignalingTest,
        SessionVersionIncrementedInSubsequentDifferentAnswer) {
@@ -537,8 +537,8 @@ TEST_P(PeerConnectionSignalingTest,
   auto later_answer = callee->CreateAnswer();
 
   EXPECT_EQ(original_id, later_answer->session_id());
-  EXPECT_LT(rtc::FromString<uint64_t>(original_version),
-            rtc::FromString<uint64_t>(later_answer->session_version()));
+  EXPECT_LT(FromString<uint64_t>(original_version),
+            FromString<uint64_t>(later_answer->session_version()));
 }
 
 TEST_P(PeerConnectionSignalingTest, InitiatorFlagSetOnCallerAndNotOnCallee) {

@@ -27,7 +27,7 @@ enum : int {  // The first valid value is 1.
 };
 
 class DecryptedFrameObserver : public test::EndToEndTest,
-                               public rtc::VideoSinkInterface<VideoFrame> {
+                               public VideoSinkInterface<VideoFrame> {
  public:
   DecryptedFrameObserver()
       : EndToEndTest(test::VideoTestConstants::kDefaultTimeout),

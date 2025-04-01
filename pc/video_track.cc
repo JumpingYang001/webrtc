@@ -48,10 +48,10 @@ std::string VideoTrack::kind() const {
 // AddOrUpdateSink and RemoveSink should be called on the worker
 // thread.
 void VideoTrack::AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                                 const rtc::VideoSinkWants& wants) {
+                                 const VideoSinkWants& wants) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   VideoSourceBaseGuarded::AddOrUpdateSink(sink, wants);
-  rtc::VideoSinkWants modified_wants = wants;
+  VideoSinkWants modified_wants = wants;
   modified_wants.black_frames = !enabled_w_;
   video_source_->internal()->AddOrUpdateSink(sink, modified_wants);
 }
@@ -98,7 +98,7 @@ bool VideoTrack::set_enabled(bool enable) {
     RTC_DCHECK_RUN_ON(worker_thread_);
     enabled_w_ = enable;
     for (auto& sink_pair : sink_pairs()) {
-      rtc::VideoSinkWants modified_wants = sink_pair.wants;
+      VideoSinkWants modified_wants = sink_pair.wants;
       modified_wants.black_frames = !enable;
       video_source_->AddOrUpdateSink(sink_pair.sink, modified_wants);
     }

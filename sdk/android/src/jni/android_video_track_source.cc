@@ -108,12 +108,12 @@ ScopedJavaLocalRef<jobject> AndroidVideoTrackSource::AdaptFrame(
   // TODO(magjed): Move this logic to users of NativeAndroidVideoTrackSource
   // instead, in order to keep this native wrapping layer as thin as possible.
   if (rotation % 180 == 0) {
-    drop = !rtc::AdaptedVideoTrackSource::AdaptFrame(
+    drop = !AdaptedVideoTrackSource::AdaptFrame(
         j_width, j_height, camera_time_us, &adapted_width, &adapted_height,
         &crop_width, &crop_height, &crop_x, &crop_y);
   } else {
     // Swap all width/height and x/y.
-    drop = !rtc::AdaptedVideoTrackSource::AdaptFrame(
+    drop = !AdaptedVideoTrackSource::AdaptFrame(
         j_height, j_width, camera_time_us, &adapted_height, &adapted_width,
         &crop_height, &crop_width, &crop_y, &crop_x);
   }

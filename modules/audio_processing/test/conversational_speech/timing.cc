@@ -30,7 +30,7 @@ bool Turn::operator==(const Turn& b) const {
 std::vector<Turn> LoadTiming(absl::string_view timing_filepath) {
   // Line parser.
   auto parse_line = [](absl::string_view line) {
-    std::vector<absl::string_view> fields = rtc::split(line, ' ');
+    std::vector<absl::string_view> fields = split(line, ' ');
     RTC_CHECK_GE(fields.size(), 3);
     RTC_CHECK_LE(fields.size(), 4);
     int gain = 0;

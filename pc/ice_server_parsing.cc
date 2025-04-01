@@ -178,12 +178,11 @@ RTCError ParseIceServerUrl(const PeerConnectionInterface::IceServer& server,
   RTC_DCHECK(turn_servers != nullptr);
   ProtocolType turn_transport_type = PROTO_UDP;
   RTC_DCHECK(!url.empty());
-  std::vector<absl::string_view> tokens = rtc::split(url, '?');
+  std::vector<absl::string_view> tokens = split(url, '?');
   absl::string_view uri_without_transport = tokens[0];
   // Let's look into transport= param, if it exists.
   if (tokens.size() == kTurnTransportTokensNum) {  // ?transport= is present.
-    std::vector<absl::string_view> transport_tokens =
-        rtc::split(tokens[1], '=');
+    std::vector<absl::string_view> transport_tokens = split(tokens[1], '=');
     if (transport_tokens[0] != kTransport) {
       LOG_AND_RETURN_ERROR(
           RTCErrorType::SYNTAX_ERROR,

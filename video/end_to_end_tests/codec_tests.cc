@@ -48,7 +48,7 @@ class CodecEndToEndTest : public test::CallTest {
 };
 
 class CodecObserver : public test::EndToEndTest,
-                      public rtc::VideoSinkInterface<VideoFrame> {
+                      public VideoSinkInterface<VideoFrame> {
  public:
   CodecObserver(int no_frames_to_wait_for,
                 VideoRotation rotation_to_test,

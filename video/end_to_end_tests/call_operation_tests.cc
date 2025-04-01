@@ -82,7 +82,7 @@ TEST_F(CallOperationEndToEndTest, RendersSingleDelayedFrame) {
   // frames in the queue.
   static const int kRenderDelayMs = 1000;
 
-  class Renderer : public rtc::VideoSinkInterface<VideoFrame> {
+  class Renderer : public VideoSinkInterface<VideoFrame> {
    public:
     void OnFrame(const VideoFrame& video_frame) override {
       SleepMs(kRenderDelayMs);
@@ -141,7 +141,7 @@ TEST_F(CallOperationEndToEndTest, RendersSingleDelayedFrame) {
 }
 
 TEST_F(CallOperationEndToEndTest, TransmitsFirstFrame) {
-  class Renderer : public rtc::VideoSinkInterface<VideoFrame> {
+  class Renderer : public VideoSinkInterface<VideoFrame> {
    public:
     void OnFrame(const VideoFrame& video_frame) override { event_.Set(); }
 

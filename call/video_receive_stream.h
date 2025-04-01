@@ -268,7 +268,7 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
     Transport* rtcp_send_transport = nullptr;
 
     // Must always be set.
-    rtc::VideoSinkInterface<VideoFrame>* renderer = nullptr;
+    VideoSinkInterface<VideoFrame>* renderer = nullptr;
 
     // Expected delay needed by the renderer, i.e. the frame will be delivered
     // this many milliseconds, if possible, earlier than the ideal render time.

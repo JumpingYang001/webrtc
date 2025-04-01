@@ -22,21 +22,19 @@
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/ssl_certificate.h"
+#include "rtc_base/ssl_identity.h"
 #include "rtc_base/system/rtc_export.h"
-namespace rtc {
-class SSLIdentity;
-}  // namespace rtc
 
 namespace webrtc {
 
 struct RTC_EXPORT SSLFingerprint {
   // TODO(steveanton): Remove once downstream projects have moved off of this.
   static SSLFingerprint* Create(absl::string_view algorithm,
-                                const rtc::SSLIdentity* identity);
+                                const SSLIdentity* identity);
   // TODO(steveanton): Rename to Create once projects have migrated.
   static std::unique_ptr<SSLFingerprint> CreateUnique(
       absl::string_view algorithm,
-      const rtc::SSLIdentity& identity);
+      const SSLIdentity& identity);
 
   static std::unique_ptr<SSLFingerprint> Create(absl::string_view algorithm,
                                                 const SSLCertificate& cert);

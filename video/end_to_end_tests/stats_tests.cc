@@ -469,7 +469,7 @@ TEST_F(StatsEndToEndTest, TestReceivedRtpPacketStats) {
 #endif
 TEST_F(StatsEndToEndTest, MAYBE_ContentTypeSwitches) {
   class StatsObserver : public test::BaseTest,
-                        public rtc::VideoSinkInterface<VideoFrame> {
+                        public VideoSinkInterface<VideoFrame> {
    public:
     StatsObserver()
         : BaseTest(test::VideoTestConstants::kLongTimeout),

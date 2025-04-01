@@ -45,7 +45,7 @@ enum PacketFlags {
 // Once the public interface is supported,
 // (https://www.w3.org/TR/webrtc/#rtcdtlstransport-interface)
 // the DtlsTransportInterface will be split from this class.
-class DtlsTransportInternal : public rtc::PacketTransportInternal {
+class DtlsTransportInternal : public webrtc::PacketTransportInternal {
  public:
   ~DtlsTransportInternal() override;
 

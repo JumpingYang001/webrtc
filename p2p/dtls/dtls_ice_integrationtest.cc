@@ -205,9 +205,9 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
 
   void Prepare() {
     auto client_certificate = webrtc::RTCCertificate::Create(
-        rtc::SSLIdentity::Create("test", rtc::KT_DEFAULT));
+        webrtc::SSLIdentity::Create("test", webrtc::KT_DEFAULT));
     auto server_certificate = webrtc::RTCCertificate::Create(
-        rtc::SSLIdentity::Create("test", rtc::KT_DEFAULT));
+        webrtc::SSLIdentity::Create("test", webrtc::KT_DEFAULT));
 
     if (network_emulation_manager_ == nullptr) {
       thread_ = std::make_unique<webrtc::AutoSocketServerThread>(ss_.get());

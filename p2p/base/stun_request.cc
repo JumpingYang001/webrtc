@@ -216,7 +216,7 @@ bool StunRequestManager::CheckResponse(const char* data, size_t size) {
   std::unique_ptr<StunMessage> response(iter->second->msg_->CreateNew());
   if (!response->Read(&buf)) {
     RTC_LOG(LS_WARNING) << "Failed to read STUN response "
-                        << rtc::hex_encode(id);
+                        << webrtc::hex_encode(id);
     return false;
   }
 

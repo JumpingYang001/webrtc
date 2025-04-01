@@ -253,7 +253,7 @@ void OpenSSLAdapter::SetCertVerifier(
   ssl_cert_verifier_ = ssl_cert_verifier;
 }
 
-void OpenSSLAdapter::SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) {
+void OpenSSLAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
   RTC_DCHECK(!identity_);
 #ifdef OPENSSL_IS_BORINGSSL
   identity_ =
@@ -1040,8 +1040,7 @@ void OpenSSLAdapterFactory::SetCertVerifier(
   ssl_cert_verifier_ = ssl_cert_verifier;
 }
 
-void OpenSSLAdapterFactory::SetIdentity(
-    std::unique_ptr<rtc::SSLIdentity> identity) {
+void OpenSSLAdapterFactory::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
   RTC_DCHECK(!ssl_session_cache_);
   identity_ = std::move(identity);
 }

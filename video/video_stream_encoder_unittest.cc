@@ -332,20 +332,19 @@ class FakeVideoSourceRestrictionsListener
 };
 
 auto WantsFps(Matcher<int> fps_matcher) {
-  return Field("max_framerate_fps", &rtc::VideoSinkWants::max_framerate_fps,
+  return Field("max_framerate_fps", &VideoSinkWants::max_framerate_fps,
                fps_matcher);
 }
 
 auto WantsMaxPixels(Matcher<int> max_pixel_matcher) {
-  return Field("max_pixel_count", &rtc::VideoSinkWants::max_pixel_count,
+  return Field("max_pixel_count", &VideoSinkWants::max_pixel_count,
                AllOf(max_pixel_matcher, Gt(0)));
 }
 
 auto ResolutionMax() {
-  return AllOf(
-      WantsMaxPixels(Eq(std::numeric_limits<int>::max())),
-      Field("target_pixel_count", &rtc::VideoSinkWants::target_pixel_count,
-            Eq(std::nullopt)));
+  return AllOf(WantsMaxPixels(Eq(std::numeric_limits<int>::max())),
+               Field("target_pixel_count", &VideoSinkWants::target_pixel_count,
+                     Eq(std::nullopt)));
 }
 
 auto FpsMax() {
@@ -388,47 +387,47 @@ auto FpsInRangeForPixelsInBalanced(int last_frame_pixels) {
   } else {
     fps_range_matcher = Eq(kDefaultFramerate);
   }
-  return Field("max_framerate_fps", &rtc::VideoSinkWants::max_framerate_fps,
+  return Field("max_framerate_fps", &VideoSinkWants::max_framerate_fps,
                fps_range_matcher);
 }
 
-auto FpsEqResolutionEqTo(const rtc::VideoSinkWants& other_wants) {
+auto FpsEqResolutionEqTo(const VideoSinkWants& other_wants) {
   return AllOf(WantsFps(Eq(other_wants.max_framerate_fps)),
                WantsMaxPixels(Eq(other_wants.max_pixel_count)));
 }
 
-auto FpsMaxResolutionLt(const rtc::VideoSinkWants& other_wants) {
+auto FpsMaxResolutionLt(const VideoSinkWants& other_wants) {
   return AllOf(FpsMax(), WantsMaxPixels(Lt(other_wants.max_pixel_count)));
 }
 
-auto FpsUnlimitedResolutionLt(const rtc::VideoSinkWants& other_wants) {
+auto FpsUnlimitedResolutionLt(const VideoSinkWants& other_wants) {
   return AllOf(FpsUnlimited(), WantsMaxPixels(Lt(other_wants.max_pixel_count)));
 }
 
-auto FpsMaxResolutionGt(const rtc::VideoSinkWants& other_wants) {
+auto FpsMaxResolutionGt(const VideoSinkWants& other_wants) {
   return AllOf(FpsMax(), WantsMaxPixels(Gt(other_wants.max_pixel_count)));
 }
 
-auto FpsUnlimitedResolutionGt(const rtc::VideoSinkWants& other_wants) {
+auto FpsUnlimitedResolutionGt(const VideoSinkWants& other_wants) {
   return AllOf(FpsUnlimited(), WantsMaxPixels(Gt(other_wants.max_pixel_count)));
 }
 
-auto FpsLtResolutionEq(const rtc::VideoSinkWants& other_wants) {
+auto FpsLtResolutionEq(const VideoSinkWants& other_wants) {
   return AllOf(WantsFps(Lt(other_wants.max_framerate_fps)),
                WantsMaxPixels(Eq(other_wants.max_pixel_count)));
 }
 
-auto FpsGtResolutionEq(const rtc::VideoSinkWants& other_wants) {
+auto FpsGtResolutionEq(const VideoSinkWants& other_wants) {
   return AllOf(WantsFps(Gt(other_wants.max_framerate_fps)),
                WantsMaxPixels(Eq(other_wants.max_pixel_count)));
 }
 
-auto FpsEqResolutionLt(const rtc::VideoSinkWants& other_wants) {
+auto FpsEqResolutionLt(const VideoSinkWants& other_wants) {
   return AllOf(WantsFps(Eq(other_wants.max_framerate_fps)),
                WantsMaxPixels(Lt(other_wants.max_pixel_count)));
 }
 
-auto FpsEqResolutionGt(const rtc::VideoSinkWants& other_wants) {
+auto FpsEqResolutionGt(const VideoSinkWants& other_wants) {
   return AllOf(WantsFps(Eq(other_wants.max_framerate_fps)),
                WantsMaxPixels(Gt(other_wants.max_pixel_count)));
 }
@@ -468,7 +467,7 @@ class VideoStreamEncoderUnderTest : public VideoStreamEncoder {
   }
 
   void SetSourceAndWaitForRestrictionsUpdated(
-      rtc::VideoSourceInterface<VideoFrame>* source,
+      VideoSourceInterface<VideoFrame>* source,
       const DegradationPreference& degradation_preference) {
     FakeVideoSourceRestrictionsListener listener;
     AddRestrictionsListenerForTesting(&listener);
@@ -478,7 +477,7 @@ class VideoStreamEncoderUnderTest : public VideoStreamEncoder {
   }
 
   void SetSourceAndWaitForFramerateUpdated(
-      rtc::VideoSourceInterface<VideoFrame>* source,
+      VideoSourceInterface<VideoFrame>* source,
       const DegradationPreference& degradation_preference) {
     overuse_detector_proxy_->framerate_updated_event()->Reset();
     SetSource(source, degradation_preference);
@@ -593,7 +592,7 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
   // the resolution or frame rate was different than it is currently. If
   // something else is modified, such as encoder resolutions, but the resolution
   // and frame rate stays the same, last wants is not updated.
-  rtc::VideoSinkWants last_wants() const {
+  VideoSinkWants last_wants() const {
     MutexLock lock(&mutex_);
     return last_wants_;
   }
@@ -656,10 +655,10 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
                                    max_fps);
   }
 
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override {
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
+                       const VideoSinkWants& wants) override {
     MutexLock lock(&mutex_);
-    rtc::VideoSinkWants prev_wants = sink_wants_locked();
+    VideoSinkWants prev_wants = sink_wants_locked();
     bool did_adapt =
         prev_wants.max_pixel_count != wants.max_pixel_count ||
         prev_wants.target_pixel_count != wants.target_pixel_count ||
@@ -676,7 +675,7 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
   TimeController* const time_controller_;
   cricket::VideoAdapter adapter_;
   bool adaptation_enabled_ RTC_GUARDED_BY(mutex_);
-  rtc::VideoSinkWants last_wants_ RTC_GUARDED_BY(mutex_);
+  VideoSinkWants last_wants_ RTC_GUARDED_BY(mutex_);
   std::optional<int> last_width_;
   std::optional<int> last_height_;
   int refresh_frames_requested_{0};
@@ -879,16 +878,16 @@ class MockEncoderSelector
   MOCK_METHOD(std::optional<SdpVideoFormat>, OnEncoderBroken, (), (override));
 };
 
-class MockVideoSourceInterface : public rtc::VideoSourceInterface<VideoFrame> {
+class MockVideoSourceInterface : public VideoSourceInterface<VideoFrame> {
  public:
   MOCK_METHOD(void,
               AddOrUpdateSink,
-              (rtc::VideoSinkInterface<VideoFrame>*,
-               const rtc::VideoSinkWants&),
+              (webrtc::VideoSinkInterface<VideoFrame>*,
+               const webrtc::VideoSinkWants&),
               (override));
   MOCK_METHOD(void,
               RemoveSink,
-              (rtc::VideoSinkInterface<VideoFrame>*),
+              (webrtc::VideoSinkInterface<VideoFrame>*),
               (override));
   MOCK_METHOD(void, RequestRefreshFrame, (), (override));
 };
@@ -2787,7 +2786,7 @@ TEST_F(VideoStreamEncoderTest, RequestInSinkWantsBeforeFirstFrame) {
                                           kMaxPayloadLength);
 
   EXPECT_EQ(video_source_.sink_wants().requested_resolution,
-            rtc::VideoSinkWants::FrameSize(320, 160));
+            VideoSinkWants::FrameSize(320, 160));
 
   video_encoder_config_.simulcast_layers[0].scale_resolution_down_to->height =
       320;
@@ -2797,7 +2796,7 @@ TEST_F(VideoStreamEncoderTest, RequestInSinkWantsBeforeFirstFrame) {
                                           kMaxPayloadLength);
 
   EXPECT_EQ(video_source_.sink_wants().requested_resolution,
-            rtc::VideoSinkWants::FrameSize(640, 320));
+            VideoSinkWants::FrameSize(640, 320));
 
   video_stream_encoder_->Stop();
 }
@@ -3009,7 +3008,7 @@ TEST_F(VideoStreamEncoderTest, TestCpuDowngrades_BalancedMode) {
   EXPECT_EQ(0, stats_proxy_->GetStats().number_of_cpu_adapt_changes);
 
   // Adapt down as far as possible.
-  rtc::VideoSinkWants last_wants;
+  VideoSinkWants last_wants;
   int64_t t = 1;
   int loop_count = 0;
   do {
@@ -4352,7 +4351,7 @@ TEST_F(VideoStreamEncoderTest, DoesNotScaleBelowSetResolutionLimit) {
     WaitForEncodedFrame(i * kFrameIntervalMs);
 
     // Trigger scale down.
-    rtc::VideoSinkWants last_wants = video_source_.sink_wants();
+    VideoSinkWants last_wants = video_source_.sink_wants();
     video_stream_encoder_->TriggerQualityLow();
     EXPECT_GE(video_source_.sink_wants().max_pixel_count, kMinPixelsPerFrame);
 
@@ -4944,7 +4943,7 @@ TEST_F(VideoStreamEncoderTest,
   WaitForEncodedFrame(timestamp_ms);
   EXPECT_THAT(source.sink_wants(),
               FpsUnlimitedResolutionLt(source.last_wants()));
-  rtc::VideoSinkWants last_wants = source.sink_wants();
+  VideoSinkWants last_wants = source.sink_wants();
   EXPECT_TRUE(stats_proxy_->GetStats().cpu_limited_resolution);
   EXPECT_TRUE(stats_proxy_->GetStats().bw_limited_resolution);
   EXPECT_EQ(3, stats_proxy_->GetStats().number_of_cpu_adapt_changes);
@@ -7040,7 +7039,7 @@ TEST_F(VideoStreamEncoderTest, DoesntAdaptDownPastMinFramerate) {
   int64_t timestamp_ms = CurrentTimeMs();
 
   // Trigger overuse as much as we can.
-  rtc::VideoSinkWants last_wants;
+  VideoSinkWants last_wants;
   do {
     last_wants = video_source_.sink_wants();
 
@@ -7159,7 +7158,7 @@ TEST_F(VideoStreamEncoderTest,
   source.IncomingCapturedFrame(CreateFrame(timestamp_ms, kWidth, kHeight));
   WaitForEncodedFrame(timestamp_ms);
   EXPECT_THAT(source.sink_wants(), FpsLtResolutionEq(source.last_wants()));
-  rtc::VideoSinkWants last_wants = source.sink_wants();
+  VideoSinkWants last_wants = source.sink_wants();
   EXPECT_TRUE(stats_proxy_->GetStats().bw_limited_resolution);
   EXPECT_TRUE(stats_proxy_->GetStats().bw_limited_framerate);
   EXPECT_EQ(7, stats_proxy_->GetStats().number_of_quality_adapt_changes);
@@ -8698,7 +8697,7 @@ TEST_F(VideoStreamEncoderTest, EncoderResolutionsExposedInSinglecast) {
   video_stream_encoder_->WaitUntilTaskQueueIsIdle();
   EXPECT_THAT(video_source_.sink_wants().resolutions,
               ::testing::ElementsAreArray(
-                  {rtc::VideoSinkWants::FrameSize(kFrameWidth, kFrameHeight)}));
+                  {VideoSinkWants::FrameSize(kFrameWidth, kFrameHeight)}));
 
   video_stream_encoder_->Stop();
 }
@@ -8714,11 +8713,11 @@ TEST_F(VideoStreamEncoderTest, EncoderResolutionsExposedInSimulcast) {
   const float kDownscaleFactors[] = {8.0, 4.0, 2.0};
   const int kFrameWidth = 1280;
   const int kFrameHeight = 720;
-  const rtc::VideoSinkWants::FrameSize kLayer0Size(
+  const VideoSinkWants::FrameSize kLayer0Size(
       kFrameWidth / kDownscaleFactors[0], kFrameHeight / kDownscaleFactors[0]);
-  const rtc::VideoSinkWants::FrameSize kLayer1Size(
+  const VideoSinkWants::FrameSize kLayer1Size(
       kFrameWidth / kDownscaleFactors[1], kFrameHeight / kDownscaleFactors[1]);
-  const rtc::VideoSinkWants::FrameSize kLayer2Size(
+  const VideoSinkWants::FrameSize kLayer2Size(
       kFrameWidth / kDownscaleFactors[2], kFrameHeight / kDownscaleFactors[2]);
 
   VideoEncoderConfig config;
@@ -9485,11 +9484,11 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, HandlesLayerToggling) {
   const float kDownscaleFactors[] = {4.0, 2.0, 1.0};
   const int kFrameWidth = 1280;
   const int kFrameHeight = 720;
-  const rtc::VideoSinkWants::FrameSize kLayer0Size(
+  const VideoSinkWants::FrameSize kLayer0Size(
       kFrameWidth / kDownscaleFactors[0], kFrameHeight / kDownscaleFactors[0]);
-  const rtc::VideoSinkWants::FrameSize kLayer1Size(
+  const VideoSinkWants::FrameSize kLayer1Size(
       kFrameWidth / kDownscaleFactors[1], kFrameHeight / kDownscaleFactors[1]);
-  const rtc::VideoSinkWants::FrameSize kLayer2Size(
+  const VideoSinkWants::FrameSize kLayer2Size(
       kFrameWidth / kDownscaleFactors[2], kFrameHeight / kDownscaleFactors[2]);
 
   VideoEncoderConfig config;

@@ -37,7 +37,7 @@ class FakePeriodicVideoTrackSource : public VideoTrackSource {
   }
 
  protected:
-  rtc::VideoSourceInterface<VideoFrame>* source() override { return &source_; }
+  VideoSourceInterface<VideoFrame>* source() override { return &source_; }
 
  private:
   FakePeriodicVideoSource source_;

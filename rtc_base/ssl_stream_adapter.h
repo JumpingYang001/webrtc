@@ -134,8 +134,8 @@ class SSLStreamAdapter : public StreamInterface {
   // Specify our SSL identity: key and certificate. SSLStream takes ownership
   // of the SSLIdentity object and will free it when appropriate. Should be
   // called no more than once on a given SSLStream instance.
-  virtual void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) = 0;
-  virtual rtc::SSLIdentity* GetIdentityForTesting() const = 0;
+  virtual void SetIdentity(std::unique_ptr<SSLIdentity> identity) = 0;
+  virtual SSLIdentity* GetIdentityForTesting() const = 0;
 
   // Call this to indicate that we are to play the server role (or client role,
   // if the default argument is replaced by SSL_CLIENT).
@@ -238,9 +238,8 @@ class SSLStreamAdapter : public StreamInterface {
 
   // Returns true iff the supplied cipher is deemed to be strong.
   // TODO(torbjorng): Consider removing the KeyType argument.
-  static bool IsAcceptableCipher(int cipher, rtc::KeyType key_type);
-  static bool IsAcceptableCipher(absl::string_view cipher,
-                                 rtc::KeyType key_type);
+  static bool IsAcceptableCipher(int cipher, KeyType key_type);
+  static bool IsAcceptableCipher(absl::string_view cipher, KeyType key_type);
 
   ////////////////////////////////////////////////////////////////////////////
   // Testing only member functions

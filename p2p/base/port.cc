@@ -358,7 +358,7 @@ void Port::OnReadPacket(const rtc::ReceivedPacket& packet,
     // STUN message handled already
   } else if (msg->type() == STUN_BINDING_REQUEST) {
     RTC_LOG(LS_INFO) << "Received " << StunMethodToString(msg->type())
-                     << " id=" << rtc::hex_encode(msg->transaction_id())
+                     << " id=" << webrtc::hex_encode(msg->transaction_id())
                      << " from unknown address " << addr.ToSensitiveString();
     // We need to signal an unknown address before we handle any role conflict
     // below. Otherwise there would be no candidate pair and TURN entry created

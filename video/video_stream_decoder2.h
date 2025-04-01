@@ -35,10 +35,9 @@ class ReceiveStatisticsProxy;
 
 class VideoStreamDecoder : public VCMReceiveCallback {
  public:
-  VideoStreamDecoder(
-      VideoReceiver2* video_receiver,
-      ReceiveStatisticsProxy* receive_statistics_proxy,
-      rtc::VideoSinkInterface<VideoFrame>* incoming_video_stream);
+  VideoStreamDecoder(VideoReceiver2* video_receiver,
+                     ReceiveStatisticsProxy* receive_statistics_proxy,
+                     VideoSinkInterface<VideoFrame>* incoming_video_stream);
   ~VideoStreamDecoder() override;
 
   // Implements VCMReceiveCallback.
@@ -51,7 +50,7 @@ class VideoStreamDecoder : public VCMReceiveCallback {
  private:
   VideoReceiver2* const video_receiver_;
   ReceiveStatisticsProxy* const receive_stats_callback_;
-  rtc::VideoSinkInterface<VideoFrame>* const incoming_video_stream_;
+  VideoSinkInterface<VideoFrame>* const incoming_video_stream_;
 };
 
 }  // namespace internal

@@ -22,7 +22,7 @@
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 
-namespace rtc {
+namespace webrtc {
 
 // OpenSSLCertificate encapsulates an OpenSSL X509* certificate object,
 // which is also reference counted inside the OpenSSL library.
@@ -73,6 +73,14 @@ class OpenSSLCertificate final : public SSLCertificate {
   X509* x509_;  // NOT OWNED
 };
 
-}  // namespace rtc
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+
+using ::webrtc::OpenSSLCertificate;
+
+}
 
 #endif  // RTC_BASE_OPENSSL_CERTIFICATE_H_

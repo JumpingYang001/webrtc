@@ -145,7 +145,7 @@ std::unique_ptr<CertificateInfo> CreateFakeCertificateAndInfoFromDers(
   std::unique_ptr<CertificateInfo> info(new CertificateInfo());
   info->ders = ders;
   for (const std::string& der : ders) {
-    info->pems.push_back(rtc::SSLIdentity::DerToPem(
+    info->pems.push_back(SSLIdentity::DerToPem(
         "CERTIFICATE", reinterpret_cast<const unsigned char*>(der.c_str()),
         der.length()));
   }
@@ -268,7 +268,7 @@ class FakeVideoTrackSourceForStats : public VideoTrackSourceInterface {
   void UnregisterObserver(ObserverInterface* observer) override {}
   // rtc::VideoSourceInterface<VideoFrame> (part of VideoTrackSourceInterface)
   void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override {}
+                       const VideoSinkWants& wants) override {}
   void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override {}
   bool SupportsEncodedOutput() const override { return false; }
   void GenerateKeyFrame() override {}
@@ -303,7 +303,7 @@ class FakeVideoTrackForStats : public MediaStreamTrack<VideoTrackInterface> {
   }
 
   void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override {}
+                       const VideoSinkWants& wants) override {}
   void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override {}
 
   VideoTrackSourceInterface* GetSource() const override {

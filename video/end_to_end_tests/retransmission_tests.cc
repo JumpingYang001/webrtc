@@ -273,7 +273,7 @@ void RetransmissionEndToEndTest::ReceivesPliAndRecovers(int rtp_history_ms) {
   static const int kPacketsToDrop = 1;
 
   class PliObserver : public test::EndToEndTest,
-                      public rtc::VideoSinkInterface<VideoFrame> {
+                      public VideoSinkInterface<VideoFrame> {
    public:
     explicit PliObserver(int rtp_history_ms)
         : EndToEndTest(test::VideoTestConstants::kLongTimeout),
@@ -363,7 +363,7 @@ void RetransmissionEndToEndTest::DecodesRetransmittedFrame(bool enable_rtx,
                                                            bool enable_red) {
   static const int kDroppedFrameNumber = 10;
   class RetransmissionObserver : public test::EndToEndTest,
-                                 public rtc::VideoSinkInterface<VideoFrame> {
+                                 public VideoSinkInterface<VideoFrame> {
    public:
     RetransmissionObserver(bool enable_rtx, bool enable_red)
         : EndToEndTest(test::VideoTestConstants::kDefaultTimeout),
@@ -497,7 +497,7 @@ void RetransmissionEndToEndTest::DecodesRetransmittedFrame(bool enable_rtx,
     }
 
     Mutex mutex_;
-    rtc::VideoSinkInterface<VideoFrame>* orig_renderer_ = nullptr;
+    VideoSinkInterface<VideoFrame>* orig_renderer_ = nullptr;
     const int payload_type_;
     const uint32_t retransmission_ssrc_;
     const int retransmission_payload_type_;

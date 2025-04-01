@@ -30,7 +30,7 @@
 #include "rtc_base/openssl_identity.h"
 #include "rtc_base/openssl_utility.h"
 
-namespace rtc {
+namespace webrtc {
 namespace {
 
 // Random bits for certificate serial number
@@ -288,4 +288,4 @@ int64_t OpenSSLCertificate::CertificateExpirationTime() const {
   return ASN1TimeToSec(expire_time->data, expire_time->length, long_format);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

@@ -64,7 +64,7 @@ struct MediaDescriptionOptions {
   std::string mid;
   webrtc::RtpTransceiverDirection direction;
   bool stopped;
-  TransportOptions transport_options;
+  webrtc::TransportOptions transport_options;
   // Note: There's no equivalent "RtpReceiverOptions" because only send
   // stream information goes in the local descriptions.
   std::vector<SenderOptions> sender_options;

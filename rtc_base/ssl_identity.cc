@@ -30,7 +30,7 @@
 #include "rtc_base/third_party/base64/base64.h"
 #include "rtc_base/time_utils.h"
 
-namespace rtc {
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // Helper Functions
@@ -188,20 +188,19 @@ bool SSLIdentity::PemToDer(absl::string_view pem_type,
     return false;
   }
   std::string inner(pem_string.substr(body + 1, trailer - (body + 1)));
-  *der = webrtc::Base64::Decode(inner, webrtc::Base64::DO_PARSE_WHITE |
-                                           webrtc::Base64::DO_PAD_ANY |
-                                           webrtc::Base64::DO_TERM_BUFFER);
+  *der = Base64::Decode(inner, Base64::DO_PARSE_WHITE | Base64::DO_PAD_ANY |
+                                   Base64::DO_TERM_BUFFER);
   return true;
 }
 
 std::string SSLIdentity::DerToPem(absl::string_view pem_type,
                                   const unsigned char* data,
                                   size_t length) {
-  webrtc::StringBuilder result;
+  StringBuilder result;
   result << "-----BEGIN " << pem_type << "-----\n";
 
   std::string b64_encoded;
-  webrtc::Base64::EncodeFromArray(data, length, &b64_encoded);
+  Base64::EncodeFromArray(data, length, &b64_encoded);
   // Divide the Base-64 encoded data into 64-character chunks, as per 4.3.2.4
   // of RFC 1421.
   static const size_t kChunkSize = 64;
@@ -220,8 +219,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::Create(absl::string_view common_name,
                                                  const KeyParams& key_param,
                                                  time_t certificate_lifetime) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return webrtc::BoringSSLIdentity::CreateWithExpiration(common_name, key_param,
-                                                         certificate_lifetime);
+  return BoringSSLIdentity::CreateWithExpiration(common_name, key_param,
+                                                 certificate_lifetime);
 #else
   return OpenSSLIdentity::CreateWithExpiration(common_name, key_param,
                                                certificate_lifetime);
@@ -245,7 +244,7 @@ std::unique_ptr<SSLIdentity> SSLIdentity::Create(absl::string_view common_name,
 std::unique_ptr<SSLIdentity> SSLIdentity::CreateForTest(
     const SSLIdentityParams& params) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return webrtc::BoringSSLIdentity::CreateForTest(params);
+  return BoringSSLIdentity::CreateForTest(params);
 #else
   return OpenSSLIdentity::CreateForTest(params);
 #endif
@@ -257,8 +256,7 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMStrings(
     absl::string_view private_key,
     absl::string_view certificate) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return webrtc::BoringSSLIdentity::CreateFromPEMStrings(private_key,
-                                                         certificate);
+  return BoringSSLIdentity::CreateFromPEMStrings(private_key, certificate);
 #else
   return OpenSSLIdentity::CreateFromPEMStrings(private_key, certificate);
 #endif
@@ -270,8 +268,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMChainStrings(
     absl::string_view private_key,
     absl::string_view certificate_chain) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return webrtc::BoringSSLIdentity::CreateFromPEMChainStrings(
-      private_key, certificate_chain);
+  return BoringSSLIdentity::CreateFromPEMChainStrings(private_key,
+                                                      certificate_chain);
 #else
   return OpenSSLIdentity::CreateFromPEMChainStrings(private_key,
                                                     certificate_chain);
@@ -280,8 +278,8 @@ std::unique_ptr<SSLIdentity> SSLIdentity::CreateFromPEMChainStrings(
 
 bool operator==(const SSLIdentity& a, const SSLIdentity& b) {
 #ifdef OPENSSL_IS_BORINGSSL
-  return static_cast<const webrtc::BoringSSLIdentity&>(a) ==
-         static_cast<const webrtc::BoringSSLIdentity&>(b);
+  return static_cast<const BoringSSLIdentity&>(a) ==
+         static_cast<const BoringSSLIdentity&>(b);
 #else
   return static_cast<const OpenSSLIdentity&>(a) ==
          static_cast<const OpenSSLIdentity&>(b);
@@ -291,4 +289,4 @@ bool operator!=(const SSLIdentity& a, const SSLIdentity& b) {
   return !(a == b);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

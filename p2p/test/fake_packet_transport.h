@@ -29,7 +29,7 @@
 namespace webrtc {
 
 // Used to simulate a packet-based transport.
-class FakePacketTransport : public rtc::PacketTransportInternal {
+class FakePacketTransport : public PacketTransportInternal {
  public:
   explicit FakePacketTransport(const std::string& transport_name)
       : transport_name_(transport_name) {}
@@ -107,8 +107,8 @@ class FakePacketTransport : public rtc::PacketTransportInternal {
     SignalNetworkRouteChanged(network_route);
   }
 
-  using rtc::PacketTransportInternal::NotifyOnClose;
-  using rtc::PacketTransportInternal::NotifyPacketReceived;
+  using PacketTransportInternal::NotifyOnClose;
+  using PacketTransportInternal::NotifyPacketReceived;
 
  private:
   void set_writable(bool writable) {

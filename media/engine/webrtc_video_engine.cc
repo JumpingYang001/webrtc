@@ -1535,7 +1535,7 @@ bool WebRtcVideoSendChannel::SetSend(bool send) {
 bool WebRtcVideoSendChannel::SetVideoSend(
     uint32_t ssrc,
     const VideoOptions* options,
-    rtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
+    webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   TRACE_EVENT0("webrtc", "SetVideoSend");
   RTC_DCHECK(ssrc != 0);
@@ -1912,7 +1912,7 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::~WebRtcVideoSendStream() {
 
 bool WebRtcVideoSendChannel::WebRtcVideoSendStream::SetVideoSend(
     const VideoOptions* options,
-    rtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
+    webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
   TRACE_EVENT0("webrtc", "WebRtcVideoSendStream::SetVideoSend");
   RTC_DCHECK_RUN_ON(&thread_checker_);
 
@@ -3183,7 +3183,7 @@ void WebRtcVideoReceiveChannel::OnDemuxerCriteriaUpdateComplete() {
 
 bool WebRtcVideoReceiveChannel::SetSink(
     uint32_t ssrc,
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   RTC_LOG(LS_INFO) << "SetSink: ssrc:" << ssrc << " "
                    << (sink ? "(ptr)" : "nullptr");
@@ -3198,7 +3198,7 @@ bool WebRtcVideoReceiveChannel::SetSink(
 }
 
 void WebRtcVideoReceiveChannel::SetDefaultSink(
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   RTC_LOG(LS_INFO) << "SetDefaultSink: " << (sink ? "(ptr)" : "nullptr");
   default_sink_ = sink;
@@ -3811,7 +3811,7 @@ int WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::
 }
 
 void WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::SetSink(
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
   webrtc::MutexLock lock(&sink_lock_);
   sink_ = sink;
 }

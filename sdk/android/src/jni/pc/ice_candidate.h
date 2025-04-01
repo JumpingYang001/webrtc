@@ -62,8 +62,7 @@ JavaToNativeCandidateNetworkPolicy(
     JNIEnv* jni,
     const JavaRef<jobject>& j_candidate_network_policy);
 
-rtc::KeyType JavaToNativeKeyType(JNIEnv* jni,
-                                 const JavaRef<jobject>& j_key_type);
+KeyType JavaToNativeKeyType(JNIEnv* jni, const JavaRef<jobject>& j_key_type);
 
 PeerConnectionInterface::ContinualGatheringPolicy
 JavaToNativeContinualGatheringPolicy(

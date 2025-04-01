@@ -28,14 +28,14 @@
 #include "rtc_base/system/rtc_export.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace rtc {
+namespace webrtc {
 
 // Base class for sources which needs video adaptation, e.g., video
 // capture sources. Sinks must be added and removed on one and only
 // one thread, while AdaptFrame and OnFrame may be called on any
 // thread.
 class RTC_EXPORT AdaptedVideoTrackSource
-    : public webrtc::Notifier<webrtc::VideoTrackSourceInterface> {
+    : public Notifier<VideoTrackSourceInterface> {
  public:
   AdaptedVideoTrackSource();
   ~AdaptedVideoTrackSource() override;
@@ -47,7 +47,7 @@ class RTC_EXPORT AdaptedVideoTrackSource
   // Checks the apply_rotation() flag. If the frame needs rotation, and it is a
   // plain memory frame, it is rotated. Subclasses producing native frames must
   // handle apply_rotation() themselves.
-  void OnFrame(const webrtc::VideoFrame& frame);
+  void OnFrame(const VideoFrame& frame);
   // Indication from source that a frame was dropped.
   void OnFrameDropped();
 
@@ -75,35 +75,39 @@ class RTC_EXPORT AdaptedVideoTrackSource
 
  private:
   // Implements rtc::VideoSourceInterface.
-  void AddOrUpdateSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
+                       const VideoSinkWants& wants) override;
+  void RemoveSink(VideoSinkInterface<VideoFrame>* sink) override;
 
   // Part of VideoTrackSourceInterface.
   bool GetStats(Stats* stats) override;
 
-  void OnSinkWantsChanged(const rtc::VideoSinkWants& wants);
+  void OnSinkWantsChanged(const VideoSinkWants& wants);
 
   // Encoded sinks not implemented for AdaptedVideoTrackSource.
   bool SupportsEncodedOutput() const override { return false; }
   void GenerateKeyFrame() override {}
   void AddEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* /* sink */)
-      override {}
+      VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
   void RemoveEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* /* sink */)
-      override {}
+      VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
   void ProcessConstraints(
-      const webrtc::VideoTrackSourceConstraints& constraints) override;
+      const VideoTrackSourceConstraints& constraints) override;
 
   cricket::VideoAdapter video_adapter_;
 
-  webrtc::Mutex stats_mutex_;
+  Mutex stats_mutex_;
   std::optional<Stats> stats_ RTC_GUARDED_BY(stats_mutex_);
 
   VideoBroadcaster broadcaster_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::AdaptedVideoTrackSource;
 }  // namespace rtc
 
 #endif  // MEDIA_BASE_ADAPTED_VIDEO_TRACK_SOURCE_H_

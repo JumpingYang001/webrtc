@@ -120,8 +120,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   void RestartMediaChannel_w(std::optional<uint32_t> ssrc,
                              MediaSourceInterface::SourceState state)
       RTC_RUN_ON(worker_thread_);
-  void SetSink(rtc::VideoSinkInterface<VideoFrame>* sink)
-      RTC_RUN_ON(worker_thread_);
+  void SetSink(VideoSinkInterface<VideoFrame>* sink) RTC_RUN_ON(worker_thread_);
   void SetMediaChannel_w(cricket::MediaReceiveChannelInterface* media_channel)
       RTC_RUN_ON(worker_thread_);
 

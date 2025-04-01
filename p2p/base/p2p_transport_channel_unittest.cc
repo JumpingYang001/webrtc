@@ -405,10 +405,10 @@ class P2PTransportChannelTestBase : public ::testing::Test,
           tiebreaker_(0),
           role_conflict_(false),
           save_candidates_(false) {}
-    bool HasTransport(const rtc::PacketTransportInternal* transport) {
+    bool HasTransport(const webrtc::PacketTransportInternal* transport) {
       return (transport == cd1_.ch_.get() || transport == cd2_.ch_.get());
     }
-    ChannelData* GetChannelData(rtc::PacketTransportInternal* transport) {
+    ChannelData* GetChannelData(webrtc::PacketTransportInternal* transport) {
       if (!HasTransport(transport))
         return NULL;
       if (cd1_.ch_.get() == transport)
@@ -452,7 +452,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     std::map<webrtc::IceRegatheringReason, int> ice_regathering_counter_;
   };
 
-  ChannelData* GetChannelData(rtc::PacketTransportInternal* transport) {
+  ChannelData* GetChannelData(webrtc::PacketTransportInternal* transport) {
     if (ep1_.HasTransport(transport))
       return ep1_.GetChannelData(transport);
     else
@@ -864,7 +864,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     EXPECT_TRUE(info.network_id.has_value());
   }
 
-  void OnReadyToSend(rtc::PacketTransportInternal* transport) {
+  void OnReadyToSend(webrtc::PacketTransportInternal* transport) {
     GetEndpoint(transport)->ready_to_send_ = true;
   }
 
@@ -962,7 +962,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     rch->AddRemoteCandidate(candidate);
   }
 
-  void OnReadPacket(rtc::PacketTransportInternal* transport,
+  void OnReadPacket(webrtc::PacketTransportInternal* transport,
                     const rtc::ReceivedPacket& packet) {
     std::list<std::string>& packets = GetPacketList(transport);
     packets.push_front(
@@ -978,7 +978,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     channel->SetIceRole(new_role);
   }
 
-  void OnSentPacket(rtc::PacketTransportInternal* transport,
+  void OnSentPacket(webrtc::PacketTransportInternal* transport,
                     const rtc::SentPacket& packet) {
     TestPacketInfoIsSet(packet.info);
   }
@@ -1004,7 +1004,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
                ? &ch->selected_connection()->remote_candidate()
                : NULL;
   }
-  Endpoint* GetEndpoint(rtc::PacketTransportInternal* transport) {
+  Endpoint* GetEndpoint(webrtc::PacketTransportInternal* transport) {
     if (ep1_.HasTransport(transport)) {
       return &ep1_;
     } else if (ep2_.HasTransport(transport)) {
@@ -1026,7 +1026,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
       return NULL;
   }
   std::list<std::string>& GetPacketList(
-      rtc::PacketTransportInternal* transport) {
+      webrtc::PacketTransportInternal* transport) {
     return GetChannelData(transport)->ch_packets_;
   }
 
@@ -4085,7 +4085,7 @@ class P2PTransportChannelPingTest : public ::testing::Test,
                             std::nullopt);
   }
 
-  void OnReadyToSend(rtc::PacketTransportInternal* transport) {
+  void OnReadyToSend(webrtc::PacketTransportInternal* transport) {
     channel_ready_to_send_ = true;
   }
   void OnChannelStateChanged(webrtc::IceTransportInternal* channel) {

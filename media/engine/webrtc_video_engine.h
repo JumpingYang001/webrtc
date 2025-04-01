@@ -204,7 +204,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
   bool SetVideoSend(
       uint32_t ssrc,
       const VideoOptions* options,
-      rtc::VideoSourceInterface<webrtc::VideoFrame>* source) override;
+      webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) override;
   bool AddSendStream(const StreamParams& sp) override;
   bool RemoveSendStream(uint32_t ssrc) override;
   void FillBitrateInfo(BandwidthEstimationInfo* bwe_info) override;
@@ -350,7 +350,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
         rtc::scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor);
 
     bool SetVideoSend(const VideoOptions* options,
-                      rtc::VideoSourceInterface<webrtc::VideoFrame>* source);
+                      webrtc::VideoSourceInterface<webrtc::VideoFrame>* source);
 
     // note: The encoder_selector object must remain valid for the lifetime of
     // the MediaChannel, unless replaced.
@@ -419,7 +419,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
     const std::vector<SsrcGroup> ssrc_groups_ RTC_GUARDED_BY(&thread_checker_);
     webrtc::Call* const call_;
     const bool enable_cpu_overuse_detection_;
-    rtc::VideoSourceInterface<webrtc::VideoFrame>* source_
+    webrtc::VideoSourceInterface<webrtc::VideoFrame>* source_
         RTC_GUARDED_BY(&thread_checker_);
 
     webrtc::VideoSendStream* stream_ RTC_GUARDED_BY(&thread_checker_);
@@ -477,7 +477,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
   bool receiving_ RTC_GUARDED_BY(&thread_checker_);
   webrtc::Call* const call_;
 
-  rtc::VideoSinkInterface<webrtc::VideoFrame>* default_sink_
+  webrtc::VideoSinkInterface<webrtc::VideoFrame>* default_sink_
       RTC_GUARDED_BY(thread_checker_);
 
   // Delay for unsignaled streams, which may be set before the stream exists.
@@ -606,9 +606,9 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
   void OnDemuxerCriteriaUpdatePending() override;
   void OnDemuxerCriteriaUpdateComplete() override;
   bool SetSink(uint32_t ssrc,
-               rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+               webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   void SetDefaultSink(
-      rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   bool GetStats(VideoMediaReceiveInfo* info) override;
   void OnPacketReceived(const webrtc::RtpPacketReceived& packet) override;
   bool SetBaseMinimumPlayoutDelayMs(uint32_t ssrc, int delay_ms) override;
@@ -691,7 +691,7 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
   // Wrapper for the receiver part, contains configs etc. that are needed to
   // reconstruct the underlying VideoReceiveStreamInterface.
   class WebRtcVideoReceiveStream
-      : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+      : public webrtc::VideoSinkInterface<webrtc::VideoFrame> {
    public:
     WebRtcVideoReceiveStream(
         webrtc::Call* call,
@@ -731,7 +731,7 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
 
     int GetBaseMinimumPlayoutDelayMs() const;
 
-    void SetSink(rtc::VideoSinkInterface<webrtc::VideoFrame>* sink);
+    void SetSink(webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink);
 
     VideoReceiverInfo GetVideoReceiverInfo(bool log_stats);
 
@@ -776,7 +776,7 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
     webrtc::FlexfecReceiveStream* flexfec_stream_;
 
     webrtc::Mutex sink_lock_;
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink_
         RTC_GUARDED_BY(sink_lock_);
     int64_t first_frame_timestamp_ RTC_GUARDED_BY(sink_lock_);
     // Start NTP time is estimated as current remote NTP time (estimated from
@@ -812,7 +812,7 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
   bool receiving_ RTC_GUARDED_BY(&thread_checker_);
   webrtc::Call* const call_;
 
-  rtc::VideoSinkInterface<webrtc::VideoFrame>* default_sink_
+  webrtc::VideoSinkInterface<webrtc::VideoFrame>* default_sink_
       RTC_GUARDED_BY(thread_checker_);
 
   // Delay for unsignaled streams, which may be set before the stream exists.

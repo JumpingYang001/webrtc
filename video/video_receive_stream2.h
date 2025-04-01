@@ -86,7 +86,7 @@ struct VideoFrameMetaData {
 
 class VideoReceiveStream2
     : public webrtc::VideoReceiveStreamInterface,
-      public rtc::VideoSinkInterface<VideoFrame>,
+      public VideoSinkInterface<VideoFrame>,
       public RtpVideoStreamReceiver2::OnCompleteFrameCallback,
       public Syncable,
       public CallStatsObserver,
@@ -279,7 +279,7 @@ class VideoReceiveStream2
 
   std::unique_ptr<VCMTiming> timing_;  // Jitter buffer experiment.
   VideoReceiver2 video_receiver_;
-  std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>> incoming_video_stream_;
+  std::unique_ptr<VideoSinkInterface<VideoFrame>> incoming_video_stream_;
   RtpVideoStreamReceiver2 rtp_video_stream_receiver_;
   std::unique_ptr<VideoStreamDecoder> video_stream_decoder_;
   RtpStreamsSynchronizer rtp_stream_sync_;

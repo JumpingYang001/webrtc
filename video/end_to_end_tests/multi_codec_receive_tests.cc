@@ -62,7 +62,7 @@ int RemoveOlderOrEqual(uint32_t timestamp, std::vector<uint32_t>* timestamps) {
 }
 
 class FrameObserver : public test::RtpRtcpObserver,
-                      public rtc::VideoSinkInterface<VideoFrame> {
+                      public VideoSinkInterface<VideoFrame> {
  public:
   FrameObserver()
       : test::RtpRtcpObserver(test::VideoTestConstants::kDefaultTimeout) {}

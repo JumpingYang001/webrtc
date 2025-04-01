@@ -257,7 +257,7 @@ struct RTC_EXPORT IceConfig {
 // the IceTransportInterface will be split from this class.
 //
 // TODO(bugs.webrtc.org/15609): Define a public API for this.
-class RTC_EXPORT IceTransportInternal : public rtc::PacketTransportInternal {
+class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
  public:
   IceTransportInternal();
   ~IceTransportInternal() override;

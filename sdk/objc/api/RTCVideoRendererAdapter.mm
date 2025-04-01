@@ -17,8 +17,7 @@
 
 namespace webrtc {
 
-class VideoRendererAdapter
-    : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+class VideoRendererAdapter : public VideoSinkInterface<webrtc::VideoFrame> {
  public:
   VideoRendererAdapter(RTCVideoRendererAdapter* adapter) {
     adapter_ = adapter;
@@ -63,7 +62,7 @@ class VideoRendererAdapter
   return self;
 }
 
-- (rtc::VideoSinkInterface<webrtc::VideoFrame>*)nativeVideoRenderer {
+- (webrtc::VideoSinkInterface<webrtc::VideoFrame>*)nativeVideoRenderer {
   return _adapter.get();
 }
 

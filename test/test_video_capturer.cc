@@ -85,18 +85,17 @@ void TestVideoCapturer::OnFrame(const VideoFrame& original_frame) {
   }
 }
 
-rtc::VideoSinkWants TestVideoCapturer::GetSinkWants() {
+VideoSinkWants TestVideoCapturer::GetSinkWants() {
   return broadcaster_.wants();
 }
 
-void TestVideoCapturer::AddOrUpdateSink(
-    rtc::VideoSinkInterface<VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+void TestVideoCapturer::AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
+                                        const VideoSinkWants& wants) {
   broadcaster_.AddOrUpdateSink(sink, wants);
   UpdateVideoAdapter();
 }
 
-void TestVideoCapturer::RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) {
+void TestVideoCapturer::RemoveSink(VideoSinkInterface<VideoFrame>* sink) {
   broadcaster_.RemoveSink(sink);
   UpdateVideoAdapter();
 }

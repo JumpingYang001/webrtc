@@ -111,7 +111,7 @@ class RTC_EXPORT MediaStreamTrackInterface : public webrtc::RefCountInterface,
 // can inherit AdaptedVideoTrackSource instead of directly implementing this
 // interface.
 class VideoTrackSourceInterface : public MediaSourceInterface,
-                                  public rtc::VideoSourceInterface<VideoFrame> {
+                                  public VideoSourceInterface<VideoFrame> {
  public:
   struct Stats {
     // Original size of captured frame, before video adaptation.
@@ -150,11 +150,11 @@ class VideoTrackSourceInterface : public MediaSourceInterface,
   // a key frame to be generated from the source. The sink will be
   // invoked from a decoder queue.
   virtual void AddEncodedSink(
-      rtc::VideoSinkInterface<RecordableEncodedFrame>* sink) = 0;
+      VideoSinkInterface<RecordableEncodedFrame>* sink) = 0;
 
   // Removes an encoded video sink from the source.
   virtual void RemoveEncodedSink(
-      rtc::VideoSinkInterface<RecordableEncodedFrame>* sink) = 0;
+      VideoSinkInterface<RecordableEncodedFrame>* sink) = 0;
 
   // Notify about constraints set on the source. The information eventually gets
   // routed to attached sinks via VideoSinkInterface<>::OnConstraintsChanged.
@@ -173,9 +173,8 @@ class VideoTrackSourceInterface : public MediaSourceInterface,
 // PeerConnectionFactory::CreateVideoTrack can be used for creating a VideoTrack
 // that ensures thread safety and that all methods are called on the right
 // thread.
-class RTC_EXPORT VideoTrackInterface
-    : public MediaStreamTrackInterface,
-      public rtc::VideoSourceInterface<VideoFrame> {
+class RTC_EXPORT VideoTrackInterface : public MediaStreamTrackInterface,
+                                       public VideoSourceInterface<VideoFrame> {
  public:
   // Video track content hint, used to override the source is_screencast
   // property.
@@ -184,9 +183,9 @@ class RTC_EXPORT VideoTrackInterface
 
   // Register a video sink for this track. Used to connect the track to the
   // underlying video engine.
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* /* sink */,
-                       const rtc::VideoSinkWants& /* wants */) override {}
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* /* sink */) override {}
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* /* sink */,
+                       const VideoSinkWants& /* wants */) override {}
+  void RemoveSink(VideoSinkInterface<VideoFrame>* /* sink */) override {}
 
   virtual VideoTrackSourceInterface* GetSource() const = 0;
 

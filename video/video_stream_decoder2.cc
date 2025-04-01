@@ -26,7 +26,7 @@ namespace internal {
 VideoStreamDecoder::VideoStreamDecoder(
     VideoReceiver2* video_receiver,
     ReceiveStatisticsProxy* receive_statistics_proxy,
-    rtc::VideoSinkInterface<VideoFrame>* incoming_video_stream)
+    VideoSinkInterface<VideoFrame>* incoming_video_stream)
     : video_receiver_(video_receiver),
       receive_stats_callback_(receive_statistics_proxy),
       incoming_video_stream_(incoming_video_stream) {

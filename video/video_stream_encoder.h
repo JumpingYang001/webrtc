@@ -94,7 +94,7 @@ class VideoStreamEncoder : public VideoStreamEncoderInterface,
   void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) override;
   std::vector<rtc::scoped_refptr<Resource>> GetAdaptationResources() override;
 
-  void SetSource(rtc::VideoSourceInterface<VideoFrame>* source,
+  void SetSource(VideoSourceInterface<VideoFrame>* source,
                  const DegradationPreference& degradation_preference) override;
 
   void SetSink(EncoderSink* sink, bool rotation_applied) override;

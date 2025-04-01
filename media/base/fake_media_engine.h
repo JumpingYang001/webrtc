@@ -686,15 +686,15 @@ class FakeVideoMediaReceiveChannel
   const std::vector<Codec>& send_codecs() const;
   bool rendering() const;
   const VideoOptions& options() const;
-  const std::map<uint32_t, rtc::VideoSinkInterface<webrtc::VideoFrame>*>&
+  const std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*>&
   sinks() const;
   int max_bps() const;
   bool SetReceiverParameters(const VideoReceiverParameters& params) override;
 
   bool SetSink(uint32_t ssrc,
-               rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+               webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   void SetDefaultSink(
-      rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) override;
   bool HasSink(uint32_t ssrc) const;
 
   void SetReceive(bool /* receive */) override {}
@@ -733,8 +733,9 @@ class FakeVideoMediaReceiveChannel
   bool SetMaxSendBandwidth(int bps);
 
   std::vector<Codec> recv_codecs_;
-  std::map<uint32_t, rtc::VideoSinkInterface<webrtc::VideoFrame>*> sinks_;
-  std::map<uint32_t, rtc::VideoSourceInterface<webrtc::VideoFrame>*> sources_;
+  std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*> sinks_;
+  std::map<uint32_t, webrtc::VideoSourceInterface<webrtc::VideoFrame>*>
+      sources_;
   std::map<uint32_t, int> output_delays_;
   VideoOptions options_;
   int max_bps_;
@@ -759,7 +760,7 @@ class FakeVideoMediaSendChannel
   const std::vector<Codec>& send_codecs() const;
   const std::vector<Codec>& codecs() const;
   const VideoOptions& options() const;
-  const std::map<uint32_t, rtc::VideoSinkInterface<webrtc::VideoFrame>*>&
+  const std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*>&
   sinks() const;
   int max_bps() const;
   bool SetSenderParameters(const VideoSenderParameters& params) override;
@@ -770,7 +771,7 @@ class FakeVideoMediaSendChannel
   bool SetVideoSend(
       uint32_t ssrc,
       const VideoOptions* options,
-      rtc::VideoSourceInterface<webrtc::VideoFrame>* source) override;
+      webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) override;
 
   bool HasSource(uint32_t ssrc) const;
 
@@ -798,7 +799,8 @@ class FakeVideoMediaSendChannel
   bool SetMaxSendBandwidth(int bps);
 
   std::vector<Codec> send_codecs_;
-  std::map<uint32_t, rtc::VideoSourceInterface<webrtc::VideoFrame>*> sources_;
+  std::map<uint32_t, webrtc::VideoSourceInterface<webrtc::VideoFrame>*>
+      sources_;
   VideoOptions options_;
   int max_bps_;
 };

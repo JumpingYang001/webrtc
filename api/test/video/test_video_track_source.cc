@@ -48,7 +48,7 @@ void TestVideoTrackSource::SetState(SourceState new_state) {
 
 void TestVideoTrackSource::AddOrUpdateSink(
     rtc::VideoSinkInterface<VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+    const VideoSinkWants& wants) {
   RTC_DCHECK(worker_thread_checker_.IsCurrent());
   source()->AddOrUpdateSink(sink, wants);
 }

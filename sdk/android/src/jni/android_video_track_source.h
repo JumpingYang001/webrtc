@@ -28,7 +28,7 @@ namespace jni {
 // called from any thread, but if frames A, B, ..., are sent to adaptFrame(),
 // the adapted frames adaptedA, adaptedB, ..., needs to be passed in the same
 // order to onFrameCaptured().
-class AndroidVideoTrackSource : public rtc::AdaptedVideoTrackSource {
+class AndroidVideoTrackSource : public AdaptedVideoTrackSource {
  public:
   AndroidVideoTrackSource(Thread* signaling_thread,
                           JNIEnv* jni,

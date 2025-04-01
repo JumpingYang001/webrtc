@@ -136,8 +136,8 @@ class InitEncodeTest : public test::EndToEndTest,
     frame_generator_capturer->ChangeResolution(1280, 720);
   }
 
-  void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                          const rtc::VideoSinkWants& wants) override {}
+  void OnSinkWantsChanged(VideoSinkInterface<VideoFrame>* sink,
+                          const VideoSinkWants& wants) override {}
 
   size_t GetNumVideoStreams() const override {
     return SupportsSpatialLayers(payload_name_) ? 1 : configs_.size();

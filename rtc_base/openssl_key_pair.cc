@@ -36,10 +36,10 @@ namespace webrtc {
 // but keeping it simple seems best.
 
 // Generate a key pair. Caller is responsible for freeing the returned object.
-static EVP_PKEY* MakeKey(const rtc::KeyParams& key_params) {
+static EVP_PKEY* MakeKey(const KeyParams& key_params) {
   RTC_LOG(LS_INFO) << "Making key pair";
   EVP_PKEY* pkey = EVP_PKEY_new();
-  if (key_params.type() == rtc::KT_RSA) {
+  if (key_params.type() == KT_RSA) {
     int key_length = key_params.rsa_params().mod_size;
     BIGNUM* exponent = BN_new();
     RSA* rsa = RSA_new();
@@ -55,8 +55,8 @@ static EVP_PKEY* MakeKey(const rtc::KeyParams& key_params) {
     }
     // ownership of rsa struct was assigned, don't free it.
     BN_free(exponent);
-  } else if (key_params.type() == rtc::KT_ECDSA) {
-    if (key_params.ec_curve() == rtc::EC_NIST_P256) {
+  } else if (key_params.type() == KT_ECDSA) {
+    if (key_params.ec_curve() == EC_NIST_P256) {
       EC_KEY* ec_key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
       if (!ec_key) {
         EVP_PKEY_free(pkey);
@@ -95,7 +95,7 @@ static EVP_PKEY* MakeKey(const rtc::KeyParams& key_params) {
 }
 
 std::unique_ptr<OpenSSLKeyPair> OpenSSLKeyPair::Generate(
-    const rtc::KeyParams& key_params) {
+    const KeyParams& key_params) {
   EVP_PKEY* pkey = MakeKey(key_params);
   if (!pkey) {
     rtc::openssl::LogSSLErrors("Generating key pair");

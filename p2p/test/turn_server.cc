@@ -391,7 +391,7 @@ void TurnServer::HandleAllocateRequest(TurnServerConnection* conn,
 std::string TurnServer::GenerateNonce(int64_t now) const {
   // Generate a nonce of the form hex(now + HMAC-MD5(nonce_key_, now))
   std::string input(reinterpret_cast<const char*>(&now), sizeof(now));
-  std::string nonce = rtc::hex_encode(input);
+  std::string nonce = hex_encode(input);
   nonce += ComputeHmac(DIGEST_MD5, nonce_key_, input);
   RTC_DCHECK(nonce.size() == kNonceSize);
 
@@ -407,8 +407,8 @@ bool TurnServer::ValidateNonce(absl::string_view nonce) const {
   // Decode the timestamp.
   int64_t then;
   char* p = reinterpret_cast<char*>(&then);
-  size_t len = rtc::hex_decode(rtc::ArrayView<char>(p, sizeof(then)),
-                               nonce.substr(0, sizeof(then) * 2));
+  size_t len = hex_decode(rtc::ArrayView<char>(p, sizeof(then)),
+                          nonce.substr(0, sizeof(then) * 2));
   if (len != sizeof(then)) {
     return false;
   }

@@ -3723,8 +3723,8 @@ TEST_F(VideoSendStreamTest, EncoderConfigMaxFramerateReportedToSource) {
       frame_generator_capturer->SetSinkWantsObserver(this);
     }
 
-    void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                            const rtc::VideoSinkWants& wants) override {
+    void OnSinkWantsChanged(VideoSinkInterface<VideoFrame>* sink,
+                            const VideoSinkWants& wants) override {
       if (wants.max_framerate_fps == kMaxFps)
         observation_complete_.Set();
     }
@@ -4103,8 +4103,8 @@ void VideoSendStreamTest::TestTemporalLayers(
       frame_generator_capturer->ChangeResolution(640, 360);
     }
 
-    void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                            const rtc::VideoSinkWants& wants) override {}
+    void OnSinkWantsChanged(VideoSinkInterface<VideoFrame>* sink,
+                            const VideoSinkWants& wants) override {}
 
     void ModifySenderBitrateConfig(
         BitrateConstraints* bitrate_config) override {

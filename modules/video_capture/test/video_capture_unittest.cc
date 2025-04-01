@@ -48,7 +48,7 @@ static const int kTestFramerate = 30;
 #endif
 
 class TestVideoCaptureCallback
-    : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+    : public webrtc::VideoSinkInterface<webrtc::VideoFrame> {
  public:
   TestVideoCaptureCallback()
       : last_render_time_ms_(0),
@@ -147,7 +147,7 @@ class VideoCaptureTest : public ::testing::Test {
 
   rtc::scoped_refptr<VideoCaptureModule> OpenVideoCaptureDevice(
       unsigned int device,
-      rtc::VideoSinkInterface<webrtc::VideoFrame>* callback) {
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* callback) {
     char device_name[256];
     char unique_name[256];
 

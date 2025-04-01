@@ -684,7 +684,7 @@ void SrtpSession::DumpPacket(const rtc::CopyOnWriteBuffer& buffer,
       << hours << ":" << std::setfill('0') << std::setw(2) << minutes << ":"
       << std::setfill('0') << std::setw(2) << seconds << "."
       << std::setfill('0') << std::setw(3) << millis << " " << "000000 "
-      << rtc::hex_encode_with_delimiter(
+      << webrtc::hex_encode_with_delimiter(
              absl::string_view(buffer.data<char>(), buffer.size()), ' ')
       << " # RTP_DUMP";
 }

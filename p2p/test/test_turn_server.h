@@ -121,7 +121,7 @@ class TestTurnServer : public TurnAuthInterface {
             rtc::SSLAdapterFactory::Create();
         ssl_adapter_factory->SetRole(webrtc::SSL_SERVER);
         ssl_adapter_factory->SetIdentity(
-            rtc::SSLIdentity::Create(common_name, rtc::KeyParams()));
+            SSLIdentity::Create(common_name, KeyParams()));
         ssl_adapter_factory->SetIgnoreBadCert(ignore_bad_cert);
         server_.AddInternalServerSocket(socket, proto,
                                         std::move(ssl_adapter_factory));

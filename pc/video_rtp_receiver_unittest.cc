@@ -64,7 +64,7 @@ class VideoRtpReceiverTest : public testing::Test {
     MOCK_METHOD(void, RequestRecvKeyFrame, (uint32_t), (override));
   };
 
-  class MockVideoSink : public rtc::VideoSinkInterface<RecordableEncodedFrame> {
+  class MockVideoSink : public VideoSinkInterface<RecordableEncodedFrame> {
    public:
     MOCK_METHOD(void, OnFrame, (const RecordableEncodedFrame&), (override));
   };

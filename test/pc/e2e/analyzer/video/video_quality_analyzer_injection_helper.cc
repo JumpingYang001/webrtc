@@ -48,7 +48,7 @@ class AnalyzingFramePreprocessor
       absl::string_view peer_name,
       absl::string_view stream_label,
       VideoQualityAnalyzerInterface* analyzer,
-      std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>> sinks)
+      std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>> sinks)
       : peer_name_(peer_name),
         stream_label_(stream_label),
         analyzer_(analyzer),
@@ -72,8 +72,7 @@ class AnalyzingFramePreprocessor
   const std::string peer_name_;
   const std::string stream_label_;
   VideoQualityAnalyzerInterface* const analyzer_;
-  const std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>>
-      sinks_;
+  const std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>> sinks_;
 };
 
 }  // namespace
@@ -117,7 +116,7 @@ std::unique_ptr<test::TestVideoCapturer::FramePreprocessor>
 VideoQualityAnalyzerInjectionHelper::CreateFramePreprocessor(
     absl::string_view peer_name,
     const VideoConfig& config) {
-  std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>> sinks;
+  std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>> sinks;
   if (config.input_dump_options.has_value()) {
     std::unique_ptr<test::VideoFrameWriter> writer =
         config.input_dump_options->CreateInputDumpVideoFrameWriter(

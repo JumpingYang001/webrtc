@@ -91,7 +91,7 @@ static void PrintCert(BoringSSLCertificate* cert) {
 }
 #endif
 
-bool AddSHA256SignatureAlgorithm(CBB* cbb, rtc::KeyType key_type) {
+bool AddSHA256SignatureAlgorithm(CBB* cbb, KeyType key_type) {
   // An AlgorithmIdentifier is described in RFC 5280, 4.1.1.2.
   CBB sequence, oid, params;
   if (!CBB_add_asn1(cbb, &sequence, CBS_ASN1_SEQUENCE) ||
@@ -100,14 +100,14 @@ bool AddSHA256SignatureAlgorithm(CBB* cbb, rtc::KeyType key_type) {
   }
 
   switch (key_type) {
-    case rtc::KT_RSA:
+    case KT_RSA:
       if (!CBB_add_bytes(&oid, kSHA256WithRSAEncryption,
                          sizeof(kSHA256WithRSAEncryption)) ||
           !CBB_add_asn1(&sequence, &params, CBS_ASN1_NULL)) {
         return false;
       }
       break;
-    case rtc::KT_ECDSA:
+    case KT_ECDSA:
       if (!CBB_add_bytes(&oid, kECDSAWithSHA256, sizeof(kECDSAWithSHA256))) {
         return false;
       }
@@ -190,7 +190,7 @@ bool AddTime(CBB* cbb, time_t time) {
 // given key pair. Caller is responsible for freeing the returned object.
 static bssl::UniquePtr<CRYPTO_BUFFER> MakeCertificate(
     EVP_PKEY* pkey,
-    const rtc::SSLIdentityParams& params) {
+    const SSLIdentityParams& params) {
   RTC_LOG(LS_INFO) << "Making certificate for " << params.common_name;
 
   // See RFC 5280, section 4.1. First, construct the TBSCertificate.
@@ -249,7 +249,7 @@ static bssl::UniquePtr<CRYPTO_BUFFER> MakeCertificate(
 
   RTC_LOG(LS_INFO) << "Returning certificate";
   return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(cert_bytes, cert_len, rtc::openssl::GetBufferPool()));
+      CRYPTO_BUFFER_new(cert_bytes, cert_len, openssl::GetBufferPool()));
 }
 
 }  // namespace
@@ -262,8 +262,8 @@ BoringSSLCertificate::BoringSSLCertificate(
 
 std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
     OpenSSLKeyPair* key_pair,
-    const rtc::SSLIdentityParams& params) {
-  rtc::SSLIdentityParams actual_params(params);
+    const SSLIdentityParams& params) {
+  SSLIdentityParams actual_params(params);
   if (actual_params.common_name.empty()) {
     // Use a random string, arbitrarily 8 chars long.
     actual_params.common_name = webrtc::CreateRandomString(8);
@@ -284,7 +284,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
 std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::FromPEMString(
     absl::string_view pem_string) {
   std::string der;
-  if (!rtc::SSLIdentity::PemToDer(rtc::kPemTypeCertificate, pem_string, &der)) {
+  if (!SSLIdentity::PemToDer(kPemTypeCertificate, pem_string, &der)) {
     return nullptr;
   }
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer(
@@ -383,9 +383,9 @@ std::unique_ptr<SSLCertificate> BoringSSLCertificate::Clone() const {
 }
 
 std::string BoringSSLCertificate::ToPEMString() const {
-  return rtc::SSLIdentity::DerToPem(rtc::kPemTypeCertificate,
-                                    CRYPTO_BUFFER_data(cert_buffer_.get()),
-                                    CRYPTO_BUFFER_len(cert_buffer_.get()));
+  return SSLIdentity::DerToPem(kPemTypeCertificate,
+                               CRYPTO_BUFFER_data(cert_buffer_.get()),
+                               CRYPTO_BUFFER_len(cert_buffer_.get()));
 }
 
 void BoringSSLCertificate::ToDER(Buffer* der_buffer) const {

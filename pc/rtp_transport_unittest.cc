@@ -72,7 +72,7 @@ class SignalObserver : public sigslot::has_slots<> {
     network_route_ = network_route;
   }
 
-  void OnSentPacket(rtc::PacketTransportInternal* packet_transport,
+  void OnSentPacket(PacketTransportInternal* packet_transport,
                     const rtc::SentPacket& sent_packet) {
     if (packet_transport == transport_->rtp_packet_transport()) {
       rtp_transport_sent_count_++;

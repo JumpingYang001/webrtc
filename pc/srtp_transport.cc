@@ -174,8 +174,7 @@ void SrtpTransport::OnNetworkRouteChanged(
   SendNetworkRouteChanged(network_route);
 }
 
-void SrtpTransport::OnWritableState(
-    rtc::PacketTransportInternal* packet_transport) {
+void SrtpTransport::OnWritableState(PacketTransportInternal* packet_transport) {
   SendWritableState(IsWritable(/*rtcp=*/false) && IsWritable(/*rtcp=*/true));
 }
 

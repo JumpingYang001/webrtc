@@ -200,8 +200,8 @@ void FrameGeneratorCapturer::SetSinkWantsObserver(SinkWantsObserver* observer) {
 }
 
 void FrameGeneratorCapturer::AddOrUpdateSink(
-    rtc::VideoSinkInterface<VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+    VideoSinkInterface<VideoFrame>* sink,
+    const VideoSinkWants& wants) {
   TestVideoCapturer::AddOrUpdateSink(sink, wants);
   {
     MutexLock lock(&lock_);
@@ -213,8 +213,7 @@ void FrameGeneratorCapturer::AddOrUpdateSink(
   ChangeFramerate(GetSinkWants().max_framerate_fps);
 }
 
-void FrameGeneratorCapturer::RemoveSink(
-    rtc::VideoSinkInterface<VideoFrame>* sink) {
+void FrameGeneratorCapturer::RemoveSink(VideoSinkInterface<VideoFrame>* sink) {
   TestVideoCapturer::RemoveSink(sink);
   ChangeFramerate(GetSinkWants().max_framerate_fps);
 }

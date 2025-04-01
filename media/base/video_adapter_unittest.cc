@@ -40,33 +40,33 @@ using ::testing::Eq;
 using ::testing::Pair;
 using webrtc::Resolution;
 
-rtc::VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
-                                   int max_pixel_count,
-                                   int max_framerate_fps,
-                                   int sink_alignment = 1) {
-  rtc::VideoSinkWants wants;
+webrtc::VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
+                                      int max_pixel_count,
+                                      int max_framerate_fps,
+                                      int sink_alignment = 1) {
+  webrtc::VideoSinkWants wants;
   wants.target_pixel_count = target_pixel_count;
   wants.max_pixel_count = max_pixel_count;
   wants.max_framerate_fps = max_framerate_fps;
   wants.resolution_alignment = sink_alignment;
   wants.is_active = true;
-  wants.aggregates.emplace(rtc::VideoSinkWants::Aggregates());
+  wants.aggregates.emplace(webrtc::VideoSinkWants::Aggregates());
   wants.aggregates->any_active_without_requested_resolution = false;
   return wants;
 }
 
-rtc::VideoSinkWants BuildSinkWants(
+webrtc::VideoSinkWants BuildSinkWants(
     std::optional<webrtc::Resolution> scale_resolution_down_to,
     bool any_active_without_requested_resolution) {
-  rtc::VideoSinkWants wants;
+  webrtc::VideoSinkWants wants;
   wants.max_framerate_fps = kDefaultFps;
   wants.resolution_alignment = 1;
   wants.is_active = true;
   if (scale_resolution_down_to) {
-    wants.requested_resolution.emplace(rtc::VideoSinkWants::FrameSize(
+    wants.requested_resolution.emplace(webrtc::VideoSinkWants::FrameSize(
         scale_resolution_down_to->width, scale_resolution_down_to->height));
   }
-  wants.aggregates.emplace(rtc::VideoSinkWants::Aggregates());
+  wants.aggregates.emplace(webrtc::VideoSinkWants::Aggregates());
   wants.aggregates->any_active_without_requested_resolution =
       any_active_without_requested_resolution;
   return wants;

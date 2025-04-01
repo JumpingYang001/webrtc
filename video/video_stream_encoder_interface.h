@@ -79,7 +79,7 @@ class VideoStreamEncoderInterface {
   // TODO(bugs.webrtc.org/14246): When adaptation logic is extracted from this
   // class, it no longer needs to know the source.
   virtual void SetSource(
-      rtc::VideoSourceInterface<VideoFrame>* source,
+      VideoSourceInterface<VideoFrame>* source,
       const DegradationPreference& degradation_preference) = 0;
 
   // Sets the `sink` that gets the encoded frames. `rotation_applied` means

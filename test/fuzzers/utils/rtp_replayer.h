@@ -42,7 +42,7 @@ class RtpReplayer final {
   // rtp receival code path.
   struct StreamState {
     test::NullTransport transport;
-    std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>> sinks;
+    std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>> sinks;
     std::vector<VideoReceiveStreamInterface*> receive_streams;
     std::unique_ptr<VideoDecoderFactory> decoder_factory;
   };

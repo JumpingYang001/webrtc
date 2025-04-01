@@ -26,10 +26,10 @@ void VideoRtpTrackSource::ClearCallback() {
   callback_ = nullptr;
 }
 
-rtc::VideoSourceInterface<VideoFrame>* VideoRtpTrackSource::source() {
+VideoSourceInterface<VideoFrame>* VideoRtpTrackSource::source() {
   return &broadcaster_;
 }
-rtc::VideoSinkInterface<VideoFrame>* VideoRtpTrackSource::sink() {
+VideoSinkInterface<VideoFrame>* VideoRtpTrackSource::sink() {
   return &broadcaster_;
 }
 
@@ -53,7 +53,7 @@ void VideoRtpTrackSource::GenerateKeyFrame() {
 }
 
 void VideoRtpTrackSource::AddEncodedSink(
-    rtc::VideoSinkInterface<RecordableEncodedFrame>* sink) {
+    VideoSinkInterface<RecordableEncodedFrame>* sink) {
   RTC_DCHECK_RUN_ON(&worker_sequence_checker_);
   RTC_DCHECK(sink);
   size_t size = 0;
@@ -70,7 +70,7 @@ void VideoRtpTrackSource::AddEncodedSink(
 }
 
 void VideoRtpTrackSource::RemoveEncodedSink(
-    rtc::VideoSinkInterface<RecordableEncodedFrame>* sink) {
+    VideoSinkInterface<RecordableEncodedFrame>* sink) {
   RTC_DCHECK_RUN_ON(&worker_sequence_checker_);
   size_t size = 0;
   {

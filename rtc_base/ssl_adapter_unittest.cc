@@ -168,9 +168,9 @@ class SSLAdapterTestDummyClient : public SSLAdapterTestDummy {
 
 class SSLAdapterTestDummyServer : public SSLAdapterTestDummy {
  public:
-  explicit SSLAdapterTestDummyServer(const rtc::KeyParams& key_params)
+  explicit SSLAdapterTestDummyServer(const webrtc::KeyParams& key_params)
       : SSLAdapterTestDummy(),
-        ssl_identity_(rtc::SSLIdentity::Create(GetHostname(), key_params)) {
+        ssl_identity_(webrtc::SSLIdentity::Create(GetHostname(), key_params)) {
     socket_->Listen(1);
     socket_->SignalReadEvent.connect(this,
                                      &SSLAdapterTestDummyServer::OnReadEvent);
@@ -199,12 +199,12 @@ class SSLAdapterTestDummyServer : public SSLAdapterTestDummy {
   }
 
  private:
-  std::unique_ptr<rtc::SSLIdentity> ssl_identity_;
+  std::unique_ptr<webrtc::SSLIdentity> ssl_identity_;
 };
 
 class SSLAdapterTestBase : public ::testing::Test, public sigslot::has_slots<> {
  public:
-  explicit SSLAdapterTestBase(const rtc::KeyParams& key_params)
+  explicit SSLAdapterTestBase(const webrtc::KeyParams& key_params)
       : vss_(new webrtc::VirtualSocketServer()),
         thread_(vss_.get()),
         server_(new SSLAdapterTestDummyServer(key_params)),
@@ -310,12 +310,12 @@ class SSLAdapterTestBase : public ::testing::Test, public sigslot::has_slots<> {
 
 class SSLAdapterTestTLS_RSA : public SSLAdapterTestBase {
  public:
-  SSLAdapterTestTLS_RSA() : SSLAdapterTestBase(rtc::KeyParams::RSA()) {}
+  SSLAdapterTestTLS_RSA() : SSLAdapterTestBase(webrtc::KeyParams::RSA()) {}
 };
 
 class SSLAdapterTestTLS_ECDSA : public SSLAdapterTestBase {
  public:
-  SSLAdapterTestTLS_ECDSA() : SSLAdapterTestBase(rtc::KeyParams::ECDSA()) {}
+  SSLAdapterTestTLS_ECDSA() : SSLAdapterTestBase(webrtc::KeyParams::ECDSA()) {}
 };
 
 // Test that handshake works, using RSA

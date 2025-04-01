@@ -170,7 +170,7 @@ WebRtcSessionDescriptionFactory::WebRtcSessionDescriptionFactory(
     }
   };
 
-  rtc::KeyParams key_params = rtc::KeyParams();
+  KeyParams key_params = KeyParams();
   RTC_LOG(LS_VERBOSE)
       << "DTLS-SRTP enabled; sending DTLS identity request (key type: "
       << key_params.type() << ").";

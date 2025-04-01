@@ -80,7 +80,7 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
 
   rtc::scoped_refptr<webrtc::RTCCertificate> MakeCertificate() {
     return webrtc::RTCCertificate::Create(
-        rtc::SSLIdentity::Create("test", rtc::KT_DEFAULT));
+        webrtc::SSLIdentity::Create("test", webrtc::KT_DEFAULT));
   }
   std::unique_ptr<cricket::FakeIceTransport> MakeIceTransport(
       cricket::IceRole role) {

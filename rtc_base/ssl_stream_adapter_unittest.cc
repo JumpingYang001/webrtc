@@ -409,8 +409,8 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       absl::string_view client_cert_pem,
       absl::string_view client_private_key_pem,
       bool dtls,
-      rtc::KeyParams client_key_type = rtc::KeyParams(rtc::KT_DEFAULT),
-      rtc::KeyParams server_key_type = rtc::KeyParams(rtc::KT_DEFAULT),
+      webrtc::KeyParams client_key_type = webrtc::KeyParams(webrtc::KT_DEFAULT),
+      webrtc::KeyParams server_key_type = webrtc::KeyParams(webrtc::KT_DEFAULT),
       std::pair<std::string, size_t> digest =
           std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH))
       : client_cert_pem_(client_cert_pem),
@@ -439,14 +439,15 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   void SetUp() override {
     InitializeClientAndServerStreams();
 
-    std::unique_ptr<rtc::SSLIdentity> client_identity;
+    std::unique_ptr<webrtc::SSLIdentity> client_identity;
     if (!client_cert_pem_.empty() && !client_private_key_pem_.empty()) {
-      client_identity = rtc::SSLIdentity::CreateFromPEMStrings(
+      client_identity = webrtc::SSLIdentity::CreateFromPEMStrings(
           client_private_key_pem_, client_cert_pem_);
     } else {
-      client_identity = rtc::SSLIdentity::Create("client", client_key_type_);
+      client_identity = webrtc::SSLIdentity::Create("client", client_key_type_);
     }
-    auto server_identity = rtc::SSLIdentity::Create("server", server_key_type_);
+    auto server_identity =
+        webrtc::SSLIdentity::Create("server", server_key_type_);
 
     client_ssl_->SetIdentity(std::move(client_identity));
     server_ssl_->SetIdentity(std::move(server_identity));
@@ -497,19 +498,19 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
 
     time_t now = time(nullptr);
 
-    rtc::SSLIdentityParams client_params;
-    client_params.key_params = rtc::KeyParams(rtc::KT_DEFAULT);
+    webrtc::SSLIdentityParams client_params;
+    client_params.key_params = webrtc::KeyParams(webrtc::KT_DEFAULT);
     client_params.common_name = "client";
     client_params.not_before = now + not_before;
     client_params.not_after = now + not_after;
-    auto client_identity = rtc::SSLIdentity::CreateForTest(client_params);
+    auto client_identity = webrtc::SSLIdentity::CreateForTest(client_params);
 
-    rtc::SSLIdentityParams server_params;
-    server_params.key_params = rtc::KeyParams(rtc::KT_DEFAULT);
+    webrtc::SSLIdentityParams server_params;
+    server_params.key_params = webrtc::KeyParams(webrtc::KT_DEFAULT);
     server_params.common_name = "server";
     server_params.not_before = now + not_before;
     server_params.not_after = now + not_after;
-    auto server_identity = rtc::SSLIdentity::CreateForTest(server_params);
+    auto server_identity = webrtc::SSLIdentity::CreateForTest(server_params);
 
     client_ssl_->SetIdentity(std::move(client_identity));
     server_ssl_->SetIdentity(std::move(server_identity));
@@ -869,13 +870,13 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   }
 
  protected:
-  rtc::SSLIdentity* client_identity() const {
+  webrtc::SSLIdentity* client_identity() const {
     if (!client_ssl_) {
       return nullptr;
     }
     return client_ssl_->GetIdentityForTesting();
   }
-  rtc::SSLIdentity* server_identity() const {
+  webrtc::SSLIdentity* server_identity() const {
     if (!server_ssl_) {
       return nullptr;
     }
@@ -886,8 +887,8 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   webrtc::ScopedFakeClock clock_;
   std::string client_cert_pem_;
   std::string client_private_key_pem_;
-  rtc::KeyParams client_key_type_;
-  rtc::KeyParams server_key_type_;
+  webrtc::KeyParams client_key_type_;
+  webrtc::KeyParams server_key_type_;
   std::string digest_algorithm_;
   size_t digest_length_;
   std::unique_ptr<webrtc::SSLStreamAdapter> client_ssl_;
@@ -904,8 +905,8 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
 
 class SSLStreamAdapterTestDTLSBase : public SSLStreamAdapterTestBase {
  public:
-  SSLStreamAdapterTestDTLSBase(rtc::KeyParams param1,
-                               rtc::KeyParams param2,
+  SSLStreamAdapterTestDTLSBase(webrtc::KeyParams param1,
+                               webrtc::KeyParams param2,
                                std::pair<std::string, size_t> digest)
       : SSLStreamAdapterTestBase("", "", true, param1, param2, digest),
         packet_size_(1000),
@@ -1065,12 +1066,12 @@ class SSLStreamAdapterTestDTLSCertChain : public SSLStreamAdapterTestDTLSBase {
     client_ssl_->SetInitialRetransmissionTimeout(/*timeout_ms=*/1000);
     server_ssl_->SetInitialRetransmissionTimeout(/*timeout_ms=*/1000);
 
-    std::unique_ptr<rtc::SSLIdentity> client_identity;
+    std::unique_ptr<webrtc::SSLIdentity> client_identity;
     if (!client_cert_pem_.empty() && !client_private_key_pem_.empty()) {
-      client_identity = rtc::SSLIdentity::CreateFromPEMStrings(
+      client_identity = webrtc::SSLIdentity::CreateFromPEMStrings(
           client_private_key_pem_, client_cert_pem_);
     } else {
-      client_identity = rtc::SSLIdentity::Create("client", client_key_type_);
+      client_identity = webrtc::SSLIdentity::Create("client", client_key_type_);
     }
 
     client_ssl_->SetIdentity(std::move(client_identity));
@@ -1078,7 +1079,7 @@ class SSLStreamAdapterTestDTLSCertChain : public SSLStreamAdapterTestDTLSBase {
 };
 
 TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshake) {
-  auto server_identity = rtc::SSLIdentity::CreateFromPEMChainStrings(
+  auto server_identity = webrtc::SSLIdentity::CreateFromPEMChainStrings(
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kCACert);
   server_ssl_->SetIdentity(std::move(server_identity));
   TestHandshake();
@@ -1095,7 +1096,7 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshake) {
 }
 
 TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshakeWithCopy) {
-  server_ssl_->SetIdentity(rtc::SSLIdentity::CreateFromPEMChainStrings(
+  server_ssl_->SetIdentity(webrtc::SSLIdentity::CreateFromPEMChainStrings(
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kCACert));
   TestHandshake();
   std::unique_ptr<webrtc::SSLCertChain> peer_cert_chain =
@@ -1111,7 +1112,7 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, TwoCertHandshakeWithCopy) {
 }
 
 TEST_F(SSLStreamAdapterTestDTLSCertChain, ThreeCertHandshake) {
-  server_ssl_->SetIdentity(rtc::SSLIdentity::CreateFromPEMChainStrings(
+  server_ssl_->SetIdentity(webrtc::SSLIdentity::CreateFromPEMChainStrings(
       kRSA_PRIVATE_KEY_PEM, std::string(kCERT_PEM) + kIntCert1 + kCACert));
   TestHandshake();
   std::unique_ptr<webrtc::SSLCertChain> peer_cert_chain =
@@ -1129,8 +1130,8 @@ TEST_F(SSLStreamAdapterTestDTLSCertChain, ThreeCertHandshake) {
 
 class SSLStreamAdapterTestDTLSHandshake
     : public SSLStreamAdapterTestDTLSBase,
-      public WithParamInterface<tuple<rtc::KeyParams,
-                                      rtc::KeyParams,
+      public WithParamInterface<tuple<webrtc::KeyParams,
+                                      webrtc::KeyParams,
                                       std::pair<std::string, size_t>>> {
  public:
   SSLStreamAdapterTestDTLSHandshake()
@@ -1168,21 +1169,21 @@ TEST_P(SSLStreamAdapterTestDTLSHandshake, TestGetSslCipherSuite) {
 INSTANTIATE_TEST_SUITE_P(
     SSLStreamAdapterTestDTLSHandshakeKeyParameters,
     SSLStreamAdapterTestDTLSHandshake,
-    Values(std::make_tuple(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
-                           rtc::KeyParams::RSA(rtc::kRsaDefaultModSize,
-                                               rtc::kRsaDefaultExponent),
+    Values(std::make_tuple(webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256),
+                           webrtc::KeyParams::RSA(webrtc::kRsaDefaultModSize,
+                                                  webrtc::kRsaDefaultExponent),
                            std::make_pair(webrtc::DIGEST_SHA_256,
                                           SHA256_DIGEST_LENGTH)),
-           std::make_tuple(rtc::KeyParams::RSA(1152, rtc::kRsaDefaultExponent),
-                           rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
-                           std::make_pair(webrtc::DIGEST_SHA_256,
-                                          SHA256_DIGEST_LENGTH))));
+           std::make_tuple(
+               webrtc::KeyParams::RSA(1152, webrtc::kRsaDefaultExponent),
+               webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256),
+               std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH))));
 
 INSTANTIATE_TEST_SUITE_P(
     SSLStreamAdapterTestDTLSHandshakeSignatureAlgorithms,
     SSLStreamAdapterTestDTLSHandshake,
-    Combine(Values(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256)),
-            Values(rtc::KeyParams::ECDSA(rtc::EC_NIST_P256)),
+    Combine(Values(webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256)),
+            Values(webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256)),
             Values(std::make_pair(webrtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH),
                    std::make_pair(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH),
                    std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH),
@@ -1195,8 +1196,8 @@ class SSLStreamAdapterTestDTLS : public SSLStreamAdapterTestDTLSBase {
  public:
   SSLStreamAdapterTestDTLS()
       : SSLStreamAdapterTestDTLSBase(
-            rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
-            rtc::KeyParams::ECDSA(rtc::EC_NIST_P256),
+            webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256),
+            webrtc::KeyParams::ECDSA(webrtc::EC_NIST_P256),
             std::make_pair(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH)) {}
 };
 
@@ -1590,7 +1591,7 @@ TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslCipherSuite) {
 
   ASSERT_EQ(client_cipher, server_cipher);
   ASSERT_TRUE(webrtc::SSLStreamAdapter::IsAcceptableCipher(server_cipher,
-                                                           rtc::KT_DEFAULT));
+                                                           webrtc::KT_DEFAULT));
 }
 
 #ifdef OPENSSL_IS_BORINGSSL

@@ -209,7 +209,7 @@ class JitterEstimator {
   RttFilter rtt_filter_;
 
   // Tracks frame rates in microseconds.
-  rtc::RollingAccumulator<uint64_t> fps_counter_;
+  RollingAccumulator<uint64_t> fps_counter_;
   Clock* clock_;
 };
 

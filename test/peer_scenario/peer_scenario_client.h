@@ -135,7 +135,7 @@ class PeerScenarioClient {
   VideoSendTrack CreateVideo(std::string track_id, VideoSendTrackConfig config);
 
   void AddVideoReceiveSink(std::string track_id,
-                           rtc::VideoSinkInterface<VideoFrame>* video_sink);
+                           VideoSinkInterface<VideoFrame>* video_sink);
 
   CallbackHandlers* handlers() { return &handlers_; }
 
@@ -165,7 +165,7 @@ class PeerScenarioClient {
   const std::unique_ptr<Thread> worker_thread_;
   CallbackHandlers handlers_ RTC_GUARDED_BY(signaling_thread_);
   const std::unique_ptr<PeerConnectionObserver> observer_;
-  std::map<std::string, std::vector<rtc::VideoSinkInterface<VideoFrame>*>>
+  std::map<std::string, std::vector<VideoSinkInterface<VideoFrame>*>>
       track_id_to_video_sinks_ RTC_GUARDED_BY(signaling_thread_);
   std::list<std::unique_ptr<IceCandidateInterface>> pending_ice_candidates_
       RTC_GUARDED_BY(signaling_thread_);

@@ -88,7 +88,7 @@ bool CodecPrefersLowerRange(const cricket::Codec& codec) {
     int associated_pt;
     return codec.GetParam(cricket::kCodecParamAssociatedPayloadType,
                           &associated_pt_str) &&
-           rtc::FromString(associated_pt_str, &associated_pt) &&
+           FromString(associated_pt_str, &associated_pt) &&
            associated_pt >= kFirstDynamicPayloadTypeLowerRange &&
            associated_pt <= kLastDynamicPayloadTypeLowerRange;
   }

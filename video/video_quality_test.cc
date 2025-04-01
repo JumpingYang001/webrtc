@@ -1571,7 +1571,7 @@ void VideoQualityTest::RunWithRenderers(const Params& params) {
             "Local Preview", params_.video[0].width, params_.video[0].height));
 
         video_sources_[0]->AddOrUpdateSink(local_preview.get(),
-                                           rtc::VideoSinkWants());
+                                           VideoSinkWants());
       }
       ConnectVideoSourcesToStreams();
     }

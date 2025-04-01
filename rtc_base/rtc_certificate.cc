@@ -23,13 +23,12 @@
 namespace webrtc {
 
 scoped_refptr<RTCCertificate> RTCCertificate::Create(
-    std::unique_ptr<rtc::SSLIdentity> identity) {
+    std::unique_ptr<SSLIdentity> identity) {
   // Explicit new to access protected constructor.
   return scoped_refptr<RTCCertificate>(new RTCCertificate(identity.release()));
 }
 
-RTCCertificate::RTCCertificate(rtc::SSLIdentity* identity)
-    : identity_(identity) {
+RTCCertificate::RTCCertificate(SSLIdentity* identity) : identity_(identity) {
   RTC_DCHECK(identity_);
 }
 
@@ -62,9 +61,8 @@ RTCCertificatePEM RTCCertificate::ToPEM() const {
 
 scoped_refptr<RTCCertificate> RTCCertificate::FromPEM(
     const RTCCertificatePEM& pem) {
-  std::unique_ptr<rtc::SSLIdentity> identity(
-      rtc::SSLIdentity::CreateFromPEMStrings(pem.private_key(),
-                                             pem.certificate()));
+  std::unique_ptr<SSLIdentity> identity(
+      SSLIdentity::CreateFromPEMStrings(pem.private_key(), pem.certificate()));
   if (!identity)
     return nullptr;
   return RTCCertificate::Create(std::move(identity));

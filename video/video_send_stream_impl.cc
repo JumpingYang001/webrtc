@@ -540,7 +540,7 @@ VideoSendStreamImpl::GetAdaptationResources() {
 }
 
 void VideoSendStreamImpl::SetSource(
-    rtc::VideoSourceInterface<webrtc::VideoFrame>* source,
+    VideoSourceInterface<webrtc::VideoFrame>* source,
     const DegradationPreference& degradation_preference) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   video_stream_encoder_->SetSource(source, degradation_preference);

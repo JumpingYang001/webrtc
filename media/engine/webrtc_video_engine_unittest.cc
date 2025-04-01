@@ -298,12 +298,13 @@ int GetMaxDefaultBitrateBps(size_t width, size_t height) {
   }
 }
 
-class MockVideoSource : public rtc::VideoSourceInterface<webrtc::VideoFrame> {
+class MockVideoSource
+    : public webrtc::VideoSourceInterface<webrtc::VideoFrame> {
  public:
   MOCK_METHOD(void,
               AddOrUpdateSink,
               (rtc::VideoSinkInterface<webrtc::VideoFrame> * sink,
-               const rtc::VideoSinkWants& wants),
+               const webrtc::VideoSinkWants& wants),
               (override));
   MOCK_METHOD(void,
               RemoveSink,
@@ -639,9 +640,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionBeforeCapturer) {
       RtpExtension(RtpExtension::kVideoRotationUri, id));
   EXPECT_TRUE(send_channel->SetSenderParameters(parameters));
 
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, false)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, false)));
   // Set capturer.
   EXPECT_TRUE(send_channel->SetVideoSend(kSsrc, nullptr, &video_source));
 
@@ -650,9 +651,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionBeforeCapturer) {
 
   // Verify removing header extension turns on applying rotation.
   parameters.extensions.clear();
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, true)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, true)));
 
   EXPECT_TRUE(send_channel->SetSenderParameters(parameters));
 }
@@ -675,9 +676,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionBeforeAddSendStream) {
   EXPECT_TRUE(send_channel->AddSendStream(StreamParams::CreateLegacy(kSsrc)));
 
   // Set source.
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, false)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, false)));
   EXPECT_TRUE(send_channel->SetVideoSend(kSsrc, nullptr, &video_source));
 }
 
@@ -692,9 +693,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionAfterCapturer) {
   EXPECT_TRUE(send_channel->AddSendStream(StreamParams::CreateLegacy(kSsrc)));
 
   // Set capturer.
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, true)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, true)));
   EXPECT_TRUE(send_channel->SetVideoSend(kSsrc, nullptr, &video_source));
 
   // Verify capturer has turned on applying rotation.
@@ -709,9 +710,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionAfterCapturer) {
       RtpExtension(RtpExtension::kVideoRotationUri, id));
   // Also remove the first codec to trigger a codec change as well.
   parameters.codecs.erase(parameters.codecs.begin());
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, false)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, false)));
   EXPECT_TRUE(send_channel->SetSenderParameters(parameters));
 
   // Verify capturer has turned off applying rotation.
@@ -719,9 +720,9 @@ TEST_F(WebRtcVideoEngineTest, CVOSetHeaderExtensionAfterCapturer) {
 
   // Verify removing header extension turns on applying rotation.
   parameters.extensions.clear();
-  EXPECT_CALL(
-      video_source,
-      AddOrUpdateSink(_, Field(&rtc::VideoSinkWants::rotation_applied, true)));
+  EXPECT_CALL(video_source,
+              AddOrUpdateSink(
+                  _, Field(&webrtc::VideoSinkWants::rotation_applied, true)));
   EXPECT_TRUE(send_channel->SetSenderParameters(parameters));
 }
 

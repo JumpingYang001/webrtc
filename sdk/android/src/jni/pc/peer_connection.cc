@@ -291,9 +291,8 @@ void JavaToNativeRTCConfiguration(
       Java_RTCConfiguration_getPortAllocatorFlags(jni, j_rtc_config);
 }
 
-rtc::KeyType GetRtcConfigKeyType(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_rtc_config) {
+KeyType GetRtcConfigKeyType(JNIEnv* env,
+                            const jni_zero::JavaRef<jobject>& j_rtc_config) {
   return JavaToNativeKeyType(
       env, Java_RTCConfiguration_getKeyType(env, j_rtc_config));
 }

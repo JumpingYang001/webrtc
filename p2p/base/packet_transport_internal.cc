@@ -20,25 +20,24 @@
 #include "rtc_base/network_route.h"
 #include "rtc_base/socket.h"
 
-namespace rtc {
+namespace webrtc {
 
 PacketTransportInternal::PacketTransportInternal() = default;
 
 PacketTransportInternal::~PacketTransportInternal() = default;
 
-bool PacketTransportInternal::GetOption(webrtc::Socket::Option /* opt */,
+bool PacketTransportInternal::GetOption(Socket::Option /* opt */,
                                         int* /* value */) {
   return false;
 }
 
-std::optional<webrtc::NetworkRoute> PacketTransportInternal::network_route()
-    const {
-  return std::optional<webrtc::NetworkRoute>();
+std::optional<NetworkRoute> PacketTransportInternal::network_route() const {
+  return std::optional<NetworkRoute>();
 }
 
 void PacketTransportInternal::RegisterReceivedPacketCallback(
     void* id,
-    absl::AnyInvocable<void(PacketTransportInternal*,
+    absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
                             const rtc::ReceivedPacket&)> callback) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   received_packet_callback_list_.AddReceiver(id, std::move(callback));
@@ -70,4 +69,4 @@ void PacketTransportInternal::NotifyOnClose() {
   }
 }
 
-}  // namespace rtc
+}  // namespace webrtc

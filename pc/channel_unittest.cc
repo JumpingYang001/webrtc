@@ -238,7 +238,7 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
         }
         if (flags1 & DTLS) {
           auto cert1 = webrtc::RTCCertificate::Create(
-              rtc::SSLIdentity::Create("session1", rtc::KT_DEFAULT));
+              webrtc::SSLIdentity::Create("session1", webrtc::KT_DEFAULT));
           fake_rtp_dtls_transport1_->SetLocalCertificate(cert1);
           if (fake_rtcp_dtls_transport1_) {
             fake_rtcp_dtls_transport1_->SetLocalCertificate(cert1);
@@ -264,7 +264,7 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
         }
         if (flags2 & DTLS) {
           auto cert2 = webrtc::RTCCertificate::Create(
-              rtc::SSLIdentity::Create("session2", rtc::KT_DEFAULT));
+              webrtc::SSLIdentity::Create("session2", webrtc::KT_DEFAULT));
           fake_rtp_dtls_transport2_->SetLocalCertificate(cert2);
           if (fake_rtcp_dtls_transport2_) {
             fake_rtcp_dtls_transport2_->SetLocalCertificate(cert2);
@@ -313,8 +313,8 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
       int flags);
 
   std::unique_ptr<webrtc::RtpTransportInternal> CreateRtpTransportBasedOnFlags(
-      rtc::PacketTransportInternal* rtp_packet_transport,
-      rtc::PacketTransportInternal* rtcp_packet_transport,
+      webrtc::PacketTransportInternal* rtp_packet_transport,
+      webrtc::PacketTransportInternal* rtcp_packet_transport,
       DtlsTransportInternal* rtp_dtls_transport,
       DtlsTransportInternal* rtcp_dtls_transport,
       int flags) {
@@ -353,8 +353,8 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   }
 
   std::unique_ptr<webrtc::RtpTransport> CreateUnencryptedTransport(
-      rtc::PacketTransportInternal* rtp_packet_transport,
-      rtc::PacketTransportInternal* rtcp_packet_transport) {
+      webrtc::PacketTransportInternal* rtp_packet_transport,
+      webrtc::PacketTransportInternal* rtcp_packet_transport) {
     auto rtp_transport = std::make_unique<webrtc::RtpTransport>(
         rtcp_packet_transport == nullptr, field_trials_);
 

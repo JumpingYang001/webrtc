@@ -194,8 +194,8 @@ class DownscalingObserver
     frame_generator_capturer->ChangeResolution(kInitialWidth, kInitialHeight);
   }
 
-  void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                          const rtc::VideoSinkWants& wants) override {
+  void OnSinkWantsChanged(VideoSinkInterface<VideoFrame>* sink,
+                          const VideoSinkWants& wants) override {
     if (wants.max_pixel_count < kInitialWidth * kInitialHeight)
       observation_complete_.Set();
   }
@@ -227,8 +227,8 @@ class UpscalingObserver
     frame_generator_capturer->ChangeResolution(kInitialWidth, kInitialHeight);
   }
 
-  void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                          const rtc::VideoSinkWants& wants) override {
+  void OnSinkWantsChanged(VideoSinkInterface<VideoFrame>* sink,
+                          const VideoSinkWants& wants) override {
     if (wants.max_pixel_count > last_wants_.max_pixel_count) {
       if (wants.max_pixel_count == std::numeric_limits<int>::max())
         observation_complete_.Set();
@@ -236,7 +236,7 @@ class UpscalingObserver
     last_wants_ = wants;
   }
 
-  rtc::VideoSinkWants last_wants_;
+  VideoSinkWants last_wants_;
 };
 
 TEST_F(QualityScalingTest, AdaptsDownForHighQp_Vp8) {

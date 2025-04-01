@@ -92,11 +92,11 @@ std::unique_ptr<SSLStreamAdapter> SSLStreamAdapter::Create(
 bool SSLStreamAdapter::IsBoringSsl() {
   return OpenSSLStreamAdapter::IsBoringSsl();
 }
-bool SSLStreamAdapter::IsAcceptableCipher(int cipher, rtc::KeyType key_type) {
+bool SSLStreamAdapter::IsAcceptableCipher(int cipher, KeyType key_type) {
   return OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
 }
 bool SSLStreamAdapter::IsAcceptableCipher(absl::string_view cipher,
-                                          rtc::KeyType key_type) {
+                                          KeyType key_type) {
   return OpenSSLStreamAdapter::IsAcceptableCipher(cipher, key_type);
 }
 

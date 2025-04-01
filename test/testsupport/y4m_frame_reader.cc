@@ -40,7 +40,7 @@ void ParseY4mHeader(std::string filepath,
       << "File " << filepath << " is too small";
   fclose(file);
 
-  std::vector<absl::string_view> header = rtc::split(h, ' ');
+  std::vector<absl::string_view> header = split(h, ' ');
   RTC_CHECK(!header.empty() && header[0] == "YUV4MPEG2")
       << filepath << " is not a valid Y4M file";
 

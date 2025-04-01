@@ -495,13 +495,13 @@ Resolution EncoderStreamFactory::GetLayerResolutionFromScaleResolutionDownTo(
   adapter.OnOutputFormatRequest(frame.ToPair(), frame.PixelCount(),
                                 std::nullopt);
   if (restrictions_) {
-    rtc::VideoSinkWants wants;
+    VideoSinkWants wants;
     wants.is_active = true;
     wants.target_pixel_count = restrictions_->target_pixels_per_frame();
     wants.max_pixel_count = webrtc::dchecked_cast<int>(
         restrictions_->max_pixels_per_frame().value_or(
             std::numeric_limits<int>::max()));
-    wants.aggregates.emplace(rtc::VideoSinkWants::Aggregates());
+    wants.aggregates.emplace(VideoSinkWants::Aggregates());
     wants.resolution_alignment = encoder_info_requested_resolution_alignment_;
     adapter.OnSinkWants(wants);
   }

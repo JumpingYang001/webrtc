@@ -186,9 +186,9 @@ bool MatchesWithReferenceAttributesAndComparator(
       // Different levels of redundancy between offer and answer are OK
       // since RED is considered to be declarative.
       std::vector<absl::string_view> redundant_payloads_1 =
-          rtc::split(red_parameters_1->second, '/');
+          split(red_parameters_1->second, '/');
       std::vector<absl::string_view> redundant_payloads_2 =
-          rtc::split(red_parameters_2->second, '/');
+          split(red_parameters_2->second, '/');
       // note: rtc::split returns at least 1 string even on empty strings.
       size_t smallest_size =
           std::min(redundant_payloads_1.size(), redundant_payloads_2.size());
@@ -197,8 +197,8 @@ bool MatchesWithReferenceAttributesAndComparator(
       for (size_t i = 0; i < smallest_size; i++) {
         int red_value_1;
         int red_value_2;
-        if (rtc::FromString(redundant_payloads_1[i], &red_value_1) &&
-            rtc::FromString(redundant_payloads_2[i], &red_value_2)) {
+        if (FromString(redundant_payloads_1[i], &red_value_1) &&
+            FromString(redundant_payloads_2[i], &red_value_2)) {
           if (!reference_comparator(red_value_1, red_value_2)) {
             return false;
           }

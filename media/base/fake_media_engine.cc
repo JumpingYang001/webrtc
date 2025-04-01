@@ -401,7 +401,7 @@ bool FakeVideoMediaSendChannel::SetSend(bool send) {
 bool FakeVideoMediaSendChannel::SetVideoSend(
     uint32_t ssrc,
     const VideoOptions* options,
-    rtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
+    webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) {
   if (options) {
     if (!SetOptions(*options)) {
       return false;
@@ -459,7 +459,7 @@ bool FakeVideoMediaReceiveChannel::rendering() const {
 const VideoOptions& FakeVideoMediaReceiveChannel::options() const {
   return options_;
 }
-const std::map<uint32_t, rtc::VideoSinkInterface<webrtc::VideoFrame>*>&
+const std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*>&
 FakeVideoMediaReceiveChannel::sinks() const {
   return sinks_;
 }
@@ -474,7 +474,7 @@ bool FakeVideoMediaReceiveChannel::SetReceiverParameters(
 }
 bool FakeVideoMediaReceiveChannel::SetSink(
     uint32_t ssrc,
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
   auto it = sinks_.find(ssrc);
   if (it == sinks_.end()) {
     return false;
@@ -483,7 +483,7 @@ bool FakeVideoMediaReceiveChannel::SetSink(
   return true;
 }
 void FakeVideoMediaReceiveChannel::SetDefaultSink(
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* /* sink */) {}
+    webrtc::VideoSinkInterface<webrtc::VideoFrame>* /* sink */) {}
 bool FakeVideoMediaReceiveChannel::HasSink(uint32_t ssrc) const {
   return sinks_.find(ssrc) != sinks_.end() && sinks_.at(ssrc) != nullptr;
 }

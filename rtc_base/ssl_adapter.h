@@ -46,7 +46,7 @@ class SSLAdapterFactory {
 
   // Set the certificate this socket will present to incoming clients.
   // Takes ownership of `identity`.
-  virtual void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) = 0;
+  virtual void SetIdentity(std::unique_ptr<SSLIdentity> identity) = 0;
 
   // Choose whether the socket acts as a server socket or client socket.
   virtual void SetRole(SSLRole role) = 0;
@@ -86,7 +86,7 @@ class SSLAdapter : public AsyncSocketAdapter {
 
   // Set the certificate this socket will present to incoming clients.
   // Takes ownership of `identity`.
-  virtual void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) = 0;
+  virtual void SetIdentity(std::unique_ptr<SSLIdentity> identity) = 0;
 
   // Choose whether the socket acts as a server socket or client socket.
   virtual void SetRole(SSLRole role) = 0;

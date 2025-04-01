@@ -210,12 +210,11 @@ void VideoAnalyzer::SetReceiver(PacketReceiver* receiver) {
   receiver_ = receiver;
 }
 
-void VideoAnalyzer::SetSource(
-    rtc::VideoSourceInterface<VideoFrame>* video_source,
-    bool respect_sink_wants) {
+void VideoAnalyzer::SetSource(VideoSourceInterface<VideoFrame>* video_source,
+                              bool respect_sink_wants) {
   if (respect_sink_wants)
     captured_frame_forwarder_.SetSource(video_source);
-  rtc::VideoSinkWants wants;
+  VideoSinkWants wants;
   video_source->AddOrUpdateSink(InputInterface(), wants);
 }
 
@@ -244,11 +243,11 @@ void VideoAnalyzer::SetAudioReceiveStream(
   audio_receive_stream_ = recv_stream;
 }
 
-rtc::VideoSinkInterface<VideoFrame>* VideoAnalyzer::InputInterface() {
+VideoSinkInterface<VideoFrame>* VideoAnalyzer::InputInterface() {
   return &captured_frame_forwarder_;
 }
 
-rtc::VideoSourceInterface<VideoFrame>* VideoAnalyzer::OutputInterface() {
+VideoSourceInterface<VideoFrame>* VideoAnalyzer::OutputInterface() {
   return &captured_frame_forwarder_;
 }
 
@@ -1059,8 +1058,8 @@ void VideoAnalyzer::CapturedFrameForwarder::OnFrame(
 }
 
 void VideoAnalyzer::CapturedFrameForwarder::AddOrUpdateSink(
-    rtc::VideoSinkInterface<VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+    VideoSinkInterface<VideoFrame>* sink,
+    const VideoSinkWants& wants) {
   {
     MutexLock lock(&lock_);
     RTC_DCHECK(!send_stream_input_ || send_stream_input_ == sink);
@@ -1072,7 +1071,7 @@ void VideoAnalyzer::CapturedFrameForwarder::AddOrUpdateSink(
 }
 
 void VideoAnalyzer::CapturedFrameForwarder::RemoveSink(
-    rtc::VideoSinkInterface<VideoFrame>* sink) {
+    VideoSinkInterface<VideoFrame>* sink) {
   MutexLock lock(&lock_);
   RTC_DCHECK(sink == send_stream_input_);
   send_stream_input_ = nullptr;

@@ -29,7 +29,7 @@ namespace webrtc {
 // Each renderer verifies that it receives the expected resolution, and as soon
 // as every renderer has received a frame, the test finishes.
 TEST(MultiStreamEndToEndTest, SendsAndReceivesMultipleStreams) {
-  class VideoOutputObserver : public rtc::VideoSinkInterface<VideoFrame> {
+  class VideoOutputObserver : public VideoSinkInterface<VideoFrame> {
    public:
     VideoOutputObserver(const MultiStreamTester::CodecSettings& settings,
                         uint32_t ssrc,

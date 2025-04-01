@@ -31,8 +31,7 @@ class OpenSSLKeyPair final {
     RTC_DCHECK(pkey_ != nullptr);
   }
 
-  static std::unique_ptr<OpenSSLKeyPair> Generate(
-      const rtc::KeyParams& key_params);
+  static std::unique_ptr<OpenSSLKeyPair> Generate(const KeyParams& key_params);
   // Constructs a key pair from the private key PEM string. This must not result
   // in missing public key parameters. Returns null on error.
   static std::unique_ptr<OpenSSLKeyPair> FromPrivateKeyPEMString(

@@ -23,7 +23,7 @@
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/time_utils.h"
 
-namespace rtc {
+namespace webrtc {
 
 AdaptedVideoTrackSource::AdaptedVideoTrackSource() = default;
 
@@ -33,7 +33,7 @@ AdaptedVideoTrackSource::AdaptedVideoTrackSource(int required_alignment)
 AdaptedVideoTrackSource::~AdaptedVideoTrackSource() = default;
 
 bool AdaptedVideoTrackSource::GetStats(Stats* stats) {
-  webrtc::MutexLock lock(&stats_mutex_);
+  MutexLock lock(&stats_mutex_);
 
   if (!stats_) {
     return false;
@@ -43,9 +43,8 @@ bool AdaptedVideoTrackSource::GetStats(Stats* stats) {
   return true;
 }
 
-void AdaptedVideoTrackSource::OnFrame(const webrtc::VideoFrame& frame) {
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer(
-      frame.video_frame_buffer());
+void AdaptedVideoTrackSource::OnFrame(const VideoFrame& frame) {
+  scoped_refptr<VideoFrameBuffer> buffer(frame.video_frame_buffer());
   /* Note that this is a "best effort" approach to
      wants.rotation_applied; apply_rotation_ can change from false to
      true between the check of apply_rotation() and the call to
@@ -55,11 +54,11 @@ void AdaptedVideoTrackSource::OnFrame(const webrtc::VideoFrame& frame) {
      synchronization for us in this case, by not passing the frame on
      to sinks which don't want it. */
   if (apply_rotation() && frame.rotation() != webrtc::kVideoRotation_0 &&
-      buffer->type() == webrtc::VideoFrameBuffer::Type::kI420) {
+      buffer->type() == VideoFrameBuffer::Type::kI420) {
     /* Apply pending rotation. */
-    webrtc::VideoFrame rotated_frame(frame);
+    VideoFrame rotated_frame(frame);
     rotated_frame.set_video_frame_buffer(
-        webrtc::I420Buffer::Rotate(*buffer->GetI420(), frame.rotation()));
+        I420Buffer::Rotate(*buffer->GetI420(), frame.rotation()));
     rotated_frame.set_rotation(webrtc::kVideoRotation_0);
     broadcaster_.OnFrame(rotated_frame);
   } else {
@@ -72,14 +71,13 @@ void AdaptedVideoTrackSource::OnFrameDropped() {
 }
 
 void AdaptedVideoTrackSource::AddOrUpdateSink(
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+    VideoSinkInterface<VideoFrame>* sink,
+    const VideoSinkWants& wants) {
   broadcaster_.AddOrUpdateSink(sink, wants);
   OnSinkWantsChanged(broadcaster_.wants());
 }
 
-void AdaptedVideoTrackSource::RemoveSink(
-    rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) {
+void AdaptedVideoTrackSource::RemoveSink(VideoSinkInterface<VideoFrame>* sink) {
   broadcaster_.RemoveSink(sink);
   OnSinkWantsChanged(broadcaster_.wants());
 }
@@ -88,8 +86,7 @@ bool AdaptedVideoTrackSource::apply_rotation() {
   return broadcaster_.wants().rotation_applied;
 }
 
-void AdaptedVideoTrackSource::OnSinkWantsChanged(
-    const rtc::VideoSinkWants& wants) {
+void AdaptedVideoTrackSource::OnSinkWantsChanged(const VideoSinkWants& wants) {
   video_adapter_.OnSinkWants(wants);
 }
 
@@ -103,7 +100,7 @@ bool AdaptedVideoTrackSource::AdaptFrame(int width,
                                          int* crop_x,
                                          int* crop_y) {
   {
-    webrtc::MutexLock lock(&stats_mutex_);
+    MutexLock lock(&stats_mutex_);
     stats_ = Stats{width, height};
   }
 
@@ -125,8 +122,8 @@ bool AdaptedVideoTrackSource::AdaptFrame(int width,
 }
 
 void AdaptedVideoTrackSource::ProcessConstraints(
-    const webrtc::VideoTrackSourceConstraints& constraints) {
+    const VideoTrackSourceConstraints& constraints) {
   broadcaster_.ProcessConstraints(constraints);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

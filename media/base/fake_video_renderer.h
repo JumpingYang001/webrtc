@@ -21,7 +21,7 @@
 namespace webrtc {
 
 // Faked video renderer that has a callback for actions on rendering.
-class FakeVideoRenderer : public rtc::VideoSinkInterface<VideoFrame> {
+class FakeVideoRenderer : public VideoSinkInterface<VideoFrame> {
  public:
   FakeVideoRenderer();
 

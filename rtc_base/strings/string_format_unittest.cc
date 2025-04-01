@@ -40,7 +40,7 @@ TEST(StringFormatTest, MaxSizeShouldWork) {
 // whe using `%.*s`.
 TEST(StringFormatTest, FormatStringView) {
   const std::string main_string("This is a substring test.");
-  std::vector<absl::string_view> string_views = rtc::split(main_string, ' ');
+  std::vector<absl::string_view> string_views = split(main_string, ' ');
   ASSERT_EQ(string_views.size(), 5u);
 
   const absl::string_view& sv = string_views[3];

@@ -107,7 +107,7 @@ const Codec* GetAssociatedCodecForRtx(const CodecList& codec_list,
   }
 
   int associated_pt;
-  if (!rtc::FromString(associated_pt_str, &associated_pt)) {
+  if (!webrtc::FromString(associated_pt_str, &associated_pt)) {
     RTC_LOG(LS_WARNING) << "Couldn't convert payload type " << associated_pt_str
                         << " of RTX codec " << rtx_codec.id
                         << " to an integer.";
@@ -138,14 +138,14 @@ const Codec* GetAssociatedCodecForRed(const CodecList& codec_list,
     return nullptr;
   }
 
-  std::vector<absl::string_view> redundant_payloads = rtc::split(fmtp, '/');
+  std::vector<absl::string_view> redundant_payloads = webrtc::split(fmtp, '/');
   if (redundant_payloads.size() < 2) {
     return nullptr;
   }
 
   absl::string_view associated_pt_str = redundant_payloads[0];
   int associated_pt;
-  if (!rtc::FromString(associated_pt_str, &associated_pt)) {
+  if (!webrtc::FromString(associated_pt_str, &associated_pt)) {
     RTC_LOG(LS_WARNING) << "Couldn't convert first payload type "
                         << associated_pt_str << " of RED codec " << red_codec.id
                         << " to an integer.";
@@ -297,7 +297,7 @@ CodecList MatchCodecPreference(
                   codec.params.find(cricket::kCodecParamNotInNameValueFormat);
               if (fmtp != codec.params.end()) {
                 std::vector<absl::string_view> redundant_payloads =
-                    rtc::split(fmtp->second, '/');
+                    webrtc::split(fmtp->second, '/');
                 if (!redundant_payloads.empty() &&
                     redundant_payloads[0] == id) {
                   if (!red_was_added) {
@@ -487,7 +487,7 @@ RTCError NegotiateCodecs(const CodecList& local_codecs,
         continue;
       }
       int apt_value;
-      if (!rtc::FromString(apt_str, &apt_value)) {
+      if (!webrtc::FromString(apt_str, &apt_value)) {
         RTC_LOG(LS_WARNING) << "Unconvertable apt value";
         continue;
       }

@@ -75,8 +75,8 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
       const FieldTrialsView* field_trials = nullptr);
   ~OpenSSLStreamAdapter() override;
 
-  void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) override;
-  rtc::SSLIdentity* GetIdentityForTesting() const override;
+  void SetIdentity(std::unique_ptr<SSLIdentity> identity) override;
+  SSLIdentity* GetIdentityForTesting() const override;
 
   // Default argument is for compatibility
   void SetServerRole(SSLRole role = webrtc::SSL_SERVER) override;
@@ -123,9 +123,8 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   // Capabilities interfaces.
   static bool IsBoringSsl();
 
-  static bool IsAcceptableCipher(int cipher, rtc::KeyType key_type);
-  static bool IsAcceptableCipher(absl::string_view cipher,
-                                 rtc::KeyType key_type);
+  static bool IsAcceptableCipher(int cipher, KeyType key_type);
+  static bool IsAcceptableCipher(absl::string_view cipher, KeyType key_type);
 
   // Use our timeutils.h source of timing in BoringSSL, allowing us to test
   // using a fake clock.

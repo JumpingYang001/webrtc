@@ -23,7 +23,7 @@
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
 // KT_LAST is intended for vector declarations and loops over all key types;
 // it does not represent any key type in itself.
@@ -53,14 +53,14 @@ enum ECCurve { EC_NIST_P256, /* EC_FANCY, */ EC_LAST };
 class RTC_EXPORT KeyParams {
  public:
   // Generate a KeyParams object from a simple KeyType, using default params.
-  explicit KeyParams(KeyType key_type = rtc::KT_DEFAULT);
+  explicit KeyParams(KeyType key_type = KT_DEFAULT);
 
   // Generate a a KeyParams for RSA with explicit parameters.
-  static KeyParams RSA(int mod_size = rtc::kRsaDefaultModSize,
-                       int pub_exp = rtc::kRsaDefaultExponent);
+  static KeyParams RSA(int mod_size = kRsaDefaultModSize,
+                       int pub_exp = kRsaDefaultExponent);
 
   // Generate a a KeyParams for ECDSA specifying the curve.
-  static KeyParams ECDSA(ECCurve curve = rtc::EC_NIST_P256);
+  static KeyParams ECDSA(ECCurve curve = EC_NIST_P256);
 
   // Check validity of a KeyParams object. Since the factory functions have
   // no way of returning errors, this function can be called after creation
@@ -163,6 +163,33 @@ extern const char kPemTypeCertificate[];
 extern const char kPemTypeRsaPrivateKey[];
 extern const char kPemTypeEcPrivateKey[];
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::ASN1TimeToSec;
+using ::webrtc::EC_LAST;
+using ::webrtc::EC_NIST_P256;
+using ::webrtc::ECCurve;
+using ::webrtc::kCertificateWindowInSeconds;
+using ::webrtc::kDefaultCertificateLifetimeInSeconds;
+using ::webrtc::KeyParams;
+using ::webrtc::KeyType;
+using ::webrtc::kPemTypeCertificate;
+using ::webrtc::kPemTypeEcPrivateKey;
+using ::webrtc::kPemTypeRsaPrivateKey;
+using ::webrtc::kRsaDefaultExponent;
+using ::webrtc::kRsaDefaultModSize;
+using ::webrtc::kRsaMaxModSize;
+using ::webrtc::kRsaMinModSize;
+using ::webrtc::KT_DEFAULT;
+using ::webrtc::KT_ECDSA;
+using ::webrtc::KT_LAST;
+using ::webrtc::KT_RSA;
+using ::webrtc::RSAParams;
+using ::webrtc::SSLIdentity;
+using ::webrtc::SSLIdentityParams;
 }  // namespace rtc
 
 #endif  // RTC_BASE_SSL_IDENTITY_H_

@@ -100,8 +100,8 @@ rtc::scoped_refptr<webrtc::IceTransportInterface> CreateIceTransport(
 class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
  protected:
   std::unique_ptr<webrtc::SrtpTransport> CreateSdesTransport(
-      rtc::PacketTransportInternal* rtp_packet_transport,
-      rtc::PacketTransportInternal* rtcp_packet_transport) {
+      webrtc::PacketTransportInternal* rtp_packet_transport,
+      webrtc::PacketTransportInternal* rtcp_packet_transport) {
     auto srtp_transport = std::make_unique<webrtc::SrtpTransport>(
         rtcp_packet_transport == nullptr, field_trials_);
 
@@ -260,10 +260,10 @@ TEST_P(JsepTransport2WithRtcpMux, SetDtlsParameters) {
   // Create certificates.
   rtc::scoped_refptr<webrtc::RTCCertificate> local_cert =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("local", rtc::KT_DEFAULT));
+          webrtc::SSLIdentity::Create("local", webrtc::KT_DEFAULT));
   rtc::scoped_refptr<webrtc::RTCCertificate> remote_cert =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("remote", rtc::KT_DEFAULT));
+          webrtc::SSLIdentity::Create("remote", webrtc::KT_DEFAULT));
   jsep_transport_->SetLocalCertificate(local_cert);
 
   // Apply offer.
@@ -312,10 +312,10 @@ TEST_P(JsepTransport2WithRtcpMux, SetDtlsParametersWithPassiveAnswer) {
   // Create certificates.
   rtc::scoped_refptr<webrtc::RTCCertificate> local_cert =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("local", rtc::KT_DEFAULT));
+          webrtc::SSLIdentity::Create("local", webrtc::KT_DEFAULT));
   rtc::scoped_refptr<webrtc::RTCCertificate> remote_cert =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("remote", rtc::KT_DEFAULT));
+          webrtc::SSLIdentity::Create("remote", webrtc::KT_DEFAULT));
   jsep_transport_->SetLocalCertificate(local_cert);
 
   // Apply offer.
@@ -424,12 +424,12 @@ TEST_P(JsepTransport2WithRtcpMux, VerifyCertificateFingerprint) {
 
   EXPECT_FALSE(
       jsep_transport_->VerifyCertificateFingerprint(nullptr, nullptr).ok());
-  rtc::KeyType key_types[] = {rtc::KT_RSA, rtc::KT_ECDSA};
+  webrtc::KeyType key_types[] = {webrtc::KT_RSA, webrtc::KT_ECDSA};
 
   for (auto& key_type : key_types) {
     rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
         webrtc::RTCCertificate::Create(
-            rtc::SSLIdentity::Create("testing", key_type));
+            webrtc::SSLIdentity::Create("testing", key_type));
     ASSERT_NE(nullptr, certificate);
 
     std::string digest_algorithm;
@@ -469,7 +469,7 @@ TEST_P(JsepTransport2WithRtcpMux, ValidDtlsRoleNegotiation) {
   // non end-to-end test.
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
 
   JsepTransportDescription local_description = MakeJsepTransportDescription(
       rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate);
@@ -576,7 +576,7 @@ TEST_P(JsepTransport2WithRtcpMux, InvalidDtlsRoleNegotiation) {
   // non end-to-end test.
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
 
   JsepTransportDescription local_description = MakeJsepTransportDescription(
       rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate);
@@ -704,7 +704,7 @@ TEST_F(JsepTransport2Test, ValidDtlsReofferFromAnswerer) {
   // non end-to-end test.
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -751,7 +751,7 @@ TEST_F(JsepTransport2Test, InvalidDtlsReofferFromAnswerer) {
   // non end-to-end test.
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -797,7 +797,7 @@ TEST_F(JsepTransport2Test, InvalidDtlsReofferFromAnswerer) {
 TEST_F(JsepTransport2Test, RemoteOfferWithCurrentNegotiatedDtlsRole) {
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -842,7 +842,7 @@ TEST_F(JsepTransport2Test, RemoteOfferWithCurrentNegotiatedDtlsRole) {
 TEST_F(JsepTransport2Test, RemoteOfferThatChangesNegotiatedDtlsRole) {
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -886,10 +886,10 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesNegotiatedDtlsRole) {
 TEST_F(JsepTransport2Test, RemoteOfferThatChangesFingerprintAndDtlsRole) {
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing1", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing1", webrtc::KT_ECDSA));
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate2 =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing2", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing2", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -942,7 +942,7 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesFingerprintAndDtlsRole) {
 TEST_F(JsepTransport2Test, DtlsSetupWithLegacyAsAnswerer) {
   rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
       webrtc::RTCCertificate::Create(
-          rtc::SSLIdentity::Create("testing", rtc::KT_ECDSA));
+          webrtc::SSLIdentity::Create("testing", webrtc::KT_ECDSA));
   bool rtcp_mux_enabled = true;
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
@@ -1073,14 +1073,14 @@ class JsepTransport2HeaderExtensionTest
         });
 
     auto cert1 = webrtc::RTCCertificate::Create(
-        rtc::SSLIdentity::Create("session1", rtc::KT_DEFAULT));
+        webrtc::SSLIdentity::Create("session1", webrtc::KT_DEFAULT));
     jsep_transport1_->rtp_dtls_transport()->SetLocalCertificate(cert1);
     auto cert2 = webrtc::RTCCertificate::Create(
-        rtc::SSLIdentity::Create("session1", rtc::KT_DEFAULT));
+        webrtc::SSLIdentity::Create("session1", webrtc::KT_DEFAULT));
     jsep_transport2_->rtp_dtls_transport()->SetLocalCertificate(cert2);
   }
 
-  void OnReadPacket1(rtc::PacketTransportInternal* transport,
+  void OnReadPacket1(webrtc::PacketTransportInternal* transport,
                      const rtc::ReceivedPacket& packet) {
     RTC_LOG(LS_INFO) << "JsepTransport 1 Received a packet.";
     CompareHeaderExtensions(
@@ -1091,7 +1091,7 @@ class JsepTransport2HeaderExtensionTest
     received_packet_count_++;
   }
 
-  void OnReadPacket2(rtc::PacketTransportInternal* transport,
+  void OnReadPacket2(webrtc::PacketTransportInternal* transport,
                      const rtc::ReceivedPacket& packet) {
     RTC_LOG(LS_INFO) << "JsepTransport 2 Received a packet.";
     CompareHeaderExtensions(

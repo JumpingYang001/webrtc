@@ -133,7 +133,7 @@ class PeerConnectionE2EQualityTest
       alice_video_sources_;
   std::vector<rtc::scoped_refptr<TestVideoCapturerVideoTrackSource>>
       bob_video_sources_;
-  std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>>
+  std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>>
       output_video_sinks_;
   AnalyzerHelper analyzer_helper_;
 

@@ -28,7 +28,8 @@
 #include "rtc_base/ssl_fingerprint.h"
 #include "test/gtest.h"
 
-using rtc::SSLIdentity;
+namespace webrtc {
+namespace {
 
 const char kTestCertificate[] =
     "-----BEGIN CERTIFICATE-----\n"
@@ -161,7 +162,7 @@ static const char kECDSA_BASE64_CERTIFICATE[] =
     "kekw==";
 
 struct IdentityAndInfo {
-  std::unique_ptr<rtc::SSLIdentity> identity;
+  std::unique_ptr<SSLIdentity> identity;
   std::vector<std::string> ders;
   std::vector<std::string> pems;
   std::vector<std::string> fingerprints;
@@ -173,11 +174,11 @@ IdentityAndInfo CreateFakeIdentityAndInfoFromDers(
   IdentityAndInfo info;
   info.ders = ders;
   for (const std::string& der : ders) {
-    info.pems.push_back(rtc::SSLIdentity::DerToPem(
+    info.pems.push_back(SSLIdentity::DerToPem(
         "CERTIFICATE", reinterpret_cast<const unsigned char*>(der.c_str()),
         der.length()));
   }
-  info.identity.reset(new webrtc::FakeSSLIdentity(info.pems));
+  info.identity.reset(new FakeSSLIdentity(info.pems));
   // Strip header/footer and newline characters of PEM strings.
   for (size_t i = 0; i < info.pems.size(); ++i) {
     absl::StrReplaceAll({{"-----BEGIN CERTIFICATE-----", ""},
@@ -187,10 +188,10 @@ IdentityAndInfo CreateFakeIdentityAndInfoFromDers(
   }
   // Fingerprints for the whole certificate chain, starting with leaf
   // certificate.
-  const webrtc::SSLCertChain& chain = info.identity->cert_chain();
-  std::unique_ptr<webrtc::SSLFingerprint> fp;
+  const SSLCertChain& chain = info.identity->cert_chain();
+  std::unique_ptr<SSLFingerprint> fp;
   for (size_t i = 0; i < chain.GetSize(); i++) {
-    fp = webrtc::SSLFingerprint::Create("sha-1", chain.Get(i));
+    fp = SSLFingerprint::Create("sha-1", chain.Get(i));
     EXPECT_TRUE(fp);
     info.fingerprints.push_back(fp->GetRfc4572Fingerprint());
   }
@@ -201,17 +202,17 @@ IdentityAndInfo CreateFakeIdentityAndInfoFromDers(
 class SSLIdentityTest : public ::testing::Test {
  public:
   void SetUp() override {
-    identity_rsa1_ = SSLIdentity::Create("test1", rtc::KT_RSA);
-    identity_rsa2_ = SSLIdentity::Create("test2", rtc::KT_RSA);
-    identity_ecdsa1_ = SSLIdentity::Create("test3", rtc::KT_ECDSA);
-    identity_ecdsa2_ = SSLIdentity::Create("test4", rtc::KT_ECDSA);
+    identity_rsa1_ = SSLIdentity::Create("test1", KT_RSA);
+    identity_rsa2_ = SSLIdentity::Create("test2", KT_RSA);
+    identity_ecdsa1_ = SSLIdentity::Create("test3", KT_ECDSA);
+    identity_ecdsa2_ = SSLIdentity::Create("test4", KT_ECDSA);
 
     ASSERT_TRUE(identity_rsa1_);
     ASSERT_TRUE(identity_rsa2_);
     ASSERT_TRUE(identity_ecdsa1_);
     ASSERT_TRUE(identity_ecdsa2_);
 
-    test_cert_ = webrtc::SSLCertificate::FromPEMString(kTestCertificate);
+    test_cert_ = SSLCertificate::FromPEMString(kTestCertificate);
     ASSERT_TRUE(test_cert_);
   }
 
@@ -220,26 +221,26 @@ class SSLIdentityTest : public ::testing::Test {
 
     ASSERT_TRUE(identity_rsa1_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_rsa2_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_ecdsa1_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(DIGEST_SHA_256, digest_algorithm);
 
     ASSERT_TRUE(identity_ecdsa2_->certificate().GetSignatureDigestAlgorithm(
         &digest_algorithm));
-    ASSERT_EQ(webrtc::DIGEST_SHA_256, digest_algorithm);
+    ASSERT_EQ(DIGEST_SHA_256, digest_algorithm);
 
     // The test certificate has an MD5-based signature.
     ASSERT_TRUE(test_cert_->GetSignatureDigestAlgorithm(&digest_algorithm));
-    ASSERT_EQ(webrtc::DIGEST_MD5, digest_algorithm);
+    ASSERT_EQ(DIGEST_MD5, digest_algorithm);
   }
 
-  typedef unsigned char DigestType[webrtc::MessageDigest::kMaxSize];
+  typedef unsigned char DigestType[MessageDigest::kMaxSize];
 
   void TestDigestHelper(DigestType digest,
                         const SSLIdentity* identity,
@@ -340,50 +341,45 @@ class SSLIdentityTest : public ::testing::Test {
   std::unique_ptr<SSLIdentity> identity_rsa2_;
   std::unique_ptr<SSLIdentity> identity_ecdsa1_;
   std::unique_ptr<SSLIdentity> identity_ecdsa2_;
-  std::unique_ptr<webrtc::SSLCertificate> test_cert_;
+  std::unique_ptr<SSLCertificate> test_cert_;
 };
 
 TEST_F(SSLIdentityTest, FixedDigestSHA1) {
-  TestDigestForFixedCert(webrtc::DIGEST_SHA_1, SHA_DIGEST_LENGTH,
-                         kTestCertSha1);
+  TestDigestForFixedCert(DIGEST_SHA_1, SHA_DIGEST_LENGTH, kTestCertSha1);
 }
 
 // HASH_AlgSHA224 is not supported in the chromium linux build.
 TEST_F(SSLIdentityTest, FixedDigestSHA224) {
-  TestDigestForFixedCert(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH,
-                         kTestCertSha224);
+  TestDigestForFixedCert(DIGEST_SHA_224, SHA224_DIGEST_LENGTH, kTestCertSha224);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA256) {
-  TestDigestForFixedCert(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH,
-                         kTestCertSha256);
+  TestDigestForFixedCert(DIGEST_SHA_256, SHA256_DIGEST_LENGTH, kTestCertSha256);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA384) {
-  TestDigestForFixedCert(webrtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH,
-                         kTestCertSha384);
+  TestDigestForFixedCert(DIGEST_SHA_384, SHA384_DIGEST_LENGTH, kTestCertSha384);
 }
 
 TEST_F(SSLIdentityTest, FixedDigestSHA512) {
-  TestDigestForFixedCert(webrtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH,
-                         kTestCertSha512);
+  TestDigestForFixedCert(DIGEST_SHA_512, SHA512_DIGEST_LENGTH, kTestCertSha512);
 }
 
 // HASH_AlgSHA224 is not supported in the chromium linux build.
 TEST_F(SSLIdentityTest, DigestSHA224) {
-  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_224, SHA224_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(DIGEST_SHA_224, SHA224_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA256) {
-  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_256, SHA256_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(DIGEST_SHA_256, SHA256_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA384) {
-  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_384, SHA384_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(DIGEST_SHA_384, SHA384_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, DigestSHA512) {
-  TestDigestForGeneratedCert(webrtc::DIGEST_SHA_512, SHA512_DIGEST_LENGTH);
+  TestDigestForGeneratedCert(DIGEST_SHA_512, SHA512_DIGEST_LENGTH);
 }
 
 TEST_F(SSLIdentityTest, IdentityComparison) {
@@ -461,7 +457,7 @@ TEST_F(SSLIdentityTest, GetSignatureDigestAlgorithm) {
 TEST_F(SSLIdentityTest, SSLCertificateGetStatsRSA) {
   std::unique_ptr<SSLIdentity> identity(
       SSLIdentity::CreateFromPEMStrings(kRSA_PRIVATE_KEY_PEM, kRSA_CERT_PEM));
-  std::unique_ptr<webrtc::SSLCertificateStats> stats =
+  std::unique_ptr<SSLCertificateStats> stats =
       identity->certificate().GetStats();
   EXPECT_EQ(stats->fingerprint, kRSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kRSA_FINGERPRINT_ALGORITHM);
@@ -472,7 +468,7 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsRSA) {
 TEST_F(SSLIdentityTest, SSLCertificateGetStatsECDSA) {
   std::unique_ptr<SSLIdentity> identity(SSLIdentity::CreateFromPEMStrings(
       kECDSA_PRIVATE_KEY_PEM, kECDSA_CERT_PEM));
-  std::unique_ptr<webrtc::SSLCertificateStats> stats =
+  std::unique_ptr<SSLCertificateStats> stats =
       identity->certificate().GetStats();
   EXPECT_EQ(stats->fingerprint, kECDSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kECDSA_FINGERPRINT_ALGORITHM);
@@ -491,9 +487,9 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsWithChain) {
   EXPECT_EQ(info.pems.size(), info.ders.size());
   EXPECT_EQ(info.fingerprints.size(), info.ders.size());
 
-  std::unique_ptr<webrtc::SSLCertificateStats> first_stats =
+  std::unique_ptr<SSLCertificateStats> first_stats =
       info.identity->cert_chain().GetStats();
-  webrtc::SSLCertificateStats* cert_stats = first_stats.get();
+  SSLCertificateStats* cert_stats = first_stats.get();
   for (size_t i = 0; i < info.ders.size(); ++i) {
     EXPECT_EQ(cert_stats->fingerprint, info.fingerprints[i]);
     EXPECT_EQ(cert_stats->fingerprint_algorithm, "sha-1");
@@ -507,11 +503,11 @@ class SSLIdentityExpirationTest : public ::testing::Test {
  public:
   SSLIdentityExpirationTest() {
     // Set use of the test RNG to get deterministic expiration timestamp.
-    webrtc::SetRandomTestMode(true);
+    SetRandomTestMode(true);
   }
   ~SSLIdentityExpirationTest() override {
     // Put it back for the next test.
-    webrtc::SetRandomTestMode(false);
+    SetRandomTestMode(false);
   }
 
   void TestASN1TimeToSec() {
@@ -581,8 +577,8 @@ class SSLIdentityExpirationTest : public ::testing::Test {
     for (const auto& entry : data) {
       size_t length = strlen(entry.string);
       memcpy(buf, entry.string, length);    // Copy the ASN1 string...
-      buf[length] = webrtc::CreateRandomId();  // ...and terminate it with junk.
-      int64_t res = rtc::ASN1TimeToSec(buf, length, entry.long_format);
+      buf[length] = CreateRandomId();  // ...and terminate it with junk.
+      int64_t res = ASN1TimeToSec(buf, length, entry.long_format);
       RTC_LOG(LS_VERBOSE) << entry.string;
       ASSERT_EQ(entry.want, res);
     }
@@ -590,8 +586,8 @@ class SSLIdentityExpirationTest : public ::testing::Test {
     for (const auto& entry : data) {
       size_t length = strlen(entry.string);
       memcpy(buf, entry.string, length);    // Copy the ASN1 string...
-      buf[length] = webrtc::CreateRandomId();  // ...and terminate it with junk.
-      int64_t res = rtc::ASN1TimeToSec(buf, length - 1, entry.long_format);
+      buf[length] = CreateRandomId();  // ...and terminate it with junk.
+      int64_t res = ASN1TimeToSec(buf, length - 1, entry.long_format);
       RTC_LOG(LS_VERBOSE) << entry.string;
       ASSERT_EQ(-1, res);
     }
@@ -605,10 +601,10 @@ class SSLIdentityExpirationTest : public ::testing::Test {
       // we hit time offset limitations in OpenSSL on some 32-bit systems.
       time_t time_before_generation = time(nullptr);
       time_t lifetime =
-          webrtc::CreateRandomId() % (0x80000000 - time_before_generation);
-      rtc::KeyParams key_params = rtc::KeyParams::ECDSA(rtc::EC_NIST_P256);
+          CreateRandomId() % (0x80000000 - time_before_generation);
+      KeyParams key_params = KeyParams::ECDSA(EC_NIST_P256);
       auto identity =
-          rtc::SSLIdentity::Create("", key_params, lifetime);
+          SSLIdentity::Create("", key_params, lifetime);
       time_t time_after_generation = time(nullptr);
       EXPECT_LE(time_before_generation + lifetime,
                 identity->certificate().CertificateExpirationTime());
@@ -625,3 +621,6 @@ TEST_F(SSLIdentityExpirationTest, TestASN1TimeToSec) {
 TEST_F(SSLIdentityExpirationTest, TestExpireTime) {
   TestExpireTime(500);
 }
+
+}  // namespace
+}  // namespace webrtc

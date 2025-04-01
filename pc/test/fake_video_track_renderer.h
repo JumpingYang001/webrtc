@@ -22,7 +22,7 @@ class FakeVideoTrackRenderer : public cricket::FakeVideoRenderer {
  public:
   explicit FakeVideoTrackRenderer(VideoTrackInterface* video_track)
       : video_track_(video_track) {
-    video_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
+    video_track_->AddOrUpdateSink(this, VideoSinkWants());
   }
   ~FakeVideoTrackRenderer() { video_track_->RemoveSink(this); }
 

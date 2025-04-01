@@ -57,15 +57,15 @@ class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
 
   bool remote() const override { return android_video_track_source_->remote(); }
 
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override {
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
+                       const VideoSinkWants& wants) override {
     // The method is defined private in the implementation so we have to access
     // it through the interface...
     static_cast<VideoTrackSourceInterface*>(android_video_track_source_.get())
         ->AddOrUpdateSink(sink, wants);
   }
 
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override {
+  void RemoveSink(VideoSinkInterface<VideoFrame>* sink) override {
     // The method is defined private in the implementation so we have to access
     // it through the interface...
     static_cast<VideoTrackSourceInterface*>(android_video_track_source_.get())

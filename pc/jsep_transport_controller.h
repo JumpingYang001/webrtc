@@ -69,11 +69,6 @@
 #include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace rtc {
-
-class PacketTransportInternal;
-}  // namespace rtc
-
 namespace webrtc {
 
 class JsepTransportController : public PayloadTypeSuggester,
@@ -433,8 +428,8 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   std::unique_ptr<RtpTransport> CreateUnencryptedRtpTransport(
       const std::string& transport_name,
-      rtc::PacketTransportInternal* rtp_packet_transport,
-      rtc::PacketTransportInternal* rtcp_packet_transport);
+      PacketTransportInternal* rtp_packet_transport,
+      PacketTransportInternal* rtcp_packet_transport);
   std::unique_ptr<SrtpTransport> CreateSdesTransport(
       const std::string& transport_name,
       cricket::DtlsTransportInternal* rtp_dtls_transport,
@@ -454,9 +449,9 @@ class JsepTransportController : public PayloadTypeSuggester,
   std::vector<cricket::DtlsTransportInternal*> GetActiveDtlsTransports();
 
   // Handlers for signals from Transport.
-  void OnTransportWritableState_n(rtc::PacketTransportInternal* transport)
+  void OnTransportWritableState_n(PacketTransportInternal* transport)
       RTC_RUN_ON(network_thread_);
-  void OnTransportReceivingState_n(rtc::PacketTransportInternal* transport)
+  void OnTransportReceivingState_n(PacketTransportInternal* transport)
       RTC_RUN_ON(network_thread_);
   void OnTransportGatheringState_n(IceTransportInternal* transport)
       RTC_RUN_ON(network_thread_);

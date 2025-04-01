@@ -147,7 +147,7 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
 
   if (ack != nullptr && !ack->string_view().empty()) {
     RTC_LOG(LS_VERBOSE) << "DTLS-STUN piggybacking ACK: "
-                        << rtc::hex_encode(ack->string_view());
+                        << webrtc::hex_encode(ack->string_view());
   }
   // The response to the final flight of the handshake will not contain
   // the DTLS data but will contain an ack.

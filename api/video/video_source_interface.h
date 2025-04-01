@@ -18,7 +18,7 @@
 #include "api/video/video_sink_interface.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
 // VideoSinkWants is used for notifying the source of properties a video frame
 // should have when it is delivered to a certain sink.
@@ -132,5 +132,12 @@ class VideoSourceInterface {
   virtual void RequestRefreshFrame() {}
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::VideoSinkWants;
+using ::webrtc::VideoSourceInterface;
 }  // namespace rtc
 #endif  // API_VIDEO_VIDEO_SOURCE_INTERFACE_H_

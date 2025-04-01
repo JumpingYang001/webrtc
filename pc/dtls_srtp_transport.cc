@@ -308,7 +308,7 @@ void DtlsSrtpTransport::OnDtlsState(cricket::DtlsTransportInternal* transport,
 }
 
 void DtlsSrtpTransport::OnWritableState(
-    rtc::PacketTransportInternal* packet_transport) {
+    PacketTransportInternal* packet_transport) {
   MaybeSetupDtlsSrtp();
 }
 

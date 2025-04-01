@@ -19,7 +19,7 @@
 
 namespace webrtc {
 
-std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>> JavaToNativeVideoSink(
+std::unique_ptr<VideoSinkInterface<VideoFrame>> JavaToNativeVideoSink(
     JNIEnv* jni,
     jobject video_sink) {
   return std::make_unique<jni::VideoSinkWrapper>(

@@ -373,7 +373,7 @@ FakeVideoSendStream::GetAdaptationResources() {
 }
 
 void FakeVideoSendStream::SetSource(
-    rtc::VideoSourceInterface<VideoFrame>* source,
+    VideoSourceInterface<VideoFrame>* source,
     const DegradationPreference& degradation_preference) {
   if (source_)
     source_->RemoveSink(this);
@@ -397,9 +397,8 @@ void FakeVideoSendStream::SetSource(
       break;
   }
   if (source)
-    source->AddOrUpdateSink(this, resolution_scaling_enabled_
-                                      ? sink_wants_
-                                      : rtc::VideoSinkWants());
+    source->AddOrUpdateSink(
+        this, resolution_scaling_enabled_ ? sink_wants_ : VideoSinkWants());
 }
 
 void FakeVideoSendStream::GenerateKeyFrame(
@@ -407,8 +406,7 @@ void FakeVideoSendStream::GenerateKeyFrame(
   keyframes_requested_by_rid_ = rids;
 }
 
-void FakeVideoSendStream::InjectVideoSinkWants(
-    const rtc::VideoSinkWants& wants) {
+void FakeVideoSendStream::InjectVideoSinkWants(const VideoSinkWants& wants) {
   sink_wants_ = wants;
   source_->AddOrUpdateSink(this, wants);
 }

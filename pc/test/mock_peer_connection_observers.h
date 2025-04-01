@@ -552,7 +552,7 @@ class MockStatsObserver : public StatsObserver {
     const StatsReport::Value* v = report->FindValue(name);
     if (v) {
       // TODO(tommi): We should really just be using an int here :-/
-      *value = rtc::FromString<int>(v->ToString());
+      *value = FromString<int>(v->ToString());
     }
     return v != nullptr;
   }
@@ -563,7 +563,7 @@ class MockStatsObserver : public StatsObserver {
     const StatsReport::Value* v = report->FindValue(name);
     if (v) {
       // TODO(tommi): We should really just be using an int here :-/
-      *value = rtc::FromString<int64_t>(v->ToString());
+      *value = FromString<int64_t>(v->ToString());
     }
     return v != nullptr;
   }

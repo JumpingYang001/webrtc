@@ -77,8 +77,8 @@ class BasicRegatheringController : public sigslot::has_slots<> {
   // transport like GetStats to get additional information for the decision
   // making in regathering.
   void OnIceTransportStateChanged(IceTransportInternal*) {}
-  void OnIceTransportWritableState(rtc::PacketTransportInternal*) {}
-  void OnIceTransportReceivingState(rtc::PacketTransportInternal*) {}
+  void OnIceTransportWritableState(PacketTransportInternal*) {}
+  void OnIceTransportReceivingState(PacketTransportInternal*) {}
   void OnIceTransportNetworkRouteChanged(std::optional<NetworkRoute>) {}
   // Schedules delayed and repeated regathering of local candidates on failed
   // networks, where the delay in milliseconds is given by the config. Each

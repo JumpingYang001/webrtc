@@ -31,8 +31,7 @@ void JavaToNativeRTCConfiguration(
     const JavaRef<jobject>& j_rtc_config,
     PeerConnectionInterface::RTCConfiguration* rtc_config);
 
-rtc::KeyType GetRtcConfigKeyType(JNIEnv* env,
-                                 const JavaRef<jobject>& j_rtc_config);
+KeyType GetRtcConfigKeyType(JNIEnv* env, const JavaRef<jobject>& j_rtc_config);
 
 ScopedJavaLocalRef<jobject> NativeToJavaAdapterType(JNIEnv* env,
                                                     int adapterType);

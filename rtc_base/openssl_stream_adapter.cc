@@ -312,8 +312,7 @@ OpenSSLStreamAdapter::~OpenSSLStreamAdapter() {
   Cleanup(0);
 }
 
-void OpenSSLStreamAdapter::SetIdentity(
-    std::unique_ptr<rtc::SSLIdentity> identity) {
+void OpenSSLStreamAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
   RTC_DCHECK(!identity_);
 #ifdef OPENSSL_IS_BORINGSSL
   identity_.reset(static_cast<BoringSSLIdentity*>(identity.release()));
@@ -322,7 +321,7 @@ void OpenSSLStreamAdapter::SetIdentity(
 #endif
 }
 
-rtc::SSLIdentity* OpenSSLStreamAdapter::GetIdentityForTesting() const {
+SSLIdentity* OpenSSLStreamAdapter::GetIdentityForTesting() const {
   return identity_.get();
 }
 
@@ -1142,8 +1141,8 @@ bool OpenSSLStreamAdapter::VerifyPeerCertificate() {
     RTC_LOG(LS_WARNING)
         << "Rejected peer certificate due to mismatched digest using "
         << peer_certificate_digest_algorithm_ << ". Expected "
-        << rtc::hex_encode_with_delimiter(peer_certificate_digest_value_, ':')
-        << " got " << rtc::hex_encode_with_delimiter(computed_digest, ':');
+        << hex_encode_with_delimiter(peer_certificate_digest_value_, ':')
+        << " got " << hex_encode_with_delimiter(computed_digest, ':');
     return false;
   }
   // Ignore any verification error if the digest matches, since there is no
@@ -1278,9 +1277,8 @@ static const cipher_list OK_DTLS13_ciphers[] = {
 #endif
 };
 
-bool OpenSSLStreamAdapter::IsAcceptableCipher(int cipher,
-                                              rtc::KeyType key_type) {
-  if (key_type == rtc::KT_RSA) {
+bool OpenSSLStreamAdapter::IsAcceptableCipher(int cipher, KeyType key_type) {
+  if (key_type == KT_RSA) {
     for (const cipher_list& c : OK_RSA_ciphers) {
       if (cipher == c.cipher) {
         return true;
@@ -1288,7 +1286,7 @@ bool OpenSSLStreamAdapter::IsAcceptableCipher(int cipher,
     }
   }
 
-  if (key_type == rtc::KT_ECDSA) {
+  if (key_type == KT_ECDSA) {
     for (const cipher_list& c : OK_ECDSA_ciphers) {
       if (cipher == c.cipher) {
         return true;
@@ -1306,8 +1304,8 @@ bool OpenSSLStreamAdapter::IsAcceptableCipher(int cipher,
 }
 
 bool OpenSSLStreamAdapter::IsAcceptableCipher(absl::string_view cipher,
-                                              rtc::KeyType key_type) {
-  if (key_type == rtc::KT_RSA) {
+                                              KeyType key_type) {
+  if (key_type == KT_RSA) {
     for (const cipher_list& c : OK_RSA_ciphers) {
       if (cipher == c.cipher_str) {
         return true;
@@ -1315,7 +1313,7 @@ bool OpenSSLStreamAdapter::IsAcceptableCipher(absl::string_view cipher,
     }
   }
 
-  if (key_type == rtc::KT_ECDSA) {
+  if (key_type == KT_ECDSA) {
     for (const cipher_list& c : OK_ECDSA_ciphers) {
       if (cipher == c.cipher_str) {
         return true;

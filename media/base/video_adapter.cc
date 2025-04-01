@@ -366,7 +366,7 @@ void VideoAdapter::OnOutputFormatRequest(
   framerate_controller_.Reset();
 }
 
-void VideoAdapter::OnSinkWants(const rtc::VideoSinkWants& sink_wants) {
+void VideoAdapter::OnSinkWants(const webrtc::VideoSinkWants& sink_wants) {
   webrtc::MutexLock lock(&mutex_);
   resolution_request_max_pixel_count_ = sink_wants.max_pixel_count;
   resolution_request_target_pixel_count_ =

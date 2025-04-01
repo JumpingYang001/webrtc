@@ -25,10 +25,12 @@
 #include "rtc_base/system/rtc_export.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread_annotations.h"
-
 namespace rtc {
 struct PacketOptions;
 struct SentPacket;
+}  // namespace rtc
+
+namespace webrtc {
 
 class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
  public:
@@ -56,18 +58,18 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
 
   // Sets a socket option. Note that not all options are
   // supported by all transport types.
-  virtual int SetOption(webrtc::Socket::Option opt, int value) = 0;
+  virtual int SetOption(Socket::Option opt, int value) = 0;
 
   // TODO(pthatcher): Once Chrome's MockPacketTransportInterface implements
   // this, remove the default implementation.
-  virtual bool GetOption(webrtc::Socket::Option opt, int* value);
+  virtual bool GetOption(Socket::Option opt, int* value);
 
   // Returns the most recent error that occurred on this channel.
   virtual int GetError() = 0;
 
   // Returns the current network route with transport overhead.
   // TODO(zhihuang): Make it pure virtual once the Chrome/remoting is updated.
-  virtual std::optional<webrtc::NetworkRoute> network_route() const;
+  virtual std::optional<NetworkRoute> network_route() const;
 
   // Emitted when the writable state, represented by `writable()`, changes.
   sigslot::signal1<PacketTransportInternal*> SignalWritableState;
@@ -85,7 +87,7 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
   // Callback is invoked each time a packet is received on this channel.
   void RegisterReceivedPacketCallback(
       void* id,
-      absl::AnyInvocable<void(PacketTransportInternal*,
+      absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
                               const rtc::ReceivedPacket&)> callback);
 
   void DeregisterReceivedPacketCallback(void* id);
@@ -95,8 +97,7 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
       SignalSentPacket;
 
   // Signalled when the current network route has changed.
-  sigslot::signal1<std::optional<webrtc::NetworkRoute>>
-      SignalNetworkRouteChanged;
+  sigslot::signal1<std::optional<NetworkRoute>> SignalNetworkRouteChanged;
 
   // Signalled when the transport is closed.
   void SetOnCloseCallback(absl::AnyInvocable<void() &&> callback);
@@ -108,14 +109,20 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
   void NotifyPacketReceived(const rtc::ReceivedPacket& packet);
   void NotifyOnClose();
 
-  webrtc::SequenceChecker network_checker_{webrtc::SequenceChecker::kDetached};
+  SequenceChecker network_checker_{SequenceChecker::kDetached};
 
  private:
-  webrtc::CallbackList<PacketTransportInternal*, const rtc::ReceivedPacket&>
+  CallbackList<PacketTransportInternal*, const rtc::ReceivedPacket&>
       received_packet_callback_list_ RTC_GUARDED_BY(&network_checker_);
   absl::AnyInvocable<void() &&> on_close_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::PacketTransportInternal;
 }  // namespace rtc
 
 #endif  // P2P_BASE_PACKET_TRANSPORT_INTERNAL_H_

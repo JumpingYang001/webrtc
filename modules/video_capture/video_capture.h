@@ -74,7 +74,7 @@ class VideoCaptureModule : public RefCountInterface {
 
   //   Register capture data callback
   virtual void RegisterCaptureDataCallback(
-      rtc::VideoSinkInterface<VideoFrame>* dataCallback) = 0;
+      VideoSinkInterface<VideoFrame>* dataCallback) = 0;
   virtual void RegisterCaptureDataCallback(
       RawVideoSinkInterface* dataCallback) = 0;
 

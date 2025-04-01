@@ -149,7 +149,7 @@ rtc::scoped_refptr<Video> OpenY4mFile(const std::string& file_name) {
   std::optional<float> fps;
 
   std::vector<std::string> fields;
-  rtc::tokenize(header_line, ' ', &fields);
+  tokenize(header_line, ' ', &fields);
   for (const std::string& field : fields) {
     const char prefix = field.front();
     const std::string suffix = field.substr(1);
@@ -171,7 +171,7 @@ rtc::scoped_refptr<Video> OpenY4mFile(const std::string& file_name) {
         break;
       case 'F': {
         std::vector<std::string> fraction;
-        rtc::tokenize(suffix, ':', &fraction);
+        tokenize(suffix, ':', &fraction);
         if (fraction.size() == 2) {
           const std::optional<int> numerator = StringToNumber<int>(fraction[0]);
           const std::optional<int> denominator =

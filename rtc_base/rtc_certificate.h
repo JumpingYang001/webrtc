@@ -53,7 +53,7 @@ class RTC_EXPORT RTCCertificate final
  public:
   // Takes ownership of `identity`.
   static scoped_refptr<RTCCertificate> Create(
-      std::unique_ptr<rtc::SSLIdentity> identity);
+      std::unique_ptr<SSLIdentity> identity);
 
   // Returns the expiration time in ms relative to epoch, 1970-01-01T00:00:00Z.
   uint64_t Expires() const;
@@ -68,7 +68,7 @@ class RTC_EXPORT RTCCertificate final
   // GetSSLCertificate() is used in all relevant places. Should not pass around
   // raw SSLIdentity* for the sake of accessing SSLIdentity::certificate().
   // However, some places might need SSLIdentity* for its public/private key...
-  rtc::SSLIdentity* identity() const { return identity_.get(); }
+  SSLIdentity* identity() const { return identity_.get(); }
 
   // To/from PEM, a text representation of the RTCCertificate.
   RTCCertificatePEM ToPEM() const;
@@ -78,7 +78,7 @@ class RTC_EXPORT RTCCertificate final
   bool operator!=(const RTCCertificate& certificate) const;
 
  protected:
-  explicit RTCCertificate(rtc::SSLIdentity* identity);
+  explicit RTCCertificate(SSLIdentity* identity);
 
   friend class RefCountedNonVirtual<RTCCertificate>;
   ~RTCCertificate();
@@ -86,7 +86,7 @@ class RTC_EXPORT RTCCertificate final
  private:
   // The SSLIdentity is the owner of the SSLCertificate. To protect our
   // GetSSLCertificate() we take ownership of `identity_`.
-  const std::unique_ptr<rtc::SSLIdentity> identity_;
+  const std::unique_ptr<SSLIdentity> identity_;
 };
 
 }  //  namespace webrtc

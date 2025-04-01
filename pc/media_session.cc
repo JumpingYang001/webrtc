@@ -683,7 +683,7 @@ MediaSessionDescriptionFactory::MediaSessionDescriptionFactory(
     cricket::MediaEngineInterface* media_engine,
     bool rtx_enabled,
     UniqueRandomIdGenerator* ssrc_generator,
-    const cricket::TransportDescriptionFactory* transport_desc_factory,
+    const TransportDescriptionFactory* transport_desc_factory,
     cricket::CodecLookupHelper* codec_lookup_helper)
     : ssrc_generator_(ssrc_generator),
       transport_desc_factory_(transport_desc_factory),
@@ -1128,7 +1128,7 @@ MediaSessionDescriptionFactory::GetOfferedRtpHeaderExtensionsWithIds(
 
 RTCError MediaSessionDescriptionFactory::AddTransportOffer(
     const std::string& content_name,
-    const cricket::TransportOptions& transport_options,
+    const TransportOptions& transport_options,
     const SessionDescription* current_desc,
     SessionDescription* offer_desc,
     cricket::IceCredentialsIterator* ice_credentials) const {
@@ -1150,7 +1150,7 @@ std::unique_ptr<cricket::TransportDescription>
 MediaSessionDescriptionFactory::CreateTransportAnswer(
     const std::string& content_name,
     const SessionDescription* offer_desc,
-    const cricket::TransportOptions& transport_options,
+    const TransportOptions& transport_options,
     const SessionDescription* current_desc,
     bool require_transport_attributes,
     cricket::IceCredentialsIterator* ice_credentials) const {

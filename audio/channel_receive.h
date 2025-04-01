@@ -43,10 +43,6 @@
 // warnings about use of unsigned short.
 // These need cleanup, in a separate cl.
 
-namespace rtc {
-class TimestampWrapAroundHandler;
-}
-
 namespace webrtc {
 
 class AudioDeviceModule;

@@ -310,7 +310,7 @@ ABSL_FLAG(std::string,
 std::vector<std::string> Slides() {
   std::vector<std::string> slides;
   std::string slides_list = absl::GetFlag(FLAGS_slides);
-  rtc::tokenize(slides_list, ',', &slides);
+  webrtc::tokenize(slides_list, ',', &slides);
   return slides;
 }
 

@@ -57,7 +57,7 @@ BoringSSLIdentity::BoringSSLIdentity(std::unique_ptr<OpenSSLKeyPair> key_pair,
 BoringSSLIdentity::~BoringSSLIdentity() = default;
 
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateInternal(
-    const rtc::SSLIdentityParams& params) {
+    const SSLIdentityParams& params) {
   auto key_pair = OpenSSLKeyPair::Generate(params.key_params);
   if (key_pair) {
     std::unique_ptr<BoringSSLCertificate> certificate(
@@ -74,13 +74,13 @@ std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateInternal(
 // static
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateWithExpiration(
     absl::string_view common_name,
-    const rtc::KeyParams& key_params,
+    const KeyParams& key_params,
     time_t certificate_lifetime) {
-  rtc::SSLIdentityParams params;
+  SSLIdentityParams params;
   params.key_params = key_params;
   params.common_name = std::string(common_name);
   time_t now = time(nullptr);
-  params.not_before = now + rtc::kCertificateWindowInSeconds;
+  params.not_before = now + kCertificateWindowInSeconds;
   params.not_after = now + certificate_lifetime;
   if (params.not_before > params.not_after)
     return nullptr;
@@ -88,11 +88,11 @@ std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateWithExpiration(
 }
 
 std::unique_ptr<BoringSSLIdentity> BoringSSLIdentity::CreateForTest(
-    const rtc::SSLIdentityParams& params) {
+    const SSLIdentityParams& params) {
   return CreateInternal(params);
 }
 
-std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
+std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
     absl::string_view private_key,
     absl::string_view certificate) {
   std::unique_ptr<BoringSSLCertificate> cert(
@@ -113,7 +113,7 @@ std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CreateFromPEMStrings(
       new BoringSSLIdentity(std::move(key_pair), std::move(cert)));
 }
 
-std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
+std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
     absl::string_view private_key,
     absl::string_view certificate_chain) {
   bssl::UniquePtr<BIO> bio(
@@ -179,7 +179,7 @@ const SSLCertChain& BoringSSLIdentity::cert_chain() const {
   return *cert_chain_.get();
 }
 
-std::unique_ptr<rtc::SSLIdentity> BoringSSLIdentity::CloneInternal() const {
+std::unique_ptr<SSLIdentity> BoringSSLIdentity::CloneInternal() const {
   // We cannot use std::make_unique here because the referenced
   // BoringSSLIdentity constructor is private.
   return absl::WrapUnique(

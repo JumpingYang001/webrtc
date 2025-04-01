@@ -60,7 +60,7 @@ int RtpTransport::SetRtcpOption(Socket::Option opt, int value) {
 }
 
 void RtpTransport::SetRtpPacketTransport(
-    rtc::PacketTransportInternal* new_packet_transport) {
+    PacketTransportInternal* new_packet_transport) {
   if (new_packet_transport == rtp_packet_transport_) {
     return;
   }
@@ -97,7 +97,7 @@ void RtpTransport::SetRtpPacketTransport(
 }
 
 void RtpTransport::SetRtcpPacketTransport(
-    rtc::PacketTransportInternal* new_packet_transport) {
+    PacketTransportInternal* new_packet_transport) {
   if (new_packet_transport == rtcp_packet_transport_) {
     return;
   }
@@ -135,9 +135,9 @@ void RtpTransport::SetRtcpPacketTransport(
 }
 
 bool RtpTransport::IsWritable(bool rtcp) const {
-  rtc::PacketTransportInternal* transport = rtcp && !rtcp_mux_enabled_
-                                                ? rtcp_packet_transport_
-                                                : rtp_packet_transport_;
+  PacketTransportInternal* transport = rtcp && !rtcp_mux_enabled_
+                                           ? rtcp_packet_transport_
+                                           : rtp_packet_transport_;
   return transport && transport->writable();
 }
 
@@ -157,9 +157,9 @@ bool RtpTransport::SendPacket(bool rtcp,
                               rtc::CopyOnWriteBuffer* packet,
                               const rtc::PacketOptions& options,
                               int flags) {
-  rtc::PacketTransportInternal* transport = rtcp && !rtcp_mux_enabled_
-                                                ? rtcp_packet_transport_
-                                                : rtp_packet_transport_;
+  PacketTransportInternal* transport = rtcp && !rtcp_mux_enabled_
+                                           ? rtcp_packet_transport_
+                                           : rtp_packet_transport_;
   int ret = transport->SendPacket(packet->cdata<char>(), packet->size(),
                                   options, flags);
   if (ret != static_cast<int>(packet->size())) {
@@ -230,7 +230,7 @@ bool RtpTransport::IsTransportWritable() {
          (!rtcp_packet_transport || rtcp_packet_transport->writable());
 }
 
-void RtpTransport::OnReadyToSend(rtc::PacketTransportInternal* transport) {
+void RtpTransport::OnReadyToSend(PacketTransportInternal* transport) {
   SetReadyToSend(transport == rtcp_packet_transport_, true);
 }
 
@@ -239,14 +239,13 @@ void RtpTransport::OnNetworkRouteChanged(
   SendNetworkRouteChanged(network_route);
 }
 
-void RtpTransport::OnWritableState(
-    rtc::PacketTransportInternal* packet_transport) {
+void RtpTransport::OnWritableState(PacketTransportInternal* packet_transport) {
   RTC_DCHECK(packet_transport == rtp_packet_transport_ ||
              packet_transport == rtcp_packet_transport_);
   SendWritableState(IsTransportWritable());
 }
 
-void RtpTransport::OnSentPacket(rtc::PacketTransportInternal* packet_transport,
+void RtpTransport::OnSentPacket(PacketTransportInternal* packet_transport,
                                 const rtc::SentPacket& sent_packet) {
   RTC_DCHECK(packet_transport == rtp_packet_transport_ ||
              packet_transport == rtcp_packet_transport_);
@@ -279,7 +278,7 @@ void RtpTransport::OnRtcpPacketReceived(
                                        : -1);
 }
 
-void RtpTransport::OnReadPacket(rtc::PacketTransportInternal* transport,
+void RtpTransport::OnReadPacket(PacketTransportInternal* transport,
                                 const rtc::ReceivedPacket& received_packet) {
   TRACE_EVENT0("webrtc", "RtpTransport::OnReadPacket");
 

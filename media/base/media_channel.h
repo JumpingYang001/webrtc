@@ -62,10 +62,6 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/strings/string_builder.h"
 
-namespace rtc {
-class Timing;
-}
-
 namespace webrtc {
 class VideoFrame;
 
@@ -973,7 +969,7 @@ class VideoMediaSendChannelInterface : public MediaSendChannelInterface {
   virtual bool SetVideoSend(
       uint32_t ssrc,
       const VideoOptions* options,
-      rtc::VideoSourceInterface<webrtc::VideoFrame>* source) = 0;
+      webrtc::VideoSourceInterface<webrtc::VideoFrame>* source) = 0;
   // Cause generation of a keyframe for `ssrc` on a sending channel.
   virtual void GenerateSendKeyFrame(uint32_t ssrc,
                                     const std::vector<std::string>& rids) = 0;
@@ -1005,11 +1001,12 @@ class VideoMediaReceiveChannelInterface : public MediaReceiveChannelInterface {
   // stream, which is used when SSRCs are not signaled.
   virtual webrtc::RtpParameters GetDefaultRtpReceiveParameters() const = 0;
   // Sets the sink object to be used for the specified stream.
-  virtual bool SetSink(uint32_t ssrc,
-                       rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) = 0;
+  virtual bool SetSink(
+      uint32_t ssrc,
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) = 0;
   // The sink is used for the 'default' stream.
   virtual void SetDefaultSink(
-      rtc::VideoSinkInterface<webrtc::VideoFrame>* sink) = 0;
+      webrtc::VideoSinkInterface<webrtc::VideoFrame>* sink) = 0;
   // Request generation of a keyframe for `ssrc` on a receiving channel via
   // RTCP feedback.
   virtual void RequestRecvKeyFrame(uint32_t ssrc) = 0;

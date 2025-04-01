@@ -34,7 +34,7 @@ namespace webrtc {
 // conflicting access, so we'd need to override those methods anyway in this
 // class in order to make sure things are correctly checked.
 class VideoTrack : public MediaStreamTrack<VideoTrackInterface>,
-                   public rtc::VideoSourceBaseGuarded,
+                   public VideoSourceBaseGuarded,
                    public ObserverInterface {
  public:
   static rtc::scoped_refptr<VideoTrack> Create(
@@ -42,9 +42,9 @@ class VideoTrack : public MediaStreamTrack<VideoTrackInterface>,
       rtc::scoped_refptr<VideoTrackSourceInterface> source,
       Thread* worker_thread);
 
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override;
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
+                       const VideoSinkWants& wants) override;
+  void RemoveSink(VideoSinkInterface<VideoFrame>* sink) override;
   void RequestRefreshFrame() override;
   VideoTrackSourceInterface* GetSource() const override;
 

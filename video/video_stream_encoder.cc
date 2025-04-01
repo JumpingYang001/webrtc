@@ -875,7 +875,7 @@ VideoStreamEncoder::GetAdaptationResources() {
 }
 
 void VideoStreamEncoder::SetSource(
-    rtc::VideoSourceInterface<VideoFrame>* source,
+    VideoSourceInterface<VideoFrame>* source,
     const DegradationPreference& degradation_preference) {
   RTC_DCHECK_RUN_ON(worker_queue_);
   video_source_sink_controller_.SetSource(source);
@@ -935,7 +935,7 @@ void VideoStreamEncoder::ConfigureEncoder(VideoEncoderConfig config,
   // Is any layer active.
   bool active = false;
   // The max scale_resolution_down_to.
-  std::optional<rtc::VideoSinkWants::FrameSize> scale_resolution_down_to;
+  std::optional<VideoSinkWants::FrameSize> scale_resolution_down_to;
   for (const auto& stream : config.simulcast_layers) {
     active |= stream.active;
     if (stream.active) {
@@ -1288,7 +1288,7 @@ void VideoStreamEncoder::ReconfigureEncoder() {
   max_framerate_ = codec.maxFramerate;
 
   // The resolutions that we're actually encoding with.
-  std::vector<rtc::VideoSinkWants::FrameSize> encoder_resolutions;
+  std::vector<VideoSinkWants::FrameSize> encoder_resolutions;
   // TODO(hbos): For the case of SVC, also make use of `codec.spatialLayers`.
   // For now, SVC layers are handled by the VP9 encoder.
   for (const auto& simulcastStream : codec.simulcastStream) {

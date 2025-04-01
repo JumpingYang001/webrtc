@@ -32,11 +32,11 @@
 #include "test/scoped_key_value_config.h"
 
 using cricket::TransportDescription;
-using cricket::TransportDescriptionFactory;
-using cricket::TransportOptions;
 using ::testing::Contains;
 using ::testing::Not;
 using ::testing::NotNull;
+using ::webrtc::TransportDescriptionFactory;
+using ::webrtc::TransportOptions;
 
 class TransportDescriptionFactoryTest : public ::testing::Test {
  public:
@@ -44,10 +44,12 @@ class TransportDescriptionFactoryTest : public ::testing::Test {
       : ice_credentials_({}),
         f1_(field_trials_),
         f2_(field_trials_),
-        cert1_(webrtc::RTCCertificate::Create(std::unique_ptr<rtc::SSLIdentity>(
-            new webrtc::FakeSSLIdentity("User1")))),
-        cert2_(webrtc::RTCCertificate::Create(std::unique_ptr<rtc::SSLIdentity>(
-            new webrtc::FakeSSLIdentity("User2")))) {
+        cert1_(
+            webrtc::RTCCertificate::Create(std::unique_ptr<webrtc::SSLIdentity>(
+                new webrtc::FakeSSLIdentity("User1")))),
+        cert2_(
+            webrtc::RTCCertificate::Create(std::unique_ptr<webrtc::SSLIdentity>(
+                new webrtc::FakeSSLIdentity("User2")))) {
     // By default, certificates are supplied.
     f1_.set_certificate(cert1_);
     f2_.set_certificate(cert2_);
@@ -89,7 +91,7 @@ class TransportDescriptionFactoryTest : public ::testing::Test {
     } else {
       SetInsecure();
     }
-    cricket::TransportOptions options;
+    webrtc::TransportOptions options;
     // The initial offer / answer exchange.
     std::unique_ptr<TransportDescription> offer =
         f1_.CreateOffer(options, NULL, &ice_credentials_);
@@ -137,7 +139,7 @@ class TransportDescriptionFactoryTest : public ::testing::Test {
       SetInsecureNoDtls();
     }
 
-    cricket::TransportOptions options;
+    webrtc::TransportOptions options;
     // The initial offer / answer exchange.
     std::unique_ptr<TransportDescription> offer =
         f1_.CreateOffer(options, nullptr, &ice_credentials_);
@@ -329,7 +331,7 @@ TEST_F(TransportDescriptionFactoryTest, TestIceRenominationWithDtls) {
 
 // Test that offers and answers have ice-option:trickle.
 TEST_F(TransportDescriptionFactoryTest, AddsTrickleIceOption) {
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &ice_credentials_);
   ASSERT_THAT(offer, NotNull());
@@ -344,7 +346,7 @@ TEST_F(TransportDescriptionFactoryTest, CreateOfferIceCredentialsIterator) {
   std::vector<cricket::IceParameters> credentials = {
       cricket::IceParameters("kalle", "anka", false)};
   cricket::IceCredentialsIterator credentialsIterator(credentials);
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &credentialsIterator);
   EXPECT_EQ(offer->GetIceParameters().ufrag, credentials[0].ufrag);
@@ -353,7 +355,7 @@ TEST_F(TransportDescriptionFactoryTest, CreateOfferIceCredentialsIterator) {
 
 // Test CreateAnswer with IceCredentialsIterator.
 TEST_F(TransportDescriptionFactoryTest, CreateAnswerIceCredentialsIterator) {
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &ice_credentials_);
 
@@ -367,7 +369,7 @@ TEST_F(TransportDescriptionFactoryTest, CreateAnswerIceCredentialsIterator) {
 }
 
 TEST_F(TransportDescriptionFactoryTest, CreateAnswerToDtlsActpassOffer) {
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &ice_credentials_);
 
@@ -377,7 +379,7 @@ TEST_F(TransportDescriptionFactoryTest, CreateAnswerToDtlsActpassOffer) {
 }
 
 TEST_F(TransportDescriptionFactoryTest, CreateAnswerToDtlsActiveOffer) {
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &ice_credentials_);
   offer->connection_role = cricket::CONNECTIONROLE_ACTIVE;
@@ -388,7 +390,7 @@ TEST_F(TransportDescriptionFactoryTest, CreateAnswerToDtlsActiveOffer) {
 }
 
 TEST_F(TransportDescriptionFactoryTest, CreateAnswerToDtlsPassiveOffer) {
-  cricket::TransportOptions options;
+  webrtc::TransportOptions options;
   std::unique_ptr<TransportDescription> offer =
       f1_.CreateOffer(options, nullptr, &ice_credentials_);
   offer->connection_role = cricket::CONNECTIONROLE_PASSIVE;

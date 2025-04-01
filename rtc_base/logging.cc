@@ -307,7 +307,7 @@ void LogMessage::ConfigureLogging(absl::string_view params) {
   LoggingSeverity debug_level = GetLogToDebug();
 
   std::vector<std::string> tokens;
-  rtc::tokenize(params, ' ', &tokens);
+  tokenize(params, ' ', &tokens);
 
   for (const std::string& token : tokens) {
     if (token.empty())

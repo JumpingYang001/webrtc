@@ -58,7 +58,7 @@ class MediaSessionDescriptionFactory {
       cricket::MediaEngineInterface* media_engine,
       bool rtx_enabled,
       UniqueRandomIdGenerator* ssrc_generator,
-      const cricket::TransportDescriptionFactory* factory,
+      const TransportDescriptionFactory* factory,
       cricket::CodecLookupHelper* codec_lookup_helper);
 
   cricket::RtpHeaderExtensions filtered_rtp_header_extensions(
@@ -93,7 +93,7 @@ class MediaSessionDescriptionFactory {
           media_description_options) const;
   RTCError AddTransportOffer(
       const std::string& content_name,
-      const cricket::TransportOptions& transport_options,
+      const TransportOptions& transport_options,
       const SessionDescription* current_desc,
       SessionDescription* offer,
       cricket::IceCredentialsIterator* ice_credentials) const;
@@ -101,7 +101,7 @@ class MediaSessionDescriptionFactory {
   std::unique_ptr<cricket::TransportDescription> CreateTransportAnswer(
       const std::string& content_name,
       const SessionDescription* offer_desc,
-      const cricket::TransportOptions& transport_options,
+      const TransportOptions& transport_options,
       const SessionDescription* current_desc,
       bool require_transport_attributes,
       cricket::IceCredentialsIterator* ice_credentials) const;
@@ -185,7 +185,7 @@ class MediaSessionDescriptionFactory {
   // This object may or may not be owned by this class.
   AlwaysValidPointer<UniqueRandomIdGenerator> const ssrc_generator_;
   bool enable_encrypted_rtp_header_extensions_ = true;
-  const cricket::TransportDescriptionFactory* transport_desc_factory_;
+  const TransportDescriptionFactory* transport_desc_factory_;
   cricket::CodecLookupHelper* codec_lookup_helper_;
   bool payload_types_in_transport_trial_enabled_;
 };

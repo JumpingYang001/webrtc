@@ -30,8 +30,7 @@ namespace webrtc {
 // With the exception of the constructor and the methods overridden in
 // VideoSinkInterface, the rest of the interface to this class (including dtor)
 // needs to happen on the queue passed in Create.
-class FrameCadenceAdapterInterface
-    : public rtc::VideoSinkInterface<VideoFrame> {
+class FrameCadenceAdapterInterface : public VideoSinkInterface<VideoFrame> {
  public:
   // Averaging window spanning 90 frames at default 30fps, matching old media
   // optimization module defaults.

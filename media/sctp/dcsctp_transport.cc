@@ -696,7 +696,7 @@ void DcSctpTransport::DisconnectTransportSignals() {
 }
 
 void DcSctpTransport::OnTransportWritableState(
-    rtc::PacketTransportInternal* transport) {
+    PacketTransportInternal* transport) {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_DCHECK_EQ(transport_, transport);
   RTC_DLOG(LS_VERBOSE) << debug_name_
@@ -729,7 +729,7 @@ void DcSctpTransport::OnDtlsTransportState(
 }
 
 void DcSctpTransport::OnTransportReadPacket(
-    rtc::PacketTransportInternal* /* transport */,
+    PacketTransportInternal* /* transport */,
     const rtc::ReceivedPacket& packet) {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (packet.decryption_info() != rtc::ReceivedPacket::kDtlsDecrypted) {

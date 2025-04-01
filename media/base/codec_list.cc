@@ -71,7 +71,7 @@ RTCError CheckInputConsistency(const std::vector<Codec>& codecs) {
           break;
         }
         int associated_pt;
-        if (!(rtc::FromString(apt_it->second, &associated_pt))) {
+        if (!(webrtc::FromString(apt_it->second, &associated_pt))) {
           RTC_LOG(LS_ERROR) << "Non-numeric argument to rtx apt: " << codec
                             << " apt=" << apt_it->second;
           LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,

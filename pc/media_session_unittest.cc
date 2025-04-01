@@ -553,9 +553,9 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
     codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(
         MAKE_VECTOR(kVideoCodecs2), MAKE_VECTOR(kVideoCodecs2));
     tdf1_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("id1"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("id1"))));
     tdf2_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("id2"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("id2"))));
   }
 
   // Create a video StreamParamsVec object with:
@@ -795,8 +795,8 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
   ScopedKeyValueConfig field_trials;
   UniqueRandomIdGenerator ssrc_generator1;
   UniqueRandomIdGenerator ssrc_generator2;
-  cricket::TransportDescriptionFactory tdf1_;
-  cricket::TransportDescriptionFactory tdf2_;
+  TransportDescriptionFactory tdf1_;
+  TransportDescriptionFactory tdf2_;
   CodecLookupHelperForTesting codec_lookup_helper_1_;
   CodecLookupHelperForTesting codec_lookup_helper_2_;
   MediaSessionDescriptionFactory f1_;
@@ -3435,8 +3435,8 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   int new_h264_pl_type = updated_vcd->codecs()[0].id;
   EXPECT_NE(used_pl_type, new_h264_pl_type);
   cricket::Codec rtx = updated_vcd->codecs()[1];
-  int pt_referenced_by_rtx = rtc::FromString<int>(
-      rtx.params[cricket::kCodecParamAssociatedPayloadType]);
+  int pt_referenced_by_rtx =
+      FromString<int>(rtx.params[cricket::kCodecParamAssociatedPayloadType]);
   EXPECT_EQ(new_h264_pl_type, pt_referenced_by_rtx);
 }
 
@@ -4772,15 +4772,15 @@ class MediaProtocolTest : public testing::TestWithParam<const char*> {
     codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(
         MAKE_VECTOR(kVideoCodecs2), MAKE_VECTOR(kVideoCodecs2));
     tdf1_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("id1"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("id1"))));
     tdf2_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("id2"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("id2"))));
   }
 
  protected:
   ScopedKeyValueConfig field_trials_;
-  cricket::TransportDescriptionFactory tdf1_;
-  cricket::TransportDescriptionFactory tdf2_;
+  TransportDescriptionFactory tdf1_;
+  TransportDescriptionFactory tdf2_;
   CodecLookupHelperForTesting codec_lookup_helper_1_;
   CodecLookupHelperForTesting codec_lookup_helper_2_;
   MediaSessionDescriptionFactory f1_;
@@ -4837,9 +4837,9 @@ bool CodecsMatch(const std::vector<cricket::Codec>& codecs1,
 
 void TestAudioCodecsOffer(RtpTransceiverDirection direction) {
   ScopedKeyValueConfig field_trials;
-  cricket::TransportDescriptionFactory tdf(field_trials);
+  TransportDescriptionFactory tdf(field_trials);
   tdf.set_certificate(RTCCertificate::Create(
-      std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("id"))));
+      std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("id"))));
 
   UniqueRandomIdGenerator ssrc_generator;
   CodecLookupHelperForTesting codec_lookup_helper(field_trials);
@@ -4945,12 +4945,12 @@ void TestAudioCodecsAnswer(RtpTransceiverDirection offer_direction,
                            RtpTransceiverDirection answer_direction,
                            bool add_legacy_stream) {
   ScopedKeyValueConfig field_trials;
-  cricket::TransportDescriptionFactory offer_tdf(field_trials);
-  cricket::TransportDescriptionFactory answer_tdf(field_trials);
+  TransportDescriptionFactory offer_tdf(field_trials);
+  TransportDescriptionFactory answer_tdf(field_trials);
   offer_tdf.set_certificate(RTCCertificate::Create(
-      std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("offer_id"))));
+      std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("offer_id"))));
   answer_tdf.set_certificate(RTCCertificate::Create(
-      std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("answer_id"))));
+      std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("answer_id"))));
   UniqueRandomIdGenerator ssrc_generator1, ssrc_generator2;
   CodecLookupHelperForTesting offer_codec_lookup_helper(field_trials);
   MediaSessionDescriptionFactory offer_factory(
@@ -5115,9 +5115,9 @@ class VideoCodecsOfferH265LevelIdTest : public testing::Test {
         codec_lookup_helper_offerer_(field_trials_),
         codec_lookup_helper_answerer_(field_trials_) {
     tdf_offerer_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("offer_id"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("offer_id"))));
     tdf_answerer_.set_certificate(RTCCertificate::Create(
-        std::unique_ptr<rtc::SSLIdentity>(new FakeSSLIdentity("answer_id"))));
+        std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("answer_id"))));
   }
 
   void CheckH265Level(const std::vector<cricket::Codec>& codecs,
@@ -5133,8 +5133,8 @@ class VideoCodecsOfferH265LevelIdTest : public testing::Test {
 
  protected:
   ScopedKeyValueConfig field_trials_;
-  cricket::TransportDescriptionFactory tdf_offerer_;
-  cricket::TransportDescriptionFactory tdf_answerer_;
+  TransportDescriptionFactory tdf_offerer_;
+  TransportDescriptionFactory tdf_answerer_;
   UniqueRandomIdGenerator ssrc_generator_offerer_;
   UniqueRandomIdGenerator ssrc_generator_answerer_;
   MediaSessionDescriptionFactory sf_offerer_;

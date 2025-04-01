@@ -1679,7 +1679,7 @@ TEST_P(PeerConnectionIntegrationTest, Dtls10CipherStatsAndUmaMetrics) {
   EXPECT_THAT(WaitUntil(
                   [&] {
                     return SSLStreamAdapter::IsAcceptableCipher(
-                        caller()->OldGetStats()->DtlsCipher(), rtc::KT_DEFAULT);
+                        caller()->OldGetStats()->DtlsCipher(), KT_DEFAULT);
                   },
                   ::testing::IsTrue()),
               IsRtcOk());
@@ -1704,7 +1704,7 @@ TEST_P(PeerConnectionIntegrationTest, Dtls12CipherStatsAndUmaMetrics) {
   EXPECT_THAT(WaitUntil(
                   [&] {
                     return SSLStreamAdapter::IsAcceptableCipher(
-                        caller()->OldGetStats()->DtlsCipher(), rtc::KT_DEFAULT);
+                        caller()->OldGetStats()->DtlsCipher(), KT_DEFAULT);
                   },
                   ::testing::IsTrue()),
               IsRtcOk());
@@ -4499,7 +4499,7 @@ int SetNewSsrcs(std::unique_ptr<SessionDescriptionInterface>& sdp) {
 }
 
 void SetNewFingerprint(std::unique_ptr<SessionDescriptionInterface>& sdp) {
-  auto identity = rtc::SSLIdentity::Create("NewIdentity", rtc::KT_DEFAULT);
+  auto identity = SSLIdentity::Create("NewIdentity", KT_DEFAULT);
   auto new_fingerprint = SSLFingerprint::CreateUnique("sha-256", *identity);
   for (auto& transport_info : sdp->description()->transport_infos()) {
     transport_info.description.identity_fingerprint =
@@ -4865,7 +4865,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
       const auto apt_it =
           codec.params.find(cricket::kCodecParamAssociatedPayloadType);
       int apt_value;
-      ASSERT_TRUE(rtc::FromString(apt_it->second, &apt_value));
+      ASSERT_TRUE(FromString(apt_it->second, &apt_value));
       apt_values.push_back(apt_value);
     }
   }

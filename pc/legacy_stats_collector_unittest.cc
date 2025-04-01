@@ -275,9 +275,9 @@ std::string ExtractBweStatsValue(const StatsReports& reports,
 }
 
 std::string DerToPem(const std::string& der) {
-  return rtc::SSLIdentity::DerToPem(
-      rtc::kPemTypeCertificate,
-      reinterpret_cast<const unsigned char*>(der.c_str()), der.length());
+  return SSLIdentity::DerToPem(
+      kPemTypeCertificate, reinterpret_cast<const unsigned char*>(der.c_str()),
+      der.length());
 }
 
 std::vector<std::string> DersToPems(const std::vector<std::string>& ders) {

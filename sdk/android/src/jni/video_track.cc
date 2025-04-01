@@ -24,16 +24,16 @@ static void JNI_VideoTrack_AddSink(JNIEnv* jni,
                                    jlong j_native_sink) {
   reinterpret_cast<VideoTrackInterface*>(j_native_track)
       ->AddOrUpdateSink(
-          reinterpret_cast<rtc::VideoSinkInterface<VideoFrame>*>(j_native_sink),
-          rtc::VideoSinkWants());
+          reinterpret_cast<VideoSinkInterface<VideoFrame>*>(j_native_sink),
+          VideoSinkWants());
 }
 
 static void JNI_VideoTrack_RemoveSink(JNIEnv* jni,
                                       jlong j_native_track,
                                       jlong j_native_sink) {
   reinterpret_cast<VideoTrackInterface*>(j_native_track)
-      ->RemoveSink(reinterpret_cast<rtc::VideoSinkInterface<VideoFrame>*>(
-          j_native_sink));
+      ->RemoveSink(
+          reinterpret_cast<VideoSinkInterface<VideoFrame>*>(j_native_sink));
 }
 
 static jlong JNI_VideoTrack_WrapSink(
@@ -43,7 +43,7 @@ static jlong JNI_VideoTrack_WrapSink(
 }
 
 static void JNI_VideoTrack_FreeSink(JNIEnv* jni, jlong j_native_sink) {
-  delete reinterpret_cast<rtc::VideoSinkInterface<VideoFrame>*>(j_native_sink);
+  delete reinterpret_cast<VideoSinkInterface<VideoFrame>*>(j_native_sink);
 }
 
 }  // namespace jni

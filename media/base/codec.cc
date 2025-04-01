@@ -166,7 +166,7 @@ bool Codec::GetParam(const std::string& key, int* out) const {
   webrtc::CodecParameterMap::const_iterator iter = params.find(key);
   if (iter == params.end())
     return false;
-  return rtc::FromString(iter->second, out);
+  return webrtc::FromString(iter->second, out);
 }
 
 void Codec::SetParam(const std::string& key, const std::string& value) {

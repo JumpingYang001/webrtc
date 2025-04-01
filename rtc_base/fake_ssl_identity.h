@@ -55,7 +55,7 @@ class FakeSSLCertificate : public SSLCertificate {
   int64_t expiration_time_;
 };
 
-class FakeSSLIdentity : public rtc::SSLIdentity {
+class FakeSSLIdentity : public SSLIdentity {
  public:
   explicit FakeSSLIdentity(absl::string_view pem_string);
   // For a certificate chain.
@@ -74,10 +74,10 @@ class FakeSSLIdentity : public rtc::SSLIdentity {
   // Not implemented.
   std::string PublicKeyToPEMString() const override;
   // Not implemented.
-  virtual bool operator==(const rtc::SSLIdentity& other) const;
+  virtual bool operator==(const SSLIdentity& other) const;
 
  private:
-  std::unique_ptr<rtc::SSLIdentity> CloneInternal() const override;
+  std::unique_ptr<SSLIdentity> CloneInternal() const override;
 
   std::unique_ptr<SSLCertChain> cert_chain_;
 };

@@ -258,7 +258,7 @@ PeerScenarioClient::PeerScenarioClient(
           auto* video = static_cast<VideoTrackInterface*>(track);
           RTC_DCHECK_RUN_ON(signaling_thread_);
           for (auto* sink : track_id_to_video_sinks_[track->id()]) {
-            video->AddOrUpdateSink(sink, rtc::VideoSinkWants());
+            video->AddOrUpdateSink(sink, VideoSinkWants());
           }
         }
       });
@@ -376,7 +376,7 @@ PeerScenarioClient::VideoSendTrack PeerScenarioClient::CreateVideo(
 
 void PeerScenarioClient::AddVideoReceiveSink(
     std::string track_id,
-    rtc::VideoSinkInterface<VideoFrame>* video_sink) {
+    VideoSinkInterface<VideoFrame>* video_sink) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   track_id_to_video_sinks_[track_id].push_back(video_sink);
 }

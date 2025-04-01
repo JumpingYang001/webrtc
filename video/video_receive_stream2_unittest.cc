@@ -103,7 +103,7 @@ constexpr uint8_t kAv1PayloadType = 101;
 constexpr uint32_t kRemoteSsrc = 1111;
 constexpr uint32_t kLocalSsrc = 2222;
 
-class FakeVideoRenderer : public rtc::VideoSinkInterface<VideoFrame> {
+class FakeVideoRenderer : public VideoSinkInterface<VideoFrame> {
  public:
   explicit FakeVideoRenderer(TimeController* time_controller)
       : time_controller_(time_controller) {}

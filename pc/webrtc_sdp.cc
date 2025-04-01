@@ -612,7 +612,7 @@ static bool GetValue(absl::string_view message,
                      std::string* value,
                      SdpParseError* error) {
   std::string leftpart;
-  if (!rtc::tokenize_first(message, kSdpDelimiterColonChar, &leftpart, value)) {
+  if (!tokenize_first(message, kSdpDelimiterColonChar, &leftpart, value)) {
     return ParseFailedGetValue(message, attribute, error);
   }
   // The left part should end with the expected attribute.
@@ -1050,8 +1050,8 @@ bool ParseCandidate(absl::string_view message,
   std::string candidate_value;
 
   // `first_line` must be in the form of "candidate:<value>".
-  if (!rtc::tokenize_first(first_line, kSdpDelimiterColonChar,
-                           &attribute_candidate, &candidate_value) ||
+  if (!tokenize_first(first_line, kSdpDelimiterColonChar, &attribute_candidate,
+                      &candidate_value) ||
       attribute_candidate != kAttributeCandidate) {
     if (is_raw) {
       StringBuilder description;
@@ -1066,7 +1066,7 @@ bool ParseCandidate(absl::string_view message,
   }
 
   std::vector<absl::string_view> fields =
-      rtc::split(candidate_value, kSdpDelimiterSpaceChar);
+      split(candidate_value, kSdpDelimiterSpaceChar);
 
   // RFC 5245
   // a=candidate:<foundation> <component-id> <transport> <priority>
@@ -1228,7 +1228,7 @@ bool ParseIceOptions(absl::string_view line,
     return false;
   }
   std::vector<absl::string_view> fields =
-      rtc::split(ice_options, kSdpDelimiterSpaceChar);
+      split(ice_options, kSdpDelimiterSpaceChar);
   for (size_t i = 0; i < fields.size(); ++i) {
     transport_options->emplace_back(fields[i]);
   }
@@ -1242,14 +1242,14 @@ bool ParseSctpPort(absl::string_view line,
   // a=sctp-port
   const size_t expected_min_fields = 2;
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
   if (fields.size() < expected_min_fields) {
-    fields = rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+    fields = split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   }
   if (fields.size() < expected_min_fields) {
     return ParseFailedExpectMinFieldNum(line, expected_min_fields, error);
   }
-  if (!rtc::FromString(fields[1], sctp_port)) {
+  if (!FromString(fields[1], sctp_port)) {
     return ParseFailed(line, "Invalid sctp port value.", error);
   }
   return true;
@@ -1262,11 +1262,11 @@ bool ParseSctpMaxMessageSize(absl::string_view line,
   // a=max-message-size:199999
   const size_t expected_min_fields = 2;
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
   if (fields.size() < expected_min_fields) {
     return ParseFailedExpectMinFieldNum(line, expected_min_fields, error);
   }
-  if (!rtc::FromString(fields[1], max_message_size)) {
+  if (!FromString(fields[1], max_message_size)) {
     return ParseFailed(line, "Invalid SCTP max message size.", error);
   }
   return true;
@@ -1278,7 +1278,7 @@ bool ParseExtmap(absl::string_view line,
   // RFC 5285
   // a=extmap:<value>["/"<direction>] <URI> <extensionattributes>
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   const size_t expected_min_fields = 2;
   if (fields.size() < expected_min_fields) {
     return ParseFailedExpectMinFieldNum(line, expected_min_fields, error);
@@ -1290,7 +1290,7 @@ bool ParseExtmap(absl::string_view line,
     return false;
   }
   std::vector<absl::string_view> sub_fields =
-      rtc::split(value_direction, kSdpDelimiterSlashChar);
+      split(value_direction, kSdpDelimiterSlashChar);
   int value = 0;
   if (!GetValueFromString(line, sub_fields[0], &value, error)) {
     return false;
@@ -1868,7 +1868,7 @@ bool GetParameter(const std::string& name,
   if (found == params.end()) {
     return false;
   }
-  if (!rtc::FromString(found->second, value)) {
+  if (!FromString(found->second, value)) {
     return false;
   }
   return true;
@@ -2045,13 +2045,12 @@ bool ParseConnectionData(absl::string_view line,
   // RFC 4566
   // c=<nettype> <addrtype> <connection-address>
   // Skip the "c="
-  if (!rtc::tokenize_first(line, kSdpDelimiterEqualChar, &token, &rightpart)) {
+  if (!tokenize_first(line, kSdpDelimiterEqualChar, &token, &rightpart)) {
     return ParseFailed(line, "Failed to parse the network type.", error);
   }
 
   // Extract and verify the <nettype>
-  if (!rtc::tokenize_first(rightpart, kSdpDelimiterSpaceChar, &token,
-                           &rightpart) ||
+  if (!tokenize_first(rightpart, kSdpDelimiterSpaceChar, &token, &rightpart) ||
       token != kConnectionNettype) {
     return ParseFailed(line,
                        "Failed to parse the connection data. The network type "
@@ -2060,8 +2059,7 @@ bool ParseConnectionData(absl::string_view line,
   }
 
   // Extract the "<addrtype>" and "<connection-address>".
-  if (!rtc::tokenize_first(rightpart, kSdpDelimiterSpaceChar, &token,
-                           &rightpart)) {
+  if (!tokenize_first(rightpart, kSdpDelimiterSpaceChar, &token, &rightpart)) {
     return ParseFailed(line, "Failed to parse the address type.", error);
   }
 
@@ -2116,7 +2114,7 @@ bool ParseSessionDescription(absl::string_view message,
                                  error);
   }
   std::vector<absl::string_view> fields =
-      rtc::split(line->substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line->substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   const size_t expected_fields = 6;
   if (fields.size() != expected_fields) {
     return ParseFailedExpectFieldNum(*line, expected_fields, error);
@@ -2264,7 +2262,7 @@ bool ParseGroupAttribute(absl::string_view line,
   // RFC 5888 and draft-holmberg-mmusic-sdp-bundle-negotiation-00
   // a=group:BUNDLE video voice
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   std::string semantics;
   if (!GetValue(fields[0], kAttributeGroup, &semantics, error)) {
     return false;
@@ -2282,7 +2280,7 @@ static bool ParseFingerprintAttribute(
     std::unique_ptr<SSLFingerprint>* fingerprint,
     SdpParseError* error) {
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   const size_t expected_fields = 2;
   if (fields.size() != expected_fields) {
     return ParseFailedExpectFieldNum(line, expected_fields, error);
@@ -2314,7 +2312,7 @@ static bool ParseDtlsSetup(absl::string_view line,
   // setup-attr           =  "a=setup:" role
   // role                 =  "active" / "passive" / "actpass" / "holdconn"
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterColonChar);
   const size_t expected_fields = 2;
   if (fields.size() != expected_fields) {
     return ParseFailedExpectFieldNum(line, expected_fields, error);
@@ -2342,8 +2340,8 @@ static bool ParseMsidAttribute(absl::string_view line,
   // is supported for backward compability reasons only.
   // RFC 8830 section 2 states that duplicate a=msid:stream track is illegal.
   std::vector<std::string> fields;
-  size_t num_fields = rtc::tokenize(line.substr(kLinePrefixLength),
-                                    kSdpDelimiterSpaceChar, &fields);
+  size_t num_fields =
+      tokenize(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar, &fields);
   if (num_fields < 1 || num_fields > 2) {
     return ParseFailed(line, "Expected a stream ID and optionally a track ID",
                        error);
@@ -2668,7 +2666,7 @@ bool ParseMediaDescription(
     ++mline_index;
 
     std::vector<absl::string_view> fields =
-        rtc::split(mline->substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+        split(mline->substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
 
     const size_t expected_min_fields = 4;
     if (fields.size() < expected_min_fields) {
@@ -2683,7 +2681,7 @@ bool ParseMediaDescription(
     }
 
     int port = 0;
-    if (!rtc::FromString<int>(fields[1], &port) || !IsValidPort(port)) {
+    if (!FromString<int>(fields[1], &port) || !IsValidPort(port)) {
       return ParseFailed(*mline, "The port number is invalid", error);
     }
     absl::string_view protocol = fields[2];
@@ -2740,7 +2738,7 @@ bool ParseMediaDescription(
       // according to draft-ietf-mmusic-sctp-sdp-26
       data_desc->set_max_message_size(kDefaultSctpMaxMessageSize);
       int p;
-      if (rtc::FromString(fields[3], &p)) {
+      if (FromString(fields[3], &p)) {
         data_desc->set_port(p);
       } else if (fields[3] == kDefaultSctpmapProtocol) {
         data_desc->set_use_sctpmap(false);
@@ -3044,9 +3042,9 @@ bool ParseContent(absl::string_view message,
     if (IsLineType(*line, kLineTypeSessionBandwidth)) {
       std::string bandwidth;
       std::string bandwidth_type;
-      if (!rtc::tokenize_first(line->substr(kLinePrefixLength),
-                               kSdpDelimiterColonChar, &bandwidth_type,
-                               &bandwidth)) {
+      if (!tokenize_first(line->substr(kLinePrefixLength),
+                          kSdpDelimiterColonChar, &bandwidth_type,
+                          &bandwidth)) {
         return ParseFailed(
             *line,
             "b= syntax error, does not match b=<modifier>:<bandwidth-value>.",
@@ -3424,8 +3422,8 @@ bool ParseSsrcAttribute(absl::string_view line,
   // a=ssrc:<ssrc-id> <attribute>
   // a=ssrc:<ssrc-id> <attribute>:<value>
   std::string field1, field2;
-  if (!rtc::tokenize_first(line.substr(kLinePrefixLength),
-                           kSdpDelimiterSpaceChar, &field1, &field2)) {
+  if (!tokenize_first(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar,
+                      &field1, &field2)) {
     const size_t expected_fields = 2;
     return ParseFailedExpectFieldNum(line, expected_fields, error);
   }
@@ -3442,8 +3440,7 @@ bool ParseSsrcAttribute(absl::string_view line,
 
   std::string attribute;
   std::string value;
-  if (!rtc::tokenize_first(field2, kSdpDelimiterColonChar, &attribute,
-                           &value)) {
+  if (!tokenize_first(field2, kSdpDelimiterColonChar, &attribute, &value)) {
     StringBuilder description;
     description << "Failed to get the ssrc attribute value from " << field2
                 << ". Expected format <attribute>:<value>.";
@@ -3473,7 +3470,7 @@ bool ParseSsrcAttribute(absl::string_view line,
     // draft-alvestrand-mmusic-msid-00
     // msid:identifier [appdata]
     std::vector<absl::string_view> fields =
-        rtc::split(value, kSdpDelimiterSpaceChar);
+        split(value, kSdpDelimiterSpaceChar);
     if (fields.size() < 1 || fields.size() > 2) {
       return ParseFailed(
           line, "Expected format \"msid:<identifier>[ <appdata>]\".", error);
@@ -3496,7 +3493,7 @@ bool ParseSsrcGroupAttribute(absl::string_view line,
   // RFC 5576
   // a=ssrc-group:<semantics> <ssrc-id> ...
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   const size_t expected_min_fields = 2;
   if (fields.size() < expected_min_fields) {
     return ParseFailedExpectMinFieldNum(line, expected_min_fields, error);
@@ -3561,7 +3558,7 @@ bool ParseRtpmapAttribute(absl::string_view line,
                           SdpParseError* error) {
   static const int kFirstDynamicPayloadTypeLowerRange = 35;
   std::vector<absl::string_view> fields =
-      rtc::split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
+      split(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar);
   // RFC 4566
   // a=rtpmap:<payload type> <encoding name>/<clock rate>[/<encodingparameters>]
   const size_t expected_min_fields = 2;
@@ -3584,7 +3581,7 @@ bool ParseRtpmapAttribute(absl::string_view line,
                         << line;
     return true;
   }
-  std::vector<absl::string_view> codec_params = rtc::split(fields[1], '/');
+  std::vector<absl::string_view> codec_params = split(fields[1], '/');
   // <encoding name>/<clock rate>[/<encodingparameters>]
   // 2 mandatory fields
   if (codec_params.size() < 2 || codec_params.size() > 3) {
@@ -3656,7 +3653,7 @@ bool ParseFmtpParam(absl::string_view line,
                     std::string* parameter,
                     std::string* value,
                     SdpParseError* error) {
-  if (!rtc::tokenize_first(line, kSdpDelimiterEqualChar, parameter, value)) {
+  if (!tokenize_first(line, kSdpDelimiterEqualChar, parameter, value)) {
     // Support for non-key-value lines like RFC 2198 or RFC 4733.
     *parameter = "";
     *value = std::string(line);
@@ -3671,7 +3668,7 @@ bool ParseFmtpParameterSet(absl::string_view line_params,
                            SdpParseError* error) {
   // Parse out format specific parameters.
   for (absl::string_view param :
-       rtc::split(line_params, kSdpDelimiterSemicolonChar)) {
+       split(line_params, kSdpDelimiterSemicolonChar)) {
     std::string name;
     std::string value;
     if (!ParseFmtpParam(absl::StripAsciiWhitespace(param), &name, &value,
@@ -3703,9 +3700,8 @@ bool ParseFmtpAttributes(absl::string_view line,
   // a=fmtp:<format> <format specific parameters>
   // At least two fields, whereas the second one is any of the optional
   // parameters.
-  if (!rtc::tokenize_first(line.substr(kLinePrefixLength),
-                           kSdpDelimiterSpaceChar, &line_payload,
-                           &line_params)) {
+  if (!tokenize_first(line.substr(kLinePrefixLength), kSdpDelimiterSpaceChar,
+                      &line_payload, &line_params)) {
     ParseFailedExpectMinFieldNum(line, 2, error);
     return false;
   }
@@ -3743,7 +3739,7 @@ bool ParsePacketizationAttribute(absl::string_view line,
     return true;
   }
   std::vector<absl::string_view> packetization_fields =
-      rtc::split(line, kSdpDelimiterSpaceChar);
+      split(line, kSdpDelimiterSpaceChar);
   if (packetization_fields.size() < 2) {
     return ParseFailedGetValue(line, kAttributePacketization, error);
   }
@@ -3771,7 +3767,7 @@ bool ParseRtcpFbAttribute(absl::string_view line,
     return true;
   }
   std::vector<absl::string_view> rtcp_fb_fields =
-      rtc::split(line, kSdpDelimiterSpaceChar);
+      split(line, kSdpDelimiterSpaceChar);
   if (rtcp_fb_fields.size() < 2) {
     return ParseFailedGetValue(line, kAttributeRtcpFb, error);
   }

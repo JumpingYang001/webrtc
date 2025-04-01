@@ -100,7 +100,7 @@ class RTC_EXPORT VideoAdapter {
   // The sink resolution alignment requirement is given by
   // `sink_wants.resolution_alignment`.
   // Note: Should be called from the sink only.
-  void OnSinkWants(const rtc::VideoSinkWants& sink_wants)
+  void OnSinkWants(const webrtc::VideoSinkWants& sink_wants)
       RTC_LOCKS_EXCLUDED(mutex_);
 
   // Returns maximum image area, which shouldn't impose any adaptations.

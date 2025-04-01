@@ -136,7 +136,7 @@ class WebRtcSessionDescriptionFactory {
   std::queue<CreateSessionDescriptionRequest>
       create_session_description_requests_;
   TaskQueueBase* const signaling_thread_;
-  cricket::TransportDescriptionFactory transport_desc_factory_;
+  TransportDescriptionFactory transport_desc_factory_;
   MediaSessionDescriptionFactory session_desc_factory_;
   uint64_t session_version_;
   const std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator_;

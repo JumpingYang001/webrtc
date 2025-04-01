@@ -168,7 +168,7 @@ void VideoRtpReceiver::RestartMediaChannel_w(
   }
 }
 
-void VideoRtpReceiver::SetSink(rtc::VideoSinkInterface<VideoFrame>* sink) {
+void VideoRtpReceiver::SetSink(VideoSinkInterface<VideoFrame>* sink) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   if (signaled_ssrc_) {
     media_channel_->SetSink(*signaled_ssrc_, sink);

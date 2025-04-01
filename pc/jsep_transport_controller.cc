@@ -579,8 +579,8 @@ JsepTransportController::CreateDtlsTransport(const ContentInfo& content_info,
 std::unique_ptr<RtpTransport>
 JsepTransportController::CreateUnencryptedRtpTransport(
     const std::string& transport_name,
-    rtc::PacketTransportInternal* rtp_packet_transport,
-    rtc::PacketTransportInternal* rtcp_packet_transport) {
+    PacketTransportInternal* rtp_packet_transport,
+    PacketTransportInternal* rtcp_packet_transport) {
   RTC_DCHECK_RUN_ON(network_thread_);
   auto unencrypted_rtp_transport = std::make_unique<RtpTransport>(
       rtcp_packet_transport == nullptr, env_.field_trials());
@@ -1290,7 +1290,7 @@ cricket::IceRole JsepTransportController::DetermineIceRole(
 }
 
 void JsepTransportController::OnTransportWritableState_n(
-    rtc::PacketTransportInternal* transport) {
+    PacketTransportInternal* transport) {
   RTC_LOG(LS_INFO) << " Transport " << transport->transport_name()
                    << " writability changed to " << transport->writable()
                    << ".";
@@ -1298,7 +1298,7 @@ void JsepTransportController::OnTransportWritableState_n(
 }
 
 void JsepTransportController::OnTransportReceivingState_n(
-    rtc::PacketTransportInternal* transport) {
+    PacketTransportInternal* transport) {
   UpdateAggregateStates_n();
 }
 

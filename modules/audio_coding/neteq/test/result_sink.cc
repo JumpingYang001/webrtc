@@ -95,7 +95,7 @@ void ResultSink::VerifyChecksum(absl::string_view checksum) {
   std::string buffer;
   buffer.resize(digest_->Size());
   digest_->Finish(buffer.data(), buffer.size());
-  const std::string result = rtc::hex_encode(buffer);
+  const std::string result = hex_encode(buffer);
   if (checksum.size() == result.size()) {
     EXPECT_EQ(checksum, result);
   } else {

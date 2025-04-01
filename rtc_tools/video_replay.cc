@@ -199,15 +199,15 @@ namespace {
 
 const uint32_t kReceiverLocalSsrc = 0x123456;
 
-class NullRenderer : public rtc::VideoSinkInterface<VideoFrame> {
+class NullRenderer : public VideoSinkInterface<VideoFrame> {
  public:
   void OnFrame(const VideoFrame& frame) override {}
 };
 
-class FileRenderPassthrough : public rtc::VideoSinkInterface<VideoFrame> {
+class FileRenderPassthrough : public VideoSinkInterface<VideoFrame> {
  public:
   FileRenderPassthrough(const std::string& basename,
-                        rtc::VideoSinkInterface<VideoFrame>* renderer)
+                        VideoSinkInterface<VideoFrame>* renderer)
       : basename_(basename), renderer_(renderer), file_(nullptr), count_(0) {}
 
   ~FileRenderPassthrough() override {
@@ -232,7 +232,7 @@ class FileRenderPassthrough : public rtc::VideoSinkInterface<VideoFrame> {
   }
 
   const std::string basename_;
-  rtc::VideoSinkInterface<VideoFrame>* const renderer_;
+  VideoSinkInterface<VideoFrame>* const renderer_;
   FILE* file_;
   size_t count_;
 };
@@ -300,7 +300,7 @@ class DecoderIvfFileWriter : public test::FakeDecoder {
 // has been finished.
 struct StreamState {
   test::NullTransport transport;
-  std::vector<std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>>> sinks;
+  std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>> sinks;
   std::vector<VideoReceiveStreamInterface*> receive_streams;
   std::vector<FlexfecReceiveStream*> flexfec_streams;
   std::unique_ptr<VideoDecoderFactory> decoder_factory;
@@ -371,7 +371,7 @@ std::unique_ptr<StreamState> ConfigureFromFlags(
   // them from deallocating.
   std::stringstream window_title;
   window_title << "Playback Video (" << rtp_dump_path << ")";
-  std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>> playback_video;
+  std::unique_ptr<VideoSinkInterface<VideoFrame>> playback_video;
   if (absl::GetFlag(FLAGS_disable_preview)) {
     playback_video = std::make_unique<NullRenderer>();
   } else {

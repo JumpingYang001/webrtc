@@ -45,8 +45,8 @@ std::string FakeSSLCertificate::ToPEMString() const {
 
 void FakeSSLCertificate::ToDER(Buffer* der_buffer) const {
   std::string der_string;
-  RTC_CHECK(rtc::SSLIdentity::PemToDer(rtc::kPemTypeCertificate, pem_string_,
-                                       &der_string));
+  RTC_CHECK(
+      SSLIdentity::PemToDer(kPemTypeCertificate, pem_string_, &der_string));
   der_buffer->SetData(der_string.c_str(), der_string.size());
 }
 
@@ -97,7 +97,7 @@ FakeSSLIdentity::FakeSSLIdentity(const FakeSSLIdentity& o)
 
 FakeSSLIdentity::~FakeSSLIdentity() = default;
 
-std::unique_ptr<rtc::SSLIdentity> FakeSSLIdentity::CloneInternal() const {
+std::unique_ptr<SSLIdentity> FakeSSLIdentity::CloneInternal() const {
   return std::make_unique<FakeSSLIdentity>(*this);
 }
 
@@ -119,7 +119,7 @@ std::string FakeSSLIdentity::PublicKeyToPEMString() const {
   return "";
 }
 
-bool FakeSSLIdentity::operator==(const rtc::SSLIdentity& other) const {
+bool FakeSSLIdentity::operator==(const SSLIdentity& other) const {
   RTC_DCHECK_NOTREACHED();  // Not implemented.
   return false;
 }

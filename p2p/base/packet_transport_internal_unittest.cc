@@ -26,17 +26,18 @@ using ::testing::MockFunction;
 TEST(PacketTransportInternal,
      NotifyPacketReceivedPassthrougPacketToRegisteredListener) {
   webrtc::FakePacketTransport packet_transport("test");
-  MockFunction<void(rtc::PacketTransportInternal*, const rtc::ReceivedPacket&)>
+  MockFunction<void(webrtc::PacketTransportInternal*,
+                    const rtc::ReceivedPacket&)>
       receiver;
 
   packet_transport.RegisterReceivedPacketCallback(&receiver,
                                                   receiver.AsStdFunction());
   EXPECT_CALL(receiver, Call)
-      .WillOnce(
-          [](rtc::PacketTransportInternal*, const rtc::ReceivedPacket& packet) {
-            EXPECT_EQ(packet.decryption_info(),
-                      rtc::ReceivedPacket::kDtlsDecrypted);
-          });
+      .WillOnce([](webrtc::PacketTransportInternal*,
+                   const rtc::ReceivedPacket& packet) {
+        EXPECT_EQ(packet.decryption_info(),
+                  rtc::ReceivedPacket::kDtlsDecrypted);
+      });
   packet_transport.NotifyPacketReceived(rtc::ReceivedPacket(
       {}, webrtc::SocketAddress(), std::nullopt, rtc::EcnMarking::kNotEct,
       rtc::ReceivedPacket::kDtlsDecrypted));

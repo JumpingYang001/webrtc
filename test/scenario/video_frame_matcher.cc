@@ -143,7 +143,7 @@ void CapturedFrameTap::OnDiscardedFrame() {
 ForwardingCapturedFrameTap::ForwardingCapturedFrameTap(
     Clock* clock,
     VideoFrameMatcher* matcher,
-    rtc::VideoSourceInterface<VideoFrame>* source)
+    VideoSourceInterface<VideoFrame>* source)
     : clock_(clock), matcher_(matcher), source_(source) {}
 
 void ForwardingCapturedFrameTap::OnFrame(const VideoFrame& frame) {
@@ -159,7 +159,7 @@ void ForwardingCapturedFrameTap::OnDiscardedFrame() {
 
 void ForwardingCapturedFrameTap::AddOrUpdateSink(
     VideoSinkInterface<VideoFrame>* sink,
-    const rtc::VideoSinkWants& wants) {
+    const VideoSinkWants& wants) {
   if (!sink_)
     sink_ = sink;
   RTC_DCHECK_EQ(sink_, sink);

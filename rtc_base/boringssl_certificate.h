@@ -37,7 +37,7 @@ class BoringSSLCertificate final : public SSLCertificate {
 
   static std::unique_ptr<BoringSSLCertificate> Generate(
       OpenSSLKeyPair* key_pair,
-      const rtc::SSLIdentityParams& params);
+      const SSLIdentityParams& params);
   static std::unique_ptr<BoringSSLCertificate> FromPEMString(
       absl::string_view pem_string);
 

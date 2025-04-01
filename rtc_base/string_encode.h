@@ -23,8 +23,31 @@
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/string_to_number.h"
-
 namespace rtc {
+template <typename T,
+          typename std::enable_if<
+              !std::is_pointer<T>::value ||
+              std::is_convertible<T, const char*>::value>::type* = nullptr>
+std::string ToString(T value) {
+  return {absl::StrCat(value)};
+}
+template <>
+std::string ToString(bool b);
+template <>
+std::string ToString(long double t);
+template <typename T,
+          typename std::enable_if<
+              std::is_pointer<T>::value &&
+              !std::is_convertible<T, const char*>::value>::type* = nullptr>
+std::string ToString(T p) {
+  char buf[32];
+  const int len = std::snprintf(&buf[0], std::size(buf), "%p", p);
+  RTC_DCHECK_LE(len, std::size(buf));
+  return std::string(&buf[0], len);
+}
+}  // namespace rtc
+
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // String Encoding Utilities
@@ -34,13 +57,13 @@ std::string hex_encode(absl::string_view str);
 std::string hex_encode_with_delimiter(absl::string_view source, char delimiter);
 
 // hex_decode converts ascii hex to binary.
-size_t hex_decode(ArrayView<char> buffer, absl::string_view source);
+size_t hex_decode(rtc::ArrayView<char> buffer, absl::string_view source);
 
 // hex_decode, assuming that there is a delimiter between every byte
 // pair.
 // `delimiter` == 0 means no delimiter
 // If the buffer is too short or the data is invalid, we return 0.
-size_t hex_decode_with_delimiter(ArrayView<char> buffer,
+size_t hex_decode_with_delimiter(rtc::ArrayView<char> buffer,
                                  absl::string_view source,
                                  char delimiter);
 
@@ -63,32 +86,9 @@ bool tokenize_first(absl::string_view source,
                     std::string* token,
                     std::string* rest);
 
-template <typename T,
-          typename std::enable_if<
-              !std::is_pointer<T>::value ||
-              std::is_convertible<T, const char*>::value>::type* = nullptr>
-std::string ToString(T value) {
-  return {absl::StrCat(value)};
-}
-
 // Versions that behave differently from StrCat
-template <>
-std::string ToString(bool b);
 
 // Versions not supported by StrCat:
-template <>
-std::string ToString(long double t);
-
-template <typename T,
-          typename std::enable_if<
-              std::is_pointer<T>::value &&
-              !std::is_convertible<T, const char*>::value>::type* = nullptr>
-std::string ToString(T p) {
-  char buf[32];
-  const int len = std::snprintf(&buf[0], std::size(buf), "%p", p);
-  RTC_DCHECK_LE(len, std::size(buf));
-  return std::string(&buf[0], len);
-}
 
 template <typename T,
           typename std::enable_if<std::is_arithmetic<T>::value &&
@@ -115,6 +115,19 @@ static inline T FromString(absl::string_view str) {
 
 //////////////////////////////////////////////////////////////////////
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ::webrtc::FromString;
+using ::webrtc::hex_decode;
+using ::webrtc::hex_decode_with_delimiter;
+using ::webrtc::hex_encode;
+using ::webrtc::hex_encode_with_delimiter;
+using ::webrtc::split;
+using ::webrtc::tokenize;
+using ::webrtc::tokenize_first;
 }  // namespace rtc
 
 #endif  // RTC_BASE_STRING_ENCODE_H__

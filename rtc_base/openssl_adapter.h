@@ -59,7 +59,7 @@ class OpenSSLAdapter final : public SSLAdapter {
   void SetEllipticCurves(const std::vector<std::string>& curves) override;
   [[deprecated]] void SetMode(SSLMode mode) override;
   void SetCertVerifier(SSLCertificateVerifier* ssl_cert_verifier) override;
-  void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) override;
+  void SetIdentity(std::unique_ptr<SSLIdentity> identity) override;
   void SetRole(SSLRole role) override;
   int StartSSL(absl::string_view hostname) override;
   int Send(const void* pv, size_t cb) override;
@@ -195,7 +195,7 @@ class OpenSSLAdapterFactory : public SSLAdapterFactory {
   // call to the factory and cannot be changed after the fact.
   void SetCertVerifier(SSLCertificateVerifier* ssl_cert_verifier) override;
 
-  void SetIdentity(std::unique_ptr<rtc::SSLIdentity> identity) override;
+  void SetIdentity(std::unique_ptr<SSLIdentity> identity) override;
 
   // Choose whether the socket acts as a server socket or client socket.
   void SetRole(SSLRole role) override;
@@ -215,7 +215,7 @@ class OpenSSLAdapterFactory : public SSLAdapterFactory {
   SSLRole ssl_role_ = webrtc::SSL_CLIENT;
   bool ignore_bad_cert_ = false;
 
-  std::unique_ptr<rtc::SSLIdentity> identity_;
+  std::unique_ptr<SSLIdentity> identity_;
 
   // Holds a cache of existing SSL Sessions.
   std::unique_ptr<OpenSSLSessionCache> ssl_session_cache_;

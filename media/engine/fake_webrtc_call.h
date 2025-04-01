@@ -184,7 +184,7 @@ class FakeAudioReceiveStream final : public AudioReceiveStreamInterface {
 };
 
 class FakeVideoSendStream final : public VideoSendStream,
-                                  public rtc::VideoSinkInterface<VideoFrame> {
+                                  public VideoSinkInterface<VideoFrame> {
  public:
   FakeVideoSendStream(const Environment& env,
                       VideoSendStream::Config config,
@@ -213,9 +213,9 @@ class FakeVideoSendStream final : public VideoSendStream,
     return resolution_scaling_enabled_;
   }
   bool framerate_scaling_enabled() const { return framerate_scaling_enabled_; }
-  void InjectVideoSinkWants(const rtc::VideoSinkWants& wants);
+  void InjectVideoSinkWants(const VideoSinkWants& wants);
 
-  rtc::VideoSourceInterface<VideoFrame>* source() const { return source_; }
+  VideoSourceInterface<VideoFrame>* source() const { return source_; }
   void GenerateKeyFrame(const std::vector<std::string>& rids);
   const std::vector<std::string>& GetKeyFramesRequested() const {
     return keyframes_requested_by_rid_;
@@ -231,7 +231,7 @@ class FakeVideoSendStream final : public VideoSendStream,
   bool started() override { return IsSending(); }
   void AddAdaptationResource(scoped_refptr<Resource> resource) override;
   std::vector<scoped_refptr<Resource>> GetAdaptationResources() override;
-  void SetSource(rtc::VideoSourceInterface<VideoFrame>* source,
+  void SetSource(VideoSourceInterface<VideoFrame>* source,
                  const DegradationPreference& degradation_preference) override;
   VideoSendStream::Stats GetStats() override;
 
@@ -244,7 +244,7 @@ class FakeVideoSendStream final : public VideoSendStream,
   VideoSendStream::Config config_;
   VideoEncoderConfig encoder_config_;
   std::vector<VideoStream> video_streams_;
-  rtc::VideoSinkWants sink_wants_;
+  VideoSinkWants sink_wants_;
 
   bool codec_settings_set_;
   union CodecSpecificSettings {
@@ -255,7 +255,7 @@ class FakeVideoSendStream final : public VideoSendStream,
   } codec_specific_settings_;
   bool resolution_scaling_enabled_;
   bool framerate_scaling_enabled_;
-  rtc::VideoSourceInterface<VideoFrame>* source_;
+  VideoSourceInterface<VideoFrame>* source_;
   int num_swapped_frames_;
   std::optional<VideoFrame> last_frame_;
   VideoSendStream::Stats stats_;

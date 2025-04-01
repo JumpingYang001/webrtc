@@ -1411,14 +1411,14 @@ TurnAllocateRequest::TurnAllocateRequest(TurnPort* port)
 
 void TurnAllocateRequest::OnSent() {
   RTC_LOG(LS_INFO) << port_->ToString() << ": TURN allocate request sent, id="
-                   << rtc::hex_encode(id());
+                   << webrtc::hex_encode(id());
   StunRequest::OnSent();
 }
 
 void TurnAllocateRequest::OnResponse(StunMessage* response) {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN allocate requested successfully, id="
-                   << rtc::hex_encode(id())
+                   << webrtc::hex_encode(id())
                    << ", code=0"  // Makes logging easier to parse.
                       ", rtt="
                    << Elapsed();
@@ -1464,7 +1464,7 @@ void TurnAllocateRequest::OnErrorResponse(StunMessage* response) {
 
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": Received TURN allocate error response, id="
-                   << rtc::hex_encode(id()) << ", code=" << error_code
+                   << webrtc::hex_encode(id()) << ", code=" << error_code
                    << ", rtt=" << Elapsed();
 
   switch (error_code) {
@@ -1484,7 +1484,7 @@ void TurnAllocateRequest::OnErrorResponse(StunMessage* response) {
     default:
       RTC_LOG(LS_WARNING) << port_->ToString()
                           << ": Received TURN allocate error response, id="
-                          << rtc::hex_encode(id()) << ", code=" << error_code
+                          << webrtc::hex_encode(id()) << ", code=" << error_code
                           << ", rtt=" << Elapsed();
       const StunErrorCodeAttribute* attr = response->GetErrorCode();
       port_->OnAllocateError(error_code, attr ? attr->reason() : "");
@@ -1493,7 +1493,7 @@ void TurnAllocateRequest::OnErrorResponse(StunMessage* response) {
 
 void TurnAllocateRequest::OnTimeout() {
   RTC_LOG(LS_WARNING) << port_->ToString() << ": TURN allocate request "
-                      << rtc::hex_encode(id()) << " timeout";
+                      << webrtc::hex_encode(id()) << " timeout";
   port_->OnAllocateRequestTimeout();
 }
 
@@ -1601,14 +1601,14 @@ TurnRefreshRequest::TurnRefreshRequest(TurnPort* port, int lifetime /*= -1*/)
 
 void TurnRefreshRequest::OnSent() {
   RTC_LOG(LS_INFO) << port_->ToString() << ": TURN refresh request sent, id="
-                   << rtc::hex_encode(id());
+                   << webrtc::hex_encode(id());
   StunRequest::OnSent();
 }
 
 void TurnRefreshRequest::OnResponse(StunMessage* response) {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN refresh requested successfully, id="
-                   << rtc::hex_encode(id())
+                   << webrtc::hex_encode(id())
                    << ", code=0"  // Makes logging easier to parse.
                       ", rtt="
                    << Elapsed();
@@ -1650,7 +1650,7 @@ void TurnRefreshRequest::OnErrorResponse(StunMessage* response) {
   } else {
     RTC_LOG(LS_WARNING) << port_->ToString()
                         << ": Received TURN refresh error response, id="
-                        << rtc::hex_encode(id()) << ", code=" << error_code
+                        << webrtc::hex_encode(id()) << ", code=" << error_code
                         << ", rtt=" << Elapsed();
     port_->OnRefreshError();
     if (port_->callbacks_for_test_) {
@@ -1661,7 +1661,7 @@ void TurnRefreshRequest::OnErrorResponse(StunMessage* response) {
 
 void TurnRefreshRequest::OnTimeout() {
   RTC_LOG(LS_WARNING) << port_->ToString() << ": TURN refresh timeout "
-                      << rtc::hex_encode(id());
+                      << webrtc::hex_encode(id());
   port_->OnRefreshError();
 }
 
@@ -1698,14 +1698,14 @@ TurnCreatePermissionRequest::~TurnCreatePermissionRequest() {
 void TurnCreatePermissionRequest::OnSent() {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN create permission request sent, id="
-                   << rtc::hex_encode(id());
+                   << webrtc::hex_encode(id());
   StunRequest::OnSent();
 }
 
 void TurnCreatePermissionRequest::OnResponse(StunMessage* response) {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN permission requested successfully, id="
-                   << rtc::hex_encode(id())
+                   << webrtc::hex_encode(id())
                    << ", code=0"  // Makes logging easier to parse.
                       ", rtt="
                    << Elapsed();
@@ -1719,7 +1719,7 @@ void TurnCreatePermissionRequest::OnErrorResponse(StunMessage* response) {
   int error_code = response->GetErrorCodeValue();
   RTC_LOG(LS_WARNING) << port_->ToString()
                       << ": Received TURN create permission error response, id="
-                      << rtc::hex_encode(id()) << ", code=" << error_code
+                      << webrtc::hex_encode(id()) << ", code=" << error_code
                       << ", rtt=" << Elapsed();
   if (entry_) {
     entry_->OnCreatePermissionError(response, error_code);
@@ -1729,7 +1729,7 @@ void TurnCreatePermissionRequest::OnErrorResponse(StunMessage* response) {
 void TurnCreatePermissionRequest::OnTimeout() {
   RTC_LOG(LS_WARNING) << port_->ToString()
                       << ": TURN create permission timeout "
-                      << rtc::hex_encode(id());
+                      << webrtc::hex_encode(id());
   if (entry_) {
     entry_->OnCreatePermissionTimeout();
   }
@@ -1771,14 +1771,14 @@ TurnChannelBindRequest::~TurnChannelBindRequest() {
 void TurnChannelBindRequest::OnSent() {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN channel bind request sent, id="
-                   << rtc::hex_encode(id());
+                   << webrtc::hex_encode(id());
   StunRequest::OnSent();
 }
 
 void TurnChannelBindRequest::OnResponse(StunMessage* response) {
   RTC_LOG(LS_INFO) << port_->ToString()
                    << ": TURN channel bind requested successfully, id="
-                   << rtc::hex_encode(id())
+                   << webrtc::hex_encode(id())
                    << ", code=0"  // Makes logging easier to parse.
                       ", rtt="
                    << Elapsed();
@@ -1800,7 +1800,7 @@ void TurnChannelBindRequest::OnErrorResponse(StunMessage* response) {
   int error_code = response->GetErrorCodeValue();
   RTC_LOG(LS_WARNING) << port_->ToString()
                       << ": Received TURN channel bind error response, id="
-                      << rtc::hex_encode(id()) << ", code=" << error_code
+                      << webrtc::hex_encode(id()) << ", code=" << error_code
                       << ", rtt=" << Elapsed();
   if (entry_) {
     entry_->OnChannelBindError(response, error_code);
@@ -1809,7 +1809,7 @@ void TurnChannelBindRequest::OnErrorResponse(StunMessage* response) {
 
 void TurnChannelBindRequest::OnTimeout() {
   RTC_LOG(LS_WARNING) << port_->ToString() << ": TURN channel bind timeout "
-                      << rtc::hex_encode(id());
+                      << webrtc::hex_encode(id());
   if (entry_) {
     entry_->OnChannelBindTimeout();
   }

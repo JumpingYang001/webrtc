@@ -73,7 +73,7 @@ TrackWithPeriodicSource CreateTrackWithPeriodicSource(
 // parallel and this function makes no guarantee that the returnd VideoSinkWants
 // have yet to reflect the overuse signal. Used together with EXPECT_TRUE_WAIT
 // to "spam overuse until a change is observed".
-rtc::VideoSinkWants TriggerOveruseAndGetSinkWants(
+VideoSinkWants TriggerOveruseAndGetSinkWants(
     rtc::scoped_refptr<FakeResource> fake_resource,
     const FakePeriodicVideoSource& source) {
   fake_resource->SetUsageState(ResourceUsageState::kOveruse);

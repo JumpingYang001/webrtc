@@ -19,12 +19,9 @@
 #include "p2p/base/ice_credentials_iterator.h"
 #include "p2p/base/transport_description.h"
 #include "rtc_base/rtc_certificate.h"
+#include "rtc_base/ssl_identity.h"
 
-namespace rtc {
-class SSLIdentity;
-}
-
-namespace cricket {
+namespace webrtc {
 
 struct TransportOptions {
   bool ice_restart = false;
@@ -40,25 +37,24 @@ struct TransportOptions {
 class TransportDescriptionFactory {
  public:
   // Default ctor; use methods below to set configuration.
-  explicit TransportDescriptionFactory(
-      const webrtc::FieldTrialsView& field_trials);
+  explicit TransportDescriptionFactory(const FieldTrialsView& field_trials);
   ~TransportDescriptionFactory();
 
   // The certificate to use when setting up DTLS.
-  const rtc::scoped_refptr<webrtc::RTCCertificate>& certificate() const {
+  const scoped_refptr<RTCCertificate>& certificate() const {
     return certificate_;
   }
 
   // Specifies the certificate to use
-  void set_certificate(rtc::scoped_refptr<webrtc::RTCCertificate> certificate) {
+  void set_certificate(scoped_refptr<RTCCertificate> certificate) {
     certificate_ = std::move(certificate);
   }
 
   // Creates a transport description suitable for use in an offer.
-  std::unique_ptr<TransportDescription> CreateOffer(
+  std::unique_ptr<cricket::TransportDescription> CreateOffer(
       const TransportOptions& options,
-      const TransportDescription* current_description,
-      IceCredentialsIterator* ice_credentials) const;
+      const cricket::TransportDescription* current_description,
+      cricket::IceCredentialsIterator* ice_credentials) const;
   // Create a transport description that is a response to an offer.
   //
   // If `require_transport_attributes` is true, then TRANSPORT category
@@ -66,14 +62,14 @@ class TransportDescriptionFactory {
   // sdp-mux-attributes, and null will be returned otherwise. It's expected
   // that this will be set to false for an m= section that's in a BUNDLE group
   // but isn't the first m= section in the group.
-  std::unique_ptr<TransportDescription> CreateAnswer(
-      const TransportDescription* offer,
+  std::unique_ptr<cricket::TransportDescription> CreateAnswer(
+      const cricket::TransportDescription* offer,
       const TransportOptions& options,
       bool require_transport_attributes,
-      const TransportDescription* current_description,
-      IceCredentialsIterator* ice_credentials) const;
+      const cricket::TransportDescription* current_description,
+      cricket::IceCredentialsIterator* ice_credentials) const;
 
-  const webrtc::FieldTrialsView& trials() const { return field_trials_; }
+  const FieldTrialsView& trials() const { return field_trials_; }
   // Functions for disabling encryption - test only!
   // In insecure mode, the connection will accept a description without
   // fingerprint, and will generate SDP even if certificate is not set.
@@ -83,13 +79,20 @@ class TransportDescriptionFactory {
   void SetInsecureForTesting() { insecure_ = true; }
 
  private:
-  bool SetSecurityInfo(TransportDescription* description,
-                       ConnectionRole role) const;
+  bool SetSecurityInfo(cricket::TransportDescription* description,
+                       cricket::ConnectionRole role) const;
   bool insecure_ = false;
-  rtc::scoped_refptr<webrtc::RTCCertificate> certificate_;
-  const webrtc::FieldTrialsView& field_trials_;
+  scoped_refptr<RTCCertificate> certificate_;
+  const FieldTrialsView& field_trials_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::TransportDescriptionFactory;
+using ::webrtc::TransportOptions;
 }  // namespace cricket
 
 #endif  // P2P_BASE_TRANSPORT_DESCRIPTION_FACTORY_H_
