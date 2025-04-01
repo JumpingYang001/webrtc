@@ -810,6 +810,35 @@ TEST(DcSctpSocketTest, SendMessageAfterEstablished) {
   std::optional<DcSctpMessage> msg = z.cb.ConsumeReceivedMessage();
   ASSERT_TRUE(msg.has_value());
   EXPECT_EQ(msg->stream_id(), StreamID(1));
+
+  // Calling the pull-mode API with it not enabled just returns false.
+  EXPECT_EQ(z.socket.MessagesReady(), 0u);
+  EXPECT_FALSE(z.socket.GetNextMessage().has_value());
+}
+
+TEST(DcSctpSocketTest, SendMessageAfterEstablishedInPullMode) {
+  SocketUnderTest a("A");
+  SocketUnderTest z("Z", {.enable_receive_pull_mode = true});
+
+  EXPECT_CALL(z.cb, OnMessageReceived).Times(0);
+  EXPECT_CALL(z.cb, OnMessageReady).Times(1);
+
+  ConnectSockets(a, z);
+
+  EXPECT_EQ(z.socket.MessagesReady(), 0u);
+  EXPECT_FALSE(z.socket.GetNextMessage().has_value());
+
+  a.socket.Send(DcSctpMessage(StreamID(1), PPID(53), {1, 2}), kSendOptions);
+  z.socket.ReceivePacket(a.cb.ConsumeSentPacket());
+
+  // Not delivered by callback.
+  ASSERT_FALSE(z.cb.ConsumeReceivedMessage().has_value());
+
+  // But available by polling.
+  EXPECT_EQ(z.socket.MessagesReady(), 1u);
+  std::optional<DcSctpMessage> msg = z.socket.GetNextMessage();
+  EXPECT_TRUE(msg.has_value());
+  EXPECT_EQ(msg->stream_id(), StreamID(1));
 }
 
 TEST_P(DcSctpSocketParametrizedTest, TimeoutResendsPacket) {

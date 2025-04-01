@@ -158,9 +158,13 @@ void ReassemblyQueue::EnterDeferredReset(
   RTC_DCHECK(IsConsistent());
 }
 
-std::vector<DcSctpMessage> ReassemblyQueue::FlushMessages() {
-  std::vector<DcSctpMessage> ret;
-  reassembled_messages_.swap(ret);
+std::optional<DcSctpMessage> ReassemblyQueue::GetNextMessage() {
+  if (reassembled_messages_.empty()) {
+    return std::nullopt;
+  }
+  DcSctpMessage ret = std::move(reassembled_messages_.front());
+  reassembled_messages_.pop_front();
+  queued_bytes_ -= ret.payload().size();
   return ret;
 }
 
@@ -177,6 +181,7 @@ void ReassemblyQueue::AddReassembledMessage(
                        << ", ppid=" << *message.ppid()
                        << ", payload=" << message.payload().size() << " bytes";
 
+  queued_bytes_ += message.payload().size();
   reassembled_messages_.emplace_back(std::move(message));
 }
 

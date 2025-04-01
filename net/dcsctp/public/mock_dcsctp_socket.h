@@ -24,6 +24,9 @@ class MockDcSctpSocket : public DcSctpSocketInterface {
               (webrtc::ArrayView<const uint8_t> data),
               (override));
 
+  MOCK_METHOD(size_t, MessagesReady, (), (const, override));
+  MOCK_METHOD(std::optional<DcSctpMessage>, GetNextMessage, (), (override));
+
   MOCK_METHOD(void, HandleTimeout, (TimeoutID timeout_id), (override));
 
   MOCK_METHOD(void, Connect, (), (override));

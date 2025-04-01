@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <set>
 #include <string>
@@ -79,11 +80,16 @@ class ReassemblyQueue {
   void Add(TSN tsn, Data data);
 
   // Indicates if the reassembly queue has any reassembled messages that can be
-  // retrieved by calling `FlushMessages`.
+  // retrieved by calling `GetNextMessage`.
   bool HasMessages() const { return !reassembled_messages_.empty(); }
 
-  // Returns any reassembled messages.
-  std::vector<DcSctpMessage> FlushMessages();
+  // Returns the number of reassembled messages that are ready to be retrieved
+  // by calling `GetNextMessage`.
+  size_t MessagesReady() const { return reassembled_messages_.size(); }
+
+  // Returns the next reassembled message or nullopt if there are no messages
+  // ready.
+  std::optional<DcSctpMessage> GetNextMessage();
 
   // Handle a ForwardTSN chunk, when the sender has indicated that the received
   // (this class) should forget about some chunks. This is used to implement
@@ -147,9 +153,9 @@ class ReassemblyQueue {
   const size_t watermark_bytes_;
   UnwrappedTSN::Unwrapper tsn_unwrapper_;
 
-  // Messages that have been reassembled, and will be returned by
-  // `FlushMessages`.
-  std::vector<DcSctpMessage> reassembled_messages_;
+  // Messages that have been reassembled, and will be consumed from by
+  // `GetNextMessage`.
+  std::deque<DcSctpMessage> reassembled_messages_;
 
   // If present, "deferred reset processing" mode is active.
   std::optional<DeferredResetStreams> deferred_reset_streams_;

@@ -69,6 +69,15 @@ void CallbackDeferrer::OnMessageReceived(DcSctpMessage message) {
       std::move(message));
 }
 
+void CallbackDeferrer::OnMessageReady() {
+  RTC_DCHECK(prepared_);
+  deferred_.emplace_back(
+      +[](CallbackData data, DcSctpSocketCallbacks& cb) {
+        return cb.OnMessageReady();
+      },
+      std::monostate{});
+}
+
 void CallbackDeferrer::OnError(ErrorKind error, absl::string_view message) {
   RTC_DCHECK(prepared_);
   deferred_.emplace_back(

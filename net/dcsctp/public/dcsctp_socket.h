@@ -360,10 +360,18 @@ class DcSctpSocketCallbacks {
   virtual void NotifyOutgoingMessageBufferEmpty() {}
 
   // Called when the library has received an SCTP message in full and delivers
-  // it to the upper layer.
+  // it to the upper layer, given that `DcSctpOptions::enable_receive_pull_mode`
+  // isn't enabled.
   //
   // It is allowed to call into this library from within this callback.
   virtual void OnMessageReceived(DcSctpMessage message) = 0;
+
+  // Called when `DcSctpOptions::enable_receive_pull_mode` is enabled and the
+  // library has one or more SCTP messages ready to be received with
+  // `DcSctpSocket::GetNextMessage()`.
+  //
+  // It is allowed to call into this library from within this callback.
+  virtual void OnMessageReady() {}
 
   // Triggered when an non-fatal error is reported by either this library or
   // from the other peer (by sending an ERROR command). These should be logged,
@@ -524,6 +532,20 @@ class DcSctpSocketInterface {
 
   // To be called when an incoming SCTP packet is to be processed.
   virtual void ReceivePacket(webrtc::ArrayView<const uint8_t> data) = 0;
+
+  // Returns the number of received messages that can be retrieved by calling
+  // calling `::GetNextMessage`.
+  //
+  // Only used when `DcSctpOptions::enable_receive_pull_mode` is true (will
+  // always return zero if not enabled).
+  virtual size_t MessagesReady() const = 0;
+
+  // To be called after `DcSctpSocketCallbacks::OnMessagesReady` has triggered
+  // to retrieve the next message, if any.
+  //
+  // Only used when `DcSctpOptions::enable_receive_pull_mode` is true (will
+  // always return empty if not enabled).
+  virtual std::optional<DcSctpMessage> GetNextMessage() = 0;
 
   // To be called when a timeout has expired. The `timeout_id` is provided
   // when the timeout was initiated.

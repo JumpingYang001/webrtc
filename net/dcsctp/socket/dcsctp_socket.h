@@ -84,6 +84,8 @@ class DcSctpSocket : public DcSctpSocketInterface {
 
   // Implementation of `DcSctpSocketInterface`.
   void ReceivePacket(webrtc::ArrayView<const uint8_t> data) override;
+  size_t MessagesReady() const override;
+  std::optional<DcSctpMessage> GetNextMessage() override;
   void HandleTimeout(TimeoutID timeout_id) override;
   void Connect() override;
   void RestoreFromState(const DcSctpSocketHandoverState& state) override;

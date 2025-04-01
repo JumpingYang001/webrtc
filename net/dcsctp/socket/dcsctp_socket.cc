@@ -224,7 +224,8 @@ std::string DcSctpSocket::log_prefix() const {
 }
 
 bool DcSctpSocket::IsConsistent() const {
-  if (tcb_ != nullptr && tcb_->reassembly_queue().HasMessages()) {
+  if (tcb_ != nullptr && (!options_.enable_receive_pull_mode &&
+                          tcb_->reassembly_queue().HasMessages())) {
     return false;
   }
   switch (state_) {
@@ -1082,15 +1083,24 @@ void DcSctpSocket::HandleDataCommon(AnyDataChunk& chunk) {
                        << tcb_->reassembly_queue().is_above_watermark();
 
   if (tcb_->reassembly_queue().is_full()) {
-    // If the reassembly queue is full, there is nothing that can be done. The
-    // specification only allows dropping gap-ack-blocks, and that's not
-    // likely to help as the socket has been trying to fill gaps since the
-    // watermark was reached.
-    packet_sender_.Send(tcb_->PacketBuilder().Add(AbortChunk(
-        true, Parameters::Builder().Add(OutOfResourceErrorCause()).Build())));
-    InternalClose(ErrorKind::kResourceExhaustion,
-                  "Reassembly Queue is exhausted");
-    return;
+    if (tcb_->reassembly_queue().HasMessages()) {
+      // If the reassembly queue is full but there are assembled messages
+      // waiting to be pulled, we can't do anything with this data except drop
+      // it, and hope the upper layer drains the accumulated messages soon.
+      RTC_DLOG(LS_VERBOSE) << log_prefix()
+                           << "Rejected data because of full reassembly queue";
+      return;
+    } else {
+      // If the reassembly queue is full and there's no messages waiting, there
+      // is nothing that can be done. The specification only allows dropping
+      // gap-ack-blocks, and that's not likely to help as the socket has been
+      // trying to fill gaps since the watermark was reached.
+      packet_sender_.Send(tcb_->PacketBuilder().Add(AbortChunk(
+          true, Parameters::Builder().Add(OutOfResourceErrorCause()).Build())));
+      InternalClose(ErrorKind::kResourceExhaustion,
+                    "Reassembly Queue is exhausted");
+      return;
+    }
   }
 
   if (tcb_->reassembly_queue().is_above_watermark()) {
@@ -1472,10 +1482,33 @@ void DcSctpSocket::HandleCookieAck(
 }
 
 void DcSctpSocket::MaybeDeliverMessages() {
-  for (auto& message : tcb_->reassembly_queue().FlushMessages()) {
-    ++metrics_.rx_messages_count;
-    callbacks_.OnMessageReceived(std::move(message));
+  if (options_.enable_receive_pull_mode) {
+    if (tcb_->reassembly_queue().HasMessages()) {
+      callbacks_.OnMessageReady();
+    }
+    return;
   }
+
+  while (std::optional<DcSctpMessage> message =
+             tcb_->reassembly_queue().GetNextMessage()) {
+    ++metrics_.rx_messages_count;
+    callbacks_.OnMessageReceived(*std::move(message));
+  }
+}
+
+size_t DcSctpSocket::MessagesReady() const {
+  return tcb_ != nullptr ? tcb_->reassembly_queue().MessagesReady() : 0;
+}
+
+std::optional<DcSctpMessage> DcSctpSocket::GetNextMessage() {
+  if (tcb_ == nullptr) {
+    return std::nullopt;
+  }
+  std::optional<DcSctpMessage> ret = tcb_->reassembly_queue().GetNextMessage();
+  if (ret.has_value()) {
+    ++metrics_.rx_messages_count;
+  }
+  return ret;
 }
 
 void DcSctpSocket::HandleSack(const CommonHeader& /* header */,

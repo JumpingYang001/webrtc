@@ -100,6 +100,7 @@ class MockDcSctpSocketCallbacks : public DcSctpSocketCallbacks {
   }
 
   MOCK_METHOD(void, OnMessageReceived, (DcSctpMessage message), (override));
+  MOCK_METHOD(void, OnMessageReady, (), (override));
   MOCK_METHOD(void,
               OnError,
               (ErrorKind error, absl::string_view message),

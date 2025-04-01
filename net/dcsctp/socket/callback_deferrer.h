@@ -69,6 +69,7 @@ class CallbackDeferrer : public DcSctpSocketCallbacks {
   webrtc::Timestamp Now() override { return underlying_.Now(); }
   uint32_t GetRandomInt(uint32_t low, uint32_t high) override;
   void OnMessageReceived(DcSctpMessage message) override;
+  void OnMessageReady() override;
   void OnError(ErrorKind error, absl::string_view message) override;
   void OnAborted(ErrorKind error, absl::string_view message) override;
   void OnConnected() override;
