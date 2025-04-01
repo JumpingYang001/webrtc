@@ -10,15 +10,21 @@
 
 #include "modules/audio_coding/include/audio_coding_module.h"
 
-#include <algorithm>
+#include <array>
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
-#include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/function_view.h"
 #include "modules/audio_coding/acm2/acm_remixing.h"
 #include "modules/audio_coding/acm2/acm_resampler.h"
-#include "modules/include/module_common_types.h"
+#include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/include/module_common_types_public.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
@@ -164,6 +170,10 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   int codec_histogram_bins_log_[static_cast<size_t>(
       AudioEncoder::CodecType::kMaxLoggedAudioCodecTypes)];
   int number_of_consecutive_empty_packets_;
+
+  mutable Mutex stats_mutex_;
+  ANAStats ana_stats_ RTC_GUARDED_BY(stats_mutex_);
+  int target_bitrate_ RTC_GUARDED_BY(stats_mutex_) = -1;
 };
 
 // Adds a codec usage sample to the histogram.
@@ -284,6 +294,11 @@ int32_t AudioCodingModuleImpl::Encode(
   }
   absolute_capture_timestamp_ms_.reset();
   previous_pltype_ = encoded_info.payload_type;
+  {
+    MutexLock lock(&stats_mutex_);
+    ana_stats_ = encoder_stack_->GetANAStats();
+    target_bitrate_ = encoder_stack_->GetTargetBitrate();
+  }
   return static_cast<int32_t>(encode_buffer_.size());
 }
 
@@ -430,7 +445,7 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
   }
 
   if (!down_mix && !resample) {
-    // No pre-processing is required.
+    // No preprocessing is required.
     if (expected_in_ts_ == expected_codec_ts_) {
       // If we've never resampled, we can use the input frame as-is
       *ptr_out = &in_frame;
@@ -525,19 +540,13 @@ bool AudioCodingModuleImpl::HaveValidEncoder(
 }
 
 ANAStats AudioCodingModuleImpl::GetANAStats() const {
-  MutexLock lock(&acm_mutex_);
-  if (encoder_stack_)
-    return encoder_stack_->GetANAStats();
-  // If no encoder is set, return default stats.
-  return ANAStats();
+  MutexLock lock(&stats_mutex_);
+  return ana_stats_;
 }
 
 int AudioCodingModuleImpl::GetTargetBitrate() const {
-  MutexLock lock(&acm_mutex_);
-  if (!encoder_stack_) {
-    return -1;
-  }
-  return encoder_stack_->GetTargetBitrate();
+  MutexLock lock(&stats_mutex_);
+  return target_bitrate_;
 }
 
 }  // namespace
