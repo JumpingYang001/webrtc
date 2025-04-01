@@ -121,12 +121,18 @@ do
       Darwin*)    INPLACE_ARG=( -i '' );;
       *)          INPLACE_ARG=( -i )
   esac
-  for INCLUDE in "gtest" "gmock"; do
-    if grep -q "#include \"test\/${INCLUDE}\.h\"" $FILE; then
-      OUTPUT=${OUTPUT//"+ \"${INCLUDE}"\/"${INCLUDE}.h\""/}
-      sed "${INPLACE_ARG[@]}" -e "/#include \"${INCLUDE}\/${INCLUDE}\.h\"/d" $FILE
+  IWYU_MAPPING=( "\"gmock\/gmock\.h\":\"test\/gmock\.h\""
+                 "\"gtest\/gtest\.h\":\"test\/gtest\.h\""
+                 "\<sys\/socket\.h\>:\"rtc_base\/net_helpers\.h\"" )
+
+  for mapping in "${IWYU_MAPPING[@]}" ; do
+    KEY="${mapping%%:*}"
+    VALUE="${mapping##*:}"
+    if grep -q "#include ${VALUE}" $FILE; then
+      OUTPUT=$(echo "$OUTPUT" | sed "/+ ${KEY}/d")
+      sed "${INPLACE_ARG[@]}" -e "/#include ${KEY}/d" $FILE
     else
-      sed "${INPLACE_ARG[@]}" -e "s@^#include \"${INCLUDE}\/${INCLUDE}\.h@#include \"test\/${INCLUDE}\.h@g" $FILE
+      sed "${INPLACE_ARG[@]}" -e "s@^#include ${KEY}@#include ${VALUE}@g" $FILE
     fi
   done
 
