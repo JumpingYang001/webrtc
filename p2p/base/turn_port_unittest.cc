@@ -14,6 +14,8 @@
 #include "absl/functional/any_invocable.h"
 #include "api/array_view.h"
 #include "api/candidate.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/packet_socket_factory.h"
 #include "api/test/mock_async_dns_resolver.h"
 #include "api/test/rtc_error_matchers.h"
@@ -67,11 +69,8 @@
 #include "rtc_base/time_utils.h"
 #include "rtc_base/virtual_socket_server.h"
 #include "test/gtest.h"
-#include "test/scoped_key_value_config.h"
 
 namespace {
-using ::webrtc::SocketAddress;
-
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -80,7 +79,10 @@ using ::testing::Ne;
 using ::testing::Return;
 using ::testing::ReturnPointee;
 using ::testing::SetArgPointee;
+using ::webrtc::CreateEnvironment;
+using ::webrtc::Environment;
 using ::webrtc::IceCandidateType;
+using ::webrtc::SocketAddress;
 
 static const SocketAddress kLocalAddr1("11.11.11.11", 0);
 static const SocketAddress kLocalAddr2("22.22.22.22", 0);
@@ -309,7 +311,7 @@ class TurnPortTest : public ::testing::Test,
                                    const ProtocolAddress& server_address) {
     webrtc::RelayServerConfig config;
     config.credentials = webrtc::RelayCredentials(username, password);
-    CreateRelayPortArgs args;
+    CreateRelayPortArgs args = {.env = env_};
     args.network_thread = &main_;
     args.socket_factory = socket_factory();
     args.network = network;
@@ -318,7 +320,6 @@ class TurnPortTest : public ::testing::Test,
     args.server_address = &server_address;
     args.config = &config;
     args.turn_customizer = turn_customizer_.get();
-    args.field_trials = &field_trials_;
 
     turn_port_ = TurnPort::Create(args, 0, 0);
     if (!turn_port_) {
@@ -357,7 +358,7 @@ class TurnPortTest : public ::testing::Test,
 
     webrtc::RelayServerConfig config;
     config.credentials = webrtc::RelayCredentials(username, password);
-    CreateRelayPortArgs args;
+    CreateRelayPortArgs args = {.env = env_};
     args.network_thread = &main_;
     args.socket_factory = socket_factory();
     args.network = MakeNetwork(kLocalAddr1);
@@ -366,7 +367,6 @@ class TurnPortTest : public ::testing::Test,
     args.server_address = &server_address;
     args.config = &config;
     args.turn_customizer = turn_customizer_.get();
-    args.field_trials = &field_trials_;
     turn_port_ = TurnPort::Create(args, socket_.get());
     // This TURN port will be the controlling.
     turn_port_->SetIceRole(ICEROLE_CONTROLLING);
@@ -390,12 +390,12 @@ class TurnPortTest : public ::testing::Test,
   void CreateUdpPort() { CreateUdpPort(kLocalAddr2); }
 
   void CreateUdpPort(const SocketAddress& address) {
-    udp_port_ = UDPPort::Create({.network_thread = &main_,
+    udp_port_ = UDPPort::Create({.env = env_,
+                                 .network_thread = &main_,
                                  .socket_factory = socket_factory(),
                                  .network = MakeNetwork(address),
                                  .ice_username_fragment = kIceUfrag2,
-                                 .ice_password = kIcePwd2,
-                                 .field_trials = &field_trials_},
+                                 .ice_password = kIcePwd2},
                                 0, 0, false, std::nullopt);
     // UDP port will be controlled.
     udp_port_->SetIceRole(ICEROLE_CONTROLLED);
@@ -945,8 +945,8 @@ class TurnPortTest : public ::testing::Test,
     return &socket_factory_;
   }
 
-  webrtc::test::ScopedKeyValueConfig field_trials_;
   webrtc::ScopedFakeClock fake_clock_;
+  const Environment env_ = CreateEnvironment();
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.

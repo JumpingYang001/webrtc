@@ -591,7 +591,7 @@ void BasicPortAllocatorSession::GetPortConfigurations() {
 
   auto config = std::make_unique<PortConfiguration>(
       allocator_->stun_servers(), username(), password(),
-      allocator()->field_trials());
+      &allocator()->env().field_trials());
 
   for (const RelayServerConfig& turn_server : allocator_->turn_servers()) {
     config->AddRelay(turn_server);
@@ -738,11 +738,11 @@ std::vector<const webrtc::Network*> BasicPortAllocatorSession::GetNetworks() {
         continue;
       }
       lowest_cost = std::min<uint16_t>(
-          lowest_cost, network->GetCost(*allocator()->field_trials()));
+          lowest_cost, network->GetCost(allocator()->env().field_trials()));
     }
     NetworkFilter costly_filter(
         [lowest_cost, this](const rtc::Network* network) {
-          return network->GetCost(*allocator()->field_trials()) >
+          return network->GetCost(allocator()->env().field_trials()) >
                  lowest_cost + webrtc::kNetworkCostLow;
         },
         "costly");
@@ -1468,22 +1468,22 @@ void AllocationSequence::CreateUDPPorts() {
       !IsFlagSet(webrtc::PORTALLOCATOR_DISABLE_DEFAULT_LOCAL_CANDIDATE);
   if (IsFlagSet(webrtc::PORTALLOCATOR_ENABLE_SHARED_SOCKET) && udp_socket_) {
     port = UDPPort::Create(
-        {.network_thread = session_->network_thread(),
+        {.env = session_->allocator()->env(),
+         .network_thread = session_->network_thread(),
          .socket_factory = session_->socket_factory(),
          .network = network_,
          .ice_username_fragment = session_->username(),
-         .ice_password = session_->password(),
-         .field_trials = session_->allocator()->field_trials()},
+         .ice_password = session_->password()},
         udp_socket_.get(), emit_local_candidate_for_anyaddress,
         session_->allocator()->stun_candidate_keepalive_interval());
   } else {
     port = UDPPort::Create(
-        {.network_thread = session_->network_thread(),
+        {.env = session_->allocator()->env(),
+         .network_thread = session_->network_thread(),
          .socket_factory = session_->socket_factory(),
          .network = network_,
          .ice_username_fragment = session_->username(),
-         .ice_password = session_->password(),
-         .field_trials = session_->allocator()->field_trials()},
+         .ice_password = session_->password()},
         session_->allocator()->min_port(), session_->allocator()->max_port(),
         emit_local_candidate_for_anyaddress,
         session_->allocator()->stun_candidate_keepalive_interval());
@@ -1520,14 +1520,13 @@ void AllocationSequence::CreateTCPPorts() {
   }
 
   std::unique_ptr<Port> port = TCPPort::Create(
-      {.network_thread = session_->network_thread(),
+      {.env = session_->allocator()->env(),
+       .network_thread = session_->network_thread(),
        .socket_factory = session_->socket_factory(),
        .network = network_,
        .ice_username_fragment = session_->username(),
-       .ice_password = session_->password(),
-       .field_trials = session_->allocator()->field_trials()},
+       .ice_password = session_->password()},
       session_->allocator()->min_port(), session_->allocator()->max_port(),
-
       session_->allocator()->allow_tcp_listen());
   if (port) {
     port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
@@ -1554,12 +1553,12 @@ void AllocationSequence::CreateStunPorts() {
   }
 
   std::unique_ptr<StunPort> port = StunPort::Create(
-      {.network_thread = session_->network_thread(),
+      {.env = session_->allocator()->env(),
+       .network_thread = session_->network_thread(),
        .socket_factory = session_->socket_factory(),
        .network = network_,
        .ice_username_fragment = session_->username(),
-       .ice_password = session_->password(),
-       .field_trials = session_->allocator()->field_trials()},
+       .ice_password = session_->password()},
       session_->allocator()->min_port(), session_->allocator()->max_port(),
       config_->StunServers(),
       session_->allocator()->stun_candidate_keepalive_interval());
@@ -1621,7 +1620,7 @@ void AllocationSequence::CreateTurnPort(const webrtc::RelayServerConfig& config,
       continue;
     }
 
-    CreateRelayPortArgs args;
+    CreateRelayPortArgs args = {.env = session_->allocator()->env()};
     args.network_thread = session_->network_thread();
     args.socket_factory = session_->socket_factory();
     args.network = network_;
@@ -1630,7 +1629,6 @@ void AllocationSequence::CreateTurnPort(const webrtc::RelayServerConfig& config,
     args.server_address = &(*relay_port);
     args.config = &config;
     args.turn_customizer = session_->allocator()->turn_customizer();
-    args.field_trials = session_->allocator()->field_trials();
     args.relative_priority = relative_priority;
 
     std::unique_ptr<cricket::Port> port;

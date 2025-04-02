@@ -120,9 +120,14 @@ Port::Port(const PortParametersRef& args,
            uint16_t min_port,
            uint16_t max_port,
            bool shared_socket /*= false*/)
-    : thread_(args.network_thread),
+    : env_(args.env),
+      thread_(args.network_thread),
       factory_(args.socket_factory),
-      field_trials_(args.field_trials),
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      field_trials_(env_.has_value() ? &env_->field_trials()
+                                     : args.field_trials),
+#pragma clang diagnostic pop
       type_(type),
       send_retransmit_count_attribute_(false),
       network_(args.network),

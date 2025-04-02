@@ -20,6 +20,7 @@
 
 #include "absl/functional/any_invocable.h"
 #include "api/candidate.h"
+#include "api/environment/environment_factory.h"
 #include "api/field_trials_view.h"
 #include "api/packet_socket_factory.h"
 #include "api/test/mock_async_dns_resolver.h"
@@ -68,7 +69,8 @@ using ::testing::IsTrue;
 using ::testing::Return;
 using ::testing::ReturnPointee;
 using ::testing::SetArgPointee;
-using webrtc::IceCandidateType;
+using ::webrtc::CreateEnvironment;
+using ::webrtc::IceCandidateType;
 using ::webrtc::SocketAddress;
 
 static const SocketAddress kPrivateIP("192.168.1.12", 0);
@@ -192,12 +194,12 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   void CreateStunPort(const ServerAddresses& stun_servers,
                       const webrtc::FieldTrialsView* field_trials = nullptr) {
     stun_port_ = cricket::StunPort::Create(
-        {.network_thread = &thread_,
+        {.env = CreateEnvironment(field_trials),
+         .network_thread = &thread_,
          .socket_factory = socket_factory(),
          .network = network_,
          .ice_username_fragment = webrtc::CreateRandomString(16),
-         .ice_password = webrtc::CreateRandomString(22),
-         .field_trials = field_trials},
+         .ice_password = webrtc::CreateRandomString(22)},
         0, 0, stun_servers, std::nullopt);
     stun_port_->SetIceTiebreaker(kTiebreakerDefault);
     stun_port_->set_stun_keepalive_delay(stun_keepalive_delay_);
@@ -231,12 +233,12 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
     ServerAddresses stun_servers;
     stun_servers.insert(server_addr);
     stun_port_ = cricket::UDPPort::Create(
-        {.network_thread = &thread_,
+        {.env = CreateEnvironment(field_trials),
+         .network_thread = &thread_,
          .socket_factory = socket_factory(),
          .network = network_,
          .ice_username_fragment = webrtc::CreateRandomString(16),
-         .ice_password = webrtc::CreateRandomString(22),
-         .field_trials = field_trials},
+         .ice_password = webrtc::CreateRandomString(22)},
         socket_.get(), false, std::nullopt);
     stun_port_->set_server_addresses(stun_servers);
     ASSERT_TRUE(stun_port_ != NULL);

@@ -562,6 +562,7 @@ rtc_library("port") {
     "../api:packet_socket_factory",
     "../api:rtc_error",
     "../api:sequence_checker",
+    "../api/environment",
     "../api/task_queue",
     "../api/transport:field_trial_based_config",
     "../api/transport:stun_types",
@@ -958,11 +959,10 @@ rtc_source_set("relay_port_factory_interface") {
   sources = [ "client/relay_port_factory_interface.h" ]
   deps = [
     ":port_allocator",
-    ":port_interface",
     "../api:packet_socket_factory",
+    "../api/environment",
     "../rtc_base:async_packet_socket",
     "../rtc_base:network",
-    "../rtc_base:refcount",
     "../rtc_base:threading",
   ]
 }

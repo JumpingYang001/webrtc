@@ -27,6 +27,8 @@
 #include "api/array_view.h"
 #include "api/async_dns_resolver.h"
 #include "api/candidate.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/packet_socket_factory.h"
 #include "api/rtc_error.h"
 #include "api/test/rtc_error_matchers.h"
@@ -85,7 +87,9 @@ using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::NotNull;
 using ::webrtc::AsyncListenSocket;
-using webrtc::IceCandidateType;
+using ::webrtc::CreateEnvironment;
+using ::webrtc::Environment;
+using ::webrtc::IceCandidateType;
 using ::webrtc::NAT_ADDR_RESTRICTED;
 using ::webrtc::NAT_OPEN_CONE;
 using ::webrtc::NAT_PORT_RESTRICTED;
@@ -559,12 +563,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   }
   std::unique_ptr<UDPPort> CreateUdpPort(const SocketAddress& addr,
                                          PacketSocketFactory* socket_factory) {
-    auto port = UDPPort::Create({.network_thread = &main_,
+    auto port = UDPPort::Create({.env = env_,
+                                 .network_thread = &main_,
                                  .socket_factory = socket_factory,
                                  .network = MakeNetwork(addr),
                                  .ice_username_fragment = username_,
-                                 .ice_password = password_,
-                                 .field_trials = &field_trials_},
+                                 .ice_password = password_},
                                 0, 0, true, std::nullopt);
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
@@ -575,12 +579,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
       const SocketAddress& link_local_addr,
       PacketSocketFactory* socket_factory) {
     auto port = UDPPort::Create(
-        {.network_thread = &main_,
+        {.env = env_,
+         .network_thread = &main_,
          .socket_factory = socket_factory,
          .network = MakeNetworkMultipleAddrs(global_addr, link_local_addr),
          .ice_username_fragment = username_,
-         .ice_password = password_,
-         .field_trials = &field_trials_},
+         .ice_password = password_},
         0, 0, true, std::nullopt);
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
@@ -590,12 +594,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   }
   std::unique_ptr<TCPPort> CreateTcpPort(const SocketAddress& addr,
                                          PacketSocketFactory* socket_factory) {
-    auto port = TCPPort::Create({.network_thread = &main_,
+    auto port = TCPPort::Create({.env = env_,
+                                 .network_thread = &main_,
                                  .socket_factory = socket_factory,
                                  .network = MakeNetwork(addr),
                                  .ice_username_fragment = username_,
-                                 .ice_password = password_,
-                                 .field_trials = &field_trials_},
+                                 .ice_password = password_},
                                 0, 0, true);
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
@@ -605,12 +609,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
       webrtc::PacketSocketFactory* socket_factory) {
     ServerAddresses stun_servers;
     stun_servers.insert(kStunAddr);
-    auto port = StunPort::Create({.network_thread = &main_,
+    auto port = StunPort::Create({.env = env_,
+                                  .network_thread = &main_,
                                   .socket_factory = socket_factory,
                                   .network = MakeNetwork(addr),
                                   .ice_username_fragment = username_,
-                                  .ice_password = password_,
-                                  .field_trials = &field_trials_},
+                                  .ice_password = password_},
                                  0, 0, stun_servers, std::nullopt);
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
@@ -638,7 +642,7 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
     webrtc::RelayServerConfig config;
     config.credentials = kRelayCredentials;
     ProtocolAddress server_address(server_addr, int_proto);
-    CreateRelayPortArgs args;
+    CreateRelayPortArgs args = {.env = env_};
     args.network_thread = &main_;
     args.socket_factory = socket_factory;
     args.network = MakeNetwork(addr);
@@ -646,7 +650,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
     args.password = password_;
     args.server_address = &server_address;
     args.config = &config;
-    args.field_trials = &field_trials_;
 
     auto port = TurnPort::Create(args, 0, 0);
     port->SetIceTiebreaker(kTiebreakerDefault);
@@ -889,12 +892,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
       absl::string_view username,
       absl::string_view password,
       const webrtc::FieldTrialsView* field_trials = nullptr) {
-    Port::PortParametersRef args = {.network_thread = &main_,
+    Port::PortParametersRef args = {.env = CreateEnvironment(field_trials),
+                                    .network_thread = &main_,
                                     .socket_factory = &socket_factory_,
                                     .network = MakeNetwork(addr),
                                     .ice_username_fragment = username,
-                                    .ice_password = password,
-                                    .field_trials = field_trials};
+                                    .ice_password = password};
     auto port = std::make_unique<TestPort>(args, 0, 0);
     port->SignalRoleConflict.connect(this, &PortTest::OnRoleConflict);
     return port;
@@ -913,12 +916,12 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   std::unique_ptr<TestPort> CreateTestPort(const webrtc::Network* network,
                                            absl::string_view username,
                                            absl::string_view password) {
-    Port::PortParametersRef args = {.network_thread = &main_,
+    Port::PortParametersRef args = {.env = env_,
+                                    .network_thread = &main_,
                                     .socket_factory = &socket_factory_,
                                     .network = network,
                                     .ice_username_fragment = username,
-                                    .ice_password = password,
-                                    .field_trials = nullptr};
+                                    .ice_password = password};
     auto port = std::make_unique<TestPort>(args, 0, 0);
     port->SignalRoleConflict.connect(this, &PortTest::OnRoleConflict);
     return port;
@@ -942,6 +945,7 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   webrtc::VirtualSocketServer* vss() { return ss_.get(); }
 
  private:
+  const Environment env_ = CreateEnvironment();
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.
@@ -961,7 +965,6 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
   std::string password_;
   bool role_conflict_;
   int ports_destroyed_;
-  webrtc::test::ScopedKeyValueConfig field_trials_;
 };
 
 void PortTest::TestConnectivity(absl::string_view name1,

@@ -25,6 +25,7 @@
 
 #include "absl/strings/string_view.h"
 #include "api/candidate.h"
+#include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "api/packet_socket_factory.h"
 #include "api/sequence_checker.h"
@@ -164,12 +165,16 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // A struct containing common arguments to creating a port. See also
   // CreateRelayPortArgs.
   struct PortParametersRef {
+    // TODO: bugs.webrtc.org/405883462 - Make Environment non-optional when
+    // provided by all callers.
+    std::optional<webrtc::Environment> env;
     webrtc::TaskQueueBase* network_thread;
     webrtc::PacketSocketFactory* socket_factory;
     const webrtc::Network* network;
     absl::string_view ice_username_fragment;
     absl::string_view ice_password;
-    const webrtc::FieldTrialsView* field_trials;
+    [[deprecated("bugs.webrtc.org/405883462")]] const webrtc::FieldTrialsView*
+        field_trials = nullptr;
   };
 
  protected:
@@ -459,6 +464,9 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
 
   void OnNetworkTypeChanged(const webrtc::Network* network);
 
+  // TODO: bugs.webrtc.org/405883462 - Make Environment non-optional and remove
+  // `field_trials_` when Environment is provided by all constructors.
+  const std::optional<webrtc::Environment> env_;
   webrtc::TaskQueueBase* const thread_;
   webrtc::PacketSocketFactory* const factory_;
   webrtc::AlwaysValidPointer<const webrtc::FieldTrialsView,

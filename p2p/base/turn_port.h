@@ -78,8 +78,7 @@ class TurnPort : public Port {
       return false;
     }
     // Do not connect to low-numbered ports. The default STUN port is 3478.
-    if (!AllowedTurnPort(args.server_address->address.port(),
-                         args.field_trials)) {
+    if (!AllowedTurnPort(args.server_address->address.port())) {
       RTC_LOG(LS_ERROR) << "Attempt to use TURN to connect to port "
                         << args.server_address->address.port();
       return false;
@@ -95,12 +94,16 @@ class TurnPort : public Port {
     }
     // Using `new` to access a non-public constructor.
     return absl::WrapUnique(
-        new TurnPort({.network_thread = args.network_thread,
+        new TurnPort({.env = args.env,
+                      .network_thread = args.network_thread,
                       .socket_factory = args.socket_factory,
                       .network = args.network,
                       .ice_username_fragment = args.username,
                       .ice_password = args.password,
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                       .field_trials = args.field_trials},
+#pragma clang diagnostic pop
                      socket, *args.server_address, args.config->credentials,
                      args.relative_priority, args.config->tls_alpn_protocols,
                      args.config->tls_elliptic_curves, args.turn_customizer,
@@ -117,12 +120,16 @@ class TurnPort : public Port {
     }
     // Using `new` to access a non-public constructor.
     return absl::WrapUnique(new TurnPort(
-        {.network_thread = args.network_thread,
+        {.env = args.env,
+         .network_thread = args.network_thread,
          .socket_factory = args.socket_factory,
          .network = args.network,
          .ice_username_fragment = args.username,
          .ice_password = args.password,
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
          .field_trials = args.field_trials},
+#pragma clang diagnostic pop
         min_port, max_port, *args.server_address, args.config->credentials,
         args.relative_priority, args.config->tls_alpn_protocols,
         args.config->tls_elliptic_curves, args.turn_customizer,
@@ -288,8 +295,7 @@ class TurnPort : public Port {
   typedef std::map<webrtc::Socket::Option, int> SocketOptionsMap;
   typedef std::set<webrtc::SocketAddress> AttemptedServerSet;
 
-  static bool AllowedTurnPort(int port,
-                              const webrtc::FieldTrialsView* field_trials);
+  static bool AllowedTurnPort(int port);
   void TryAlternateServer();
 
   bool CreateTurnClientSocket();

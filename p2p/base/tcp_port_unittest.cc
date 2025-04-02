@@ -17,6 +17,8 @@
 #include <vector>
 
 #include "api/candidate.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/units/time_delta.h"
 #include "p2p/base/basic_packet_socket_factory.h"
@@ -38,7 +40,6 @@
 #include "rtc_base/virtual_socket_server.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
-#include "test/scoped_key_value_config.h"
 #include "test/wait_until.h"
 
 using cricket::Connection;
@@ -48,6 +49,8 @@ using cricket::Port;
 using cricket::TCPPort;
 using ::testing::Eq;
 using ::testing::IsTrue;
+using ::webrtc::CreateEnvironment;
+using ::webrtc::Environment;
 using ::webrtc::SocketAddress;
 
 static int kTimeout = 1000;
@@ -102,12 +105,12 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
                                          bool allow_listen = true,
                                          int port_number = 0) {
     auto port = std::unique_ptr<TCPPort>(
-        TCPPort::Create({.network_thread = &main_,
+        TCPPort::Create({.env = env_,
+                         .network_thread = &main_,
                          .socket_factory = &socket_factory_,
                          .network = MakeNetwork(addr),
                          .ice_username_fragment = username_,
-                         .ice_password = password_,
-                         .field_trials = &field_trials_},
+                         .ice_password = password_},
                         port_number, port_number, allow_listen));
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
@@ -115,18 +118,19 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
 
   std::unique_ptr<TCPPort> CreateTCPPort(const webrtc::Network* network) {
     auto port = std::unique_ptr<TCPPort>(
-        TCPPort::Create({.network_thread = &main_,
+        TCPPort::Create({.env = env_,
+                         .network_thread = &main_,
                          .socket_factory = &socket_factory_,
                          .network = network,
                          .ice_username_fragment = username_,
-                         .ice_password = password_,
-                         .field_trials = &field_trials_},
+                         .ice_password = password_},
                         0, 0, true));
     port->SetIceTiebreaker(kTiebreakerDefault);
     return port;
   }
 
  protected:
+  const Environment env_ = CreateEnvironment();
   // When a "create port" helper method is called with an IP, we create a
   // Network with that IP and add it to this list. Using a list instead of a
   // vector so that when it grows, pointers aren't invalidated.
@@ -136,7 +140,6 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
   webrtc::BasicPacketSocketFactory socket_factory_;
   std::string username_;
   std::string password_;
-  webrtc::test::ScopedKeyValueConfig field_trials_;
 };
 
 TEST_F(TCPPortTest, TestTCPPortWithLocalhostAddress) {

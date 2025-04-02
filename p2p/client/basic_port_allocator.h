@@ -92,9 +92,7 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
 
   void SetVpnList(const std::vector<webrtc::NetworkMask>& vpn_list) override;
 
-  const webrtc::FieldTrialsView* field_trials() const {
-    return &env_.field_trials();
-  }
+  const webrtc::Environment& env() const { return env_; }
 
  private:
   bool MdnsObfuscationEnabled() const override;
