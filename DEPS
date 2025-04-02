@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': 'c87b2ac78e319fa0d37257c0cbff9c83c836c155',
+  'chromium_revision': '080be114093cadf6532fd0ce6c712f86d07d4610',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -64,24 +64,24 @@ vars = {
 deps = {
   # TODO(kjellander): Move this to be Android-only.
   'src/base':
-    'https://chromium.googlesource.com/chromium/src/base@e62aa1e0a80f69545c1d93a44f22ab9cfe0b91c3',
+    'https://chromium.googlesource.com/chromium/src/base@f2ba5fd49bdfa695d53498379bdca422d3e8e6a5',
   'src/build':
-    'https://chromium.googlesource.com/chromium/src/build@7f64565e570e9925cf81bddaa8404053fef63c78',
+    'https://chromium.googlesource.com/chromium/src/build@56ec42ee919f7a45a65db94be36fbf60ec6d15b0',
   'src/buildtools':
-    'https://chromium.googlesource.com/chromium/src/buildtools@299cb62c60f608d3b152fd3ba337f4e084e1a3b4',
+    'https://chromium.googlesource.com/chromium/src/buildtools@4b3b2242db3a2124c5251d4123eb424fafbbee7b',
   # Gradle 6.6.1. Used for testing Android Studio project generation for WebRTC.
   'src/examples/androidtests/third_party/gradle': {
     'url': 'https://chromium.googlesource.com/external/github.com/gradle/gradle.git@f2d1fb54a951d8b11d25748e4711bec8d128d7e3',
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@a049c8974891204ffeb50c49dd949e0dd8d81589',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@f58634676e3f78d24dc39d44b9588469399ca2cd',
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@66a91bf619258af2512b2d93216d7859395d3028',
+    'https://chromium.googlesource.com/chromium/src/testing@60d01c10308998a4bfe13f38ddb5142e6e190c19',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@ee428b2cc373a430f499005b782c9ed473fe10da',
+    'https://chromium.googlesource.com/chromium/src/third_party@4f26618a64d6c046b6a0166154a71b2b747b3eb0',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -165,11 +165,11 @@ deps = {
   'src/third_party/clang-format/script':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@37f6e68a107df43b7d7e044fd36a13cbae3413f2',
   'src/third_party/libc++/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@35a5aaad4ac1b87b4f2cc8bc16c2f9c7d9c83e3a',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@723abbda2053f44b185641e3557973dfdad5149b',
   'src/third_party/libc++abi/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@94c5d7a8edc09f0680aee57548c0b5d400c2840d',
   'src/third_party/llvm-libc/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc.git@23bef80461faf79b989a090c849f9965c98df463',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc.git@4b760d9a76f959f97c273217791a9b6b435ccd86',
   'src/third_party/libunwind/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git@e2e6f2a67e9420e770b014ce9bba476fa2ab9874',
 
@@ -311,7 +311,7 @@ deps = {
   'src/third_party/boringssl/src':
     'https://boringssl.googlesource.com/boringssl.git@c86127e656ae8b95622c79ba3d0fb35415502d53',
   'src/third_party/breakpad/breakpad':
-    'https://chromium.googlesource.com/breakpad/breakpad.git@657a441e5c1a818d4c10b7bafd431454e6614901',
+    'https://chromium.googlesource.com/breakpad/breakpad.git@884742b238232b434fa03a284372ee3b5bb96a08',
   'src/third_party/catapult':
     'https://chromium.googlesource.com/catapult.git@8010a1b2f59fe654ca2a5966902a5ebd38d00cb7',
   'src/third_party/ced/src': {
@@ -332,7 +332,7 @@ deps = {
   'src/third_party/flatbuffers/src':
     'https://chromium.googlesource.com/external/github.com/google/flatbuffers.git@8db59321d9f02cdffa30126654059c7d02f70c32',
   'src/third_party/grpc/src': {
-    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@c8811240b95fbaffd6487bfeec67fa114c934bc2',
+    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@71d303d18f35c9f61d8805f5950e201d0017d781',
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -412,7 +412,7 @@ deps = {
   'src/third_party/libFuzzer/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt/lib/fuzzer.git@e31b99917861f891308269c36a32363b120126bb',
   'src/third_party/fuzztest/src':
-    'https://chromium.googlesource.com/external/github.com/google/fuzztest.git@998cda318c6f15c7c8041a9d5f91afe6613a49ab',
+    'https://chromium.googlesource.com/external/github.com/google/fuzztest.git@33bb3d2040f60192c76f331879d1d57ae836e135',
   'src/third_party/libjpeg_turbo':
     'https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@e14cbfaa85529d47f9f55b0f104a579c1061f9ad',
   'src/third_party/libsrtp':
@@ -485,7 +485,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@1b9b9ace3d4615a467854f28ff11496ab4abf4a0',
+    'https://chromium.googlesource.com/chromium/src/tools@a4368045f0b99f0f071c220497f80b335d59277e',
 
   'src/third_party/espresso': {
       'packages': [
@@ -622,15 +622,15 @@ deps = {
       'packages': [
         {
           'package': 'infra/tools/luci/cas/${{platform}}',
-          'version': 'git_revision:7a44078a668bc9f75dd6e40a332450e76f2f7399',
+          'version': 'git_revision:eef34c694bdab861ded59a7e34ddf4d97e013c90',
         },
         {
           'package': 'infra/tools/luci/isolate/${{platform}}',
-          'version': 'git_revision:7a44078a668bc9f75dd6e40a332450e76f2f7399',
+          'version': 'git_revision:eef34c694bdab861ded59a7e34ddf4d97e013c90',
         },
         {
           'package': 'infra/tools/luci/swarming/${{platform}}',
-          'version': 'git_revision:7a44078a668bc9f75dd6e40a332450e76f2f7399',
+          'version': 'git_revision:eef34c694bdab861ded59a7e34ddf4d97e013c90',
         }
       ],
       'dep_type': 'cipd',
