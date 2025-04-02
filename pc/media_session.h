@@ -19,7 +19,6 @@
 
 #include "api/media_types.h"
 #include "api/rtc_error.h"
-#include "media/base/codec_list.h"
 #include "media/base/stream_params.h"
 #include "p2p/base/ice_credentials_iterator.h"
 #include "p2p/base/transport_description.h"
@@ -118,7 +117,6 @@ class MediaSessionDescriptionFactory {
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       const cricket::RtpHeaderExtensions& header_extensions,
-      const cricket::CodecList& codecs,
       cricket::StreamParamsVec* current_streams,
       SessionDescription* desc,
       cricket::IceCredentialsIterator* ice_credentials) const;
@@ -148,7 +146,6 @@ class MediaSessionDescriptionFactory {
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       const cricket::TransportInfo* bundle_transport,
-      const cricket::CodecList& codecs,
       const cricket::RtpHeaderExtensions& header_extensions,
       cricket::StreamParamsVec* current_streams,
       SessionDescription* answer,

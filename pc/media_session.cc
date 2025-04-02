@@ -29,7 +29,6 @@
 #include "api/rtp_transceiver_direction.h"
 #include "api/sctp_transport_interface.h"
 #include "media/base/codec.h"
-#include "media/base/codec_list.h"
 #include "media/base/media_constants.h"
 #include "media/base/media_engine.h"
 #include "media/base/rid_description.h"
@@ -734,16 +733,6 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
   cricket::StreamParamsVec current_streams =
       GetCurrentStreamParams(current_active_contents);
 
-  cricket::CodecList offer_audio_codecs;
-  cricket::CodecList offer_video_codecs;
-
-  // TODO: issues.webrtc.org/360058654 - Get codecs when we know the right mid.
-  RTCError error = codec_lookup_helper_->CodecVendor("")->GetCodecsForOffer(
-      current_active_contents, offer_audio_codecs, offer_video_codecs);
-  if (!error.ok()) {
-    return error;
-  }
-
   AudioVideoRtpHeaderExtensions extensions_with_ids =
       GetOfferedRtpHeaderExtensionsWithIds(
           current_active_contents, session_options.offer_extmap_allow_mixed,
@@ -762,6 +751,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
       current_content = &current_description->contents()[msection_index];
       // Media type must match unless this media section is being recycled.
     }
+    RTCError error;
     switch (media_description_options.type) {
       case webrtc::MediaType::AUDIO:
       case webrtc::MediaType::VIDEO:
@@ -771,9 +761,6 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
             media_description_options.type == webrtc::MediaType::AUDIO
                 ? extensions_with_ids.audio
                 : extensions_with_ids.video,
-            media_description_options.type == webrtc::MediaType::AUDIO
-                ? offer_audio_codecs
-                : offer_video_codecs,
             &current_streams, offer.get(), &ice_credentials);
         break;
       case webrtc::MediaType::DATA:
@@ -882,22 +869,6 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
     }
   }
 
-  // Get list of all possible codecs that respects existing payload type
-  // mappings and uses a single payload type space.
-  //
-  // Note that these lists may be further filtered for each m= section; this
-  // step is done just to establish the payload type mappings shared by all
-  // sections.
-  cricket::CodecList answer_audio_codecs;
-  cricket::CodecList answer_video_codecs;
-  // TODO: issues.webrtc.org/360058654 - do this when we have the MID.
-  RTCError error = codec_lookup_helper_->CodecVendor("")->GetCodecsForAnswer(
-      current_active_contents, *offer, answer_audio_codecs,
-      answer_video_codecs);
-  if (!error.ok()) {
-    return error;
-  }
-
   auto answer = std::make_unique<SessionDescription>();
 
   // If the offer supports BUNDLE, and we want to use it too, create a BUNDLE
@@ -958,15 +929,13 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
     cricket::RtpHeaderExtensions header_extensions =
         RtpHeaderExtensionsFromCapabilities(
             UnstoppedRtpHeaderExtensionCapabilities(header_extensions_in));
+    RTCError error;
     switch (media_description_options.type) {
       case webrtc::MediaType::AUDIO:
       case webrtc::MediaType::VIDEO:
         error = AddRtpContentForAnswer(
             media_description_options, session_options, offer_content, offer,
             current_content, current_description, bundle_transport,
-            media_description_options.type == webrtc::MediaType::AUDIO
-                ? answer_audio_codecs
-                : answer_video_codecs,
             header_extensions, &current_streams, answer.get(),
             &ice_credentials);
         break;
@@ -1195,7 +1164,6 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
     const ContentInfo* current_content,
     const SessionDescription* current_description,
     const cricket::RtpHeaderExtensions& header_extensions,
-    const cricket::CodecList& codecs,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* session_description,
     cricket::IceCredentialsIterator* ice_credentials) const {
@@ -1207,7 +1175,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
   RTCErrorOr<std::vector<cricket::Codec>> error_or_filtered_codecs =
       codec_lookup_helper_->CodecVendor(mid)->GetNegotiatedCodecsForOffer(
           media_description_options, session_options, current_content,
-          *codec_lookup_helper_->PayloadTypeSuggester(), codecs);
+          *codec_lookup_helper_->PayloadTypeSuggester());
   if (!error_or_filtered_codecs.ok()) {
     return error_or_filtered_codecs.MoveError();
   }
@@ -1327,7 +1295,6 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
     const ContentInfo* current_content,
     const SessionDescription* current_description,
     const cricket::TransportInfo* bundle_transport,
-    const cricket::CodecList& codecs,
     const cricket::RtpHeaderExtensions& header_extensions,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* answer,
@@ -1371,7 +1338,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
           ->GetNegotiatedCodecsForAnswer(
               media_description_options, session_options, offer_rtd, answer_rtd,
               current_content, offer_content_description->codecs(),
-              *codec_lookup_helper_->PayloadTypeSuggester(), codecs);
+              *codec_lookup_helper_->PayloadTypeSuggester());
   if (!error_or_filtered_codecs.ok()) {
     return error_or_filtered_codecs.MoveError();
   }

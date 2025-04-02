@@ -11,11 +11,17 @@
 #ifndef RTC_BASE_NET_TEST_HELPERS_H_
 #define RTC_BASE_NET_TEST_HELPERS_H_
 
+#include "rtc_base/system/rtc_export.h"
+
 namespace webrtc {
 
 bool HasIPv4Enabled();
-bool HasIPv6Enabled();
+RTC_EXPORT bool HasIPv6Enabled();
 
 }  // namespace webrtc
+
+namespace rtc {
+using webrtc::HasIPv6Enabled;
+}
 
 #endif  // RTC_BASE_NET_TEST_HELPERS_H_

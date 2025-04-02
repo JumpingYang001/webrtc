@@ -1726,7 +1726,7 @@ TEST_F(SdpOfferAnswerTest, PayloadTypeMatchingWithSubsequentOfferAnswer) {
   codecs = media_description2->codecs();
   ASSERT_EQ(codecs.size(), 2u);
   EXPECT_EQ(codecs[1].name, av1.name);
-  EXPECT_NE(codecs[1].id, av1.id);
+  // At this point, the value 127 may or may not have been chosen.
 
   // 4. O/A triggered by remote. This "locks in" the payload type.
   auto offer3 = callee->CreateOfferAndSetAsLocal();
