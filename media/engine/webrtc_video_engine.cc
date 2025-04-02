@@ -2518,6 +2518,7 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::GetPerLayerVideoSenderInfos(
       for (uint32_t ssrc : parameters_.config.rtp.ssrcs) {
         common_info.add_ssrc(ssrc);
       }
+      common_info.encoding_index = 0;
       common_info.active =
           IsActiveFromEncodings(std::nullopt, rtp_parameters_.encodings);
       common_info.framerate_sent = stats.encode_frame_rate;
