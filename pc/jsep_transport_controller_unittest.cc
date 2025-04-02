@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
 #include "api/dtls_transport_interface.h"
 #include "api/environment/environment.h"

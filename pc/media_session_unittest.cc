@@ -74,6 +74,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Gt;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointwise;
@@ -111,7 +112,7 @@ cricket::Codec CreateRedAudioCodec(absl::string_view encoding_id) {
 const cricket::Codec kAudioCodecs1[] = {
     cricket::CreateAudioCodec(111, "opus", 48000, 2),
     CreateRedAudioCodec("111"),
-    cricket::CreateAudioCodec(102, "G722", 16000, 1),
+    cricket::CreateAudioCodec(103, "G722", 16000, 1),
     cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
     cricket::CreateAudioCodec(8, "PCMA", 8000, 1),
     cricket::CreateAudioCodec(107, "CN", 48000, 1)};
@@ -123,7 +124,7 @@ const cricket::Codec kAudioCodecs2[] = {
 };
 
 const cricket::Codec kAudioCodecsAnswer[] = {
-    cricket::CreateAudioCodec(102, "G722", 16000, 1),
+    cricket::CreateAudioCodec(103, "G722", 16000, 1),
     cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
 };
 
@@ -3410,6 +3411,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
   std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  ASSERT_THAT(acd->codecs().size(), Gt(0));
   int used_pl_type = acd->codecs()[0].id;
   f2_codecs[0].id = used_pl_type;  // Set the payload type for H264.
   AddRtxCodec(cricket::CreateVideoRtxCodec(125, used_pl_type), &f2_codecs);
@@ -4703,6 +4705,8 @@ TEST_F(MediaSessionDescriptionFactoryTest, CreateAnswerWithLocalCodecParams) {
   auto answer_acd = answer->contents()[0].media_description();
   auto answer_vcd = answer->contents()[1].media_description();
   // Use the parameters from the local codecs.
+  ASSERT_TRUE(answer_acd);
+  ASSERT_THAT(answer_acd->codecs().size(), Gt(0));
   EXPECT_TRUE(answer_acd->codecs()[0].GetParam(audio_param_name, &value));
   EXPECT_EQ(audio_value2, value);
   EXPECT_TRUE(answer_vcd->codecs()[0].GetParam(video_param_name, &value));
