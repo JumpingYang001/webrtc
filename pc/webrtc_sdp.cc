@@ -1416,7 +1416,7 @@ void BuildMediaLine(const webrtc::MediaType media_type,
                                                   : kSdpMediaTypeVideo;
     for (const cricket::Codec& codec : media_desc->codecs()) {
       fmt.append(" ");
-      fmt.append(rtc::ToString(codec.id));
+      fmt.append(absl::StrCat(codec.id));
     }
   } else if (media_type == webrtc::MediaType::DATA) {
     type = kSdpMediaTypeData;
@@ -1425,7 +1425,7 @@ void BuildMediaLine(const webrtc::MediaType media_type,
       fmt.append(" ");
 
       if (sctp_data_desc->use_sctpmap()) {
-        fmt.append(rtc::ToString(sctp_data_desc->port()));
+        fmt.append(absl::StrCat(sctp_data_desc->port()));
       } else {
         fmt.append(kDefaultSctpmapProtocol);
       }
@@ -1459,7 +1459,7 @@ void BuildMediaLine(const webrtc::MediaType media_type,
   if (content_info->rejected || content_info->bundle_only) {
     port = kMediaPortRejected;
   } else if (!media_desc->connection_address().IsNil()) {
-    port = rtc::ToString(media_desc->connection_address().port());
+    port = absl::StrCat(media_desc->connection_address().port());
   }
 
   // Add the m and c lines.
@@ -1671,7 +1671,7 @@ void BuildRtpContentAttributes(const MediaContentDescription* media_desc,
       InitAttrLine(kAttributeSsrcGroup, &os);
       os << kSdpDelimiterColon << ssrc_group.semantics;
       for (uint32_t ssrc : ssrc_group.ssrcs) {
-        os << kSdpDelimiterSpace << rtc::ToString(ssrc);
+        os << kSdpDelimiterSpace << absl::StrCat(ssrc);
       }
       AddLine(os.str(), message);
     }

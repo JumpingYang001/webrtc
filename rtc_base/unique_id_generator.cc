@@ -53,7 +53,7 @@ UniqueStringGenerator::UniqueStringGenerator(ArrayView<std::string> known_ids) {
 UniqueStringGenerator::~UniqueStringGenerator() = default;
 
 std::string UniqueStringGenerator::GenerateString() {
-  return rtc::ToString(unique_number_generator_.GenerateNumber());
+  return absl::StrCat(unique_number_generator_.GenerateNumber());
 }
 
 bool UniqueStringGenerator::AddKnownId(absl::string_view value) {

@@ -828,7 +828,7 @@ bool BasicNetworkManager::CreateNetworks(
                                        wcslen(adapter_addrs->Description));
 
       for (; address; address = address->Next) {
-        std::string name = rtc::ToString(count);
+        std::string name = absl::StrCat(count);
 #if !defined(NDEBUG)
         name = ToUtf8(adapter_addrs->FriendlyName,
                       wcslen(adapter_addrs->FriendlyName));

@@ -517,9 +517,6 @@ void Log(const LogArgType* fmt, ...) {
       case LogArgType::kDouble:
         log_message.stream() << va_arg(args, double);
         break;
-      case LogArgType::kLongDouble:
-        log_message.stream() << va_arg(args, long double);
-        break;
       case LogArgType::kCharP: {
         const char* s = va_arg(args, const char*);
         log_message.stream() << (s ? s : "(null)");

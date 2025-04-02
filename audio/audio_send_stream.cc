@@ -38,7 +38,6 @@
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/strings/audio_format_to_string.h"
 #include "rtc_base/trace_event.h"
 
 namespace webrtc {
@@ -570,7 +569,7 @@ bool AudioSendStream::SetupSendCodec(const Config& new_config) {
 
   if (!encoder) {
     RTC_DLOG(LS_ERROR) << "Unable to create encoder for "
-                       << rtc::ToString(spec.format);
+                       << absl::StrCat(spec.format);
     return false;
   }
 

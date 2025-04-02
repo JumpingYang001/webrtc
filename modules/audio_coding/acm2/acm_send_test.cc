@@ -71,7 +71,7 @@ bool AcmSendTestOldApi::RegisterCodec(absl::string_view payload_name,
     }
     format.num_channels = 2;
   }
-  format.parameters["ptime"] = rtc::ToString(rtc::CheckedDivExact(
+  format.parameters["ptime"] = absl::StrCat(rtc::CheckedDivExact(
       frame_size_samples, rtc::CheckedDivExact(clockrate_hz, 1000)));
   auto factory = CreateBuiltinAudioEncoderFactory();
   acm_->SetEncoder(

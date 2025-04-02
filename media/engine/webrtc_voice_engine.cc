@@ -93,7 +93,6 @@
 #include "rtc_base/network_route.h"
 #include "rtc_base/race_checker.h"
 #include "rtc_base/string_encode.h"
-#include "rtc_base/strings/audio_format_to_string.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/strings/string_format.h"
 #include "rtc_base/system/file_wrapper.h"
@@ -347,7 +346,7 @@ bool CheckRedParameters(
     return false;
   }
   for (auto pt : redundant_payloads) {
-    if (pt != rtc::ToString(send_codec_spec.payload_type)) {
+    if (pt != absl::StrCat(send_codec_spec.payload_type)) {
       return false;
     }
   }
@@ -412,7 +411,7 @@ std::vector<Codec> LegacyCollectCodecs(
     if (codec.name == kOpusCodecName) {
       if (allocate_pt) {
         std::string red_fmtp =
-            rtc::ToString(codec.id) + "/" + rtc::ToString(codec.id);
+            absl::StrCat(codec.id) + "/" + absl::StrCat(codec.id);
         cricket::Codec red_codec = CreateAudioCodec(
             {kRedCodecName, codec.clockrate, codec.channels, {{"", red_fmtp}}});
         red_codec.id = pt_mapper.SuggestMapping(red_codec, nullptr).value();
@@ -2237,7 +2236,7 @@ bool WebRtcVoiceReceiveChannel::SetRecvCodecs(
     if (!IsCodec(codec, kCnCodecName) && !IsCodec(codec, kDtmfCodecName) &&
         !IsCodec(codec, kRedCodecName) &&
         !engine()->decoder_factory_->IsSupportedDecoder(format)) {
-      RTC_LOG(LS_ERROR) << "Unsupported codec: " << rtc::ToString(format);
+      RTC_LOG(LS_ERROR) << "Unsupported codec: " << absl::StrCat(format);
       return false;
     }
     // We allow adding new codecs but don't allow changing the payload type of

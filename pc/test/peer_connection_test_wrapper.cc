@@ -450,7 +450,7 @@ PeerConnectionTestWrapper::GetUserMedia(
     bool video,
     webrtc::Resolution resolution) {
   std::string stream_id =
-      kStreamIdBase + rtc::ToString(num_get_user_media_calls_++);
+      kStreamIdBase + absl::StrCat(num_get_user_media_calls_++);
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
       peer_connection_factory_->CreateLocalMediaStream(stream_id);
 

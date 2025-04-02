@@ -1802,7 +1802,7 @@ class WebRtcSdpTest : public ::testing::Test {
                             int expected_value) {
     webrtc::CodecParameterMap::const_iterator found = params.find(name);
     ASSERT_TRUE(found != params.end());
-    EXPECT_EQ(found->second, rtc::ToString(expected_value));
+    EXPECT_EQ(found->second, absl::StrCat(expected_value));
   }
 
   void TestDeserializeCodecParams(const CodecParams& params,
@@ -2162,7 +2162,7 @@ TEST_F(WebRtcSdpTest, SerializeWithSctpDataChannelAndNewPort) {
   expected_sdp.append(kSdpSctpDataChannelString);
 
   absl::StrReplaceAll(
-      {{rtc::ToString(kDefaultSctpPort), rtc::ToString(kNewPort)}},
+      {{absl::StrCat(kDefaultSctpPort), absl::StrCat(kNewPort)}},
       &expected_sdp);
 
   EXPECT_EQ(expected_sdp, message);
@@ -2913,7 +2913,7 @@ TEST_F(WebRtcSdpTest, DeserializeSdpWithSctpDataChannelAndUnusualPort) {
   std::string sdp_with_data = kSdpString;
   sdp_with_data.append(kSdpSctpDataChannelString);
   absl::StrReplaceAll(
-      {{rtc::ToString(kDefaultSctpPort), rtc::ToString(kUnusualSctpPort)}},
+      {{absl::StrCat(kDefaultSctpPort), absl::StrCat(kUnusualSctpPort)}},
       &sdp_with_data);
   JsepSessionDescription jdesc_output(kDummyType);
 
@@ -2936,7 +2936,7 @@ TEST_F(WebRtcSdpTest,
   std::string sdp_with_data = kSdpString;
   sdp_with_data.append(kSdpSctpDataChannelStringWithSctpPort);
   absl::StrReplaceAll(
-      {{rtc::ToString(kDefaultSctpPort), rtc::ToString(kUnusualSctpPort)}},
+      {{absl::StrCat(kDefaultSctpPort), absl::StrCat(kUnusualSctpPort)}},
       &sdp_with_data);
   JsepSessionDescription jdesc_output(kDummyType);
 

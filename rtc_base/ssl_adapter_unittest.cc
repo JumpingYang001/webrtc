@@ -378,7 +378,7 @@ TEST_F(SSLAdapterTestTLS_RSA, TestTLSTransferWithBlockedSocket) {
   // Note that this may not occur immediately since there may be some amount of
   // intermediate buffering (either in our code or in BoringSSL).
   for (int i = 0; i < 1024; ++i) {
-    std::string message = "Hello, world: " + rtc::ToString(i);
+    std::string message = "Hello, world: " + absl::StrCat(i);
     rv = client_->Send(message);
     if (rv != static_cast<int>(message.size())) {
       // This test assumes either the whole message or none of it is sent.

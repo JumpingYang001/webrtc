@@ -73,7 +73,6 @@ rtc_library("call_interfaces") {
     "../modules/async_audio_processing",
     "../modules/rtp_rtcp",
     "../modules/rtp_rtcp:rtp_rtcp_format",
-    "../rtc_base:audio_format_to_string",
     "../rtc_base:checks",
     "../rtc_base:copy_on_write_buffer",
     "../rtc_base:stringutils",

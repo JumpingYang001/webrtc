@@ -85,7 +85,7 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
   std::unique_ptr<cricket::FakeIceTransport> MakeIceTransport(
       cricket::IceRole role) {
     auto ice_transport = std::make_unique<cricket::FakeIceTransport>(
-        "fake_" + rtc::ToString(static_cast<int>(role)), 0);
+        "fake_" + absl::StrCat(static_cast<int>(role)), 0);
     ice_transport->SetAsync(true);
     ice_transport->SetAsyncDelay(0);
     ice_transport->SetIceRole(role);

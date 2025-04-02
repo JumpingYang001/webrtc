@@ -653,7 +653,6 @@ rtc_library("rtc_audio_video") {
     "../modules/video_coding:video_coding_utility",
     "../modules/video_coding:webrtc_vp9_helpers",
     "../modules/video_coding/svc:scalability_mode_util",
-    "../rtc_base:audio_format_to_string",
     "../rtc_base:buffer",
     "../rtc_base:byte_order",
     "../rtc_base:checks",

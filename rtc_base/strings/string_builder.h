@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "rtc_base/string_encode.h"
@@ -98,47 +99,42 @@ class StringBuilder {
   StringBuilder& operator<<(char c) = delete;
 
   StringBuilder& operator<<(int i) {
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(unsigned i) {
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(long i) {  // NOLINT
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(long long i) {  // NOLINT
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(unsigned long i) {  // NOLINT
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(unsigned long long i) {  // NOLINT
-    str_ += rtc::ToString(i);
+    str_ += absl::StrCat(i);
     return *this;
   }
 
   StringBuilder& operator<<(float f) {
-    str_ += rtc::ToString(f);
+    str_ += absl::StrCat(f);
     return *this;
   }
 
   StringBuilder& operator<<(double f) {
-    str_ += rtc::ToString(f);
-    return *this;
-  }
-
-  StringBuilder& operator<<(long double f) {
-    str_ += rtc::ToString(f);
+    str_ += absl::StrCat(f);
     return *this;
   }
 

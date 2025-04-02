@@ -203,7 +203,7 @@ void MergeCodecs(const CodecList& reference_codecs,
       }
 
       rtx_codec.params[kCodecParamAssociatedPayloadType] =
-          rtc::ToString(matching_codec->id);
+          absl::StrCat(matching_codec->id);
       used_pltypes->FindAndSetIdUsed(&rtx_codec);
       offered_codecs.push_back(rtx_codec);
     } else if (reference_codec.GetResiliencyType() ==
@@ -223,8 +223,8 @@ void MergeCodecs(const CodecList& reference_codecs,
         }
 
         red_codec.params[kCodecParamNotInNameValueFormat] =
-            rtc::ToString(matching_codec->id) + "/" +
-            rtc::ToString(matching_codec->id);
+            absl::StrCat(matching_codec->id) + "/" +
+            absl::StrCat(matching_codec->id);
       }
       used_pltypes->FindAndSetIdUsed(&red_codec);
       offered_codecs.push_back(red_codec);
@@ -276,7 +276,7 @@ CodecList MatchCodecPreference(
           filtered_codecs.push_back(*found_codec_with_correct_pt);
           red_was_added = is_red_codec ? true : red_was_added;
         }
-        std::string id = rtc::ToString(found_codec_with_correct_pt->id);
+        std::string id = absl::StrCat(found_codec_with_correct_pt->id);
         // Search for the matching rtx or red codec.
         if (want_red || want_rtx) {
           for (const auto& codec : codecs) {

@@ -252,14 +252,14 @@ void Candidate::ComputeFoundation(const SocketAddress& base_address,
   // number, called the tie-breaker, uniformly distributed between 0 and (2**64)
   // - 1 (that is, a 64-bit positive integer).  This number is used in
   // connectivity checks to detect and repair this case [...]
-  sb << rtc::ToString(tie_breaker);
-  foundation_ = rtc::ToString(webrtc::ComputeCrc32(sb.Release()));
+  sb << absl::StrCat(tie_breaker);
+  foundation_ = absl::StrCat(webrtc::ComputeCrc32(sb.Release()));
 }
 
 void Candidate::ComputePrflxFoundation() {
   RTC_DCHECK(is_prflx());
   RTC_DCHECK(!id_.empty());
-  foundation_ = rtc::ToString(webrtc::ComputeCrc32(id_));
+  foundation_ = absl::StrCat(webrtc::ComputeCrc32(id_));
 }
 
 void Candidate::Assign(std::string& s, absl::string_view view) {

@@ -1456,7 +1456,7 @@ void RTCStatsCollector::ProduceDataChannelStats_n(
   std::vector<DataChannelStats> data_stats = pc_->GetDataChannelStats();
   for (const auto& stats : data_stats) {
     auto data_channel_stats = std::make_unique<RTCDataChannelStats>(
-        "D" + rtc::ToString(stats.internal_id), timestamp);
+        "D" + absl::StrCat(stats.internal_id), timestamp);
     data_channel_stats->label = std::move(stats.label);
     data_channel_stats->protocol = std::move(stats.protocol);
     if (stats.id >= 0) {

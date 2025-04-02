@@ -46,7 +46,7 @@ class FakeNetworkManager : public NetworkManagerBase {
 
   void AddInterface(const SocketAddress& iface) {
     // Ensure a unique name for the interface if its name is not given.
-    AddInterface(iface, "test" + rtc::ToString(next_index_++));
+    AddInterface(iface, "test" + absl::StrCat(next_index_++));
   }
 
   void AddInterface(const SocketAddress& iface, absl::string_view if_name) {

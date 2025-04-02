@@ -23,7 +23,6 @@
 #include "api/environment/environment.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/strings/audio_format_to_string.h"
 
 namespace webrtc {
 
@@ -65,7 +64,7 @@ AudioDecoder* DecoderDatabase::DecoderInfo::GetDecoder() const {
     RTC_DCHECK(factory_);
     decoder_ = factory_->Create(env_, audio_format_, codec_pair_id_);
   }
-  RTC_DCHECK(decoder_) << "Failed to create: " << rtc::ToString(audio_format_);
+  RTC_DCHECK(decoder_) << "Failed to create: " << absl::StrCat(audio_format_);
   return decoder_.get();
 }
 

@@ -198,20 +198,5 @@ bool FromString(absl::string_view s, bool* b) {
   }
   return false;
 }
+
 }  // namespace webrtc
-
-namespace rtc {
-template <>
-std::string ToString(bool b) {
-  return b ? "true" : "false";
-}
-
-template <>
-std::string ToString(long double d) {
-  char buf[32];
-  const int len = std::snprintf(&buf[0], arraysize(buf), "%Lg", d);
-  RTC_DCHECK_LE(len, arraysize(buf));
-  return std::string(&buf[0], len);
-}
-
-}  // namespace rtc

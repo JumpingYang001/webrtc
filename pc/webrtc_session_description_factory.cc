@@ -305,7 +305,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateOffer(
   RTC_DCHECK(session_version_ + 1 > session_version_);
   auto offer = std::make_unique<JsepSessionDescription>(
       SdpType::kOffer, std::move(desc), session_id_,
-      rtc::ToString(session_version_++));
+      absl::StrCat(session_version_++));
   if (sdp_info_->local_description()) {
     for (const cricket::MediaDescriptionOptions& options :
          request.options.media_description_options) {
@@ -365,7 +365,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateAnswer(
   RTC_DCHECK(session_version_ + 1 > session_version_);
   auto answer = std::make_unique<JsepSessionDescription>(
       SdpType::kAnswer, std::move(desc), session_id_,
-      rtc::ToString(session_version_++));
+      absl::StrCat(session_version_++));
   if (sdp_info_->local_description()) {
     // Include all local ICE candidates in the SessionDescription unless
     // the remote peer has requested an ICE restart.

@@ -49,12 +49,12 @@ const int kBalancedLowFrameRateFps = 10;
 
 std::string BalancedFieldTrialConfig() {
   return "WebRTC-Video-BalancedDegradationSettings/pixels:" +
-         rtc::ToString(kBalancedLowResolutionPixels) + "|" +
-         rtc::ToString(kBalancedMediumResolutionPixels) + "|" +
-         rtc::ToString(kBalancedHighResolutionPixels) +
-         ",fps:" + rtc::ToString(kBalancedLowFrameRateFps) + "|" +
-         rtc::ToString(kBalancedMediumFrameRateFps) + "|" +
-         rtc::ToString(kBalancedHighFrameRateFps) + "/";
+         absl::StrCat(kBalancedLowResolutionPixels) + "|" +
+         absl::StrCat(kBalancedMediumResolutionPixels) + "|" +
+         absl::StrCat(kBalancedHighResolutionPixels) +
+         ",fps:" + absl::StrCat(kBalancedLowFrameRateFps) + "|" +
+         absl::StrCat(kBalancedMediumFrameRateFps) + "|" +
+         absl::StrCat(kBalancedHighFrameRateFps) + "/";
 }
 
 // Responsible for adjusting the inputs to VideoStreamAdapter (SetInput), such

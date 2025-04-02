@@ -18,40 +18,19 @@
 #include <type_traits>
 #include <vector>
 
+#include "absl/base/macros.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/string_to_number.h"
-namespace rtc {
-template <typename T,
-          typename std::enable_if<
-              !std::is_pointer<T>::value ||
-              std::is_convertible<T, const char*>::value>::type* = nullptr>
-std::string ToString(T value) {
-  return {absl::StrCat(value)};
-}
-template <>
-std::string ToString(bool b);
-template <>
-std::string ToString(long double t);
-template <typename T,
-          typename std::enable_if<
-              std::is_pointer<T>::value &&
-              !std::is_convertible<T, const char*>::value>::type* = nullptr>
-std::string ToString(T p) {
-  char buf[32];
-  const int len = std::snprintf(&buf[0], std::size(buf), "%p", p);
-  RTC_DCHECK_LE(len, std::size(buf));
-  return std::string(&buf[0], len);
-}
-}  // namespace rtc
+#include "rtc_base/strings/string_format.h"
 
 namespace webrtc {
 
-//////////////////////////////////////////////////////////////////////
-// String Encoding Utilities
-//////////////////////////////////////////////////////////////////////
+inline std::string BoolToString(bool b) {
+  return b ? "true" : "false";
+}
 
 std::string hex_encode(absl::string_view str);
 std::string hex_encode_with_delimiter(absl::string_view source, char delimiter);
@@ -128,6 +107,43 @@ using ::webrtc::hex_encode_with_delimiter;
 using ::webrtc::split;
 using ::webrtc::tokenize;
 using ::webrtc::tokenize_first;
+
+namespace internal {
+template <typename T, typename = void>
+struct is_absl_strcat_callable : std::false_type {};
+
+template <typename T>
+struct is_absl_strcat_callable<
+    T,
+    std::void_t<decltype(absl::StrCat(std::declval<T>()))>> : std::true_type {};
+}  // namespace internal
+
+template <typename T>
+ABSL_DEPRECATE_AND_INLINE()
+inline auto ToString(T value) ->
+    typename std::enable_if<!std::is_same_v<T, bool> &&
+                                internal::is_absl_strcat_callable<T>::value,
+                            std::string>::type {
+  return absl::StrCat(value);
+}
+
+template <typename T>
+ABSL_DEPRECATE_AND_INLINE()
+inline auto ToString(T p) ->
+    typename std::enable_if<!internal::is_absl_strcat_callable<T>::value &&
+                                std::is_pointer<T>::value,
+                            std::string>::type {
+  return webrtc::StringFormat("%p", p);
+}
+
+template <typename T>
+ABSL_DEPRECATE_AND_INLINE()
+inline auto ToString(T value) ->
+    typename std::enable_if<!std::is_pointer_v<T> && std::is_same_v<T, bool>,
+                            std::string>::type {
+  return webrtc::BoolToString(value);
+}
+
 }  // namespace rtc
 
 #endif  // RTC_BASE_STRING_ENCODE_H__

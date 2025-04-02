@@ -480,7 +480,7 @@ void TestStereo::RegisterSendCodec(char side,
   const int clockrate_hz = absl::EqualsIgnoreCase(codec_name, "g722")
                                ? sampling_freq_hz / 2
                                : sampling_freq_hz;
-  const std::string ptime = rtc::ToString(rtc::CheckedDivExact(
+  const std::string ptime = absl::StrCat(rtc::CheckedDivExact(
       pack_size, rtc::CheckedDivExact(sampling_freq_hz, 1000)));
   CodecParameterMap params = {{"ptime", ptime}};
   RTC_CHECK(channels == 1 || channels == 2);
@@ -489,7 +489,7 @@ void TestStereo::RegisterSendCodec(char side,
       params["stereo"] = "1";
     }
     channels = 2;
-    params["maxaveragebitrate"] = rtc::ToString(rate);
+    params["maxaveragebitrate"] = absl::StrCat(rate);
   }
   auto encoder = encoder_factory->Create(
       env_, SdpAudioFormat(codec_name, clockrate_hz, channels, params),

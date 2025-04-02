@@ -14,12 +14,12 @@
 
 #include "rtc_base/string_encode.h"
 
-using rtc::ToString;
+using absl::StrCat;
 
 std::string int2str(int i) {
-  return ToString(i);
+  return absl::StrCat(i);
 }
 
 std::string size_t2str(size_t i) {
-  return ToString(i);
+  return absl::StrCat(i);
 }

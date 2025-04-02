@@ -49,8 +49,12 @@ struct VisitToString {
                     std::is_same_v<T, bool> || std::is_same_v<T, std::string>,
                 bool> = true>
   std::string ValueToString(const T& value) {
-    return rtc::ToString(value);
+    if constexpr (std::is_same_v<T, bool>) {
+      return BoolToString(value);
+    }
+    return absl::StrCat(value);
   }
+
   // Convert 64-bit integers to doubles before converting to string because JSON
   // represents all numbers as floating points with ~15 digits of precision.
   template <typename T,

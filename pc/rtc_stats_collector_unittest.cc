@@ -733,7 +733,7 @@ class RTCStatsCollectorTest : public ::testing::Test {
     // peer-connection
     graph.peer_connection_id = "P";
     // media-source (kind: video)
-    graph.media_source_id = "SV" + rtc::ToString(graph.sender->AttachmentId());
+    graph.media_source_id = "SV" + absl::StrCat(graph.sender->AttachmentId());
 
     // Expected stats graph:
     //
@@ -835,7 +835,7 @@ class RTCStatsCollectorTest : public ::testing::Test {
     // peer-connection
     graph.peer_connection_id = "P";
     // media-source (kind: video)
-    graph.media_source_id = "SA" + rtc::ToString(graph.sender->AttachmentId());
+    graph.media_source_id = "SA" + absl::StrCat(graph.sender->AttachmentId());
 
     // Expected stats graph:
     //
@@ -1954,7 +1954,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidatePairStats) {
       "CP" + local_candidate->id() + "_" + remote_candidate->id(),
       report->timestamp());
   expected_pair.transport_id =
-      "Ttransport" + rtc::ToString(cricket::ICE_CANDIDATE_COMPONENT_RTP);
+      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP);
   expected_pair.local_candidate_id = "I" + local_candidate->id();
   expected_pair.remote_candidate_id = "I" + remote_candidate->id();
   expected_pair.state = "in-progress";
@@ -2798,7 +2798,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtc::scoped_refptr<const RTCStatsReport> report = stats_->GetStatsReport();
 
   RTCTransportStats expected_rtp_transport(
-      "Ttransport" + rtc::ToString(cricket::ICE_CANDIDATE_COMPONENT_RTP),
+      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP),
       report->timestamp());
   expected_rtp_transport.bytes_sent = 42;
   expected_rtp_transport.packets_sent = 1;
@@ -2846,7 +2846,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   report = stats_->GetFreshStatsReport();
 
   RTCTransportStats expected_rtcp_transport(
-      "Ttransport" + rtc::ToString(cricket::ICE_CANDIDATE_COMPONENT_RTCP),
+      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTCP),
       report->timestamp());
   expected_rtcp_transport.bytes_sent = 1337;
   expected_rtcp_transport.packets_sent = 1;
@@ -2969,7 +2969,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStatsWithCrypto) {
   rtc::scoped_refptr<const RTCStatsReport> report = stats_->GetStatsReport();
 
   RTCTransportStats expected_rtp_transport(
-      "Ttransport" + rtc::ToString(cricket::ICE_CANDIDATE_COMPONENT_RTP),
+      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP),
       report->timestamp());
   expected_rtp_transport.dtls_state = "connected";
   expected_rtp_transport.selected_candidate_pair_changes = 1;

@@ -174,7 +174,7 @@ void Codec::SetParam(const std::string& key, const std::string& value) {
 }
 
 void Codec::SetParam(const std::string& key, int value) {
-  params[key] = rtc::ToString(value);
+  params[key] = absl::StrCat(value);
 }
 
 bool Codec::RemoveParam(const std::string& key) {

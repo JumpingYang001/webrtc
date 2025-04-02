@@ -62,7 +62,7 @@ PeerScenario::PeerScenario(
 PeerScenarioClient* PeerScenario::CreateClient(
     PeerScenarioClient::Config config) {
   return CreateClient(
-      std::string("client_") + rtc::ToString(peer_clients_.size() + 1), config);
+      std::string("client_") + absl::StrCat(peer_clients_.size() + 1), config);
 }
 
 PeerScenarioClient* PeerScenario::CreateClient(

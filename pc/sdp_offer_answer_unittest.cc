@@ -976,11 +976,11 @@ TEST_F(SdpOfferAnswerTest,
   size_t end = sdp.rfind("\r\n");
   end = sdp.rfind("\r\n", end - 2);
   end = sdp.rfind("\r\n", end - 2);
-  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + rtc::ToString(audio_ssrc) +
+  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + absl::StrCat(audio_ssrc) +
                                      " cname:" + video_stream.cname +
                                      "\r\n"
                                      "a=ssrc:" +
-                                     rtc::ToString(audio_ssrc) +
+                                     absl::StrCat(audio_ssrc) +
                                      " msid:- video_track\r\n");
 
   auto modified_offer =
@@ -1017,11 +1017,11 @@ TEST_F(SdpOfferAnswerTest,
   size_t end = sdp.rfind("\r\n");
   end = sdp.rfind("\r\n", end - 2);
   end = sdp.rfind("\r\n", end - 2);
-  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + rtc::ToString(audio_ssrc) +
+  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + absl::StrCat(audio_ssrc) +
                                      " cname:" + video_stream.cname +
                                      "\r\n"
                                      "a=ssrc:" +
-                                     rtc::ToString(audio_ssrc) +
+                                     absl::StrCat(audio_ssrc) +
                                      " msid:- video_track\r\n");
 
   auto modified_offer =
@@ -1057,11 +1057,11 @@ TEST_F(SdpOfferAnswerTest, AllowOnlyOneSsrcGroupPerSemanticAndPrimarySsrc) {
   size_t end = sdp.rfind("\r\n");
   end = sdp.rfind("\r\n", end - 2);
   end = sdp.rfind("\r\n", end - 2);
-  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + rtc::ToString(audio_ssrc) +
+  EXPECT_EQ(sdp.substr(end + 2), "a=ssrc:" + absl::StrCat(audio_ssrc) +
                                      " cname:" + video_stream.cname +
                                      "\r\n"
                                      "a=ssrc:" +
-                                     rtc::ToString(audio_ssrc) +
+                                     absl::StrCat(audio_ssrc) +
                                      " msid:- video_track\r\n");
 
   auto modified_offer =
@@ -1280,7 +1280,7 @@ class SdpOfferAnswerWithPayloadTypeTest
 TEST_P(SdpOfferAnswerWithPayloadTypeTest,
        FollowUpOfferDoesNotRepurposePayloadType) {
   int payload_type = GetParam();
-  std::string payload_type_str = rtc::ToString(payload_type);
+  std::string payload_type_str = absl::StrCat(payload_type);
 
   auto pc = CreatePeerConnection();
   std::string sdp =
@@ -2025,14 +2025,14 @@ TEST_F(SdpOfferAnswerMungingTest, LegacySimulcast) {
 
   std::string sdp;
   offer->ToString(&sdp);
-  sdp += "a=ssrc-group:SIM " + rtc::ToString(ssrc) + " " +
-         rtc::ToString(ssrc + 1) + "\r\n" +  //
-         "a=ssrc-group:FID " + rtc::ToString(ssrc + 1) + " " +
-         rtc::ToString(ssrc + 2) + "\r\n" +                                  //
-         "a=ssrc:" + rtc::ToString(ssrc + 1) + " msid:- video_track\r\n" +   //
-         "a=ssrc:" + rtc::ToString(ssrc + 1) + " cname:" + cname + "\r\n" +  //
-         "a=ssrc:" + rtc::ToString(ssrc + 2) + " msid:- video_track\r\n" +   //
-         "a=ssrc:" + rtc::ToString(ssrc + 2) + " cname:" + cname + "\r\n";
+  sdp += "a=ssrc-group:SIM " + absl::StrCat(ssrc) + " " +
+         absl::StrCat(ssrc + 1) + "\r\n" +  //
+         "a=ssrc-group:FID " + absl::StrCat(ssrc + 1) + " " +
+         absl::StrCat(ssrc + 2) + "\r\n" +                                  //
+         "a=ssrc:" + absl::StrCat(ssrc + 1) + " msid:- video_track\r\n" +   //
+         "a=ssrc:" + absl::StrCat(ssrc + 1) + " cname:" + cname + "\r\n" +  //
+         "a=ssrc:" + absl::StrCat(ssrc + 2) + " msid:- video_track\r\n" +   //
+         "a=ssrc:" + absl::StrCat(ssrc + 2) + " cname:" + cname + "\r\n";
   auto modified_offer = CreateSessionDescription(SdpType::kOffer, sdp);
   RTCError error;
   EXPECT_TRUE(pc->SetLocalDescription(std::move(modified_offer), &error));

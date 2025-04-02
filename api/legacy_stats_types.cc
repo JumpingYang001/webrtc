@@ -104,7 +104,7 @@ class TypedIntId : public StatsReport::IdBase {
 
   std::string ToString() const override {
     return std::string(InternalTypeToString(type_)) + kSeparator +
-           rtc::ToString(id_);
+           absl::StrCat(id_);
   }
 
  protected:
@@ -170,7 +170,7 @@ class ComponentId : public StatsReport::IdBase {
     std::string ret(prefix);
     ret += content_name_;
     ret += '-';
-    ret += rtc::ToString(component_);
+    ret += absl::StrCat(component_);
     return ret;
   }
 
@@ -195,7 +195,7 @@ class CandidatePairId : public ComponentId {
   std::string ToString() const override {
     std::string ret(ComponentId::ToString("Conn-"));
     ret += '-';
-    ret += rtc::ToString(index_);
+    ret += absl::StrCat(index_);
     return ret;
   }
 
@@ -672,11 +672,11 @@ const char* StatsReport::Value::display_name() const {
 std::string StatsReport::Value::ToString() const {
   switch (type_) {
     case kInt:
-      return rtc::ToString(value_.int_);
+      return absl::StrCat(value_.int_);
     case kInt64:
-      return rtc::ToString(value_.int64_);
+      return absl::StrCat(value_.int64_);
     case kFloat:
-      return rtc::ToString(value_.float_);
+      return absl::StrCat(value_.float_);
     case kStaticString:
       return std::string(value_.static_string_);
     case kString:

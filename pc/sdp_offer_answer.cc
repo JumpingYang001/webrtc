@@ -423,7 +423,7 @@ RTCError FindDuplicateCodecParameters(
     LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,
                          "A BUNDLE group contains a codec collision for "
                          "payload_type='" +
-                             rtc::ToString(codec_parameters.payload_type) +
+                             absl::StrCat(codec_parameters.payload_type) +
                              ". All codecs must share the same type, "
                              "encoding name, clock rate and parameters.");
   }
@@ -484,7 +484,7 @@ RTCError FindDuplicateHeaderExtensionIds(
         RTCErrorType::INVALID_PARAMETER,
         "A BUNDLE group contains a codec collision for "
         "header extension id=" +
-            rtc::ToString(extension.id) +
+            absl::StrCat(extension.id) +
             ". The id must be the same across all bundled media descriptions");
   }
   id_to_extension.insert(std::make_pair(extension.id, extension));
@@ -597,7 +597,7 @@ RTCError ValidatePayloadTypes(const SessionDescription& description) {
           LOG_AND_RETURN_ERROR(
               RTCErrorType::INVALID_PARAMETER,
               "The media section with MID='" + content.mid() +
-                  "' used an invalid payload type " + rtc::ToString(codec.id) +
+                  "' used an invalid payload type " + absl::StrCat(codec.id) +
                   " for codec '" + codec.name + ", rtcp-mux:" +
                   (media_description->rtcp_mux() ? "enabled" : "disabled"));
         }
@@ -1893,7 +1893,7 @@ RTCError SdpOfferAnswerHandler::ApplyLocalDescription(
           if (!result.second) {
             LOG_AND_RETURN_ERROR(
                 RTCErrorType::INVALID_PARAMETER,
-                "Duplicate ssrc " + rtc::ToString(ssrc) + " is not allowed");
+                "Duplicate ssrc " + absl::StrCat(ssrc) + " is not allowed");
           }
         }
       }
@@ -5277,9 +5277,9 @@ RTCErrorOr<const ContentInfo*> SdpOfferAnswerHandler::FindContentInfo(
     } else {
       LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_RANGE,
                            "Media line index (" +
-                               rtc::ToString(candidate->sdp_mline_index()) +
+                               absl::StrCat(candidate->sdp_mline_index()) +
                                ") out of range (number of mlines: " +
-                               rtc::ToString(content_size) + ").");
+                               absl::StrCat(content_size) + ").");
     }
   }
 

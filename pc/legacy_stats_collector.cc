@@ -716,7 +716,7 @@ StatsReport* LegacyStatsCollector::PrepareReport(
   StatsReport::Id id(StatsReport::NewIdWithDirection(
       local ? StatsReport::kStatsReportTypeSsrc
             : StatsReport::kStatsReportTypeRemoteSsrc,
-      rtc::ToString(ssrc), direction));
+      absl::StrCat(ssrc), direction));
   StatsReport* report = reports_.Find(id);
   if (!report) {
     report = reports_.InsertNew(id);
@@ -1312,7 +1312,7 @@ void LegacyStatsCollector::ExtractSenderInfo() {
       continue;
     }
     const StatsReport::Id stats_id = StatsReport::NewIdWithDirection(
-        StatsReport::kStatsReportTypeSsrc, rtc::ToString(sender->ssrc()),
+        StatsReport::kStatsReportTypeSsrc, absl::StrCat(sender->ssrc()),
         StatsReport::kSend);
     StatsReport* report = reports_.FindOrAddNew(stats_id);
     report->AddInt(StatsReport::kStatsValueNameFrameWidthInput,
@@ -1361,7 +1361,7 @@ void LegacyStatsCollector::UpdateStatsFromExistingLocalAudioTracks(
     AudioTrackInterface* track = it.first;
     uint32_t ssrc = it.second;
     StatsReport* report = GetReport(StatsReport::kStatsReportTypeSsrc,
-                                    rtc::ToString(ssrc), StatsReport::kSend);
+                                    absl::StrCat(ssrc), StatsReport::kSend);
     if (report == NULL) {
       // This can happen if a local audio track is added to a stream on the
       // fly and the report has not been set up yet. Do nothing in this case.

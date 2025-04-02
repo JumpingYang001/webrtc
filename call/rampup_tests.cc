@@ -473,13 +473,13 @@ void RampUpDownUpTester::ModifyReceiverBitrateConfig(
 std::string RampUpDownUpTester::GetModifierString() const {
   std::string str("_");
   if (num_video_streams_ > 0) {
-    str += rtc::ToString(num_video_streams_);
+    str += absl::StrCat(num_video_streams_);
     str += "stream";
     str += (num_video_streams_ > 1 ? "s" : "");
     str += "_";
   }
   if (num_audio_streams_ > 0) {
-    str += rtc::ToString(num_audio_streams_);
+    str += absl::StrCat(num_audio_streams_);
     str += "stream";
     str += (num_audio_streams_ > 1 ? "s" : "");
     str += "_";

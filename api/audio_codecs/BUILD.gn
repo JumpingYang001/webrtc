@@ -40,6 +40,7 @@ rtc_library("audio_codecs_api") {
     "../../rtc_base:event_tracer",
     "../../rtc_base:refcount",
     "../../rtc_base:sanitizer",
+    "../../rtc_base:stringutils",
     "../../rtc_base/system:rtc_export",
     "../environment",
     "../units:data_rate",
