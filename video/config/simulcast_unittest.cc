@@ -10,18 +10,32 @@
 
 #include "video/config/simulcast.h"
 
+#include <cstddef>
+#include <string>
+#include <tuple>
+#include <vector>
+
+#include "api/units/data_rate.h"
+#include "api/video/resolution.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_codec.h"
 #include "media/base/media_constants.h"
 #include "test/explicit_key_value_config.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {
 using test::ExplicitKeyValueConfig;
+using ::testing::Combine;
 using ::testing::SizeIs;
+using ::testing::TestParamInfo;
+using ::testing::TestWithParam;
+using ::testing::Values;
 
 constexpr bool kScreenshare = true;
-constexpr int kDefaultTemporalLayers = 3;  // Value from simulcast.cc.
+constexpr int kDefaultTemporalLayers = 3;      // Value from simulcast.cc.
 constexpr int kDefaultH265TemporalLayers = 1;  // Value from simulcast.cc.
 
 // Values from kSimulcastConfigs in simulcast.cc.
@@ -397,94 +411,93 @@ TEST(SimulcastTest,
   EXPECT_EQ(streams[0].min_bitrate_bps, 30000);
 }
 
-TEST(SimulcastTest, BitratesBasedOnCodec) {
+struct BitrateLimitsTestParams {
+  int width;
+  int height;
+  std::vector<int> expected_min_bitrate_kbps;
+  std::vector<int> expected_max_bitrate_kbps;
+};
+
+using BitrateLimitsTest =
+    TestWithParam<std::tuple<webrtc::VideoCodecType, BitrateLimitsTestParams>>;
+
+TEST_P(BitrateLimitsTest, VerifyBitrateLimits) {
+  const auto codec_type = std::get<webrtc::VideoCodecType>(GetParam());
+  const auto test_params = std::get<BitrateLimitsTestParams>(GetParam());
   ExplicitKeyValueConfig trials("");
-
-  const size_t kMaxLayers = 3;
-  std::vector<VideoStream> streams_vp8 = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1280, /*max_height=*/720, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecVP8);
-
-  std::vector<VideoStream> streams_vp9 = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1280, /*max_height=*/720, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecVP9);
-
-  ASSERT_THAT(streams_vp8, SizeIs(kMaxLayers));
-  ASSERT_THAT(streams_vp9, SizeIs(kMaxLayers));
-
-  EXPECT_EQ(streams_vp9[0].width, streams_vp8[0].width);
-  EXPECT_EQ(streams_vp9[0].height, streams_vp8[0].height);
-
-  EXPECT_NE(streams_vp9[0].max_bitrate_bps, streams_vp8[0].max_bitrate_bps);
-  EXPECT_NE(streams_vp9[0].target_bitrate_bps,
-            streams_vp8[0].target_bitrate_bps);
-
-  EXPECT_NE(streams_vp9[1].max_bitrate_bps, streams_vp8[1].max_bitrate_bps);
-  EXPECT_NE(streams_vp9[1].target_bitrate_bps,
-            streams_vp8[1].target_bitrate_bps);
-  EXPECT_NE(streams_vp9[1].min_bitrate_bps, streams_vp8[1].min_bitrate_bps);
-
-  EXPECT_NE(streams_vp9[2].max_bitrate_bps, streams_vp8[2].max_bitrate_bps);
-  EXPECT_NE(streams_vp9[2].target_bitrate_bps,
-            streams_vp8[2].target_bitrate_bps);
-  EXPECT_NE(streams_vp9[2].min_bitrate_bps, streams_vp8[2].min_bitrate_bps);
-}
-
-TEST(SimulcastTest, BitratesForVP9) {
-  ExplicitKeyValueConfig trials("");
-
-  const size_t kMaxLayers = 3;
   std::vector<VideoStream> streams = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1280, /*max_height=*/720, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecVP9);
-
-  ASSERT_THAT(streams, SizeIs(kMaxLayers));
-  EXPECT_EQ(1280u, streams[2].width);
-  EXPECT_EQ(720u, streams[2].height);
-  EXPECT_EQ(streams[2].max_bitrate_bps, 1524000);
-  EXPECT_EQ(streams[2].target_bitrate_bps, 1524000);
-  EXPECT_EQ(streams[2].min_bitrate_bps, 481000);
-
-  streams = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1276, /*max_height=*/716, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecVP9);
-
-  ASSERT_THAT(streams, SizeIs(kMaxLayers));
-  EXPECT_EQ(1276u, streams[2].width);
-  EXPECT_EQ(716u, streams[2].height);
-  EXPECT_NEAR(streams[2].max_bitrate_bps, 1524000, 20000);
-  EXPECT_NEAR(streams[2].target_bitrate_bps, 1524000, 20000);
-  EXPECT_NEAR(streams[2].min_bitrate_bps, 481000, 20000);
+      CreateResolutions(test_params.width, test_params.height,
+                        /*num_streams=*/3),
+      !kScreenshare,
+      /*temporal_layers_supported=*/true, trials, codec_type);
+  ASSERT_THAT(streams, SizeIs(3));
+  for (size_t i = 0; i < streams.size(); ++i) {
+    EXPECT_EQ(streams[i].min_bitrate_bps / 1000,
+              test_params.expected_min_bitrate_kbps[i]);
+    EXPECT_EQ(streams[i].max_bitrate_bps / 1000,
+              test_params.expected_max_bitrate_kbps[i]);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    Vp8H264,
+    BitrateLimitsTest,
+    Combine(Values(webrtc::kVideoCodecVP8, webrtc::kVideoCodecH264),
+            Values(BitrateLimitsTestParams{.width = 1920,
+                                           .height = 1080,
+                                           .expected_min_bitrate_kbps{150, 350,
+                                                                      800},
+                                           .expected_max_bitrate_kbps{450, 1200,
+                                                                      5000}},
+                   BitrateLimitsTestParams{
+                       .width = 1280,
+                       .height = 720,
+                       .expected_min_bitrate_kbps{30, 150, 600},
+                       .expected_max_bitrate_kbps{200, 700, 2500}},
+                   BitrateLimitsTestParams{
+                       .width = 960,
+                       .height = 540,
+                       .expected_min_bitrate_kbps{30, 150, 350},
+                       .expected_max_bitrate_kbps{200, 450, 1200}})),
+    [](const TestParamInfo<BitrateLimitsTest::ParamType>& info) {
+      return CodecTypeToPayloadString(
+                 std::get<webrtc::VideoCodecType>(info.param)) +
+             std::to_string(
+                 std::get<BitrateLimitsTestParams>(info.param).height);
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    Av1Vp9H265,
+    BitrateLimitsTest,
+    Combine(
+        Values(
+#ifdef RTC_ENABLE_H265
+            webrtc::kVideoCodecH265,
+#endif
+            webrtc::kVideoCodecAV1,
+            webrtc::kVideoCodecVP9),
+        Values(
+            BitrateLimitsTestParams{.width = 1920,
+                                    .height = 1080,
+                                    .expected_min_bitrate_kbps{121, 337, 769},
+                                    .expected_max_bitrate_kbps{257, 879, 3367}},
+            BitrateLimitsTestParams{.width = 1280,
+                                    .height = 720,
+                                    .expected_min_bitrate_kbps{30, 193, 481},
+                                    .expected_max_bitrate_kbps{142, 420, 1524}},
+            BitrateLimitsTestParams{
+                .width = 960,
+                .height = 540,
+                .expected_min_bitrate_kbps{30, 121, 337},
+                .expected_max_bitrate_kbps{101, 257, 879}})),
+    [](const TestParamInfo<BitrateLimitsTest::ParamType>& info) {
+      return CodecTypeToPayloadString(
+                 std::get<webrtc::VideoCodecType>(info.param)) +
+             std::to_string(
+                 std::get<BitrateLimitsTestParams>(info.param).height);
+    });
 
 #ifdef RTC_ENABLE_H265
-TEST(SimulcastTest, BitratesForH265) {
-  ExplicitKeyValueConfig trials("");
-
-  const size_t kMaxLayers = 3;
-  std::vector<VideoStream> streams = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1280, /*max_height=*/720, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecH265);
-
-  ASSERT_THAT(streams, SizeIs(kMaxLayers));
-  EXPECT_EQ(1280u, streams[2].width);
-  EXPECT_EQ(720u, streams[2].height);
-  EXPECT_EQ(streams[2].max_bitrate_bps, 1524000);
-  EXPECT_EQ(streams[2].target_bitrate_bps, 1524000);
-  EXPECT_EQ(streams[2].min_bitrate_bps, 481000);
-
-  streams = GetSimulcastConfig(
-      CreateResolutions(/*max_width=*/1276, /*max_height=*/716, kMaxLayers),
-      !kScreenshare, true, trials, webrtc::kVideoCodecH265);
-
-  ASSERT_THAT(streams, SizeIs(kMaxLayers));
-  EXPECT_EQ(1276u, streams[2].width);
-  EXPECT_EQ(716u, streams[2].height);
-  EXPECT_NEAR(streams[2].max_bitrate_bps, 1524000, 20000);
-  EXPECT_NEAR(streams[2].target_bitrate_bps, 1524000, 20000);
-  EXPECT_NEAR(streams[2].min_bitrate_bps, 481000, 20000);
-}
-
 // Test that for H.265, the simulcast layers are created with the correct
 // default temporal layers, before that is overrided by application settings.
 TEST(SimulcastTest, GetConfigForH265) {
