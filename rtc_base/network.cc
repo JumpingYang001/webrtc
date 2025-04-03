@@ -564,27 +564,12 @@ BasicNetworkManager::BasicNetworkManager(
     SocketFactory* absl_nonnull socket_factory,
     rtc::NetworkMonitorFactory* absl_nullable network_monitor_factory)
     : env_(env),
-      field_trials_(&env_->field_trials()),
       network_monitor_factory_(network_monitor_factory),
       socket_factory_(socket_factory),
       allow_mac_based_ipv6_(
-          env_->field_trials().IsEnabled("WebRTC-AllowMACBasedIPv6")),
+          env_.field_trials().IsEnabled("WebRTC-AllowMACBasedIPv6")),
       bind_using_ifname_(
-          !env_->field_trials().IsDisabled("WebRTC-BindUsingInterfaceName")) {
-  RTC_DCHECK(socket_factory_);
-}
-
-BasicNetworkManager::BasicNetworkManager(
-    NetworkMonitorFactory* network_monitor_factory,
-    SocketFactory* socket_factory,
-    const FieldTrialsView* field_trials_view)
-    : field_trials_(field_trials_view),
-      network_monitor_factory_(network_monitor_factory),
-      socket_factory_(socket_factory),
-      allow_mac_based_ipv6_(
-          field_trials_->IsEnabled("WebRTC-AllowMACBasedIPv6")),
-      bind_using_ifname_(
-          !field_trials_->IsDisabled("WebRTC-BindUsingInterfaceName")) {
+          !env_.field_trials().IsDisabled("WebRTC-BindUsingInterfaceName")) {
   RTC_DCHECK(socket_factory_);
 }
 
@@ -854,7 +839,7 @@ bool BasicNetworkManager::CreateNetworks(
             // PrefixOrigin is equal to IpPrefixOriginRouterAdvertisement and
             // SuffixOrigin equal to IpSuffixOriginRandom.
             int ip_address_attributes = IPV6_ADDRESS_FLAG_NONE;
-            if (IpAddressAttributesEnabled(field_trials_.get())) {
+            if (IpAddressAttributesEnabled(&env_.field_trials())) {
               if (address->PrefixOrigin == IpPrefixOriginRouterAdvertisement &&
                   address->SuffixOrigin == IpSuffixOriginRandom) {
                 ip_address_attributes |= IPV6_ADDRESS_FLAG_TEMPORARY;
@@ -1029,7 +1014,7 @@ void BasicNetworkManager::StartNetworkMonitor() {
   }
   if (!network_monitor_) {
     network_monitor_.reset(
-        network_monitor_factory_->CreateNetworkMonitor(*field_trials_));
+        network_monitor_factory_->CreateNetworkMonitor(env_.field_trials()));
     if (!network_monitor_) {
       return;
     }

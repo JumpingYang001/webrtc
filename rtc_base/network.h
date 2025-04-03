@@ -15,7 +15,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,11 +27,9 @@
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
-#include "api/transport/field_trial_based_config.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/mdns_responder_interface.h"
-#include "rtc_base/memory/always_valid_pointer.h"
 #include "rtc_base/network_constants.h"
 #include "rtc_base/network_monitor.h"
 #include "rtc_base/network_monitor_factory.h"
@@ -490,17 +487,6 @@ class RTC_EXPORT BasicNetworkManager : public NetworkManagerBase,
       SocketFactory* absl_nonnull socket_factory,
       NetworkMonitorFactory* absl_nullable network_monitor_factory = nullptr);
 
-  // TODO: bugs.webrtc.org/405883462 - Deprecate and remove two constructors
-  // below when chromium is updated not to use these constructors.
-  BasicNetworkManager(SocketFactory* socket_factory,
-                      const FieldTrialsView* field_trials = nullptr)
-      : BasicNetworkManager(/* network_monitor_factory= */ nullptr,
-                            socket_factory,
-                            field_trials) {}
-
-  BasicNetworkManager(NetworkMonitorFactory* network_monitor_factory,
-                      SocketFactory* socket_factory,
-                      const FieldTrialsView* field_trials = nullptr);
   ~BasicNetworkManager() override;
 
   void StartUpdating() override;
@@ -574,16 +560,10 @@ class RTC_EXPORT BasicNetworkManager : public NetworkManagerBase,
   // Only updates the networks; does not reschedule the next update.
   void UpdateNetworksOnce() RTC_RUN_ON(thread_);
 
-  // TODO: bugs.webrtc.org/405883462 - Make non-optional and remove
-  // `field_trials_` when all users are migrated to constructor providing
-  // Environment.
-  std::optional<webrtc::Environment> env_;
+  const Environment env_;
   Thread* thread_ = nullptr;
   bool sent_first_update_ = true;
   int start_count_ = 0;
-
-  AlwaysValidPointer<const FieldTrialsView, FieldTrialBasedConfig>
-      field_trials_;
   std::vector<std::string> network_ignore_list_;
   NetworkMonitorFactory* absl_nullable const network_monitor_factory_;
   SocketFactory* absl_nonnull const socket_factory_;
