@@ -561,8 +561,8 @@ bool NetworkManagerBase::IsVpnMacAddress(
 
 BasicNetworkManager::BasicNetworkManager(
     const Environment& env,
-    absl::Nonnull<SocketFactory*> socket_factory,
-    absl::Nullable<rtc::NetworkMonitorFactory*> network_monitor_factory)
+    SocketFactory* absl_nonnull socket_factory,
+    rtc::NetworkMonitorFactory* absl_nullable network_monitor_factory)
     : env_(env),
       field_trials_(&env_->field_trials()),
       network_monitor_factory_(network_monitor_factory),

@@ -40,7 +40,7 @@ struct Helper<> {
     return false;
   }
 
-  static absl::Nullable<std::unique_ptr<AudioDecoder>> MakeAudioDecoder(
+  static absl_nullable std::unique_ptr<AudioDecoder> MakeAudioDecoder(
       const Environment& /* env */,
       const SdpAudioFormat& /* format */,
       std::optional<AudioCodecPairId> /* codec_pair_id */) {
@@ -59,7 +59,7 @@ template <typename Trait,
                   std::declval<typename Trait::Config>(),
                   std::declval<std::optional<AudioCodecPairId>>())),
               std::unique_ptr<AudioDecoder>>>>
-absl::Nullable<std::unique_ptr<AudioDecoder>> CreateDecoder(
+absl_nullable std::unique_ptr<AudioDecoder> CreateDecoder(
     Rank1,
     const Environment& env,
     const typename Trait::Config& config,
@@ -73,7 +73,7 @@ template <typename Trait,
                   std::declval<typename Trait::Config>(),
                   std::declval<std::optional<AudioCodecPairId>>())),
               std::unique_ptr<AudioDecoder>>>>
-absl::Nullable<std::unique_ptr<AudioDecoder>> CreateDecoder(
+absl_nullable std::unique_ptr<AudioDecoder> CreateDecoder(
     Rank0,
     const Environment& /* env */,
     const typename Trait::Config& config,
@@ -98,7 +98,7 @@ struct Helper<T, Ts...> {
     return opt_config ? true : Helper<Ts...>::IsSupportedDecoder(format);
   }
 
-  static absl::Nullable<std::unique_ptr<AudioDecoder>> MakeAudioDecoder(
+  static absl_nullable std::unique_ptr<AudioDecoder> MakeAudioDecoder(
       const Environment& env,
       const SdpAudioFormat& format,
       std::optional<AudioCodecPairId> codec_pair_id) {
@@ -122,7 +122,7 @@ class AudioDecoderFactoryT : public AudioDecoderFactory {
     return Helper<Ts...>::IsSupportedDecoder(format);
   }
 
-  absl::Nullable<std::unique_ptr<AudioDecoder>> Create(
+  absl_nullable std::unique_ptr<AudioDecoder> Create(
       const Environment& env,
       const SdpAudioFormat& format,
       std::optional<AudioCodecPairId> codec_pair_id) override {

@@ -25,7 +25,7 @@ EchoCanceller3Factory::EchoCanceller3Factory() {}
 EchoCanceller3Factory::EchoCanceller3Factory(const EchoCanceller3Config& config)
     : config_(config) {}
 
-absl::Nonnull<std::unique_ptr<EchoControl>> EchoCanceller3Factory::Create(
+absl_nonnull std::unique_ptr<EchoControl> EchoCanceller3Factory::Create(
     const Environment& env,
     int sample_rate_hz,
     int num_render_channels,

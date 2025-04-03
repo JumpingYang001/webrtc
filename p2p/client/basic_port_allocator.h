@@ -50,10 +50,10 @@ class RTC_EXPORT BasicPortAllocator : public webrtc::PortAllocator {
  public:
   BasicPortAllocator(
       const webrtc::Environment& env,
-      absl::Nonnull<webrtc::NetworkManager*> network_manager,
-      absl::Nonnull<webrtc::PacketSocketFactory*> socket_factory,
-      absl::Nullable<webrtc::TurnCustomizer*> turn_customizer = nullptr,
-      absl::Nullable<RelayPortFactoryInterface*> relay_port_factory = nullptr);
+      webrtc::NetworkManager* absl_nonnull network_manager,
+      webrtc::PacketSocketFactory* absl_nonnull socket_factory,
+      webrtc::TurnCustomizer* absl_nullable turn_customizer = nullptr,
+      RelayPortFactoryInterface* absl_nullable relay_port_factory = nullptr);
 
   BasicPortAllocator(const BasicPortAllocator&) = delete;
   BasicPortAllocator& operator=(const BasicPortAllocator&) = delete;

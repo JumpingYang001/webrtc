@@ -31,7 +31,7 @@ class RTC_EXPORT EchoCanceller3Factory : public EchoControlFactory {
   explicit EchoCanceller3Factory(const EchoCanceller3Config& config);
 
   // Creates an EchoCanceller3 with a specified channel count and sampling rate.
-  absl::Nonnull<std::unique_ptr<EchoControl>> Create(
+  absl_nonnull std::unique_ptr<EchoControl> Create(
       const Environment& env,
       int sample_rate_hz,
       int num_render_channels,

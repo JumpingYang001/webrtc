@@ -67,7 +67,7 @@ class EchoControlFactory {
  public:
   virtual ~EchoControlFactory() = default;
 
-  virtual absl::Nonnull<std::unique_ptr<EchoControl>> Create(
+  virtual absl_nonnull std::unique_ptr<EchoControl> Create(
       const Environment& env,
       int sample_rate_hz,
       int num_render_channels,

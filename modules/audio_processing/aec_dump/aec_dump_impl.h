@@ -39,7 +39,7 @@ class AecDumpImpl : public AecDump {
   // `max_log_size_bytes == -1` means the log size will be unlimited.
   AecDumpImpl(FileWrapper debug_file,
               int64_t max_log_size_bytes,
-              absl::Nonnull<TaskQueueBase*> worker_queue);
+              TaskQueueBase* absl_nonnull worker_queue);
   AecDumpImpl(const AecDumpImpl&) = delete;
   AecDumpImpl& operator=(const AecDumpImpl&) = delete;
   ~AecDumpImpl() override;
@@ -74,7 +74,7 @@ class AecDumpImpl : public AecDump {
   FileWrapper debug_file_;
   int64_t num_bytes_left_for_log_ = 0;
   RaceChecker race_checker_;
-  absl::Nonnull<TaskQueueBase*> worker_queue_;
+  TaskQueueBase* absl_nonnull worker_queue_;
   CaptureStreamInfo capture_stream_info_;
 };
 }  // namespace webrtc

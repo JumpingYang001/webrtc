@@ -337,7 +337,7 @@ class NetworkEmulationManager {
   // available network interfaces for PeerConnection. If endpoint is enabled, it
   // will be immediately available for PeerConnection, otherwise user will be
   // able to enable endpoint later to make it available for PeerConnection.
-  virtual absl::Nonnull<EmulatedNetworkManagerInterface*>
+  virtual EmulatedNetworkManagerInterface* absl_nonnull
   CreateEmulatedNetworkManagerInterface(
       const std::vector<EmulatedEndpoint*>& endpoints) = 0;
 

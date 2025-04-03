@@ -301,7 +301,7 @@ void NetworkEmulationManagerImpl::StopCrossTraffic(
   });
 }
 
-absl::Nonnull<EmulatedNetworkManagerInterface*>
+EmulatedNetworkManagerInterface* absl_nonnull
 NetworkEmulationManagerImpl::CreateEmulatedNetworkManagerInterface(
     const std::vector<EmulatedEndpoint*>& endpoints) {
   std::vector<EmulatedEndpointImpl*> endpoint_impls;

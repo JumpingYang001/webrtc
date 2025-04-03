@@ -37,9 +37,9 @@ namespace webrtc {
 
 class RemoteBitrateEstimatorAbsSendTime : public RemoteBitrateEstimator {
  public:
-  RemoteBitrateEstimatorAbsSendTime(
-      const Environment& env,
-      absl::Nonnull<RemoteBitrateObserver*> observer);
+  RemoteBitrateEstimatorAbsSendTime(const Environment& env,
+                                    RemoteBitrateObserver* absl_nonnull
+                                        observer);
 
   RemoteBitrateEstimatorAbsSendTime() = delete;
   RemoteBitrateEstimatorAbsSendTime(const RemoteBitrateEstimatorAbsSendTime&) =
@@ -99,7 +99,7 @@ class RemoteBitrateEstimatorAbsSendTime : public RemoteBitrateEstimator {
   void TimeoutStreams(Timestamp now);
 
   const Environment env_;
-  const absl::Nonnull<RemoteBitrateObserver*> observer_;
+  RemoteBitrateObserver* absl_nonnull const observer_;
   std::unique_ptr<InterArrival> inter_arrival_;
   std::unique_ptr<OveruseEstimator> estimator_;
   OveruseDetector detector_;

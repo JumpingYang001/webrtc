@@ -868,7 +868,7 @@ class FakeVoiceEngine : public VoiceEngineInterface {
         const webrtc::SdpAudioFormat& format) override {
       return std::nullopt;
     }
-    absl::Nullable<std::unique_ptr<webrtc::AudioEncoder>> Create(
+    absl_nullable std::unique_ptr<webrtc::AudioEncoder> Create(
         const webrtc::Environment& env,
         const webrtc::SdpAudioFormat& format,
         Options options) override {
@@ -894,7 +894,7 @@ class FakeVoiceEngine : public VoiceEngineInterface {
     bool IsSupportedDecoder(const webrtc::SdpAudioFormat& format) override {
       return false;
     }
-    absl::Nullable<std::unique_ptr<webrtc::AudioDecoder>> Create(
+    absl_nullable std::unique_ptr<webrtc::AudioDecoder> Create(
         const webrtc::Environment& env,
         const webrtc::SdpAudioFormat& format,
         std::optional<webrtc::AudioCodecPairId> codec_pair_id) override {

@@ -41,7 +41,7 @@ struct Helper<> {
       const SdpAudioFormat& /* format */) {
     return std::nullopt;
   }
-  static absl::Nullable<std::unique_ptr<AudioEncoder>> CreateAudioEncoder(
+  static absl_nullable std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       const Environment& /* env */,
       const SdpAudioFormat& /* format */,
       const AudioEncoderFactory::Options& /* options */) {
@@ -60,7 +60,7 @@ template <typename Trait,
                   std::declval<typename Trait::Config>(),
                   std::declval<AudioEncoderFactory::Options>())),
               std::unique_ptr<AudioEncoder>>>>
-absl::Nullable<std::unique_ptr<AudioEncoder>> CreateEncoder(
+absl_nullable std::unique_ptr<AudioEncoder> CreateEncoder(
     Rank1,
     const Environment& env,
     const typename Trait::Config& config,
@@ -75,7 +75,7 @@ template <typename Trait,
                   int{},
                   std::declval<std::optional<AudioCodecPairId>>())),
               std::unique_ptr<AudioEncoder>>>>
-absl::Nullable<std::unique_ptr<AudioEncoder>> CreateEncoder(
+absl_nullable std::unique_ptr<AudioEncoder> CreateEncoder(
     Rank0,
     const Environment& /* env */,
     const typename Trait::Config& config,
@@ -104,7 +104,7 @@ struct Helper<T, Ts...> {
                       : Helper<Ts...>::QueryAudioEncoder(format);
   }
 
-  static absl::Nullable<std::unique_ptr<AudioEncoder>> CreateAudioEncoder(
+  static absl_nullable std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       const Environment& env,
       const SdpAudioFormat& format,
       const AudioEncoderFactory::Options& options) {
@@ -129,7 +129,7 @@ class AudioEncoderFactoryT : public AudioEncoderFactory {
     return Helper<Ts...>::QueryAudioEncoder(format);
   }
 
-  absl::Nullable<std::unique_ptr<AudioEncoder>> Create(
+  absl_nullable std::unique_ptr<AudioEncoder> Create(
       const Environment& env,
       const SdpAudioFormat& format,
       Options options) override {

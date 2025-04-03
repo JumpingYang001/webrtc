@@ -234,8 +234,8 @@ class FakePortAllocatorSession : public webrtc::PortAllocatorSession {
 class FakePortAllocator : public webrtc::PortAllocator {
  public:
   FakePortAllocator(const webrtc::Environment& env,
-                    absl::Nonnull<webrtc::SocketFactory*> socket_factory,
-                    absl::Nonnull<webrtc::TaskQueueBase*> network_thread =
+                    webrtc::SocketFactory* absl_nonnull socket_factory,
+                    webrtc::TaskQueueBase* absl_nonnull network_thread =
                         webrtc::TaskQueueBase::Current())
       : env_(env), network_thread_(network_thread), factory_(socket_factory) {
     RTC_CHECK(network_thread);
@@ -266,7 +266,7 @@ class FakePortAllocator : public webrtc::PortAllocator {
 
  private:
   const webrtc::Environment env_;
-  absl::Nonnull<webrtc::TaskQueueBase*> network_thread_;
+  webrtc::TaskQueueBase* absl_nonnull network_thread_;
   webrtc::BasicPacketSocketFactory factory_;
   bool mdns_obfuscation_enabled_ = false;
 };

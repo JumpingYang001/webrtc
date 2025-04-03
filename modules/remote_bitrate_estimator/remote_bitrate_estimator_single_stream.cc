@@ -48,7 +48,7 @@ RemoteBitrateEstimatorSingleStream::Detector::Detector()
 
 RemoteBitrateEstimatorSingleStream::RemoteBitrateEstimatorSingleStream(
     const Environment& env,
-    absl::Nonnull<RemoteBitrateObserver*> observer)
+    RemoteBitrateObserver* absl_nonnull observer)
     : env_(env),
       observer_(observer),
       incoming_bitrate_(kBitrateWindow),

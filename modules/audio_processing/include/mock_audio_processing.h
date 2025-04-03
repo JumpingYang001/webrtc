@@ -159,13 +159,13 @@ class MockAudioProcessing : public AudioProcessing {
               CreateAndAttachAecDump,
               (absl::string_view file_name,
                int64_t max_log_size_bytes,
-               absl::Nonnull<TaskQueueBase*> worker_queue),
+               TaskQueueBase* absl_nonnull worker_queue),
               (override));
   MOCK_METHOD(bool,
               CreateAndAttachAecDump,
               (FILE * handle,
                int64_t max_log_size_bytes,
-               absl::Nonnull<TaskQueueBase*> worker_queue),
+               TaskQueueBase* absl_nonnull worker_queue),
               (override));
   MOCK_METHOD(void, AttachAecDump, (std::unique_ptr<AecDump>), (override));
   MOCK_METHOD(void, DetachAecDump, (), (override));

@@ -55,7 +55,7 @@ std::unique_ptr<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(
     size_t height,
     int frame_repeat_count = 1);
 
-absl::Nonnull<std::unique_ptr<FrameGeneratorInterface>>
+absl_nonnull std::unique_ptr<FrameGeneratorInterface>
 CreateFromIvfFileFrameGenerator(const Environment& env,
                                 absl::string_view filename,
                                 std::optional<int> fps_hint = std::nullopt);

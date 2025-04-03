@@ -81,7 +81,7 @@ class NetworkEmulationManagerImpl : public NetworkEmulationManager {
       std::unique_ptr<CrossTrafficGenerator> generator) override;
   void StopCrossTraffic(CrossTrafficGenerator* generator) override;
 
-  absl::Nonnull<EmulatedNetworkManagerInterface*>
+  EmulatedNetworkManagerInterface* absl_nonnull
   CreateEmulatedNetworkManagerInterface(
       const std::vector<EmulatedEndpoint*>& endpoints) override;
 

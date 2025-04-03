@@ -93,7 +93,7 @@ SimulationSettings::~SimulationSettings() = default;
 
 AudioProcessingSimulator::AudioProcessingSimulator(
     const SimulationSettings& settings,
-    absl::Nonnull<scoped_refptr<AudioProcessing>> audio_processing)
+    absl_nonnull scoped_refptr<AudioProcessing> audio_processing)
     : settings_(settings),
       ap_(std::move(audio_processing)),
       applied_input_volume_(settings.initial_mic_level),

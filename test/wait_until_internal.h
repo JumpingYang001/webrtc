@@ -26,11 +26,11 @@ namespace wait_until_internal {
 // This is inspired by testing::ExplainMatchResult and
 // testing::internal::MatchPrintAndExplain.
 template <typename T, typename M>
-bool ExplainMatchResult(
-    const M& matcher,
-    const T& value,
-    absl::Nonnull<::testing::StringMatchResultListener*> listener,
-    absl::string_view value_name) {
+bool ExplainMatchResult(const M& matcher,
+                        const T& value,
+                        ::testing::StringMatchResultListener* absl_nonnull
+                            listener,
+                        absl::string_view value_name) {
   // SafeMatcherCast is required for matchers whose type does not match the
   // argument type.
   ::testing::Matcher<const T&> safe_matcher =

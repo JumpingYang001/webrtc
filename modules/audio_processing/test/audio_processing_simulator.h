@@ -166,7 +166,7 @@ class AudioProcessingSimulator {
  public:
   AudioProcessingSimulator(
       const SimulationSettings& settings,
-      absl::Nonnull<scoped_refptr<AudioProcessing>> audio_processing);
+      absl_nonnull scoped_refptr<AudioProcessing> audio_processing);
 
   AudioProcessingSimulator() = delete;
   AudioProcessingSimulator(const AudioProcessingSimulator&) = delete;

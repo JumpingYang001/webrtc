@@ -37,7 +37,7 @@ std::vector<SdpVideoFormat> SupportedVP9DecoderCodecs();
 struct Vp9EncoderSettings {
   VP9Profile profile = VP9Profile::kProfile0;
 };
-absl::Nonnull<std::unique_ptr<VideoEncoder>> CreateVp9Encoder(
+absl_nonnull std::unique_ptr<VideoEncoder> CreateVp9Encoder(
     const Environment& env,
     Vp9EncoderSettings settings = {});
 

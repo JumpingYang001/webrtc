@@ -147,7 +147,7 @@ class EmulatedNetworkNodeStatsBuilder {
 class LinkEmulation : public EmulatedNetworkReceiverInterface {
  public:
   LinkEmulation(Clock* clock,
-                absl::Nonnull<TaskQueueBase*> task_queue,
+                TaskQueueBase* absl_nonnull task_queue,
                 std::unique_ptr<NetworkBehaviorInterface> network_behavior,
                 EmulatedNetworkReceiverInterface* receiver,
                 EmulatedNetworkStatsGatheringMode stats_gathering_mode,
@@ -168,7 +168,7 @@ class LinkEmulation : public EmulatedNetworkReceiverInterface {
   size_t GetPacketSizeForEmulation(const EmulatedIpPacket& packet) const;
 
   Clock* const clock_;
-  const absl::Nonnull<TaskQueueBase*> task_queue_;
+  TaskQueueBase* absl_nonnull const task_queue_;
   const std::unique_ptr<NetworkBehaviorInterface> network_behavior_
       RTC_GUARDED_BY(task_queue_);
   EmulatedNetworkReceiverInterface* const receiver_;
@@ -187,7 +187,7 @@ class LinkEmulation : public EmulatedNetworkReceiverInterface {
 // the packet will be silently dropped.
 class NetworkRouterNode : public EmulatedNetworkReceiverInterface {
  public:
-  explicit NetworkRouterNode(absl::Nonnull<TaskQueueBase*> task_queue);
+  explicit NetworkRouterNode(TaskQueueBase* absl_nonnull task_queue);
 
   void OnPacketReceived(EmulatedIpPacket packet) override;
   void SetReceiver(const IPAddress& dest_ip,
@@ -201,7 +201,7 @@ class NetworkRouterNode : public EmulatedNetworkReceiverInterface {
   void SetFilter(std::function<bool(const EmulatedIpPacket&)> filter);
 
  private:
-  const absl::Nonnull<TaskQueueBase*> task_queue_;
+  TaskQueueBase* absl_nonnull const task_queue_;
   std::optional<EmulatedNetworkReceiverInterface*> default_receiver_
       RTC_GUARDED_BY(task_queue_);
   std::map<IPAddress, EmulatedNetworkReceiverInterface*> routing_
@@ -225,7 +225,7 @@ class EmulatedNetworkNode : public EmulatedNetworkReceiverInterface {
   // they are ready.
   EmulatedNetworkNode(
       Clock* clock,
-      absl::Nonnull<TaskQueueBase*> task_queue,
+      TaskQueueBase* absl_nonnull task_queue,
       std::unique_ptr<NetworkBehaviorInterface> network_behavior,
       EmulatedNetworkStatsGatheringMode stats_gathering_mode,
       bool fake_dtls_handshake_sizes);
@@ -285,7 +285,7 @@ class EmulatedEndpointImpl : public EmulatedEndpoint {
 
   EmulatedEndpointImpl(const Options& options,
                        bool is_enabled,
-                       absl::Nonnull<TaskQueueBase*> task_queue,
+                       TaskQueueBase* absl_nonnull task_queue,
                        Clock* clock);
   ~EmulatedEndpointImpl() override;
 
@@ -344,7 +344,7 @@ class EmulatedEndpointImpl : public EmulatedEndpoint {
   const Options options_;
   bool is_enabled_ RTC_GUARDED_BY(enable_state_mutex_);
   Clock* const clock_;
-  const absl::Nonnull<TaskQueueBase*> task_queue_;
+  TaskQueueBase* absl_nonnull const task_queue_;
   std::unique_ptr<Network> network_;
   NetworkRouterNode router_;
 

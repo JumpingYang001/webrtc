@@ -46,7 +46,7 @@ class MediaFactoryImpl : public MediaFactory {
   std::unique_ptr<MediaEngineInterface> CreateMediaEngine(
       const Environment& env,
       PeerConnectionFactoryDependencies& deps) override {
-    absl::Nullable<scoped_refptr<AudioProcessing>> audio_processing =
+    absl_nullable scoped_refptr<AudioProcessing> audio_processing =
         deps.audio_processing_builder != nullptr
             ? std::move(deps.audio_processing_builder)->Build(env)
 #pragma clang diagnostic push

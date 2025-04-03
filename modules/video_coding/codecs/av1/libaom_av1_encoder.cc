@@ -857,7 +857,7 @@ VideoEncoder::EncoderInfo LibaomAv1Encoder::GetEncoderInfo() const {
 
 }  // namespace
 
-absl::Nonnull<std::unique_ptr<VideoEncoder>> CreateLibaomAv1Encoder(
+absl_nonnull std::unique_ptr<VideoEncoder> CreateLibaomAv1Encoder(
     const Environment& env,
     LibaomAv1EncoderSettings settings) {
   return std::make_unique<LibaomAv1Encoder>(env, std::move(settings));

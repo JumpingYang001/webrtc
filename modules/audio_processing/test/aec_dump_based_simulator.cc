@@ -97,7 +97,7 @@ bool ReadNextMessage(bool use_dump_file,
 
 AecDumpBasedSimulator::AecDumpBasedSimulator(
     const SimulationSettings& settings,
-    absl::Nonnull<scoped_refptr<AudioProcessing>> audio_processing)
+    absl_nonnull scoped_refptr<AudioProcessing> audio_processing)
     : AudioProcessingSimulator(settings, std::move(audio_processing)) {
   MaybeOpenCallOrderFile();
 }

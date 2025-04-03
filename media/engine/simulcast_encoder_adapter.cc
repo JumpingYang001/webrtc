@@ -254,8 +254,8 @@ void SimulcastEncoderAdapter::StreamContext::OnDroppedFrame(
 
 SimulcastEncoderAdapter::SimulcastEncoderAdapter(
     const Environment& env,
-    absl::Nonnull<VideoEncoderFactory*> primary_factory,
-    absl::Nullable<VideoEncoderFactory*> fallback_factory,
+    VideoEncoderFactory* absl_nonnull primary_factory,
+    VideoEncoderFactory* absl_nullable fallback_factory,
     const SdpVideoFormat& format)
     : env_(env),
       inited_(0),

@@ -71,7 +71,7 @@ std::vector<SdpVideoFormat> SupportedVP9DecoderCodecs() {
 #endif
 }
 
-absl::Nonnull<std::unique_ptr<VideoEncoder>> CreateVp9Encoder(
+absl_nonnull std::unique_ptr<VideoEncoder> CreateVp9Encoder(
     const Environment& env,
     Vp9EncoderSettings settings) {
 #ifdef RTC_ENABLE_VP9

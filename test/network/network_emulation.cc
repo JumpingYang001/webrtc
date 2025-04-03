@@ -359,7 +359,7 @@ size_t LinkEmulation::GetPacketSizeForEmulation(
 
 LinkEmulation::LinkEmulation(
     Clock* clock,
-    absl::Nonnull<TaskQueueBase*> task_queue,
+    TaskQueueBase* absl_nonnull task_queue,
     std::unique_ptr<NetworkBehaviorInterface> network_behavior,
     EmulatedNetworkReceiverInterface* receiver,
     EmulatedNetworkStatsGatheringMode stats_gathering_mode,
@@ -464,7 +464,7 @@ void LinkEmulation::UpdateProcessSchedule() {
       });
 }
 
-NetworkRouterNode::NetworkRouterNode(absl::Nonnull<TaskQueueBase*> task_queue)
+NetworkRouterNode::NetworkRouterNode(TaskQueueBase* absl_nonnull task_queue)
     : task_queue_(task_queue) {}
 
 void NetworkRouterNode::OnPacketReceived(EmulatedIpPacket packet) {
@@ -540,7 +540,7 @@ void NetworkRouterNode::SetFilter(
 
 EmulatedNetworkNode::EmulatedNetworkNode(
     Clock* clock,
-    absl::Nonnull<TaskQueueBase*> task_queue,
+    TaskQueueBase* absl_nonnull task_queue,
     std::unique_ptr<NetworkBehaviorInterface> network_behavior,
     EmulatedNetworkStatsGatheringMode stats_gathering_mode,
     bool fake_dtls_handshake_sizes)
@@ -593,11 +593,11 @@ EmulatedEndpointImpl::Options::Options(
           config.allow_receive_packets_with_different_dest_ip),
       log_name(ip.ToString() + " (" + config.name.value_or("") + ")") {}
 
-EmulatedEndpointImpl::EmulatedEndpointImpl(
-    const Options& options,
-    bool is_enabled,
-    absl::Nonnull<TaskQueueBase*> task_queue,
-    Clock* clock)
+EmulatedEndpointImpl::EmulatedEndpointImpl(const Options& options,
+                                           bool is_enabled,
+                                           TaskQueueBase* absl_nonnull
+                                               task_queue,
+                                           Clock* clock)
     : options_(options),
       is_enabled_(is_enabled),
       clock_(clock),

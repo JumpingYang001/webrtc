@@ -41,9 +41,9 @@ PendingTaskSafetyFlag::CreateDetached() {
 // Creates a flag, but with its SequenceChecker explicitly initialized for
 // a given task queue and the `alive()` flag specified.
 rtc::scoped_refptr<PendingTaskSafetyFlag>
-PendingTaskSafetyFlag::CreateAttachedToTaskQueue(
-    bool alive,
-    absl::Nonnull<TaskQueueBase*> attached_queue) {
+PendingTaskSafetyFlag::CreateAttachedToTaskQueue(bool alive,
+                                                 TaskQueueBase* absl_nonnull
+                                                     attached_queue) {
   RTC_DCHECK(attached_queue) << "Null TaskQueue provided";
   return rtc::scoped_refptr<PendingTaskSafetyFlag>(
       new PendingTaskSafetyFlag(alive, attached_queue));

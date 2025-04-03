@@ -633,14 +633,14 @@ class RTC_EXPORT AudioProcessing : public RefCountInterface {
   // return value of true indicates that the file has been
   // sucessfully opened, while a value of false indicates that
   // opening the file failed.
-  virtual bool CreateAndAttachAecDump(
-      absl::string_view file_name,
-      int64_t max_log_size_bytes,
-      absl::Nonnull<TaskQueueBase*> worker_queue) = 0;
-  virtual bool CreateAndAttachAecDump(
-      absl::Nonnull<FILE*> handle,
-      int64_t max_log_size_bytes,
-      absl::Nonnull<TaskQueueBase*> worker_queue) = 0;
+  virtual bool CreateAndAttachAecDump(absl::string_view file_name,
+                                      int64_t max_log_size_bytes,
+                                      TaskQueueBase* absl_nonnull
+                                          worker_queue) = 0;
+  virtual bool CreateAndAttachAecDump(FILE* absl_nonnull handle,
+                                      int64_t max_log_size_bytes,
+                                      TaskQueueBase* absl_nonnull
+                                          worker_queue) = 0;
 
   // TODO(webrtc:5298) Deprecated variant.
   // Attaches provided webrtc::AecDump for recording debugging
@@ -738,7 +738,7 @@ class AudioProcessingBuilderInterface {
  public:
   virtual ~AudioProcessingBuilderInterface() = default;
 
-  virtual absl::Nullable<scoped_refptr<AudioProcessing>> Build(
+  virtual absl_nullable scoped_refptr<AudioProcessing> Build(
       const Environment& env) = 0;
 };
 
@@ -747,9 +747,9 @@ class AudioProcessingBuilderInterface {
 // nullptr `audio_processing` is not supported as in some scenarios that imply
 // no audio processing, while in others - default builtin audio processing.
 // Callers should be explicit which of these two behaviors they want.
-absl::Nonnull<std::unique_ptr<AudioProcessingBuilderInterface>>
+absl_nonnull std::unique_ptr<AudioProcessingBuilderInterface>
 CustomAudioProcessing(
-    absl::Nonnull<scoped_refptr<AudioProcessing>> audio_processing);
+    absl_nonnull scoped_refptr<AudioProcessing> audio_processing);
 
 // Experimental interface for a custom analysis submodule.
 class CustomAudioAnalyzer {

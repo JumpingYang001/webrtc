@@ -487,8 +487,8 @@ class RTC_EXPORT BasicNetworkManager : public NetworkManagerBase,
  public:
   BasicNetworkManager(
       const Environment& env,
-      absl::Nonnull<SocketFactory*> socket_factory,
-      absl::Nullable<NetworkMonitorFactory*> network_monitor_factory = nullptr);
+      SocketFactory* absl_nonnull socket_factory,
+      NetworkMonitorFactory* absl_nullable network_monitor_factory = nullptr);
 
   // TODO: bugs.webrtc.org/405883462 - Deprecate and remove two constructors
   // below when chromium is updated not to use these constructors.
@@ -585,8 +585,8 @@ class RTC_EXPORT BasicNetworkManager : public NetworkManagerBase,
   AlwaysValidPointer<const FieldTrialsView, FieldTrialBasedConfig>
       field_trials_;
   std::vector<std::string> network_ignore_list_;
-  absl::Nullable<NetworkMonitorFactory*> const network_monitor_factory_;
-  absl::Nonnull<SocketFactory*> const socket_factory_;
+  NetworkMonitorFactory* absl_nullable const network_monitor_factory_;
+  SocketFactory* absl_nonnull const socket_factory_;
   std::unique_ptr<NetworkMonitorInterface> network_monitor_
       RTC_GUARDED_BY(thread_);
   bool allow_mac_based_ipv6_ RTC_GUARDED_BY(thread_) = false;

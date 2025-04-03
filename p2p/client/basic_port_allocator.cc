@@ -185,10 +185,10 @@ const uint32_t DISABLE_ALL_PHASES =
 
 BasicPortAllocator::BasicPortAllocator(
     const webrtc::Environment& env,
-    absl::Nonnull<webrtc::NetworkManager*> network_manager,
-    absl::Nonnull<webrtc::PacketSocketFactory*> socket_factory,
-    absl::Nullable<webrtc::TurnCustomizer*> turn_customizer,
-    absl::Nullable<RelayPortFactoryInterface*> relay_port_factory)
+    webrtc::NetworkManager* absl_nonnull network_manager,
+    webrtc::PacketSocketFactory* absl_nonnull socket_factory,
+    webrtc::TurnCustomizer* absl_nullable turn_customizer,
+    RelayPortFactoryInterface* absl_nullable relay_port_factory)
     : env_(env),
       network_manager_(network_manager),
       socket_factory_(socket_factory),

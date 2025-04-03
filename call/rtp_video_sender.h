@@ -85,7 +85,7 @@ class RtpVideoSender : public RtpVideoSenderInterface,
   // Rtp modules are assumed to be sorted in simulcast index order.
   RtpVideoSender(
       const Environment& env,
-      absl::Nonnull<TaskQueueBase*> transport_queue,
+      TaskQueueBase* absl_nonnull transport_queue,
       const std::map<uint32_t, RtpState>& suspended_ssrcs,
       const std::map<uint32_t, RtpPayloadState>& states,
       const RtpConfig& rtp_config,

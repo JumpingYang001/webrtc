@@ -21,7 +21,7 @@
 
 namespace webrtc {
 
-absl::Nullable<scoped_refptr<AudioProcessing>>
+absl_nullable scoped_refptr<AudioProcessing>
 BuiltinAudioProcessingBuilder::Build(const Environment& env) {
   return make_ref_counted<AudioProcessingImpl>(
       env, config_, std::move(capture_post_processing_),

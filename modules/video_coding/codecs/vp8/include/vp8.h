@@ -26,7 +26,7 @@ struct Vp8EncoderSettings {
   // VideoEncoder::GetEncoderInfo(). No override is done if empty.
   std::vector<VideoEncoder::ResolutionBitrateLimits> resolution_bitrate_limits;
 };
-absl::Nonnull<std::unique_ptr<VideoEncoder>> CreateVp8Encoder(
+absl_nonnull std::unique_ptr<VideoEncoder> CreateVp8Encoder(
     const Environment& env,
     Vp8EncoderSettings settings = {});
 

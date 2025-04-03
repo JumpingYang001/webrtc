@@ -1786,10 +1786,10 @@ void AudioProcessingImpl::UpdateRecommendedInputVolumeLocked() {
   capture_.recommended_input_volume = capture_.applied_input_volume;
 }
 
-bool AudioProcessingImpl::CreateAndAttachAecDump(
-    absl::string_view file_name,
-    int64_t max_log_size_bytes,
-    absl::Nonnull<TaskQueueBase*> worker_queue) {
+bool AudioProcessingImpl::CreateAndAttachAecDump(absl::string_view file_name,
+                                                 int64_t max_log_size_bytes,
+                                                 TaskQueueBase* absl_nonnull
+                                                     worker_queue) {
   std::unique_ptr<AecDump> aec_dump =
       AecDumpFactory::Create(file_name, max_log_size_bytes, worker_queue);
   if (!aec_dump) {
@@ -1800,10 +1800,10 @@ bool AudioProcessingImpl::CreateAndAttachAecDump(
   return true;
 }
 
-bool AudioProcessingImpl::CreateAndAttachAecDump(
-    FILE* handle,
-    int64_t max_log_size_bytes,
-    absl::Nonnull<TaskQueueBase*> worker_queue) {
+bool AudioProcessingImpl::CreateAndAttachAecDump(FILE* handle,
+                                                 int64_t max_log_size_bytes,
+                                                 TaskQueueBase* absl_nonnull
+                                                     worker_queue) {
   std::unique_ptr<AecDump> aec_dump =
       AecDumpFactory::Create(handle, max_log_size_bytes, worker_queue);
   if (!aec_dump) {
