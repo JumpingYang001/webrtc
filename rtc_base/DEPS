@@ -38,4 +38,7 @@ specific_include_rules = {
   "openssl_session_cache\.h": [
     "+openssl",
   ],
+  "base64_benchmark\.cc": [
+    "+benchmark",
+  ],
 }

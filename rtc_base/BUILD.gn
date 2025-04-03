@@ -1798,6 +1798,17 @@ rtc_library("base64") {
 }
 
 if (rtc_include_tests) {
+  if (rtc_enable_google_benchmarks) {
+    rtc_test("base64_benchmark") {
+      sources = [ "base64_benchmark.cc" ]
+      deps = [
+        ":base64",
+        "../test:benchmark_main",
+        "//third_party/google_benchmark",
+      ]
+    }
+  }
+
   rtc_library("sigslot_unittest") {
     testonly = true
     sources = [ "sigslot_unittest.cc" ]
