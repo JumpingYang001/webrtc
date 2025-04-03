@@ -10,23 +10,30 @@
 #include "test/pc/e2e/analyzer/video/analyzing_video_sink.h"
 
 #include <cstddef>
+#include <cstdlib>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
+#include "api/scoped_refptr.h"
 #include "api/test/metrics/metric.h"
 #include "api/test/metrics/metrics_logger.h"
 #include "api/test/pclf/media_configuration.h"
 #include "api/test/video/video_frame_writer.h"
+#include "api/test/video_quality_analyzer_interface.h"
 #include "api/units/timestamp.h"
 #include "api/video/i420_buffer.h"
 #include "api/video/video_frame.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/synchronization/mutex.h"
+#include "system_wrappers/include/clock.h"
+#include "test/pc/e2e/analyzer/video/analyzing_video_sinks_helper.h"
 #include "test/pc/e2e/analyzer/video/simulcast_dummy_buffer_helper.h"
 #include "test/pc/e2e/analyzer/video/video_dumping.h"
 #include "test/pc/e2e/metric_metadata_keys.h"
@@ -117,16 +124,13 @@ void AnalyzingVideoSink::LogMetrics(webrtc::test::MetricsLogger& metrics_logger,
                                     absl::string_view test_case_name) const {
   if (report_infra_stats_) {
     MutexLock lock(&mutex_);
-    const std::string test_case(test_case_name);
-    // TODO(bugs.webrtc.org/14757): Remove kExperimentalTestNameMetadataKey.
     std::map<std::string, std::string> metadata = {
-        {MetricMetadataKey::kPeerMetadataKey, peer_name_},
-        {MetricMetadataKey::kExperimentalTestNameMetadataKey, test_case}};
+        {MetricMetadataKey::kPeerMetadataKey, peer_name_}};
     metrics_logger.LogMetric(
-        "analyzing_sink_processing_time_ms", test_case + "/" + peer_name_,
+        "analyzing_sink_processing_time_ms", test_case_name,
         stats_.analyzing_sink_processing_time_ms, test::Unit::kMilliseconds,
         test::ImprovementDirection::kSmallerIsBetter, metadata);
-    metrics_logger.LogMetric("scaling_tims_ms", test_case + "/" + peer_name_,
+    metrics_logger.LogMetric("scaling_tims_ms", test_case_name,
                              stats_.scaling_tims_ms, test::Unit::kMilliseconds,
                              test::ImprovementDirection::kSmallerIsBetter,
                              metadata);

@@ -10,34 +10,40 @@
 
 #include "test/pc/e2e/stats_based_network_quality_metrics_reporter.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
-#include <memory>
 #include <set>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "absl/flags/flag.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
-#include "api/stats/rtc_stats.h"
+#include "api/stats/rtc_stats_report.h"
 #include "api/stats/rtcstats_objects.h"
 #include "api/test/metrics/metric.h"
+#include "api/test/metrics/metrics_logger.h"
 #include "api/test/network_emulation/network_emulation_interfaces.h"
 #include "api/test/network_emulation_manager.h"
+#include "api/test/track_id_stream_info_map.h"
 #include "api/units/data_rate.h"
+#include "api/units/data_size.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/event.h"
 #include "rtc_base/ip_address.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/system/no_unique_address.h"
-#include "system_wrappers/include/field_trial.h"
+#include "rtc_base/thread_annotations.h"
 #include "test/pc/e2e/metric_metadata_keys.h"
+#include "test/test_flags.h"
 
 namespace webrtc {
 namespace webrtc_pc_e2e {
@@ -358,10 +364,8 @@ void StatsBasedNetworkQualityMetricsReporter::ReportStats(
     const NetworkLayerStats& network_layer_stats,
     int64_t packet_loss,
     const Timestamp& end_time) {
-  // TODO(bugs.webrtc.org/14757): Remove kExperimentalTestNameMetadataKey.
   std::map<std::string, std::string> metric_metadata{
-      {MetricMetadataKey::kPeerMetadataKey, pc_label},
-      {MetricMetadataKey::kExperimentalTestNameMetadataKey, test_case_name_}};
+      {MetricMetadataKey::kPeerMetadataKey, pc_label}};
   metrics_logger_->LogSingleValueMetric(
       "bytes_discarded_no_receiver", GetTestCaseName(pc_label),
       network_layer_stats.endpoints_stats.overall_incoming_stats
@@ -412,9 +416,10 @@ void StatsBasedNetworkQualityMetricsReporter::ReportStats(
 
 std::string StatsBasedNetworkQualityMetricsReporter::GetTestCaseName(
     absl::string_view network_label) const {
-  StringBuilder builder;
-  builder << test_case_name_ << "/" << network_label.data();
-  return builder.str();
+  if (!absl::GetFlag(FLAGS_isolated_script_test_perf_output).empty()) {
+    return test_case_name_ + "/" + std::string(network_label);
+  }
+  return test_case_name_;
 }
 
 void StatsBasedNetworkQualityMetricsReporter::LogNetworkLayerStats(
@@ -428,10 +433,8 @@ void StatsBasedNetworkQualityMetricsReporter::LogNetworkLayerStats(
       stats.endpoints_stats.overall_incoming_stats.packets_received >= 2
           ? stats.endpoints_stats.overall_incoming_stats.AverageReceiveRate()
           : DataRate::Zero();
-  // TODO(bugs.webrtc.org/14757): Remove kExperimentalTestNameMetadataKey.
   std::map<std::string, std::string> metric_metadata{
-      {MetricMetadataKey::kPeerMetadataKey, peer_name},
-      {MetricMetadataKey::kExperimentalTestNameMetadataKey, test_case_name_}};
+      {MetricMetadataKey::kPeerMetadataKey, peer_name}};
   StringBuilder log;
   log << "Raw network layer statistic for [" << peer_name << "]:\n"
       << "Local IPs:\n";
