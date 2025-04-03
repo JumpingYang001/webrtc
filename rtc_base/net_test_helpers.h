@@ -15,12 +15,13 @@
 
 namespace webrtc {
 
-bool HasIPv4Enabled();
+RTC_EXPORT bool HasIPv4Enabled();
 RTC_EXPORT bool HasIPv6Enabled();
 
 }  // namespace webrtc
 
 namespace rtc {
+using webrtc::HasIPv4Enabled;
 using webrtc::HasIPv6Enabled;
 }
 
