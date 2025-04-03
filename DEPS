@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': 'f2812e793ca6cd373254a97abe2839e7012cf9af',
+  'chromium_revision': 'c6ae2d7757a4d9c45da7b0ad7bcd47d8133cc419',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -75,13 +75,13 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@9b26cef2c0fb976771d3655f9d7ad838419e390f',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@579ee5ef12b3d14a3396c6014bc5e93fb561f34c',
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@576e7554b916950e7f15c60f0105d2c50c88f505',
+    'https://chromium.googlesource.com/chromium/src/testing@3854c0d55c80119ab1977b4be7b17cac85031dd5',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@c22170aab3489da4da6367437841009396e050f6',
+    'https://chromium.googlesource.com/chromium/src/third_party@e85daf0384b82b8ab18d6c4baae93ca405188836',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -313,7 +313,7 @@ deps = {
   'src/third_party/breakpad/breakpad':
     'https://chromium.googlesource.com/breakpad/breakpad.git@884742b238232b434fa03a284372ee3b5bb96a08',
   'src/third_party/catapult':
-    'https://chromium.googlesource.com/catapult.git@8010a1b2f59fe654ca2a5966902a5ebd38d00cb7',
+    'https://chromium.googlesource.com/catapult.git@7236fd6c03b5c8f0e31e37207419cfdbe7bfee98',
   'src/third_party/ced/src': {
     'url': 'https://chromium.googlesource.com/external/github.com/google/compact_enc_det.git@ba412eaaacd3186085babcd901679a48863c7dd5',
   },
@@ -342,7 +342,7 @@ deps = {
   'src/third_party/freetype/src':
     'https://chromium.googlesource.com/chromium/src/third_party/freetype2.git@82090e67c24259c343c83fd9cefe6ff0be7a7eca',
   'src/third_party/harfbuzz-ng/src':
-    'https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git@8efd2d85c78fbba6ca09a3e454f77525f3b296ce',
+    'https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git@9f83bbbe64654b45ba5bb06927ff36c2e7588495',
   'src/third_party/google_benchmark/src': {
     'url': 'https://chromium.googlesource.com/external/github.com/google/benchmark.git@761305ec3b33abf30e08d50eb829e19a802581cc',
   },
@@ -485,7 +485,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@a3c5fe0e54a006bbebc2d54cdeeb1de12cf8986c',
+    'https://chromium.googlesource.com/chromium/src/tools@30615716efc95f6152b125f9f58c72c51d1bb6e5',
 
   'src/third_party/espresso': {
       'packages': [
