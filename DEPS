@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': '479c058ca2d23d2f71640a4a816dcda8487efa5f',
+  'chromium_revision': 'f2812e793ca6cd373254a97abe2839e7012cf9af',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -33,7 +33,7 @@ vars = {
 
   # By default, download the fuchsia sdk from the public sdk directory.
   'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/core/',
-  'fuchsia_version': 'version:27.20250326.5.1',
+  'fuchsia_version': 'version:27.20250402.5.1',
   # By default, download the fuchsia images from the fuchsia GCS bucket.
   'fuchsia_images_bucket': 'fuchsia',
   'checkout_fuchsia': False,
@@ -66,7 +66,7 @@ deps = {
   'src/base':
     'https://chromium.googlesource.com/chromium/src/base@b0ecf00319ecd3ab74bec7d3adf567acacba506a',
   'src/build':
-    'https://chromium.googlesource.com/chromium/src/build@2950487dcd103d8ed1022ebed91ebe2c44e01d5a',
+    'https://chromium.googlesource.com/chromium/src/build@26ff83f04895841b0a22ce0009ab56d15782fc1d',
   'src/buildtools':
     'https://chromium.googlesource.com/chromium/src/buildtools@4b3b2242db3a2124c5251d4123eb424fafbbee7b',
   # Gradle 6.6.1. Used for testing Android Studio project generation for WebRTC.
@@ -79,9 +79,9 @@ deps = {
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@31101839b3b56d782701d9db174ea022b201edef',
+    'https://chromium.googlesource.com/chromium/src/testing@576e7554b916950e7f15c60f0105d2c50c88f505',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@61b45617a8ffc0aaa16d24913991c4cfb65d15de',
+    'https://chromium.googlesource.com/chromium/src/third_party@c22170aab3489da4da6367437841009396e050f6',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -332,7 +332,7 @@ deps = {
   'src/third_party/flatbuffers/src':
     'https://chromium.googlesource.com/external/github.com/google/flatbuffers.git@8db59321d9f02cdffa30126654059c7d02f70c32',
   'src/third_party/grpc/src': {
-    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@2b149599d9365cae8bdb9c5b8900b67a936c3ff4',
+    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@4eacaf78be4b533160cb3ff479eac8405316d699',
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -485,7 +485,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@252128f6c36f9f2eb52eba52e845ecb78bcc03d6',
+    'https://chromium.googlesource.com/chromium/src/tools@a3c5fe0e54a006bbebc2d54cdeeb1de12cf8986c',
 
   'src/third_party/espresso': {
       'packages': [
