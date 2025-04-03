@@ -24,14 +24,12 @@
 #include "api/candidate.h"
 #include "api/field_trials_view.h"
 #include "api/packet_socket_factory.h"
-#include "api/task_queue/task_queue_base.h"
 #include "p2p/base/connection.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_interface.h"
 #include "p2p/base/stun_request.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/dscp.h"
-#include "rtc_base/network.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_constants.h"
@@ -64,25 +62,6 @@ class RTC_EXPORT UDPPort : public Port {
     }
     return port;
   }
-  [[deprecated("Pass arguments using PortParametersRef")]] static std::
-      unique_ptr<UDPPort>
-      Create(webrtc::TaskQueueBase* thread,
-             webrtc::PacketSocketFactory* factory,
-             const webrtc::Network* network,
-             webrtc::AsyncPacketSocket* socket,
-             absl::string_view username,
-             absl::string_view password,
-             bool emit_local_for_anyaddress,
-             std::optional<int> stun_keepalive_interval,
-             const webrtc::FieldTrialsView* field_trials = nullptr) {
-    return Create({.network_thread = thread,
-                   .socket_factory = factory,
-                   .network = network,
-                   .ice_username_fragment = username,
-                   .ice_password = password,
-                   .field_trials = field_trials},
-                  socket, emit_local_for_anyaddress, stun_keepalive_interval);
-  }
 
   static std::unique_ptr<UDPPort> Create(
       const PortParametersRef& args,
@@ -99,27 +78,6 @@ class RTC_EXPORT UDPPort : public Port {
       return nullptr;
     }
     return port;
-  }
-  [[deprecated("Pass arguments using PortParametersRef")]] static std::
-      unique_ptr<UDPPort>
-      Create(webrtc::TaskQueueBase* thread,
-             webrtc::PacketSocketFactory* factory,
-             const webrtc::Network* network,
-             uint16_t min_port,
-             uint16_t max_port,
-             absl::string_view username,
-             absl::string_view password,
-             bool emit_local_for_anyaddress,
-             std::optional<int> stun_keepalive_interval,
-             const webrtc::FieldTrialsView* field_trials = nullptr) {
-    return Create({.network_thread = thread,
-                   .socket_factory = factory,
-                   .network = network,
-                   .ice_username_fragment = username,
-                   .ice_password = password,
-                   .field_trials = field_trials},
-                  min_port, max_port, emit_local_for_anyaddress,
-                  stun_keepalive_interval);
   }
 
   ~UDPPort() override;
@@ -305,18 +263,7 @@ class StunPort : public UDPPort {
       uint16_t max_port,
       const ServerAddresses& servers,
       std::optional<int> stun_keepalive_interval);
-  [[deprecated("Pass arguments using PortParametersRef")]] static std::
-      unique_ptr<StunPort>
-      Create(webrtc::TaskQueueBase* thread,
-             webrtc::PacketSocketFactory* factory,
-             const webrtc::Network* network,
-             uint16_t min_port,
-             uint16_t max_port,
-             absl::string_view username,
-             absl::string_view password,
-             const ServerAddresses& servers,
-             std::optional<int> stun_keepalive_interval,
-             const webrtc::FieldTrialsView* field_trials);
+
   void PrepareAddress() override;
 
  protected:

@@ -123,11 +123,6 @@ Port::Port(const PortParametersRef& args,
     : env_(args.env),
       thread_(args.network_thread),
       factory_(args.socket_factory),
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      field_trials_(env_.has_value() ? &env_->field_trials()
-                                     : args.field_trials),
-#pragma clang diagnostic pop
       type_(type),
       send_retransmit_count_attribute_(false),
       network_(args.network),
@@ -142,7 +137,7 @@ Port::Port(const PortParametersRef& args,
       ice_role_(ICEROLE_UNKNOWN),
       tiebreaker_(0),
       shared_socket_(shared_socket),
-      network_cost_(args.network->GetCost(*field_trials_)),
+      network_cost_(args.network->GetCost(env_.field_trials())),
       weak_factory_(this) {
   RTC_DCHECK_RUN_ON(thread_);
   RTC_DCHECK(factory_ != nullptr);
@@ -252,7 +247,7 @@ void Port::AddAddress(const webrtc::SocketAddress& address,
 
   c.set_priority(
       c.GetPriority(type_preference, network_->preference(), relay_preference,
-                    field_trials_->IsEnabled(
+                    field_trials().IsEnabled(
                         "WebRTC-IncreaseIceCandidatePriorityHostSrflx")));
 #if RTC_DCHECK_IS_ON
   if (protocol == TCP_PROTOCOL_NAME && c.is_local()) {

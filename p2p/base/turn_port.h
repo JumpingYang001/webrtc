@@ -24,9 +24,7 @@
 #include "absl/strings/string_view.h"
 #include "api/async_dns_resolver.h"
 #include "api/candidate.h"
-#include "api/packet_socket_factory.h"
 #include "api/task_queue/pending_task_safety_flag.h"
-#include "api/task_queue/task_queue_base.h"
 #include "api/transport/stun.h"
 #include "p2p/base/connection.h"
 #include "p2p/base/port.h"
@@ -38,7 +36,6 @@
 #include "rtc_base/dscp.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/network.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/socket.h"
@@ -99,11 +96,7 @@ class TurnPort : public Port {
                       .socket_factory = args.socket_factory,
                       .network = args.network,
                       .ice_username_fragment = args.username,
-                      .ice_password = args.password,
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                      .field_trials = args.field_trials},
-#pragma clang diagnostic pop
+                      .ice_password = args.password},
                      socket, *args.server_address, args.config->credentials,
                      args.relative_priority, args.config->tls_alpn_protocols,
                      args.config->tls_elliptic_curves, args.turn_customizer,
@@ -125,11 +118,7 @@ class TurnPort : public Port {
          .socket_factory = args.socket_factory,
          .network = args.network,
          .ice_username_fragment = args.username,
-         .ice_password = args.password,
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-         .field_trials = args.field_trials},
-#pragma clang diagnostic pop
+         .ice_password = args.password},
         min_port, max_port, *args.server_address, args.config->credentials,
         args.relative_priority, args.config->tls_alpn_protocols,
         args.config->tls_elliptic_curves, args.turn_customizer,
@@ -248,39 +237,6 @@ class TurnPort : public Port {
            const std::vector<std::string>& tls_elliptic_curves,
            webrtc::TurnCustomizer* customizer,
            webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr);
-
-  [[deprecated("Pass arguments using PortParametersRef")]] TurnPort(
-      webrtc::TaskQueueBase* thread,
-      webrtc::PacketSocketFactory* factory,
-      const webrtc::Network* network,
-      webrtc::AsyncPacketSocket* socket,
-      absl::string_view username,
-      absl::string_view password,
-      const ProtocolAddress& server_address,
-      const webrtc::RelayCredentials& credentials,
-      int server_priority,
-      const std::vector<std::string>& tls_alpn_protocols,
-      const std::vector<std::string>& tls_elliptic_curves,
-      webrtc::TurnCustomizer* customizer,
-      webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
-      const webrtc::FieldTrialsView* field_trials = nullptr);
-
-  [[deprecated("Pass arguments using PortParametersRef")]] TurnPort(
-      webrtc::TaskQueueBase* thread,
-      webrtc::PacketSocketFactory* factory,
-      const webrtc::Network* network,
-      uint16_t min_port,
-      uint16_t max_port,
-      absl::string_view username,
-      absl::string_view password,
-      const ProtocolAddress& server_address,
-      const webrtc::RelayCredentials& credentials,
-      int server_priority,
-      const std::vector<std::string>& tls_alpn_protocols,
-      const std::vector<std::string>& tls_elliptic_curves,
-      webrtc::TurnCustomizer* customizer,
-      webrtc::SSLCertificateVerifier* tls_cert_verifier = nullptr,
-      const webrtc::FieldTrialsView* field_trials = nullptr);
 
   // NOTE: This method needs to be accessible for StunPort
   // return true if entry was created (i.e channel_number consumed).

@@ -24,7 +24,6 @@
 #include "api/candidate.h"
 #include "api/field_trials_view.h"
 #include "api/packet_socket_factory.h"
-#include "api/task_queue/task_queue_base.h"
 #include "api/transport/stun.h"
 #include "p2p/base/connection.h"
 #include "p2p/base/p2p_constants.h"
@@ -644,26 +643,6 @@ std::unique_ptr<StunPort> StunPort::Create(
     return nullptr;
   }
   return port;
-}
-
-std::unique_ptr<StunPort> StunPort::Create(
-    webrtc::TaskQueueBase* thread,
-    webrtc::PacketSocketFactory* factory,
-    const webrtc::Network* network,
-    uint16_t min_port,
-    uint16_t max_port,
-    absl::string_view username,
-    absl::string_view password,
-    const ServerAddresses& servers,
-    std::optional<int> stun_keepalive_interval,
-    const webrtc::FieldTrialsView* field_trials) {
-  return Create({.network_thread = thread,
-                 .socket_factory = factory,
-                 .network = network,
-                 .ice_username_fragment = username,
-                 .ice_password = password,
-                 .field_trials = field_trials},
-                min_port, max_port, servers, stun_keepalive_interval);
 }
 
 StunPort::StunPort(const PortParametersRef& args,

@@ -30,7 +30,6 @@
 #include "api/packet_socket_factory.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/task_queue_base.h"
-#include "api/transport/field_trial_based_config.h"
 #include "api/transport/stun.h"
 #include "p2p/base/candidate_pair_interface.h"
 #include "p2p/base/connection.h"
@@ -40,7 +39,6 @@
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/callback_list.h"
 #include "rtc_base/dscp.h"
-#include "rtc_base/memory/always_valid_pointer.h"
 #include "rtc_base/network.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
@@ -165,16 +163,12 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // A struct containing common arguments to creating a port. See also
   // CreateRelayPortArgs.
   struct PortParametersRef {
-    // TODO: bugs.webrtc.org/405883462 - Make Environment non-optional when
-    // provided by all callers.
-    std::optional<webrtc::Environment> env;
+    webrtc::Environment env;
     webrtc::TaskQueueBase* network_thread;
     webrtc::PacketSocketFactory* socket_factory;
     const webrtc::Network* network;
     absl::string_view ice_username_fragment;
     absl::string_view ice_password;
-    [[deprecated("bugs.webrtc.org/405883462")]] const webrtc::FieldTrialsView*
-        field_trials = nullptr;
   };
 
  protected:
@@ -438,7 +432,9 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
     mdns_name_registration_status_ = status;
   }
 
-  const webrtc::FieldTrialsView& field_trials() const { return *field_trials_; }
+  const webrtc::FieldTrialsView& field_trials() const {
+    return env_.field_trials();
+  }
 
   webrtc::IceCandidateType type() const { return type_; }
 
@@ -464,14 +460,9 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
 
   void OnNetworkTypeChanged(const webrtc::Network* network);
 
-  // TODO: bugs.webrtc.org/405883462 - Make Environment non-optional and remove
-  // `field_trials_` when Environment is provided by all constructors.
-  const std::optional<webrtc::Environment> env_;
+  const webrtc::Environment env_;
   webrtc::TaskQueueBase* const thread_;
   webrtc::PacketSocketFactory* const factory_;
-  webrtc::AlwaysValidPointer<const webrtc::FieldTrialsView,
-                             webrtc::FieldTrialBasedConfig>
-      field_trials_;
   const webrtc::IceCandidateType type_;
   bool send_retransmit_count_attribute_;
   const webrtc::Network* network_;

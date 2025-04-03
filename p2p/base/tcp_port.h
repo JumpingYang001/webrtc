@@ -19,11 +19,8 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/candidate.h"
-#include "api/field_trials_view.h"
-#include "api/packet_socket_factory.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
-#include "api/task_queue/task_queue_base.h"
 #include "api/transport/stun.h"
 #include "p2p/base/connection.h"
 #include "p2p/base/port.h"
@@ -32,7 +29,6 @@
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/containers/flat_map.h"
-#include "rtc_base/network.h"
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/socket.h"
@@ -60,25 +56,7 @@ class TCPPort : public Port {
     return absl::WrapUnique(
         new TCPPort(args, min_port, max_port, allow_listen));
   }
-  [[deprecated("Pass arguments using PortParametersRef")]] static std::
-      unique_ptr<TCPPort>
-      Create(webrtc::TaskQueueBase* thread,
-             webrtc::PacketSocketFactory* factory,
-             const webrtc::Network* network,
-             uint16_t min_port,
-             uint16_t max_port,
-             absl::string_view username,
-             absl::string_view password,
-             bool allow_listen,
-             const webrtc::FieldTrialsView* field_trials = nullptr) {
-    return Create({.network_thread = thread,
-                   .socket_factory = factory,
-                   .network = network,
-                   .ice_username_fragment = username,
-                   .ice_password = password,
-                   .field_trials = field_trials},
-                  min_port, max_port, allow_listen);
-  }
+
   ~TCPPort() override;
 
   Connection* CreateConnection(const webrtc::Candidate& address,

@@ -25,7 +25,6 @@
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "api/candidate.h"
-#include "api/field_trials_view.h"
 #include "api/packet_socket_factory.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/pending_task_safety_flag.h"
@@ -290,64 +289,6 @@ TurnPort::TurnPort(const PortParametersRef& args,
       allocate_mismatch_retries_(0),
       turn_customizer_(customizer) {}
 
-TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
-                   webrtc::PacketSocketFactory* factory,
-                   const webrtc::Network* network,
-                   webrtc::AsyncPacketSocket* socket,
-                   absl::string_view username,
-                   absl::string_view password,
-                   const ProtocolAddress& server_address,
-                   const webrtc::RelayCredentials& credentials,
-                   int server_priority,
-                   const std::vector<std::string>& tls_alpn_protocols,
-                   const std::vector<std::string>& tls_elliptic_curves,
-                   webrtc::TurnCustomizer* customizer,
-                   webrtc::SSLCertificateVerifier* tls_cert_verifier,
-                   const webrtc::FieldTrialsView* field_trials)
-    : TurnPort({.network_thread = thread,
-                .socket_factory = factory,
-                .network = network,
-                .ice_username_fragment = username,
-                .ice_password = password,
-                .field_trials = field_trials},
-               socket,
-               server_address,
-               credentials,
-               server_priority,
-               tls_alpn_protocols,
-               tls_elliptic_curves,
-               customizer,
-               tls_cert_verifier) {}
-TurnPort::TurnPort(webrtc::TaskQueueBase* thread,
-                   webrtc::PacketSocketFactory* factory,
-                   const webrtc::Network* network,
-                   uint16_t min_port,
-                   uint16_t max_port,
-                   absl::string_view username,
-                   absl::string_view password,
-                   const ProtocolAddress& server_address,
-                   const webrtc::RelayCredentials& credentials,
-                   int server_priority,
-                   const std::vector<std::string>& tls_alpn_protocols,
-                   const std::vector<std::string>& tls_elliptic_curves,
-                   webrtc::TurnCustomizer* customizer,
-                   webrtc::SSLCertificateVerifier* tls_cert_verifier,
-                   const webrtc::FieldTrialsView* field_trials)
-    : TurnPort({.network_thread = thread,
-                .socket_factory = factory,
-                .network = network,
-                .ice_username_fragment = username,
-                .ice_password = password,
-                .field_trials = field_trials},
-               min_port,
-               max_port,
-               server_address,
-               credentials,
-               server_priority,
-               tls_alpn_protocols,
-               tls_elliptic_curves,
-               customizer,
-               tls_cert_verifier) {}
 
 TurnPort::~TurnPort() {
   // TODO(juberti): Should this even be necessary?
