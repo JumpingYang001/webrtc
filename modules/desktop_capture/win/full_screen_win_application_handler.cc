@@ -103,31 +103,29 @@ class FullScreenPowerPointHandler : public FullScreenApplicationHandler {
       return 0;
 
     HWND original_window = reinterpret_cast<HWND>(GetSourceId());
-    DWORD process_id = WindowProcessId(original_window);
-
-    DesktopCapturer::SourceList powerpoint_windows =
-        GetProcessWindows(window_list, process_id, original_window);
-
-    if (powerpoint_windows.empty())
-      return 0;
-
     if (GetWindowType(original_window) != WindowType::kEditor)
       return 0;
 
-    const auto original_document = GetDocumentFromEditorTitle(original_window);
+    DesktopCapturer::SourceList powerpoint_windows = GetProcessWindows(
+        window_list, WindowProcessId(original_window), original_window);
 
+    // No relevant window with the same process id as the `original_window` was
+    // found.
+    if (powerpoint_windows.empty())
+      return 0;
+
+    const std::string original_document_title =
+        GetDocumentTitleFromEditor(original_window);
     for (const auto& source : powerpoint_windows) {
       HWND window = reinterpret_cast<HWND>(source.id);
 
-      // Looking for slide show window for the same document
-      if (GetWindowType(window) != WindowType::kSlideShow ||
-          GetDocumentFromSlideShowTitle(window) != original_document) {
-        continue;
+      // Looking for fullscreen slide show window for the corresponding editor
+      // document
+      if (GetWindowType(window) == WindowType::kSlideShow &&
+          GetDocumentTitleFromSlideShow(window) == original_document_title) {
+        return source.id;
       }
-
-      return source.id;
     }
-
     return 0;
   }
 
@@ -143,33 +141,41 @@ class FullScreenPowerPointHandler : public FullScreenApplicationHandler {
       return WindowType::kOther;
   }
 
-  constexpr static char kDocumentTitleSeparator[] = " - ";
+  constexpr static char kDocumentTitleSeparator = '-';
 
-  std::string GetDocumentFromEditorTitle(HWND window) const {
+  // This function extracts the title from the editor. It needs to be
+  // updated everytime PowerPoint changes its editor title format. Currently, it
+  // supports editor title in the format "Window - Title - PowerPoint".
+  std::string GetDocumentTitleFromEditor(HWND window) const {
     std::string title = WindowText(window);
-    auto position = title.find(kDocumentTitleSeparator);
-    return std::string(absl::StripAsciiWhitespace(
-        absl::string_view(title).substr(0, position)));
+    return std::string(
+        absl::StripAsciiWhitespace(absl::string_view(title).substr(
+            0, title.rfind(kDocumentTitleSeparator))));
   }
 
-  std::string GetDocumentFromSlideShowTitle(HWND window) const {
+  // This function extracts the title from the slideshow when PowerPoint goes
+  // fullscreen. This function needs to be updated whenever PowerPoint changes
+  // its title format. Currently, it supports Fullscreen titles of the format
+  // "PowerPoint Slide Show - [Window - Title]" or "PowerPoint Slide Show -
+  // Window - Title".
+  std::string GetDocumentTitleFromSlideShow(HWND window) const {
     std::string title = WindowText(window);
-    auto left_pos = title.find(kDocumentTitleSeparator);
-    auto right_pos = title.rfind(kDocumentTitleSeparator);
-    constexpr size_t kSeparatorLength = arraysize(kDocumentTitleSeparator) - 1;
-    if (left_pos == std::string::npos || right_pos == std::string::npos)
-      return title;
-
-    if (right_pos > left_pos + kSeparatorLength) {
-      auto result_len = right_pos - left_pos - kSeparatorLength;
-      auto document = absl::string_view(title).substr(
-          left_pos + kSeparatorLength, result_len);
-      return std::string(absl::StripAsciiWhitespace(document));
-    } else {
-      auto document = absl::string_view(title).substr(
-          left_pos + kSeparatorLength, std::wstring::npos);
-      return std::string(absl::StripAsciiWhitespace(document));
+    auto position = title.find(kDocumentTitleSeparator);
+    if (position != std::string::npos) {
+      title = std::string(absl::StripAsciiWhitespace(
+          absl::string_view(title).substr(position + 1, std::wstring::npos)));
     }
+
+    auto left_bracket_pos = title.find("[");
+    auto right_bracket_pos = title.rfind("]");
+    if (left_bracket_pos == std::string::npos ||
+        right_bracket_pos == std::string::npos ||
+        right_bracket_pos <= left_bracket_pos) {
+      return title;
+    }
+
+    return std::string(absl::StripAsciiWhitespace(title.substr(
+        left_bracket_pos + 1, right_bracket_pos - left_bracket_pos - 1)));
   }
 
   bool IsEditorWindow(HWND window) const {
