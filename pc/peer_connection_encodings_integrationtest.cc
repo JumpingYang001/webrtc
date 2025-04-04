@@ -243,7 +243,7 @@ class PeerConnectionEncodingsIntegrationTest : public ::testing::Test {
   rtc::scoped_refptr<RtpTransceiverInterface> AddTransceiverWithSimulcastLayers(
       rtc::scoped_refptr<PeerConnectionTestWrapper> local,
       rtc::scoped_refptr<PeerConnectionTestWrapper> remote,
-      std::vector<cricket::SimulcastLayer> init_layers) {
+      std::vector<SimulcastLayer> init_layers) {
     rtc::scoped_refptr<MediaStreamInterface> stream = local->GetUserMedia(
         /*audio=*/false, cricket::AudioOptions(), /*video=*/true,
         {.width = 1280, .height = 720});
@@ -328,8 +328,7 @@ class PeerConnectionEncodingsIntegrationTest : public ::testing::Test {
         SetLocalDescription(local_pc_wrapper, offer.get());
     // Modify the offer before handoff because `remote_pc_wrapper` only supports
     // receiving singlecast.
-    cricket::SimulcastDescription simulcast_description =
-        RemoveSimulcast(offer.get());
+    SimulcastDescription simulcast_description = RemoveSimulcast(offer.get());
     rtc::scoped_refptr<MockSetSessionDescriptionObserver> p2 =
         SetRemoteDescription(remote_pc_wrapper, offer.get());
     EXPECT_TRUE(Await({p1, p2}));
@@ -344,9 +343,9 @@ class PeerConnectionEncodingsIntegrationTest : public ::testing::Test {
     MediaContentDescription* mcd_answer =
         answer->description()->contents()[0].media_description();
     mcd_answer->mutable_streams().clear();
-    std::vector<cricket::SimulcastLayer> simulcast_layers =
+    std::vector<SimulcastLayer> simulcast_layers =
         simulcast_description.send_layers().GetAllLayers();
-    cricket::SimulcastLayerList& receive_layers =
+    SimulcastLayerList& receive_layers =
         mcd_answer->simulcast_description().receive_layers();
     for (const auto& layer : simulcast_layers) {
       receive_layers.AddLayer(layer);
@@ -437,8 +436,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
                                         layers);
@@ -474,8 +472,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
                                         layers);
@@ -526,8 +523,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
                                         layers);
@@ -581,8 +577,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
                                         layers);
@@ -651,7 +646,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -700,8 +695,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
                                         layers);
@@ -758,7 +752,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -810,7 +804,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -867,7 +861,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -960,7 +954,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1026,7 +1020,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1105,7 +1099,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest, VP9_OneLayerActive_LegacySvc) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1143,7 +1137,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1180,7 +1174,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1220,7 +1214,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest, VP9_TargetBitrate_LegacyL1T3) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1270,7 +1264,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest, VP9_TargetBitrate_StandardL1T3) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -1324,7 +1318,7 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2427,7 +2421,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest, AllLayersInactive) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"f", "h", "q"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2471,7 +2465,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest, Simulcast) {
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2542,7 +2536,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2618,7 +2612,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2705,7 +2699,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2802,7 +2796,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
 
   // Configure {20p,40p,80p} with 2:1 aspect ratio.
@@ -2858,7 +2852,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
@@ -2929,8 +2923,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
 
   // This transceiver receives a 1280x720 source.
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
@@ -2990,8 +2983,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
 
   // This transceiver receives a 1280x720 source.
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
@@ -3029,8 +3021,7 @@ TEST_P(PeerConnectionEncodingsIntegrationParameterizedTest,
   rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
 
   // This transceiver receives a 1280x720 source.
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
@@ -3187,7 +3178,7 @@ TEST_F(PeerConnectionEncodingsFakeCodecsIntegrationTest, H265Simulcast) {
       CreatePcWithFakeH265();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
+  std::vector<SimulcastLayer> layers =
       CreateLayers({"q", "h", "f"}, /*active=*/true);
 
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
@@ -3229,8 +3220,7 @@ TEST_F(PeerConnectionEncodingsFakeCodecsIntegrationTest,
       CreatePcWithFakeH265();
   ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
 
-  std::vector<cricket::SimulcastLayer> layers =
-      CreateLayers({"f"}, /*active=*/true);
+  std::vector<SimulcastLayer> layers = CreateLayers({"f"}, /*active=*/true);
 
   rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
       AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,

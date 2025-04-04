@@ -235,13 +235,13 @@ bool SrtpTransport::SetRtcpParams(
     return false;
   }
 
-  send_rtcp_session_.reset(new cricket::SrtpSession(field_trials_));
+  send_rtcp_session_.reset(new SrtpSession(field_trials_));
   if (!send_rtcp_session_->SetSend(send_crypto_suite, send_key,
                                    send_extension_ids)) {
     return false;
   }
 
-  recv_rtcp_session_.reset(new cricket::SrtpSession(field_trials_));
+  recv_rtcp_session_.reset(new SrtpSession(field_trials_));
   if (!recv_rtcp_session_->SetReceive(recv_crypto_suite, recv_key,
                                       recv_extension_ids)) {
     return false;
@@ -273,8 +273,8 @@ void SrtpTransport::ResetParams() {
 }
 
 void SrtpTransport::CreateSrtpSessions() {
-  send_session_.reset(new cricket::SrtpSession(field_trials_));
-  recv_session_.reset(new cricket::SrtpSession(field_trials_));
+  send_session_.reset(new SrtpSession(field_trials_));
+  recv_session_.reset(new SrtpSession(field_trials_));
   if (external_auth_enabled_) {
     send_session_->EnableExternalAuth();
   }

@@ -13,15 +13,15 @@
 #include "absl/strings/string_view.h"
 #include "test/gtest.h"
 
-using cricket::UsedIds;
-using cricket::UsedRtpHeaderExtensionIds;
+using ::webrtc::UsedIds;
+using ::webrtc::UsedRtpHeaderExtensionIds;
 
 struct Foo {
   int id;
 };
 
 TEST(UsedIdsTest, UniqueIdsAreUnchanged) {
-  UsedIds<Foo> used_ids(1, 5);
+  webrtc::UsedIds<Foo> used_ids(1, 5);
   for (int i = 1; i <= 5; ++i) {
     Foo id = {i};
     used_ids.FindAndSetIdUsed(&id);
@@ -30,7 +30,7 @@ TEST(UsedIdsTest, UniqueIdsAreUnchanged) {
 }
 
 TEST(UsedIdsTest, IdsOutsideRangeAreUnchanged) {
-  UsedIds<Foo> used_ids(1, 5);
+  webrtc::UsedIds<Foo> used_ids(1, 5);
 
   Foo id_11 = {11};
   Foo id_12 = {12};
@@ -51,7 +51,7 @@ TEST(UsedIdsTest, IdsOutsideRangeAreUnchanged) {
 }
 
 TEST(UsedIdsTest, CollisionsAreReassignedIdsInReverseOrder) {
-  UsedIds<Foo> used_ids(1, 10);
+  webrtc::UsedIds<Foo> used_ids(1, 10);
   Foo id_1 = {1};
   Foo id_2 = {2};
   Foo id_2_collision = {2};

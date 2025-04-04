@@ -32,7 +32,7 @@
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
-namespace rtc {
+namespace webrtc {
 
 std::vector<int> kEncryptedHeaderExtensionIds;
 
@@ -79,11 +79,11 @@ class SrtpSessionTest : public ::testing::Test {
     EXPECT_EQ(
         0, std::memcmp(kRtcpReport, rtcp_packet_.data(), rtcp_packet_.size()));
   }
-  webrtc::test::ScopedKeyValueConfig field_trials_;
-  cricket::SrtpSession s1_;
-  cricket::SrtpSession s2_;
-  rtc::CopyOnWriteBuffer rtp_packet_;
-  rtc::CopyOnWriteBuffer rtcp_packet_;
+  test::ScopedKeyValueConfig field_trials_;
+  SrtpSession s1_;
+  SrtpSession s2_;
+  CopyOnWriteBuffer rtp_packet_;
+  CopyOnWriteBuffer rtcp_packet_;
   size_t rtp_len_;
   size_t rtcp_len_;
 };
@@ -196,12 +196,12 @@ TEST_F(SrtpSessionTest, TestBuffersTooSmall) {
   EXPECT_TRUE(s1_.SetSend(webrtc::kSrtpAes128CmSha1_80, webrtc::kTestKey1,
                           kEncryptedHeaderExtensionIds));
   // This buffer does not have extra capacity which we treat as an error.
-  rtc::CopyOnWriteBuffer rtp_packet(rtp_packet_.data(), rtp_packet_.size(),
-                                    rtp_packet_.size());
+  CopyOnWriteBuffer rtp_packet(rtp_packet_.data(), rtp_packet_.size(),
+                               rtp_packet_.size());
   EXPECT_FALSE(s1_.ProtectRtp(rtp_packet));
   // This buffer does not have extra capacity which we treat as an error.
-  rtc::CopyOnWriteBuffer rtcp_packet(rtcp_packet_.data(), rtcp_packet_.size(),
-                                     rtcp_packet_.size());
+  CopyOnWriteBuffer rtcp_packet(rtcp_packet_.data(), rtcp_packet_.size(),
+                                rtcp_packet_.size());
   EXPECT_FALSE(s1_.ProtectRtcp(rtcp_packet));
 }
 
@@ -309,8 +309,7 @@ TEST_F(SrtpSessionTest, ProtectUnprotectWrapAroundRocMismatch) {
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       // clang-format on
   };
-  rtc::CopyOnWriteBuffer packet1(kFrame1, sizeof(kFrame1) - 10,
-                                 sizeof(kFrame1));
+  CopyOnWriteBuffer packet1(kFrame1, sizeof(kFrame1) - 10, sizeof(kFrame1));
   unsigned char kFrame2[] = {
       // clang-format off
       // PT=0, SN=1, TS=0, SSRC=1
@@ -320,8 +319,7 @@ TEST_F(SrtpSessionTest, ProtectUnprotectWrapAroundRocMismatch) {
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       // clang-format on
   };
-  rtc::CopyOnWriteBuffer packet2(kFrame2, sizeof(kFrame2) - 10,
-                                 sizeof(kFrame1));
+  CopyOnWriteBuffer packet2(kFrame2, sizeof(kFrame2) - 10, sizeof(kFrame1));
   const unsigned char kPayload[] = {0xBE, 0xEF};
 
   // Encrypt the frames in-order. There is a sequence number rollover from
@@ -366,8 +364,7 @@ TEST_F(SrtpSessionTest, ProtectGetPacketIndex) {
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       // clang-format on
   };
-  rtc::CopyOnWriteBuffer packet1(kFrame1, sizeof(kFrame1) - 10,
-                                 sizeof(kFrame1));
+  CopyOnWriteBuffer packet1(kFrame1, sizeof(kFrame1) - 10, sizeof(kFrame1));
   unsigned char kFrame2[] = {
       // clang-format off
       // PT=0, SN=1, TS=0, SSRC=1
@@ -377,8 +374,7 @@ TEST_F(SrtpSessionTest, ProtectGetPacketIndex) {
       0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
       // clang-format on
   };
-  rtc::CopyOnWriteBuffer packet2(kFrame2, sizeof(kFrame2) - 10,
-                                 sizeof(kFrame1));
+  CopyOnWriteBuffer packet2(kFrame2, sizeof(kFrame2) - 10, sizeof(kFrame1));
 
   // Encrypt the frames in-order. There is a sequence number rollover from
   // 65535 to 1 (skipping 0) and the second packet gets encrypted with a
@@ -393,4 +389,4 @@ TEST_F(SrtpSessionTest, ProtectGetPacketIndex) {
   EXPECT_EQ(index, 0x10001000000);  // ntohl(65537 << 16)
 }
 
-}  // namespace rtc
+}  // namespace webrtc

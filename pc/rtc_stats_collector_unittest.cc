@@ -1820,7 +1820,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidateStats) {
   expected_b_remote.username_fragment = "iceusernamefragment";
 
   // Add candidate pairs to connection.
-  cricket::TransportChannelStats a_transport_channel_stats;
+  TransportChannelStats a_transport_channel_stats;
   a_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       cricket::ConnectionInfo());
   a_transport_channel_stats.ice_transport_stats.connection_infos[0]
@@ -1851,7 +1851,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidateStats) {
   pc_->AddVoiceChannel("audio", "a");
   pc_->SetTransportStats("a", a_transport_channel_stats);
 
-  cricket::TransportChannelStats b_transport_channel_stats;
+  TransportChannelStats b_transport_channel_stats;
   b_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       cricket::ConnectionInfo());
   b_transport_channel_stats.ice_transport_stats.connection_infos[0]
@@ -1940,7 +1940,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidatePairStats) {
   connection_info.last_data_received = Timestamp::Millis(2500);
   connection_info.last_data_sent = Timestamp::Millis(5200);
 
-  cricket::TransportChannelStats transport_channel_stats;
+  TransportChannelStats transport_channel_stats;
   transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
   transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       connection_info);
@@ -2779,7 +2779,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtp_connection_info.sent_total_packets = 3;
   rtp_connection_info.sent_discarded_packets = 2;
   rtp_connection_info.packets_received = 4;
-  cricket::TransportChannelStats rtp_transport_channel_stats;
+  TransportChannelStats rtp_transport_channel_stats;
   rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       rtp_connection_info);
@@ -2825,7 +2825,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtcp_connection_info.sent_total_packets = 3;
   rtcp_connection_info.sent_discarded_packets = 2;
   rtcp_connection_info.packets_received = 4;
-  cricket::TransportChannelStats rtcp_transport_channel_stats;
+  TransportChannelStats rtcp_transport_channel_stats;
   rtcp_transport_channel_stats.component =
       cricket::ICE_CANDIDATE_COMPONENT_RTCP;
   rtcp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
@@ -2944,7 +2944,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStatsWithCrypto) {
   rtp_connection_info.best_connection = false;
   rtp_connection_info.local_candidate = *rtp_local_candidate;
   rtp_connection_info.remote_candidate = *rtp_remote_candidate;
-  cricket::TransportChannelStats rtp_transport_channel_stats;
+  TransportChannelStats rtp_transport_channel_stats;
   rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       rtp_connection_info);
@@ -3490,10 +3490,10 @@ TEST_P(RTCStatsCollectorTestWithParamKind,
   report_block_data.SetReportBlock(0, report_block, kReportBlockTimestampUtc,
                                    kReportBlockTimestamp);
 
-  cricket::TransportChannelStats rtp_transport_channel_stats;
+  TransportChannelStats rtp_transport_channel_stats;
   rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.dtls_state = DtlsTransportState::kNew;
-  cricket::TransportChannelStats rtcp_transport_channel_stats;
+  TransportChannelStats rtcp_transport_channel_stats;
   rtcp_transport_channel_stats.component =
       cricket::ICE_CANDIDATE_COMPONENT_RTCP;
   rtcp_transport_channel_stats.dtls_state = DtlsTransportState::kNew;
@@ -3853,8 +3853,7 @@ class FakeRTCStatsCollector : public RTCStatsCollector,
   }
   void ProducePartialResultsOnNetworkThreadImpl(
       Timestamp timestamp,
-      const std::map<std::string, cricket::TransportStats>&
-          transport_stats_by_name,
+      const std::map<std::string, TransportStats>& transport_stats_by_name,
       const std::map<std::string, CertificateStatsPair>& transport_cert_stats,
       RTCStatsReport* partial_report) override {
     EXPECT_TRUE(network_thread_->IsCurrent());

@@ -24,26 +24,24 @@
 
 namespace webrtc {
 
-std::vector<cricket::SimulcastLayer> CreateLayers(
-    const std::vector<std::string>& rids,
-    const std::vector<bool>& active) {
+std::vector<SimulcastLayer> CreateLayers(const std::vector<std::string>& rids,
+                                         const std::vector<bool>& active) {
   RTC_DCHECK_EQ(rids.size(), active.size());
-  std::vector<cricket::SimulcastLayer> result;
+  std::vector<SimulcastLayer> result;
   absl::c_transform(rids, active, std::back_inserter(result),
                     [](const std::string& rid, bool is_active) {
-                      return cricket::SimulcastLayer(rid, !is_active);
+                      return SimulcastLayer(rid, !is_active);
                     });
   return result;
 }
 
-std::vector<cricket::SimulcastLayer> CreateLayers(
-    const std::vector<std::string>& rids,
-    bool active) {
+std::vector<SimulcastLayer> CreateLayers(const std::vector<std::string>& rids,
+                                         bool active) {
   return CreateLayers(rids, std::vector<bool>(rids.size(), active));
 }
 
 RtpTransceiverInit CreateTransceiverInit(
-    const std::vector<cricket::SimulcastLayer>& layers) {
+    const std::vector<SimulcastLayer>& layers) {
   RtpTransceiverInit init;
   for (const cricket::SimulcastLayer& layer : layers) {
     RtpEncodingParameters encoding;
@@ -54,10 +52,10 @@ RtpTransceiverInit CreateTransceiverInit(
   return init;
 }
 
-cricket::SimulcastDescription RemoveSimulcast(SessionDescriptionInterface* sd) {
+SimulcastDescription RemoveSimulcast(SessionDescriptionInterface* sd) {
   auto mcd = sd->description()->contents()[0].media_description();
   auto result = mcd->simulcast_description();
-  mcd->set_simulcast_description(cricket::SimulcastDescription());
+  mcd->set_simulcast_description(SimulcastDescription());
   return result;
 }
 

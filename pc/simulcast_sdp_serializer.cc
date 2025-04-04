@@ -35,9 +35,9 @@
 
 using cricket::RidDescription;
 using cricket::RidDirection;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
-using cricket::SimulcastLayerList;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
+using ::webrtc::SimulcastLayerList;
 
 namespace webrtc {
 
@@ -190,7 +190,7 @@ webrtc::RTCError ParseRidPayloadList(const std::string& payload_list,
 }  // namespace
 
 std::string SimulcastSdpSerializer::SerializeSimulcastDescription(
-    const cricket::SimulcastDescription& simulcast) const {
+    const SimulcastDescription& simulcast) const {
   StringBuilder sb;
   std::string delimiter;
 

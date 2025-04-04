@@ -401,16 +401,15 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
   }
 
   void SetTransportStats(const std::string& transport_name,
-                         const cricket::TransportChannelStats& channel_stats) {
-    SetTransportStats(
-        transport_name,
-        std::vector<cricket::TransportChannelStats>{channel_stats});
+                         const TransportChannelStats& channel_stats) {
+    SetTransportStats(transport_name,
+                      std::vector<TransportChannelStats>{channel_stats});
   }
 
   void SetTransportStats(
       const std::string& transport_name,
-      const std::vector<cricket::TransportChannelStats>& channel_stats_list) {
-    cricket::TransportStats transport_stats;
+      const std::vector<TransportChannelStats>& channel_stats_list) {
+    TransportStats transport_stats;
     transport_stats.transport_name = transport_name;
     transport_stats.channel_stats = channel_stats_list;
     transport_stats_by_name_[transport_name] = transport_stats;
@@ -491,10 +490,10 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return {};
   }
 
-  std::map<std::string, cricket::TransportStats> GetTransportStatsByNames(
+  std::map<std::string, TransportStats> GetTransportStatsByNames(
       const std::set<std::string>& transport_names) override {
     RTC_DCHECK_RUN_ON(network_thread_);
-    std::map<std::string, cricket::TransportStats> transport_stats_by_name;
+    std::map<std::string, TransportStats> transport_stats_by_name;
     for (const std::string& transport_name : transport_names) {
       transport_stats_by_name[transport_name] =
           GetTransportStatsByName(transport_name);
@@ -532,17 +531,16 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
   PayloadTypePicker& payload_type_picker() { return payload_type_picker_; }
 
  private:
-  cricket::TransportStats GetTransportStatsByName(
-      const std::string& transport_name) {
+  TransportStats GetTransportStatsByName(const std::string& transport_name) {
     auto it = transport_stats_by_name_.find(transport_name);
     if (it != transport_stats_by_name_.end()) {
       // If specific transport stats have been specified, return those.
       return it->second;
     }
     // Otherwise, generate some dummy stats.
-    cricket::TransportChannelStats channel_stats;
+    TransportChannelStats channel_stats;
     channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
-    cricket::TransportStats transport_stats;
+    TransportStats transport_stats;
     transport_stats.transport_name = transport_name;
     transport_stats.channel_stats.push_back(channel_stats);
     return transport_stats;
@@ -586,7 +584,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   std::vector<rtc::scoped_refptr<SctpDataChannel>> sctp_data_channels_;
 
-  std::map<std::string, cricket::TransportStats> transport_stats_by_name_;
+  std::map<std::string, TransportStats> transport_stats_by_name_;
 
   Call::Stats call_stats_;
 

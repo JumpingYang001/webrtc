@@ -25,48 +25,49 @@
 #include "rtc_base/checks.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
 
-Codec CreateRedAudioCodec(absl::string_view encoding_id) {
-  Codec red = CreateAudioCodec(63, "red", 48000, 2);
-  red.SetParam(kCodecParamNotInNameValueFormat,
+cricket::Codec CreateRedAudioCodec(absl::string_view encoding_id) {
+  cricket::Codec red = cricket::CreateAudioCodec(63, "red", 48000, 2);
+  red.SetParam(cricket::kCodecParamNotInNameValueFormat,
                std::string(encoding_id) + '/' + std::string(encoding_id));
   return red;
 }
 
-const Codec kAudioCodecs1[] = {CreateAudioCodec(111, "opus", 48000, 2),
-                               CreateRedAudioCodec("111"),
-                               CreateAudioCodec(102, "G722", 16000, 1),
-                               CreateAudioCodec(0, "PCMU", 8000, 1),
-                               CreateAudioCodec(8, "PCMA", 8000, 1),
-                               CreateAudioCodec(107, "CN", 48000, 1)};
+const cricket::Codec kAudioCodecs1[] = {
+    cricket::CreateAudioCodec(111, "opus", 48000, 2),
+    CreateRedAudioCodec("111"),
+    cricket::CreateAudioCodec(102, "G722", 16000, 1),
+    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
+    cricket::CreateAudioCodec(8, "PCMA", 8000, 1),
+    cricket::CreateAudioCodec(107, "CN", 48000, 1)};
 
-const Codec kAudioCodecs2[] = {
-    CreateAudioCodec(126, "foo", 16000, 1),
-    CreateAudioCodec(0, "PCMU", 8000, 1),
-    CreateAudioCodec(127, "G722", 16000, 1),
+const cricket::Codec kAudioCodecs2[] = {
+    cricket::CreateAudioCodec(126, "foo", 16000, 1),
+    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
+    cricket::CreateAudioCodec(127, "G722", 16000, 1),
 };
 
-const Codec kAudioCodecsAnswer[] = {
-    CreateAudioCodec(102, "G722", 16000, 1),
-    CreateAudioCodec(0, "PCMU", 8000, 1),
+const cricket::Codec kAudioCodecsAnswer[] = {
+    cricket::CreateAudioCodec(102, "G722", 16000, 1),
+    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
 };
 
 TEST(CodecVendorTest, TestSetAudioCodecs) {
-  std::unique_ptr<webrtc::FieldTrials> trials =
-      webrtc::FieldTrials::CreateNoGlobal("");
+  std::unique_ptr<FieldTrials> trials = FieldTrials::CreateNoGlobal("");
   CodecVendor codec_vendor(nullptr, false, *trials);
-  std::vector<Codec> send_codecs = MAKE_VECTOR(kAudioCodecs1);
-  std::vector<Codec> recv_codecs = MAKE_VECTOR(kAudioCodecs2);
+  std::vector<cricket::Codec> send_codecs = MAKE_VECTOR(kAudioCodecs1);
+  std::vector<cricket::Codec> recv_codecs = MAKE_VECTOR(kAudioCodecs2);
 
   // The merged list of codecs should contain any send codecs that are also
   // nominally in the receive codecs list. Payload types should be picked from
   // the send codecs and a number-of-channels of 0 and 1 should be equivalent
   // (set to 1). This equals what happens when the send codecs are used in an
   // offer and the receive codecs are used in the following answer.
-  const std::vector<Codec> sendrecv_codecs = MAKE_VECTOR(kAudioCodecsAnswer);
-  CodecList no_codecs;
+  const std::vector<cricket::Codec> sendrecv_codecs =
+      MAKE_VECTOR(kAudioCodecsAnswer);
+  cricket::CodecList no_codecs;
 
   RTC_CHECK_EQ(send_codecs[2].name, "G722")
       << "Please don't change shared test data!";
@@ -81,22 +82,23 @@ TEST(CodecVendorTest, TestSetAudioCodecs) {
   recv_codecs[1].name = "pcmu";
 
   // Test proper merge
-  codec_vendor.set_audio_codecs(CodecList::CreateFromTrustedData(send_codecs),
-                                CodecList::CreateFromTrustedData(recv_codecs));
+  codec_vendor.set_audio_codecs(
+      cricket::CodecList::CreateFromTrustedData(send_codecs),
+      cricket::CodecList::CreateFromTrustedData(recv_codecs));
   EXPECT_EQ(send_codecs, codec_vendor.audio_send_codecs().codecs());
   EXPECT_EQ(recv_codecs, codec_vendor.audio_recv_codecs().codecs());
   EXPECT_EQ(sendrecv_codecs, codec_vendor.audio_sendrecv_codecs().codecs());
 
   // Test empty send codecs list
-  codec_vendor.set_audio_codecs(no_codecs,
-                                CodecList::CreateFromTrustedData(recv_codecs));
+  codec_vendor.set_audio_codecs(
+      no_codecs, cricket::CodecList::CreateFromTrustedData(recv_codecs));
   EXPECT_EQ(no_codecs.codecs(), codec_vendor.audio_send_codecs().codecs());
   EXPECT_EQ(recv_codecs, codec_vendor.audio_recv_codecs().codecs());
   EXPECT_EQ(no_codecs.codecs(), codec_vendor.audio_sendrecv_codecs().codecs());
 
   // Test empty recv codecs list
-  codec_vendor.set_audio_codecs(CodecList::CreateFromTrustedData(send_codecs),
-                                no_codecs);
+  codec_vendor.set_audio_codecs(
+      cricket::CodecList::CreateFromTrustedData(send_codecs), no_codecs);
   EXPECT_EQ(send_codecs, codec_vendor.audio_send_codecs().codecs());
   EXPECT_EQ(no_codecs.codecs(), codec_vendor.audio_recv_codecs().codecs());
   EXPECT_EQ(no_codecs.codecs(), codec_vendor.audio_sendrecv_codecs().codecs());
@@ -109,4 +111,4 @@ TEST(CodecVendorTest, TestSetAudioCodecs) {
 }
 
 }  // namespace
-}  // namespace cricket
+}  // namespace webrtc

@@ -41,7 +41,7 @@
 #define SRTP_SRCTP_INDEX_LEN 4
 #endif
 
-namespace cricket {
+namespace webrtc {
 
 namespace {
 class LibSrtpInitializer {
@@ -72,7 +72,7 @@ class LibSrtpInitializer {
  private:
   LibSrtpInitializer() = default;
 
-  webrtc::Mutex mutex_;
+  Mutex mutex_;
   int usage_count_ RTC_GUARDED_BY(mutex_) = 0;
 };
 
@@ -92,13 +92,13 @@ void LibSrtpInitializer::LibSrtpLogHandler(srtp_log_level_t level,
 }
 
 void LibSrtpInitializer::ProhibitLibsrtpInitialization() {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   ++usage_count_;
 }
 
 bool LibSrtpInitializer::IncrementLibsrtpUsageCountAndMaybeInit(
     srtp_event_handler_func_t* event_handler) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   RTC_DCHECK(event_handler);
 
   RTC_DCHECK_GE(usage_count_, 0);
@@ -134,7 +134,7 @@ bool LibSrtpInitializer::IncrementLibsrtpUsageCountAndMaybeInit(
 }
 
 void LibSrtpInitializer::DecrementLibsrtpUsageCountAndMaybeDeinit() {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
 
   RTC_DCHECK_GE(usage_count_, 1);
   if (--usage_count_ == 0) {
@@ -159,7 +159,7 @@ constexpr int kSrtpErrorCodeBoundary = 28;
 
 SrtpSession::SrtpSession() {}
 
-SrtpSession::SrtpSession(const webrtc::FieldTrialsView& field_trials) {
+SrtpSession::SrtpSession(const FieldTrialsView& field_trials) {
   dump_plain_rtp_ = field_trials.IsEnabled("WebRTC-Debugging-RtpDump");
 }
 
@@ -197,7 +197,7 @@ bool SrtpSession::UpdateReceive(int crypto_suite,
   return UpdateKey(ssrc_any_inbound, crypto_suite, key, extension_ids);
 }
 
-bool SrtpSession::ProtectRtp(rtc::CopyOnWriteBuffer& buffer) {
+bool SrtpSession::ProtectRtp(CopyOnWriteBuffer& buffer) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (!session_) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTP packet: no SRTP Session";
@@ -268,7 +268,7 @@ bool SrtpSession::ProtectRtp(void* p, int in_len, int max_len, int* out_len) {
   return true;
 }
 
-bool SrtpSession::ProtectRtp(rtc::CopyOnWriteBuffer& buffer, int64_t* index) {
+bool SrtpSession::ProtectRtp(CopyOnWriteBuffer& buffer, int64_t* index) {
   if (!ProtectRtp(buffer)) {
     return false;
   }
@@ -280,7 +280,7 @@ bool SrtpSession::ProtectRtp(void* data,
                              int max_len,
                              int* out_len,
                              int64_t* index) {
-  rtc::CopyOnWriteBuffer buffer(static_cast<uint8_t*>(data), in_len, max_len);
+  CopyOnWriteBuffer buffer(static_cast<uint8_t*>(data), in_len, max_len);
   if (!ProtectRtp(buffer)) {
     return false;
   }
@@ -288,7 +288,7 @@ bool SrtpSession::ProtectRtp(void* data,
   return (index) ? GetSendStreamPacketIndex(buffer, index) : true;
 }
 
-bool SrtpSession::ProtectRtcp(rtc::CopyOnWriteBuffer& buffer) {
+bool SrtpSession::ProtectRtcp(CopyOnWriteBuffer& buffer) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (!session_) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTCP packet: no SRTP Session";
@@ -351,7 +351,7 @@ bool SrtpSession::ProtectRtcp(void* p, int in_len, int max_len, int* out_len) {
   return true;
 }
 
-bool SrtpSession::UnprotectRtp(rtc::CopyOnWriteBuffer& buffer) {
+bool SrtpSession::UnprotectRtp(CopyOnWriteBuffer& buffer) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (!session_) {
     RTC_LOG(LS_WARNING) << "Failed to unprotect SRTP packet: no SRTP Session";
@@ -410,7 +410,7 @@ bool SrtpSession::UnprotectRtp(void* p, int in_len, int* out_len) {
   return true;
 }
 
-bool SrtpSession::UnprotectRtcp(rtc::CopyOnWriteBuffer& buffer) {
+bool SrtpSession::UnprotectRtcp(CopyOnWriteBuffer& buffer) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (!session_) {
     RTC_LOG(LS_WARNING) << "Failed to unprotect SRTCP packet: no SRTP Session";
@@ -504,7 +504,7 @@ bool SrtpSession::RemoveSsrcFromSession(uint32_t ssrc) {
   return srtp_remove_stream(session_, htonl(ssrc)) == srtp_err_status_ok;
 }
 
-bool SrtpSession::GetSendStreamPacketIndex(rtc::CopyOnWriteBuffer& buffer,
+bool SrtpSession::GetSendStreamPacketIndex(CopyOnWriteBuffer& buffer,
                                            int64_t* index) {
   RTC_DCHECK(thread_checker_.IsCurrent());
 
@@ -671,8 +671,7 @@ void SrtpSession::HandleEventThunk(srtp_event_data_t* ev) {
 //   text2pcap -D -u 1000,2000 -t %H:%M:%S.%f in.txt out.pcap
 // The resulting file can be replayed using the WebRTC video_replay tool and
 // be inspected in Wireshark using the RTP, VP8 and H264 dissectors.
-void SrtpSession::DumpPacket(const rtc::CopyOnWriteBuffer& buffer,
-                             bool outbound) {
+void SrtpSession::DumpPacket(const CopyOnWriteBuffer& buffer, bool outbound) {
   int64_t time_of_day = webrtc::TimeUTCMillis() % (24 * 3600 * 1000);
   int64_t hours = time_of_day / (3600 * 1000);
   int64_t minutes = (time_of_day / (60 * 1000)) % 60;
@@ -690,9 +689,8 @@ void SrtpSession::DumpPacket(const rtc::CopyOnWriteBuffer& buffer,
 }
 
 void SrtpSession::DumpPacket(const void* buf, int len, bool outbound) {
-  const rtc::CopyOnWriteBuffer buffer(static_cast<const uint8_t*>(buf), len,
-                                      len);
+  const CopyOnWriteBuffer buffer(static_cast<const uint8_t*>(buf), len, len);
   DumpPacket(buffer, outbound);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

@@ -12,7 +12,7 @@
 
 #include "rtc_base/logging.h"
 
-namespace cricket {
+namespace webrtc {
 
 RtcpMuxFilter::RtcpMuxFilter() : state_(ST_INIT), offer_enable_(false) {}
 
@@ -32,7 +32,7 @@ void RtcpMuxFilter::SetActive() {
   state_ = ST_ACTIVE;
 }
 
-bool RtcpMuxFilter::SetOffer(bool offer_enable, webrtc::ContentSource src) {
+bool RtcpMuxFilter::SetOffer(bool offer_enable, ContentSource src) {
   if (state_ == ST_ACTIVE) {
     // Fail if we try to deactivate and no-op if we try and activate.
     return offer_enable;
@@ -49,7 +49,7 @@ bool RtcpMuxFilter::SetOffer(bool offer_enable, webrtc::ContentSource src) {
 }
 
 bool RtcpMuxFilter::SetProvisionalAnswer(bool answer_enable,
-                                         webrtc::ContentSource src) {
+                                         ContentSource src) {
   if (state_ == ST_ACTIVE) {
     // Fail if we try to deactivate and no-op if we try and activate.
     return answer_enable;
@@ -84,7 +84,7 @@ bool RtcpMuxFilter::SetProvisionalAnswer(bool answer_enable,
   return true;
 }
 
-bool RtcpMuxFilter::SetAnswer(bool answer_enable, webrtc::ContentSource src) {
+bool RtcpMuxFilter::SetAnswer(bool answer_enable, ContentSource src) {
   if (state_ == ST_ACTIVE) {
     // Fail if we try to deactivate and no-op if we try and activate.
     return answer_enable;
@@ -108,19 +108,18 @@ bool RtcpMuxFilter::SetAnswer(bool answer_enable, webrtc::ContentSource src) {
   return true;
 }
 
-bool RtcpMuxFilter::ExpectOffer(bool offer_enable,
-                                webrtc::ContentSource source) {
+bool RtcpMuxFilter::ExpectOffer(bool offer_enable, ContentSource source) {
   return ((state_ == ST_INIT) ||
           (state_ == ST_ACTIVE && offer_enable == offer_enable_) ||
           (state_ == ST_SENTOFFER && source == webrtc::CS_LOCAL) ||
           (state_ == ST_RECEIVEDOFFER && source == webrtc::CS_REMOTE));
 }
 
-bool RtcpMuxFilter::ExpectAnswer(webrtc::ContentSource source) {
+bool RtcpMuxFilter::ExpectAnswer(ContentSource source) {
   return ((state_ == ST_SENTOFFER && source == webrtc::CS_REMOTE) ||
           (state_ == ST_RECEIVEDOFFER && source == webrtc::CS_LOCAL) ||
           (state_ == ST_SENTPRANSWER && source == webrtc::CS_LOCAL) ||
           (state_ == ST_RECEIVEDPRANSWER && source == webrtc::CS_REMOTE));
 }
 
-}  // namespace cricket
+}  // namespace webrtc

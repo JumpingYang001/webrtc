@@ -134,10 +134,10 @@ class SrtpTransport : public RtpTransport {
 
   const std::string content_name_;
 
-  std::unique_ptr<cricket::SrtpSession> send_session_;
-  std::unique_ptr<cricket::SrtpSession> recv_session_;
-  std::unique_ptr<cricket::SrtpSession> send_rtcp_session_;
-  std::unique_ptr<cricket::SrtpSession> recv_rtcp_session_;
+  std::unique_ptr<SrtpSession> send_session_;
+  std::unique_ptr<SrtpSession> recv_session_;
+  std::unique_ptr<SrtpSession> send_rtcp_session_;
+  std::unique_ptr<SrtpSession> recv_rtcp_session_;
 
   std::optional<int> send_crypto_suite_;
   std::optional<int> recv_crypto_suite_;

@@ -154,31 +154,29 @@ void BundleManager::RefreshEstablishedBundleGroupsByMid() {
 
 void JsepTransportCollection::RegisterTransport(
     const std::string& mid,
-    std::unique_ptr<cricket::JsepTransport> transport) {
+    std::unique_ptr<JsepTransport> transport) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   SetTransportForMid(mid, transport.get());
   jsep_transports_by_name_[mid] = std::move(transport);
   RTC_DCHECK(IsConsistent());
 }
 
-std::vector<cricket::JsepTransport*> JsepTransportCollection::Transports() {
+std::vector<JsepTransport*> JsepTransportCollection::Transports() {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  std::vector<cricket::JsepTransport*> result;
+  std::vector<JsepTransport*> result;
   for (auto& kv : jsep_transports_by_name_) {
     result.push_back(kv.second.get());
   }
   return result;
 }
 
-std::vector<cricket::JsepTransport*>
-JsepTransportCollection::ActiveTransports() {
+std::vector<JsepTransport*> JsepTransportCollection::ActiveTransports() {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  std::set<cricket::JsepTransport*> transports;
+  std::set<JsepTransport*> transports;
   for (const auto& kv : mid_to_transport_) {
     transports.insert(kv.second);
   }
-  return std::vector<cricket::JsepTransport*>(transports.begin(),
-                                              transports.end());
+  return std::vector<JsepTransport*>(transports.begin(), transports.end());
 }
 
 void JsepTransportCollection::DestroyAllTransports() {
@@ -190,35 +188,35 @@ void JsepTransportCollection::DestroyAllTransports() {
   RTC_DCHECK(IsConsistent());
 }
 
-const cricket::JsepTransport* JsepTransportCollection::GetTransportByName(
+const JsepTransport* JsepTransportCollection::GetTransportByName(
     const std::string& transport_name) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   auto it = jsep_transports_by_name_.find(transport_name);
   return (it == jsep_transports_by_name_.end()) ? nullptr : it->second.get();
 }
 
-cricket::JsepTransport* JsepTransportCollection::GetTransportByName(
+JsepTransport* JsepTransportCollection::GetTransportByName(
     const std::string& transport_name) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   auto it = jsep_transports_by_name_.find(transport_name);
   return (it == jsep_transports_by_name_.end()) ? nullptr : it->second.get();
 }
 
-cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
+JsepTransport* JsepTransportCollection::GetTransportForMid(
     const std::string& mid) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   auto it = mid_to_transport_.find(mid);
   return it == mid_to_transport_.end() ? nullptr : it->second;
 }
 
-const cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
+const JsepTransport* JsepTransportCollection::GetTransportForMid(
     const std::string& mid) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   auto it = mid_to_transport_.find(mid);
   return it == mid_to_transport_.end() ? nullptr : it->second;
 }
 
-cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
+JsepTransport* JsepTransportCollection::GetTransportForMid(
     absl::string_view mid) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // TODO(hta): should be a better way.
@@ -226,7 +224,7 @@ cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
   return it == mid_to_transport_.end() ? nullptr : it->second;
 }
 
-const cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
+const JsepTransport* JsepTransportCollection::GetTransportForMid(
     absl::string_view mid) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // TODO(hta): Should be a better way
@@ -236,7 +234,7 @@ const cricket::JsepTransport* JsepTransportCollection::GetTransportForMid(
 
 bool JsepTransportCollection::SetTransportForMid(
     const std::string& mid,
-    cricket::JsepTransport* jsep_transport) {
+    JsepTransport* jsep_transport) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   RTC_DCHECK(jsep_transport);
 
@@ -312,7 +310,7 @@ void JsepTransportCollection::CommitTransports() {
 }
 
 bool JsepTransportCollection::TransportInUse(
-    cricket::JsepTransport* jsep_transport) const {
+    JsepTransport* jsep_transport) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   for (const auto& kv : mid_to_transport_) {
     if (kv.second == jsep_transport) {
@@ -323,7 +321,7 @@ bool JsepTransportCollection::TransportInUse(
 }
 
 bool JsepTransportCollection::TransportNeededForRollback(
-    cricket::JsepTransport* jsep_transport) const {
+    JsepTransport* jsep_transport) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   for (const auto& kv : stable_mid_to_transport_) {
     if (kv.second == jsep_transport) {
@@ -334,7 +332,7 @@ bool JsepTransportCollection::TransportNeededForRollback(
 }
 
 void JsepTransportCollection::MaybeDestroyJsepTransport(
-    cricket::JsepTransport* transport) {
+    JsepTransport* transport) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // Don't destroy the JsepTransport if there are still media sections referring
   // to it, or if it will be needed in case of rollback.

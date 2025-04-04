@@ -117,13 +117,13 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
   struct TransportStats {
     TransportStats() = default;
     TransportStats(std::string transport_name,
-                   cricket::TransportStats transport_stats)
+                   ::webrtc::TransportStats transport_stats)
         : name(std::move(transport_name)), stats(std::move(transport_stats)) {}
     TransportStats(TransportStats&&) = default;
     TransportStats(const TransportStats&) = delete;
 
     std::string name;
-    cricket::TransportStats stats;
+    ::webrtc::TransportStats stats;
     std::unique_ptr<SSLCertificateStats> local_cert_stats;
     std::unique_ptr<SSLCertificateStats> remote_cert_stats;
   };

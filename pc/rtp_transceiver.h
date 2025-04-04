@@ -50,10 +50,6 @@
 #include "pc/session_description.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace cricket {
-class MediaEngineInterface;
-}
-
 namespace webrtc {
 
 class PeerConnectionSdpMethods;
@@ -94,7 +90,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
   // the type of senders, receivers, and channel). Can either by audio or video.
   RtpTransceiver(webrtc::MediaType media_type,
                  ConnectionContext* context,
-                 cricket::CodecLookupHelper* codec_lookup_helper);
+                 CodecLookupHelper* codec_lookup_helper);
   // Construct a Unified Plan-style RtpTransceiver with the given sender and
   // receiver. The media type will be derived from the media types of the sender
   // and receiver. The sender and receiver should have the same media type.
@@ -105,7 +101,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
       rtc::scoped_refptr<RtpReceiverProxyWithInternal<RtpReceiverInternal>>
           receiver,
       ConnectionContext* context,
-      cricket::CodecLookupHelper* codec_lookup_helper,
+      CodecLookupHelper* codec_lookup_helper,
       std::vector<RtpHeaderExtensionCapability> HeaderExtensionsToNegotiate,
       std::function<void()> on_negotiation_needed);
   ~RtpTransceiver() override;
@@ -118,7 +114,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
 
   // Returns the Voice/VideoChannel set for this transceiver. May be null if
   // the transceiver is not in the currently set local/remote description.
-  cricket::ChannelInterface* channel() const { return channel_.get(); }
+  ChannelInterface* channel() const { return channel_.get(); }
 
   // Creates the Voice/VideoChannel and sets it.
   RTCError CreateChannel(
@@ -157,7 +153,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
   //     The callback allows us to combine the transport lookup with network
   //     state initialization of the channel object.
   // ClearChannel() must be used before calling SetChannel() again.
-  void SetChannel(std::unique_ptr<cricket::ChannelInterface> channel,
+  void SetChannel(std::unique_ptr<ChannelInterface> channel,
                   std::function<RtpTransportInternal*(const std::string&)>
                       transport_lookup);
 
@@ -309,7 +305,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
     return context_->media_engine();
   }
   ConnectionContext* context() const { return context_; }
-  cricket::CodecVendor& codec_vendor() {
+  CodecVendor& codec_vendor() {
     if (mid_) {
       return *codec_lookup_helper_->CodecVendor(*mid_);
     } else {
@@ -355,9 +351,9 @@ class RtpTransceiver : public RtpTransceiverInterface {
   // Accessed on both thread_ and the network thread. Considered safe
   // because all access on the network thread is within an invoke()
   // from thread_.
-  std::unique_ptr<cricket::ChannelInterface> channel_ = nullptr;
+  std::unique_ptr<ChannelInterface> channel_ = nullptr;
   ConnectionContext* const context_;
-  cricket::CodecLookupHelper* const codec_lookup_helper_;
+  CodecLookupHelper* const codec_lookup_helper_;
   std::vector<RtpCodecCapability> codec_preferences_;
   std::vector<RtpCodecCapability> sendrecv_codec_preferences_;
   std::vector<RtpCodecCapability> sendonly_codec_preferences_;

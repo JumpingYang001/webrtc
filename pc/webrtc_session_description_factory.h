@@ -55,7 +55,7 @@ class WebRtcSessionDescriptionFactory {
       rtc::scoped_refptr<RTCCertificate> certificate,
       std::function<void(const rtc::scoped_refptr<webrtc::RTCCertificate>&)>
           on_certificate_ready,
-      cricket::CodecLookupHelper* codec_lookup_helper,
+      CodecLookupHelper* codec_lookup_helper,
       const FieldTrialsView& field_trials);
   ~WebRtcSessionDescriptionFactory();
 
@@ -72,9 +72,9 @@ class WebRtcSessionDescriptionFactory {
   void CreateOffer(
       CreateSessionDescriptionObserver* observer,
       const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-      const cricket::MediaSessionOptions& session_options);
+      const MediaSessionOptions& session_options);
   void CreateAnswer(CreateSessionDescriptionObserver* observer,
-                    const cricket::MediaSessionOptions& session_options);
+                    const MediaSessionOptions& session_options);
 
   void set_enable_encrypted_rtp_header_extensions(bool enable) {
     session_desc_factory_.set_enable_encrypted_rtp_header_extensions(enable);
@@ -108,12 +108,12 @@ class WebRtcSessionDescriptionFactory {
 
     CreateSessionDescriptionRequest(Type type,
                                     CreateSessionDescriptionObserver* observer,
-                                    const cricket::MediaSessionOptions& options)
+                                    const MediaSessionOptions& options)
         : type(type), observer(observer), options(options) {}
 
     Type type;
     rtc::scoped_refptr<CreateSessionDescriptionObserver> observer;
-    cricket::MediaSessionOptions options;
+    MediaSessionOptions options;
   };
 
   void InternalCreateOffer(CreateSessionDescriptionRequest request);

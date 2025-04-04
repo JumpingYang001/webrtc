@@ -58,7 +58,7 @@ class AudioRtpReceiverTest : public ::testing::Test {
   AutoThread main_thread_;
   Thread* worker_;
   rtc::scoped_refptr<AudioRtpReceiver> receiver_;
-  cricket::MockVoiceMediaReceiveChannelInterface receive_channel_;
+  MockVoiceMediaReceiveChannelInterface receive_channel_;
 };
 
 TEST_F(AudioRtpReceiverTest, SetOutputVolumeIsCalled) {
@@ -109,7 +109,7 @@ TEST_F(AudioRtpReceiverTest, VolumesSetBeforeStartingAreRespected) {
 TEST(AudioRtpReceiver, OnChangedNotificationsAfterConstruction) {
   test::RunLoop loop;
   auto* thread = Thread::Current();  // Points to loop's thread.
-  cricket::MockVoiceMediaReceiveChannelInterface receive_channel;
+  MockVoiceMediaReceiveChannelInterface receive_channel;
   auto receiver = rtc::make_ref_counted<AudioRtpReceiver>(
       thread, std::string(), std::vector<std::string>(), true,
       &receive_channel);

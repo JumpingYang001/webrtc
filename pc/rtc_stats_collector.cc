@@ -1324,7 +1324,7 @@ void RTCStatsCollector::ProducePartialResultsOnNetworkThread(
       transport_names.insert(*info.transport_name);
   }
 
-  std::map<std::string, cricket::TransportStats> transport_stats_by_name =
+  std::map<std::string, TransportStats> transport_stats_by_name =
       pc_->GetTransportStatsByNames(transport_names);
   std::map<std::string, CertificateStatsPair> transport_cert_stats =
       PrepareTransportCertificateStats_n(transport_stats_by_name);
@@ -1343,8 +1343,7 @@ void RTCStatsCollector::ProducePartialResultsOnNetworkThread(
 
 void RTCStatsCollector::ProducePartialResultsOnNetworkThreadImpl(
     Timestamp timestamp,
-    const std::map<std::string, cricket::TransportStats>&
-        transport_stats_by_name,
+    const std::map<std::string, TransportStats>& transport_stats_by_name,
     const std::map<std::string, CertificateStatsPair>& transport_cert_stats,
     RTCStatsReport* partial_report) {
   RTC_DCHECK_RUN_ON(network_thread_);
@@ -1475,8 +1474,7 @@ void RTCStatsCollector::ProduceDataChannelStats_n(
 
 void RTCStatsCollector::ProduceIceCandidateAndPairStats_n(
     Timestamp timestamp,
-    const std::map<std::string, cricket::TransportStats>&
-        transport_stats_by_name,
+    const std::map<std::string, TransportStats>& transport_stats_by_name,
     const Call::Stats& call_stats,
     RTCStatsReport* report) const {
   RTC_DCHECK_RUN_ON(network_thread_);
@@ -1484,7 +1482,7 @@ void RTCStatsCollector::ProduceIceCandidateAndPairStats_n(
 
   for (const auto& entry : transport_stats_by_name) {
     const std::string& transport_name = entry.first;
-    const cricket::TransportStats& transport_stats = entry.second;
+    const TransportStats& transport_stats = entry.second;
     for (const auto& channel_stats : transport_stats.channel_stats) {
       std::string transport_id = RTCTransportStatsIDFromTransportChannel(
           transport_name, channel_stats.component);
@@ -1922,8 +1920,7 @@ void RTCStatsCollector::ProduceVideoRTPStreamStats_n(
 
 void RTCStatsCollector::ProduceTransportStats_n(
     Timestamp timestamp,
-    const std::map<std::string, cricket::TransportStats>&
-        transport_stats_by_name,
+    const std::map<std::string, TransportStats>& transport_stats_by_name,
     const std::map<std::string, CertificateStatsPair>& transport_cert_stats,
     RTCStatsReport* report) const {
   RTC_DCHECK_RUN_ON(network_thread_);
@@ -1931,7 +1928,7 @@ void RTCStatsCollector::ProduceTransportStats_n(
 
   for (const auto& entry : transport_stats_by_name) {
     const std::string& transport_name = entry.first;
-    const cricket::TransportStats& transport_stats = entry.second;
+    const TransportStats& transport_stats = entry.second;
 
     // Get reference to RTCP channel, if it exists.
     std::string rtcp_transport_stats_id;
@@ -2031,8 +2028,7 @@ void RTCStatsCollector::ProduceTransportStats_n(
 
 std::map<std::string, RTCStatsCollector::CertificateStatsPair>
 RTCStatsCollector::PrepareTransportCertificateStats_n(
-    const std::map<std::string, cricket::TransportStats>&
-        transport_stats_by_name) {
+    const std::map<std::string, TransportStats>& transport_stats_by_name) {
   RTC_DCHECK_RUN_ON(network_thread_);
   Thread::ScopedDisallowBlockingCalls no_blocking_calls;
 
@@ -2113,7 +2109,7 @@ void RTCStatsCollector::PrepareTransceiverStatsInfosAndCallStats_s_w_n() {
       stats.transceiver = transceiver;
       stats.media_type = media_type;
 
-      cricket::ChannelInterface* channel = transceiver->channel();
+      ChannelInterface* channel = transceiver->channel();
       if (!channel) {
         // The remaining fields require a BaseChannel.
         continue;

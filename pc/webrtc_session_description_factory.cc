@@ -45,8 +45,8 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/unique_id_generator.h"
 
-using cricket::MediaSessionOptions;
 using rtc::UniqueRandomIdGenerator;
+using ::webrtc::MediaSessionOptions;
 
 namespace webrtc {
 namespace {
@@ -59,23 +59,23 @@ static const uint64_t kInitSessionVersion = 2;
 
 // Check that each sender has a unique ID.
 static bool ValidMediaSessionOptions(
-    const cricket::MediaSessionOptions& session_options) {
-  std::vector<cricket::SenderOptions> sorted_senders;
+    const MediaSessionOptions& session_options) {
+  std::vector<SenderOptions> sorted_senders;
   for (const cricket::MediaDescriptionOptions& media_description_options :
        session_options.media_description_options) {
     sorted_senders.insert(sorted_senders.end(),
                           media_description_options.sender_options.begin(),
                           media_description_options.sender_options.end());
   }
-  absl::c_sort(sorted_senders, [](const cricket::SenderOptions& sender1,
-                                  const cricket::SenderOptions& sender2) {
-    return sender1.track_id < sender2.track_id;
-  });
-  return absl::c_adjacent_find(sorted_senders,
-                               [](const cricket::SenderOptions& sender1,
-                                  const cricket::SenderOptions& sender2) {
-                                 return sender1.track_id == sender2.track_id;
-                               }) == sorted_senders.end();
+  absl::c_sort(sorted_senders,
+               [](const SenderOptions& sender1, const SenderOptions& sender2) {
+                 return sender1.track_id < sender2.track_id;
+               });
+  return absl::c_adjacent_find(
+             sorted_senders,
+             [](const SenderOptions& sender1, const SenderOptions& sender2) {
+               return sender1.track_id == sender2.track_id;
+             }) == sorted_senders.end();
 }
 }  // namespace
 
@@ -119,7 +119,7 @@ WebRtcSessionDescriptionFactory::WebRtcSessionDescriptionFactory(
     rtc::scoped_refptr<RTCCertificate> certificate,
     std::function<void(const rtc::scoped_refptr<webrtc::RTCCertificate>&)>
         on_certificate_ready,
-    cricket::CodecLookupHelper* codec_lookup_helper,
+    CodecLookupHelper* codec_lookup_helper,
     const FieldTrialsView& field_trials)
     : signaling_thread_(context->signaling_thread()),
       transport_desc_factory_(field_trials),
@@ -200,7 +200,7 @@ WebRtcSessionDescriptionFactory::~WebRtcSessionDescriptionFactory() {
 void WebRtcSessionDescriptionFactory::CreateOffer(
     CreateSessionDescriptionObserver* observer,
     const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-    const cricket::MediaSessionOptions& session_options) {
+    const MediaSessionOptions& session_options) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   std::string error = "CreateOffer";
   if (certificate_request_state_ == CERTIFICATE_FAILED) {
@@ -230,7 +230,7 @@ void WebRtcSessionDescriptionFactory::CreateOffer(
 
 void WebRtcSessionDescriptionFactory::CreateAnswer(
     CreateSessionDescriptionObserver* observer,
-    const cricket::MediaSessionOptions& session_options) {
+    const MediaSessionOptions& session_options) {
   std::string error = "CreateAnswer";
   if (certificate_request_state_ == CERTIFICATE_FAILED) {
     error += kFailedDueToIdentityFailed;

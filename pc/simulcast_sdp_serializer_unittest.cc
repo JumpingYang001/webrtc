@@ -21,11 +21,11 @@
 
 using cricket::RidDescription;
 using cricket::RidDirection;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
-using cricket::SimulcastLayerList;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
+using ::webrtc::SimulcastLayerList;
 
 namespace webrtc {
 

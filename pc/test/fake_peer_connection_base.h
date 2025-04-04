@@ -308,7 +308,7 @@ class FakePeerConnectionBase : public PeerConnectionInternal {
 
   std::optional<std::string> sctp_mid() const override { return std::nullopt; }
 
-  std::map<std::string, cricket::TransportStats> GetTransportStatsByNames(
+  std::map<std::string, TransportStats> GetTransportStatsByNames(
       const std::set<std::string>& transport_names) override {
     return {};
   }

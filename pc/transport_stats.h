@@ -21,7 +21,7 @@
 #include "p2p/base/ice_transport_internal.h"
 #include "rtc_base/ssl_stream_adapter.h"
 
-namespace cricket {
+namespace webrtc {
 
 struct TransportChannelStats {
   TransportChannelStats();
@@ -33,9 +33,9 @@ struct TransportChannelStats {
   int srtp_crypto_suite = webrtc::kSrtpInvalidCryptoSuite;
   int ssl_cipher_suite = webrtc::kTlsNullWithNullNull;
   std::optional<absl::string_view> tls_cipher_suite_name;
-  std::optional<webrtc::SSLRole> dtls_role;
-  webrtc::DtlsTransportState dtls_state = webrtc::DtlsTransportState::kNew;
-  webrtc::IceTransportStats ice_transport_stats;
+  std::optional<SSLRole> dtls_role;
+  DtlsTransportState dtls_state = DtlsTransportState::kNew;
+  IceTransportStats ice_transport_stats;
   uint16_t ssl_peer_signature_algorithm = webrtc::kSslSignatureAlgorithmUnknown;
 };
 
@@ -49,6 +49,14 @@ struct TransportStats {
   TransportChannelStatsList channel_stats;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::TransportChannelStats;
+using ::webrtc::TransportChannelStatsList;
+using ::webrtc::TransportStats;
 }  // namespace cricket
 
 #endif  // PC_TRANSPORT_STATS_H_

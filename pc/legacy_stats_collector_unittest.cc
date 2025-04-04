@@ -63,7 +63,6 @@
 
 using cricket::ConnectionInfo;
 using cricket::SsrcReceiverInfo;
-using cricket::TransportChannelStats;
 using cricket::VideoMediaInfo;
 using cricket::VideoReceiverInfo;
 using cricket::VideoSenderInfo;
@@ -74,6 +73,7 @@ using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+using ::webrtc::TransportChannelStats;
 
 namespace webrtc {
 

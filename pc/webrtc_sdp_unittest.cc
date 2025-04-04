@@ -62,8 +62,6 @@ using cricket::ICE_CANDIDATE_COMPONENT_RTP;
 using cricket::kFecSsrcGroupSemantics;
 using cricket::RidDescription;
 using cricket::RidDirection;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
 using cricket::StreamParams;
 using cricket::TransportDescription;
 using cricket::TransportInfo;
@@ -86,6 +84,8 @@ using webrtc::SdpParseError;
 using webrtc::SdpType;
 using ::webrtc::SessionDescription;
 using webrtc::SessionDescriptionInterface;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
 using ::webrtc::VideoContentDescription;
 
 static const uint32_t kDefaultSctpPort = 5000;
@@ -1246,7 +1246,7 @@ class WebRtcSdpTest : public ::testing::Test {
     AudioContentDescription* audio = new AudioContentDescription();
     audio->set_rtcp_mux(true);
     audio->set_rtcp_reduced_size(true);
-    audio->set_protocol(cricket::kMediaProtocolSavpf);
+    audio->set_protocol(webrtc::kMediaProtocolSavpf);
     audio->AddCodec(cricket::CreateAudioCodec(111, "opus", 48000, 2));
     audio->AddCodec(cricket::CreateAudioCodec(103, "ISAC", 16000, 1));
     audio->AddCodec(cricket::CreateAudioCodec(104, "ISAC", 32000, 1));
@@ -1322,7 +1322,7 @@ class WebRtcSdpTest : public ::testing::Test {
   // configuration.
   VideoContentDescription* CreateVideoContentDescription() {
     VideoContentDescription* video = new VideoContentDescription();
-    video->set_protocol(cricket::kMediaProtocolSavpf);
+    video->set_protocol(webrtc::kMediaProtocolSavpf);
     video->AddCodec(cricket::CreateVideoCodec(120, "VP8"));
     return video;
   }
@@ -1345,13 +1345,13 @@ class WebRtcSdpTest : public ::testing::Test {
     // protocol
     // Use an equivalence class here, for old and new versions of the
     // protocol description.
-    if (cd1->protocol() == cricket::kMediaProtocolDtlsSctp ||
-        cd1->protocol() == cricket::kMediaProtocolUdpDtlsSctp ||
-        cd1->protocol() == cricket::kMediaProtocolTcpDtlsSctp) {
+    if (cd1->protocol() == webrtc::kMediaProtocolDtlsSctp ||
+        cd1->protocol() == webrtc::kMediaProtocolUdpDtlsSctp ||
+        cd1->protocol() == webrtc::kMediaProtocolTcpDtlsSctp) {
       const bool cd2_is_also_dtls_sctp =
-          cd2->protocol() == cricket::kMediaProtocolDtlsSctp ||
-          cd2->protocol() == cricket::kMediaProtocolUdpDtlsSctp ||
-          cd2->protocol() == cricket::kMediaProtocolTcpDtlsSctp;
+          cd2->protocol() == webrtc::kMediaProtocolDtlsSctp ||
+          cd2->protocol() == webrtc::kMediaProtocolUdpDtlsSctp ||
+          cd2->protocol() == webrtc::kMediaProtocolTcpDtlsSctp;
       EXPECT_TRUE(cd2_is_also_dtls_sctp);
     } else {
       EXPECT_EQ(cd1->protocol(), cd2->protocol());
@@ -1707,7 +1707,7 @@ class WebRtcSdpTest : public ::testing::Test {
         new SctpDataContentDescription());
     sctp_desc_ = data.get();
     sctp_desc_->set_use_sctpmap(use_sctpmap);
-    sctp_desc_->set_protocol(cricket::kMediaProtocolUdpDtlsSctp);
+    sctp_desc_->set_protocol(webrtc::kMediaProtocolUdpDtlsSctp);
     sctp_desc_->set_port(kDefaultSctpPort);
     desc_.AddContent(kDataContentName, MediaProtocolType::kSctp,
                      std::move(data));
@@ -4763,15 +4763,14 @@ TEST_F(WebRtcSdpTest, SerializeWithDefaultSctpProtocol) {
   JsepSessionDescription jsep_desc(kDummyType);
   MakeDescriptionWithoutCandidates(&jsep_desc);
   std::string message = webrtc::SdpSerialize(jsep_desc);
-  EXPECT_NE(std::string::npos,
-            message.find(cricket::kMediaProtocolUdpDtlsSctp));
+  EXPECT_NE(std::string::npos, message.find(webrtc::kMediaProtocolUdpDtlsSctp));
 }
 
 TEST_F(WebRtcSdpTest, DeserializeWithAllSctpProtocols) {
   AddSctpDataChannel(false);
-  std::string protocols[] = {cricket::kMediaProtocolDtlsSctp,
-                             cricket::kMediaProtocolUdpDtlsSctp,
-                             cricket::kMediaProtocolTcpDtlsSctp};
+  std::string protocols[] = {webrtc::kMediaProtocolDtlsSctp,
+                             webrtc::kMediaProtocolUdpDtlsSctp,
+                             webrtc::kMediaProtocolTcpDtlsSctp};
   for (const auto& protocol : protocols) {
     sctp_desc_->set_protocol(protocol);
     JsepSessionDescription jsep_desc(kDummyType);

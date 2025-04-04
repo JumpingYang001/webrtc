@@ -98,7 +98,7 @@ class SignalingInterceptor {
     const std::string mid;
     const MediaProtocolType media_protocol_type;
     std::vector<std::string> rids;
-    cricket::SimulcastDescription simulcast_description;
+    SimulcastDescription simulcast_description;
     webrtc::RtpExtension mid_extension;
     webrtc::RtpExtension rid_extension;
     webrtc::RtpExtension rrid_extension;

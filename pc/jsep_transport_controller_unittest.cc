@@ -696,7 +696,7 @@ TEST_F(JsepTransportControllerTest, GetStats) {
           ->SetLocalDescription(SdpType::kOffer, description.get(), nullptr)
           .ok());
 
-  cricket::TransportStats stats;
+  TransportStats stats;
   EXPECT_TRUE(transport_controller_->GetStats(kAudioMid1, &stats));
   EXPECT_EQ(kAudioMid1, stats.transport_name);
   EXPECT_EQ(1u, stats.channel_stats.size());

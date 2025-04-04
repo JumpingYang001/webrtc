@@ -242,7 +242,7 @@ class JsepTransportController : public PayloadTypeSuggester,
     return payload_type_picker_;
   }
 
-  bool GetStats(const std::string& mid, cricket::TransportStats* stats) const;
+  bool GetStats(const std::string& mid, TransportStats* stats) const;
 
   bool initial_offerer() const { return initial_offerer_ && *initial_offerer_; }
 
@@ -366,7 +366,7 @@ class JsepTransportController : public PayloadTypeSuggester,
                             const ContentGroup& bundle_group)
       RTC_RUN_ON(network_thread_);
 
-  cricket::JsepTransportDescription CreateJsepTransportDescription(
+  JsepTransportDescription CreateJsepTransportDescription(
       const ContentInfo& content_info,
       const cricket::TransportInfo& transport_info,
       const std::vector<int>& encrypted_extension_ids,
@@ -384,21 +384,21 @@ class JsepTransportController : public PayloadTypeSuggester,
   // destroyed because of BUNDLE, it would return the transport which other
   // transports are bundled on (In current implementation, it is the first
   // content in the BUNDLE group).
-  const cricket::JsepTransport* GetJsepTransportForMid(
-      const std::string& mid) const RTC_RUN_ON(network_thread_);
-  cricket::JsepTransport* GetJsepTransportForMid(const std::string& mid)
+  const JsepTransport* GetJsepTransportForMid(const std::string& mid) const
       RTC_RUN_ON(network_thread_);
-  const cricket::JsepTransport* GetJsepTransportForMid(
-      absl::string_view mid) const RTC_RUN_ON(network_thread_);
-  cricket::JsepTransport* GetJsepTransportForMid(absl::string_view mid)
+  JsepTransport* GetJsepTransportForMid(const std::string& mid)
+      RTC_RUN_ON(network_thread_);
+  const JsepTransport* GetJsepTransportForMid(absl::string_view mid) const
+      RTC_RUN_ON(network_thread_);
+  JsepTransport* GetJsepTransportForMid(absl::string_view mid)
       RTC_RUN_ON(network_thread_);
 
   // Get the JsepTransport without considering the BUNDLE group. Return nullptr
   // if the JsepTransport is destroyed.
-  const cricket::JsepTransport* GetJsepTransportByName(
+  const JsepTransport* GetJsepTransportByName(
       const std::string& transport_name) const RTC_RUN_ON(network_thread_);
-  cricket::JsepTransport* GetJsepTransportByName(
-      const std::string& transport_name) RTC_RUN_ON(network_thread_);
+  JsepTransport* GetJsepTransportByName(const std::string& transport_name)
+      RTC_RUN_ON(network_thread_);
 
   // Creates jsep transport. Noop if transport is already created.
   // Transport is created either during SetLocalDescription (`local` == true) or
@@ -414,7 +414,7 @@ class JsepTransportController : public PayloadTypeSuggester,
   void SetIceRole_n(cricket::IceRole ice_role) RTC_RUN_ON(network_thread_);
 
   cricket::IceRole DetermineIceRole(
-      cricket::JsepTransport* jsep_transport,
+      JsepTransport* jsep_transport,
       const cricket::TransportInfo& transport_info,
       SdpType type,
       bool local);
@@ -481,8 +481,7 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   void OnDtlsHandshakeError(SSLHandshakeError error);
 
-  bool OnTransportChanged(const std::string& mid,
-                          cricket::JsepTransport* transport);
+  bool OnTransportChanged(const std::string& mid, JsepTransport* transport);
 
   const Environment env_;
   Thread* const network_thread_ = nullptr;

@@ -35,12 +35,6 @@
 #include "rtc_base/network_route.h"
 #include "rtc_base/socket.h"
 
-namespace rtc {
-
-struct PacketOptions;
-
-}  // namespace rtc
-
 namespace webrtc {
 
 class CopyOnWriteBuffer;

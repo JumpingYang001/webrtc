@@ -197,7 +197,7 @@ TEST_P(PeerConnectionCryptoTest, CorrectCryptoInOfferWhenDtlsEnabled) {
 
   ASSERT_FALSE(offer->description()->contents().empty());
   EXPECT_TRUE(SdpContentsAll(HaveDtlsFingerprint(), offer->description()));
-  EXPECT_TRUE(SdpContentsAll(HaveProtocol(cricket::kMediaProtocolDtlsSavpf),
+  EXPECT_TRUE(SdpContentsAll(HaveProtocol(kMediaProtocolDtlsSavpf),
                              offer->description()));
 }
 TEST_P(PeerConnectionCryptoTest, CorrectCryptoInAnswerWhenDtlsEnabled) {
@@ -211,7 +211,7 @@ TEST_P(PeerConnectionCryptoTest, CorrectCryptoInAnswerWhenDtlsEnabled) {
 
   ASSERT_FALSE(answer->description()->contents().empty());
   EXPECT_TRUE(SdpContentsAll(HaveDtlsFingerprint(), answer->description()));
-  EXPECT_TRUE(SdpContentsAll(HaveProtocol(cricket::kMediaProtocolDtlsSavpf),
+  EXPECT_TRUE(SdpContentsAll(HaveProtocol(kMediaProtocolDtlsSavpf),
                              answer->description()));
 }
 

@@ -80,9 +80,7 @@ class RtpTransceiverTest : public testing::Test {
     return static_cast<cricket::FakeMediaEngine*>(context_->media_engine());
   }
   ConnectionContext* context() { return context_.get(); }
-  cricket::CodecLookupHelper* codec_lookup_helper() {
-    return &codec_lookup_helper_;
-  }
+  CodecLookupHelper* codec_lookup_helper() { return &codec_lookup_helper_; }
   FakeCodecLookupHelper* fake_codec_lookup_helper() {
     return &codec_lookup_helper_;
   }

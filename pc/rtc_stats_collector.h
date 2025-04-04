@@ -113,8 +113,7 @@ class RTCStatsCollector : public RefCountInterface {
       RTCStatsReport* partial_report);
   virtual void ProducePartialResultsOnNetworkThreadImpl(
       Timestamp timestamp,
-      const std::map<std::string, cricket::TransportStats>&
-          transport_stats_by_name,
+      const std::map<std::string, TransportStats>& transport_stats_by_name,
       const std::map<std::string, CertificateStatsPair>& transport_cert_stats,
       RTCStatsReport* partial_report);
 
@@ -193,8 +192,7 @@ class RTCStatsCollector : public RefCountInterface {
   // Produces `RTCIceCandidatePairStats` and `RTCIceCandidateStats`.
   void ProduceIceCandidateAndPairStats_n(
       Timestamp timestamp,
-      const std::map<std::string, cricket::TransportStats>&
-          transport_stats_by_name,
+      const std::map<std::string, TransportStats>& transport_stats_by_name,
       const Call::Stats& call_stats,
       RTCStatsReport* report) const;
   // Produces RTCMediaSourceStats, including RTCAudioSourceStats and
@@ -225,16 +223,14 @@ class RTCStatsCollector : public RefCountInterface {
   // Produces `RTCTransportStats`.
   void ProduceTransportStats_n(
       Timestamp timestamp,
-      const std::map<std::string, cricket::TransportStats>&
-          transport_stats_by_name,
+      const std::map<std::string, TransportStats>& transport_stats_by_name,
       const std::map<std::string, CertificateStatsPair>& transport_cert_stats,
       RTCStatsReport* report) const;
 
   // Helper function to stats-producing functions.
   std::map<std::string, CertificateStatsPair>
   PrepareTransportCertificateStats_n(
-      const std::map<std::string, cricket::TransportStats>&
-          transport_stats_by_name);
+      const std::map<std::string, TransportStats>& transport_stats_by_name);
   // The results are stored in `transceiver_stats_infos_` and `call_stats_`.
   void PrepareTransceiverStatsInfosAndCallStats_s_w_n();
 

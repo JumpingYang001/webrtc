@@ -19,18 +19,20 @@
 #include "pc/simulcast_description.h"
 #include "rtc_base/checks.h"
 
-namespace cricket {
+namespace webrtc {
 
 namespace {
 // note: function duplicated in media_session.cc
-bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
+bool ValidateSimulcastLayers(const std::vector<cricket::RidDescription>& rids,
                              const SimulcastLayerList& simulcast_layers) {
-  return absl::c_all_of(
-      simulcast_layers.GetAllLayers(), [&rids](const SimulcastLayer& layer) {
-        return absl::c_any_of(rids, [&layer](const RidDescription& rid) {
-          return rid.rid == layer.rid;
-        });
-      });
+  return absl::c_all_of(simulcast_layers.GetAllLayers(),
+                        [&rids](const cricket::SimulcastLayer& layer) {
+                          return absl::c_any_of(
+                              rids,
+                              [&layer](const cricket::RidDescription& rid) {
+                                return rid.rid == layer.rid;
+                              });
+                        });
 }
 
 }  // namespace
@@ -38,17 +40,17 @@ bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
 void MediaDescriptionOptions::AddAudioSender(
     const std::string& track_id,
     const std::vector<std::string>& stream_ids) {
-  RTC_DCHECK(type == webrtc::MediaType::AUDIO);
+  RTC_DCHECK(type == MediaType::AUDIO);
   AddSenderInternal(track_id, stream_ids, {}, SimulcastLayerList(), 1);
 }
 
 void MediaDescriptionOptions::AddVideoSender(
     const std::string& track_id,
     const std::vector<std::string>& stream_ids,
-    const std::vector<RidDescription>& rids,
+    const std::vector<cricket::RidDescription>& rids,
     const SimulcastLayerList& simulcast_layers,
     int num_sim_layers) {
-  RTC_DCHECK(type == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(type == MediaType::VIDEO);
   RTC_DCHECK(rids.empty() || num_sim_layers == 0)
       << "RIDs are the compliant way to indicate simulcast.";
   RTC_DCHECK(ValidateSimulcastLayers(rids, simulcast_layers));
@@ -59,7 +61,7 @@ void MediaDescriptionOptions::AddVideoSender(
 void MediaDescriptionOptions::AddSenderInternal(
     const std::string& track_id,
     const std::vector<std::string>& stream_ids,
-    const std::vector<RidDescription>& rids,
+    const std::vector<cricket::RidDescription>& rids,
     const SimulcastLayerList& simulcast_layers,
     int num_sim_layers) {
   // TODO(steveanton): Support any number of stream ids.
@@ -73,10 +75,10 @@ void MediaDescriptionOptions::AddSenderInternal(
   sender_options.push_back(options);
 }
 
-bool MediaSessionOptions::HasMediaDescription(webrtc::MediaType type) const {
+bool MediaSessionOptions::HasMediaDescription(MediaType type) const {
   return absl::c_any_of(
       media_description_options,
       [type](const MediaDescriptionOptions& t) { return t.type == type; });
 }
 
-}  // namespace cricket
+}  // namespace webrtc

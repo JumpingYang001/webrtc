@@ -188,8 +188,8 @@ class PeerConnectionInternal : public PeerConnectionInterface,
   // Returns a map from transport name to transport stats for all given
   // transport names.
   // Must be called on the network thread.
-  virtual std::map<std::string, cricket::TransportStats>
-  GetTransportStatsByNames(const std::set<std::string>& transport_names) = 0;
+  virtual std::map<std::string, TransportStats> GetTransportStatsByNames(
+      const std::set<std::string>& transport_names) = 0;
 
   virtual Call::Stats GetCallStats() = 0;
 

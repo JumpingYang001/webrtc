@@ -215,12 +215,11 @@ class MediaContentDescription {
 
   // Simulcast functionality.
   bool HasSimulcast() const { return !simulcast_.empty(); }
-  cricket::SimulcastDescription& simulcast_description() { return simulcast_; }
-  const cricket::SimulcastDescription& simulcast_description() const {
+  SimulcastDescription& simulcast_description() { return simulcast_; }
+  const SimulcastDescription& simulcast_description() const {
     return simulcast_;
   }
-  void set_simulcast_description(
-      const cricket::SimulcastDescription& simulcast) {
+  void set_simulcast_description(const SimulcastDescription& simulcast) {
     simulcast_ = simulcast;
   }
   const std::vector<cricket::RidDescription>& receive_rids() const {
@@ -279,7 +278,7 @@ class MediaContentDescription {
   SocketAddress connection_address_;
   ExtmapAllowMixed extmap_allow_mixed_enum_ = kMedia;
 
-  cricket::SimulcastDescription simulcast_;
+  SimulcastDescription simulcast_;
   std::vector<cricket::RidDescription> receive_rids_;
 
   // Copy function that returns a raw pointer. Caller will assert ownership.
@@ -295,7 +294,7 @@ class RtpMediaContentDescription : public MediaContentDescription {};
 class AudioContentDescription : public RtpMediaContentDescription {
  public:
   void set_protocol(absl::string_view protocol) override {
-    RTC_DCHECK(cricket::IsRtpProtocol(protocol));
+    RTC_DCHECK(IsRtpProtocol(protocol));
     protocol_ = std::string(protocol);
   }
   webrtc::MediaType type() const override { return webrtc::MediaType::AUDIO; }
@@ -311,7 +310,7 @@ class AudioContentDescription : public RtpMediaContentDescription {
 class VideoContentDescription : public RtpMediaContentDescription {
  public:
   void set_protocol(absl::string_view protocol) override {
-    RTC_DCHECK(cricket::IsRtpProtocol(protocol));
+    RTC_DCHECK(IsRtpProtocol(protocol));
     protocol_ = std::string(protocol);
   }
   webrtc::MediaType type() const override { return webrtc::MediaType::VIDEO; }
@@ -338,7 +337,7 @@ class SctpDataContentDescription : public MediaContentDescription {
 
   bool has_codecs() const override { return false; }
   void set_protocol(absl::string_view protocol) override {
-    RTC_DCHECK(cricket::IsSctpProtocol(protocol));
+    RTC_DCHECK(IsSctpProtocol(protocol));
     protocol_ = std::string(protocol);
   }
 

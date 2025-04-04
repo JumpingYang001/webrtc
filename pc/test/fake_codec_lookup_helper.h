@@ -21,11 +21,11 @@
 
 namespace webrtc {
 
-class FakeCodecLookupHelper : public cricket::CodecLookupHelper {
+class FakeCodecLookupHelper : public CodecLookupHelper {
  public:
   explicit FakeCodecLookupHelper(ConnectionContext* context)
       : context_(context),
-        codec_vendor_(std::make_unique<cricket::CodecVendor>(
+        codec_vendor_(std::make_unique<::webrtc::CodecVendor>(
             context->media_engine(),
             context->use_rtx(),
             context->env().field_trials())) {}
@@ -35,21 +35,21 @@ class FakeCodecLookupHelper : public cricket::CodecLookupHelper {
     return nullptr;
   }
 
-  cricket::CodecVendor* CodecVendor(const std::string& mid) override {
+  ::webrtc::CodecVendor* CodecVendor(const std::string& mid) override {
     return codec_vendor_.get();
   }
   // Recreate the codec vendor.
   // Used by tests that manipulate the factory's codecs and expect the
   // result to show up in the codec vendor's output.
   void Reset() {
-    codec_vendor_ = std::make_unique<cricket::CodecVendor>(
+    codec_vendor_ = std::make_unique<::webrtc::CodecVendor>(
         context_->media_engine(), context_->use_rtx(),
         context_->env().field_trials());
   }
 
  private:
   ConnectionContext* context_;
-  std::unique_ptr<cricket::CodecVendor> codec_vendor_;
+  std::unique_ptr<::webrtc::CodecVendor> codec_vendor_;
 };
 
 }  // namespace webrtc

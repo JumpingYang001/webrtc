@@ -123,12 +123,11 @@ class PeerConnectionWrapperForBundleTest : public PeerConnectionWrapper {
     return (voice_channel() ? voice_channel()->rtp_transport() : nullptr);
   }
 
-  cricket::VoiceChannel* voice_channel() {
+  VoiceChannel* voice_channel() {
     auto transceivers = GetInternalPeerConnection()->GetTransceiversInternal();
     for (const auto& transceiver : transceivers) {
       if (transceiver->media_type() == webrtc::MediaType::AUDIO) {
-        return static_cast<cricket::VoiceChannel*>(
-            transceiver->internal()->channel());
+        return static_cast<VoiceChannel*>(transceiver->internal()->channel());
       }
     }
     return nullptr;
@@ -138,12 +137,11 @@ class PeerConnectionWrapperForBundleTest : public PeerConnectionWrapper {
     return (video_channel() ? video_channel()->rtp_transport() : nullptr);
   }
 
-  cricket::VideoChannel* video_channel() {
+  VideoChannel* video_channel() {
     auto transceivers = GetInternalPeerConnection()->GetTransceiversInternal();
     for (const auto& transceiver : transceivers) {
       if (transceiver->media_type() == webrtc::MediaType::VIDEO) {
-        return static_cast<cricket::VideoChannel*>(
-            transceiver->internal()->channel());
+        return static_cast<VideoChannel*>(transceiver->internal()->channel());
       }
     }
     return nullptr;

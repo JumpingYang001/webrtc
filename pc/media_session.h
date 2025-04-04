@@ -53,12 +53,11 @@ class MediaSessionDescriptionFactory {
   // The TransportDescriptionFactory, the UniqueRandomIdGenerator, and the
   // PayloadTypeSuggester are not owned by MediaSessionDescriptionFactory, so
   // they must be kept alive by the user of this class.
-  MediaSessionDescriptionFactory(
-      cricket::MediaEngineInterface* media_engine,
-      bool rtx_enabled,
-      UniqueRandomIdGenerator* ssrc_generator,
-      const TransportDescriptionFactory* factory,
-      cricket::CodecLookupHelper* codec_lookup_helper);
+  MediaSessionDescriptionFactory(cricket::MediaEngineInterface* media_engine,
+                                 bool rtx_enabled,
+                                 UniqueRandomIdGenerator* ssrc_generator,
+                                 const TransportDescriptionFactory* factory,
+                                 CodecLookupHelper* codec_lookup_helper);
 
   cricket::RtpHeaderExtensions filtered_rtp_header_extensions(
       cricket::RtpHeaderExtensions extensions) const;
@@ -72,11 +71,11 @@ class MediaSessionDescriptionFactory {
   }
 
   RTCErrorOr<std::unique_ptr<SessionDescription>> CreateOfferOrError(
-      const cricket::MediaSessionOptions& options,
+      const MediaSessionOptions& options,
       const SessionDescription* current_description) const;
   RTCErrorOr<std::unique_ptr<SessionDescription>> CreateAnswerOrError(
       const SessionDescription* offer,
-      const cricket::MediaSessionOptions& options,
+      const MediaSessionOptions& options,
       const SessionDescription* current_description) const;
 
  private:
@@ -88,8 +87,8 @@ class MediaSessionDescriptionFactory {
   AudioVideoRtpHeaderExtensions GetOfferedRtpHeaderExtensionsWithIds(
       const std::vector<const ContentInfo*>& current_active_contents,
       bool extmap_allow_mixed,
-      const std::vector<cricket::MediaDescriptionOptions>&
-          media_description_options) const;
+      const std::vector<MediaDescriptionOptions>& media_description_options)
+      const;
   RTCError AddTransportOffer(
       const std::string& content_name,
       const TransportOptions& transport_options,
@@ -112,8 +111,8 @@ class MediaSessionDescriptionFactory {
 
   // Helpers for adding media contents to the SessionDescription.
   RTCError AddRtpContentForOffer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       const cricket::RtpHeaderExtensions& header_extensions,
@@ -122,8 +121,8 @@ class MediaSessionDescriptionFactory {
       cricket::IceCredentialsIterator* ice_credentials) const;
 
   RTCError AddDataContentForOffer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       cricket::StreamParamsVec* current_streams,
@@ -131,16 +130,16 @@ class MediaSessionDescriptionFactory {
       cricket::IceCredentialsIterator* ice_credentials) const;
 
   RTCError AddUnsupportedContentForOffer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       SessionDescription* desc,
       cricket::IceCredentialsIterator* ice_credentials) const;
 
   RTCError AddRtpContentForAnswer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* offer_content,
       const SessionDescription* offer_description,
       const ContentInfo* current_content,
@@ -152,8 +151,8 @@ class MediaSessionDescriptionFactory {
       cricket::IceCredentialsIterator* ice_credentials) const;
 
   RTCError AddDataContentForAnswer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* offer_content,
       const SessionDescription* offer_description,
       const ContentInfo* current_content,
@@ -164,8 +163,8 @@ class MediaSessionDescriptionFactory {
       cricket::IceCredentialsIterator* ice_credentials) const;
 
   RTCError AddUnsupportedContentForAnswer(
-      const cricket::MediaDescriptionOptions& media_description_options,
-      const cricket::MediaSessionOptions& session_options,
+      const MediaDescriptionOptions& media_description_options,
+      const MediaSessionOptions& session_options,
       const ContentInfo* offer_content,
       const SessionDescription* offer_description,
       const ContentInfo* current_content,
@@ -183,7 +182,7 @@ class MediaSessionDescriptionFactory {
   AlwaysValidPointer<UniqueRandomIdGenerator> const ssrc_generator_;
   bool enable_encrypted_rtp_header_extensions_ = true;
   const TransportDescriptionFactory* transport_desc_factory_;
-  cricket::CodecLookupHelper* codec_lookup_helper_;
+  CodecLookupHelper* codec_lookup_helper_;
   bool payload_types_in_transport_trial_enabled_;
 };
 

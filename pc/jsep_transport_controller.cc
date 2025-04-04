@@ -229,8 +229,7 @@ bool JsepTransportController::NeedsIceRestart(
     const std::string& transport_name) const {
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  const cricket::JsepTransport* transport =
-      GetJsepTransportByName(transport_name);
+  const JsepTransport* transport = GetJsepTransportByName(transport_name);
   if (!transport) {
     return false;
   }
@@ -248,7 +247,7 @@ std::optional<SSLRole> JsepTransportController::GetDtlsRole(
 
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  const cricket::JsepTransport* t = GetJsepTransportForMid(mid);
+  const JsepTransport* t = GetJsepTransportForMid(mid);
   if (!t) {
     return std::optional<SSLRole>();
   }
@@ -268,7 +267,7 @@ RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
     });
   }
   RTC_DCHECK_RUN_ON(network_thread_);
-  const cricket::JsepTransport* transport = GetJsepTransportForMid(mid);
+  const JsepTransport* transport = GetJsepTransportForMid(mid);
   if (transport) {
     auto local_result =
         transport->local_payload_types().LookupPayloadType(codec);
@@ -314,7 +313,7 @@ RTCError JsepTransportController::AddLocalMapping(const std::string& mid,
     });
   }
   RTC_DCHECK_RUN_ON(network_thread_);
-  cricket::JsepTransport* transport = GetJsepTransportForMid(mid);
+  JsepTransport* transport = GetJsepTransportForMid(mid);
   if (!transport) {
     return RTCError(RTCErrorType::INVALID_PARAMETER,
                     "AddLocalMapping: no transport for mid");
@@ -354,7 +353,7 @@ rtc::scoped_refptr<RTCCertificate> JsepTransportController::GetLocalCertificate(
     const std::string& transport_name) const {
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  const cricket::JsepTransport* t = GetJsepTransportByName(transport_name);
+  const JsepTransport* t = GetJsepTransportByName(transport_name);
   if (!t) {
     return nullptr;
   }
@@ -434,8 +433,7 @@ RTCError JsepTransportController::RemoveRemoteCandidates(
   for (const auto& kv : candidates_by_transport_name) {
     const std::string& transport_name = kv.first;
     const cricket::Candidates& transport_candidates = kv.second;
-    cricket::JsepTransport* jsep_transport =
-        GetJsepTransportByName(transport_name);
+    JsepTransport* jsep_transport = GetJsepTransportByName(transport_name);
     if (!jsep_transport) {
       RTC_LOG(LS_WARNING)
           << "Not removing candidate because the JsepTransport doesn't exist.";
@@ -455,11 +453,10 @@ RTCError JsepTransportController::RemoveRemoteCandidates(
 }
 
 bool JsepTransportController::GetStats(const std::string& transport_name,
-                                       cricket::TransportStats* stats) const {
+                                       TransportStats* stats) const {
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  const cricket::JsepTransport* transport =
-      GetJsepTransportByName(transport_name);
+  const JsepTransport* transport = GetJsepTransportByName(transport_name);
   if (!transport) {
     return false;
   }
@@ -755,8 +752,7 @@ RTCError JsepTransportController::ApplyDescription_n(
     int rtp_abs_sendtime_extn_id =
         GetRtpAbsSendTimeHeaderExtensionId(content_info);
 
-    cricket::JsepTransport* transport =
-        GetJsepTransportForMid(content_info.mid());
+    JsepTransport* transport = GetJsepTransportForMid(content_info.mid());
     if (!transport) {
       LOG_AND_RETURN_ERROR(
           RTCErrorType::INVALID_PARAMETER,
@@ -766,9 +762,8 @@ RTCError JsepTransportController::ApplyDescription_n(
 
     SetIceRole_n(DetermineIceRole(transport, transport_info, type, local));
 
-    cricket::JsepTransportDescription jsep_description =
-        CreateJsepTransportDescription(content_info, transport_info,
-                                       extension_ids, rtp_abs_sendtime_extn_id);
+    JsepTransportDescription jsep_description = CreateJsepTransportDescription(
+        content_info, transport_info, extension_ids, rtp_abs_sendtime_extn_id);
     if (local) {
       error =
           transport->SetLocalJsepTransportDescription(jsep_description, type);
@@ -1037,7 +1032,7 @@ bool JsepTransportController::HandleBundledContent(
   return transports_.SetTransportForMid(content_info.mid(), jsep_transport);
 }
 
-cricket::JsepTransportDescription
+JsepTransportDescription
 JsepTransportController::CreateJsepTransportDescription(
     const ContentInfo& content_info,
     const cricket::TransportInfo& transport_info,
@@ -1052,9 +1047,9 @@ JsepTransportController::CreateJsepTransportDescription(
                               ? true
                               : content_desc->rtcp_mux();
 
-  return cricket::JsepTransportDescription(
-      rtcp_mux_enabled, encrypted_extension_ids, rtp_abs_sendtime_extn_id,
-      transport_info.description);
+  return JsepTransportDescription(rtcp_mux_enabled, encrypted_extension_ids,
+                                  rtp_abs_sendtime_extn_id,
+                                  transport_info.description);
 }
 
 std::vector<int> JsepTransportController::GetEncryptedHeaderExtensionIds(
@@ -1123,31 +1118,31 @@ int JsepTransportController::GetRtpAbsSendTimeHeaderExtensionId(
   return send_time_extension ? send_time_extension->id : -1;
 }
 
-const cricket::JsepTransport* JsepTransportController::GetJsepTransportForMid(
+const JsepTransport* JsepTransportController::GetJsepTransportForMid(
     const std::string& mid) const {
   return transports_.GetTransportForMid(mid);
 }
 
-cricket::JsepTransport* JsepTransportController::GetJsepTransportForMid(
+JsepTransport* JsepTransportController::GetJsepTransportForMid(
     const std::string& mid) {
   return transports_.GetTransportForMid(mid);
 }
-const cricket::JsepTransport* JsepTransportController::GetJsepTransportForMid(
+const JsepTransport* JsepTransportController::GetJsepTransportForMid(
     absl::string_view mid) const {
   return transports_.GetTransportForMid(mid);
 }
 
-cricket::JsepTransport* JsepTransportController::GetJsepTransportForMid(
+JsepTransport* JsepTransportController::GetJsepTransportForMid(
     absl::string_view mid) {
   return transports_.GetTransportForMid(mid);
 }
 
-const cricket::JsepTransport* JsepTransportController::GetJsepTransportByName(
+const JsepTransport* JsepTransportController::GetJsepTransportByName(
     const std::string& transport_name) const {
   return transports_.GetTransportByName(transport_name);
 }
 
-cricket::JsepTransport* JsepTransportController::GetJsepTransportByName(
+JsepTransport* JsepTransportController::GetJsepTransportByName(
     const std::string& transport_name) {
   return transports_.GetTransportByName(transport_name);
 }
@@ -1156,8 +1151,7 @@ RTCError JsepTransportController::MaybeCreateJsepTransport(
     bool local,
     const ContentInfo& content_info,
     const SessionDescription& description) {
-  cricket::JsepTransport* transport =
-      GetJsepTransportByName(content_info.mid());
+  JsepTransport* transport = GetJsepTransportByName(content_info.mid());
   if (transport) {
     return RTCError::OK();
   }
@@ -1201,8 +1195,8 @@ RTCError JsepTransportController::MaybeCreateJsepTransport(
         env_, rtp_dtls_transport.get());
   }
 
-  std::unique_ptr<cricket::JsepTransport> jsep_transport =
-      std::make_unique<cricket::JsepTransport>(
+  std::unique_ptr<JsepTransport> jsep_transport =
+      std::make_unique<JsepTransport>(
           content_info.mid(), certificate_, std::move(ice), std::move(rtcp_ice),
           std::move(unencrypted_rtp_transport), std::move(sdes_transport),
           std::move(dtls_srtp_transport), std::move(rtp_dtls_transport),
@@ -1242,7 +1236,7 @@ void JsepTransportController::SetIceRole_n(cricket::IceRole ice_role) {
 }
 
 cricket::IceRole JsepTransportController::DetermineIceRole(
-    cricket::JsepTransport* jsep_transport,
+    JsepTransport* jsep_transport,
     const cricket::TransportInfo& transport_info,
     SdpType type,
     bool local) {
@@ -1554,7 +1548,7 @@ void JsepTransportController::OnDtlsHandshakeError(SSLHandshakeError error) {
 
 bool JsepTransportController::OnTransportChanged(
     const std::string& mid,
-    cricket::JsepTransport* jsep_transport) {
+    JsepTransport* jsep_transport) {
   if (config_.transport_observer) {
     if (jsep_transport) {
       return config_.transport_observer->OnTransportChanged(

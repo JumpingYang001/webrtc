@@ -25,7 +25,7 @@
 #include "pc/session_description.h"
 #include "pc/typed_codec_vendor.h"
 
-namespace cricket {
+namespace webrtc {
 
 // This class contains the functions required to compute the list of codecs
 // for SDP offer/answer. It is exposed to MediaSessionDescriptionFactory
@@ -42,62 +42,62 @@ namespace cricket {
 // - Thread guard
 class CodecVendor {
  public:
-  CodecVendor(MediaEngineInterface* media_engine,
+  CodecVendor(cricket::MediaEngineInterface* media_engine,
               bool rtx_enabled,
-              const webrtc::FieldTrialsView& trials);
+              const FieldTrialsView& trials);
 
  public:
-  webrtc::RTCErrorOr<std::vector<Codec>> GetNegotiatedCodecsForOffer(
+  RTCErrorOr<std::vector<cricket::Codec>> GetNegotiatedCodecsForOffer(
       const MediaDescriptionOptions& media_description_options,
       const MediaSessionOptions& session_options,
-      const webrtc::ContentInfo* current_content,
-      webrtc::PayloadTypeSuggester& pt_suggester);
+      const ContentInfo* current_content,
+      PayloadTypeSuggester& pt_suggester);
 
-  webrtc::RTCErrorOr<Codecs> GetNegotiatedCodecsForAnswer(
+  RTCErrorOr<cricket::Codecs> GetNegotiatedCodecsForAnswer(
       const MediaDescriptionOptions& media_description_options,
       const MediaSessionOptions& session_options,
-      webrtc::RtpTransceiverDirection offer_rtd,
-      webrtc::RtpTransceiverDirection answer_rtd,
-      const webrtc::ContentInfo* current_content,
-      std::vector<Codec> codecs_from_offer,
-      webrtc::PayloadTypeSuggester& pt_suggester);
+      RtpTransceiverDirection offer_rtd,
+      RtpTransceiverDirection answer_rtd,
+      const ContentInfo* current_content,
+      std::vector<cricket::Codec> codecs_from_offer,
+      PayloadTypeSuggester& pt_suggester);
 
   // Functions exposed for testing
-  void set_audio_codecs(const CodecList& send_codecs,
-                        const CodecList& recv_codecs);
-  void set_audio_codecs(const std::vector<Codec>& send_codecs,
-                        const std::vector<Codec>& recv_codecs) {
-    set_audio_codecs(CodecList::CreateFromTrustedData(send_codecs),
-                     CodecList::CreateFromTrustedData(recv_codecs));
+  void set_audio_codecs(const cricket::CodecList& send_codecs,
+                        const cricket::CodecList& recv_codecs);
+  void set_audio_codecs(const std::vector<cricket::Codec>& send_codecs,
+                        const std::vector<cricket::Codec>& recv_codecs) {
+    set_audio_codecs(cricket::CodecList::CreateFromTrustedData(send_codecs),
+                     cricket::CodecList::CreateFromTrustedData(recv_codecs));
   }
-  void set_video_codecs(const CodecList& send_codecs,
-                        const CodecList& recv_codecs);
-  void set_video_codecs(const std::vector<Codec>& send_codecs,
-                        const std::vector<Codec>& recv_codecs) {
-    set_video_codecs(CodecList::CreateFromTrustedData(send_codecs),
-                     CodecList::CreateFromTrustedData(recv_codecs));
+  void set_video_codecs(const cricket::CodecList& send_codecs,
+                        const cricket::CodecList& recv_codecs);
+  void set_video_codecs(const std::vector<cricket::Codec>& send_codecs,
+                        const std::vector<cricket::Codec>& recv_codecs) {
+    set_video_codecs(cricket::CodecList::CreateFromTrustedData(send_codecs),
+                     cricket::CodecList::CreateFromTrustedData(recv_codecs));
   }
-  CodecList audio_sendrecv_codecs() const;
-  const CodecList& audio_send_codecs() const;
-  const CodecList& audio_recv_codecs() const;
-  CodecList video_sendrecv_codecs() const;
-  const CodecList& video_send_codecs() const;
-  const CodecList& video_recv_codecs() const;
+  cricket::CodecList audio_sendrecv_codecs() const;
+  const cricket::CodecList& audio_send_codecs() const;
+  const cricket::CodecList& audio_recv_codecs() const;
+  cricket::CodecList video_sendrecv_codecs() const;
+  const cricket::CodecList& video_send_codecs() const;
+  const cricket::CodecList& video_recv_codecs() const;
 
  private:
-  CodecList GetAudioCodecsForOffer(
-      const webrtc::RtpTransceiverDirection& direction) const;
-  CodecList GetAudioCodecsForAnswer(
-      const webrtc::RtpTransceiverDirection& offer,
-      const webrtc::RtpTransceiverDirection& answer) const;
-  CodecList GetVideoCodecsForOffer(
-      const webrtc::RtpTransceiverDirection& direction) const;
-  CodecList GetVideoCodecsForAnswer(
-      const webrtc::RtpTransceiverDirection& offer,
-      const webrtc::RtpTransceiverDirection& answer) const;
+  cricket::CodecList GetAudioCodecsForOffer(
+      const RtpTransceiverDirection& direction) const;
+  cricket::CodecList GetAudioCodecsForAnswer(
+      const RtpTransceiverDirection& offer,
+      const RtpTransceiverDirection& answer) const;
+  cricket::CodecList GetVideoCodecsForOffer(
+      const RtpTransceiverDirection& direction) const;
+  cricket::CodecList GetVideoCodecsForAnswer(
+      const RtpTransceiverDirection& offer,
+      const RtpTransceiverDirection& answer) const;
 
-  CodecList all_video_codecs() const;
-  CodecList all_audio_codecs() const;
+  cricket::CodecList all_video_codecs() const;
+  cricket::CodecList all_audio_codecs() const;
 
   TypedCodecVendor audio_send_codecs_;
   TypedCodecVendor audio_recv_codecs_;
@@ -113,10 +113,17 @@ class CodecVendor {
 class CodecLookupHelper {
  public:
   virtual ~CodecLookupHelper() = default;
-  virtual webrtc::PayloadTypeSuggester* PayloadTypeSuggester() = 0;
-  virtual cricket::CodecVendor* CodecVendor(const std::string& mid) = 0;
+  virtual PayloadTypeSuggester* PayloadTypeSuggester() = 0;
+  virtual CodecVendor* CodecVendor(const std::string& mid) = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::CodecLookupHelper;
+using ::webrtc::CodecVendor;
 }  // namespace cricket
 
 #endif  // PC_CODEC_VENDOR_H_

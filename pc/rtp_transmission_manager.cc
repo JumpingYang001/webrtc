@@ -60,7 +60,7 @@ RtpTransmissionManager::RtpTransmissionManager(
     const Environment& env,
     bool is_unified_plan,
     ConnectionContext* context,
-    cricket::CodecLookupHelper* codec_lookup_helper,
+    CodecLookupHelper* codec_lookup_helper,
     UsagePattern* usage_pattern,
     PeerConnectionObserver* observer,
     LegacyStatsCollectorInterface* legacy_stats,

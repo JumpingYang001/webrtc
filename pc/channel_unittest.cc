@@ -115,7 +115,7 @@ class Traits {
   typedef OptionsT Options;
 };
 
-class VoiceTraits : public Traits<cricket::VoiceChannel,
+class VoiceTraits : public Traits<webrtc::VoiceChannel,
                                   cricket::FakeVoiceMediaSendChannel,
                                   cricket::FakeVoiceMediaReceiveChannel,
                                   cricket::VoiceMediaSendChannelInterface,
@@ -124,7 +124,7 @@ class VoiceTraits : public Traits<cricket::VoiceChannel,
                                   cricket::VoiceMediaInfo,
                                   cricket::AudioOptions> {};
 
-class VideoTraits : public Traits<cricket::VideoChannel,
+class VideoTraits : public Traits<webrtc::VideoChannel,
                                   cricket::FakeVideoMediaSendChannel,
                                   cricket::FakeVideoMediaReceiveChannel,
                                   cricket::VideoMediaSendChannelInterface,
@@ -1421,9 +1421,9 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
     SendTask(network_thread_, [&] {
       new_rtp_transport_ = CreateDtlsSrtpTransport(
           fake_rtp_dtls_transport2_.get(), fake_rtcp_dtls_transport2_.get());
-      channel1_->SetOption(cricket::BaseChannel::ST_RTP,
+      channel1_->SetOption(webrtc::BaseChannel::ST_RTP,
                            webrtc::Socket::Option::OPT_SNDBUF, kSndBufSize);
-      channel2_->SetOption(cricket::BaseChannel::ST_RTP,
+      channel2_->SetOption(webrtc::BaseChannel::ST_RTP,
                            webrtc::Socket::Option::OPT_RCVBUF, kRcvBufSize);
       channel1_->SetRtpTransport(new_rtp_transport_.get());
       send_success = fake_rtp_dtls_transport2_->GetOption(
@@ -1595,7 +1595,7 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
 };
 
 template <>
-std::unique_ptr<cricket::VoiceChannel> ChannelTest<VoiceTraits>::CreateChannel(
+std::unique_ptr<webrtc::VoiceChannel> ChannelTest<VoiceTraits>::CreateChannel(
     webrtc::Thread* worker_thread,
     webrtc::Thread* network_thread,
     std::unique_ptr<cricket::FakeVoiceMediaSendChannel> send_ch,
@@ -1603,7 +1603,7 @@ std::unique_ptr<cricket::VoiceChannel> ChannelTest<VoiceTraits>::CreateChannel(
     webrtc::RtpTransportInternal* rtp_transport,
     int flags) {
   webrtc::Thread* signaling_thread = webrtc::Thread::Current();
-  auto channel = std::make_unique<cricket::VoiceChannel>(
+  auto channel = std::make_unique<webrtc::VoiceChannel>(
       worker_thread, network_thread, signaling_thread, std::move(send_ch),
       std::move(receive_ch), cricket::CN_AUDIO, (flags & DTLS) != 0,
       webrtc::CryptoOptions(), &ssrc_generator_);
@@ -1675,7 +1675,7 @@ class VoiceChannelWithEncryptedRtpHeaderExtensionsDoubleThreadTest
 
 // override to add NULL parameter
 template <>
-std::unique_ptr<cricket::VideoChannel> ChannelTest<VideoTraits>::CreateChannel(
+std::unique_ptr<webrtc::VideoChannel> ChannelTest<VideoTraits>::CreateChannel(
     webrtc::Thread* worker_thread,
     webrtc::Thread* network_thread,
     std::unique_ptr<cricket::FakeVideoMediaSendChannel> send_ch,
@@ -1683,7 +1683,7 @@ std::unique_ptr<cricket::VideoChannel> ChannelTest<VideoTraits>::CreateChannel(
     webrtc::RtpTransportInternal* rtp_transport,
     int flags) {
   webrtc::Thread* signaling_thread = webrtc::Thread::Current();
-  auto channel = std::make_unique<cricket::VideoChannel>(
+  auto channel = std::make_unique<webrtc::VideoChannel>(
       worker_thread, network_thread, signaling_thread, std::move(send_ch),
       std::move(receive_ch), cricket::CN_VIDEO, (flags & DTLS) != 0,
       webrtc::CryptoOptions(), &ssrc_generator_);

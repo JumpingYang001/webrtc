@@ -117,7 +117,7 @@ TaskQueueBase* GetCurrentTaskQueueOrThread() {
 
 RtpTransceiver::RtpTransceiver(webrtc::MediaType media_type,
                                ConnectionContext* context,
-                               cricket::CodecLookupHelper* codec_lookup_helper)
+                               CodecLookupHelper* codec_lookup_helper)
     : thread_(GetCurrentTaskQueueOrThread()),
       unified_plan_(false),
       media_type_(media_type),
@@ -134,7 +134,7 @@ RtpTransceiver::RtpTransceiver(
     rtc::scoped_refptr<RtpReceiverProxyWithInternal<RtpReceiverInternal>>
         receiver,
     ConnectionContext* context,
-    cricket::CodecLookupHelper* codec_lookup_helper,
+    CodecLookupHelper* codec_lookup_helper,
     std::vector<RtpHeaderExtensionCapability> header_extensions_to_negotiate,
     std::function<void()> on_negotiation_needed)
     : thread_(GetCurrentTaskQueueOrThread()),
@@ -217,7 +217,7 @@ RTCError RtpTransceiver::CreateChannel(
                     "No media engine for mid=" + std::string(mid));
   }
 
-  std::unique_ptr<cricket::ChannelInterface> new_channel;
+  std::unique_ptr<ChannelInterface> new_channel;
   if (media_type() == webrtc::MediaType::AUDIO) {
     // TODO(bugs.webrtc.org/11992): CreateVideoChannel internally switches to
     // the worker thread. We shouldn't be using the `call_ptr_` hack here but
@@ -247,7 +247,7 @@ RTCError RtpTransceiver::CreateChannel(
             receive_channel->ChooseReceiverReportSsrc(choices);
           });
 
-      new_channel = std::make_unique<cricket::VoiceChannel>(
+      new_channel = std::make_unique<VoiceChannel>(
           context()->worker_thread(), context()->network_thread(),
           context()->signaling_thread(), std::move(media_send_channel),
           std::move(media_receive_channel), mid, srtp_required, crypto_options,
@@ -277,7 +277,7 @@ RTCError RtpTransceiver::CreateChannel(
             receive_channel->ChooseReceiverReportSsrc(choices);
           });
 
-      new_channel = std::make_unique<cricket::VideoChannel>(
+      new_channel = std::make_unique<VideoChannel>(
           context()->worker_thread(), context()->network_thread(),
           context()->signaling_thread(), std::move(media_send_channel),
           std::move(media_receive_channel), mid, srtp_required, crypto_options,
@@ -289,7 +289,7 @@ RTCError RtpTransceiver::CreateChannel(
 }
 
 void RtpTransceiver::SetChannel(
-    std::unique_ptr<cricket::ChannelInterface> channel,
+    std::unique_ptr<ChannelInterface> channel,
     std::function<RtpTransportInternal*(const std::string&)> transport_lookup) {
   RTC_DCHECK_RUN_ON(thread_);
   RTC_DCHECK(channel);

@@ -76,9 +76,6 @@ using cricket::kCodecParamMinPTime;
 using cricket::kCodecParamPTime;
 using cricket::kTransportSpecificBandwidth;
 using cricket::RidDescription;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
-using cricket::SimulcastLayerList;
 using cricket::SsrcGroup;
 using cricket::StreamParams;
 using cricket::StreamParamsVec;
@@ -91,6 +88,9 @@ using ::webrtc::MediaContentDescription;
 using ::webrtc::MediaProtocolType;
 using ::webrtc::RtpHeaderExtensions;
 using ::webrtc::SctpDataContentDescription;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
+using ::webrtc::SimulcastLayerList;
 using ::webrtc::SocketAddress;
 using ::webrtc::UnsupportedContentDescription;
 using ::webrtc::VideoContentDescription;
@@ -1522,7 +1522,7 @@ void BuildMediaDescription(const ContentInfo* content_info,
   }
 
   // Add the a=rtcp line.
-  if (cricket::IsRtpProtocol(media_desc->protocol())) {
+  if (IsRtpProtocol(media_desc->protocol())) {
     std::string rtcp_line = GetRtcpLine(candidates);
     if (!rtcp_line.empty()) {
       AddLine(rtcp_line, message);
@@ -1553,10 +1553,10 @@ void BuildMediaDescription(const ContentInfo* content_info,
   os << kSdpDelimiterColon << content_info->mid();
   AddLine(os.str(), message);
 
-  if (cricket::IsDtlsSctp(media_desc->protocol())) {
+  if (IsDtlsSctp(media_desc->protocol())) {
     const SctpDataContentDescription* data_desc = media_desc->as_sctp();
     BuildSctpContentAttributes(message, data_desc);
-  } else if (cricket::IsRtpProtocol(media_desc->protocol())) {
+  } else if (IsRtpProtocol(media_desc->protocol())) {
     BuildRtpContentAttributes(media_desc, media_type, msid_signaling, message);
   }
 }
@@ -2688,7 +2688,7 @@ bool ParseMediaDescription(
 
     // <fmt>
     std::vector<int> payload_types;
-    if (cricket::IsRtpProtocol(protocol)) {
+    if (IsRtpProtocol(protocol)) {
       for (size_t j = 3; j < fields.size(); ++j) {
         int pl = 0;
         if (!GetPayloadTypeFromString(*mline, fields[j], &pl, error)) {
@@ -2712,7 +2712,7 @@ bool ParseMediaDescription(
     absl::string_view media_type = fields[0];
     if ((media_type == kSdpMediaTypeVideo ||
          media_type == kSdpMediaTypeAudio) &&
-        !cricket::IsRtpProtocol(protocol)) {
+        !IsRtpProtocol(protocol)) {
       return ParseFailed(*mline, "Unsupported protocol for media type", error);
     }
     if (media_type == kSdpMediaTypeVideo) {
@@ -2725,8 +2725,7 @@ bool ParseMediaDescription(
           message, webrtc::MediaType::AUDIO, mline_index, protocol,
           payload_types, pos, &content_name, &bundle_only,
           &section_msid_signaling, &transport, candidates, error);
-    } else if (media_type == kSdpMediaTypeData &&
-               cricket::IsDtlsSctp(protocol)) {
+    } else if (media_type == kSdpMediaTypeData && IsDtlsSctp(protocol)) {
       // The draft-03 format is:
       // m=application <port> DTLS/SCTP <sctp-port>...
       // use_sctpmap should be false.
@@ -2793,7 +2792,7 @@ bool ParseMediaDescription(
 
     if (content->as_unsupported()) {
       content_rejected = true;
-    } else if (cricket::IsRtpProtocol(protocol) && !content->as_sctp()) {
+    } else if (IsRtpProtocol(protocol) && !content->as_sctp()) {
       content->set_protocol(std::string(protocol));
       // Set the extmap.
       if (!session_extmaps.empty() &&
@@ -2823,8 +2822,8 @@ bool ParseMediaDescription(
     content->set_connection_address(address);
 
     desc->AddContent(content_name,
-                     cricket::IsDtlsSctp(protocol) ? MediaProtocolType::kSctp
-                                                   : MediaProtocolType::kRtp,
+                     IsDtlsSctp(protocol) ? MediaProtocolType::kSctp
+                                          : MediaProtocolType::kRtp,
                      content_rejected, bundle_only, std::move(content));
     // Create TransportInfo with the media level "ice-pwd" and "ice-ufrag".
     desc->AddTransportInfo(TransportInfo(content_name, transport));
@@ -3150,8 +3149,7 @@ bool ParseContent(absl::string_view message,
       if (!ParseDtlsSetup(*line, &(transport->connection_role), error)) {
         return false;
       }
-    } else if (cricket::IsDtlsSctp(protocol) &&
-               media_type == webrtc::MediaType::DATA) {
+    } else if (IsDtlsSctp(protocol) && media_type == webrtc::MediaType::DATA) {
       //
       // SCTP specific attributes
       //
@@ -3175,7 +3173,7 @@ bool ParseContent(absl::string_view message,
         // Ignore a=sctpmap: from early versions of draft-ietf-mmusic-sctp-sdp
         continue;
       }
-    } else if (cricket::IsRtpProtocol(protocol)) {
+    } else if (IsRtpProtocol(protocol)) {
       //
       // RTP specific attributes
       //

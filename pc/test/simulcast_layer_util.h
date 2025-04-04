@@ -20,18 +20,16 @@
 
 namespace webrtc {
 
-std::vector<cricket::SimulcastLayer> CreateLayers(
-    const std::vector<std::string>& rids,
-    const std::vector<bool>& active);
+std::vector<SimulcastLayer> CreateLayers(const std::vector<std::string>& rids,
+                                         const std::vector<bool>& active);
 
-std::vector<cricket::SimulcastLayer> CreateLayers(
-    const std::vector<std::string>& rids,
-    bool active);
+std::vector<SimulcastLayer> CreateLayers(const std::vector<std::string>& rids,
+                                         bool active);
 
 RtpTransceiverInit CreateTransceiverInit(
-    const std::vector<cricket::SimulcastLayer>& layers);
+    const std::vector<SimulcastLayer>& layers);
 
-cricket::SimulcastDescription RemoveSimulcast(SessionDescriptionInterface* sd);
+SimulcastDescription RemoveSimulcast(SessionDescriptionInterface* sd);
 
 }  // namespace webrtc
 

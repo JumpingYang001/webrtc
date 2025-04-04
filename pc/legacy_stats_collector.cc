@@ -60,7 +60,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
@@ -919,7 +918,7 @@ LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
   SessionStats stats;
   stats.candidate_stats = pc_->GetPooledCandidateStats();
   for (auto& transceiver : transceivers) {
-    cricket::ChannelInterface* channel = transceiver->internal()->channel();
+    ChannelInterface* channel = transceiver->internal()->channel();
     if (channel) {
       stats.transport_names_by_mid[channel->mid()] =
           std::string(channel->transport_name());
@@ -936,7 +935,7 @@ LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
     transport_names.insert(entry.second);
   }
 
-  std::map<std::string, cricket::TransportStats> transport_stats_by_name =
+  std::map<std::string, webrtc::TransportStats> transport_stats_by_name =
       pc_->GetTransportStatsByNames(transport_names);
 
   for (auto& entry : transport_stats_by_name) {
@@ -1126,7 +1125,7 @@ class ChannelStatsGatherer {
 
 class VoiceChannelStatsGatherer final : public ChannelStatsGatherer {
  public:
-  explicit VoiceChannelStatsGatherer(cricket::VoiceChannel* voice_channel)
+  explicit VoiceChannelStatsGatherer(VoiceChannel* voice_channel)
       : voice_channel_(voice_channel) {
     RTC_DCHECK(voice_channel_);
   }
@@ -1162,13 +1161,13 @@ class VoiceChannelStatsGatherer final : public ChannelStatsGatherer {
   }
 
  private:
-  cricket::VoiceChannel* voice_channel_;
+  VoiceChannel* voice_channel_;
   cricket::VoiceMediaInfo voice_media_info;
 };
 
 class VideoChannelStatsGatherer final : public ChannelStatsGatherer {
  public:
-  explicit VideoChannelStatsGatherer(cricket::VideoChannel* video_channel)
+  explicit VideoChannelStatsGatherer(VideoChannel* video_channel)
       : video_channel_(video_channel) {
     RTC_DCHECK(video_channel_);
   }
@@ -1195,12 +1194,12 @@ class VideoChannelStatsGatherer final : public ChannelStatsGatherer {
   bool HasRemoteAudio() const override { return false; }
 
  private:
-  cricket::VideoChannel* video_channel_;
+  VideoChannel* video_channel_;
   cricket::VideoMediaInfo video_media_info;
 };
 
 std::unique_ptr<ChannelStatsGatherer> CreateChannelStatsGatherer(
-    cricket::ChannelInterface* channel) {
+    ChannelInterface* channel) {
   RTC_DCHECK(channel);
   if (channel->media_type() == webrtc::MediaType::AUDIO) {
     return std::make_unique<VoiceChannelStatsGatherer>(
@@ -1224,7 +1223,7 @@ void LegacyStatsCollector::ExtractMediaInfo(
   {
     Thread::ScopedDisallowBlockingCalls no_blocking_calls;
     for (const auto& transceiver : transceivers) {
-      cricket::ChannelInterface* channel = transceiver->internal()->channel();
+      ChannelInterface* channel = transceiver->internal()->channel();
       if (!channel) {
         continue;
       }
@@ -1253,7 +1252,7 @@ void LegacyStatsCollector::ExtractMediaInfo(
     // Populate `receiver_track_id_by_ssrc` for the gatherers.
     int i = 0;
     for (const auto& transceiver : transceivers) {
-      cricket::ChannelInterface* channel = transceiver->internal()->channel();
+      ChannelInterface* channel = transceiver->internal()->channel();
       if (!channel)
         continue;
       ChannelStatsGatherer* gatherer = gatherers[i++].get();

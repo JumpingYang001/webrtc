@@ -69,9 +69,9 @@ using ::testing::StartsWith;
 
 using cricket::MediaContentDescription;
 using cricket::RidDescription;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
 using cricket::StreamParams;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
 
 namespace webrtc {
 

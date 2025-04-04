@@ -25,6 +25,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/adaptation/resource.h"
 #include "api/audio/audio_device.h"
@@ -117,7 +118,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/trace_event.h"
 #include "rtc_base/unique_id_generator.h"
@@ -126,22 +126,22 @@
 using cricket::MediaContentDescription;
 using cricket::RidDescription;
 using cricket::RidDirection;
-using cricket::SimulcastDescription;
-using cricket::SimulcastLayer;
-using cricket::SimulcastLayerList;
 using cricket::StreamParams;
 using cricket::TransportInfo;
 using ::webrtc::ContentInfo;
 using ::webrtc::ContentInfos;
 using ::webrtc::MediaProtocolType;
 using ::webrtc::SessionDescription;
+using ::webrtc::SimulcastDescription;
+using ::webrtc::SimulcastLayer;
+using ::webrtc::SimulcastLayerList;
 
 namespace webrtc {
 
 namespace {
 static const int REPORT_USAGE_PATTERN_DELAY_MS = 60000;
 
-class CodecLookupHelperForPeerConnection : public cricket::CodecLookupHelper {
+class CodecLookupHelperForPeerConnection : public CodecLookupHelper {
  public:
   explicit CodecLookupHelperForPeerConnection(PeerConnection* self)
       : self_(self) {}
@@ -150,19 +150,19 @@ class CodecLookupHelperForPeerConnection : public cricket::CodecLookupHelper {
     return self_->transport_controller_s();
   }
 
-  cricket::CodecVendor* CodecVendor(const std::string& mid) override {
+  ::webrtc::CodecVendor* CodecVendor(const std::string& mid) override {
     if (codec_vendors_.count(mid) == 0) {
       codec_vendors_.emplace(
-          mid, cricket::CodecVendor{self_->context()->media_engine(),
-                                    self_->context()->use_rtx(),
-                                    self_->context()->env().field_trials()});
+          mid, ::webrtc::CodecVendor{self_->context()->media_engine(),
+                                     self_->context()->use_rtx(),
+                                     self_->context()->env().field_trials()});
     }
     return &codec_vendors_.at(mid);
   }
 
  private:
   PeerConnection* self_;
-  std::map<std::string, cricket::CodecVendor> codec_vendors_;
+  std::map<std::string, ::webrtc::CodecVendor> codec_vendors_;
 };
 
 uint32_t ConvertIceTransportTypeToCandidateFilter(
@@ -1109,8 +1109,8 @@ PeerConnection::AddTransceiver(
   std::vector<cricket::Codec> codecs;
   // Gather the current codec capabilities to allow checking scalabilityMode and
   // codec selection against supported values.
-  cricket::CodecVendor codec_vendor(context_->media_engine(), false,
-                                    context_->env().field_trials());
+  CodecVendor codec_vendor(context_->media_engine(), false,
+                           context_->env().field_trials());
   if (media_type == webrtc::MediaType::VIDEO) {
     codecs = codec_vendor.video_send_codecs().codecs();
   } else {
@@ -2305,8 +2305,7 @@ cricket::CandidateStatsList PeerConnection::GetPooledCandidateStats() const {
   return candidate_stats_list;
 }
 
-std::map<std::string, cricket::TransportStats>
-PeerConnection::GetTransportStatsByNames(
+std::map<std::string, TransportStats> PeerConnection::GetTransportStatsByNames(
     const std::set<std::string>& transport_names) {
   TRACE_EVENT0("webrtc", "PeerConnection::GetTransportStatsByNames");
   RTC_DCHECK_RUN_ON(network_thread());
@@ -2314,9 +2313,9 @@ PeerConnection::GetTransportStatsByNames(
     return {};
 
   Thread::ScopedDisallowBlockingCalls no_blocking_calls;
-  std::map<std::string, cricket::TransportStats> transport_stats_by_name;
+  std::map<std::string, TransportStats> transport_stats_by_name;
   for (const std::string& transport_name : transport_names) {
-    cricket::TransportStats transport_stats;
+    TransportStats transport_stats;
     bool success =
         transport_controller_->GetStats(transport_name, &transport_stats);
     if (success) {
@@ -2762,7 +2761,7 @@ void PeerConnection::ReportTransportStats(
   for (const auto& entry : media_types_by_transport_name) {
     const std::string& transport_name = entry.first;
     const std::set<webrtc::MediaType> media_types = entry.second;
-    cricket::TransportStats stats;
+    TransportStats stats;
     if (transport_controller_->GetStats(transport_name, &stats)) {
       ReportBestConnectionState(stats);
       ReportNegotiatedCiphers(dtls_enabled_, stats, media_types);
@@ -2773,8 +2772,7 @@ void PeerConnection::ReportTransportStats(
 // Walk through the ConnectionInfos to gather best connection usage
 // for IPv4 and IPv6.
 // static (no member state required)
-void PeerConnection::ReportBestConnectionState(
-    const cricket::TransportStats& stats) {
+void PeerConnection::ReportBestConnectionState(const TransportStats& stats) {
   for (const cricket::TransportChannelStats& channel_stats :
        stats.channel_stats) {
     for (const cricket::ConnectionInfo& connection_info :
@@ -2822,7 +2820,7 @@ void PeerConnection::ReportBestConnectionState(
 // static
 void PeerConnection::ReportNegotiatedCiphers(
     bool dtls_enabled,
-    const cricket::TransportStats& stats,
+    const TransportStats& stats,
     const std::set<webrtc::MediaType>& media_types) {
   if (!dtls_enabled || stats.channel_stats.empty()) {
     return;
@@ -2898,7 +2896,7 @@ bool PeerConnection::OnTransportChanged(
   if (ConfiguredForMedia()) {
     for (const auto& transceiver :
          rtp_manager()->transceivers()->UnsafeList()) {
-      cricket::ChannelInterface* channel = transceiver->internal()->channel();
+      ChannelInterface* channel = transceiver->internal()->channel();
       if (channel && channel->mid() == mid) {
         ret = channel->SetRtpTransport(rtp_transport);
       }
