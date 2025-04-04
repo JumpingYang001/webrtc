@@ -29,7 +29,7 @@ on a monolithic Abseil build target that will generate a shared library.
 * `absl::Cleanup`
 * [Hash tables, and B-tree ordered][abseil-containers] containers
 * `absl::InlinedVector`
-* `absl::Nonnull` and `absl::Nullable`
+* `absl_nonnull` and `absl_nullable`
 * `absl::WrapUnique`
 * `absl::string_view`
 * The functions in `absl/strings/ascii.h`, `absl/strings/match.h`,
