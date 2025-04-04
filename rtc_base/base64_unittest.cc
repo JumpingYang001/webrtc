@@ -10,33 +10,29 @@
 
 #include "rtc_base/base64.h"
 
-#include <cstdint>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "absl/strings/string_view.h"
-#include "api/array_view.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
 namespace webrtc {
 namespace {
-using ::testing::ElementsAreArray;
+
 using ::testing::Eq;
 using ::testing::Optional;
 using ::testing::SizeIs;
 using ::testing::TestWithParam;
 
 TEST(Base64Test, Encode) {
-  uint8_t data[] = {0x64, 0x65, 0x66};
+  std::string data{0x64, 0x65, 0x66};
   EXPECT_THAT(Base64Encode(data), Eq("ZGVm"));
 }
 
 TEST(Base64Test, EncodeDecode) {
-  uint8_t data[] = {0x01, 0x02, 0x03, 0x04, 0x05};
-  EXPECT_THAT(Base64Decode(Base64Encode(data)),
-              Optional(ElementsAreArray(data)));
+  std::string data{0x01, 0x02, 0x03, 0x04, 0x05};
+  EXPECT_THAT(Base64Decode(Base64Encode(data)), Optional(Eq(data)));
 }
 
 TEST(Base64Test, DecodeCertificate) {
@@ -66,73 +62,79 @@ TEST(Base64Test, DecodeCertificate) {
 struct Base64DecodeTestCase {
   std::string name;
   std::string data;
-  std::optional<std::vector<uint8_t>> result;
+  std::optional<std::string> result;
 };
 
 const Base64DecodeTestCase kBase64DecodeTestCases[] = {
     {"InvalidCharacters", "invalid;;;", std::nullopt},
     {"InvalidLength", "abcde", std::nullopt},
-    {"ValidInput", "abcd", std::vector<uint8_t>{0x69, 0xB7, 0x1D}},
-    {"ValidInputPadding", "abc=", std::vector<uint8_t>{0x69, 0xB7}},
-    {"EmptyInput", "", std::vector<uint8_t>{}},
+    {"ValidInput", "abcd", "i\xB7\x1D"},
+    {"ValidInputPadding", "abc=", "i\xB7"},
+    {"EmptyInput", "", ""},
 };
 
 using Base64DecodeTest = TestWithParam<Base64DecodeTestCase>;
 INSTANTIATE_TEST_SUITE_P(
     Base64DecodeTest,
     Base64DecodeTest,
-    ::testing::ValuesIn<Base64DecodeTestCase>(kBase64DecodeTestCases),
+    testing::ValuesIn<Base64DecodeTestCase>(kBase64DecodeTestCases),
     [](const auto& info) { return info.param.name; });
 
 TEST_P(Base64DecodeTest, TestDecodeStrict) {
   absl::string_view data = GetParam().data;
-  EXPECT_THAT(Base64Decode(data, Base64DecodeOptions::kForgiving),
-              Eq(GetParam().result));
   EXPECT_THAT(Base64Decode(data, Base64DecodeOptions::kStrict),
               Eq(GetParam().result));
+}
+
+TEST_P(Base64DecodeTest, TestDecodeForgiving) {
+  // Test default value is strict.
+  EXPECT_THAT(Base64Decode(GetParam().data), Eq(GetParam().result));
 }
 
 const Base64DecodeTestCase kBase64DecodeForgivingTestCases[] = {
     {
         "ForgivingPadding",
         "abc",
-        std::vector<uint8_t>{0x69, 0xB7},
+        "i\xB7",
     },
     {
         "WhitespaceForgivenTab",
         "ab\tcd",
-        std::vector<uint8_t>{0x69, 0xB7, 0x1D},
+        "i\xB7\x1D",
     },
     {
         "WhitespaceForgivenSpace",
         "a bc d",
-        std::vector<uint8_t>{0x69, 0xB7, 0x1D},
+        "i\xB7\x1D",
     },
     {
         "WhitespaceForgivenNewline",
         "a\nbc\nd",
-        std::vector<uint8_t>{0x69, 0xB7, 0x1D},
+        "i\xB7\x1D",
     },
     {
         "WhitespaceForgivenCarriageReturn",
         "a\r\nbc\rd",
-        std::vector<uint8_t>{0x69, 0xB7, 0x1D},
+        "i\xB7\x1D",
     },
-    {"WhitespaceForgivenLineFeed", "a\fbcd",
-     std::vector<uint8_t>{0x69, 0xB7, 0x1D}},
+    {"WhitespaceForgivenLineFeed", "a\fbcd", "i\xB7\x1D"},
 };
+
 using Base64DecodeForgivingTest = TestWithParam<Base64DecodeTestCase>;
 INSTANTIATE_TEST_SUITE_P(
     Base64DecodeTest,
     Base64DecodeForgivingTest,
-    ::testing::ValuesIn<Base64DecodeTestCase>(kBase64DecodeForgivingTestCases),
+    testing::ValuesIn<Base64DecodeTestCase>(kBase64DecodeForgivingTestCases),
     [](const auto& info) { return info.param.name; });
 
 TEST_P(Base64DecodeForgivingTest, TestDecodeForgiving) {
-  absl::string_view data = GetParam().data;
-  EXPECT_THAT(Base64Decode(data, Base64DecodeOptions::kForgiving),
+  EXPECT_THAT(Base64Decode(GetParam().data, Base64DecodeOptions::kForgiving),
               Eq(GetParam().result));
-  EXPECT_THAT(Base64Decode(data), Eq(std::nullopt));
+}
+
+TEST_P(Base64DecodeForgivingTest, TestDecodeStrictFails) {
+  // Test default value is strict.
+  EXPECT_THAT(Base64Decode(GetParam().data), Eq(std::nullopt));
 }
 
 }  // namespace

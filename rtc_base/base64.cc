@@ -10,42 +10,36 @@
 
 #include "rtc_base/base64.h"
 
-#include <cstdint>
 #include <optional>
 #include <string>
-#include <vector>
+#include <utility>
 
+#include "absl/algorithm/container.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
-#include "api/array_view.h"
-#include "rtc_base/third_party/base64/base64.h"
 
 namespace webrtc {
 
-std::string Base64Encode(ArrayView<const uint8_t> data) {
-  std::string result;
-  Base64::EncodeFromArray(data.data(), data.size(), &result);
-  return result;
+namespace {
+
+bool IsStrictBase64(absl::string_view data) {
+  // Strict base64 must be a multiple of 4 bytes and have no whitespace.
+  return data.size() % 4 == 0 && absl::c_none_of(data, absl::ascii_isspace);
 }
+}  // namespace
 
-std::optional<std::vector<uint8_t>> Base64Decode(absl::string_view data,
-                                                 Base64DecodeOptions options) {
-  Base64::DecodeFlags flags;
-  switch (options) {
-    case Base64DecodeOptions::kForgiving:
-      flags =
-          Base64::DO_PARSE_WHITE | Base64::DO_PAD_ANY | Base64::DO_TERM_BUFFER;
-      break;
-    case Base64DecodeOptions::kStrict:
-      flags = Base64::DO_STRICT;
-      break;
-  }
-
-  std::vector<uint8_t> result;
-  if (!Base64::DecodeFromArray(data.data(), data.size(), flags, &result,
-                               nullptr)) {
+std::optional<std::string> Base64Decode(absl::string_view data,
+                                        Base64DecodeOptions options) {
+  // absl::Base64Unescape is forgiving. Return nullopt if the input is not
+  // strict.
+  if (options == Base64DecodeOptions::kStrict && !IsStrictBase64(data)) {
     return std::nullopt;
   }
-  return result;
+
+  std::string dest;
+  return absl::Base64Unescape(data, &dest) ? std::make_optional(std::move(dest))
+                                           : std::nullopt;
 }
 
 }  // namespace webrtc

@@ -1788,9 +1788,9 @@ rtc_library("base64") {
     "base64.h",
   ]
   deps = [
-    ":checks",
     "../api:array_view",
-    "third_party/base64",
+    "//third_party/abseil-cpp/absl/algorithm:container",
+    "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
