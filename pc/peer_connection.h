@@ -394,7 +394,6 @@ class PeerConnection : public PeerConnectionInternal,
   // TODO(bugs.webrtc.org/8530): Flip the default to be Unified Plan once
   // sufficient time has passed.
   bool IsUnifiedPlan() const override {
-    RTC_DCHECK_RUN_ON(signaling_thread());
     return is_unified_plan_;
   }
   bool ValidateBundleSettings(const SessionDescription* desc,

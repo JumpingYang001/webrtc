@@ -288,7 +288,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
       const SessionDescription* description,
       const std::map<std::string, const ContentGroup*>& bundle_groups_by_mid);
 
-  bool IsUnifiedPlan() const RTC_RUN_ON(signaling_thread());
+  bool IsUnifiedPlan() const;
 
   // Signals from MediaStreamObserver.
   void OnAudioTrackAdded(AudioTrackInterface* track,
