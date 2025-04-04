@@ -13,14 +13,15 @@
 
 #include <stdio.h>
 
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "api/scoped_refptr.h"
+#include "api/video/i420_buffer.h"
 #include "api/video/resolution.h"
 
 namespace webrtc {
-class I420Buffer;
 namespace test {
 
 // Handles reading of I420 frames from video files.
