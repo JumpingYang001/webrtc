@@ -176,6 +176,7 @@ def Build(build_dir, arch, use_remoteexec, extra_gn_args, extra_gn_switches,
         'rtc_include_tests': False,
         'target_cpu': _GetTargetCpu(arch),
         'use_remoteexec': use_remoteexec,
+        'android_static_analysis': "off",
     }
     arm_version = _GetArmVersion(arch)
     if arm_version:
