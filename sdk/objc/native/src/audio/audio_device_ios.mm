@@ -205,7 +205,6 @@ int32_t AudioDeviceIOS::InitPlayout() {
       return -1;
     }
   }
-  audio_is_initialized_ = true;
   return 0;
 }
 
@@ -231,7 +230,6 @@ int32_t AudioDeviceIOS::InitRecording() {
       return -1;
     }
   }
-  audio_is_initialized_ = true;
   return 0;
 }
 
@@ -241,6 +239,9 @@ int32_t AudioDeviceIOS::StartPlayout() {
   RTC_DCHECK(audio_is_initialized_);
   RTC_DCHECK(!playing_.load());
   RTC_DCHECK(audio_unit_);
+  if (!audio_is_initialized_) {
+    return -1;
+  }
   if (fine_audio_buffer_) {
     fine_audio_buffer_->ResetPlayout();
   }
@@ -272,7 +273,6 @@ int32_t AudioDeviceIOS::StopPlayout() {
   }
   if (!recording_.load()) {
     ShutdownPlayOrRecord();
-    audio_is_initialized_ = false;
   }
   playing_.store(0, std::memory_order_release);
 
@@ -304,6 +304,9 @@ int32_t AudioDeviceIOS::StartRecording() {
   RTC_DCHECK(audio_is_initialized_);
   RTC_DCHECK(!recording_.load());
   RTC_DCHECK(audio_unit_);
+  if (!audio_is_initialized_) {
+    return -1;
+  }
   if (fine_audio_buffer_) {
     fine_audio_buffer_->ResetRecord();
   }
@@ -332,7 +335,6 @@ int32_t AudioDeviceIOS::StopRecording() {
   }
   if (!playing_.load()) {
     ShutdownPlayOrRecord();
-    audio_is_initialized_ = false;
   }
   recording_.store(0, std::memory_order_release);
   return 0;
@@ -813,6 +815,10 @@ void AudioDeviceIOS::SetupAudioBuffersForActiveAudioSession() {
 
 bool AudioDeviceIOS::CreateAudioUnit() {
   RTC_DCHECK(!audio_unit_);
+  RTC_DCHECK(!audio_is_initialized_);
+  if (audio_unit_ || audio_is_initialized_) {
+    return false;
+  }
   BOOL detect_mute_speech_ = (muted_speech_event_handler_ != 0);
   audio_unit_.reset(new VoiceProcessingAudioUnit(
       bypass_voice_processing_, detect_mute_speech_, this));
@@ -1013,6 +1019,7 @@ bool AudioDeviceIOS::InitPlayOrRecord() {
 
   // Release the lock.
   [session unlockForConfiguration];
+  audio_is_initialized_ = true;
   return true;
 }
 
@@ -1038,6 +1045,8 @@ void AudioDeviceIOS::ShutdownPlayOrRecord() {
   // All I/O should be stopped or paused prior to deactivating the audio
   // session, hence we deactivate as last action.
   UnconfigureAudioSession();
+
+  audio_is_initialized_ = false;
 }
 
 void AudioDeviceIOS::PrepareForNewStart() {
