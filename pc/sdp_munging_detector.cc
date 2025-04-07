@@ -105,7 +105,7 @@ SdpMungingType DetermineAudioSdpMungingType(
   // Opus stereo modification required to enabled stereo playout for opus.
   bool created_opus_stereo =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         std::string value;
                         return codec.name == cricket::kOpusCodecName &&
                                codec.GetParam(cricket::kCodecParamStereo,
@@ -114,7 +114,7 @@ SdpMungingType DetermineAudioSdpMungingType(
                       }) != last_created_media_description->codecs().end();
   bool set_opus_stereo =
       absl::c_find_if(
-          media_description_to_set->codecs(), [](const cricket::Codec codec) {
+          media_description_to_set->codecs(), [](const Codec codec) {
             std::string value;
             return codec.name == cricket::kOpusCodecName &&
                    codec.GetParam(cricket::kCodecParamStereo, &value) &&
@@ -128,12 +128,12 @@ SdpMungingType DetermineAudioSdpMungingType(
   // Nonstandard 5.1/7.1 opus variant.
   bool created_multiopus =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.name == "multiopus";
                       }) != last_created_media_description->codecs().end();
   bool set_multiopus =
       absl::c_find_if(media_description_to_set->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.name == "multiopus";
                       }) != media_description_to_set->codecs().end();
   if (!created_multiopus && set_multiopus) {
@@ -144,11 +144,11 @@ SdpMungingType DetermineAudioSdpMungingType(
   // L16.
   bool created_l16 =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.name == cricket::kL16CodecName;
                       }) != last_created_media_description->codecs().end();
   bool set_l16 = absl::c_find_if(media_description_to_set->codecs(),
-                                 [](const cricket::Codec codec) {
+                                 [](const Codec codec) {
                                    return codec.name == cricket::kL16CodecName;
                                  }) != media_description_to_set->codecs().end();
   if (!created_l16 && set_l16) {
@@ -165,15 +165,15 @@ SdpMungingType DetermineAudioSdpMungingType(
   // Audio NACK is not offered by default.
   bool created_nack =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.HasFeedbackParam(
-                            cricket::FeedbackParam(cricket::kRtcpFbParamNack));
+                            FeedbackParam(cricket::kRtcpFbParamNack));
                       }) != last_created_media_description->codecs().end();
   bool set_nack =
       absl::c_find_if(media_description_to_set->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.HasFeedbackParam(
-                            cricket::FeedbackParam(cricket::kRtcpFbParamNack));
+                            FeedbackParam(cricket::kRtcpFbParamNack));
                       }) != media_description_to_set->codecs().end();
   if (!created_nack && set_nack) {
     RTC_LOG(LS_WARNING) << "SDP munging: audio nack enabled.";
@@ -183,15 +183,15 @@ SdpMungingType DetermineAudioSdpMungingType(
   // RRTR is not offered by default.
   bool created_rrtr =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.HasFeedbackParam(
-                            cricket::FeedbackParam(cricket::kRtcpFbParamRrtr));
+                            FeedbackParam(cricket::kRtcpFbParamRrtr));
                       }) != last_created_media_description->codecs().end();
   bool set_rrtr =
       absl::c_find_if(media_description_to_set->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         return codec.HasFeedbackParam(
-                            cricket::FeedbackParam(cricket::kRtcpFbParamRrtr));
+                            FeedbackParam(cricket::kRtcpFbParamRrtr));
                       }) != media_description_to_set->codecs().end();
   if (!created_rrtr && set_rrtr) {
     RTC_LOG(LS_WARNING) << "SDP munging: audio rrtr enabled.";
@@ -202,7 +202,7 @@ SdpMungingType DetermineAudioSdpMungingType(
   // the other side.
   bool created_opus_fec =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         std::string value;
                         return codec.name == cricket::kOpusCodecName &&
                                codec.GetParam(cricket::kCodecParamUseInbandFec,
@@ -211,7 +211,7 @@ SdpMungingType DetermineAudioSdpMungingType(
                       }) != last_created_media_description->codecs().end();
   bool set_opus_fec =
       absl::c_find_if(
-          media_description_to_set->codecs(), [](const cricket::Codec codec) {
+          media_description_to_set->codecs(), [](const Codec codec) {
             std::string value;
             return codec.name == cricket::kOpusCodecName &&
                    codec.GetParam(cricket::kCodecParamUseInbandFec, &value) &&
@@ -225,7 +225,7 @@ SdpMungingType DetermineAudioSdpMungingType(
   // the other side.
   bool created_opus_dtx =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         std::string value;
                         return codec.name == cricket::kOpusCodecName &&
                                codec.GetParam(cricket::kCodecParamUseDtx,
@@ -234,7 +234,7 @@ SdpMungingType DetermineAudioSdpMungingType(
                       }) != last_created_media_description->codecs().end();
   bool set_opus_dtx =
       absl::c_find_if(
-          media_description_to_set->codecs(), [](const cricket::Codec codec) {
+          media_description_to_set->codecs(), [](const Codec codec) {
             std::string value;
             return codec.name == cricket::kOpusCodecName &&
                    codec.GetParam(cricket::kCodecParamUseDtx, &value) &&
@@ -249,7 +249,7 @@ SdpMungingType DetermineAudioSdpMungingType(
   // the other side.
   bool created_opus_cbr =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         std::string value;
                         return codec.name == cricket::kOpusCodecName &&
                                codec.GetParam(cricket::kCodecParamCbr,
@@ -258,7 +258,7 @@ SdpMungingType DetermineAudioSdpMungingType(
                       }) != last_created_media_description->codecs().end();
   bool set_opus_cbr =
       absl::c_find_if(
-          media_description_to_set->codecs(), [](const cricket::Codec codec) {
+          media_description_to_set->codecs(), [](const Codec codec) {
             std::string value;
             return codec.name == cricket::kOpusCodecName &&
                    codec.GetParam(cricket::kCodecParamCbr, &value) &&
@@ -314,7 +314,7 @@ SdpMungingType DetermineVideoSdpMungingType(
   // sps-pps-idr-in-keyframe.
   bool created_sps_pps_idr_in_keyframe =
       absl::c_find_if(last_created_media_description->codecs(),
-                      [](const cricket::Codec codec) {
+                      [](const Codec codec) {
                         std::string value;
                         return codec.name == cricket::kH264CodecName &&
                                codec.GetParam(
@@ -324,7 +324,7 @@ SdpMungingType DetermineVideoSdpMungingType(
                       }) != last_created_media_description->codecs().end();
   bool set_sps_pps_idr_in_keyframe =
       absl::c_find_if(
-          media_description_to_set->codecs(), [](const cricket::Codec codec) {
+          media_description_to_set->codecs(), [](const Codec codec) {
             std::string value;
             return codec.name == cricket::kH264CodecName &&
                    codec.GetParam(cricket::kH264FmtpSpsPpsIdrInKeyframe,

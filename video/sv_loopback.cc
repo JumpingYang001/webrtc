@@ -501,7 +501,7 @@ int StartBitrateKbps() {
   return absl::GetFlag(FLAGS_start_bitrate);
 }
 
-std::string Codec() {
+std::string CodecName() {
   return absl::GetFlag(FLAGS_codec);
 }
 
@@ -615,7 +615,7 @@ void Loopback() {
       ScreenshareTargetBitrateKbps() * 1000;
   params.video[screenshare_idx].max_bitrate_bps =
       ScreenshareMaxBitrateKbps() * 1000;
-  params.video[screenshare_idx].codec = Codec();
+  params.video[screenshare_idx].codec = CodecName();
   params.video[screenshare_idx].num_temporal_layers =
       ScreenshareNumTemporalLayers();
   params.video[screenshare_idx].selected_tl = ScreenshareSelectedTL();
@@ -630,7 +630,7 @@ void Loopback() {
   params.video[camera_idx].max_bitrate_bps = VideoMaxBitrateKbps() * 1000;
   params.video[camera_idx].suspend_below_min_bitrate =
       absl::GetFlag(FLAGS_suspend_below_min_bitrate);
-  params.video[camera_idx].codec = Codec();
+  params.video[camera_idx].codec = CodecName();
   params.video[camera_idx].num_temporal_layers = VideoNumTemporalLayers();
   params.video[camera_idx].selected_tl = VideoSelectedTL();
   params.video[camera_idx].ulpfec = absl::GetFlag(FLAGS_use_ulpfec);

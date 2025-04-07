@@ -38,7 +38,7 @@ std::vector<webrtc::RtpExtension> FilterRtpExtensions(
     bool filter_redundant_extensions,
     const webrtc::FieldTrialsView& trials);
 
-webrtc::BitrateConstraints GetBitrateConfigForCodec(const Codec& codec);
+webrtc::BitrateConstraints GetBitrateConfigForCodec(const webrtc::Codec& codec);
 
 }  // namespace cricket
 

@@ -19,7 +19,7 @@
 #include "rtc_base/checks.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
 
 using webrtc::RTCErrorOr;
@@ -29,16 +29,15 @@ TEST(CodecList, StoreAndRecall) {
   CodecList empty_list = CodecList::CreateFromTrustedData(std::vector<Codec>{});
   EXPECT_TRUE(empty_list.empty());
   EXPECT_TRUE(empty_list.codecs().empty());
-  Codec video_codec = CreateVideoCodec({webrtc::SdpVideoFormat{"VP8"}});
+  Codec video_codec = CreateVideoCodec({SdpVideoFormat{"VP8"}});
   CodecList one_codec = CodecList::CreateFromTrustedData({{video_codec}});
   EXPECT_EQ(one_codec.size(), 1U);
   EXPECT_EQ(one_codec.codecs()[0], video_codec);
 }
 
 TEST(CodecList, RejectIllegalConstructorArguments) {
-  std::vector<Codec> apt_without_number{
-      CreateVideoCodec({webrtc::SdpVideoFormat{
-          "rtx", webrtc::CodecParameterMap{{"apt", "not-a-number"}}}})};
+  std::vector<Codec> apt_without_number{webrtc::CreateVideoCodec(
+      {SdpVideoFormat{"rtx", CodecParameterMap{{"apt", "not-a-number"}}}})};
   apt_without_number[0].id = 96;
   RTCErrorOr<CodecList> checked_codec_list =
       CodecList::Create(apt_without_number);
@@ -55,9 +54,8 @@ TEST(CodecList, CrashOnIllegalConstructorArguments) {
   // Checks that can't be enabled log things instead.
   // Note: DCHECK is on in some release builds, so we can't use
   // EXPECT_DEBUG_DEATH here.
-  std::vector<Codec> apt_without_number{
-      CreateVideoCodec({webrtc::SdpVideoFormat{
-          "rtx", webrtc::CodecParameterMap{{"apt", "not-a-number"}}}})};
+  std::vector<Codec> apt_without_number{webrtc::CreateVideoCodec(
+      {SdpVideoFormat{"rtx", CodecParameterMap{{"apt", "not-a-number"}}}})};
   apt_without_number[0].id = 96;
 #if RTC_DCHECK_IS_ON
   EXPECT_DEATH(
@@ -72,4 +70,4 @@ TEST(CodecList, CrashOnIllegalConstructorArguments) {
 #endif
 
 }  // namespace
-}  // namespace cricket
+}  // namespace webrtc

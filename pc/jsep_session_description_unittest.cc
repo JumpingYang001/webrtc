@@ -64,11 +64,11 @@ CreateCricketSessionDescription() {
   // VideoContentDescription
   auto video = std::make_unique<webrtc::VideoContentDescription>();
 
-  audio->AddCodec(cricket::CreateAudioCodec(103, "ISAC", 16000, 0));
+  audio->AddCodec(webrtc::CreateAudioCodec(103, "ISAC", 16000, 0));
   desc->AddContent(cricket::CN_AUDIO, MediaProtocolType::kRtp,
                    std::move(audio));
 
-  video->AddCodec(cricket::CreateVideoCodec(120, "VP8"));
+  video->AddCodec(webrtc::CreateVideoCodec(120, "VP8"));
   desc->AddContent(cricket::CN_VIDEO, MediaProtocolType::kRtp,
                    std::move(video));
 

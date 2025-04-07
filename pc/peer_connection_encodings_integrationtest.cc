@@ -1860,10 +1860,10 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   // Munge a new parameter for VP8 in the offer.
   auto* mcd = offer->description()->contents()[0].media_description();
   ASSERT_THAT(mcd, NotNull());
-  std::vector<cricket::Codec> codecs = mcd->codecs();
-  ASSERT_THAT(codecs, Contains(Field(&cricket::Codec::name, "VP8")));
+  std::vector<Codec> codecs = mcd->codecs();
+  ASSERT_THAT(codecs, Contains(Field(&Codec::name, "VP8")));
   auto vp8_codec = absl::c_find_if(
-      codecs, [](const cricket::Codec& codec) { return codec.name == "VP8"; });
+      codecs, [](const Codec& codec) { return codec.name == "VP8"; });
   vp8_codec->params.emplace("non-standard-param", "true");
   mcd->set_codecs(codecs);
 
@@ -1879,9 +1879,9 @@ TEST_F(PeerConnectionEncodingsIntegrationTest,
   mcd = answer->description()->contents()[0].media_description();
   ASSERT_THAT(mcd, NotNull());
   codecs = mcd->codecs();
-  ASSERT_THAT(codecs, Contains(Field(&cricket::Codec::name, "VP8")));
+  ASSERT_THAT(codecs, Contains(Field(&Codec::name, "VP8")));
   vp8_codec = absl::c_find_if(
-      codecs, [](const cricket::Codec& codec) { return codec.name == "VP8"; });
+      codecs, [](const Codec& codec) { return codec.name == "VP8"; });
   vp8_codec->params.emplace("non-standard-param", "true");
   mcd->set_codecs(codecs);
   p1 = SetLocalDescription(remote_pc_wrapper, answer.get());

@@ -256,7 +256,7 @@ InterLayerPredMode InterLayerPred() {
   }
 }
 
-std::string Codec() {
+std::string CodecName() {
   return absl::GetFlag(FLAGS_codec);
 }
 
@@ -387,7 +387,7 @@ void Loopback() {
   params.video[0].max_bitrate_bps = MaxBitrateKbps() * 1000;
   params.video[0].suspend_below_min_bitrate =
       absl::GetFlag(FLAGS_suspend_below_min_bitrate);
-  params.video[0].codec = Codec();
+  params.video[0].codec = CodecName();
   params.video[0].num_temporal_layers = NumTemporalLayers();
   params.video[0].selected_tl = SelectedTL();
   params.video[0].min_transmit_bps = 0;

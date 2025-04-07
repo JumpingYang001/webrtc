@@ -37,8 +37,6 @@ namespace webrtc {
 
 namespace {
 
-using cricket::Codec;
-
 // TODO(bugs.webrtc.org/15847): remove code duplication of IsSameCodecSpecific
 // in api/video_codecs/sdp_video_format.cc
 std::string GetFmtpParameterOrDefault(const CodecParameterMap& params,

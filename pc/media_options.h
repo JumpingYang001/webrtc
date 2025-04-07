@@ -72,7 +72,7 @@ struct MediaDescriptionOptions {
   std::vector<RtpHeaderExtensionCapability> header_extensions;
   // Codecs to include in a generated offer or answer.
   // If this is used, session-level codec lists MUST be ignored.
-  std::vector<cricket::Codec> codecs_to_include;
+  std::vector<Codec> codecs_to_include;
 
  private:
   // Doesn't DCHECK on `type`.

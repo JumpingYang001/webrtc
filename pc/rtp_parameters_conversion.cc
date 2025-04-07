@@ -24,7 +24,7 @@
 namespace webrtc {
 
 std::optional<RtcpFeedback> ToRtcpFeedback(
-    const cricket::FeedbackParam& cricket_feedback) {
+    const FeedbackParam& cricket_feedback) {
   if (cricket_feedback.id() == cricket::kRtcpFbParamCcm) {
     if (cricket_feedback.param() == cricket::kRtcpFbCcmParamFir) {
       return RtcpFeedback(RtcpFeedbackType::CCM, RtcpFeedbackMessageType::FIR);
@@ -75,15 +75,15 @@ std::optional<RtcpFeedback> ToRtcpFeedback(
   return std::nullopt;
 }
 
-RtpCodecCapability ToRtpCodecCapability(const cricket::Codec& cricket_codec) {
+RtpCodecCapability ToRtpCodecCapability(const Codec& cricket_codec) {
   RtpCodecCapability codec;
   codec.name = cricket_codec.name;
-  codec.kind = cricket_codec.type == cricket::Codec::Type::kAudio
+  codec.kind = cricket_codec.type == Codec::Type::kAudio
                    ? webrtc::MediaType::AUDIO
                    : webrtc::MediaType::VIDEO;
   codec.clock_rate.emplace(cricket_codec.clockrate);
   codec.preferred_payload_type.emplace(cricket_codec.id);
-  for (const cricket::FeedbackParam& cricket_feedback :
+  for (const FeedbackParam& cricket_feedback :
        cricket_codec.feedback_params.params()) {
     std::optional<RtcpFeedback> feedback = ToRtcpFeedback(cricket_feedback);
     if (feedback) {
@@ -91,10 +91,10 @@ RtpCodecCapability ToRtpCodecCapability(const cricket::Codec& cricket_codec) {
     }
   }
   switch (cricket_codec.type) {
-    case cricket::Codec::Type::kAudio:
+    case Codec::Type::kAudio:
       codec.num_channels = static_cast<int>(cricket_codec.channels);
       break;
-    case cricket::Codec::Type::kVideo:
+    case Codec::Type::kVideo:
       codec.scalability_modes = cricket_codec.scalability_modes;
       break;
   }
@@ -104,14 +104,14 @@ RtpCodecCapability ToRtpCodecCapability(const cricket::Codec& cricket_codec) {
 }
 
 RtpCapabilities ToRtpCapabilities(
-    const std::vector<cricket::Codec>& cricket_codecs,
+    const std::vector<Codec>& cricket_codecs,
     const cricket::RtpHeaderExtensions& cricket_extensions) {
   RtpCapabilities capabilities;
   bool have_red = false;
   bool have_ulpfec = false;
   bool have_flexfec = false;
   bool have_rtx = false;
-  for (const cricket::Codec& cricket_codec : cricket_codecs) {
+  for (const Codec& cricket_codec : cricket_codecs) {
     if (cricket_codec.name == cricket::kRedCodecName) {
       if (have_red) {
         // There should only be one RED codec entry in caps.

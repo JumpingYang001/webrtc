@@ -919,7 +919,7 @@ bool VoiceChannel::SetLocalContent_w(const MediaContentDescription* content,
 
   bool criteria_modified = false;
   if (webrtc::RtpTransceiverDirectionHasRecv(content->direction())) {
-    for (const cricket::Codec& codec : content->codecs()) {
+    for (const Codec& codec : content->codecs()) {
       if (MaybeAddHandledPayloadType(codec.id)) {
         criteria_modified = true;
       }
@@ -1068,23 +1068,23 @@ bool VideoChannel::SetLocalContent_w(const MediaContentDescription* content,
   // instead.
   bool needs_send_params_update = false;
   if (type == SdpType::kAnswer || type == SdpType::kPrAnswer) {
-    flat_set<const cricket::Codec*> matched_codecs;
-    for (cricket::Codec& send_codec : send_params.codecs) {
-      if (absl::c_any_of(matched_codecs, [&](const cricket::Codec* c) {
+    flat_set<const Codec*> matched_codecs;
+    for (Codec& send_codec : send_params.codecs) {
+      if (absl::c_any_of(matched_codecs, [&](const Codec* c) {
             return send_codec.Matches(*c);
           })) {
         continue;
       }
 
-      std::vector<const cricket::Codec*> recv_codecs =
-          cricket::FindAllMatchingCodecs(recv_params.codecs, send_codec);
+      std::vector<const Codec*> recv_codecs =
+          FindAllMatchingCodecs(recv_params.codecs, send_codec);
       if (recv_codecs.empty()) {
         continue;
       }
 
       bool may_ignore_packetization = false;
       bool has_matching_packetization = false;
-      for (const cricket::Codec* recv_codec : recv_codecs) {
+      for (const Codec* recv_codec : recv_codecs) {
         if (!recv_codec->packetization.has_value() &&
             send_codec.packetization.has_value()) {
           may_ignore_packetization = true;
@@ -1121,7 +1121,7 @@ bool VideoChannel::SetLocalContent_w(const MediaContentDescription* content,
 
   bool criteria_modified = false;
   if (webrtc::RtpTransceiverDirectionHasRecv(content->direction())) {
-    for (const cricket::Codec& codec : content->codecs()) {
+    for (const Codec& codec : content->codecs()) {
       if (MaybeAddHandledPayloadType(codec.id))
         criteria_modified = true;
     }
@@ -1182,23 +1182,23 @@ bool VideoChannel::SetRemoteContent_w(const MediaContentDescription* content,
   // instead.
   bool needs_recv_params_update = false;
   if (type == SdpType::kAnswer || type == SdpType::kPrAnswer) {
-    flat_set<const cricket::Codec*> matched_codecs;
-    for (cricket::Codec& recv_codec : recv_params.codecs) {
-      if (absl::c_any_of(matched_codecs, [&](const cricket::Codec* c) {
+    flat_set<const Codec*> matched_codecs;
+    for (Codec& recv_codec : recv_params.codecs) {
+      if (absl::c_any_of(matched_codecs, [&](const Codec* c) {
             return recv_codec.Matches(*c);
           })) {
         continue;
       }
 
-      std::vector<const cricket::Codec*> send_codecs =
-          cricket::FindAllMatchingCodecs(send_params.codecs, recv_codec);
+      std::vector<const Codec*> send_codecs =
+          FindAllMatchingCodecs(send_params.codecs, recv_codec);
       if (send_codecs.empty()) {
         continue;
       }
 
       bool may_ignore_packetization = false;
       bool has_matching_packetization = false;
-      for (const cricket::Codec* send_codec : send_codecs) {
+      for (const Codec* send_codec : send_codecs) {
         if (!send_codec->packetization.has_value() &&
             recv_codec.packetization.has_value()) {
           may_ignore_packetization = true;

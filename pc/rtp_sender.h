@@ -104,8 +104,8 @@ class RtpSenderInternal : public RtpSenderInterface {
 
   // Used by the owning transceiver to inform the sender on the currently
   // selected codecs.
-  virtual void SetSendCodecs(std::vector<cricket::Codec> send_codecs) = 0;
-  virtual std::vector<cricket::Codec> GetSendCodecs() const = 0;
+  virtual void SetSendCodecs(std::vector<Codec> send_codecs) = 0;
+  virtual std::vector<Codec> GetSendCodecs() const = 0;
 
   virtual void NotifyFirstPacketSent() = 0;
 };
@@ -225,12 +225,10 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
     is_transceiver_stopped_ = true;
   }
 
-  void SetSendCodecs(std::vector<cricket::Codec> send_codecs) override {
+  void SetSendCodecs(std::vector<Codec> send_codecs) override {
     send_codecs_ = send_codecs;
   }
-  std::vector<cricket::Codec> GetSendCodecs() const override {
-    return send_codecs_;
-  }
+  std::vector<Codec> GetSendCodecs() const override { return send_codecs_; }
 
   void NotifyFirstPacketSent() override;
   void SetObserver(RtpSenderObserverInterface* observer) override;
@@ -272,7 +270,7 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
 
   std::vector<std::string> stream_ids_;
   RtpParameters init_parameters_;
-  std::vector<cricket::Codec> send_codecs_;
+  std::vector<Codec> send_codecs_;
 
   // TODO(tommi): `media_channel_` and several other member variables in this
   // class (ssrc_, stopped_, etc) are accessed from more than one thread without

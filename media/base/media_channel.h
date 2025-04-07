@@ -190,7 +190,7 @@ class MediaSendChannelInterface {
   virtual webrtc::MediaType media_type() const = 0;
 
   // Gets the currently set codecs/payload types to be used for outgoing media.
-  virtual std::optional<Codec> GetSendCodec() const = 0;
+  virtual std::optional<webrtc::Codec> GetSendCodec() const = 0;
 
   // Creates a new outgoing media stream with SSRCs and CNAME as described
   // by sp.
@@ -836,7 +836,7 @@ struct MediaChannelParameters {
   // It is also used as a key to map the channnel to its transport.
   std::string mid;
 
-  std::vector<Codec> codecs;
+  std::vector<webrtc::Codec> codecs;
   std::vector<webrtc::RtpExtension> extensions;
   // For a send stream this is true if we've negotiated a send direction,
   // for a receive stream this is true if we've negotiated a receive direction.

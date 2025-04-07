@@ -70,12 +70,11 @@ bool HasAnyMediaCodec(const std::vector<RtpCodecCapability>& codecs) {
   });
 }
 
-RTCError VerifyCodecPreferences(
-    const std::vector<RtpCodecCapability>& codecs,
-    const std::vector<cricket::Codec>& send_codecs,
-    const std::vector<cricket::Codec>& recv_codecs) {
+RTCError VerifyCodecPreferences(const std::vector<RtpCodecCapability>& codecs,
+                                const std::vector<Codec>& send_codecs,
+                                const std::vector<Codec>& recv_codecs) {
   // `codec_capabilities` is the union of `send_codecs` and `recv_codecs`.
-  std::vector<cricket::Codec> codec_capabilities;
+  std::vector<Codec> codec_capabilities;
   codec_capabilities.reserve(send_codecs.size() + recv_codecs.size());
   codec_capabilities.insert(codec_capabilities.end(), send_codecs.begin(),
                             send_codecs.end());
@@ -87,7 +86,7 @@ RTCError VerifyCodecPreferences(
                                   const RtpCodecCapability& codec) {
         return !codec.IsMediaCodec() ||
                absl::c_any_of(codec_capabilities,
-                              [&codec](const cricket::Codec& codec_capability) {
+                              [&codec](const Codec& codec_capability) {
                                 return IsSameRtpCodec(codec_capability, codec);
                               });
       })) {
@@ -404,7 +403,7 @@ void RtpTransceiver::AddSender(
   RTC_DCHECK_EQ(media_type(), sender->media_type());
   RTC_DCHECK(!absl::c_linear_search(senders_, sender));
 
-  std::vector<cricket::Codec> send_codecs =
+  std::vector<Codec> send_codecs =
       media_type() == webrtc::MediaType::VIDEO
           ? codec_vendor().video_send_codecs().codecs()
           : codec_vendor().audio_send_codecs().codecs();
@@ -681,7 +680,7 @@ RTCError RtpTransceiver::SetCodecPreferences(
 RTCError RtpTransceiver::UpdateCodecPreferencesCaches(
     const std::vector<RtpCodecCapability>& codecs) {
   // Get codec capabilities from media engine.
-  std::vector<cricket::Codec> send_codecs, recv_codecs;
+  std::vector<Codec> send_codecs, recv_codecs;
   if (media_type_ == webrtc::MediaType::AUDIO) {
     send_codecs = codec_vendor().audio_send_codecs().codecs();
     recv_codecs = codec_vendor().audio_recv_codecs().codecs();
@@ -710,11 +709,11 @@ RTCError RtpTransceiver::UpdateCodecPreferencesCaches(
     }
     // Is this a send codec, receive codec or both?
     bool is_send_codec =
-        absl::c_any_of(send_codecs, [&codec](const cricket::Codec& send_codec) {
+        absl::c_any_of(send_codecs, [&codec](const Codec& send_codec) {
           return IsSameRtpCodecIgnoringLevel(send_codec, codec);
         });
     bool is_recv_codec =
-        absl::c_any_of(recv_codecs, [&codec](const cricket::Codec& recv_codec) {
+        absl::c_any_of(recv_codecs, [&codec](const Codec& recv_codec) {
           return IsSameRtpCodecIgnoringLevel(recv_codec, codec);
         });
     // The codec being neither for sending or receving is not possible because

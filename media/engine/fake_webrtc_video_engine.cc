@@ -143,8 +143,8 @@ void FakeWebRtcVideoDecoderFactory::AddSupportedVideoCodec(
 
 void FakeWebRtcVideoDecoderFactory::AddSupportedVideoCodecType(
     const std::string& name) {
-  // This is to match the default H264 params of cricket::Codec.
-  cricket::Codec video_codec = cricket::CreateVideoCodec(name);
+  // This is to match the default H264 params of Codec.
+  Codec video_codec = CreateVideoCodec(name);
   supported_codec_formats_.push_back(
       SdpVideoFormat(video_codec.name, video_codec.params));
 }
@@ -309,8 +309,8 @@ void FakeWebRtcVideoEncoderFactory::AddSupportedVideoCodec(
 void FakeWebRtcVideoEncoderFactory::AddSupportedVideoCodecType(
     const std::string& name,
     const std::vector<ScalabilityMode>& scalability_modes) {
-  // This is to match the default H264 params of cricket::Codec.
-  cricket::Codec video_codec = cricket::CreateVideoCodec(name);
+  // This is to match the default H264 params of Codec.
+  Codec video_codec = CreateVideoCodec(name);
   formats_.push_back(
       SdpVideoFormat(video_codec.name, video_codec.params,
                      {scalability_modes.begin(), scalability_modes.end()}));

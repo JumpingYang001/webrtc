@@ -236,13 +236,13 @@ class RtpTransceiverFilteredCodecPreferencesTest
                               MockReceiver(webrtc::MediaType::VIDEO))) {}
 
   struct H264CodecCapabilities {
-    cricket::Codec cricket_sendrecv_codec;
+    Codec cricket_sendrecv_codec;
     RtpCodecCapability sendrecv_codec;
-    cricket::Codec cricket_sendonly_codec;
+    Codec cricket_sendonly_codec;
     RtpCodecCapability sendonly_codec;
-    cricket::Codec cricket_recvonly_codec;
+    Codec cricket_recvonly_codec;
     RtpCodecCapability recvonly_codec;
-    cricket::Codec cricket_rtx_codec;
+    Codec cricket_rtx_codec;
     RtpCodecCapability rtx_codec;
   };
 
@@ -258,26 +258,26 @@ class RtpTransceiverFilteredCodecPreferencesTest
   // For H264, the profile and level IDs are entangled. This function uses
   // profile-level-id values that are not equal even when levels are ignored.
   H264CodecCapabilities ConfigureH264CodecCapabilities() {
-    cricket::Codec cricket_sendrecv_codec = cricket::CreateVideoCodec(
-        SdpVideoFormat("H264",
-                       {{"level-asymmetry-allowed", "1"},
-                        {"packetization-mode", "1"},
-                        {"profile-level-id", "42f00b"}},
-                       {ScalabilityMode::kL1T1}));
-    cricket::Codec cricket_sendonly_codec = cricket::CreateVideoCodec(
-        SdpVideoFormat("H264",
-                       {{"level-asymmetry-allowed", "1"},
-                        {"packetization-mode", "1"},
-                        {"profile-level-id", "640034"}},
-                       {ScalabilityMode::kL1T1}));
-    cricket::Codec cricket_recvonly_codec = cricket::CreateVideoCodec(
-        SdpVideoFormat("H264",
-                       {{"level-asymmetry-allowed", "1"},
-                        {"packetization-mode", "1"},
-                        {"profile-level-id", "f4001f"}},
-                       {ScalabilityMode::kL1T1}));
-    cricket::Codec cricket_rtx_codec = cricket::CreateVideoRtxCodec(
-        cricket::Codec::kIdNotSet, cricket::Codec::kIdNotSet);
+    Codec cricket_sendrecv_codec =
+        CreateVideoCodec(SdpVideoFormat("H264",
+                                        {{"level-asymmetry-allowed", "1"},
+                                         {"packetization-mode", "1"},
+                                         {"profile-level-id", "42f00b"}},
+                                        {ScalabilityMode::kL1T1}));
+    Codec cricket_sendonly_codec =
+        CreateVideoCodec(SdpVideoFormat("H264",
+                                        {{"level-asymmetry-allowed", "1"},
+                                         {"packetization-mode", "1"},
+                                         {"profile-level-id", "640034"}},
+                                        {ScalabilityMode::kL1T1}));
+    Codec cricket_recvonly_codec =
+        CreateVideoCodec(SdpVideoFormat("H264",
+                                        {{"level-asymmetry-allowed", "1"},
+                                         {"packetization-mode", "1"},
+                                         {"profile-level-id", "f4001f"}},
+                                        {ScalabilityMode::kL1T1}));
+    Codec cricket_rtx_codec =
+        CreateVideoRtxCodec(Codec::kIdNotSet, Codec::kIdNotSet);
     media_engine()->SetVideoSendCodecs(
         {cricket_sendrecv_codec, cricket_sendonly_codec, cricket_rtx_codec});
     media_engine()->SetVideoRecvCodecs(
@@ -312,23 +312,23 @@ class RtpTransceiverFilteredCodecPreferencesTest
     // A valid H265 level-id, but one not present in either getCapabilities().
     static constexpr const char* kLevelNotInCapabilities = "135";
 
-    cricket::Codec cricket_sendonly_codec;
+    Codec cricket_sendonly_codec;
     RtpCodecCapability sendonly_codec;
-    cricket::Codec cricket_recvonly_codec;
+    Codec cricket_recvonly_codec;
     RtpCodecCapability recvonly_codec;
   };
 
   // For H265, the profile and level IDs are separate and are ignored by
   // IsSameRtpCodecIgnoringLevel().
   H265CodecCapabilities ConfigureH265CodecCapabilities() {
-    cricket::Codec cricket_sendonly_codec = cricket::CreateVideoCodec(
+    Codec cricket_sendonly_codec = CreateVideoCodec(
         SdpVideoFormat("H265",
                        {{"profile-id", "1"},
                         {"tier-flag", "0"},
                         {"level-id", H265CodecCapabilities::kSendOnlyLevel},
                         {"tx-mode", "SRST"}},
                        {ScalabilityMode::kL1T1}));
-    cricket::Codec cricket_recvonly_codec = cricket::CreateVideoCodec(
+    Codec cricket_recvonly_codec = CreateVideoCodec(
         SdpVideoFormat("H265",
                        {{"profile-id", "1"},
                         {"tier-flag", "0"},
@@ -463,25 +463,25 @@ TEST_F(RtpTransceiverFilteredCodecPreferencesTest,
 TEST_F(RtpTransceiverFilteredCodecPreferencesTest,
        H264LevelIdsIgnoredByFilter) {
   // Baseline 3.1 and 5.2 are compatible when ignoring level IDs.
-  cricket::Codec baseline_3_1 = cricket::CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{"level-asymmetry-allowed", "1"},
-                      {"packetization-mode", "1"},
-                      {"profile-level-id", "42001f"}},
-                     {ScalabilityMode::kL1T1}));
-  cricket::Codec baseline_5_2 = cricket::CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{"level-asymmetry-allowed", "1"},
-                      {"packetization-mode", "1"},
-                      {"profile-level-id", "420034"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec baseline_3_1 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{"level-asymmetry-allowed", "1"},
+                                       {"packetization-mode", "1"},
+                                       {"profile-level-id", "42001f"}},
+                                      {ScalabilityMode::kL1T1}));
+  Codec baseline_5_2 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{"level-asymmetry-allowed", "1"},
+                                       {"packetization-mode", "1"},
+                                       {"profile-level-id", "420034"}},
+                                      {ScalabilityMode::kL1T1}));
   // High is NOT compatible with baseline.
-  cricket::Codec high_3_1 = cricket::CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{"level-asymmetry-allowed", "1"},
-                      {"packetization-mode", "1"},
-                      {"profile-level-id", "64001f"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec high_3_1 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{"level-asymmetry-allowed", "1"},
+                                       {"packetization-mode", "1"},
+                                       {"profile-level-id", "64001f"}},
+                                      {ScalabilityMode::kL1T1}));
   // Configure being able to both send and receive Baseline but using different
   // level IDs in either direction, while the High profile is "truly" recvonly.
   media_engine()->SetVideoSendCodecs({baseline_3_1});
@@ -542,7 +542,7 @@ TEST_F(RtpTransceiverFilteredCodecPreferencesTest,
 TEST_F(RtpTransceiverFilteredCodecPreferencesTest,
        H265LevelIdHasToBeFromSenderOrReceiverCapabilities) {
   ConfigureH265CodecCapabilities();
-  cricket::Codec cricket_codec = cricket::CreateVideoCodec(SdpVideoFormat(
+  Codec cricket_codec = CreateVideoCodec(SdpVideoFormat(
       "H265",
       {{"profile-id", "1"},
        {"tier-flag", "0"},

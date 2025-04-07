@@ -115,20 +115,19 @@ namespace webrtc {
 
 namespace {
 
-bool ContainsRtxCodec(const std::vector<cricket::Codec>& codecs) {
-  return absl::c_find_if(codecs, [](const cricket::Codec& c) {
-           return c.GetResiliencyType() == cricket::Codec::ResiliencyType::kRtx;
+bool ContainsRtxCodec(const std::vector<Codec>& codecs) {
+  return absl::c_find_if(codecs, [](const Codec& c) {
+           return c.GetResiliencyType() == Codec::ResiliencyType::kRtx;
          }) != codecs.end();
 }
 
-bool ContainsFlexfecCodec(const std::vector<cricket::Codec>& codecs) {
-  return absl::c_find_if(codecs, [](const cricket::Codec& c) {
-           return c.GetResiliencyType() ==
-                  cricket::Codec::ResiliencyType::kFlexfec;
+bool ContainsFlexfecCodec(const std::vector<Codec>& codecs) {
+  return absl::c_find_if(codecs, [](const Codec& c) {
+           return c.GetResiliencyType() == Codec::ResiliencyType::kFlexfec;
          }) != codecs.end();
 }
 
-bool IsComfortNoiseCodec(const cricket::Codec& codec) {
+bool IsComfortNoiseCodec(const Codec& codec) {
   return absl::EqualsIgnoreCase(codec.name, cricket::kComfortNoiseCodecName);
 }
 
@@ -410,7 +409,7 @@ RTCError CreateContentOffer(
 RTCError CreateMediaContentOffer(
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
-    const std::vector<cricket::Codec>& codecs,
+    const std::vector<Codec>& codecs,
     const cricket::RtpHeaderExtensions& rtp_extensions,
     UniqueRandomIdGenerator* ssrc_generator,
     cricket::StreamParamsVec* current_streams,
@@ -546,7 +545,7 @@ void NegotiateRtpHeaderExtensions(
 }
 
 bool SetCodecsInAnswer(const MediaContentDescription* offer,
-                       const std::vector<cricket::Codec>& local_codecs,
+                       const std::vector<Codec>& local_codecs,
                        const MediaDescriptionOptions& media_description_options,
                        const MediaSessionOptions& session_options,
                        UniqueRandomIdGenerator* ssrc_generator,
@@ -1167,9 +1166,9 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
   RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
              media_description_options.type == webrtc::MediaType::VIDEO);
 
-  std::vector<cricket::Codec> codecs_to_include;
+  std::vector<Codec> codecs_to_include;
   std::string mid = media_description_options.mid;
-  RTCErrorOr<std::vector<cricket::Codec>> error_or_filtered_codecs =
+  RTCErrorOr<std::vector<Codec>> error_or_filtered_codecs =
       codec_lookup_helper_->CodecVendor(mid)->GetNegotiatedCodecsForOffer(
           media_description_options, session_options, current_content,
           *codec_lookup_helper_->PayloadTypeSuggester());
@@ -1329,8 +1328,8 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
   auto offer_rtd = offer_content_description->direction();
   auto answer_rtd = NegotiateRtpTransceiverDirection(offer_rtd, wants_rtd);
 
-  std::vector<cricket::Codec> codecs_to_include;
-  RTCErrorOr<std::vector<cricket::Codec>> error_or_filtered_codecs =
+  std::vector<Codec> codecs_to_include;
+  RTCErrorOr<std::vector<Codec>> error_or_filtered_codecs =
       codec_lookup_helper_->CodecVendor(media_description_options.mid)
           ->GetNegotiatedCodecsForAnswer(
               media_description_options, session_options, offer_rtd, answer_rtd,
@@ -1343,7 +1342,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
   // Determine if we have media codecs in common.
   bool has_usable_media_codecs =
       std::find_if(codecs_to_include.begin(), codecs_to_include.end(),
-                   [](const cricket::Codec& c) {
+                   [](const Codec& c) {
                      return c.IsMediaCodec() && !IsComfortNoiseCodec(c);
                    }) != codecs_to_include.end();
 
@@ -1364,7 +1363,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
             "WebRTC-RFC8888CongestionControlFeedback"));
     for (auto& codec : codecs_to_include) {
       codec.feedback_params.Remove(
-          cricket::FeedbackParam(cricket::kRtcpFbParamTransportCc));
+          FeedbackParam(cricket::kRtcpFbParamTransportCc));
     }
   }
   if (!SetCodecsInAnswer(offer_content_description, codecs_to_include,

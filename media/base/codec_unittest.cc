@@ -24,8 +24,9 @@
 #include "modules/video_coding/codecs/h264/include/h264.h"
 #include "test/gtest.h"
 
-using cricket::Codec;
-using cricket::FeedbackParam;
+namespace webrtc {
+namespace {
+
 using cricket::kCodecParamAssociatedPayloadType;
 using cricket::kCodecParamMaxBitrate;
 using cricket::kCodecParamMinBitrate;
@@ -73,20 +74,20 @@ TEST(CodecTest, TestCodecOperators) {
 }
 
 TEST(CodecTest, TestAudioCodecOperators) {
-  Codec c0 = cricket::CreateAudioCodec(96, "A", 44100, 2);
-  Codec c1 = cricket::CreateAudioCodec(95, "A", 44100, 2);
-  Codec c2 = cricket::CreateAudioCodec(96, "x", 44100, 2);
-  Codec c3 = cricket::CreateAudioCodec(96, "A", 48000, 2);
-  Codec c4 = cricket::CreateAudioCodec(96, "A", 44100, 2);
+  Codec c0 = CreateAudioCodec(96, "A", 44100, 2);
+  Codec c1 = CreateAudioCodec(95, "A", 44100, 2);
+  Codec c2 = CreateAudioCodec(96, "x", 44100, 2);
+  Codec c3 = CreateAudioCodec(96, "A", 48000, 2);
+  Codec c4 = CreateAudioCodec(96, "A", 44100, 2);
   c4.bitrate = 10000;
-  Codec c5 = cricket::CreateAudioCodec(96, "A", 44100, 1);
+  Codec c5 = CreateAudioCodec(96, "A", 44100, 1);
   EXPECT_NE(c0, c1);
   EXPECT_NE(c0, c2);
   EXPECT_NE(c0, c3);
   EXPECT_NE(c0, c4);
   EXPECT_NE(c0, c5);
 
-  Codec c8 = cricket::CreateAudioCodec(0, "", 0, 0);
+  Codec c8 = CreateAudioCodec(0, "", 0, 0);
   Codec c9 = c0;
   EXPECT_EQ(c9, c0);
 
@@ -108,14 +109,14 @@ TEST(CodecTest, TestAudioCodecOperators) {
 }
 
 TEST(CodecTest, TestVideoCodecOperators) {
-  Codec c0 = cricket::CreateVideoCodec(96, "V");
-  Codec c1 = cricket::CreateVideoCodec(95, "V");
-  Codec c2 = cricket::CreateVideoCodec(96, "x");
+  Codec c0 = CreateVideoCodec(96, "V");
+  Codec c1 = CreateVideoCodec(95, "V");
+  Codec c2 = CreateVideoCodec(96, "x");
 
   EXPECT_TRUE(c0 != c1);
   EXPECT_TRUE(c0 != c2);
 
-  Codec c8 = cricket::CreateVideoCodec(0, "");
+  Codec c8 = CreateVideoCodec(0, "");
   Codec c9 = c0;
   EXPECT_TRUE(c9 == c0);
 
@@ -137,9 +138,9 @@ TEST(CodecTest, TestVideoCodecOperators) {
 }
 
 TEST(CodecTest, TestVideoCodecEqualsWithDifferentPacketization) {
-  Codec c0 = cricket::CreateVideoCodec(100, cricket::kVp8CodecName);
-  Codec c1 = cricket::CreateVideoCodec(100, cricket::kVp8CodecName);
-  Codec c2 = cricket::CreateVideoCodec(100, cricket::kVp8CodecName);
+  Codec c0 = CreateVideoCodec(100, cricket::kVp8CodecName);
+  Codec c1 = CreateVideoCodec(100, cricket::kVp8CodecName);
+  Codec c2 = CreateVideoCodec(100, cricket::kVp8CodecName);
   c2.packetization = "raw";
 
   EXPECT_EQ(c0, c1);
@@ -149,7 +150,7 @@ TEST(CodecTest, TestVideoCodecEqualsWithDifferentPacketization) {
 }
 
 TEST(CodecTest, TestSetParamGetParamAndRemoveParam) {
-  Codec codec = cricket::CreateAudioCodec(0, "foo", 22222, 2);
+  Codec codec = CreateAudioCodec(0, "foo", 22222, 2);
   codec.SetParam("a", "1");
   codec.SetParam("b", "x");
 
@@ -190,11 +191,11 @@ TEST(CodecTest, TestIntersectFeedbackParams) {
 
 TEST(CodecTest, TestGetCodecType) {
   // Codec type comparison should be case insensitive on names.
-  const Codec codec = cricket::CreateVideoCodec(96, "V");
-  const Codec rtx_codec = cricket::CreateVideoCodec(96, "rTx");
-  const Codec ulpfec_codec = cricket::CreateVideoCodec(96, "ulpFeC");
-  const Codec flexfec_codec = cricket::CreateVideoCodec(96, "FlExFeC-03");
-  const Codec red_codec = cricket::CreateVideoCodec(96, "ReD");
+  const Codec codec = CreateVideoCodec(96, "V");
+  const Codec rtx_codec = CreateVideoCodec(96, "rTx");
+  const Codec ulpfec_codec = CreateVideoCodec(96, "ulpFeC");
+  const Codec flexfec_codec = CreateVideoCodec(96, "FlExFeC-03");
+  const Codec red_codec = CreateVideoCodec(96, "ReD");
   EXPECT_TRUE(codec.IsMediaCodec());
   EXPECT_EQ(codec.GetResiliencyType(), Codec::ResiliencyType::kNone);
   EXPECT_EQ(rtx_codec.GetResiliencyType(), Codec::ResiliencyType::kRtx);
@@ -204,7 +205,7 @@ TEST(CodecTest, TestGetCodecType) {
 }
 
 TEST(CodecTest, TestCreateRtxCodec) {
-  const Codec rtx_codec = cricket::CreateVideoRtxCodec(96, 120);
+  const Codec rtx_codec = CreateVideoRtxCodec(96, 120);
   EXPECT_EQ(96, rtx_codec.id);
   EXPECT_EQ(rtx_codec.GetResiliencyType(), Codec::ResiliencyType::kRtx);
   int associated_payload_type;
@@ -214,7 +215,7 @@ TEST(CodecTest, TestCreateRtxCodec) {
 }
 
 TEST(CodecTest, TestValidateCodecFormat) {
-  const Codec codec = cricket::CreateVideoCodec(96, "V");
+  const Codec codec = CreateVideoCodec(96, "V");
   ASSERT_TRUE(codec.ValidateCodecFormat());
 
   // Accept 0-127 as payload types.
@@ -255,7 +256,7 @@ TEST(CodecTest, TestValidateCodecFormat) {
 }
 
 TEST(CodecTest, TestToCodecParameters) {
-  Codec v = cricket::CreateVideoCodec(96, "V");
+  Codec v = CreateVideoCodec(96, "V");
   v.SetParam("p1", "v1");
   webrtc::RtpCodecParameters codec_params_1 = v.ToCodecParameters();
   EXPECT_EQ(96, codec_params_1.payload_type);
@@ -267,7 +268,7 @@ TEST(CodecTest, TestToCodecParameters) {
   EXPECT_EQ("p1", codec_params_1.parameters.begin()->first);
   EXPECT_EQ("v1", codec_params_1.parameters.begin()->second);
 
-  Codec a = cricket::CreateAudioCodec(97, "A", 44100, 2);
+  Codec a = CreateAudioCodec(97, "A", 44100, 2);
   a.SetParam("p1", "a1");
   webrtc::RtpCodecParameters codec_params_2 = a.ToCodecParameters();
   EXPECT_EQ(97, codec_params_2.payload_type);
@@ -289,8 +290,7 @@ TEST(CodecTest, H264CostrainedBaselineIsAddedIfH264IsSupported) {
 
   std::vector<webrtc::SdpVideoFormat> supported_formats =
       kExplicitlySupportedFormats;
-  cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
-      &supported_formats);
+  AddH264ConstrainedBaselineProfileToSupportedFormats(&supported_formats);
 
   const webrtc::SdpVideoFormat kH264ConstrainedBasedlinePacketization1 =
       webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline,
@@ -313,8 +313,7 @@ TEST(CodecTest, H264CostrainedBaselineIsNotAddedIfH264IsUnsupported) {
 
   std::vector<webrtc::SdpVideoFormat> supported_formats =
       kExplicitlySupportedFormats;
-  cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
-      &supported_formats);
+  AddH264ConstrainedBaselineProfileToSupportedFormats(&supported_formats);
 
   EXPECT_EQ(supported_formats[0], kExplicitlySupportedFormats[0]);
   EXPECT_EQ(supported_formats.size(), kExplicitlySupportedFormats.size());
@@ -333,8 +332,7 @@ TEST(CodecTest, H264CostrainedBaselineNotAddedIfAlreadySpecified) {
 
   std::vector<webrtc::SdpVideoFormat> supported_formats =
       kExplicitlySupportedFormats;
-  cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
-      &supported_formats);
+  AddH264ConstrainedBaselineProfileToSupportedFormats(&supported_formats);
 
   EXPECT_EQ(supported_formats[0], kExplicitlySupportedFormats[0]);
   EXPECT_EQ(supported_formats[1], kExplicitlySupportedFormats[1]);
@@ -344,8 +342,11 @@ TEST(CodecTest, H264CostrainedBaselineNotAddedIfAlreadySpecified) {
 }
 
 TEST(CodecTest, AbslStringify) {
-  Codec codec = cricket::CreateAudioCodec(47, "custom-audio", 48000, 2);
+  Codec codec = CreateAudioCodec(47, "custom-audio", 48000, 2);
   EXPECT_EQ(absl::StrCat(codec), "[47:audio/custom-audio/48000/2]");
   codec.params["key"] = "value";
   EXPECT_EQ(absl::StrCat(codec), "[47:audio/custom-audio/48000/2;key=value]");
 }
+
+}  // namespace
+}  // namespace webrtc

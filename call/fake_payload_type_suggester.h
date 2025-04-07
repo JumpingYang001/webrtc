@@ -26,13 +26,13 @@ class FakePayloadTypeSuggester : public webrtc::PayloadTypeSuggester {
  public:
   webrtc::RTCErrorOr<webrtc::PayloadType> SuggestPayloadType(
       const std::string& mid,
-      cricket::Codec codec) override {
+      Codec codec) override {
     // Ignores mid argument.
     return pt_picker_.SuggestMapping(codec, nullptr);
   }
   webrtc::RTCError AddLocalMapping(const std::string& mid,
                                    webrtc::PayloadType payload_type,
-                                   const cricket::Codec& codec) override {
+                                   const Codec& codec) override {
     return webrtc::RTCError::OK();
   }
 

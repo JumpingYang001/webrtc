@@ -1070,11 +1070,11 @@ TEST_P(PeerConnectionSignalingTest, ReceiveFlexFecReoffer) {
       offer->description()->contents()[0].media_description()->codecs();
   auto flexfec_it = std::find_if(
       offer_codecs.begin(), offer_codecs.end(),
-      [](const cricket::Codec& codec) { return codec.name == "flexfec-03"; });
+      [](const Codec& codec) { return codec.name == "flexfec-03"; });
   ASSERT_EQ(flexfec_it->id, 35);
-  auto av1_it = std::find_if(
-      offer_codecs.begin(), offer_codecs.end(),
-      [](const cricket::Codec& codec) { return codec.name == "AV1"; });
+  auto av1_it =
+      std::find_if(offer_codecs.begin(), offer_codecs.end(),
+                   [](const Codec& codec) { return codec.name == "AV1"; });
   if (av1_it != offer_codecs.end()) {
     ASSERT_NE(av1_it->id, 35);
   }

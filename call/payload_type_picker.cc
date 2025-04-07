@@ -41,7 +41,7 @@ static const int kLastDynamicPayloadTypeUpperRange = 127;
 
 // Note: The only fields we need from a Codec are the type (audio/video),
 // the subtype (vp8/h264/....), the clock rate, the channel count, and the
-// fmtp parameters. The use of cricket::Codec, which contains more fields,
+// fmtp parameters. The use of Codec, which contains more fields,
 // is only a temporary measure.
 
 struct MapTableEntry {
@@ -51,9 +51,9 @@ struct MapTableEntry {
 
 // Helper function to determine whether a codec should use the [35, 63] range.
 // Should be used when adding new codecs (or variants).
-bool CodecPrefersLowerRange(const cricket::Codec& codec) {
+bool CodecPrefersLowerRange(const Codec& codec) {
   // All audio codecs prefer upper range.
-  if (codec.type == cricket::Codec::Type::kAudio) {
+  if (codec.type == Codec::Type::kAudio) {
     return absl::EqualsIgnoreCase(codec.name, cricket::kRedCodecName);
   }
   if (absl::EqualsIgnoreCase(codec.name, cricket::kFlexfecCodecName) ||
@@ -95,7 +95,7 @@ bool CodecPrefersLowerRange(const cricket::Codec& codec) {
   return false;
 }
 
-RTCErrorOr<PayloadType> FindFreePayloadType(const cricket::Codec& codec,
+RTCErrorOr<PayloadType> FindFreePayloadType(const Codec& codec,
                                             std::set<PayloadType> seen_pt) {
   // Prefer to use lower range for codecs that can handle it.
   bool prefer_lower_range = CodecPrefersLowerRange(codec);
@@ -193,13 +193,12 @@ PayloadTypePicker::PayloadTypePicker() {
       {{cricket::kDtmfCodecName, 16000, 1}, 113},
       {{cricket::kDtmfCodecName, 8000, 1}, 126}};
   for (const MapTableEntry& entry : default_audio_mappings) {
-    AddMapping(PayloadType(entry.payload_type),
-               cricket::CreateAudioCodec(entry.format));
+    AddMapping(PayloadType(entry.payload_type), CreateAudioCodec(entry.format));
   }
 }
 
 RTCErrorOr<PayloadType> PayloadTypePicker::SuggestMapping(
-    cricket::Codec codec,
+    Codec codec,
     const PayloadTypeRecorder* excluder) {
   // Test compatibility: If the codec contains a PT, and it is free, use it.
   // This saves having to rewrite tests that set the codec ID themselves.
@@ -232,8 +231,7 @@ RTCErrorOr<PayloadType> PayloadTypePicker::SuggestMapping(
   return found_pt;
 }
 
-RTCError PayloadTypePicker::AddMapping(PayloadType payload_type,
-                                       cricket::Codec codec) {
+RTCError PayloadTypePicker::AddMapping(PayloadType payload_type, Codec codec) {
   // Completely duplicate mappings are ignored.
   // Multiple mappings for the same codec and the same PT are legal;
   for (const MapEntry& entry : entries_) {
@@ -248,7 +246,7 @@ RTCError PayloadTypePicker::AddMapping(PayloadType payload_type,
 }
 
 RTCError PayloadTypeRecorder::AddMapping(PayloadType payload_type,
-                                         cricket::Codec codec) {
+                                         Codec codec) {
   auto existing_codec_it = payload_type_to_codec_.find(payload_type);
   if (existing_codec_it != payload_type_to_codec_.end() &&
       !MatchesWithCodecRules(codec, existing_codec_it->second)) {
@@ -286,13 +284,13 @@ RTCError PayloadTypeRecorder::AddMapping(PayloadType payload_type,
   return RTCError::OK();
 }
 
-std::vector<std::pair<PayloadType, cricket::Codec>>
-PayloadTypeRecorder::GetMappings() const {
-  return std::vector<std::pair<PayloadType, cricket::Codec>>{};
+std::vector<std::pair<PayloadType, Codec>> PayloadTypeRecorder::GetMappings()
+    const {
+  return std::vector<std::pair<PayloadType, Codec>>{};
 }
 
 RTCErrorOr<PayloadType> PayloadTypeRecorder::LookupPayloadType(
-    cricket::Codec codec) const {
+    Codec codec) const {
   // Note that having multiple PTs mapping to the same codec is NOT an error.
   // In this case, we return the first found (not deterministic).
   auto result =
@@ -307,7 +305,7 @@ RTCErrorOr<PayloadType> PayloadTypeRecorder::LookupPayloadType(
   return result->first;
 }
 
-RTCErrorOr<cricket::Codec> PayloadTypeRecorder::LookupCodec(
+RTCErrorOr<Codec> PayloadTypeRecorder::LookupCodec(
     PayloadType payload_type) const {
   auto result = payload_type_to_codec_.find(payload_type);
   if (result == payload_type_to_codec_.end()) {

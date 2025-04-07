@@ -90,15 +90,15 @@ class UsedIds {
 
 // Helper class used for finding duplicate RTP payload types among audio, video
 // and data codecs. When bundle is used the payload types may not collide.
-class UsedPayloadTypes : public UsedIds<cricket::Codec> {
+class UsedPayloadTypes : public UsedIds<Codec> {
  public:
   UsedPayloadTypes()
-      : UsedIds<cricket::Codec>(kFirstDynamicPayloadTypeLowerRange,
-                                kLastDynamicPayloadTypeUpperRange) {}
+      : UsedIds<Codec>(kFirstDynamicPayloadTypeLowerRange,
+                       kLastDynamicPayloadTypeUpperRange) {}
 
   // Check if a payload type is valid. The range [64-95] is forbidden
   // when rtcp-mux is used.
-  static bool IsIdValid(cricket::Codec codec, bool rtcp_mux) {
+  static bool IsIdValid(Codec codec, bool rtcp_mux) {
     if (rtcp_mux && (codec.id > kLastDynamicPayloadTypeLowerRange &&
                      codec.id < kFirstDynamicPayloadTypeUpperRange)) {
       return false;
@@ -112,7 +112,7 @@ class UsedPayloadTypes : public UsedIds<cricket::Codec> {
     if (new_id > kLastDynamicPayloadTypeLowerRange &&
         new_id < kFirstDynamicPayloadTypeUpperRange)
       return true;
-    return UsedIds<cricket::Codec>::IsIdUsed(new_id);
+    return UsedIds<Codec>::IsIdUsed(new_id);
   }
 
  private:

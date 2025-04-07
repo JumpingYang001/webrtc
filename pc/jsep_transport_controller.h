@@ -233,10 +233,10 @@ class JsepTransportController : public PayloadTypeSuggester,
   // The function will either return a PT already in use on the connection
   // or a newly suggested one.
   RTCErrorOr<PayloadType> SuggestPayloadType(const std::string& mid,
-                                             cricket::Codec codec) override;
+                                             Codec codec) override;
   RTCError AddLocalMapping(const std::string& mid,
                            PayloadType payload_type,
-                           const cricket::Codec& codec) override;
+                           const Codec& codec) override;
   const PayloadTypePicker& PayloadTypePickerForTesting() const {
     return payload_type_picker_;
   }

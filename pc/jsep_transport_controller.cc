@@ -257,7 +257,7 @@ std::optional<SSLRole> JsepTransportController::GetDtlsRole(
 
 RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
     const std::string& mid,
-    cricket::Codec codec) {
+    Codec codec) {
   // Because SDP processing runs on the signal thread and Call processing
   // runs on the worker thread, we allow cross thread invocation until we
   // can clean up the thread work.
@@ -278,7 +278,7 @@ RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
     auto remote_result =
         transport->remote_payload_types().LookupPayloadType(codec);
     if (remote_result.ok()) {
-      RTCErrorOr<cricket::Codec> local_result =
+      RTCErrorOr<Codec> local_result =
           transport->local_payload_types().LookupCodec(remote_result.value());
       if (local_result.ok()) {
         // Already in use, possibly for something else.
@@ -303,7 +303,7 @@ RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
 
 RTCError JsepTransportController::AddLocalMapping(const std::string& mid,
                                                   PayloadType payload_type,
-                                                  const cricket::Codec& codec) {
+                                                  const Codec& codec) {
   // Because SDP processing runs on the signal thread and Call processing
   // runs on the worker thread, we allow cross thread invocation until we
   // can clean up the thread work.

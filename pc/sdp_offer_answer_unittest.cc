@@ -684,8 +684,8 @@ TEST_F(SdpOfferAnswerTest, SimulcastOfferWithMixedCodec) {
   // Verify that the serialized SDP includes pt=.
   std::string sdp;
   offer->ToString(&sdp);
-  const cricket::Codec* vp8_send_codec = nullptr;
-  const cricket::Codec* vp9_send_codec = nullptr;
+  const Codec* vp8_send_codec = nullptr;
+  const Codec* vp9_send_codec = nullptr;
   for (auto& codec : send_codecs) {
     if (codec.name == vp8_codec_capability->name && !vp8_send_codec) {
       vp8_send_codec = &codec;
@@ -1361,7 +1361,7 @@ TEST_P(SdpOfferAnswerWithPayloadTypeTest,
     // The previously negotiated PT should still map to the same VP9 codec.
     auto it = std::find_if(
         codecs.begin(), codecs.end(),
-        [&](const cricket::Codec& codec) { return codec.id == payload_type; });
+        [&](const Codec& codec) { return codec.id == payload_type; });
     ASSERT_TRUE(it != codecs.end());
     const auto& vp9_codec = *it;
     EXPECT_EQ(vp9_codec.name, "VP9");
@@ -1696,10 +1696,10 @@ TEST_F(SdpOfferAnswerTest, PayloadTypeMatchingWithSubsequentOfferAnswer) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   ASSERT_EQ(codecs.size(), 1u);
   ASSERT_NE(codecs[0].id, 127);
-  auto av1 = cricket::CreateVideoCodec(SdpVideoFormat("AV1", {}));
+  auto av1 = CreateVideoCodec(SdpVideoFormat("AV1", {}));
   av1.id = 127;
   codecs.insert(codecs.begin(), av1);
   media_description->set_codecs(codecs);
@@ -2051,7 +2051,7 @@ TEST_F(SdpOfferAnswerMungingTest, H264SpsPpsIdrInKeyFrame) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
     if (codec.name == cricket::kH264CodecName) {
       codec.SetParam(cricket::kH264FmtpSpsPpsIdrInKeyframe,
@@ -2077,7 +2077,7 @@ TEST_F(SdpOfferAnswerMungingTest, OpusStereo) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
     if (codec.name == cricket::kOpusCodecName) {
       codec.SetParam(cricket::kCodecParamStereo, cricket::kParamValueTrue);
@@ -2100,7 +2100,7 @@ TEST_F(SdpOfferAnswerMungingTest, OpusFec) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
     if (codec.name == cricket::kOpusCodecName) {
       // Enabled by default so we need to remove the parameter.
@@ -2124,7 +2124,7 @@ TEST_F(SdpOfferAnswerMungingTest, OpusDtx) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
     if (codec.name == cricket::kOpusCodecName) {
       codec.SetParam(cricket::kCodecParamUseDtx, cricket::kParamValueTrue);
@@ -2147,7 +2147,7 @@ TEST_F(SdpOfferAnswerMungingTest, OpusCbr) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
     if (codec.name == cricket::kOpusCodecName) {
       codec.SetParam(cricket::kCodecParamCbr, cricket::kParamValueTrue);
@@ -2170,7 +2170,7 @@ TEST_F(SdpOfferAnswerMungingTest, AudioCodecsRemoved) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   codecs.pop_back();
   media_description->set_codecs(codecs);
   RTCError error;
@@ -2189,8 +2189,8 @@ TEST_F(SdpOfferAnswerMungingTest, AudioCodecsAdded) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
-  auto codec = cricket::CreateAudioCodec(SdpAudioFormat("pcmu", 8000, 1, {}));
+  std::vector<Codec> codecs = media_description->codecs();
+  auto codec = CreateAudioCodec(SdpAudioFormat("pcmu", 8000, 1, {}));
   codec.id = 19;  // IANA reserved payload type, should not conflict.
   codecs.push_back(codec);
   media_description->set_codecs(codecs);
@@ -2210,7 +2210,7 @@ TEST_F(SdpOfferAnswerMungingTest, VideoCodecsRemoved) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   codecs.pop_back();
   media_description->set_codecs(codecs);
   RTCError error;
@@ -2229,8 +2229,8 @@ TEST_F(SdpOfferAnswerMungingTest, VideoCodecsAdded) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
-  auto codec = cricket::CreateVideoCodec(SdpVideoFormat("VP8", {}));
+  std::vector<Codec> codecs = media_description->codecs();
+  auto codec = CreateVideoCodec(SdpVideoFormat("VP8", {}));
   codec.id = 19;  // IANA reserved payload type, should not conflict.
   codecs.push_back(codec);
   media_description->set_codecs(codecs);
@@ -2250,12 +2250,12 @@ TEST_F(SdpOfferAnswerMungingTest, MultiOpus) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
+  std::vector<Codec> codecs = media_description->codecs();
   auto multiopus =
-      cricket::CreateAudioCodec(SdpAudioFormat("multiopus", 48000, 4,
-                                               {{"channel_mapping", "0,1,2,3"},
-                                                {"coupled_streams", "2"},
-                                                {"num_streams", "2"}}));
+      CreateAudioCodec(SdpAudioFormat("multiopus", 48000, 4,
+                                      {{"channel_mapping", "0,1,2,3"},
+                                       {"coupled_streams", "2"},
+                                       {"num_streams", "2"}}));
   multiopus.id = 19;  // IANA reserved payload type, should not conflict.
   codecs.push_back(multiopus);
   media_description->set_codecs(codecs);
@@ -2275,8 +2275,8 @@ TEST_F(SdpOfferAnswerMungingTest, L16) {
   ASSERT_EQ(contents.size(), 1u);
   auto* media_description = contents[0].media_description();
   ASSERT_TRUE(media_description);
-  std::vector<cricket::Codec> codecs = media_description->codecs();
-  auto l16 = cricket::CreateAudioCodec(SdpAudioFormat("L16", 48000, 2, {}));
+  std::vector<Codec> codecs = media_description->codecs();
+  auto l16 = CreateAudioCodec(SdpAudioFormat("L16", 48000, 2, {}));
   l16.id = 19;  // IANA reserved payload type, should not conflict.
   codecs.push_back(l16);
   media_description->set_codecs(codecs);
@@ -2504,7 +2504,7 @@ TEST_F(SdpOfferAnswerMungingTest, AudioCodecsRtcpFbNack) {
   ASSERT_TRUE(media_description);
   auto codecs = media_description->codecs();
   ASSERT_GT(codecs.size(), 0u);
-  codecs[0].feedback_params.Add(cricket::FeedbackParam("nack"));
+  codecs[0].feedback_params.Add(FeedbackParam("nack"));
   media_description->set_codecs(codecs);
 
   RTCError error;
@@ -2525,7 +2525,7 @@ TEST_F(SdpOfferAnswerMungingTest, AudioCodecsRtcpFbRrtr) {
   ASSERT_TRUE(media_description);
   auto codecs = media_description->codecs();
   ASSERT_GT(codecs.size(), 0u);
-  codecs[0].feedback_params.Add(cricket::FeedbackParam("rrtr"));
+  codecs[0].feedback_params.Add(FeedbackParam("rrtr"));
   media_description->set_codecs(codecs);
 
   RTCError error;

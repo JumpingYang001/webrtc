@@ -495,7 +495,7 @@ class FakeVoiceMediaReceiveChannel
   virtual ~FakeVoiceMediaReceiveChannel();
 
   // Test methods
-  const std::vector<Codec>& recv_codecs() const;
+  const std::vector<webrtc::Codec>& recv_codecs() const;
   const std::vector<DtmfInfo>& dtmf_info_queue() const;
   const AudioOptions& options() const;
   int max_bps() const;
@@ -560,11 +560,11 @@ class FakeVoiceMediaReceiveChannel
     AudioSource* source_;
   };
 
-  bool SetRecvCodecs(const std::vector<Codec>& codecs);
+  bool SetRecvCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetMaxSendBandwidth(int bps);
   bool SetOptions(const AudioOptions& options);
 
-  std::vector<Codec> recv_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
   std::map<uint32_t, double> output_scalings_;
   std::map<uint32_t, int> output_delays_;
   std::vector<DtmfInfo> dtmf_info_queue_;
@@ -588,7 +588,7 @@ class FakeVoiceMediaSendChannel
                             webrtc::TaskQueueBase* network_thread);
   ~FakeVoiceMediaSendChannel() override;
 
-  const std::vector<Codec>& send_codecs() const;
+  const std::vector<webrtc::Codec>& send_codecs() const;
   const std::vector<DtmfInfo>& dtmf_info_queue() const;
   const AudioOptions& options() const;
   int max_bps() const;
@@ -621,7 +621,7 @@ class FakeVoiceMediaSendChannel
   bool SendCodecHasNack() const override { return false; }
   void SetSendCodecChangedCallback(
       absl::AnyInvocable<void()> /* callback */) override {}
-  std::optional<Codec> GetSendCodec() const override;
+  std::optional<webrtc::Codec> GetSendCodec() const override;
 
   bool GetStats(VoiceMediaSendInfo* stats) override;
 
@@ -644,12 +644,12 @@ class FakeVoiceMediaSendChannel
     AudioSource* source_;
   };
 
-  bool SetSendCodecs(const std::vector<Codec>& codecs);
+  bool SetSendCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetMaxSendBandwidth(int bps);
   bool SetOptions(const AudioOptions& options);
   bool SetLocalSource(uint32_t ssrc, AudioSource* source);
 
-  std::vector<Codec> send_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
   std::map<uint32_t, double> output_scalings_;
   std::map<uint32_t, int> output_delays_;
   std::vector<DtmfInfo> dtmf_info_queue_;
@@ -682,8 +682,8 @@ class FakeVideoMediaReceiveChannel
     return webrtc::MediaType::VIDEO;
   }
 
-  const std::vector<Codec>& recv_codecs() const;
-  const std::vector<Codec>& send_codecs() const;
+  const std::vector<webrtc::Codec>& recv_codecs() const;
+  const std::vector<webrtc::Codec>& send_codecs() const;
   bool rendering() const;
   const VideoOptions& options() const;
   const std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*>&
@@ -727,12 +727,12 @@ class FakeVideoMediaReceiveChannel
   }
 
  private:
-  bool SetRecvCodecs(const std::vector<Codec>& codecs);
-  bool SetSendCodecs(const std::vector<Codec>& codecs);
+  bool SetRecvCodecs(const std::vector<webrtc::Codec>& codecs);
+  bool SetSendCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetOptions(const VideoOptions& options);
   bool SetMaxSendBandwidth(int bps);
 
-  std::vector<Codec> recv_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
   std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*> sinks_;
   std::map<uint32_t, webrtc::VideoSourceInterface<webrtc::VideoFrame>*>
       sources_;
@@ -757,15 +757,15 @@ class FakeVideoMediaSendChannel
     return webrtc::MediaType::VIDEO;
   }
 
-  const std::vector<Codec>& send_codecs() const;
-  const std::vector<Codec>& codecs() const;
+  const std::vector<webrtc::Codec>& send_codecs() const;
+  const std::vector<webrtc::Codec>& codecs() const;
   const VideoOptions& options() const;
   const std::map<uint32_t, webrtc::VideoSinkInterface<webrtc::VideoFrame>*>&
   sinks() const;
   int max_bps() const;
   bool SetSenderParameters(const VideoSenderParameters& params) override;
 
-  std::optional<Codec> GetSendCodec() const override;
+  std::optional<webrtc::Codec> GetSendCodec() const override;
 
   bool SetSend(bool send) override;
   bool SetVideoSend(
@@ -794,11 +794,11 @@ class FakeVideoMediaSendChannel
   bool GetStats(VideoMediaSendInfo* info) override;
 
  private:
-  bool SetSendCodecs(const std::vector<Codec>& codecs);
+  bool SetSendCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetOptions(const VideoOptions& options);
   bool SetMaxSendBandwidth(int bps);
 
-  std::vector<Codec> send_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
   std::map<uint32_t, webrtc::VideoSourceInterface<webrtc::VideoFrame>*>
       sources_;
   VideoOptions options_;
@@ -827,17 +827,17 @@ class FakeVoiceEngine : public VoiceEngineInterface {
   // TODO(ossu): For proper testing, These should either individually settable
   //             or the voice engine should reference mockable factories.
   // TODO: https://issues.webrtc.org/360058654 - stop faking codecs here.
-  const std::vector<Codec>& LegacySendCodecs() const override;
-  const std::vector<Codec>& LegacyRecvCodecs() const override;
+  const std::vector<webrtc::Codec>& LegacySendCodecs() const override;
+  const std::vector<webrtc::Codec>& LegacyRecvCodecs() const override;
   webrtc::AudioEncoderFactory* encoder_factory() const override {
     return encoder_factory_.get();
   }
   webrtc::AudioDecoderFactory* decoder_factory() const override {
     return decoder_factory_.get();
   }
-  void SetCodecs(const std::vector<Codec>& codecs);
-  void SetRecvCodecs(const std::vector<Codec>& codecs);
-  void SetSendCodecs(const std::vector<Codec>& codecs);
+  void SetCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetRecvCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetSendCodecs(const std::vector<webrtc::Codec>& codecs);
   int GetInputLevel();
   bool StartAecDump(webrtc::FileWrapper file, int64_t max_size_bytes) override;
   void StopAecDump() override;
@@ -905,8 +905,8 @@ class FakeVoiceEngine : public VoiceEngineInterface {
     FakeVoiceEngine* owner_;
   };
 
-  std::vector<Codec> recv_codecs_;
-  std::vector<Codec> send_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
   webrtc::scoped_refptr<FakeVoiceEncoderFactory> encoder_factory_;
   webrtc::scoped_refptr<FakeVoiceDecoderFactory> decoder_factory_;
   std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions_;
@@ -933,16 +933,16 @@ class FakeVideoEngine : public VideoEngineInterface {
   FakeVideoMediaSendChannel* GetSendChannel(size_t index);
   FakeVideoMediaReceiveChannel* GetReceiveChannel(size_t index);
 
-  std::vector<Codec> LegacySendCodecs() const override {
+  std::vector<webrtc::Codec> LegacySendCodecs() const override {
     return LegacySendCodecs(true);
   }
-  std::vector<Codec> LegacyRecvCodecs() const override {
+  std::vector<webrtc::Codec> LegacyRecvCodecs() const override {
     return LegacyRecvCodecs(true);
   }
-  std::vector<Codec> LegacySendCodecs(bool include_rtx) const override;
-  std::vector<Codec> LegacyRecvCodecs(bool include_rtx) const override;
-  void SetSendCodecs(const std::vector<Codec>& codecs);
-  void SetRecvCodecs(const std::vector<Codec>& codecs);
+  std::vector<webrtc::Codec> LegacySendCodecs(bool include_rtx) const override;
+  std::vector<webrtc::Codec> LegacyRecvCodecs(bool include_rtx) const override;
+  void SetSendCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetRecvCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetCapture(bool capture);
   std::vector<webrtc::RtpHeaderExtensionCapability> GetRtpHeaderExtensions()
       const override;
@@ -950,8 +950,8 @@ class FakeVideoEngine : public VideoEngineInterface {
       std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions);
 
  private:
-  std::vector<Codec> send_codecs_;
-  std::vector<Codec> recv_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
   bool capture_;
   VideoOptions options_;
   std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions_;
@@ -965,12 +965,12 @@ class FakeMediaEngine : public CompositeMediaEngine {
 
   ~FakeMediaEngine() override;
 
-  void SetAudioCodecs(const std::vector<Codec>& codecs);
-  void SetAudioRecvCodecs(const std::vector<Codec>& codecs);
-  void SetAudioSendCodecs(const std::vector<Codec>& codecs);
-  void SetVideoCodecs(const std::vector<Codec>& codecs);
-  void SetVideoRecvCodecs(const std::vector<Codec>& codecs);
-  void SetVideoSendCodecs(const std::vector<Codec>& codecs);
+  void SetAudioCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetAudioRecvCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetAudioSendCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetVideoCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetVideoRecvCodecs(const std::vector<webrtc::Codec>& codecs);
+  void SetVideoSendCodecs(const std::vector<webrtc::Codec>& codecs);
 
   FakeVoiceEngine* fake_voice_engine() { return voice_; }
   FakeVideoEngine* fake_video_engine() { return video_; }

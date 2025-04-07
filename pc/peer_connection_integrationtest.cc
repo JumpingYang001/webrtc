@@ -1227,7 +1227,7 @@ void ModifyPayloadTypesAndRemoveMidExtension(
                                     }),
                      extensions.end());
     media->set_rtp_header_extensions(extensions);
-    media->set_codecs({cricket::CreateVideoCodec(pt++, "VP8")});
+    media->set_codecs({CreateVideoCodec(pt++, "VP8")});
   }
 }
 
@@ -2875,10 +2875,9 @@ TEST_P(PeerConnectionIntegrationTest, CodecNamesAreCaseInsensitive) {
         ASSERT_NE(nullptr, audio);
         auto audio_codecs = audio->codecs();
         audio_codecs.erase(
-            std::remove_if(audio_codecs.begin(), audio_codecs.end(),
-                           [](const cricket::Codec& codec) {
-                             return codec.name != "opus";
-                           }),
+            std::remove_if(
+                audio_codecs.begin(), audio_codecs.end(),
+                [](const Codec& codec) { return codec.name != "opus"; }),
             audio_codecs.end());
         ASSERT_EQ(1u, audio_codecs.size());
         audio_codecs[0].name = "OpUs";
@@ -2889,10 +2888,9 @@ TEST_P(PeerConnectionIntegrationTest, CodecNamesAreCaseInsensitive) {
         ASSERT_NE(nullptr, video);
         auto video_codecs = video->codecs();
         video_codecs.erase(
-            std::remove_if(video_codecs.begin(), video_codecs.end(),
-                           [](const cricket::Codec& codec) {
-                             return codec.name != "VP8";
-                           }),
+            std::remove_if(
+                video_codecs.begin(), video_codecs.end(),
+                [](const Codec& codec) { return codec.name != "VP8"; }),
             video_codecs.end());
         ASSERT_EQ(1u, video_codecs.size());
         video_codecs[0].name = "vP8";
@@ -4276,14 +4274,14 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
       [](std::unique_ptr<SessionDescriptionInterface>& sdp) {
         for (ContentInfo& content : sdp->description()->contents()) {
           MediaContentDescription* media = content.media_description();
-          std::vector<cricket::Codec> codecs = media->codecs();
-          std::vector<cricket::Codec> codecs_out;
-          for (cricket::Codec codec : codecs) {
+          std::vector<Codec> codecs = media->codecs();
+          std::vector<Codec> codecs_out;
+          for (Codec codec : codecs) {
             if (codec.name == "opus") {
-              codec.AddFeedbackParam(cricket::FeedbackParam(
-                  cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
-              codec.AddFeedbackParam(cricket::FeedbackParam(
-                  cricket::kRtcpFbParamRrtr, cricket::kParamValueEmpty));
+              codec.AddFeedbackParam(FeedbackParam(cricket::kRtcpFbParamNack,
+                                                   cricket::kParamValueEmpty));
+              codec.AddFeedbackParam(FeedbackParam(cricket::kRtcpFbParamRrtr,
+                                                   cricket::kParamValueEmpty));
               codecs_out.push_back(codec);
             }
           }
@@ -4331,11 +4329,11 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan, VideoPacketLossCausesNack) {
       [](std::unique_ptr<SessionDescriptionInterface>& sdp) {
         for (ContentInfo& content : sdp->description()->contents()) {
           MediaContentDescription* media = content.media_description();
-          std::vector<cricket::Codec> codecs = media->codecs();
-          std::vector<cricket::Codec> codecs_out;
-          for (const cricket::Codec& codec : codecs) {
+          std::vector<Codec> codecs = media->codecs();
+          std::vector<Codec> codecs_out;
+          for (const Codec& codec : codecs) {
             if (codec.name == "VP8") {
-              ASSERT_TRUE(codec.HasFeedbackParam(cricket::FeedbackParam(
+              ASSERT_TRUE(codec.HasFeedbackParam(FeedbackParam(
                   cricket::kRtcpFbParamNack, cricket::kParamValueEmpty)));
               codecs_out.push_back(codec);
             }
@@ -4433,7 +4431,7 @@ int ReassignPayloadIds(std::unique_ptr<SessionDescriptionInterface>& sdp) {
     if (!content.media_description()) {
       continue;
     }
-    std::vector<cricket::Codec> codecs = content.media_description()->codecs();
+    std::vector<Codec> codecs = content.media_description()->codecs();
     int left = 0;
     int right = codecs.size() - 1;
     while (left < right) {
@@ -4776,7 +4774,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   auto munger = [](std::unique_ptr<SessionDescriptionInterface>& sdp) {
     auto video = GetFirstVideoContentDescription(sdp->description());
     auto codecs = video->codecs();
-    std::optional<cricket::Codec> replacement_codec;
+    std::optional<Codec> replacement_codec;
     for (auto&& codec : codecs) {
       if (codec.name == "AV1") {
         replacement_codec = codec;
@@ -4860,8 +4858,8 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   auto codecs =
       answer->description()->contents()[0].media_description()->codecs();
   std::vector<int> apt_values;
-  for (const cricket::Codec& codec : codecs) {
-    if (codec.GetResiliencyType() == cricket::Codec::ResiliencyType::kRtx) {
+  for (const Codec& codec : codecs) {
+    if (codec.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
       const auto apt_it =
           codec.params.find(cricket::kCodecParamAssociatedPayloadType);
       int apt_value;
@@ -4870,7 +4868,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
     }
   }
   for (int apt : apt_values) {
-    EXPECT_THAT(codecs, Contains(Field("id", &cricket::Codec::id, apt)));
+    EXPECT_THAT(codecs, Contains(Field("id", &Codec::id, apt)));
   }
 }
 

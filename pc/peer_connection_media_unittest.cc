@@ -568,13 +568,12 @@ TEST_P(PeerConnectionMediaTest,
 
 // Test that raw packetization is not set in the offer by default.
 TEST_P(PeerConnectionMediaTest, RawPacketizationNotSetInOffer) {
-  std::vector<cricket::Codec> fake_codecs;
-  fake_codecs.push_back(cricket::CreateVideoCodec(111, cricket::kVp8CodecName));
-  fake_codecs.push_back(cricket::CreateVideoRtxCodec(112, 111));
-  fake_codecs.push_back(cricket::CreateVideoCodec(113, cricket::kVp9CodecName));
-  fake_codecs.push_back(
-      cricket::CreateVideoCodec(114, cricket::kH264CodecName));
-  fake_codecs.push_back(cricket::CreateVideoCodec(115, "HEVC"));
+  std::vector<Codec> fake_codecs;
+  fake_codecs.push_back(CreateVideoCodec(111, cricket::kVp8CodecName));
+  fake_codecs.push_back(CreateVideoRtxCodec(112, 111));
+  fake_codecs.push_back(CreateVideoCodec(113, cricket::kVp9CodecName));
+  fake_codecs.push_back(CreateVideoCodec(114, cricket::kH264CodecName));
+  fake_codecs.push_back(CreateVideoCodec(115, "HEVC"));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetVideoCodecs(fake_codecs);
 
@@ -590,13 +589,12 @@ TEST_P(PeerConnectionMediaTest, RawPacketizationNotSetInOffer) {
 // Test that raw packetization is set in the offer and answer for all
 // video payload when raw_packetization_for_video is true.
 TEST_P(PeerConnectionMediaTest, RawPacketizationSetInOfferAndAnswer) {
-  std::vector<cricket::Codec> fake_codecs;
-  fake_codecs.push_back(cricket::CreateVideoCodec(111, cricket::kVp8CodecName));
-  fake_codecs.push_back(cricket::CreateVideoRtxCodec(112, 111));
-  fake_codecs.push_back(cricket::CreateVideoCodec(113, cricket::kVp9CodecName));
-  fake_codecs.push_back(
-      cricket::CreateVideoCodec(114, cricket::kH264CodecName));
-  fake_codecs.push_back(cricket::CreateVideoCodec(115, "HEVC"));
+  std::vector<Codec> fake_codecs;
+  fake_codecs.push_back(CreateVideoCodec(111, cricket::kVp8CodecName));
+  fake_codecs.push_back(CreateVideoRtxCodec(112, 111));
+  fake_codecs.push_back(CreateVideoCodec(113, cricket::kVp9CodecName));
+  fake_codecs.push_back(CreateVideoCodec(114, cricket::kH264CodecName));
+  fake_codecs.push_back(CreateVideoCodec(115, "HEVC"));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetVideoCodecs(fake_codecs);
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -633,13 +631,12 @@ TEST_P(PeerConnectionMediaTest, RawPacketizationSetInOfferAndAnswer) {
 // raw_packetization_for_video is true if it was not set in the offer.
 TEST_P(PeerConnectionMediaTest,
        RawPacketizationNotSetInAnswerWhenNotSetInOffer) {
-  std::vector<cricket::Codec> fake_codecs;
-  fake_codecs.push_back(cricket::CreateVideoCodec(111, cricket::kVp8CodecName));
-  fake_codecs.push_back(cricket::CreateVideoRtxCodec(112, 111));
-  fake_codecs.push_back(cricket::CreateVideoCodec(113, cricket::kVp9CodecName));
-  fake_codecs.push_back(
-      cricket::CreateVideoCodec(114, cricket::kH264CodecName));
-  fake_codecs.push_back(cricket::CreateVideoCodec(115, "HEVC"));
+  std::vector<Codec> fake_codecs;
+  fake_codecs.push_back(CreateVideoCodec(111, cricket::kVp8CodecName));
+  fake_codecs.push_back(CreateVideoRtxCodec(112, 111));
+  fake_codecs.push_back(CreateVideoCodec(113, cricket::kVp9CodecName));
+  fake_codecs.push_back(CreateVideoCodec(114, cricket::kH264CodecName));
+  fake_codecs.push_back(CreateVideoCodec(115, "HEVC"));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetVideoCodecs(fake_codecs);
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -875,10 +872,10 @@ TEST_P(PeerConnectionMediaTest, AnswerHasDifferentDirectionsForAudioVideo) {
 }
 
 void AddComfortNoiseCodecsToSend(cricket::FakeMediaEngine* media_engine) {
-  const cricket::Codec kComfortNoiseCodec8k =
-      cricket::CreateAudioCodec(102, cricket::kCnCodecName, 8000, 1);
-  const cricket::Codec kComfortNoiseCodec16k =
-      cricket::CreateAudioCodec(103, cricket::kCnCodecName, 16000, 1);
+  const Codec kComfortNoiseCodec8k =
+      CreateAudioCodec(102, cricket::kCnCodecName, 8000, 1);
+  const Codec kComfortNoiseCodec16k =
+      CreateAudioCodec(103, cricket::kCnCodecName, 16000, 1);
 
   auto codecs = media_engine->voice().LegacySendCodecs();
   codecs.push_back(kComfortNoiseCodec8k);
@@ -1211,16 +1208,16 @@ TEST_P(PeerConnectionMediaTest, SetRemoteDescriptionFailsWithDuplicateMids) {
 // endpoint selected a different payload type or there was a conflict), the RED
 // fmtp line is modified to refer to the correct payload type.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeReassigned) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
   callee_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1254,18 +1251,18 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeReassigned) {
 
 // Test that RED without fmtp does match RED without fmtp.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpMatchNoFmtp) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
   caller_fake_codecs.push_back(
-      cricket::CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
   callee_fake_engine->SetAudioCodecs(callee_fake_codecs);
   auto callee = CreatePeerConnectionWithAudio(std::move(callee_fake_engine));
@@ -1296,18 +1293,18 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpMatchNoFmtp) {
 
 // Test that RED without fmtp does not match RED with fmtp.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpNoMatchFmtp) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
   caller_fake_codecs.push_back(
-      cricket::CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
   callee_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1343,21 +1340,21 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpNoMatchFmtp) {
 
 // Test that RED with fmtp must match base codecs.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeMustMatchBaseCodecs) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
   caller_fake_codecs.push_back(
-      cricket::CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
   caller_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "100/100");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(122, "bar", 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(CreateAudioCodec(122, "bar", 0, 1));
   callee_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "122/122");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1377,21 +1374,21 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeMustMatchBaseCodecs) {
 // Test behaviour when the RED fmtp attempts to specify different codecs
 // which is not supported.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadMixed) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(102, "bar", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
+  caller_fake_codecs.push_back(CreateAudioCodec(102, "bar", 0, 1));
   caller_fake_codecs.push_back(
-      cricket::CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
   caller_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "100/102");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
   callee_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1411,20 +1408,20 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadMixed) {
 // Test behaviour when the RED fmtp attempts to negotiate different levels of
 // redundancy.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadDifferentRedundancy) {
-  std::vector<cricket::Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> caller_fake_codecs;
+  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
   caller_fake_codecs.push_back(
-      cricket::CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(101, cricket::kRedCodecName, 0, 1));
   caller_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "100/100");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
-  std::vector<cricket::Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(cricket::CreateAudioCodec(120, "foo", 0, 1));
+  std::vector<Codec> callee_fake_codecs;
+  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
   callee_fake_codecs.push_back(
-      cricket::CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
+      CreateAudioCodec(121, cricket::kRedCodecName, 0, 1));
   callee_fake_codecs.back().SetParam(cricket::kCodecParamNotInNameValueFormat,
                                      "120/120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1492,8 +1489,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAudioMissingRecvCodec) {
   auto fake_engine = std::make_unique<FakeMediaEngine>();
   auto send_codecs = fake_engine->voice().LegacySendCodecs();
-  send_codecs.push_back(cricket::CreateAudioCodec(send_codecs.back().id + 1,
-                                                  "send_only_codec", 0, 1));
+  send_codecs.push_back(
+      CreateAudioCodec(send_codecs.back().id + 1, "send_only_codec", 0, 1));
   fake_engine->SetAudioSendCodecs(send_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
@@ -1533,12 +1530,12 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAudioRejectsOnlyRtxRedFec) {
   auto fake_engine = std::make_unique<FakeMediaEngine>();
   auto audio_codecs = fake_engine->voice().LegacySendCodecs();
-  audio_codecs.push_back(cricket::CreateAudioRtxCodec(
-      audio_codecs.back().id + 1, audio_codecs.back().id));
-  audio_codecs.push_back(cricket::CreateAudioCodec(
-      audio_codecs.back().id + 1, cricket::kRedCodecName, 0, 1));
-  audio_codecs.push_back(cricket::CreateAudioCodec(
-      audio_codecs.back().id + 1, cricket::kUlpfecCodecName, 0, 1));
+  audio_codecs.push_back(
+      CreateAudioRtxCodec(audio_codecs.back().id + 1, audio_codecs.back().id));
+  audio_codecs.push_back(CreateAudioCodec(audio_codecs.back().id + 1,
+                                          cricket::kRedCodecName, 0, 1));
+  audio_codecs.push_back(CreateAudioCodec(audio_codecs.back().id + 1,
+                                          cricket::kUlpfecCodecName, 0, 1));
   fake_engine->SetAudioCodecs(audio_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
@@ -1620,12 +1617,12 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesVideoRejectsOnlyRtxRedFec) {
   auto fake_engine = std::make_unique<FakeMediaEngine>();
   auto video_codecs = fake_engine->video().LegacySendCodecs();
-  video_codecs.push_back(cricket::CreateVideoRtxCodec(
-      video_codecs.back().id + 1, video_codecs.back().id));
-  video_codecs.push_back(cricket::CreateVideoCodec(video_codecs.back().id + 1,
-                                                   cricket::kRedCodecName));
-  video_codecs.push_back(cricket::CreateVideoCodec(video_codecs.back().id + 1,
-                                                   cricket::kUlpfecCodecName));
+  video_codecs.push_back(
+      CreateVideoRtxCodec(video_codecs.back().id + 1, video_codecs.back().id));
+  video_codecs.push_back(
+      CreateVideoCodec(video_codecs.back().id + 1, cricket::kRedCodecName));
+  video_codecs.push_back(
+      CreateVideoCodec(video_codecs.back().id + 1, cricket::kUlpfecCodecName));
   fake_engine->SetVideoCodecs(video_codecs);
 
   auto caller = CreatePeerConnectionWithVideo(std::move(fake_engine));
@@ -1716,13 +1713,13 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
 TEST_F(PeerConnectionMediaTestUnifiedPlan, SetCodecPreferencesVideoWithRtx) {
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   auto caller_video_codecs = caller_fake_engine->video().LegacySendCodecs();
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp8CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp9CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
   caller_fake_engine->SetVideoCodecs(caller_video_codecs);
 
@@ -1761,13 +1758,13 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesVideoCodecsNegotiation) {
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   auto caller_video_codecs = caller_fake_engine->video().LegacySendCodecs();
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp8CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp9CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
   caller_fake_engine->SetVideoCodecs(caller_video_codecs);
 
@@ -1825,13 +1822,13 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesVideoCodecsNegotiationReverseOrder) {
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   auto caller_video_codecs = caller_fake_engine->video().LegacySendCodecs();
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp8CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
-  caller_video_codecs.push_back(cricket::CreateVideoCodec(
+  caller_video_codecs.push_back(CreateVideoCodec(
       caller_video_codecs.back().id + 1, cricket::kVp9CodecName));
-  caller_video_codecs.push_back(cricket::CreateVideoRtxCodec(
+  caller_video_codecs.push_back(CreateVideoRtxCodec(
       caller_video_codecs.back().id + 1, caller_video_codecs.back().id));
   caller_fake_engine->SetVideoCodecs(caller_video_codecs);
 
@@ -1907,14 +1904,14 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAvoidsPayloadTypeConflictInOffer) {
   auto fake_engine = std::make_unique<cricket::FakeMediaEngine>();
 
-  std::vector<cricket::Codec> audio_codecs;
-  audio_codecs.emplace_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
-  audio_codecs.emplace_back(cricket::CreateAudioRtxCodec(101, 100));
+  std::vector<Codec> audio_codecs;
+  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
-  std::vector<cricket::Codec> video_codecs;
-  video_codecs.emplace_back(cricket::CreateVideoCodec(100, "bar"));
-  video_codecs.emplace_back(cricket::CreateVideoRtxCodec(101, 100));
+  std::vector<Codec> video_codecs;
+  video_codecs.emplace_back(CreateVideoCodec(100, "bar"));
+  video_codecs.emplace_back(CreateVideoRtxCodec(101, 100));
   fake_engine->SetVideoCodecs(video_codecs);
 
   auto caller = CreatePeerConnectionWithAudioVideo(std::move(fake_engine));
@@ -1948,14 +1945,14 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAvoidsPayloadTypeConflictInAnswer) {
   auto fake_engine = std::make_unique<cricket::FakeMediaEngine>();
 
-  std::vector<cricket::Codec> audio_codecs;
-  audio_codecs.emplace_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
-  audio_codecs.emplace_back(cricket::CreateAudioRtxCodec(101, 100));
+  std::vector<Codec> audio_codecs;
+  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
-  std::vector<cricket::Codec> video_codecs;
-  video_codecs.emplace_back(cricket::CreateVideoCodec(100, "bar"));
-  video_codecs.emplace_back(cricket::CreateVideoRtxCodec(101, 100));
+  std::vector<Codec> video_codecs;
+  video_codecs.emplace_back(CreateVideoCodec(100, "bar"));
+  video_codecs.emplace_back(CreateVideoRtxCodec(101, 100));
   fake_engine->SetVideoCodecs(video_codecs);
 
   auto caller = CreatePeerConnectionWithAudioVideo(std::move(fake_engine));
@@ -1993,14 +1990,14 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAvoidsPayloadTypeConflictInSubsequentOffer) {
   auto fake_engine = std::make_unique<cricket::FakeMediaEngine>();
 
-  std::vector<cricket::Codec> audio_codecs;
-  audio_codecs.emplace_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
-  audio_codecs.emplace_back(cricket::CreateAudioRtxCodec(101, 100));
+  std::vector<Codec> audio_codecs;
+  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
-  std::vector<cricket::Codec> video_codecs;
-  video_codecs.emplace_back(cricket::CreateVideoCodec(100, "bar"));
-  video_codecs.emplace_back(cricket::CreateVideoRtxCodec(101, 100));
+  std::vector<Codec> video_codecs;
+  video_codecs.emplace_back(CreateVideoCodec(100, "bar"));
+  video_codecs.emplace_back(CreateVideoRtxCodec(101, 100));
   fake_engine->SetVideoCodecs(video_codecs);
 
   auto caller = CreatePeerConnectionWithAudioVideo(std::move(fake_engine));
@@ -2039,8 +2036,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesRecvOnlyCodecOnSendOnlyTransceiver) {
   auto fake_engine = std::make_unique<cricket::FakeMediaEngine>();
 
-  std::vector<cricket::Codec> audio_codecs;
-  audio_codecs.emplace_back(cricket::CreateAudioCodec(100, "foo", 0, 1));
+  std::vector<Codec> audio_codecs;
+  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
   fake_engine->SetAudioRecvCodecs(audio_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
@@ -2066,11 +2063,10 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
 TEST_F(PeerConnectionMediaTestUnifiedPlan, SetCodecPreferencesVideoNoRtx) {
   auto fake_engine = std::make_unique<cricket::FakeMediaEngine>();
 
-  std::vector<cricket::Codec> video_codecs;
-  video_codecs.emplace_back(cricket::CreateVideoCodec(100, "bar"));
-  video_codecs.emplace_back(cricket::CreateVideoRtxCodec(101, 100));
-  video_codecs.emplace_back(
-      cricket::CreateVideoCodec(102, cricket::kRedCodecName));
+  std::vector<Codec> video_codecs;
+  video_codecs.emplace_back(CreateVideoCodec(100, "bar"));
+  video_codecs.emplace_back(CreateVideoRtxCodec(101, 100));
+  video_codecs.emplace_back(CreateVideoCodec(102, cricket::kRedCodecName));
   fake_engine->SetVideoCodecs(video_codecs);
 
   auto caller = CreatePeerConnectionWithVideo(std::move(fake_engine));

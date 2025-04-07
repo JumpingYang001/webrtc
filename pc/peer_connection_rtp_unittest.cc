@@ -1788,7 +1788,7 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, CheckForInvalidEncodingParameters) {
 
   init.send_encodings[0].scalability_mode = std::nullopt;
   init.send_encodings[0].codec =
-      cricket::CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
+      CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
   EXPECT_EQ(RTCErrorType::NONE,
             caller->pc()
                 ->AddTransceiver(webrtc::MediaType::VIDEO, init)
@@ -1798,7 +1798,7 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, CheckForInvalidEncodingParameters) {
 
   init.send_encodings[0].scalability_mode = "L1T2";
   init.send_encodings[0].codec =
-      cricket::CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
+      CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
   EXPECT_EQ(RTCErrorType::NONE,
             caller->pc()
                 ->AddTransceiver(webrtc::MediaType::VIDEO, init)
@@ -1808,7 +1808,7 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, CheckForInvalidEncodingParameters) {
 
   init.send_encodings[0].scalability_mode = "L2T2";
   init.send_encodings[0].codec =
-      cricket::CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
+      CreateVideoCodec(SdpVideoFormat("VP8", {})).ToCodecParameters();
   EXPECT_EQ(RTCErrorType::UNSUPPORTED_OPERATION,
             caller->pc()
                 ->AddTransceiver(webrtc::MediaType::VIDEO, init)

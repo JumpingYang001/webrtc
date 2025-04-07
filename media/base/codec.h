@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/base/macros.h"
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
@@ -26,7 +27,7 @@
 #include "media/base/media_constants.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace cricket {
+namespace webrtc {
 
 class FeedbackParam {
  public:
@@ -34,7 +35,7 @@ class FeedbackParam {
   FeedbackParam(absl::string_view id, const std::string& param)
       : id_(id), param_(param) {}
   explicit FeedbackParam(absl::string_view id)
-      : id_(id), param_(kParamValueEmpty) {}
+      : id_(id), param_(cricket::kParamValueEmpty) {}
 
   bool operator==(const FeedbackParam& other) const;
   bool operator!=(const FeedbackParam& c) const { return !(*this == c); }
@@ -225,12 +226,6 @@ struct RTC_EXPORT Codec {
                                    int associated_payload_type);
 };
 
-// TODO(webrtc:15214): Compatibility names, to be migrated away and removed.
-using VideoCodec [[deprecated]] = Codec;
-using AudioCodec [[deprecated]] = Codec;
-
-using VideoCodecs [[deprecated]] = std::vector<Codec>;
-using AudioCodecs [[deprecated]] = std::vector<Codec>;
 using Codecs = std::vector<Codec>;
 
 Codec CreateAudioCodec(int id,
@@ -242,7 +237,7 @@ Codec CreateAudioRtxCodec(int rtx_payload_type, int associated_payload_type);
 Codec CreateVideoCodec(const std::string& name);
 Codec CreateVideoCodec(int id, const std::string& name);
 Codec CreateVideoCodec(const webrtc::SdpVideoFormat& c);
-Codec CreateVideoCodec(int id, const webrtc::SdpVideoFormat& c);
+Codec CreateVideoCodec(int id, const webrtc::SdpVideoFormat& sdp);
 Codec CreateVideoRtxCodec(int rtx_payload_type, int associated_payload_type);
 
 // Get the codec setting associated with `payload_type`. If there
@@ -266,6 +261,96 @@ std::vector<const Codec*> FindAllMatchingCodecs(
 
 RTC_EXPORT void AddH264ConstrainedBaselineProfileToSupportedFormats(
     std::vector<webrtc::SdpVideoFormat>* supported_formats);
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+
+using FeedbackParam ABSL_DEPRECATE_AND_INLINE() = webrtc::FeedbackParam;
+using FeedbackParams ABSL_DEPRECATE_AND_INLINE() = webrtc::FeedbackParams;
+using Codec ABSL_DEPRECATE_AND_INLINE() = webrtc::Codec;
+using Codecs ABSL_DEPRECATE_AND_INLINE() = webrtc::Codecs;
+
+// TODO(webrtc:15214): Compatibility names, to be migrated away and removed.
+using VideoCodec ABSL_DEPRECATE_AND_INLINE() = webrtc::Codec;
+using AudioCodec ABSL_DEPRECATE_AND_INLINE() = webrtc::Codec;
+using VideoCodecs ABSL_DEPRECATE_AND_INLINE() = webrtc::Codecs;
+using AudioCodecs ABSL_DEPRECATE_AND_INLINE() = webrtc::Codecs;
+using ::webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats;
+
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateAudioCodec(int id,
+                                      const std::string& name,
+                                      int clockrate,
+                                      size_t channels) {
+  return webrtc::CreateAudioCodec(id, name, clockrate, channels);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateAudioCodec(const webrtc::SdpAudioFormat& c) {
+  return webrtc::CreateAudioCodec(c);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateAudioRtxCodec(int rtx_payload_type,
+                                         int associated_payload_type) {
+  return webrtc::CreateAudioRtxCodec(rtx_payload_type, associated_payload_type);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateVideoCodec(const std::string& name) {
+  return webrtc::CreateVideoCodec(name);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateVideoCodec(int id, const std::string& name) {
+  return webrtc::CreateVideoCodec(id, name);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateVideoCodec(const webrtc::SdpVideoFormat& c) {
+  return webrtc::CreateVideoCodec(c);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateVideoCodec(int id, const webrtc::SdpVideoFormat& c) {
+  return webrtc::CreateVideoCodec(id, c);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline webrtc::Codec CreateVideoRtxCodec(int rtx_payload_type,
+                                         int associated_payload_type) {
+  return webrtc::CreateVideoRtxCodec(rtx_payload_type, associated_payload_type);
+}
+
+ABSL_DEPRECATE_AND_INLINE()
+inline const webrtc::Codec* FindCodecById(
+    const std::vector<webrtc::Codec>& codecs,
+    int payload_type) {
+  return webrtc::FindCodecById(codecs, payload_type);
+}
+
+ABSL_DEPRECATE_AND_INLINE()
+inline bool HasLntf(const webrtc::Codec& codec) {
+  return webrtc::HasLntf(codec);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline bool HasNack(const webrtc::Codec& codec) {
+  return webrtc::HasNack(codec);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline bool HasRemb(const webrtc::Codec& codec) {
+  return webrtc::HasRemb(codec);
+}
+ABSL_DEPRECATE_AND_INLINE() inline bool HasRrtr(const webrtc::Codec& codec) {
+  return webrtc::HasRrtr(codec);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline const webrtc::Codec* FindMatchingVideoCodec(
+    const webrtc::Codecs& supported_codecs,
+    const webrtc::Codec& codec) {
+  return webrtc::FindMatchingVideoCodec(supported_codecs, codec);
+}
+ABSL_DEPRECATE_AND_INLINE()
+inline std::vector<const webrtc::Codec*> FindAllMatchingCodecs(
+    const webrtc::Codecs& supported_codecs,
+    const webrtc::Codec& codec) {
+  return webrtc::FindAllMatchingCodecs(supported_codecs, codec);
+}
 
 }  // namespace cricket
 

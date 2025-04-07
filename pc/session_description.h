@@ -230,18 +230,16 @@ class MediaContentDescription {
   }
 
   // Codecs should be in preference order (most preferred codec first).
-  const std::vector<cricket::Codec>& codecs() const { return codecs_; }
-  void set_codecs(const std::vector<cricket::Codec>& codecs) {
-    codecs_ = codecs;
-  }
+  const std::vector<Codec>& codecs() const { return codecs_; }
+  void set_codecs(const std::vector<Codec>& codecs) { codecs_ = codecs; }
   virtual bool has_codecs() const { return !codecs_.empty(); }
   bool HasCodec(int id) {
-    return absl::c_find_if(codecs_, [id](const cricket::Codec codec) {
+    return absl::c_find_if(codecs_, [id](const Codec codec) {
              return codec.id == id;
            }) != codecs_.end();
   }
-  void AddCodec(const cricket::Codec& codec) { codecs_.push_back(codec); }
-  void AddOrReplaceCodec(const cricket::Codec& codec) {
+  void AddCodec(const Codec& codec) { codecs_.push_back(codec); }
+  void AddOrReplaceCodec(const Codec& codec) {
     for (auto it = codecs_.begin(); it != codecs_.end(); ++it) {
       if (it->id == codec.id) {
         *it = codec;
@@ -250,7 +248,7 @@ class MediaContentDescription {
     }
     AddCodec(codec);
   }
-  void AddCodecs(const std::vector<cricket::Codec>& codecs) {
+  void AddCodecs(const std::vector<Codec>& codecs) {
     for (const auto& codec : codecs) {
       AddCodec(codec);
     }
@@ -286,7 +284,7 @@ class MediaContentDescription {
   // by each final subclass.
   virtual MediaContentDescription* CloneInternal() const = 0;
 
-  std::vector<cricket::Codec> codecs_;
+  std::vector<Codec> codecs_;
 };
 
 class RtpMediaContentDescription : public MediaContentDescription {};

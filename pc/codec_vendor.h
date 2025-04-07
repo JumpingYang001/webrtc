@@ -47,57 +47,57 @@ class CodecVendor {
               const FieldTrialsView& trials);
 
  public:
-  RTCErrorOr<std::vector<cricket::Codec>> GetNegotiatedCodecsForOffer(
+  RTCErrorOr<std::vector<Codec>> GetNegotiatedCodecsForOffer(
       const MediaDescriptionOptions& media_description_options,
       const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       PayloadTypeSuggester& pt_suggester);
 
-  RTCErrorOr<cricket::Codecs> GetNegotiatedCodecsForAnswer(
+  RTCErrorOr<Codecs> GetNegotiatedCodecsForAnswer(
       const MediaDescriptionOptions& media_description_options,
       const MediaSessionOptions& session_options,
       RtpTransceiverDirection offer_rtd,
       RtpTransceiverDirection answer_rtd,
       const ContentInfo* current_content,
-      std::vector<cricket::Codec> codecs_from_offer,
+      std::vector<Codec> codecs_from_offer,
       PayloadTypeSuggester& pt_suggester);
 
   // Functions exposed for testing
-  void set_audio_codecs(const cricket::CodecList& send_codecs,
-                        const cricket::CodecList& recv_codecs);
-  void set_audio_codecs(const std::vector<cricket::Codec>& send_codecs,
-                        const std::vector<cricket::Codec>& recv_codecs) {
-    set_audio_codecs(cricket::CodecList::CreateFromTrustedData(send_codecs),
-                     cricket::CodecList::CreateFromTrustedData(recv_codecs));
+  void set_audio_codecs(const CodecList& send_codecs,
+                        const CodecList& recv_codecs);
+  void set_audio_codecs(const std::vector<Codec>& send_codecs,
+                        const std::vector<Codec>& recv_codecs) {
+    set_audio_codecs(CodecList::CreateFromTrustedData(send_codecs),
+                     CodecList::CreateFromTrustedData(recv_codecs));
   }
-  void set_video_codecs(const cricket::CodecList& send_codecs,
-                        const cricket::CodecList& recv_codecs);
-  void set_video_codecs(const std::vector<cricket::Codec>& send_codecs,
-                        const std::vector<cricket::Codec>& recv_codecs) {
-    set_video_codecs(cricket::CodecList::CreateFromTrustedData(send_codecs),
-                     cricket::CodecList::CreateFromTrustedData(recv_codecs));
+  void set_video_codecs(const CodecList& send_codecs,
+                        const CodecList& recv_codecs);
+  void set_video_codecs(const std::vector<Codec>& send_codecs,
+                        const std::vector<Codec>& recv_codecs) {
+    set_video_codecs(CodecList::CreateFromTrustedData(send_codecs),
+                     CodecList::CreateFromTrustedData(recv_codecs));
   }
-  cricket::CodecList audio_sendrecv_codecs() const;
-  const cricket::CodecList& audio_send_codecs() const;
-  const cricket::CodecList& audio_recv_codecs() const;
-  cricket::CodecList video_sendrecv_codecs() const;
-  const cricket::CodecList& video_send_codecs() const;
-  const cricket::CodecList& video_recv_codecs() const;
+  CodecList audio_sendrecv_codecs() const;
+  const CodecList& audio_send_codecs() const;
+  const CodecList& audio_recv_codecs() const;
+  CodecList video_sendrecv_codecs() const;
+  const CodecList& video_send_codecs() const;
+  const CodecList& video_recv_codecs() const;
 
  private:
-  cricket::CodecList GetAudioCodecsForOffer(
+  CodecList GetAudioCodecsForOffer(
       const RtpTransceiverDirection& direction) const;
-  cricket::CodecList GetAudioCodecsForAnswer(
+  CodecList GetAudioCodecsForAnswer(
       const RtpTransceiverDirection& offer,
       const RtpTransceiverDirection& answer) const;
-  cricket::CodecList GetVideoCodecsForOffer(
+  CodecList GetVideoCodecsForOffer(
       const RtpTransceiverDirection& direction) const;
-  cricket::CodecList GetVideoCodecsForAnswer(
+  CodecList GetVideoCodecsForAnswer(
       const RtpTransceiverDirection& offer,
       const RtpTransceiverDirection& answer) const;
 
-  cricket::CodecList all_video_codecs() const;
-  cricket::CodecList all_audio_codecs() const;
+  CodecList all_video_codecs() const;
+  CodecList all_audio_codecs() const;
 
   TypedCodecVendor audio_send_codecs_;
   TypedCodecVendor audio_recv_codecs_;

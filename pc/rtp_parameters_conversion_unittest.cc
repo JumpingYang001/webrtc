@@ -31,10 +31,10 @@ TEST(RtpParametersConversionTest, ToRtcpFeedback) {
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::CCM, RtcpFeedbackMessageType::FIR),
             *result);
 
-  result = ToRtcpFeedback(cricket::FeedbackParam("goog-lntf"));
+  result = ToRtcpFeedback(FeedbackParam("goog-lntf"));
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::LNTF), *result);
 
-  result = ToRtcpFeedback(cricket::FeedbackParam("nack"));
+  result = ToRtcpFeedback(FeedbackParam("nack"));
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::NACK,
                          RtcpFeedbackMessageType::GENERIC_NACK),
             *result);
@@ -43,10 +43,10 @@ TEST(RtpParametersConversionTest, ToRtcpFeedback) {
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::NACK, RtcpFeedbackMessageType::PLI),
             *result);
 
-  result = ToRtcpFeedback(cricket::FeedbackParam("goog-remb"));
+  result = ToRtcpFeedback(FeedbackParam("goog-remb"));
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::REMB), *result);
 
-  result = ToRtcpFeedback(cricket::FeedbackParam("transport-cc"));
+  result = ToRtcpFeedback(FeedbackParam("transport-cc"));
   EXPECT_EQ(RtcpFeedback(RtcpFeedbackType::TRANSPORT_CC), *result);
 }
 
@@ -55,7 +55,7 @@ TEST(RtpParametersConversionTest, ToRtcpFeedbackErrors) {
   std::optional<RtcpFeedback> result = ToRtcpFeedback({"ccm", "pli"});
   EXPECT_FALSE(result);
 
-  result = ToRtcpFeedback(cricket::FeedbackParam("ccm"));
+  result = ToRtcpFeedback(FeedbackParam("ccm"));
   EXPECT_FALSE(result);
 
   // LNTF with message type (should be left empty).
@@ -75,14 +75,14 @@ TEST(RtpParametersConversionTest, ToRtcpFeedbackErrors) {
   EXPECT_FALSE(result);
 
   // Unknown message type.
-  result = ToRtcpFeedback(cricket::FeedbackParam("foo"));
+  result = ToRtcpFeedback(FeedbackParam("foo"));
   EXPECT_FALSE(result);
 }
 
 TEST(RtpParametersConversionTest, ToAudioRtpCodecCapability) {
-  cricket::Codec cricket_codec = cricket::CreateAudioCodec(50, "foo", 22222, 4);
+  Codec cricket_codec = CreateAudioCodec(50, "foo", 22222, 4);
   cricket_codec.params["foo"] = "bar";
-  cricket_codec.feedback_params.Add(cricket::FeedbackParam("transport-cc"));
+  cricket_codec.feedback_params.Add(FeedbackParam("transport-cc"));
   RtpCodecCapability codec = ToRtpCodecCapability(cricket_codec);
 
   EXPECT_EQ("foo", codec.name);
@@ -98,12 +98,12 @@ TEST(RtpParametersConversionTest, ToAudioRtpCodecCapability) {
 }
 
 TEST(RtpParametersConversionTest, ToVideoRtpCodecCapability) {
-  cricket::Codec cricket_codec = cricket::CreateVideoCodec(101, "VID");
+  Codec cricket_codec = CreateVideoCodec(101, "VID");
   cricket_codec.clockrate = 80000;
   cricket_codec.params["foo"] = "bar";
   cricket_codec.params["ANOTHER"] = "param";
-  cricket_codec.feedback_params.Add(cricket::FeedbackParam("transport-cc"));
-  cricket_codec.feedback_params.Add(cricket::FeedbackParam("goog-lntf"));
+  cricket_codec.feedback_params.Add(FeedbackParam("transport-cc"));
+  cricket_codec.feedback_params.Add(FeedbackParam("goog-lntf"));
   cricket_codec.feedback_params.Add({"nack", "pli"});
   RtpCodecCapability codec = ToRtpCodecCapability(cricket_codec);
 
@@ -124,10 +124,10 @@ TEST(RtpParametersConversionTest, ToVideoRtpCodecCapability) {
 
 // An unknown feedback param should just be ignored.
 TEST(RtpParametersConversionTest, ToRtpCodecCapabilityUnknownFeedbackParam) {
-  cricket::Codec cricket_codec = cricket::CreateAudioCodec(50, "foo", 22222, 4);
+  Codec cricket_codec = CreateAudioCodec(50, "foo", 22222, 4);
   cricket_codec.params["foo"] = "bar";
   cricket_codec.feedback_params.Add({"unknown", "param"});
-  cricket_codec.feedback_params.Add(cricket::FeedbackParam("transport-cc"));
+  cricket_codec.feedback_params.Add(FeedbackParam("transport-cc"));
   RtpCodecCapability codec = ToRtpCodecCapability(cricket_codec);
 
   ASSERT_EQ(1u, codec.rtcp_feedback.size());
@@ -139,17 +139,17 @@ TEST(RtpParametersConversionTest, ToRtpCodecCapabilityUnknownFeedbackParam) {
 // test that the result of ToRtpCodecCapability ends up in the result, and that
 // the "fec" list is assembled correctly.
 TEST(RtpParametersConversionTest, ToRtpCapabilities) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(101, "VP8");
+  Codec vp8 = CreateVideoCodec(101, "VP8");
 
-  cricket::Codec red = cricket::CreateVideoCodec(102, "red");
+  Codec red = CreateVideoCodec(102, "red");
   // Note: fmtp not usually done for video-red but we want it filtered.
   red.SetParam(cricket::kCodecParamNotInNameValueFormat, "101/101");
 
-  cricket::Codec red2 = cricket::CreateVideoCodec(127, "red");
-  cricket::Codec ulpfec = cricket::CreateVideoCodec(103, "ulpfec");
-  cricket::Codec flexfec = cricket::CreateVideoCodec(102, "flexfec-03");
-  cricket::Codec rtx = cricket::CreateVideoRtxCodec(014, 101);
-  cricket::Codec rtx2 = cricket::CreateVideoRtxCodec(105, 109);
+  Codec red2 = CreateVideoCodec(127, "red");
+  Codec ulpfec = CreateVideoCodec(103, "ulpfec");
+  Codec flexfec = CreateVideoCodec(102, "flexfec-03");
+  Codec rtx = CreateVideoRtxCodec(014, 101);
+  Codec rtx2 = CreateVideoRtxCodec(105, 109);
 
   RtpCapabilities capabilities =
       ToRtpCapabilities({vp8, ulpfec, rtx, rtx2}, {{"uri", 1}, {"uri2", 3}});

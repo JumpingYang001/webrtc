@@ -21,7 +21,7 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/string_encode.h"
 
-namespace cricket {
+namespace webrtc {
 
 using webrtc::RTCError;
 using webrtc::RTCErrorOr;
@@ -43,14 +43,15 @@ RTCError CheckInputConsistency(const std::vector<Codec>& codecs) {
       }
     }
   }
-  for (const Codec& codec : codecs) {
+  for (const webrtc::Codec& codec : codecs) {
     switch (codec.GetResiliencyType()) {
       case Codec::ResiliencyType::kRed:
         // Check that the target codec exists
         break;
       case Codec::ResiliencyType::kRtx: {
         // Check that the target codec exists
-        const auto apt_it = codec.params.find(kCodecParamAssociatedPayloadType);
+        const auto apt_it =
+            codec.params.find(cricket::kCodecParamAssociatedPayloadType);
         // Not true - there's a test that deliberately injects a wrong
         // RTX codec (MediaSessionDescriptionFactoryTest.RtxWithoutApt)
         // TODO: https://issues.webrtc.org/384756622 - reject codec earlier and
@@ -121,4 +122,4 @@ void CodecList::CheckConsistency() {
   RTC_DCHECK(CheckInputConsistency(codecs_).ok());
 }
 
-}  // namespace cricket
+}  // namespace webrtc

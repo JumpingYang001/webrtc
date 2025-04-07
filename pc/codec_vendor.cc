@@ -67,25 +67,23 @@ bool IsRedCodec(const RtpCodecCapability& capability) {
   return absl::EqualsIgnoreCase(capability.name, cricket::kRedCodecName);
 }
 
-bool IsComfortNoiseCodec(const cricket::Codec& codec) {
+bool IsComfortNoiseCodec(const Codec& codec) {
   return absl::EqualsIgnoreCase(codec.name, cricket::kComfortNoiseCodecName);
 }
 
 // Wrapper for FindMatchingCodecs that uses CodecList
-std::optional<cricket::Codec> FindMatchingCodec(
-    const cricket::CodecList& codecs1,
-    const cricket::CodecList& codecs2,
-    const cricket::Codec& codec_to_match) {
+std::optional<Codec> FindMatchingCodec(const CodecList& codecs1,
+                                       const CodecList& codecs2,
+                                       const Codec& codec_to_match) {
   return webrtc::FindMatchingCodec(codecs1.codecs(), codecs2.codecs(),
                                    codec_to_match);
 }
 
-void StripCNCodecs(cricket::CodecList& audio_codecs) {
+void StripCNCodecs(CodecList& audio_codecs) {
   audio_codecs.writable_codecs().erase(
-      std::remove_if(audio_codecs.begin(), audio_codecs.end(),
-                     [](const cricket::Codec& codec) {
-                       return IsComfortNoiseCodec(codec);
-                     }),
+      std::remove_if(
+          audio_codecs.begin(), audio_codecs.end(),
+          [](const Codec& codec) { return IsComfortNoiseCodec(codec); }),
       audio_codecs.end());
 }
 
@@ -96,9 +94,8 @@ bool IsMediaContentOfType(const ContentInfo* content, MediaType media_type) {
   return content->media_description()->type() == media_type;
 }
 // Find the codec in `codec_list` that `rtx_codec` is associated with.
-const cricket::Codec* GetAssociatedCodecForRtx(
-    const cricket::CodecList& codec_list,
-    const cricket::Codec& rtx_codec) {
+const Codec* GetAssociatedCodecForRtx(const CodecList& codec_list,
+                                      const Codec& rtx_codec) {
   std::string associated_pt_str;
   if (!rtx_codec.GetParam(cricket::kCodecParamAssociatedPayloadType,
                           &associated_pt_str)) {
@@ -116,8 +113,8 @@ const cricket::Codec* GetAssociatedCodecForRtx(
   }
 
   // Find the associated codec for the RTX codec.
-  const cricket::Codec* associated_codec =
-      cricket::FindCodecById(codec_list.codecs(), associated_pt);
+  const Codec* associated_codec =
+      FindCodecById(codec_list.codecs(), associated_pt);
   if (!associated_codec) {
     RTC_LOG(LS_WARNING) << "Couldn't find associated codec with payload type "
                         << associated_pt << " for RTX codec " << rtx_codec.id
@@ -127,13 +124,12 @@ const cricket::Codec* GetAssociatedCodecForRtx(
 }
 
 // Find the codec in `codec_list` that `red_codec` is associated with.
-const cricket::Codec* GetAssociatedCodecForRed(
-    const cricket::CodecList& codec_list,
-    const cricket::Codec& red_codec) {
+const Codec* GetAssociatedCodecForRed(const CodecList& codec_list,
+                                      const Codec& red_codec) {
   std::string fmtp;
   if (!red_codec.GetParam(cricket::kCodecParamNotInNameValueFormat, &fmtp)) {
     // Don't log for video/RED where this is normal.
-    if (red_codec.type == cricket::Codec::Type::kAudio) {
+    if (red_codec.type == Codec::Type::kAudio) {
       RTC_LOG(LS_WARNING) << "RED codec " << red_codec.id
                           << " is missing an associated payload type.";
     }
@@ -155,8 +151,8 @@ const cricket::Codec* GetAssociatedCodecForRed(
   }
 
   // Find the associated codec for the RED codec.
-  const cricket::Codec* associated_codec =
-      cricket::FindCodecById(codec_list.codecs(), associated_pt);
+  const Codec* associated_codec =
+      FindCodecById(codec_list.codecs(), associated_pt);
   if (!associated_codec) {
     RTC_LOG(LS_WARNING) << "Couldn't find associated codec with payload type "
                         << associated_pt << " for RED codec " << red_codec.id
@@ -168,20 +164,18 @@ const cricket::Codec* GetAssociatedCodecForRed(
 // Adds all codecs from `reference_codecs` to `offered_codecs` that don't
 // already exist in `offered_codecs` and ensure the payload types don't
 // collide.
-RTCError MergeCodecs(const cricket::CodecList& reference_codecs,
+RTCError MergeCodecs(const CodecList& reference_codecs,
                      const std::string& mid,
-                     cricket::CodecList& offered_codecs,
+                     CodecList& offered_codecs,
                      PayloadTypeSuggester& pt_suggester) {
   // Add all new codecs that are not RTX/RED codecs.
   // The two-pass splitting of the loops means preferring payload types
   // of actual codecs with respect to collisions.
-  for (const cricket::Codec& reference_codec : reference_codecs) {
-    if (reference_codec.GetResiliencyType() !=
-            cricket::Codec::ResiliencyType::kRtx &&
-        reference_codec.GetResiliencyType() !=
-            cricket::Codec::ResiliencyType::kRed &&
+  for (const Codec& reference_codec : reference_codecs) {
+    if (reference_codec.GetResiliencyType() != Codec::ResiliencyType::kRtx &&
+        reference_codec.GetResiliencyType() != Codec::ResiliencyType::kRed &&
         !FindMatchingCodec(reference_codecs, offered_codecs, reference_codec)) {
-      cricket::Codec codec = reference_codec;
+      Codec codec = reference_codec;
       RTCErrorOr<PayloadType> suggestion =
           pt_suggester.SuggestPayloadType(mid, codec);
       if (!suggestion.ok()) {
@@ -193,19 +187,18 @@ RTCError MergeCodecs(const cricket::CodecList& reference_codecs,
   }
 
   // Add all new RTX or RED codecs.
-  for (const cricket::Codec& reference_codec : reference_codecs) {
-    if (reference_codec.GetResiliencyType() ==
-            cricket::Codec::ResiliencyType::kRtx &&
+  for (const Codec& reference_codec : reference_codecs) {
+    if (reference_codec.GetResiliencyType() == Codec::ResiliencyType::kRtx &&
         !FindMatchingCodec(reference_codecs, offered_codecs, reference_codec)) {
-      cricket::Codec rtx_codec = reference_codec;
-      const cricket::Codec* associated_codec =
+      Codec rtx_codec = reference_codec;
+      const Codec* associated_codec =
           GetAssociatedCodecForRtx(reference_codecs, rtx_codec);
       if (!associated_codec) {
         continue;
       }
       // Find a codec in the offered list that matches the reference codec.
       // Its payload type may be different than the reference codec.
-      std::optional<cricket::Codec> matching_codec = FindMatchingCodec(
+      std::optional<Codec> matching_codec = FindMatchingCodec(
           reference_codecs, offered_codecs, *associated_codec);
       if (!matching_codec) {
         RTC_LOG(LS_WARNING)
@@ -223,14 +216,14 @@ RTCError MergeCodecs(const cricket::CodecList& reference_codecs,
       rtx_codec.id = suggestion.value();
       offered_codecs.push_back(rtx_codec);
     } else if (reference_codec.GetResiliencyType() ==
-                   cricket::Codec::ResiliencyType::kRed &&
+                   Codec::ResiliencyType::kRed &&
                !FindMatchingCodec(reference_codecs, offered_codecs,
                                   reference_codec)) {
-      cricket::Codec red_codec = reference_codec;
-      const cricket::Codec* associated_codec =
+      Codec red_codec = reference_codec;
+      const Codec* associated_codec =
           GetAssociatedCodecForRed(reference_codecs, red_codec);
       if (associated_codec) {
-        std::optional<cricket::Codec> matching_codec = FindMatchingCodec(
+        std::optional<Codec> matching_codec = FindMatchingCodec(
             reference_codecs, offered_codecs, *associated_codec);
         if (!matching_codec) {
           RTC_LOG(LS_WARNING) << "Couldn't find matching "
@@ -258,38 +251,35 @@ RTCError MergeCodecs(const cricket::CodecList& reference_codecs,
 // already exist in `offered_codecs` and ensure the payload types don't
 // collide.
 // OLD VERSION - uses UsedPayloadTypes
-void MergeCodecs(const cricket::CodecList& reference_codecs,
-                 cricket::CodecList& offered_codecs,
+void MergeCodecs(const CodecList& reference_codecs,
+                 CodecList& offered_codecs,
                  UsedPayloadTypes* used_pltypes) {
   // Add all new codecs that are not RTX/RED codecs.
   // The two-pass splitting of the loops means preferring payload types
   // of actual codecs with respect to collisions.
-  for (const cricket::Codec& reference_codec : reference_codecs) {
-    if (reference_codec.GetResiliencyType() !=
-            cricket::Codec::ResiliencyType::kRtx &&
-        reference_codec.GetResiliencyType() !=
-            cricket::Codec::ResiliencyType::kRed &&
+  for (const Codec& reference_codec : reference_codecs) {
+    if (reference_codec.GetResiliencyType() != Codec::ResiliencyType::kRtx &&
+        reference_codec.GetResiliencyType() != Codec::ResiliencyType::kRed &&
         !FindMatchingCodec(reference_codecs, offered_codecs, reference_codec)) {
-      cricket::Codec codec = reference_codec;
+      Codec codec = reference_codec;
       used_pltypes->FindAndSetIdUsed(&codec);
       offered_codecs.push_back(codec);
     }
   }
 
   // Add all new RTX or RED codecs.
-  for (const cricket::Codec& reference_codec : reference_codecs) {
-    if (reference_codec.GetResiliencyType() ==
-            cricket::Codec::ResiliencyType::kRtx &&
+  for (const Codec& reference_codec : reference_codecs) {
+    if (reference_codec.GetResiliencyType() == Codec::ResiliencyType::kRtx &&
         !FindMatchingCodec(reference_codecs, offered_codecs, reference_codec)) {
-      cricket::Codec rtx_codec = reference_codec;
-      const cricket::Codec* associated_codec =
+      Codec rtx_codec = reference_codec;
+      const Codec* associated_codec =
           GetAssociatedCodecForRtx(reference_codecs, rtx_codec);
       if (!associated_codec) {
         continue;
       }
       // Find a codec in the offered list that matches the reference codec.
       // Its payload type may be different than the reference codec.
-      std::optional<cricket::Codec> matching_codec = FindMatchingCodec(
+      std::optional<Codec> matching_codec = FindMatchingCodec(
           reference_codecs, offered_codecs, *associated_codec);
       if (!matching_codec) {
         RTC_LOG(LS_WARNING)
@@ -302,14 +292,14 @@ void MergeCodecs(const cricket::CodecList& reference_codecs,
       used_pltypes->FindAndSetIdUsed(&rtx_codec);
       offered_codecs.push_back(rtx_codec);
     } else if (reference_codec.GetResiliencyType() ==
-                   cricket::Codec::ResiliencyType::kRed &&
+                   Codec::ResiliencyType::kRed &&
                !FindMatchingCodec(reference_codecs, offered_codecs,
                                   reference_codec)) {
-      cricket::Codec red_codec = reference_codec;
-      const cricket::Codec* associated_codec =
+      Codec red_codec = reference_codec;
+      const Codec* associated_codec =
           GetAssociatedCodecForRed(reference_codecs, red_codec);
       if (associated_codec) {
-        std::optional<cricket::Codec> matching_codec = FindMatchingCodec(
+        std::optional<Codec> matching_codec = FindMatchingCodec(
             reference_codecs, offered_codecs, *associated_codec);
         if (!matching_codec) {
           RTC_LOG(LS_WARNING) << "Couldn't find matching "
@@ -333,11 +323,11 @@ void MergeCodecs(const cricket::CodecList& reference_codecs,
 // a list filtered for the media section`s direction but with default payload
 // types.
 // static
-cricket::CodecList MatchCodecPreference(
+CodecList MatchCodecPreference(
     const std::vector<RtpCodecCapability>& codec_preferences,
-    const cricket::CodecList& codecs,
-    const cricket::CodecList& supported_codecs) {
-  cricket::CodecList filtered_codecs;
+    const CodecList& codecs,
+    const CodecList& supported_codecs) {
+  CodecList filtered_codecs;
   bool want_rtx = false;
   bool want_red = false;
 
@@ -351,7 +341,7 @@ cricket::CodecList MatchCodecPreference(
   bool red_was_added = false;
   for (const auto& codec_preference : codec_preferences) {
     auto found_codec = absl::c_find_if(
-        supported_codecs, [&codec_preference](const cricket::Codec& codec) {
+        supported_codecs, [&codec_preference](const Codec& codec) {
           // We should not filter out the codec in |codec_preferences| if it
           // has a higher level than the codec in |supported_codecs|, as the
           // codec in |supported_codecs| may be only with lower level in
@@ -360,13 +350,13 @@ cricket::CodecList MatchCodecPreference(
         });
 
     if (found_codec != supported_codecs.end()) {
-      std::optional<cricket::Codec> found_codec_with_correct_pt =
+      std::optional<Codec> found_codec_with_correct_pt =
           FindMatchingCodec(supported_codecs, codecs, *found_codec);
       if (found_codec_with_correct_pt) {
         // RED may already have been added if its primary codec is before RED
         // in the codec list.
         bool is_red_codec = found_codec_with_correct_pt->GetResiliencyType() ==
-                            cricket::Codec::ResiliencyType::kRed;
+                            Codec::ResiliencyType::kRed;
         if (!is_red_codec || !red_was_added) {
           filtered_codecs.push_back(*found_codec_with_correct_pt);
           red_was_added = is_red_codec ? true : red_was_added;
@@ -375,8 +365,8 @@ cricket::CodecList MatchCodecPreference(
         // Search for the matching rtx or red codec.
         if (want_red || want_rtx) {
           for (const auto& codec : codecs) {
-            if (want_rtx && codec.GetResiliencyType() ==
-                                cricket::Codec::ResiliencyType::kRtx) {
+            if (want_rtx &&
+                codec.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
               const auto apt =
                   codec.params.find(cricket::kCodecParamAssociatedPayloadType);
               if (apt != codec.params.end() && apt->second == id) {
@@ -384,7 +374,7 @@ cricket::CodecList MatchCodecPreference(
                 break;
               }
             } else if (want_red && codec.GetResiliencyType() ==
-                                       cricket::Codec::ResiliencyType::kRed) {
+                                       Codec::ResiliencyType::kRed) {
               // For RED, do not insert the codec again if it was already
               // inserted. audio/red for opus gets enabled by having RED before
               // the primary codec.
@@ -412,9 +402,9 @@ cricket::CodecList MatchCodecPreference(
   return filtered_codecs;
 }
 
-void NegotiatePacketization(const cricket::Codec& local_codec,
-                            const cricket::Codec& remote_codec,
-                            cricket::Codec* negotiated_codec) {
+void NegotiatePacketization(const Codec& local_codec,
+                            const Codec& remote_codec,
+                            Codec* negotiated_codec) {
   negotiated_codec->packetization =
       (local_codec.packetization == remote_codec.packetization)
           ? local_codec.packetization
@@ -422,9 +412,9 @@ void NegotiatePacketization(const cricket::Codec& local_codec,
 }
 
 #ifdef RTC_ENABLE_H265
-void NegotiateTxMode(const cricket::Codec& local_codec,
-                     const cricket::Codec& remote_codec,
-                     cricket::Codec* negotiated_codec) {
+void NegotiateTxMode(const Codec& local_codec,
+                     const Codec& remote_codec,
+                     Codec* negotiated_codec) {
   negotiated_codec->tx_mode = (local_codec.tx_mode == remote_codec.tx_mode)
                                   ? local_codec.tx_mode
                                   : std::nullopt;
@@ -435,8 +425,8 @@ void NegotiateTxMode(const cricket::Codec& local_codec,
 // |supported_codecs| with same profile.
 void NegotiateVideoCodecLevelsForOffer(
     const MediaDescriptionOptions& media_description_options,
-    const cricket::CodecList& supported_codecs,
-    cricket::CodecList& filtered_codecs) {
+    const CodecList& supported_codecs,
+    CodecList& filtered_codecs) {
   if (filtered_codecs.empty() || supported_codecs.empty()) {
     return;
   }
@@ -450,7 +440,7 @@ void NegotiateVideoCodecLevelsForOffer(
     // The assumption here is that H.265 codecs with the same profile and tier
     // are already with highest level for that profile in both
     // |supported_codecs| and |filtered_codecs|.
-    for (const cricket::Codec& supported_codec : supported_codecs) {
+    for (const Codec& supported_codec : supported_codecs) {
       if (absl::EqualsIgnoreCase(supported_codec.name,
                                  cricket::kH265CodecName)) {
         std::optional<H265ProfileTierLevel> supported_ptl =
@@ -486,25 +476,24 @@ void NegotiateVideoCodecLevelsForOffer(
 #endif
 }
 
-RTCError NegotiateCodecs(const cricket::CodecList& local_codecs,
-                         const cricket::CodecList& offered_codecs,
-                         cricket::CodecList& negotiated_codecs_out,
+RTCError NegotiateCodecs(const CodecList& local_codecs,
+                         const CodecList& offered_codecs,
+                         CodecList& negotiated_codecs_out,
                          bool keep_offer_order) {
   std::map<int, int> pt_mapping_table;
   // Since we build the negotiated codec list one entry at a time,
   // the list will have inconsistencies during building.
-  std::vector<cricket::Codec> negotiated_codecs;
-  for (const cricket::Codec& ours : local_codecs) {
-    std::optional<cricket::Codec> theirs =
+  std::vector<Codec> negotiated_codecs;
+  for (const Codec& ours : local_codecs) {
+    std::optional<Codec> theirs =
         FindMatchingCodec(local_codecs, offered_codecs, ours);
     // Note that we intentionally only find one matching codec for each of our
     // local codecs, in case the remote offer contains duplicate codecs.
     if (theirs) {
-      cricket::Codec negotiated = ours;
+      Codec negotiated = ours;
       NegotiatePacketization(ours, *theirs, &negotiated);
       negotiated.IntersectFeedbackParams(*theirs);
-      if (negotiated.GetResiliencyType() ==
-          cricket::Codec::ResiliencyType::kRtx) {
+      if (negotiated.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
         // We support parsing the declarative rtx-time parameter.
         const auto rtx_time_it =
             theirs->params.find(cricket::kCodecParamRtxTime);
@@ -512,7 +501,7 @@ RTCError NegotiateCodecs(const cricket::CodecList& local_codecs,
           negotiated.SetParam(cricket::kCodecParamRtxTime, rtx_time_it->second);
         }
       } else if (negotiated.GetResiliencyType() ==
-                 cricket::Codec::ResiliencyType::kRed) {
+                 Codec::ResiliencyType::kRed) {
         const auto red_it =
             theirs->params.find(cricket::kCodecParamNotInNameValueFormat);
         if (red_it != theirs->params.end()) {
@@ -539,9 +528,8 @@ RTCError NegotiateCodecs(const cricket::CodecList& local_codecs,
     }
   }
   // Fix up apt parameters that point to other PTs.
-  for (cricket::Codec& negotiated : negotiated_codecs) {
-    if (negotiated.GetResiliencyType() ==
-        cricket::Codec::ResiliencyType::kRtx) {
+  for (Codec& negotiated : negotiated_codecs) {
+    if (negotiated.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
       // Change the apt value according to the pt mapping table.
       // This avoids changing to apt values that don't exist any more.
       std::string apt_str;
@@ -571,17 +559,15 @@ RTCError NegotiateCodecs(const cricket::CodecList& local_codecs,
     // This can be skipped when the transceiver has any codec preferences.
     std::unordered_map<int, int> payload_type_preferences;
     int preference = static_cast<int>(offered_codecs.size() + 1);
-    for (const cricket::Codec& codec : offered_codecs) {
+    for (const Codec& codec : offered_codecs) {
       payload_type_preferences[codec.id] = preference--;
     }
     absl::c_sort(negotiated_codecs, [&payload_type_preferences](
-                                        const cricket::Codec& a,
-                                        const cricket::Codec& b) {
+                                        const Codec& a, const Codec& b) {
       return payload_type_preferences[a.id] > payload_type_preferences[b.id];
     });
   }
-  RTCErrorOr<cricket::CodecList> result =
-      cricket::CodecList::Create(negotiated_codecs);
+  RTCErrorOr<CodecList> result = CodecList::Create(negotiated_codecs);
   if (!result.ok()) {
     return result.MoveError();
   }
@@ -596,10 +582,10 @@ RTCError NegotiateCodecs(const cricket::CodecList& local_codecs,
 // first OPUS codec in the codec list.
 RTCError AssignCodecIdsAndLinkRed(PayloadTypeSuggester* pt_suggester,
                                   const std::string& mid,
-                                  std::vector<cricket::Codec>& codecs) {
-  int codec_payload_type = cricket::Codec::kIdNotSet;
-  for (cricket::Codec& codec : codecs) {
-    if (codec.id == cricket::Codec::kIdNotSet) {
+                                  std::vector<Codec>& codecs) {
+  int codec_payload_type = Codec::kIdNotSet;
+  for (Codec& codec : codecs) {
+    if (codec.id == Codec::kIdNotSet) {
       // Add payload types to codecs, if needed
       // This should only happen if WebRTC-PayloadTypesInTransport field trial
       // is enabled.
@@ -612,13 +598,13 @@ RTCError AssignCodecIdsAndLinkRed(PayloadTypeSuggester* pt_suggester,
     }
     // record first Opus codec id
     if (absl::EqualsIgnoreCase(codec.name, cricket::kOpusCodecName) &&
-        codec_payload_type == cricket::Codec::kIdNotSet) {
+        codec_payload_type == Codec::kIdNotSet) {
       codec_payload_type = codec.id;
     }
   }
-  if (codec_payload_type != cricket::Codec::kIdNotSet) {
-    for (cricket::Codec& codec : codecs) {
-      if (codec.type == cricket::Codec::Type::kAudio &&
+  if (codec_payload_type != Codec::kIdNotSet) {
+    for (Codec& codec : codecs) {
+      if (codec.type == Codec::Type::kAudio &&
           absl::EqualsIgnoreCase(codec.name, cricket::kRedCodecName)) {
         if (codec.params.empty()) {
           char buffer[100];
@@ -634,19 +620,17 @@ RTCError AssignCodecIdsAndLinkRed(PayloadTypeSuggester* pt_suggester,
 
 }  // namespace
 
-RTCErrorOr<std::vector<cricket::Codec>>
-CodecVendor::GetNegotiatedCodecsForOffer(
+RTCErrorOr<std::vector<Codec>> CodecVendor::GetNegotiatedCodecsForOffer(
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
     const ContentInfo* current_content,
     PayloadTypeSuggester& pt_suggester) {
-  cricket::CodecList codecs;
+  CodecList codecs;
   std::string mid = media_description_options.mid;
   // If current content exists and is not being recycled, use its codecs.
   if (current_content && current_content->mid() == mid) {
-    RTCErrorOr<cricket::CodecList> checked_codec_list =
-        cricket::CodecList::Create(
-            current_content->media_description()->codecs());
+    RTCErrorOr<CodecList> checked_codec_list =
+        CodecList::Create(current_content->media_description()->codecs());
     if (!checked_codec_list.ok()) {
       return checked_codec_list.MoveError();
     }
@@ -659,8 +643,8 @@ CodecVendor::GetNegotiatedCodecsForOffer(
   } else {
     MergeCodecs(all_video_codecs(), mid, codecs, pt_suggester);
   }
-  cricket::CodecList filtered_codecs;
-  cricket::CodecList supported_codecs =
+  CodecList filtered_codecs;
+  CodecList supported_codecs =
       media_description_options.type == MediaType::AUDIO
           ? GetAudioCodecsForOffer(media_description_options.direction)
           : GetVideoCodecsForOffer(media_description_options.direction);
@@ -687,7 +671,7 @@ CodecVendor::GetNegotiatedCodecsForOffer(
         }
         const MediaContentDescription* mcd =
             current_content->media_description();
-        for (const cricket::Codec& codec : mcd->codecs()) {
+        for (const Codec& codec : mcd->codecs()) {
           if (webrtc::FindMatchingCodec(mcd->codecs(), codecs.codecs(),
                                         codec)) {
             filtered_codecs.push_back(codec);
@@ -703,16 +687,15 @@ CodecVendor::GetNegotiatedCodecsForOffer(
         used_pltypes.FindAndSetIdUsed(&codec);
       }
       // Add other supported codecs.
-      for (const cricket::Codec& codec : supported_codecs) {
-        std::optional<cricket::Codec> found_codec =
+      for (const Codec& codec : supported_codecs) {
+        std::optional<Codec> found_codec =
             FindMatchingCodec(supported_codecs, codecs, codec);
         if (found_codec &&
             !FindMatchingCodec(supported_codecs, filtered_codecs, codec)) {
           // Use the `found_codec` from `codecs` because it has the
           // correctly mapped payload type (most of the time).
           if (media_description_options.type == MediaType::VIDEO &&
-              found_codec->GetResiliencyType() ==
-                  cricket::Codec::ResiliencyType::kRtx) {
+              found_codec->GetResiliencyType() == Codec::ResiliencyType::kRtx) {
             // For RTX we might need to adjust the apt parameter if we got a
             // remote offer without RTX for a codec for which we support RTX.
             // This is only done for video since we do not yet have rtx for
@@ -722,9 +705,8 @@ CodecVendor::GetNegotiatedCodecsForOffer(
             RTC_DCHECK(referenced_codec);
 
             // Find the codec we should be referencing and point to it.
-            std::optional<cricket::Codec> changed_referenced_codec =
-                FindMatchingCodec(supported_codecs, filtered_codecs,
-                                  *referenced_codec);
+            std::optional<Codec> changed_referenced_codec = FindMatchingCodec(
+                supported_codecs, filtered_codecs, *referenced_codec);
             if (changed_referenced_codec) {
               found_codec->SetParam(cricket::kCodecParamAssociatedPayloadType,
                                     changed_referenced_codec->id);
@@ -743,7 +725,7 @@ CodecVendor::GetNegotiatedCodecsForOffer(
       StripCNCodecs(filtered_codecs);
     } else if (media_description_options.type == MediaType::VIDEO &&
                session_options.raw_packetization_for_video) {
-      for (cricket::Codec& codec : filtered_codecs) {
+      for (Codec& codec : filtered_codecs) {
         if (codec.IsMediaCodec()) {
           codec.packetization = cricket::kPacketizationParamRaw;
         }
@@ -754,8 +736,8 @@ CodecVendor::GetNegotiatedCodecsForOffer(
   } else {
     // media_description_options.codecs_to_include contains codecs
     // TODO: issues.webrtc.org/360058654 - figure out if this can be deleted.
-    RTCErrorOr<cricket::CodecList> codecs_from_arg =
-        cricket::CodecList::Create(media_description_options.codecs_to_include);
+    RTCErrorOr<CodecList> codecs_from_arg =
+        CodecList::Create(media_description_options.codecs_to_include);
     if (!codecs_from_arg.ok()) {
       return codecs_from_arg.MoveError();
     }
@@ -766,20 +748,19 @@ CodecVendor::GetNegotiatedCodecsForOffer(
   return filtered_codecs.codecs();
 }
 
-RTCErrorOr<cricket::Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
+RTCErrorOr<Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
     RtpTransceiverDirection offer_rtd,
     RtpTransceiverDirection answer_rtd,
     const ContentInfo* current_content,
-    const std::vector<cricket::Codec> codecs_from_offer,
+    const std::vector<Codec> codecs_from_offer,
     PayloadTypeSuggester& pt_suggester) {
-  cricket::CodecList codecs;
+  CodecList codecs;
   std::string mid = media_description_options.mid;
   if (current_content && current_content->mid() == mid) {
-    RTCErrorOr<cricket::CodecList> checked_codec_list =
-        cricket::CodecList::Create(
-            current_content->media_description()->codecs());
+    RTCErrorOr<CodecList> checked_codec_list =
+        CodecList::Create(current_content->media_description()->codecs());
     if (!checked_codec_list.ok()) {
       return checked_codec_list.MoveError();
     }
@@ -791,10 +772,10 @@ RTCErrorOr<cricket::Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
   } else {
     MergeCodecs(all_video_codecs(), mid, codecs, pt_suggester);
   }
-  cricket::CodecList filtered_codecs;
-  cricket::CodecList negotiated_codecs;
+  CodecList filtered_codecs;
+  CodecList negotiated_codecs;
   if (media_description_options.codecs_to_include.empty()) {
-    const cricket::CodecList& supported_codecs =
+    const CodecList& supported_codecs =
         media_description_options.type == MediaType::AUDIO
             ? GetAudioCodecsForAnswer(offer_rtd, answer_rtd)
             : GetVideoCodecsForAnswer(offer_rtd, answer_rtd);
@@ -817,7 +798,7 @@ RTCErrorOr<cricket::Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
         }
         const MediaContentDescription* mcd =
             current_content->media_description();
-        for (const cricket::Codec& codec : mcd->codecs()) {
+        for (const Codec& codec : mcd->codecs()) {
           if (webrtc::FindMatchingCodec(mcd->codecs(), codecs.codecs(),
                                         codec)) {
             filtered_codecs.push_back(codec);
@@ -834,15 +815,14 @@ RTCErrorOr<cricket::Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
       StripCNCodecs(filtered_codecs);
     } else if (media_description_options.type == MediaType::VIDEO &&
                session_options.raw_packetization_for_video) {
-      for (cricket::Codec& codec : filtered_codecs) {
+      for (Codec& codec : filtered_codecs) {
         if (codec.IsMediaCodec()) {
           codec.packetization = cricket::kPacketizationParamRaw;
         }
       }
     }
     // An offer is external data, so needs to be checked before use.
-    auto checked_codecs_from_offer =
-        cricket::CodecList::Create(codecs_from_offer);
+    auto checked_codecs_from_offer = CodecList::Create(codecs_from_offer);
     if (!checked_codecs_from_offer.ok()) {
       return checked_codecs_from_offer.MoveError();
     }
@@ -851,8 +831,8 @@ RTCErrorOr<cricket::Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
                     media_description_options.codec_preferences.empty());
   } else {
     // media_description_options.codecs_to_include contains codecs
-    RTCErrorOr<cricket::CodecList> codecs_from_arg =
-        cricket::CodecList::Create(media_description_options.codecs_to_include);
+    RTCErrorOr<CodecList> codecs_from_arg =
+        CodecList::Create(media_description_options.codecs_to_include);
     if (!codecs_from_arg.ok()) {
       return codecs_from_arg.MoveError();
     }
@@ -885,35 +865,35 @@ CodecVendor::CodecVendor(
   }
 }
 
-const cricket::CodecList& CodecVendor::audio_send_codecs() const {
+const CodecList& CodecVendor::audio_send_codecs() const {
   return audio_send_codecs_.codecs();
 }
 
-const cricket::CodecList& CodecVendor::audio_recv_codecs() const {
+const CodecList& CodecVendor::audio_recv_codecs() const {
   return audio_recv_codecs_.codecs();
 }
 
-void CodecVendor::set_audio_codecs(const cricket::CodecList& send_codecs,
-                                   const cricket::CodecList& recv_codecs) {
+void CodecVendor::set_audio_codecs(const CodecList& send_codecs,
+                                   const CodecList& recv_codecs) {
   audio_send_codecs_.set_codecs(send_codecs);
   audio_recv_codecs_.set_codecs(recv_codecs);
 }
 
-const cricket::CodecList& CodecVendor::video_send_codecs() const {
+const CodecList& CodecVendor::video_send_codecs() const {
   return video_send_codecs_.codecs();
 }
 
-const cricket::CodecList& CodecVendor::video_recv_codecs() const {
+const CodecList& CodecVendor::video_recv_codecs() const {
   return video_recv_codecs_.codecs();
 }
 
-void CodecVendor::set_video_codecs(const cricket::CodecList& send_codecs,
-                                   const cricket::CodecList& recv_codecs) {
+void CodecVendor::set_video_codecs(const CodecList& send_codecs,
+                                   const CodecList& recv_codecs) {
   video_send_codecs_.set_codecs(send_codecs);
   video_recv_codecs_.set_codecs(recv_codecs);
 }
 
-cricket::CodecList CodecVendor::GetVideoCodecsForOffer(
+CodecList CodecVendor::GetVideoCodecsForOffer(
     const RtpTransceiverDirection& direction) const {
   switch (direction) {
     // If stream is inactive - generate list as if sendrecv.
@@ -929,7 +909,7 @@ cricket::CodecList CodecVendor::GetVideoCodecsForOffer(
   RTC_CHECK_NOTREACHED();
 }
 
-cricket::CodecList CodecVendor::GetVideoCodecsForAnswer(
+CodecList CodecVendor::GetVideoCodecsForAnswer(
     const RtpTransceiverDirection& offer,
     const RtpTransceiverDirection& answer) const {
   switch (answer) {
@@ -948,7 +928,7 @@ cricket::CodecList CodecVendor::GetVideoCodecsForAnswer(
   RTC_CHECK_NOTREACHED();
 }
 
-cricket::CodecList CodecVendor::GetAudioCodecsForOffer(
+CodecList CodecVendor::GetAudioCodecsForOffer(
     const RtpTransceiverDirection& direction) const {
   switch (direction) {
     // If stream is inactive - generate list as if sendrecv.
@@ -964,7 +944,7 @@ cricket::CodecList CodecVendor::GetAudioCodecsForOffer(
   RTC_CHECK_NOTREACHED();
 }
 
-cricket::CodecList CodecVendor::GetAudioCodecsForAnswer(
+CodecList CodecVendor::GetAudioCodecsForAnswer(
     const RtpTransceiverDirection& offer,
     const RtpTransceiverDirection& answer) const {
   switch (answer) {
@@ -983,11 +963,11 @@ cricket::CodecList CodecVendor::GetAudioCodecsForAnswer(
   RTC_CHECK_NOTREACHED();
 }
 
-cricket::CodecList CodecVendor::all_video_codecs() const {
-  cricket::CodecList all_codecs;
+CodecList CodecVendor::all_video_codecs() const {
+  CodecList all_codecs;
   UsedPayloadTypes used_payload_types;
-  for (const cricket::Codec& codec : video_recv_codecs_.codecs()) {
-    cricket::Codec codec_mutable = codec;
+  for (const Codec& codec : video_recv_codecs_.codecs()) {
+    Codec codec_mutable = codec;
     used_payload_types.FindAndSetIdUsed(&codec_mutable);
     all_codecs.push_back(codec_mutable);
   }
@@ -999,20 +979,19 @@ cricket::CodecList CodecVendor::all_video_codecs() const {
   return all_codecs;
 }
 
-cricket::CodecList CodecVendor::all_audio_codecs() const {
+CodecList CodecVendor::all_audio_codecs() const {
   // Compute the audio codecs union.
-  cricket::CodecList codecs;
-  for (const cricket::Codec& send : audio_send_codecs_.codecs()) {
+  CodecList codecs;
+  for (const Codec& send : audio_send_codecs_.codecs()) {
     codecs.push_back(send);
     if (!FindMatchingCodec(audio_send_codecs_.codecs(),
                            audio_recv_codecs_.codecs(), send)) {
       // It doesn't make sense to have an RTX codec we support sending but not
       // receiving.
-      RTC_DCHECK(send.GetResiliencyType() !=
-                 cricket::Codec::ResiliencyType::kRtx);
+      RTC_DCHECK(send.GetResiliencyType() != Codec::ResiliencyType::kRtx);
     }
   }
-  for (const cricket::Codec& recv : audio_recv_codecs_.codecs()) {
+  for (const Codec& recv : audio_recv_codecs_.codecs()) {
     if (!FindMatchingCodec(audio_recv_codecs_.codecs(),
                            audio_send_codecs_.codecs(), recv)) {
       codecs.push_back(recv);
@@ -1021,13 +1000,13 @@ cricket::CodecList CodecVendor::all_audio_codecs() const {
   return codecs;
 }
 
-cricket::CodecList CodecVendor::audio_sendrecv_codecs() const {
+CodecList CodecVendor::audio_sendrecv_codecs() const {
   // Use NegotiateCodecs to merge our codec lists, since the operation is
   // essentially the same. Put send_codecs as the offered_codecs, which is the
   // order we'd like to follow. The reasoning is that encoding is usually more
   // expensive than decoding, and prioritizing a codec in the send list probably
   // means it's a codec we can handle efficiently.
-  cricket::CodecList audio_sendrecv_codecs;
+  CodecList audio_sendrecv_codecs;
   auto error =
       NegotiateCodecs(audio_recv_codecs_.codecs(), audio_send_codecs_.codecs(),
                       audio_sendrecv_codecs, true);
@@ -1035,7 +1014,7 @@ cricket::CodecList CodecVendor::audio_sendrecv_codecs() const {
   return audio_sendrecv_codecs;
 }
 
-cricket::CodecList CodecVendor::video_sendrecv_codecs() const {
+CodecList CodecVendor::video_sendrecv_codecs() const {
   // Use NegotiateCodecs to merge our codec lists, since the operation is
   // essentially the same. Put send_codecs as the offered_codecs, which is the
   // order we'd like to follow. The reasoning is that encoding is usually more
@@ -1044,7 +1023,7 @@ cricket::CodecList CodecVendor::video_sendrecv_codecs() const {
   // Also for the same profile of a codec, if there are different levels in the
   // send and receive codecs, |video_sendrecv_codecs| will contain the lower
   // level of the two for that profile.
-  cricket::CodecList video_sendrecv_codecs;
+  CodecList video_sendrecv_codecs;
   auto error =
       NegotiateCodecs(video_recv_codecs_.codecs(), video_send_codecs_.codecs(),
                       video_sendrecv_codecs, true);

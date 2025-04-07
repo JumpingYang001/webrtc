@@ -79,14 +79,12 @@ using ::testing::Field;
 using ::webrtc::RtpTransceiverDirection;
 using ::webrtc::SdpType;
 
-const cricket::Codec kPcmuCodec =
-    cricket::CreateAudioCodec(0, "PCMU", 64000, 1);
-const cricket::Codec kPcmaCodec =
-    cricket::CreateAudioCodec(8, "PCMA", 64000, 1);
-const cricket::Codec kIsacCodec =
-    cricket::CreateAudioCodec(103, "ISAC", 40000, 1);
-const cricket::Codec kH264Codec = cricket::CreateVideoCodec(97, "H264");
-const cricket::Codec kH264SvcCodec = cricket::CreateVideoCodec(99, "H264-SVC");
+const webrtc::Codec kPcmuCodec = webrtc::CreateAudioCodec(0, "PCMU", 64000, 1);
+const webrtc::Codec kPcmaCodec = webrtc::CreateAudioCodec(8, "PCMA", 64000, 1);
+const webrtc::Codec kIsacCodec =
+    webrtc::CreateAudioCodec(103, "ISAC", 40000, 1);
+const webrtc::Codec kH264Codec = webrtc::CreateVideoCodec(97, "H264");
+const webrtc::Codec kH264SvcCodec = webrtc::CreateVideoCodec(99, "H264-SVC");
 const uint32_t kSsrc1 = 0x1111;
 const uint32_t kSsrc2 = 0x2222;
 const uint32_t kSsrc3 = 0x3333;
@@ -535,8 +533,8 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   bool CheckNoRtp2() { return media_send_channel2_impl()->CheckNoRtp(); }
 
   void CreateContent(int flags,
-                     const cricket::Codec& audio_codec,
-                     const cricket::Codec& video_codec,
+                     const webrtc::Codec& audio_codec,
+                     const webrtc::Codec& video_codec,
                      typename T::Content* content) {
     // overridden in specialized classes
   }
@@ -1617,8 +1615,8 @@ std::unique_ptr<webrtc::VoiceChannel> ChannelTest<VoiceTraits>::CreateChannel(
 template <>
 void ChannelTest<VoiceTraits>::CreateContent(
     int flags,
-    const cricket::Codec& audio_codec,
-    const cricket::Codec& video_codec,
+    const webrtc::Codec& audio_codec,
+    const webrtc::Codec& video_codec,
     webrtc::AudioContentDescription* audio) {
   audio->AddCodec(audio_codec);
   audio->set_rtcp_mux((flags & RTCP_MUX) != 0);
@@ -1697,8 +1695,8 @@ std::unique_ptr<webrtc::VideoChannel> ChannelTest<VideoTraits>::CreateChannel(
 template <>
 void ChannelTest<VideoTraits>::CreateContent(
     int flags,
-    const cricket::Codec& audio_codec,
-    const cricket::Codec& video_codec,
+    const webrtc::Codec& audio_codec,
+    const webrtc::Codec& video_codec,
     webrtc::VideoContentDescription* video) {
   video->AddCodec(video_codec);
   video->set_rtcp_mux((flags & RTCP_MUX) != 0);
@@ -2154,8 +2152,8 @@ TEST_F(VideoChannelSingleThreadTest, UpdateLocalStreamsWithSimulcast) {
 }
 
 TEST_F(VideoChannelSingleThreadTest, TestSetLocalOfferWithPacketization) {
-  const cricket::Codec kVp8Codec = cricket::CreateVideoCodec(97, "VP8");
-  cricket::Codec vp9_codec = cricket::CreateVideoCodec(98, "VP9");
+  const webrtc::Codec kVp8Codec = webrtc::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp9_codec = webrtc::CreateVideoCodec(98, "VP9");
   vp9_codec.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription video;
   video.set_codecs({kVp8Codec, vp9_codec});
@@ -2177,8 +2175,8 @@ TEST_F(VideoChannelSingleThreadTest, TestSetLocalOfferWithPacketization) {
 }
 
 TEST_F(VideoChannelSingleThreadTest, TestSetRemoteOfferWithPacketization) {
-  const cricket::Codec kVp8Codec = cricket::CreateVideoCodec(97, "VP8");
-  cricket::Codec vp9_codec = cricket::CreateVideoCodec(98, "VP9");
+  const webrtc::Codec kVp8Codec = webrtc::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp9_codec = webrtc::CreateVideoCodec(98, "VP9");
   vp9_codec.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription video;
   video.set_codecs({kVp8Codec, vp9_codec});
@@ -2199,8 +2197,8 @@ TEST_F(VideoChannelSingleThreadTest, TestSetRemoteOfferWithPacketization) {
 }
 
 TEST_F(VideoChannelSingleThreadTest, TestSetAnswerWithPacketization) {
-  const cricket::Codec kVp8Codec = cricket::CreateVideoCodec(97, "VP8");
-  cricket::Codec vp9_codec = cricket::CreateVideoCodec(98, "VP9");
+  const webrtc::Codec kVp8Codec = webrtc::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp9_codec = webrtc::CreateVideoCodec(98, "VP9");
   vp9_codec.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription video;
   video.set_codecs({kVp8Codec, vp9_codec});
@@ -2231,8 +2229,8 @@ TEST_F(VideoChannelSingleThreadTest, TestSetAnswerWithPacketization) {
 }
 
 TEST_F(VideoChannelSingleThreadTest, TestSetLocalAnswerWithoutPacketization) {
-  const cricket::Codec kLocalCodec = cricket::CreateVideoCodec(98, "VP8");
-  cricket::Codec remote_codec = cricket::CreateVideoCodec(99, "VP8");
+  const webrtc::Codec kLocalCodec = webrtc::CreateVideoCodec(98, "VP8");
+  webrtc::Codec remote_codec = webrtc::CreateVideoCodec(99, "VP8");
   remote_codec.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription local_video;
   local_video.set_codecs({kLocalCodec});
@@ -2253,9 +2251,9 @@ TEST_F(VideoChannelSingleThreadTest, TestSetLocalAnswerWithoutPacketization) {
 }
 
 TEST_F(VideoChannelSingleThreadTest, TestSetRemoteAnswerWithoutPacketization) {
-  cricket::Codec local_codec = cricket::CreateVideoCodec(98, "VP8");
+  webrtc::Codec local_codec = webrtc::CreateVideoCodec(98, "VP8");
   local_codec.packetization = cricket::kPacketizationParamRaw;
-  const cricket::Codec kRemoteCodec = cricket::CreateVideoCodec(99, "VP8");
+  const webrtc::Codec kRemoteCodec = webrtc::CreateVideoCodec(99, "VP8");
   webrtc::VideoContentDescription local_video;
   local_video.set_codecs({local_codec});
   webrtc::VideoContentDescription remote_video;
@@ -2277,9 +2275,9 @@ TEST_F(VideoChannelSingleThreadTest, TestSetRemoteAnswerWithoutPacketization) {
 
 TEST_F(VideoChannelSingleThreadTest,
        TestSetRemoteAnswerWithInvalidPacketization) {
-  cricket::Codec local_codec = cricket::CreateVideoCodec(98, "VP8");
+  webrtc::Codec local_codec = webrtc::CreateVideoCodec(98, "VP8");
   local_codec.packetization = cricket::kPacketizationParamRaw;
-  cricket::Codec remote_codec = cricket::CreateVideoCodec(99, "VP8");
+  webrtc::Codec remote_codec = webrtc::CreateVideoCodec(99, "VP8");
   remote_codec.packetization = "unknownpacketizationattributevalue";
   webrtc::VideoContentDescription local_video;
   local_video.set_codecs({local_codec});
@@ -2302,9 +2300,9 @@ TEST_F(VideoChannelSingleThreadTest,
 
 TEST_F(VideoChannelSingleThreadTest,
        TestSetLocalAnswerWithInvalidPacketization) {
-  cricket::Codec local_codec = cricket::CreateVideoCodec(98, "VP8");
+  webrtc::Codec local_codec = webrtc::CreateVideoCodec(98, "VP8");
   local_codec.packetization = cricket::kPacketizationParamRaw;
-  const cricket::Codec kRemoteCodec = cricket::CreateVideoCodec(99, "VP8");
+  const webrtc::Codec kRemoteCodec = webrtc::CreateVideoCodec(99, "VP8");
   webrtc::VideoContentDescription local_video;
   local_video.set_codecs({local_codec});
   webrtc::VideoContentDescription remote_video;
@@ -2325,12 +2323,12 @@ TEST_F(VideoChannelSingleThreadTest,
 
 TEST_F(VideoChannelSingleThreadTest,
        StopsPacketizationVerificationWhenMatchIsFoundInRemoteAnswer) {
-  cricket::Codec vp8_foo = cricket::CreateVideoCodec(96, "VP8");
+  webrtc::Codec vp8_foo = webrtc::CreateVideoCodec(96, "VP8");
   vp8_foo.packetization = "foo";
-  cricket::Codec vp8_bar = cricket::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp8_bar = webrtc::CreateVideoCodec(97, "VP8");
   vp8_bar.packetization = "bar";
-  cricket::Codec vp9 = cricket::CreateVideoCodec(98, "VP9");
-  cricket::Codec vp9_foo = cricket::CreateVideoCodec(99, "VP9");
+  webrtc::Codec vp9 = webrtc::CreateVideoCodec(98, "VP9");
+  webrtc::Codec vp9_foo = webrtc::CreateVideoCodec(99, "VP9");
   vp9_foo.packetization = "bar";
   webrtc::VideoContentDescription local;
   local.set_codecs({vp8_foo, vp8_bar, vp9_foo});
@@ -2345,28 +2343,28 @@ TEST_F(VideoChannelSingleThreadTest,
 
   EXPECT_THAT(
       media_receive_channel1_impl()->recv_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, "foo")),
-                  AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization, "bar")),
-                  AllOf(Field(&cricket::Codec::id, 99),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, "foo")),
+                  AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization, "bar")),
+                  AllOf(Field(&webrtc::Codec::id, 99),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
   EXPECT_THAT(
       media_send_channel1_impl()->send_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, "foo")),
-                  AllOf(Field(&cricket::Codec::id, 98),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, "foo")),
+                  AllOf(Field(&webrtc::Codec::id, 98),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
 }
 
 TEST_F(VideoChannelSingleThreadTest,
        StopsPacketizationVerificationWhenMatchIsFoundInLocalAnswer) {
-  cricket::Codec vp8_foo = cricket::CreateVideoCodec(96, "VP8");
+  webrtc::Codec vp8_foo = webrtc::CreateVideoCodec(96, "VP8");
   vp8_foo.packetization = "foo";
-  cricket::Codec vp8_bar = cricket::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp8_bar = webrtc::CreateVideoCodec(97, "VP8");
   vp8_bar.packetization = "bar";
-  cricket::Codec vp9 = cricket::CreateVideoCodec(98, "VP9");
-  cricket::Codec vp9_foo = cricket::CreateVideoCodec(99, "VP9");
+  webrtc::Codec vp9 = webrtc::CreateVideoCodec(98, "VP9");
+  webrtc::Codec vp9_foo = webrtc::CreateVideoCodec(99, "VP9");
   vp9_foo.packetization = "bar";
   webrtc::VideoContentDescription local;
   local.set_codecs({vp8_foo, vp9});
@@ -2381,24 +2379,24 @@ TEST_F(VideoChannelSingleThreadTest,
 
   EXPECT_THAT(
       media_receive_channel1_impl()->recv_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, "foo")),
-                  AllOf(Field(&cricket::Codec::id, 98),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, "foo")),
+                  AllOf(Field(&webrtc::Codec::id, 98),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
   EXPECT_THAT(
       media_send_channel1_impl()->send_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, "foo")),
-                  AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization, "bar")),
-                  AllOf(Field(&cricket::Codec::id, 99),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, "foo")),
+                  AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization, "bar")),
+                  AllOf(Field(&webrtc::Codec::id, 99),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
 }
 
 TEST_F(VideoChannelSingleThreadTest,
        ConsidersAllCodecsWithDiffrentPacketizationsInRemoteAnswer) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(96, "VP8");
-  cricket::Codec vp8_raw = cricket::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp8 = webrtc::CreateVideoCodec(96, "VP8");
+  webrtc::Codec vp8_raw = webrtc::CreateVideoCodec(97, "VP8");
   vp8_raw.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription local;
   local.set_codecs({vp8, vp8_raw});
@@ -2413,24 +2411,24 @@ TEST_F(VideoChannelSingleThreadTest,
 
   EXPECT_THAT(
       media_receive_channel1_impl()->recv_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, std::nullopt)),
-                  AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization,
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, std::nullopt)),
+                  AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization,
                               cricket::kPacketizationParamRaw))));
   EXPECT_THAT(
       media_send_channel1_impl()->send_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization,
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization,
                               cricket::kPacketizationParamRaw)),
-                  AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+                  AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
 }
 
 TEST_F(VideoChannelSingleThreadTest,
        ConsidersAllCodecsWithDiffrentPacketizationsInLocalAnswer) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(96, "VP8");
-  cricket::Codec vp8_raw = cricket::CreateVideoCodec(97, "VP8");
+  webrtc::Codec vp8 = webrtc::CreateVideoCodec(96, "VP8");
+  webrtc::Codec vp8_raw = webrtc::CreateVideoCodec(97, "VP8");
   vp8_raw.packetization = cricket::kPacketizationParamRaw;
   webrtc::VideoContentDescription local;
   local.set_codecs({vp8_raw, vp8});
@@ -2445,17 +2443,17 @@ TEST_F(VideoChannelSingleThreadTest,
 
   EXPECT_THAT(
       media_receive_channel1_impl()->recv_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization,
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization,
                               cricket::kPacketizationParamRaw)),
-                  AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, std::nullopt))));
+                  AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, std::nullopt))));
   EXPECT_THAT(
       media_send_channel1_impl()->send_codecs(),
-      ElementsAre(AllOf(Field(&cricket::Codec::id, 96),
-                        Field(&cricket::Codec::packetization, std::nullopt)),
-                  AllOf(Field(&cricket::Codec::id, 97),
-                        Field(&cricket::Codec::packetization,
+      ElementsAre(AllOf(Field(&webrtc::Codec::id, 96),
+                        Field(&webrtc::Codec::packetization, std::nullopt)),
+                  AllOf(Field(&webrtc::Codec::id, 97),
+                        Field(&webrtc::Codec::packetization,
                               cricket::kPacketizationParamRaw))));
 }
 

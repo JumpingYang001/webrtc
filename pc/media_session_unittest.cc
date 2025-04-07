@@ -102,45 +102,41 @@ class CodecLookupHelperForTesting : public CodecLookupHelper {
   ::webrtc::CodecVendor codec_vendor_;
 };
 
-cricket::Codec CreateRedAudioCodec(absl::string_view encoding_id) {
-  cricket::Codec red = cricket::CreateAudioCodec(63, "red", 48000, 2);
+Codec CreateRedAudioCodec(absl::string_view encoding_id) {
+  Codec red = CreateAudioCodec(63, "red", 48000, 2);
   red.SetParam(cricket::kCodecParamNotInNameValueFormat,
                std::string(encoding_id) + '/' + std::string(encoding_id));
   return red;
 }
 
-const cricket::Codec kAudioCodecs1[] = {
-    cricket::CreateAudioCodec(111, "opus", 48000, 2),
-    CreateRedAudioCodec("111"),
-    cricket::CreateAudioCodec(103, "G722", 16000, 1),
-    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
-    cricket::CreateAudioCodec(8, "PCMA", 8000, 1),
-    cricket::CreateAudioCodec(107, "CN", 48000, 1)};
+const Codec kAudioCodecs1[] = {CreateAudioCodec(111, "opus", 48000, 2),
+                               CreateRedAudioCodec("111"),
+                               CreateAudioCodec(103, "G722", 16000, 1),
+                               CreateAudioCodec(0, "PCMU", 8000, 1),
+                               CreateAudioCodec(8, "PCMA", 8000, 1),
+                               CreateAudioCodec(107, "CN", 48000, 1)};
 
-const cricket::Codec kAudioCodecs2[] = {
-    cricket::CreateAudioCodec(126, "foo", 16000, 1),
-    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
-    cricket::CreateAudioCodec(127, "G722", 16000, 1),
+const Codec kAudioCodecs2[] = {
+    CreateAudioCodec(126, "foo", 16000, 1),
+    CreateAudioCodec(0, "PCMU", 8000, 1),
+    CreateAudioCodec(127, "G722", 16000, 1),
 };
 
-const cricket::Codec kAudioCodecsAnswer[] = {
-    cricket::CreateAudioCodec(103, "G722", 16000, 1),
-    cricket::CreateAudioCodec(0, "PCMU", 8000, 1),
+const Codec kAudioCodecsAnswer[] = {
+    CreateAudioCodec(103, "G722", 16000, 1),
+    CreateAudioCodec(0, "PCMU", 8000, 1),
 };
 
-const cricket::Codec kVideoCodecs1[] = {
-    cricket::CreateVideoCodec(96, "H264-SVC"),
-    cricket::CreateVideoCodec(97, "H264")};
+const Codec kVideoCodecs1[] = {CreateVideoCodec(96, "H264-SVC"),
+                               CreateVideoCodec(97, "H264")};
 
-const cricket::Codec kVideoCodecs1Reverse[] = {
-    cricket::CreateVideoCodec(97, "H264"),
-    cricket::CreateVideoCodec(96, "H264-SVC")};
+const Codec kVideoCodecs1Reverse[] = {CreateVideoCodec(97, "H264"),
+                                      CreateVideoCodec(96, "H264-SVC")};
 
-const cricket::Codec kVideoCodecs2[] = {cricket::CreateVideoCodec(126, "H264"),
-                                        cricket::CreateVideoCodec(127, "H263")};
+const Codec kVideoCodecs2[] = {CreateVideoCodec(126, "H264"),
+                               CreateVideoCodec(127, "H263")};
 
-const cricket::Codec kVideoCodecsAnswer[] = {
-    cricket::CreateVideoCodec(97, "H264")};
+const Codec kVideoCodecsAnswer[] = {CreateVideoCodec(97, "H264")};
 
 // H.265 level-id, according to H.265 spec, is calculated this way:
 // For any given H.265 level a.b, level-id = (a * 10 + b) * 3. For level 6.0,
@@ -182,27 +178,27 @@ const SdpVideoFormat kH265MainProfileLevel6Sdp("H265",
                                                  kVideoCodecsH265Level6LevelId},
                                                 {"tx-mode", "SRST"}});
 
-const cricket::Codec kVideoCodecsH265Level31[] = {
-    cricket::CreateVideoCodec(96, kH265MainProfileLevel31Sdp)};
-const cricket::Codec kVideoCodecsH265Level4[] = {
-    cricket::CreateVideoCodec(96, kH265MainProfileLevel4Sdp)};
-const cricket::Codec kVideoCodecsH265Level5[] = {
-    cricket::CreateVideoCodec(96, kH265MainProfileLevel5Sdp)};
-const cricket::Codec kVideoCodecsH265Level52[] = {
-    cricket::CreateVideoCodec(96, kH265MainProfileLevel52Sdp)};
-const cricket::Codec kVideoCodecsH265Level6[] = {
-    cricket::CreateVideoCodec(96, kH265MainProfileLevel6Sdp)};
+const Codec kVideoCodecsH265Level31[] = {
+    CreateVideoCodec(96, kH265MainProfileLevel31Sdp)};
+const Codec kVideoCodecsH265Level4[] = {
+    CreateVideoCodec(96, kH265MainProfileLevel4Sdp)};
+const Codec kVideoCodecsH265Level5[] = {
+    CreateVideoCodec(96, kH265MainProfileLevel5Sdp)};
+const Codec kVideoCodecsH265Level52[] = {
+    CreateVideoCodec(96, kH265MainProfileLevel52Sdp)};
+const Codec kVideoCodecsH265Level6[] = {
+    CreateVideoCodec(96, kH265MainProfileLevel6Sdp)};
 // Match two codec lists for content, but ignore the ID.
-bool CodecListsMatch(rtc::ArrayView<const cricket::Codec> list1,
-                     rtc::ArrayView<const cricket::Codec> list2) {
+bool CodecListsMatch(rtc::ArrayView<const Codec> list1,
+                     rtc::ArrayView<const Codec> list2) {
   if (list1.size() != list2.size()) {
     return false;
   }
   for (size_t i = 0; i < list1.size(); ++i) {
-    cricket::Codec codec1 = list1[i];
-    cricket::Codec codec2 = list2[i];
-    codec1.id = cricket::Codec::kIdNotSet;
-    codec2.id = cricket::Codec::kIdNotSet;
+    Codec codec1 = list1[i];
+    Codec codec2 = list2[i];
+    codec1.id = Codec::kIdNotSet;
+    codec2.id = Codec::kIdNotSet;
     if (codec1 != codec2) {
       RTC_LOG(LS_ERROR) << "Mismatch at position " << i << " between " << codec1
                         << " and " << codec2;
@@ -383,13 +379,13 @@ constexpr bool kStopped = true;
 constexpr bool kActive = false;
 
 // Helper used for debugging. It reports the media type and the parameters.
-std::string FullMimeType(cricket::Codec codec) {
+std::string FullMimeType(Codec codec) {
   StringBuilder sb;
   switch (codec.type) {
-    case cricket::Codec::Type::kAudio:
+    case Codec::Type::kAudio:
       sb << "audio/";
       break;
-    case cricket::Codec::Type::kVideo:
+    case Codec::Type::kVideo:
       sb << "video/";
       break;
   }
@@ -411,15 +407,13 @@ RtpTransceiverDirection GetMediaDirection(const ContentInfo* content) {
   return content->media_description()->direction();
 }
 
-void AddRtxCodec(const cricket::Codec& rtx_codec,
-                 std::vector<cricket::Codec>* codecs) {
+void AddRtxCodec(const Codec& rtx_codec, std::vector<Codec>* codecs) {
   RTC_LOG(LS_VERBOSE) << "Adding RTX codec " << FullMimeType(rtx_codec);
-  ASSERT_FALSE(cricket::FindCodecById(*codecs, rtx_codec.id));
+  ASSERT_FALSE(FindCodecById(*codecs, rtx_codec.id));
   codecs->push_back(rtx_codec);
 }
 
-std::vector<std::string> GetCodecNames(
-    const std::vector<cricket::Codec>& codecs) {
+std::vector<std::string> GetCodecNames(const std::vector<Codec>& codecs) {
   std::vector<std::string> codec_names;
   codec_names.reserve(codecs.size());
   for (const auto& codec : codecs) {
@@ -725,7 +719,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
   bool VerifyNoCNCodecs(const ContentInfo* content) {
     RTC_DCHECK(content);
     RTC_CHECK(content->media_description());
-    for (const cricket::Codec& codec : content->media_description()->codecs()) {
+    for (const Codec& codec : content->media_description()->codecs()) {
       if (codec.name == "CN") {
         return false;
       }
@@ -920,7 +914,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateOfferWithCustomCodecs) {
   MediaSessionOptions opts;
 
   SdpAudioFormat audio_format("custom-audio", 8000, 2);
-  cricket::Codec custom_audio_codec = cricket::CreateAudioCodec(audio_format);
+  Codec custom_audio_codec = CreateAudioCodec(audio_format);
   custom_audio_codec.id = 123;  // picked at random, but valid
   auto audio_options =
       MediaDescriptionOptions(webrtc::MediaType::AUDIO, "0",
@@ -928,7 +922,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateOfferWithCustomCodecs) {
   audio_options.codecs_to_include.push_back(custom_audio_codec);
   opts.media_description_options.push_back(audio_options);
 
-  cricket::Codec custom_video_codec = cricket::CreateVideoCodec("custom-video");
+  Codec custom_video_codec = CreateVideoCodec("custom-video");
   custom_video_codec.id = 124;  // picked at random, but valid
   auto video_options =
       MediaDescriptionOptions(webrtc::MediaType::VIDEO, "1",
@@ -968,7 +962,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateAnswerWithCustomCodecs) {
   // This breaks O/A rules - the responsibility for obeying those is
   // on the caller, not on this function.
   SdpAudioFormat audio_format("custom-audio", 8000, 2);
-  cricket::Codec custom_audio_codec = cricket::CreateAudioCodec(audio_format);
+  Codec custom_audio_codec = CreateAudioCodec(audio_format);
   custom_audio_codec.id = 123;  // picked at random, but valid
   auto audio_options =
       MediaDescriptionOptions(webrtc::MediaType::AUDIO, "audio",
@@ -976,7 +970,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateAnswerWithCustomCodecs) {
   audio_options.codecs_to_include.push_back(custom_audio_codec);
   answer_opts.media_description_options.push_back(audio_options);
 
-  cricket::Codec custom_video_codec = cricket::CreateVideoCodec("custom-video");
+  Codec custom_video_codec = CreateVideoCodec("custom-video");
   custom_video_codec.id = 124;
   auto video_options =
       MediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
@@ -1012,9 +1006,9 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateAnswerWithCustomCodecs) {
 // RTP paylod type. The test verifies that the offer don't contain the
 // duplicate RTP payload types.
 TEST_F(MediaSessionDescriptionFactoryTest, TestBundleOfferWithSameCodecPlType) {
-  cricket::Codec offered_video_codec =
+  Codec offered_video_codec =
       codec_lookup_helper_2_.CodecVendor("")->video_sendrecv_codecs()[0];
-  cricket::Codec offered_audio_codec =
+  Codec offered_audio_codec =
       codec_lookup_helper_2_.CodecVendor("")->audio_sendrecv_codecs()[0];
   ASSERT_EQ(offered_video_codec.id, offered_audio_codec.id);
 
@@ -1474,11 +1468,11 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddMediaDescriptionOptions(webrtc::MediaType::AUDIO, "audio",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &opts);
-  std::vector f1_codecs = {cricket::CreateAudioCodec(96, "opus", 48000, 1)};
+  std::vector f1_codecs = {CreateAudioCodec(96, "opus", 48000, 1)};
   codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateAudioCodec(0, "PCMU", 8000, 1)};
+  std::vector f2_codecs = {CreateAudioCodec(0, "PCMU", 8000, 1)};
   codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -1527,11 +1521,11 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &opts);
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H264")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H264")};
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(97, "VP8")};
+  std::vector f2_codecs = {CreateVideoCodec(97, "VP8")};
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -1552,13 +1546,13 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &opts);
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H264"),
-                           cricket::CreateVideoCodec(118, "flexfec-03")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H264"),
+                           CreateVideoCodec(118, "flexfec-03")};
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(97, "VP8"),
-                           cricket::CreateVideoCodec(118, "flexfec-03")};
+  std::vector f2_codecs = {CreateVideoCodec(97, "VP8"),
+                           CreateVideoCodec(118, "flexfec-03")};
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3101,7 +3095,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   // preference order.
   // TODO(wu): `updated_offer` should not include the codec
   // (i.e. `kAudioCodecs2[0]`) the other side doesn't support.
-  const cricket::Codec kUpdatedAudioCodecOffer[] = {
+  const Codec kUpdatedAudioCodecOffer[] = {
       kAudioCodecsAnswer[0],
       kAudioCodecsAnswer[1],
       kAudioCodecs2[0],
@@ -3110,7 +3104,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   // The expected video codecs are the common video codecs from the first
   // offer/answer exchange plus the video codecs only `f2_` offer, sorted in
   // preference order.
-  const cricket::Codec kUpdatedVideoCodecOffer[] = {
+  const Codec kUpdatedVideoCodecOffer[] = {
       kVideoCodecsAnswer[0],
       kVideoCodecs2[1],
   };
@@ -3128,10 +3122,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // that is being recycled.
 TEST_F(MediaSessionDescriptionFactoryTest,
        ReOfferDoesNotReUseRecycledAudioCodecs) {
-  codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
-  codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
+  codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(CodecList{},
+                                                           CodecList{});
+  codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(CodecList{},
+                                                           CodecList{});
 
   MediaSessionOptions opts;
   AddMediaDescriptionOptions(webrtc::MediaType::AUDIO, "a0",
@@ -3164,10 +3158,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // that is being recycled.
 TEST_F(MediaSessionDescriptionFactoryTest,
        ReOfferDoesNotReUseRecycledVideoCodecs) {
-  codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
-  codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
+  codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(CodecList{},
+                                                           CodecList{});
+  codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(CodecList{},
+                                                           CodecList{});
 
   MediaSessionOptions opts;
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "v0",
@@ -3193,10 +3187,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // section that is being recycled.
 TEST_F(MediaSessionDescriptionFactoryTest,
        ReAnswerDoesNotReUseRecycledAudioCodecs) {
-  codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
-  codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
+  codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(CodecList{},
+                                                           CodecList{});
+  codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(CodecList{},
+                                                           CodecList{});
 
   // Perform initial offer/answer in reverse (`f2_` as offerer) so that the
   // second offer/answer is forward (`f1_` as offerer).
@@ -3227,10 +3221,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // section that is being recycled.
 TEST_F(MediaSessionDescriptionFactoryTest,
        ReAnswerDoesNotReUseRecycledVideoCodecs) {
-  codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
-  codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(
-      cricket::CodecList{}, cricket::CodecList{});
+  codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(CodecList{},
+                                                           CodecList{});
+  codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(CodecList{},
+                                                           CodecList{});
 
   // Perform initial offer/answer in reverse (`f2_` as offerer) so that the
   // second offer/answer is forward (`f1_` as offerer).
@@ -3266,17 +3260,15 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kRecvOnly, kActive,
                              &opts);
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates rtx for H264 with the payload type `f1_` uses.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   // This creates rtx for H264 with the payload type `f2_` uses.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs2[0].id),
-              &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs2[0].id), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3289,9 +3281,8 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   const VideoContentDescription* vcd =
       GetFirstVideoContentDescription(answer.get());
 
-  std::vector<cricket::Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &expected_codecs);
+  std::vector<Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &expected_codecs);
 
   EXPECT_TRUE(CodecListsMatch(expected_codecs, vcd->codecs()));
 
@@ -3324,26 +3315,23 @@ TEST_F(MediaSessionDescriptionFactoryTest,
                              &opts);
   // We specifically choose different preferred payload types for VP8 to
   // trigger the issue.
-  cricket::Codec vp8_offerer = cricket::CreateVideoCodec(100, "VP8");
-  cricket::Codec vp8_offerer_rtx =
-      cricket::CreateVideoRtxCodec(101, vp8_offerer.id);
-  cricket::Codec vp8_answerer = cricket::CreateVideoCodec(110, "VP8");
-  cricket::Codec vp8_answerer_rtx =
-      cricket::CreateVideoRtxCodec(111, vp8_answerer.id);
-  cricket::Codec vp9 = cricket::CreateVideoCodec(120, "VP9");
-  cricket::Codec vp9_rtx = cricket::CreateVideoRtxCodec(121, vp9.id);
+  Codec vp8_offerer = CreateVideoCodec(100, "VP8");
+  Codec vp8_offerer_rtx = CreateVideoRtxCodec(101, vp8_offerer.id);
+  Codec vp8_answerer = CreateVideoCodec(110, "VP8");
+  Codec vp8_answerer_rtx = CreateVideoRtxCodec(111, vp8_answerer.id);
+  Codec vp9 = CreateVideoCodec(120, "VP9");
+  Codec vp9_rtx = CreateVideoRtxCodec(121, vp9.id);
 
-  std::vector<cricket::Codec> f1_codecs = {vp8_offerer, vp8_offerer_rtx};
+  std::vector<Codec> f1_codecs = {vp8_offerer, vp8_offerer_rtx};
   // We also specifically cause the answerer to prefer VP9, such that if it
   // *doesn't* honor the existing preferred codec (VP8) we'll notice.
-  std::vector<cricket::Codec> f2_codecs = {vp9, vp9_rtx, vp8_answerer,
-                                           vp8_answerer_rtx};
+  std::vector<Codec> f2_codecs = {vp9, vp9_rtx, vp8_answerer, vp8_answerer_rtx};
 
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
-  std::vector<cricket::Codec> audio_codecs;
+  std::vector<Codec> audio_codecs;
   codec_lookup_helper_1_.CodecVendor("")->set_audio_codecs(audio_codecs,
                                                            audio_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_audio_codecs(audio_codecs,
@@ -3363,7 +3351,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 
   const VideoContentDescription* vcd =
       GetFirstVideoContentDescription(updated_offer.get());
-  std::vector<cricket::Codec> codecs = vcd->codecs();
+  std::vector<Codec> codecs = vcd->codecs();
   ASSERT_EQ(4u, codecs.size());
   EXPECT_EQ(vp8_offerer, codecs[0]);
   EXPECT_EQ(vp8_offerer_rtx, codecs[1]);
@@ -3377,10 +3365,9 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // use, the added codecs payload types are changed.
 TEST_F(MediaSessionDescriptionFactoryTest,
        RespondentCreatesOfferWithVideoAndRtxAfterCreatingAudioAnswer) {
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates rtx for H264 with the payload type `f1_` uses.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3404,11 +3391,11 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   opts.media_description_options.clear();
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   ASSERT_THAT(acd->codecs().size(), Gt(0));
   int used_pl_type = acd->codecs()[0].id;
   f2_codecs[0].id = used_pl_type;  // Set the payload type for H264.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, used_pl_type), &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, used_pl_type), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3430,7 +3417,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   ASSERT_EQ(cricket::kRtxCodecName, updated_vcd->codecs()[1].name);
   int new_h264_pl_type = updated_vcd->codecs()[0].id;
   EXPECT_NE(used_pl_type, new_h264_pl_type);
-  cricket::Codec rtx = updated_vcd->codecs()[1];
+  Codec rtx = updated_vcd->codecs()[1];
   int pt_referenced_by_rtx =
       FromString<int>(rtx.params[cricket::kCodecParamAssociatedPayloadType]);
   EXPECT_EQ(new_h264_pl_type, pt_referenced_by_rtx);
@@ -3444,10 +3431,9 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   MediaSessionOptions opts;
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   // This creates rtx for H264 with the payload type `f2_` uses.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs2[0].id),
-              &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs2[0].id), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3460,7 +3446,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   const VideoContentDescription* vcd =
       GetFirstVideoContentDescription(answer.get());
 
-  std::vector<cricket::Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
+  std::vector<Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
   EXPECT_EQ(expected_codecs, vcd->codecs());
 
   // Now, ensure that the RTX codec is created correctly when `f2_` creates an
@@ -3475,8 +3461,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 
   // New offer should attempt to add H263, and RTX for H264.
   expected_codecs.push_back(kVideoCodecs2[1]);
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs1[1].id),
-              &expected_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs1[1].id), &expected_codecs);
   EXPECT_TRUE(CodecListsMatch(expected_codecs, updated_vcd->codecs()));
 }
 
@@ -3486,17 +3471,15 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtxWithoutApt) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kRecvOnly, kActive,
                              &opts);
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates RTX without associated payload type parameter.
-  AddRtxCodec(cricket::CreateVideoCodec(126, cricket::kRtxCodecName),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoCodec(126, cricket::kRtxCodecName), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   // This creates RTX for H264 with the payload type `f2_` uses.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs2[0].id),
-              &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs2[0].id), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3510,8 +3493,8 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtxWithoutApt) {
   MediaContentDescription* media_desc =
       offer->GetContentDescriptionByName(cricket::CN_VIDEO);
   ASSERT_TRUE(media_desc);
-  std::vector<cricket::Codec> codecs = media_desc->codecs();
-  for (cricket::Codec& codec : codecs) {
+  std::vector<Codec> codecs = media_desc->codecs();
+  for (Codec& codec : codecs) {
     if (absl::StartsWith(codec.name, cricket::kRtxCodecName)) {
       codec.params.clear();
     }
@@ -3533,17 +3516,15 @@ TEST_F(MediaSessionDescriptionFactoryTest, FilterOutRtxIfAptDoesntMatch) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kRecvOnly, kActive,
                              &opts);
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates RTX for H264 in sender.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   // This creates RTX for H263 in receiver.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs2[1].id),
-              &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs2[1].id), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
 
@@ -3568,23 +3549,20 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kRecvOnly, kActive,
                              &opts);
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates RTX for H264-SVC in sender.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs1[0].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs1[0].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
   // This creates RTX for H264 in sender.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector<cricket::Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
+  std::vector<Codec> f2_codecs = MAKE_VECTOR(kVideoCodecs2);
   // This creates RTX for H264 in receiver.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(124, kVideoCodecs2[0].id),
-              &f2_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(124, kVideoCodecs2[0].id), &f2_codecs);
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f1_codecs);
 
@@ -3597,9 +3575,8 @@ TEST_F(MediaSessionDescriptionFactoryTest,
       f2_.CreateAnswerOrError(offer.get(), opts, nullptr).MoveValue();
   const VideoContentDescription* vcd =
       GetFirstVideoContentDescription(answer.get());
-  std::vector<cricket::Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &expected_codecs);
+  std::vector<Codec> expected_codecs = MAKE_VECTOR(kVideoCodecsAnswer);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &expected_codecs);
 
   EXPECT_TRUE(CodecListsMatch(expected_codecs, vcd->codecs()));
 }
@@ -3611,10 +3588,9 @@ TEST_F(MediaSessionDescriptionFactoryTest, AddSecondRtxInNewOffer) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kRecvOnly, kActive,
                              &opts);
-  std::vector<cricket::Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
+  std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates RTX for H264 for the offerer.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3624,14 +3600,12 @@ TEST_F(MediaSessionDescriptionFactoryTest, AddSecondRtxInNewOffer) {
   const VideoContentDescription* vcd =
       GetFirstVideoContentDescription(offer.get());
 
-  std::vector<cricket::Codec> expected_codecs = MAKE_VECTOR(kVideoCodecs1);
-  AddRtxCodec(cricket::CreateVideoRtxCodec(126, kVideoCodecs1[1].id),
-              &expected_codecs);
+  std::vector<Codec> expected_codecs = MAKE_VECTOR(kVideoCodecs1);
+  AddRtxCodec(CreateVideoRtxCodec(126, kVideoCodecs1[1].id), &expected_codecs);
   EXPECT_TRUE(CodecListsMatch(expected_codecs, vcd->codecs()));
 
   // Now, attempt to add RTX for H264-SVC.
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs1[0].id),
-              &f1_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs1[0].id), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3640,8 +3614,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, AddSecondRtxInNewOffer) {
   ASSERT_TRUE(updated_offer);
   vcd = GetFirstVideoContentDescription(updated_offer.get());
 
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, kVideoCodecs1[0].id),
-              &expected_codecs);
+  AddRtxCodec(CreateVideoRtxCodec(125, kVideoCodecs1[0].id), &expected_codecs);
   EXPECT_TRUE(CodecListsMatch(expected_codecs, vcd->codecs()));
 }
 
@@ -3657,9 +3630,9 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateMultipleRtxSsrcs) {
                                         "stream1", {"stream1label"}, 3, &opts);
 
   // Use a single real codec, and then add RTX for it.
-  std::vector<cricket::Codec> f1_codecs;
-  f1_codecs.push_back(cricket::CreateVideoCodec(97, "H264"));
-  AddRtxCodec(cricket::CreateVideoRtxCodec(125, 97), &f1_codecs);
+  std::vector<Codec> f1_codecs;
+  f1_codecs.push_back(CreateVideoCodec(97, "H264"));
+  AddRtxCodec(CreateVideoRtxCodec(125, 97), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3702,9 +3675,9 @@ TEST_F(MediaSessionDescriptionFactoryTest, GenerateFlexfecSsrc) {
                                         "stream1", {"stream1label"}, 1, &opts);
 
   // Use a single real codec, and then add FlexFEC for it.
-  std::vector<cricket::Codec> f1_codecs;
-  f1_codecs.push_back(cricket::CreateVideoCodec(97, "H264"));
-  f1_codecs.push_back(cricket::CreateVideoCodec(118, "flexfec-03"));
+  std::vector<Codec> f1_codecs;
+  f1_codecs.push_back(CreateVideoCodec(97, "H264"));
+  f1_codecs.push_back(CreateVideoCodec(118, "flexfec-03"));
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3746,9 +3719,9 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateNoFlexfecSsrcs) {
                                         "stream1", {"stream1label"}, 3, &opts);
 
   // Use a single real codec, and then add FlexFEC for it.
-  std::vector<cricket::Codec> f1_codecs;
-  f1_codecs.push_back(cricket::CreateVideoCodec(97, "H264"));
-  f1_codecs.push_back(cricket::CreateVideoCodec(118, "flexfec-03"));
+  std::vector<Codec> f1_codecs;
+  f1_codecs.push_back(CreateVideoCodec(97, "H264"));
+  f1_codecs.push_back(CreateVideoCodec(118, "flexfec-03"));
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -4422,12 +4395,12 @@ TEST_F(MediaSessionDescriptionFactoryTest,
 // Test verifying that negotiating codecs with the same tx-mode retains the
 // tx-mode value.
 TEST_F(MediaSessionDescriptionFactoryTest, H265TxModeIsEqualRetainIt) {
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H265")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H265")};
   f1_codecs.back().tx_mode = "mrst";
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(96, "H265")};
+  std::vector f2_codecs = {CreateVideoCodec(96, "H265")};
   f2_codecs.back().tx_mode = "mrst";
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
@@ -4460,12 +4433,12 @@ TEST_F(MediaSessionDescriptionFactoryTest, H265TxModeIsEqualRetainIt) {
 // Test verifying that negotiating codecs with different tx_mode removes
 // the tx_mode value.
 TEST_F(MediaSessionDescriptionFactoryTest, H265TxModeIsDifferentDropCodecs) {
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H265")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H265")};
   f1_codecs.back().tx_mode = "mrst";
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(96, "H265")};
+  std::vector f2_codecs = {CreateVideoCodec(96, "H265")};
   f2_codecs.back().tx_mode = "mrmt";
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
@@ -4499,12 +4472,12 @@ TEST_F(MediaSessionDescriptionFactoryTest, H265TxModeIsDifferentDropCodecs) {
 // Test verifying that negotiating codecs with the same packetization retains
 // the packetization value.
 TEST_F(MediaSessionDescriptionFactoryTest, PacketizationIsEqual) {
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H264")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H264")};
   f1_codecs.back().packetization = "raw";
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(96, "H264")};
+  std::vector f2_codecs = {CreateVideoCodec(96, "H264")};
   f2_codecs.back().packetization = "raw";
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
@@ -4537,12 +4510,12 @@ TEST_F(MediaSessionDescriptionFactoryTest, PacketizationIsEqual) {
 // Test verifying that negotiating codecs with different packetization removes
 // the packetization value.
 TEST_F(MediaSessionDescriptionFactoryTest, PacketizationIsDifferent) {
-  std::vector f1_codecs = {cricket::CreateVideoCodec(96, "H264")};
+  std::vector f1_codecs = {CreateVideoCodec(96, "H264")};
   f1_codecs.back().packetization = "raw";
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
-  std::vector f2_codecs = {cricket::CreateVideoCodec(96, "H264")};
+  std::vector f2_codecs = {CreateVideoCodec(96, "H264")};
   f2_codecs.back().packetization = "notraw";
   codec_lookup_helper_2_.CodecVendor("")->set_video_codecs(f2_codecs,
                                                            f2_codecs);
@@ -4716,10 +4689,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
        H264MatchCriteriaIncludesPacketizationMode) {
   // Create two H264 codecs with the same profile level ID and different
   // packetization modes.
-  cricket::Codec h264_pm0 = cricket::CreateVideoCodec(96, "H264");
+  Codec h264_pm0 = CreateVideoCodec(96, "H264");
   h264_pm0.params[cricket::kH264FmtpProfileLevelId] = "42c01f";
   h264_pm0.params[cricket::kH264FmtpPacketizationMode] = "0";
-  cricket::Codec h264_pm1 = cricket::CreateVideoCodec(97, "H264");
+  Codec h264_pm1 = CreateVideoCodec(97, "H264");
   h264_pm1.params[cricket::kH264FmtpProfileLevelId] = "42c01f";
   h264_pm1.params[cricket::kH264FmtpPacketizationMode] = "1";
 
@@ -4819,8 +4792,8 @@ INSTANTIATE_TEST_SUITE_P(MediaProtocolDtlsPatternTest,
                          ValuesIn(kMediaProtocolsDtls));
 
 // Compare the two vectors of codecs ignoring the payload type.
-bool CodecsMatch(const std::vector<cricket::Codec>& codecs1,
-                 const std::vector<cricket::Codec>& codecs2) {
+bool CodecsMatch(const std::vector<Codec>& codecs1,
+                 const std::vector<Codec>& codecs2) {
   if (codecs1.size() != codecs2.size()) {
     return false;
   }
@@ -4843,10 +4816,9 @@ void TestAudioCodecsOffer(RtpTransceiverDirection direction) {
   CodecLookupHelperForTesting codec_lookup_helper(field_trials);
   MediaSessionDescriptionFactory sf(nullptr, false, &ssrc_generator, &tdf,
                                     &codec_lookup_helper);
-  const std::vector<cricket::Codec> send_codecs = MAKE_VECTOR(kAudioCodecs1);
-  const std::vector<cricket::Codec> recv_codecs = MAKE_VECTOR(kAudioCodecs2);
-  const std::vector<cricket::Codec> sendrecv_codecs =
-      MAKE_VECTOR(kAudioCodecsAnswer);
+  const std::vector<Codec> send_codecs = MAKE_VECTOR(kAudioCodecs1);
+  const std::vector<Codec> recv_codecs = MAKE_VECTOR(kAudioCodecs2);
+  const std::vector<Codec> sendrecv_codecs = MAKE_VECTOR(kAudioCodecsAnswer);
   codec_lookup_helper.CodecVendor("")->set_audio_codecs(send_codecs,
                                                         recv_codecs);
 
@@ -4888,14 +4860,13 @@ void TestAudioCodecsOffer(RtpTransceiverDirection direction) {
 
 // Since the PT suggester reserves the static range for specific codecs,
 // PT numbers from the 36-63 range are used.
-const cricket::Codec kOfferAnswerCodecs[] = {
-    cricket::CreateAudioCodec(40, "codec0", 16000, 1),
-    cricket::CreateAudioCodec(41, "codec1", 8000, 1),
-    cricket::CreateAudioCodec(42, "codec2", 8000, 1),
-    cricket::CreateAudioCodec(43, "codec3", 8000, 1),
-    cricket::CreateAudioCodec(44, "codec4", 8000, 2),
-    cricket::CreateAudioCodec(45, "codec5", 32000, 1),
-    cricket::CreateAudioCodec(46, "codec6", 48000, 1)};
+const Codec kOfferAnswerCodecs[] = {CreateAudioCodec(40, "codec0", 16000, 1),
+                                    CreateAudioCodec(41, "codec1", 8000, 1),
+                                    CreateAudioCodec(42, "codec2", 8000, 1),
+                                    CreateAudioCodec(43, "codec3", 8000, 1),
+                                    CreateAudioCodec(44, "codec4", 8000, 2),
+                                    CreateAudioCodec(45, "codec5", 32000, 1),
+                                    CreateAudioCodec(46, "codec6", 48000, 1)};
 
 /* The codecs groups below are chosen as per the matrix below. The objective
  * is to have different sets of codecs in the inputs, to get unique sets of
@@ -5001,7 +4972,7 @@ void TestAudioCodecsAnswer(RtpTransceiverDirection offer_direction,
     ASSERT_EQ(webrtc::MediaType::AUDIO, ac->media_description()->type());
     const MediaContentDescription* acd = ac->media_description();
 
-    std::vector<cricket::Codec> target_codecs;
+    std::vector<Codec> target_codecs;
     // For offers with sendrecv or inactive, we should never reply with more
     // codecs than offered, with these codec sets.
     switch (offer_direction) {
@@ -5034,7 +5005,7 @@ void TestAudioCodecsAnswer(RtpTransceiverDirection offer_direction,
         RTC_DCHECK_NOTREACHED();
     }
 
-    auto format_codecs = [](const std::vector<cricket::Codec>& codecs) {
+    auto format_codecs = [](const std::vector<Codec>& codecs) {
       StringBuilder os;
       bool first = true;
       os << "{";
@@ -5118,7 +5089,7 @@ class VideoCodecsOfferH265LevelIdTest : public testing::Test {
         std::unique_ptr<SSLIdentity>(new FakeSSLIdentity("answer_id"))));
   }
 
-  void CheckH265Level(const std::vector<cricket::Codec>& codecs,
+  void CheckH265Level(const std::vector<Codec>& codecs,
                       const std::string& expected_level) {
     for (const auto& codec : codecs) {
       if (codec.name == "H265") {
@@ -5145,11 +5116,9 @@ class VideoCodecsOfferH265LevelIdTest : public testing::Test {
 // Offer: level 5.2, SendRecv
 // Answer: level 5.2, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest, TestSendRecvSymmetrical) {
-  const std::vector<cricket::Codec> send_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> recv_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> sendrecv_codecs =
+  const std::vector<Codec> send_codecs = MAKE_VECTOR(kVideoCodecsH265Level52);
+  const std::vector<Codec> recv_codecs = MAKE_VECTOR(kVideoCodecsH265Level52);
+  const std::vector<Codec> sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(send_codecs,
                                                                  recv_codecs);
@@ -5200,11 +5169,9 @@ TEST_F(VideoCodecsOfferH265LevelIdTest, TestSendRecvSymmetrical) {
 // Offer: level 6.0, SendOnly
 // Answer: level 6.0, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest, TestSendOnlySymmetrical) {
-  const std::vector<cricket::Codec> send_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> recv_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> sendrecv_codecs =
+  const std::vector<Codec> send_codecs = MAKE_VECTOR(kVideoCodecsH265Level6);
+  const std::vector<Codec> recv_codecs = MAKE_VECTOR(kVideoCodecsH265Level6);
+  const std::vector<Codec> sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(send_codecs,
                                                                  recv_codecs);
@@ -5251,11 +5218,9 @@ TEST_F(VideoCodecsOfferH265LevelIdTest, TestSendOnlySymmetrical) {
 // Offer: level 5.2, RecvOnly
 // Answer: level 5.2, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest, TestRecvOnlySymmetrical) {
-  const std::vector<cricket::Codec> send_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> recv_codecs =
-      MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> sendrecv_codecs =
+  const std::vector<Codec> send_codecs = MAKE_VECTOR(kVideoCodecsH265Level52);
+  const std::vector<Codec> recv_codecs = MAKE_VECTOR(kVideoCodecsH265Level52);
+  const std::vector<Codec> sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(send_codecs,
                                                                  recv_codecs);
@@ -5301,15 +5266,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest, TestRecvOnlySymmetrical) {
 // Answer: level 5.2, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendRecvOffererEncode52Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5363,15 +5328,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 5.2, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendRecvOffererEncode60Decode52AnswererEncode52Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5425,15 +5390,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 3.1, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendRecvOffererEncode60Decode52AnswererEncode31Decode50) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level31);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level5);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5497,15 +5462,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 4, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendRecvOffererEncode60Decode52AnswererEncode40Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5559,15 +5524,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 4, SendRecv
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendRecvOffererEncode40Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5621,15 +5586,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 6, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        RecvOnlyOffererEncode52Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5679,15 +5644,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 5.2, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        RecvOnlyOffererEncode60Decode52AnswererEncode52Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5737,15 +5702,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 3.1, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        RecvOnlyOffererEncode60Decode52AnswererEncode31Decode50) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level31);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level5);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5795,15 +5760,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 4, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        RecvOnlyOffererEncode60Decode52AnswererEncode40Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5853,15 +5818,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 6, SendOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        RecvOnlyOffererEncode40Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5911,15 +5876,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 5.2, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode52Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -5970,15 +5935,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 6, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode60Decode52AnswererEncode52Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -6029,15 +5994,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 5, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode60Decode52AnswererEncode31Decode50) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level31);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level5);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -6088,15 +6053,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 6, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode60Decode52AnswererEncode40Decode60) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -6147,15 +6112,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 // Answer: level 4, RecvOnly
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode40Decode60AnswererEncode60Decode52) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);
@@ -6202,15 +6167,15 @@ TEST_F(VideoCodecsOfferH265LevelIdTest,
 
 TEST_F(VideoCodecsOfferH265LevelIdTest,
        SendOnlyOffererEncode40Decode60AnswererEncode60Decode52WithPreference) {
-  const std::vector<cricket::Codec> offerer_send_codecs =
+  const std::vector<Codec> offerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> offerer_recv_codecs =
+  const std::vector<Codec> offerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> offerer_sendrecv_codecs =
+  const std::vector<Codec> offerer_sendrecv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level4);
-  const std::vector<cricket::Codec> answerer_send_codecs =
+  const std::vector<Codec> answerer_send_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level6);
-  const std::vector<cricket::Codec> answerer_recv_codecs =
+  const std::vector<Codec> answerer_recv_codecs =
       MAKE_VECTOR(kVideoCodecsH265Level52);
   codec_lookup_helper_offerer_.CodecVendor("")->set_video_codecs(
       offerer_send_codecs, offerer_recv_codecs);

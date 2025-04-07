@@ -116,8 +116,8 @@ class WebRtcVoiceEngine final : public VoiceEngineInterface {
       const webrtc::CryptoOptions& crypto_options,
       webrtc::AudioCodecPairId codec_pair_id) override;
 
-  const std::vector<Codec>& LegacySendCodecs() const override;
-  const std::vector<Codec>& LegacyRecvCodecs() const override;
+  const std::vector<webrtc::Codec>& LegacySendCodecs() const override;
+  const std::vector<webrtc::Codec>& LegacyRecvCodecs() const override;
 
   webrtc::AudioEncoderFactory* encoder_factory() const override {
     return encoder_factory_.get();
@@ -170,8 +170,8 @@ class WebRtcVoiceEngine final : public VoiceEngineInterface {
   std::unique_ptr<webrtc::AudioFrameProcessor> audio_frame_processor_;
   // The primary instance of WebRtc VoiceEngine.
   rtc::scoped_refptr<webrtc::AudioState> audio_state_;
-  std::vector<Codec> send_codecs_;
-  std::vector<Codec> recv_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
   bool is_dumping_aec_ = false;
   bool initialized_ = false;
 
@@ -209,7 +209,7 @@ class WebRtcVoiceSendChannel final : public MediaChannelUtil,
   }
   VoiceMediaSendChannelInterface* AsVoiceSendChannel() override { return this; }
 
-  std::optional<Codec> GetSendCodec() const override;
+  std::optional<webrtc::Codec> GetSendCodec() const override;
 
   // Functions imported from MediaChannelUtil
   void SetInterface(MediaChannelNetworkInterface* iface) override {
@@ -292,8 +292,8 @@ class WebRtcVoiceSendChannel final : public MediaChannelUtil,
 
  private:
   bool SetOptions(const AudioOptions& options);
-  bool SetSendCodecs(const std::vector<Codec>& codecs,
-                     std::optional<Codec> preferred_codec);
+  bool SetSendCodecs(const std::vector<webrtc::Codec>& codecs,
+                     std::optional<webrtc::Codec> preferred_codec);
   bool SetLocalSource(uint32_t ssrc, AudioSource* source);
   bool MuteStream(uint32_t ssrc, bool mute);
 
@@ -307,7 +307,7 @@ class WebRtcVoiceSendChannel final : public MediaChannelUtil,
       webrtc::SequenceChecker::kDetached};
 
   WebRtcVoiceEngine* const engine_ = nullptr;
-  std::vector<Codec> send_codecs_;
+  std::vector<webrtc::Codec> send_codecs_;
 
   int max_send_bitrate_bps_ = 0;
   AudioOptions options_;
@@ -440,7 +440,7 @@ class WebRtcVoiceReceiveChannel final
 
  private:
   bool SetOptions(const AudioOptions& options);
-  bool SetRecvCodecs(const std::vector<Codec>& codecs);
+  bool SetRecvCodecs(const std::vector<webrtc::Codec>& codecs);
   bool SetLocalSource(uint32_t ssrc, AudioSource* source);
   bool MuteStream(uint32_t ssrc, bool mute);
 
@@ -465,7 +465,7 @@ class WebRtcVoiceReceiveChannel final
   // TODO(kwiberg): decoder_map_ and recv_codecs_ store the exact same
   // information, in slightly different formats. Eliminate recv_codecs_.
   std::map<int, webrtc::SdpAudioFormat> decoder_map_;
-  std::vector<Codec> recv_codecs_;
+  std::vector<webrtc::Codec> recv_codecs_;
 
   AudioOptions options_;
   bool recv_nack_enabled_ = false;

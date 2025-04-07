@@ -79,7 +79,7 @@ struct RidDescription final {
   // When the RID is serialized/deserialized, these codecs are mapped to/from
   // the payload types listed in the media section, ensuring PT consistency in
   // the SDP even when `codecs[i].id` cannot be trusted.
-  std::vector<Codec> codecs;
+  std::vector<webrtc::Codec> codecs;
 
   // Contains key-value pairs for restrictions.
   // The keys are not validated against a known set.

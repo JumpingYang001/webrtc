@@ -31,14 +31,14 @@ class TypedCodecVendor {
                    bool is_sender,
                    bool rtx_enabled,
                    const FieldTrialsView& trials);
-  const cricket::CodecList& codecs() const { return codecs_; }
-  void set_codecs(const cricket::CodecList& codecs) { codecs_ = codecs; }
+  const CodecList& codecs() const { return codecs_; }
+  void set_codecs(const CodecList& codecs) { codecs_ = codecs; }
   // For easy initialization, copying is allowed.
   TypedCodecVendor(const TypedCodecVendor& from) = default;
   TypedCodecVendor& operator=(const TypedCodecVendor& from) = default;
 
  private:
-  cricket::CodecList codecs_;
+  CodecList codecs_;
 };
 
 }  //  namespace webrtc

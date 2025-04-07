@@ -1415,7 +1415,7 @@ void BuildMediaLine(const webrtc::MediaType media_type,
       media_type == webrtc::MediaType::VIDEO) {
     type = media_type == webrtc::MediaType::AUDIO ? kSdpMediaTypeAudio
                                                   : kSdpMediaTypeVideo;
-    for (const cricket::Codec& codec : media_desc->codecs()) {
+    for (const Codec& codec : media_desc->codecs()) {
       fmt.append(" ");
       fmt.append(absl::StrCat(codec.id));
     }
@@ -1820,7 +1820,7 @@ bool WriteFmtpParameters(const webrtc::CodecParameterMap& parameters,
   return !empty;
 }
 
-void AddFmtpLine(const cricket::Codec& codec, std::string* message) {
+void AddFmtpLine(const Codec& codec, std::string* message) {
   StringBuilder os;
   WriteFmtpHeader(codec.id, &os);
   os << kSdpDelimiterSpace;
@@ -1831,7 +1831,7 @@ void AddFmtpLine(const cricket::Codec& codec, std::string* message) {
   return;
 }
 
-void AddPacketizationLine(const cricket::Codec& codec, std::string* message) {
+void AddPacketizationLine(const Codec& codec, std::string* message) {
   if (!codec.packetization) {
     return;
   }
@@ -1841,8 +1841,8 @@ void AddPacketizationLine(const cricket::Codec& codec, std::string* message) {
   AddLine(os.str(), message);
 }
 
-void AddRtcpFbLines(const cricket::Codec& codec, std::string* message) {
-  for (const cricket::FeedbackParam& param : codec.feedback_params.params()) {
+void AddRtcpFbLines(const Codec& codec, std::string* message) {
+  for (const FeedbackParam& param : codec.feedback_params.params()) {
     StringBuilder os;
     WriteRtcpFbHeader(codec.id, &os);
     os << " " << param.id();
@@ -1882,7 +1882,7 @@ void BuildRtpmap(const MediaContentDescription* media_desc,
   RTC_DCHECK(media_desc != NULL);
   StringBuilder os;
   if (media_type == webrtc::MediaType::VIDEO) {
-    for (const cricket::Codec& codec : media_desc->codecs()) {
+    for (const Codec& codec : media_desc->codecs()) {
       // RFC 4566
       // a=rtpmap:<payload type> <encoding name>/<clock rate>
       // [/<encodingparameters>]
@@ -1900,7 +1900,7 @@ void BuildRtpmap(const MediaContentDescription* media_desc,
     std::vector<int> ptimes;
     std::vector<int> maxptimes;
     int max_minptime = 0;
-    for (const cricket::Codec& codec : media_desc->codecs()) {
+    for (const Codec& codec : media_desc->codecs()) {
       RTC_DCHECK(!codec.name.empty());
       // RFC 4566
       // a=rtpmap:<payload type> <encoding name>/<clock rate>
@@ -2537,13 +2537,13 @@ void MaybeCreateStaticPayloadAudioCodecs(const std::vector<int>& fmts,
       std::string encoding_name = kStaticPayloadAudioCodecs[payload_type].name;
       int clock_rate = kStaticPayloadAudioCodecs[payload_type].clockrate;
       size_t channels = kStaticPayloadAudioCodecs[payload_type].channels;
-      media_desc->AddCodec(cricket::CreateAudioCodec(
-          payload_type, encoding_name, clock_rate, channels));
+      media_desc->AddCodec(
+          CreateAudioCodec(payload_type, encoding_name, clock_rate, channels));
     }
   }
 }
 
-static void BackfillCodecParameters(std::vector<cricket::Codec>& codecs) {
+static void BackfillCodecParameters(std::vector<Codec>& codecs) {
   for (auto& codec : codecs) {
     std::string unused_value;
     if (absl::EqualsIgnoreCase(cricket::kVp9CodecName, codec.name)) {
@@ -2619,11 +2619,11 @@ static std::unique_ptr<MediaContentDescription> ParseContentDescription(
   for (int pt : payload_types) {
     payload_type_preferences[pt] = preference--;
   }
-  std::vector<cricket::Codec> codecs = media_desc->codecs();
-  absl::c_sort(codecs, [&payload_type_preferences](const cricket::Codec& a,
-                                                   const cricket::Codec& b) {
-    return payload_type_preferences[a.id] > payload_type_preferences[b.id];
-  });
+  std::vector<Codec> codecs = media_desc->codecs();
+  absl::c_sort(
+      codecs, [&payload_type_preferences](const Codec& a, const Codec& b) {
+        return payload_type_preferences[a.id] > payload_type_preferences[b.id];
+      });
   // Backfill any default parameters.
   BackfillCodecParameters(codecs);
 
@@ -2845,8 +2845,7 @@ bool ParseMediaDescription(
   return true;
 }
 
-void AddParameters(const webrtc::CodecParameterMap& parameters,
-                   cricket::Codec* codec) {
+void AddParameters(const webrtc::CodecParameterMap& parameters, Codec* codec) {
   for (const auto& entry : parameters) {
     const std::string& key = entry.first;
     const std::string& value = entry.second;
@@ -2854,14 +2853,13 @@ void AddParameters(const webrtc::CodecParameterMap& parameters,
   }
 }
 
-void AddFeedbackParameter(const cricket::FeedbackParam& feedback_param,
-                          cricket::Codec* codec) {
+void AddFeedbackParameter(const FeedbackParam& feedback_param, Codec* codec) {
   codec->AddFeedbackParam(feedback_param);
 }
 
-void AddFeedbackParameters(const cricket::FeedbackParams& feedback_params,
-                           cricket::Codec* codec) {
-  for (const cricket::FeedbackParam& param : feedback_params.params()) {
+void AddFeedbackParameters(const FeedbackParams& feedback_params,
+                           Codec* codec) {
+  for (const FeedbackParam& param : feedback_params.params()) {
     codec->AddFeedbackParam(param);
   }
 }
@@ -2869,27 +2867,26 @@ void AddFeedbackParameters(const cricket::FeedbackParams& feedback_params,
 // Gets the current codec setting associated with `payload_type`. If there
 // is no Codec associated with that payload type it returns an empty codec
 // with that payload type.
-cricket::Codec GetCodecWithPayloadType(
-    webrtc::MediaType type,
-    const std::vector<cricket::Codec>& codecs,
-    int payload_type) {
-  const cricket::Codec* codec = FindCodecById(codecs, payload_type);
+Codec GetCodecWithPayloadType(webrtc::MediaType type,
+                              const std::vector<Codec>& codecs,
+                              int payload_type) {
+  const Codec* codec = FindCodecById(codecs, payload_type);
   if (codec)
     return *codec;
   // Return empty codec with `payload_type`.
   if (type == webrtc::MediaType::AUDIO) {
-    return cricket::CreateAudioCodec(payload_type, "", 0, 0);
+    return CreateAudioCodec(payload_type, "", 0, 0);
   } else {
-    return cricket::CreateVideoCodec(payload_type, "");
+    return CreateVideoCodec(payload_type, "");
   }
 }
 
 // Updates or creates a new codec entry in the media description.
 void AddOrReplaceCodec(MediaContentDescription* content_desc,
-                       const cricket::Codec& codec) {
-  std::vector<cricket::Codec> codecs = content_desc->codecs();
+                       const Codec& codec) {
+  std::vector<Codec> codecs = content_desc->codecs();
   bool found = false;
-  for (cricket::Codec& existing_codec : codecs) {
+  for (Codec& existing_codec : codecs) {
     if (codec.id == existing_codec.id) {
       // Overwrite existing codec with the new codec.
       existing_codec = codec;
@@ -2910,7 +2907,7 @@ void UpdateCodec(MediaContentDescription* content_desc,
                  int payload_type,
                  const webrtc::CodecParameterMap& parameters) {
   // Codec might already have been populated (from rtpmap).
-  cricket::Codec new_codec = GetCodecWithPayloadType(
+  Codec new_codec = GetCodecWithPayloadType(
       content_desc->type(), content_desc->codecs(), payload_type);
   AddParameters(parameters, &new_codec);
   AddOrReplaceCodec(content_desc, new_codec);
@@ -2920,9 +2917,9 @@ void UpdateCodec(MediaContentDescription* content_desc,
 // to `feedback_param`.
 void UpdateCodec(MediaContentDescription* content_desc,
                  int payload_type,
-                 const cricket::FeedbackParam& feedback_param) {
+                 const FeedbackParam& feedback_param) {
   // Codec might already have been populated (from rtpmap).
-  cricket::Codec new_codec = GetCodecWithPayloadType(
+  Codec new_codec = GetCodecWithPayloadType(
       content_desc->type(), content_desc->codecs(), payload_type);
   AddFeedbackParameter(feedback_param, &new_codec);
   AddOrReplaceCodec(content_desc, new_codec);
@@ -2939,18 +2936,17 @@ void UpdateVideoCodecPacketization(MediaContentDescription* desc,
   }
 
   // Codec might already have been populated (from rtpmap).
-  cricket::Codec codec =
+  Codec codec =
       GetCodecWithPayloadType(desc->type(), desc->codecs(), payload_type);
   codec.packetization = std::string(packetization);
   AddOrReplaceCodec(desc, codec);
 }
 
-std::optional<cricket::Codec> PopWildcardCodec(
-    std::vector<cricket::Codec>* codecs) {
+std::optional<Codec> PopWildcardCodec(std::vector<Codec>* codecs) {
   RTC_DCHECK(codecs);
   for (auto iter = codecs->begin(); iter != codecs->end(); ++iter) {
     if (iter->id == kWildcardPayloadType) {
-      cricket::Codec wildcard_codec = *iter;
+      Codec wildcard_codec = *iter;
       codecs->erase(iter);
       return wildcard_codec;
     }
@@ -2961,7 +2957,7 @@ std::optional<cricket::Codec> PopWildcardCodec(
 void UpdateFromWildcardCodecs(MediaContentDescription* desc) {
   RTC_DCHECK(desc);
   auto codecs = desc->codecs();
-  std::optional<cricket::Codec> wildcard_codec = PopWildcardCodec(&codecs);
+  std::optional<Codec> wildcard_codec = PopWildcardCodec(&codecs);
   if (!wildcard_codec) {
     return;
   }
@@ -2982,8 +2978,8 @@ void AddAudioAttribute(const std::string& name,
   if (value.empty()) {
     return;
   }
-  std::vector<cricket::Codec> codecs = desc->codecs();
-  for (cricket::Codec& codec : codecs) {
+  std::vector<Codec> codecs = desc->codecs();
+  for (Codec& codec : codecs) {
     codec.params[name] = std::string(value);
   }
   desc->set_codecs(codecs);
@@ -3387,9 +3383,8 @@ bool ParseContent(absl::string_view message,
   // Codec has not been populated correctly unless the name has been set. This
   // can happen if an SDP has an fmtp or rtcp-fb with a payload type but doesn't
   // have a corresponding "rtpmap" line. This should lead to a parse error.
-  if (!absl::c_all_of(media_desc->codecs(), [](const cricket::Codec codec) {
-        return !codec.name.empty();
-      })) {
+  if (!absl::c_all_of(media_desc->codecs(),
+                      [](const Codec codec) { return !codec.name.empty(); })) {
     return ParseFailed("Failed to parse codecs correctly.", error);
   }
   if (media_type == webrtc::MediaType::AUDIO) {
@@ -3528,7 +3523,7 @@ void UpdateCodec(int payload_type,
                  MediaContentDescription* desc) {
   // Codec may already be populated with (only) optional parameters
   // (from an fmtp).
-  cricket::Codec codec =
+  Codec codec =
       GetCodecWithPayloadType(desc->type(), desc->codecs(), payload_type);
   codec.name = std::string(name);
   codec.clockrate = clockrate;
@@ -3544,7 +3539,7 @@ void UpdateCodec(int payload_type,
                  MediaContentDescription* desc) {
   // Codec may already be populated with (only) optional parameters
   // (from an fmtp).
-  cricket::Codec codec =
+  Codec codec =
       GetCodecWithPayloadType(desc->type(), desc->codecs(), payload_type);
   codec.name = std::string(name);
   AddOrReplaceCodec(desc, codec);
@@ -3596,7 +3591,7 @@ bool ParseRtpmapAttribute(absl::string_view line,
   }
 
   if (media_type == webrtc::MediaType::VIDEO) {
-    for (const cricket::Codec& existing_codec : media_desc->codecs()) {
+    for (const Codec& existing_codec : media_desc->codecs()) {
       if (!existing_codec.name.empty() && payload_type == existing_codec.id &&
           (!absl::EqualsIgnoreCase(encoding_name, existing_codec.name) ||
            clock_rate != existing_codec.clockrate)) {
@@ -3627,7 +3622,7 @@ bool ParseRtpmapAttribute(absl::string_view line,
       return ParseFailed(line, "At most 24 channels are supported.", error);
     }
 
-    for (const cricket::Codec& existing_codec : media_desc->codecs()) {
+    for (const Codec& existing_codec : media_desc->codecs()) {
       // TODO(crbug.com/1338902) re-add checks for clockrate and number of
       // channels.
       if (!existing_codec.name.empty() && payload_type == existing_codec.id &&
@@ -3788,7 +3783,7 @@ bool ParseRtcpFbAttribute(absl::string_view line,
        ++iter) {
     param.append(iter->data(), iter->length());
   }
-  const cricket::FeedbackParam feedback_param(id, param);
+  const FeedbackParam feedback_param(id, param);
 
   if (media_type == webrtc::MediaType::AUDIO ||
       media_type == webrtc::MediaType::VIDEO) {

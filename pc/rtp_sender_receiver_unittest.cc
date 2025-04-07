@@ -170,8 +170,8 @@ class RtpSenderReceiverTest
   // Needed to use DTMF sender.
   void AddDtmfCodec() {
     cricket::AudioSenderParameter params;
-    const cricket::Codec kTelephoneEventCodec =
-        cricket::CreateAudioCodec(106, "telephone-event", 8000, 1);
+    const Codec kTelephoneEventCodec =
+        CreateAudioCodec(106, "telephone-event", 8000, 1);
     params.codecs.push_back(kTelephoneEventCodec);
     voice_media_send_channel()->SetSenderParameters(params);
   }

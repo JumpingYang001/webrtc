@@ -100,25 +100,24 @@ using ::webrtc::scoped_refptr;
 
 constexpr uint32_t kMaxUnsignaledRecvStreams = 4;
 
-const cricket::Codec kPcmuCodec = cricket::CreateAudioCodec(0, "PCMU", 8000, 1);
-const cricket::Codec kOpusCodec =
-    cricket::CreateAudioCodec(111, "opus", 48000, 2);
-const cricket::Codec kG722CodecVoE =
-    cricket::CreateAudioCodec(9, "G722", 16000, 1);
-const cricket::Codec kG722CodecSdp =
-    cricket::CreateAudioCodec(9, "G722", 8000, 1);
-const cricket::Codec kCn8000Codec =
-    cricket::CreateAudioCodec(13, "CN", 8000, 1);
-const cricket::Codec kCn16000Codec =
-    cricket::CreateAudioCodec(105, "CN", 16000, 1);
-const cricket::Codec kRed48000Codec =
-    cricket::CreateAudioCodec(112, "RED", 48000, 2);
-const cricket::Codec kTelephoneEventCodec1 =
-    cricket::CreateAudioCodec(106, "telephone-event", 8000, 1);
-const cricket::Codec kTelephoneEventCodec2 =
-    cricket::CreateAudioCodec(107, "telephone-event", 32000, 1);
-const cricket::Codec kUnknownCodec =
-    cricket::CreateAudioCodec(127, "XYZ", 32000, 1);
+const webrtc::Codec kPcmuCodec = webrtc::CreateAudioCodec(0, "PCMU", 8000, 1);
+const webrtc::Codec kOpusCodec =
+    webrtc::CreateAudioCodec(111, "opus", 48000, 2);
+const webrtc::Codec kG722CodecVoE =
+    webrtc::CreateAudioCodec(9, "G722", 16000, 1);
+const webrtc::Codec kG722CodecSdp =
+    webrtc::CreateAudioCodec(9, "G722", 8000, 1);
+const webrtc::Codec kCn8000Codec = webrtc::CreateAudioCodec(13, "CN", 8000, 1);
+const webrtc::Codec kCn16000Codec =
+    webrtc::CreateAudioCodec(105, "CN", 16000, 1);
+const webrtc::Codec kRed48000Codec =
+    webrtc::CreateAudioCodec(112, "RED", 48000, 2);
+const webrtc::Codec kTelephoneEventCodec1 =
+    webrtc::CreateAudioCodec(106, "telephone-event", 8000, 1);
+const webrtc::Codec kTelephoneEventCodec2 =
+    webrtc::CreateAudioCodec(107, "telephone-event", 32000, 1);
+const webrtc::Codec kUnknownCodec =
+    webrtc::CreateAudioCodec(127, "XYZ", 32000, 1);
 
 const uint32_t kSsrc0 = 0;
 const uint32_t kSsrc1 = 1;
@@ -186,12 +185,12 @@ void AdmSetupExpectations(webrtc::test::MockAudioDeviceModule* adm) {
   EXPECT_CALL(*adm, Terminate()).WillOnce(Return(0));
 }
 
-std::vector<cricket::Codec> AddIdToCodecs(
+std::vector<webrtc::Codec> AddIdToCodecs(
     webrtc::PayloadTypePicker& pt_mapper,
-    std::vector<cricket::Codec>&& codecs_in) {
-  std::vector<cricket::Codec> codecs = std::move(codecs_in);
-  for (cricket::Codec& codec : codecs) {
-    if (codec.id == cricket::Codec::kIdNotSet) {
+    std::vector<webrtc::Codec>&& codecs_in) {
+  std::vector<webrtc::Codec> codecs = std::move(codecs_in);
+  for (webrtc::Codec& codec : codecs) {
+    if (codec.id == webrtc::Codec::kIdNotSet) {
       auto id_or_error = pt_mapper.SuggestMapping(codec, nullptr);
       EXPECT_TRUE(id_or_error.ok());
       if (id_or_error.ok()) {
@@ -202,10 +201,10 @@ std::vector<cricket::Codec> AddIdToCodecs(
   return codecs;
 }
 
-std::vector<cricket::Codec> ReceiveCodecsWithId(
+std::vector<webrtc::Codec> ReceiveCodecsWithId(
     cricket::WebRtcVoiceEngine& engine) {
   webrtc::PayloadTypePicker pt_mapper;
-  std::vector<cricket::Codec> codecs = engine.LegacyRecvCodecs();
+  std::vector<webrtc::Codec> codecs = engine.LegacyRecvCodecs();
   return AddIdToCodecs(pt_mapper, std::move(codecs));
 }
 
@@ -419,7 +418,7 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
     EXPECT_TRUE(send_channel_->SetAudioSend(ssrc, enable, options, source));
   }
 
-  void TestInsertDtmf(uint32_t ssrc, bool caller, const cricket::Codec& codec) {
+  void TestInsertDtmf(uint32_t ssrc, bool caller, const webrtc::Codec& codec) {
     EXPECT_TRUE(SetupChannel());
     if (caller) {
       // If this is a caller, local description will be applied and add the
@@ -488,7 +487,7 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
   // `max_bitrate` is a parameter to set to SetMaxSendBandwidth().
   // `expected_result` is the expected result from SetMaxSendBandwidth().
   // `expected_bitrate` is the expected audio bitrate afterward.
-  void TestMaxSendBandwidth(const cricket::Codec& codec,
+  void TestMaxSendBandwidth(const webrtc::Codec& codec,
                             int max_bitrate,
                             bool expected_result,
                             int expected_bitrate) {
@@ -513,7 +512,7 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
     return send_channel_->SetRtpSendParameters(ssrc, parameters).ok();
   }
 
-  void SetGlobalMaxBitrate(const cricket::Codec& codec, int bitrate) {
+  void SetGlobalMaxBitrate(const webrtc::Codec& codec, int bitrate) {
     cricket::AudioSenderParameter send_parameters;
     send_parameters.codecs.push_back(codec);
     send_parameters.max_bandwidth_bps = bitrate;
@@ -544,7 +543,7 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
     return GetSendStreamConfig(ssrc).audio_network_adaptor_config;
   }
 
-  void SetAndExpectMaxBitrate(const cricket::Codec& codec,
+  void SetAndExpectMaxBitrate(const webrtc::Codec& codec,
                               int global_max,
                               int stream_max,
                               bool expected_result,
@@ -854,14 +853,14 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
       const cricket::VoiceMediaSendInfo& send_info,
       const cricket::VoiceMediaReceiveInfo& receive_info) const {
     EXPECT_EQ(send_parameters_.codecs.size(), send_info.send_codecs.size());
-    for (const cricket::Codec& codec : send_parameters_.codecs) {
+    for (const webrtc::Codec& codec : send_parameters_.codecs) {
       ASSERT_EQ(send_info.send_codecs.count(codec.id), 1U);
       EXPECT_EQ(send_info.send_codecs.find(codec.id)->second,
                 codec.ToCodecParameters());
     }
     EXPECT_EQ(recv_parameters_.codecs.size(),
               receive_info.receive_codecs.size());
-    for (const cricket::Codec& codec : recv_parameters_.codecs) {
+    for (const webrtc::Codec& codec : recv_parameters_.codecs) {
       ASSERT_EQ(receive_info.receive_codecs.count(codec.id), 1U);
       EXPECT_EQ(receive_info.receive_codecs.find(codec.id)->second,
                 codec.ToCodecParameters());
@@ -906,8 +905,8 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
     return static_cast<cricket::WebRtcVoiceReceiveChannel*>(
         receive_channel_.get());
   }
-  std::vector<cricket::Codec> SendCodecsWithId() {
-    std::vector<cricket::Codec> codecs = engine_->LegacySendCodecs();
+  std::vector<webrtc::Codec> SendCodecsWithId() {
+    std::vector<webrtc::Codec> codecs = engine_->LegacySendCodecs();
     return AddIdToCodecs(pt_mapper_, std::move(codecs));
   }
 
@@ -1993,7 +1992,7 @@ TEST_P(WebRtcVoiceEngineTestFake, SetSendCodecEnableNackAsCallee) {
   EXPECT_TRUE(SetupRecvStream());
   cricket::AudioSenderParameter parameters;
   parameters.codecs.push_back(kOpusCodec);
-  parameters.codecs[0].AddFeedbackParam(cricket::FeedbackParam(
+  parameters.codecs[0].AddFeedbackParam(webrtc::FeedbackParam(
       cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
   EXPECT_EQ(0, GetRecvStreamConfig(kSsrcX).rtp.nack.rtp_history_ms);
   SetSenderParameters(parameters);
@@ -2010,7 +2009,7 @@ TEST_P(WebRtcVoiceEngineTestFake, SetSendCodecEnableNackRecvStreams) {
   EXPECT_TRUE(AddRecvStream(kSsrcY));
   cricket::AudioSenderParameter parameters;
   parameters.codecs.push_back(kOpusCodec);
-  parameters.codecs[0].AddFeedbackParam(cricket::FeedbackParam(
+  parameters.codecs[0].AddFeedbackParam(webrtc::FeedbackParam(
       cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
   EXPECT_EQ(0, GetRecvStreamConfig(kSsrcY).rtp.nack.rtp_history_ms);
   SetSenderParameters(parameters);
@@ -2023,7 +2022,7 @@ TEST_P(WebRtcVoiceEngineTestFake, SetSendCodecDisableNackRecvStreams) {
   EXPECT_TRUE(AddRecvStream(kSsrcY));
   cricket::AudioSenderParameter parameters;
   parameters.codecs.push_back(kOpusCodec);
-  parameters.codecs[0].AddFeedbackParam(cricket::FeedbackParam(
+  parameters.codecs[0].AddFeedbackParam(webrtc::FeedbackParam(
       cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
   SetSenderParameters(parameters);
   EXPECT_EQ(kRtpHistoryMs, GetRecvStreamConfig(kSsrcY).rtp.nack.rtp_history_ms);
@@ -2040,7 +2039,7 @@ TEST_P(WebRtcVoiceEngineTestFake, AddRecvStreamEnableNack) {
   cricket::AudioSenderParameter parameters;
   parameters.codecs.push_back(kOpusCodec);
   parameters.codecs.push_back(kCn16000Codec);
-  parameters.codecs[0].AddFeedbackParam(cricket::FeedbackParam(
+  parameters.codecs[0].AddFeedbackParam(webrtc::FeedbackParam(
       cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
   SetSenderParameters(parameters);
 
@@ -3903,7 +3902,7 @@ TEST(WebRtcVoiceEngineTest, HasCorrectPayloadTypeMapping) {
         webrtc::MockAudioDecoderFactory::CreateUnusedFactory(), nullptr, apm,
         nullptr, env.field_trials());
     engine.Init();
-    for (const cricket::Codec& codec : engine.LegacySendCodecs()) {
+    for (const webrtc::Codec& codec : engine.LegacySendCodecs()) {
       auto is_codec = [&codec](const char* name, int clockrate = 0) {
         return absl::EqualsIgnoreCase(codec.name, name) &&
                (clockrate == 0 || codec.clockrate == clockrate);
@@ -4028,7 +4027,7 @@ TEST(WebRtcVoiceEngineTest, SetRtpSendParametersMaxBitrate) {
       webrtc::CryptoOptions(), call.get(), webrtc::AudioCodecPairId::Create());
   {
     cricket::AudioSenderParameter params;
-    params.codecs.push_back(cricket::CreateAudioCodec(1, "opus", 48000, 2));
+    params.codecs.push_back(webrtc::CreateAudioCodec(1, "opus", 48000, 2));
     params.extensions.push_back(webrtc::RtpExtension(
         webrtc::RtpExtension::kTransportSequenceNumberUri, 1));
     EXPECT_TRUE(channel.SetSenderParameters(params));
@@ -4088,9 +4087,9 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecs) {
 
     // Rather than just ASSERTing that there are enough codecs, ensure that we
     // can check the actual values safely, to provide better test results.
-    auto get_codec = [&codecs](size_t index) -> const cricket::Codec& {
-      static const cricket::Codec missing_codec =
-          cricket::CreateAudioCodec(0, "<missing>", 0, 0);
+    auto get_codec = [&codecs](size_t index) -> const webrtc::Codec& {
+      static const webrtc::Codec missing_codec =
+          webrtc::CreateAudioCodec(0, "<missing>", 0, 0);
       if (codecs.size() > index)
         return codecs[index];
       return missing_codec;
@@ -4108,7 +4107,7 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecs) {
     // check supplementary codecs are ordered after the general codecs.
     auto find_codec = [&codecs](const webrtc::SdpAudioFormat& format) -> int {
       for (size_t i = 0; i != codecs.size(); ++i) {
-        const cricket::Codec& codec = codecs[i];
+        const webrtc::Codec& codec = codecs[i];
         if (absl::EqualsIgnoreCase(codec.name, format.name) &&
             codec.clockrate == format.clockrate_hz &&
             codec.channels == format.num_channels) {
@@ -4175,9 +4174,9 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecsWithLatePtAssignment) {
 
     // Rather than just ASSERTing that there are enough codecs, ensure that we
     // can check the actual values safely, to provide better test results.
-    auto get_codec = [&codecs](size_t index) -> const cricket::Codec& {
-      static const cricket::Codec missing_codec =
-          cricket::CreateAudioCodec(0, "<missing>", 0, 0);
+    auto get_codec = [&codecs](size_t index) -> const webrtc::Codec& {
+      static const webrtc::Codec missing_codec =
+          webrtc::CreateAudioCodec(0, "<missing>", 0, 0);
       if (codecs.size() > index)
         return codecs[index];
       return missing_codec;
@@ -4195,7 +4194,7 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecsWithLatePtAssignment) {
     // check supplementary codecs are ordered after the general codecs.
     auto find_codec = [&codecs](const webrtc::SdpAudioFormat& format) -> int {
       for (size_t i = 0; i != codecs.size(); ++i) {
-        const cricket::Codec& codec = codecs[i];
+        const webrtc::Codec& codec = codecs[i];
         if (absl::EqualsIgnoreCase(codec.name, format.name) &&
             codec.clockrate == format.clockrate_hz &&
             codec.channels == format.num_channels) {

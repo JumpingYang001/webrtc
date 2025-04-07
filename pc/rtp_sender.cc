@@ -365,12 +365,12 @@ RTCError RtpSenderBase::CheckSetParameters(const RtpParameters& parameters) {
 }
 
 RTCError RtpSenderBase::CheckCodecParameters(const RtpParameters& parameters) {
-  std::optional<cricket::Codec> send_codec = media_channel_->GetSendCodec();
+  std::optional<Codec> send_codec = media_channel_->GetSendCodec();
 
   // Match the currently used codec against the codec preferences to gather
   // the SVC capabilities.
-  std::optional<cricket::Codec> send_codec_with_svc_info;
-  if (send_codec && send_codec->type == cricket::Codec::Type::kVideo) {
+  std::optional<Codec> send_codec_with_svc_info;
+  if (send_codec && send_codec->type == Codec::Type::kVideo) {
     auto codec_match = absl::c_find_if(
         send_codecs_, [&](auto& codec) { return send_codec->Matches(codec); });
     if (codec_match != send_codecs_.end()) {

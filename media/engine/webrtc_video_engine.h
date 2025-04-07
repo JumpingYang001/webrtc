@@ -117,14 +117,14 @@ class WebRtcVideoEngine : public VideoEngineInterface {
       const webrtc::CryptoOptions& crypto_options) override;
 
   // TODO: https://issues.webrtc.org/360058654 - remove Legacy functions.
-  std::vector<Codec> LegacySendCodecs() const override {
+  std::vector<webrtc::Codec> LegacySendCodecs() const override {
     return LegacySendCodecs(true);
   }
-  std::vector<Codec> LegacyRecvCodecs() const override {
+  std::vector<webrtc::Codec> LegacyRecvCodecs() const override {
     return LegacyRecvCodecs(true);
   }
-  std::vector<Codec> LegacySendCodecs(bool include_rtx) const override;
-  std::vector<Codec> LegacyRecvCodecs(bool include_rtx) const override;
+  std::vector<webrtc::Codec> LegacySendCodecs(bool include_rtx) const override;
+  std::vector<webrtc::Codec> LegacyRecvCodecs(bool include_rtx) const override;
   std::vector<webrtc::RtpHeaderExtensionCapability> GetRtpHeaderExtensions()
       const override;
 
@@ -137,7 +137,7 @@ class WebRtcVideoEngine : public VideoEngineInterface {
 };
 
 struct VideoCodecSettings {
-  explicit VideoCodecSettings(const Codec& codec);
+  explicit VideoCodecSettings(const webrtc::Codec& codec);
 
   // Checks if all members of |*this| are equal to the corresponding members
   // of `other`.
@@ -149,7 +149,7 @@ struct VideoCodecSettings {
   static bool EqualsDisregardingFlexfec(const VideoCodecSettings& a,
                                         const VideoCodecSettings& b);
 
-  Codec codec;
+  webrtc::Codec codec;
   webrtc::UlpfecConfig ulpfec;
   int flexfec_payload_type;  // -1 if absent.
   int rtx_payload_type;      // -1 if absent.
@@ -199,7 +199,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
       const webrtc::RtpParameters& parameters,
       webrtc::SetParametersCallback callback) override;
   webrtc::RtpParameters GetRtpSendParameters(uint32_t ssrc) const override;
-  std::optional<Codec> GetSendCodec() const override;
+  std::optional<webrtc::Codec> GetSendCodec() const override;
   bool SetSend(bool send) override;
   bool SetVideoSend(
       uint32_t ssrc,
@@ -278,14 +278,14 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
     if (!send_codec()) {
       return false;
     }
-    return HasLntf(send_codec()->codec);
+    return webrtc::HasLntf(send_codec()->codec);
   }
   bool SendCodecHasNack() const override {
     RTC_DCHECK_RUN_ON(&thread_checker_);
     if (!send_codec()) {
       return false;
     }
-    return HasNack(send_codec()->codec);
+    return webrtc::HasNack(send_codec()->codec);
   }
   std::optional<int> SendCodecRtxTime() const override {
     RTC_DCHECK_RUN_ON(&thread_checker_);
@@ -399,12 +399,12 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
     };
 
     rtc::scoped_refptr<webrtc::VideoEncoderConfig::EncoderSpecificSettings>
-    ConfigureVideoEncoderSettings(const Codec& codec);
+    ConfigureVideoEncoderSettings(const webrtc::Codec& codec);
     void SetCodec(const VideoCodecSettings& codec,
                   const std::vector<VideoCodecSettings>& codec_settings_list);
     void RecreateWebRtcStream();
     webrtc::VideoEncoderConfig CreateVideoEncoderConfig(
-        const Codec& codec) const;
+        const webrtc::Codec& codec) const;
     void ReconfigureEncoder(webrtc::SetParametersCallback callback);
 
     // Calls Start or Stop according to whether or not `sending_` is true.

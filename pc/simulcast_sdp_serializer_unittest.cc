@@ -323,8 +323,8 @@ TEST_F(RidDescriptionSdpSerializerTest, Serialize_OnlyDirectionReceive) {
 
 // Test serialization for RidDescription with format list.
 TEST_F(RidDescriptionSdpSerializerTest, Serialize_FormatList) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(101, "VP8");
-  cricket::Codec vp9 = cricket::CreateVideoCodec(102, "VP9");
+  Codec vp8 = CreateVideoCodec(101, "VP8");
+  Codec vp9 = CreateVideoCodec(102, "VP9");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8, vp9});
 
@@ -335,7 +335,7 @@ TEST_F(RidDescriptionSdpSerializerTest, Serialize_FormatList) {
 
 // Test serialization for RidDescription with format list.
 TEST_F(RidDescriptionSdpSerializerTest, Serialize_FormatListSingleFormat) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(100, "VP8");
+  Codec vp8 = CreateVideoCodec(100, "VP8");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8});
 
@@ -357,8 +357,8 @@ TEST_F(RidDescriptionSdpSerializerTest, Serialize_AttributeList) {
 // Test serialization for RidDescription with format list and attribute list.
 // Note: restriction list will be sorted because it is stored in a map.
 TEST_F(RidDescriptionSdpSerializerTest, Serialize_FormatAndAttributeList) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(103, "VP8");
-  cricket::Codec vp9 = cricket::CreateVideoCodec(104, "VP9");
+  Codec vp8 = CreateVideoCodec(103, "VP8");
+  Codec vp9 = CreateVideoCodec(104, "VP9");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8, vp9});
 
@@ -373,7 +373,7 @@ TEST_F(RidDescriptionSdpSerializerTest, Serialize_FormatAndAttributeList) {
 // Test serialization for attribute list that has key with no value.
 // Note: restriction list will be sorted because it is stored in a map.
 TEST_F(RidDescriptionSdpSerializerTest, Serialize_RestrictionWithoutValue) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(103, "VP8");
+  Codec vp8 = CreateVideoCodec(103, "VP8");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8});
 
@@ -400,7 +400,7 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_SimpleReceiveCase) {
 
 // Test simulcast deserialization with single format.
 TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithFormat) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(101, "VP8");
+  Codec vp8 = CreateVideoCodec(101, "VP8");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8});
 
@@ -412,7 +412,7 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithFormat) {
 // Test simulcast deserialization with valid format syntax (`pt=97`) but using
 // a payload type that does not refer to any codec in the media description.
 TEST_F(RidDescriptionSdpSerializerTest, Deserialize_ReferencingUnknownCodec) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(101, "VP8");
+  Codec vp8 = CreateVideoCodec(101, "VP8");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8});
 
@@ -423,10 +423,10 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_ReferencingUnknownCodec) {
 
 // Test simulcast deserialization with multiple formats.
 TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithMultipleFormats) {
-  cricket::Codec vp8 = cricket::CreateVideoCodec(101, "VP8");
-  cricket::Codec vp9 = cricket::CreateVideoCodec(102, "VP9");
-  cricket::Codec av1 = cricket::CreateVideoCodec(103, "AV1");
-  cricket::Codec h264 = cricket::CreateVideoCodec(104, "H264");
+  Codec vp8 = CreateVideoCodec(101, "VP8");
+  Codec vp9 = CreateVideoCodec(102, "VP9");
+  Codec av1 = CreateVideoCodec(103, "AV1");
+  Codec h264 = CreateVideoCodec(104, "H264");
   VideoContentDescription video_desc;
   video_desc.set_codecs({vp8, vp9, av1, h264});
 
@@ -467,8 +467,8 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithCustomRestrictions) {
 
 // Test simulcast deserialization with multiple formats and restrictions.
 TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithFormatAndRestrictions) {
-  cricket::Codec av1 = cricket::CreateVideoCodec(103, "AV1");
-  cricket::Codec h264 = cricket::CreateVideoCodec(104, "H264");
+  Codec av1 = CreateVideoCodec(103, "AV1");
+  Codec h264 = CreateVideoCodec(104, "H264");
   VideoContentDescription video_desc;
   video_desc.set_codecs({av1, h264});
 
@@ -483,7 +483,7 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_WithFormatAndRestrictions) {
 
 // Test simulcast deserialization with restriction that has no value.
 TEST_F(RidDescriptionSdpSerializerTest, Deserialize_RestrictionHasNoValue) {
-  cricket::Codec h264 = cricket::CreateVideoCodec(104, "H264");
+  Codec h264 = CreateVideoCodec(104, "H264");
   VideoContentDescription video_desc;
   video_desc.set_codecs({h264});
 
@@ -510,8 +510,8 @@ TEST_F(RidDescriptionSdpSerializerTest, Deserialize_AmbiguousCase) {
 // Parameterized negative test case for deserialization with invalid inputs.
 TEST_P(RidDescriptionSdpSerializerTest, RidDescriptionDeserializationFailed) {
   VideoContentDescription video_desc;
-  video_desc.set_codecs({cricket::CreateVideoCodec(101, "VP8"),
-                         cricket::CreateVideoCodec(102, "VP9")});
+  video_desc.set_codecs(
+      {CreateVideoCodec(101, "VP8"), CreateVideoCodec(102, "VP9")});
 
   SimulcastSdpSerializer deserializer;
   auto result = deserializer.DeserializeRidDescription(video_desc, GetParam());

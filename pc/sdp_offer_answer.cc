@@ -808,7 +808,7 @@ MediaDescriptionOptions GetMediaDescriptionOptionsForTransceiver(
     auto send_rid = RidDescription(encoding.rid, RidDirection::kSend);
     if (encoding.codec) {
       auto send_codecs = transceiver->sender_internal()->GetSendCodecs();
-      for (const cricket::Codec& codec : send_codecs) {
+      for (const Codec& codec : send_codecs) {
         if (IsSameRtpCodecIgnoringLevel(codec, *encoding.codec)) {
           send_rid.codecs.push_back(codec);
           break;
@@ -5507,7 +5507,7 @@ bool SdpOfferAnswerHandler::UpdatePayloadTypeDemuxingState(
       }
       const MediaContentDescription* media_desc =
           content_info.media_description();
-      for (const cricket::Codec& codec : media_desc->codecs()) {
+      for (const Codec& codec : media_desc->codecs()) {
         if (media_type == webrtc::MediaType::AUDIO) {
           if (payload_types->audio_payload_types.count(codec.id)) {
             // Two m= sections are using the same payload type, thus demuxing
