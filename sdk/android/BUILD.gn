@@ -155,6 +155,7 @@ if (is_android) {
 
   # TODO(sakal): Extract files from this target to releveant subtargets, video, audio etc.
   rtc_android_library("base_java") {
+    visibility = [ "*" ]
     sources = [
       "api/org/webrtc/Predicate.java",
       "api/org/webrtc/RefCounted.java",
