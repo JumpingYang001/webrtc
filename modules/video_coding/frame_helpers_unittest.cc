@@ -10,8 +10,14 @@
 
 #include "modules/video_coding/frame_helpers.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <utility>
+#include <variant>
 
+#include "absl/container/inlined_vector.h"
 #include "api/scoped_refptr.h"
 #include "api/units/timestamp.h"
 #include "api/video/encoded_frame.h"

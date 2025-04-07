@@ -15,14 +15,18 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "api/units/time_delta.h"
+#include "api/video_codecs/vp8_frame_buffer_controller.h"
 #include "api/video_codecs/vp8_frame_config.h"
 #include "modules/video_coding/codecs/interface/common_constants.h"
 #include "modules/video_coding/codecs/vp8/libvpx_vp8_encoder.h"
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/fake_clock.h"
+#include "rtc_base/time_utils.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

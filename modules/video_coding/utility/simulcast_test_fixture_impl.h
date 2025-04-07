@@ -11,15 +11,24 @@
 #ifndef MODULES_VIDEO_CODING_UTILITY_SIMULCAST_TEST_FIXTURE_IMPL_H_
 #define MODULES_VIDEO_CODING_UTILITY_SIMULCAST_TEST_FIXTURE_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "api/environment/environment.h"
+#include "api/scoped_refptr.h"
 #include "api/test/mock_video_decoder.h"
 #include "api/test/mock_video_encoder.h"
 #include "api/test/simulcast_test_fixture.h"
 #include "api/video/i420_buffer.h"
+#include "api/video/video_codec_type.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_decoder.h"
 #include "api/video_codecs/video_decoder_factory.h"
+#include "api/video_codecs/video_encoder.h"
 #include "api/video_codecs/video_encoder_factory.h"
 #include "modules/video_coding/utility/simulcast_rate_allocator.h"
 

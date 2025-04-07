@@ -11,10 +11,10 @@
 #ifndef MODULES_VIDEO_CODING_TIMING_JITTER_ESTIMATOR_H_
 #define MODULES_VIDEO_CODING_TIMING_JITTER_ESTIMATOR_H_
 
-#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
-#include <queue>
 
 #include "absl/strings/string_view.h"
 #include "api/field_trials_view.h"

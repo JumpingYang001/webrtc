@@ -12,14 +12,24 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "absl/memory/memory.h"
+#include "api/field_trials_view.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/encoded_image.h"
+#include "api/video/video_timing.h"
+#include "modules/video_coding/deprecated/event_wrapper.h"
 #include "modules/video_coding/deprecated/jitter_buffer_common.h"
+#include "modules/video_coding/deprecated/packet.h"
 #include "modules/video_coding/encoded_frame.h"
+#include "modules/video_coding/include/video_coding_defines.h"
 #include "modules/video_coding/internal_defines.h"
+#include "modules/video_coding/timing/timing.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/trace_event.h"

@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,10 +22,13 @@
 #include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "api/scoped_refptr.h"
+#include "api/video/color_space.h"
+#include "api/video/encoded_image.h"
 #include "api/video/i420_buffer.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_frame_buffer.h"
-#include "api/video/video_rotation.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/video_decoder.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "rtc_base/checks.h"
@@ -35,6 +39,7 @@
 #include "vpx/vp8.h"
 #include "vpx/vp8dx.h"
 #include "vpx/vpx_decoder.h"
+#include "vpx/vpx_image.h"
 
 namespace webrtc {
 namespace {

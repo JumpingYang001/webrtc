@@ -9,15 +9,22 @@
  */
 #include "modules/video_coding/h26x_packet_buffer.h"
 
+#include <cstdint>
 #include <cstring>
-#include <limits>
-#include <ostream>
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
 #include "api/video/render_resolution.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/system/unused.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

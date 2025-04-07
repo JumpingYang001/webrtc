@@ -9,15 +9,16 @@
  *
  */
 
-#include <memory>
-
 #ifdef RTC_ENABLE_VP9
+
+#include "modules/video_coding/codecs/vp9/libvpx_vp9_encoder.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -49,13 +50,13 @@
 #include "modules/video_coding/codecs/interface/libvpx_interface.h"
 #include "modules/video_coding/codecs/vp9/include/vp9.h"
 #include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
-#include "modules/video_coding/codecs/vp9/libvpx_vp9_encoder.h"
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"
 #include "modules/video_coding/svc/scalable_video_controller_no_layering.h"
+#include "modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "modules/video_coding/svc/svc_rate_allocator.h"
 #include "modules/video_coding/utility/framerate_controller_deprecated.h"
 #include "modules/video_coding/utility/simulcast_rate_allocator.h"

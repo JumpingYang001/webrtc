@@ -10,6 +10,7 @@
 
 #include "modules/video_coding/deprecated/event_wrapper.h"
 
+#include "api/units/time_delta.h"
 #include "rtc_base/event.h"
 
 namespace webrtc {

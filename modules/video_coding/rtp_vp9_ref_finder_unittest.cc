@@ -10,11 +10,28 @@
 
 #include "modules/video_coding/rtp_vp9_ref_finder.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <ostream>
 #include <utility>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/rtp_packet_infos.h"
+#include "api/video/encoded_frame.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_content_type.h"
+#include "api/video/video_frame_type.h"
+#include "api/video/video_rotation.h"
+#include "api/video/video_timing.h"
 #include "modules/rtp_rtcp/source/frame_object.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

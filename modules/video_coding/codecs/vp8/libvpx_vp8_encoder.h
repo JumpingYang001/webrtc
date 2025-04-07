@@ -11,18 +11,22 @@
 #ifndef MODULES_VIDEO_CODING_CODECS_VP8_LIBVPX_VP8_ENCODER_H_
 #define MODULES_VIDEO_CODING_CODECS_VP8_LIBVPX_VP8_ENCODER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <string>
-#include <utility>
+#include <optional>
 #include <vector>
 
-#include "absl/strings/string_view.h"
+#include "api/environment/environment.h"
 #include "api/fec_controller_override.h"
-#include "api/field_trials_view.h"
+#include "api/scoped_refptr.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "api/video/encoded_image.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
 #include "api/video_codecs/vp8_frame_buffer_controller.h"
 #include "api/video_codecs/vp8_frame_config.h"
@@ -31,11 +35,10 @@
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/utility/corruption_detection_settings_generator.h"
 #include "modules/video_coding/utility/framerate_controller_deprecated.h"
-#include "modules/video_coding/utility/vp8_constants.h"
 #include "rtc_base/experiments/encoder_info_settings.h"
 #include "rtc_base/experiments/rate_control_settings.h"
-#include "vpx/vp8cx.h"
 #include "vpx/vpx_encoder.h"
+#include "vpx/vpx_image.h"
 
 namespace webrtc {
 

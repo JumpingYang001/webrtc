@@ -18,13 +18,12 @@
 #include <optional>
 
 #include "api/field_trials_view.h"
-#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/video_codecs/video_encoder.h"
 #include "rtc_base/experiments/quality_scaling_experiment.h"
 #include "rtc_base/numerics/moving_average.h"
-#include "rtc_base/ref_count.h"
 #include "rtc_base/system/no_unique_address.h"
+#include "rtc_base/thread_annotations.h"
 
 namespace webrtc {
 

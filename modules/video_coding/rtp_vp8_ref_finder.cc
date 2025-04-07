@@ -10,9 +10,19 @@
 
 #include "modules/video_coding/rtp_vp8_ref_finder.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <utility>
 
+#include "api/video/video_frame_type.h"
+#include "modules/rtp_rtcp/source/frame_object.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "modules/video_coding/rtp_frame_reference_finder.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/numerics/mod_ops.h"
+#include "rtc_base/numerics/sequence_number_util.h"
 
 namespace webrtc {
 

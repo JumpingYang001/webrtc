@@ -14,7 +14,13 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <vector>
 
+#include "api/task_queue/task_queue_base.h"
+#include "api/units/time_delta.h"
+#include "modules/include/module_common_types.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/thread.h"
 #include "system_wrappers/include/clock.h"
 #include "test/gtest.h"
 #include "test/run_loop.h"

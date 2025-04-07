@@ -10,8 +10,16 @@
 
 #include "modules/video_coding/utility/qp_parser.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+
+#include "api/array_view.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video/video_codec_type.h"
 #include "modules/video_coding/utility/vp8_header_parser.h"
 #include "modules/video_coding/utility/vp9_uncompressed_header_parser.h"
+#include "rtc_base/synchronization/mutex.h"
 
 namespace webrtc {
 

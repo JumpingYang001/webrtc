@@ -14,12 +14,15 @@
 
 #ifdef RTC_ENABLE_VP9
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "api/ref_counted_base.h"
 #include "api/scoped_refptr.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/synchronization/mutex.h"
+#include "rtc_base/thread_annotations.h"
 
 struct vpx_codec_ctx;
 struct vpx_codec_frame_buffer;

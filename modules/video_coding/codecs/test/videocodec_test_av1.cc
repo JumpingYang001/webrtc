@@ -9,15 +9,13 @@
  */
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "api/test/create_videocodec_test_fixture.h"
-#include "api/test/video/function_video_encoder_factory.h"
-#include "api/video_codecs/sdp_video_format.h"
+#include "api/test/videocodec_test_fixture.h"
+#include "api/video_codecs/scalability_mode.h"
 #include "media/base/media_constants.h"
-#include "media/engine/internal_decoder_factory.h"
-#include "media/engine/internal_encoder_factory.h"
-#include "media/engine/simulcast_encoder_adapter.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 

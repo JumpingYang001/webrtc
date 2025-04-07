@@ -11,15 +11,18 @@
 #include "modules/video_coding/codecs/vp9/include/vp9.h"
 
 #include <memory>
+#include <vector>
 
+#include "absl/base/nullability.h"
 #include "absl/container/inlined_vector.h"
+#include "api/environment/environment.h"
 #include "api/video_codecs/scalability_mode.h"
 #include "api/video_codecs/sdp_video_format.h"
-#include "api/video_codecs/vp9_profile.h"
+#include "api/video_codecs/video_encoder.h"
+#include "modules/video_coding/codecs/interface/libvpx_interface.h"
 #include "modules/video_coding/codecs/vp9/libvpx_vp9_decoder.h"
 #include "modules/video_coding/codecs/vp9/libvpx_vp9_encoder.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
-#include "rtc_base/checks.h"
 #include "vpx/vp8cx.h"
 #include "vpx/vp8dx.h"
 #include "vpx/vpx_codec.h"

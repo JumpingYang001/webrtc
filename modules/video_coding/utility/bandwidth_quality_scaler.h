@@ -14,19 +14,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
 #include <vector>
 
-#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
+#include "api/units/time_delta.h"
+#include "api/video/video_codec_type.h"
 #include "api/video_codecs/video_encoder.h"
-#include "rtc_base/experiments/encoder_info_settings.h"
-#include "rtc_base/logging.h"
-#include "rtc_base/numerics/exp_filter.h"
 #include "rtc_base/rate_statistics.h"
-#include "rtc_base/ref_count.h"
 #include "rtc_base/system/no_unique_address.h"
+#include "rtc_base/thread_annotations.h"
 #include "rtc_base/weak_ptr.h"
 
 namespace webrtc {

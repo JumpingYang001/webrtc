@@ -15,7 +15,7 @@
 
 #include "api/field_trials_view.h"
 #include "api/units/time_delta.h"
-#include "rtc_base/checks.h"
+#include "api/video_codecs/video_encoder.h"
 #include "rtc_base/event.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "test/gtest.h"

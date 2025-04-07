@@ -13,35 +13,57 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "absl/container/inlined_vector.h"
+#include "api/environment/environment.h"
+#include "api/fec_controller_override.h"
+#include "api/field_trials_view.h"
 #include "api/scoped_refptr.h"
-#include "api/video/video_content_type.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/encoded_image.h"
+#include "api/video/render_resolution.h"
+#include "api/video/video_bitrate_allocation.h"
+#include "api/video/video_bitrate_allocator.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
 #include "api/video/video_frame_buffer.h"
-#include "api/video/video_timing.h"
+#include "api/video/video_frame_type.h"
 #include "api/video_codecs/scalability_mode.h"
-#include "api/video_codecs/vp8_temporal_layers.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_encoder.h"
+#include "api/video_codecs/vp8_frame_buffer_controller.h"
+#include "api/video_codecs/vp8_frame_config.h"
 #include "api/video_codecs/vp8_temporal_layers_factory.h"
 #include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/interface/libvpx_interface.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
 #include "modules/video_coding/codecs/vp8/vp8_scalability.h"
+#include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_error_codes.h"
-#include "modules/video_coding/svc/scalability_mode_util.h"
+#include "modules/video_coding/utility/corruption_detection_settings_generator.h"
 #include "modules/video_coding/utility/simulcast_rate_allocator.h"
 #include "modules/video_coding/utility/simulcast_utility.h"
+#include "modules/video_coding/utility/vp8_constants.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_parser.h"
-#include "rtc_base/experiments/field_trial_units.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/trace_event.h"
-#include "third_party/libyuv/include/libyuv/scale.h"
 #include "vpx/vp8cx.h"
+#include "vpx/vpx_codec.h"
+#include "vpx/vpx_encoder.h"
+#include "vpx/vpx_image.h"
 
 #if (defined(WEBRTC_ARCH_ARM) || defined(WEBRTC_ARCH_ARM64)) && \
     (defined(WEBRTC_ANDROID) || defined(WEBRTC_IOS))

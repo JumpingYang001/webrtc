@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <cstdlib>
 #include <limits>
 #include <optional>
 #include <string>

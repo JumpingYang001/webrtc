@@ -13,22 +13,34 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <cmath>
+#include <cstdint>
 #include <iterator>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <variant>
 
 #include "absl/algorithm/container.h"
+#include "api/field_trials_view.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/encoded_frame.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_content_type.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
 #include "api/video/video_timing.h"
 #include "api/video_codecs/video_decoder.h"
 #include "common_video/frame_instrumentation_data.h"
 #include "common_video/include/corruption_score_calculator.h"
 #include "modules/include/module_common_types_public.h"
+#include "modules/video_coding/encoded_frame.h"
+#include "modules/video_coding/include/video_coding_defines.h"
 #include "modules/video_coding/include/video_error_codes.h"
+#include "modules/video_coding/timing/timing.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/string_encode.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"

@@ -15,11 +15,17 @@
 
 #include <algorithm>
 #include <optional>
+#include <vector>
 
-#include "api/array_view.h"
 #include "api/field_trials_view.h"
 #include "api/scoped_refptr.h"
 #include "api/units/data_rate.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/scalability_mode.h"
+#include "api/video_codecs/simulcast_stream.h"
+#include "api/video_codecs/spatial_layer.h"
+#include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
 #include "modules/video_coding/codecs/av1/av1_svc_config.h"
 #include "modules/video_coding/codecs/vp8/vp8_scalability.h"
@@ -30,6 +36,7 @@
 #include "rtc_base/experiments/min_video_bitrate_experiment.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {

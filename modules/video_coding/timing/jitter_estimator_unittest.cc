@@ -17,13 +17,11 @@
 #include <utility>
 #include <vector>
 
-#include "api/array_view.h"
 #include "api/field_trials.h"
 #include "api/units/data_size.h"
 #include "api/units/frequency.h"
 #include "api/units/time_delta.h"
 #include "rtc_base/numerics/histogram_percentile_counter.h"
-#include "rtc_base/time_utils.h"
 #include "system_wrappers/include/clock.h"
 #include "test/gtest.h"
 

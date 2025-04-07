@@ -10,15 +10,24 @@
 
 #include "modules/video_coding/rtp_frame_reference_finder.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <utility>
 #include <variant>
 
+#include "api/video/video_codec_type.h"
 #include "modules/rtp_rtcp/source/frame_object.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "modules/video_coding/rtp_frame_id_only_ref_finder.h"
 #include "modules/video_coding/rtp_generic_ref_finder.h"
 #include "modules/video_coding/rtp_seq_num_only_ref_finder.h"
 #include "modules/video_coding/rtp_vp8_ref_finder.h"
 #include "modules/video_coding/rtp_vp9_ref_finder.h"
+#include "rtc_base/numerics/sequence_number_util.h"
 
 namespace webrtc {
 namespace internal {

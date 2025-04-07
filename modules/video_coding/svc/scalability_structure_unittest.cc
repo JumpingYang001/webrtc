@@ -14,14 +14,21 @@
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "api/array_view.h"
 #include "api/transport/rtp/dependency_descriptor.h"
+#include "api/video/video_bitrate_allocation.h"
+#include "api/video_codecs/scalability_mode.h"
+#include "common_video/generic_frame_descriptor/generic_frame_info.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "modules/video_coding/svc/scalability_structure_test_helpers.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

@@ -10,15 +10,23 @@
 
 #include "test/video_codec_tester.h"
 
+#include <stdio.h>
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/scoped_refptr.h"
 #include "api/test/mock_video_decoder.h"
 #include "api/test/mock_video_decoder_factory.h"
 #include "api/test/mock_video_encoder.h"
@@ -27,14 +35,20 @@
 #include "api/units/data_size.h"
 #include "api/units/frequency.h"
 #include "api/units/time_delta.h"
+#include "api/video/encoded_image.h"
 #include "api/video/i420_buffer.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
 #include "api/video_codecs/scalability_mode.h"
+#include "api/video_codecs/sdp_video_format.h"
 #include "api/video_codecs/video_decoder.h"
+#include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_encoder.h"
+#include "api/video_codecs/video_encoder_factory.h"
 #include "modules/video_coding/include/video_codec_interface.h"
+#include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

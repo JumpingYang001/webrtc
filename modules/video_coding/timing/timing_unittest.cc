@@ -10,8 +10,11 @@
 
 #include "modules/video_coding/timing/timing.h"
 
+#include <cstdint>
+
 #include "api/units/frequency.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "system_wrappers/include/clock.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

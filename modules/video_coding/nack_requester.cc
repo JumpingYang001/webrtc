@@ -11,13 +11,22 @@
 #include "modules/video_coding/nack_requester.h"
 
 #include <algorithm>
-#include <limits>
+#include <cstdint>
+#include <cstdlib>
+#include <vector>
 
+#include "api/field_trials_view.h"
 #include "api/sequence_checker.h"
+#include "api/task_queue/task_queue_base.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
+#include "modules/include/module_common_types.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/numerics/mod_ops.h"
+#include "rtc_base/numerics/sequence_number_util.h"
+#include "rtc_base/task_utils/repeating_task.h"
+#include "system_wrappers/include/clock.h"
 
 namespace webrtc {
 

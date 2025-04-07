@@ -11,28 +11,52 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "absl/container/inlined_vector.h"
 #include "absl/memory/memory.h"
 #include "api/environment/environment_factory.h"
+#include "api/scoped_refptr.h"
 #include "api/test/create_frame_generator.h"
 #include "api/test/frame_generator_interface.h"
 #include "api/test/mock_video_decoder.h"
 #include "api/test/mock_video_encoder.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/encoded_image.h"
+#include "api/video/render_resolution.h"
+#include "api/video/video_bitrate_allocation.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_decoder.h"
 #include "api/video_codecs/video_encoder.h"
-#include "api/video_codecs/vp8_temporal_layers.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
-#include "common_video/test/utilities.h"
 #include "modules/video_coding/codecs/interface/mock_libvpx_interface.h"
 #include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
 #include "modules/video_coding/codecs/vp8/libvpx_vp8_encoder.h"
+#include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/utility/vp8_header_parser.h"
 #include "rtc_base/time_utils.h"
 #include "test/field_trial.h"
+#include "test/gmock.h"
+#include "test/gtest.h"
 #include "test/mappable_native_buffer.h"
 #include "test/scoped_key_value_config.h"
 #include "test/video_codec_settings.h"
+#include "vpx/vpx_codec.h"
+#include "vpx/vpx_encoder.h"
+#include "vpx/vpx_image.h"
 
 namespace webrtc {
 

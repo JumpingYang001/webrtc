@@ -14,7 +14,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <vector>
 
 #include "absl/container/inlined_vector.h"
 #include "api/array_view.h"

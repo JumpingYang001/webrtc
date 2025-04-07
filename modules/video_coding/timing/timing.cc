@@ -11,12 +11,21 @@
 #include "modules/video_coding/timing/timing.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <optional>
 
+#include "api/field_trials_view.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_timing.h"
 #include "modules/video_coding/timing/decode_time_percentile_filter.h"
 #include "modules/video_coding/timing/timestamp_extrapolator.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "system_wrappers/include/clock.h"
 
 namespace webrtc {

@@ -10,7 +10,14 @@
 
 #include "modules/video_coding/deprecated/packet.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+
 #include "api/rtp_headers.h"
+#include "api/units/timestamp.h"
+#include "api/video/video_codec_type.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 
 namespace webrtc {
 

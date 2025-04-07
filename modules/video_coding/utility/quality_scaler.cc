@@ -10,14 +10,19 @@
 
 #include "modules/video_coding/utility/quality_scaler.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <utility>
+#include <optional>
 
 #include "api/field_trials_view.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
-#include "api/video/video_adaptation_reason.h"
+#include "api/video_codecs/video_encoder.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/experiments/quality_scaler_settings.h"
+#include "rtc_base/experiments/quality_scaling_experiment.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/exp_filter.h"
 #include "rtc_base/weak_ptr.h"

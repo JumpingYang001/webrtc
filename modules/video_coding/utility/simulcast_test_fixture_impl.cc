@@ -11,19 +11,37 @@
 #include "modules/video_coding/utility/simulcast_test_fixture_impl.h"
 
 #include <algorithm>
-#include <map>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/scoped_refptr.h"
+#include "api/test/mock_video_decoder.h"
+#include "api/test/mock_video_encoder.h"
 #include "api/video/encoded_image.h"
+#include "api/video/i420_buffer.h"
+#include "api/video/video_bitrate_allocator.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
+#include "api/video/video_rotation.h"
 #include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/simulcast_stream.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_decoder.h"
+#include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_encoder.h"
-#include "common_video/libyuv/include/webrtc_libyuv.h"
+#include "api/video_codecs/video_encoder_factory.h"
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_coding_defines.h"
+#include "modules/video_coding/utility/simulcast_rate_allocator.h"
 #include "rtc_base/checks.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 
 using ::testing::_;

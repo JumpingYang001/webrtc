@@ -11,8 +11,12 @@
 #include "modules/video_coding/timing/timestamp_extrapolator.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <cstdlib>
 #include <optional>
 
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "rtc_base/numerics/sequence_number_unwrapper.h"
 #include "system_wrappers/include/metrics.h"
 

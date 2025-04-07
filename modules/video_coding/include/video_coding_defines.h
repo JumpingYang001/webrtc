@@ -20,9 +20,7 @@
 #include "api/video/video_content_type.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_frame_type.h"
-#include "api/video/video_timing.h"
 #include "api/video_codecs/video_decoder.h"
-#include "rtc_base/checks.h"
 
 namespace webrtc {
 

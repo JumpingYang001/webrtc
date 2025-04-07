@@ -8,12 +8,19 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
+#include <limits>
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "absl/flags/flag.h"
-#include "absl/functional/any_invocable.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
@@ -22,6 +29,11 @@
 #include "api/video/resolution.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
+#include "api/video_codecs/scalability_mode.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/video_decoder_factory.h"
+#include "api/video_codecs/video_encoder_factory.h"
+#include "rtc_base/checks.h"
 #if defined(WEBRTC_ANDROID)
 #include "modules/video_coding/codecs/test/android_codec_factory_helper.h"
 #endif

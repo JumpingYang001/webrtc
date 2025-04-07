@@ -13,11 +13,23 @@
 
 #include <algorithm>
 #include <array>
+#include <bitset>
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include "api/transport/rtp/dependency_descriptor.h"
+#include "api/video/video_codec_constants.h"
+#include "api/video_codecs/video_encoder.h"
+#include "api/video_codecs/vp8_frame_buffer_controller.h"
+#include "api/video_codecs/vp8_frame_config.h"
+#include "api/video_codecs/vp8_temporal_layers.h"
+#include "common_video/generic_frame_descriptor/generic_frame_info.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp8/include/temporal_layers_checker.h"
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"

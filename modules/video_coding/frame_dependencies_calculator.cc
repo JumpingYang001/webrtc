@@ -11,12 +11,15 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <iterator>
+#include <optional>
 #include <set>
 
 #include "absl/algorithm/container.h"
 #include "absl/container/inlined_vector.h"
 #include "api/array_view.h"
+#include "common_video/generic_frame_descriptor/generic_frame_info.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 

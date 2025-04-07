@@ -14,11 +14,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include <cstdint>
 #include <memory>
 
 #include "api/environment/environment.h"
 #include "api/field_trials_view.h"
-#include "modules/video_coding/internal_defines.h"
 #include "rtc_base/experiments/rate_control_settings.h"
 #include "rtc_base/numerics/exp_filter.h"
 

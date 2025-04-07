@@ -10,18 +10,26 @@
 
 #include "modules/video_coding/deprecated/jitter_buffer.h"
 
-#include <list>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "absl/memory/memory.h"
+#include "api/rtp_headers.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
-#include "modules/video_coding/deprecated/frame_buffer.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
+#include "modules/video_coding/deprecated/event_wrapper.h"
+#include "modules/video_coding/deprecated/jitter_buffer_common.h"
 #include "modules/video_coding/deprecated/packet.h"
 #include "modules/video_coding/deprecated/stream_generator.h"
+#include "modules/video_coding/encoded_frame.h"
 #include "system_wrappers/include/clock.h"
-#include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/scoped_key_value_config.h"
 

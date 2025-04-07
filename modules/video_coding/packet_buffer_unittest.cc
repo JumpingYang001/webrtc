@@ -9,18 +9,23 @@
  */
 #include "modules/video_coding/packet_buffer.h"
 
+#include <cstdint>
 #include <cstring>
 #include <limits>
+#include <memory>
 #include <ostream>
-#include <string>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
-#include "modules/rtp_rtcp/source/frame_object.h"
-#include "rtc_base/numerics/sequence_number_unwrapper.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/random.h"
-#include "test/field_trial.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

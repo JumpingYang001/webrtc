@@ -9,9 +9,12 @@
  */
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "api/test/create_videocodec_test_fixture.h"
+#include "api/test/videocodec_test_fixture.h"
+#include "api/video_codecs/h264_profile_level_id.h"
 #include "media/base/media_constants.h"
 #include "modules/video_coding/codecs/test/objc_codec_factory_helper.h"
 #include "modules/video_coding/codecs/test/videocodec_test_fixture_impl.h"

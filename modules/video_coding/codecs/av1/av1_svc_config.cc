@@ -13,7 +13,13 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 
+#include "absl/container/inlined_vector.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/scalability_mode.h"
+#include "api/video_codecs/spatial_layer.h"
+#include "api/video_codecs/video_codec.h"
 #include "modules/video_coding/svc/create_scalability_structure.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"

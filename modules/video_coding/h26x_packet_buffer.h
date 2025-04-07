@@ -12,15 +12,15 @@
 #define MODULES_VIDEO_CODING_H26X_PACKET_BUFFER_H_
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "modules/video_coding/packet_buffer.h"
-#include "rtc_base/numerics/sequence_number_unwrapper.h"
 
 namespace webrtc {
 

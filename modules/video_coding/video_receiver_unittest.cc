@@ -8,12 +8,17 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
 #include <cstdint>
 
+#include "api/rtp_headers.h"
 #include "api/test/mock_video_decoder.h"
+#include "api/video/video_codec_type.h"
 #include "api/video/video_frame_type.h"
 #include "api/video_codecs/video_decoder.h"
-#include "modules/video_coding/include/video_coding.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "modules/video_coding/include/video_coding_defines.h"
 #include "modules/video_coding/timing/timing.h"
 #include "modules/video_coding/video_coding_impl.h"
 #include "system_wrappers/include/clock.h"

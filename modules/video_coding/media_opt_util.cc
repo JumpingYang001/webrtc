@@ -13,8 +13,11 @@
 #include <math.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 
+#include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "modules/video_coding/fec_rate_table.h"
 #include "modules/video_coding/internal_defines.h"

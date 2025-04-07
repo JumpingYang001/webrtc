@@ -12,7 +12,11 @@
 
 #include <stdint.h>
 
+#include <cstddef>
+
 #include "api/array_view.h"
+#include "api/sequence_checker.h"
+#include "modules/include/module_common_types.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/sequence_number_util.h"

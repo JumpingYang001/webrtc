@@ -9,8 +9,14 @@
  */
 #include "modules/video_coding/utility/vp9_uncompressed_header_parser.h"
 
-#include "absl/numeric/bits.h"
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <string>
+
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "modules/video_coding/utility/vp9_constants.h"
 #include "rtc_base/bitstream_reader.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"

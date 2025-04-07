@@ -11,11 +11,14 @@
 #ifndef MODULES_VIDEO_CODING_TIMING_TIMING_H_
 #define MODULES_VIDEO_CODING_TIMING_TIMING_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 
 #include "api/field_trials_view.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_timing.h"
 #include "modules/video_coding/timing/decode_time_percentile_filter.h"

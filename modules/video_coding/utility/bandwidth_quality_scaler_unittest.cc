@@ -11,15 +11,18 @@
 #include "modules/video_coding/utility/bandwidth_quality_scaler.h"
 
 #include <memory>
-#include <string>
+#include <optional>
+#include <vector>
 
+#include "api/task_queue/task_queue_factory.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_encoder.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/event.h"
 #include "rtc_base/experiments/encoder_info_settings.h"
 #include "rtc_base/task_queue_for_test.h"
-#include "rtc_base/time_utils.h"
 #include "test/gtest.h"
 #include "test/time_controller/simulated_time_controller.h"
 

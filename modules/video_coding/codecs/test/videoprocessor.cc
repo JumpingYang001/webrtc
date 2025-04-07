@@ -14,26 +14,45 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "api/environment/environment.h"
 #include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/task_queue_base.h"
+#include "api/test/videocodec_test_fixture.h"
+#include "api/test/videocodec_test_stats.h"
 #include "api/video/builtin_video_bitrate_allocator_factory.h"
+#include "api/video/encoded_image.h"
 #include "api/video/i420_buffer.h"
+#include "api/video/resolution.h"
+#include "api/video/video_bitrate_allocator.h"
 #include "api/video/video_bitrate_allocator_factory.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
 #include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
 #include "api/video/video_rotation.h"
 #include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_decoder.h"
 #include "api/video_codecs/video_encoder.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/test/videocodec_test_stats_impl.h"
+#include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/time_utils.h"
 #include "test/gtest.h"
+#include "test/testsupport/frame_reader.h"
+#include "test/testsupport/frame_writer.h"
 #include "third_party/libyuv/include/libyuv/compare.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 

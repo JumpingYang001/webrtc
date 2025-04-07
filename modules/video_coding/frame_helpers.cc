@@ -10,8 +10,18 @@
 
 #include "modules/video_coding/frame_helpers.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
 #include <utility>
 
+#include "absl/container/inlined_vector.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/encoded_frame.h"
+#include "api/video/encoded_image.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
 namespace webrtc {

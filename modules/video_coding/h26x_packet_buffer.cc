@@ -11,19 +11,23 @@
 #include "modules/video_coding/h26x_packet_buffer.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <limits>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "absl/algorithm/container.h"
 #include "api/array_view.h"
-#include "api/rtp_packet_info.h"
+#include "api/video/video_codec_type.h"
 #include "api/video/video_frame_type.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/h264/pps_parser.h"
 #include "common_video/h264/sps_parser.h"
-#include "modules/rtp_rtcp/source/rtp_header_extensions.h"
-#include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"
 #include "modules/video_coding/h264_sprop_parameter_sets.h"

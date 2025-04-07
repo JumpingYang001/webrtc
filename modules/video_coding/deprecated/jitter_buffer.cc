@@ -10,17 +10,29 @@
 #include "modules/video_coding/deprecated/jitter_buffer.h"
 
 #include <algorithm>
-#include <limits>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "api/field_trials_view.h"
+#include "api/units/data_size.h"
 #include "api/units/timestamp.h"
+#include "api/video/video_frame_type.h"
+#include "modules/include/module_common_types_public.h"
+#include "modules/video_coding/deprecated/decoding_state.h"
+#include "modules/video_coding/deprecated/event_wrapper.h"
 #include "modules/video_coding/deprecated/frame_buffer.h"
 #include "modules/video_coding/deprecated/jitter_buffer_common.h"
 #include "modules/video_coding/deprecated/packet.h"
+#include "modules/video_coding/deprecated/session_info.h"
 #include "modules/video_coding/timing/inter_frame_delay_variation_calculator.h"
 #include "modules/video_coding/timing/jitter_estimator.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "system_wrappers/include/clock.h"
 
 namespace webrtc {

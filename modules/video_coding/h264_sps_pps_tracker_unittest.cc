@@ -10,11 +10,11 @@
 
 #include "modules/video_coding/h264_sps_pps_tracker.h"
 
-#include <string.h>
-
-#include <variant>
+#include <cstdint>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/video/video_codec_type.h"
 #include "common_video/h264/h264_common.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"

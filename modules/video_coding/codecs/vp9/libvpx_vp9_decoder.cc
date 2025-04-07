@@ -14,17 +14,29 @@
 #include "modules/video_coding/codecs/vp9/libvpx_vp9_decoder.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <optional>
 
-#include "absl/strings/match.h"
+#include "api/array_view.h"
+#include "api/scoped_refptr.h"
 #include "api/video/color_space.h"
-#include "api/video/i010_buffer.h"
+#include "api/video/encoded_image.h"
+#include "api/video/render_resolution.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/video_decoder.h"
 #include "common_video/include/video_frame_buffer.h"
+#include "modules/video_coding/codecs/vp9/vp9_frame_buffer_pool.h"
+#include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/utility/vp9_uncompressed_header_parser.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
-#include "third_party/libyuv/include/libyuv/convert.h"
 #include "vpx/vp8dx.h"
 #include "vpx/vpx_decoder.h"
+#include "vpx/vpx_encoder.h"
+#include "vpx/vpx_image.h"
 
 namespace webrtc {
 namespace {

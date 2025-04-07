@@ -12,9 +12,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_codec.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "rtc_base/checks.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 
