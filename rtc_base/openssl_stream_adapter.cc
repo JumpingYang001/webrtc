@@ -81,12 +81,6 @@ struct SrtpCipherMapEntry {
   const int id;
 };
 
-// Cipher name table. Maps internal OpenSSL cipher ids to the RFC name.
-struct SslCipherMapEntry {
-  uint32_t openssl_id;
-  const char* rfc_name;
-};
-
 // This isn't elegant, but it's better than an external reference
 constexpr SrtpCipherMapEntry kSrtpCipherMap[] = {
     {"SRTP_AES128_CM_SHA1_80", webrtc::kSrtpAes128CmSha1_80},
