@@ -369,6 +369,7 @@ if (rtc_include_tests && !build_with_chromium) {
     deps = [
       ":common_audio",
       ":common_audio_c",
+      ":common_audio_cc",
       ":fir_filter",
       ":fir_filter_factory",
       ":sinc_resampler",
