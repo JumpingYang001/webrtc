@@ -10,18 +10,36 @@
 
 #include "pc/sctp_data_channel.h"
 
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "absl/functional/any_invocable.h"
+#include "api/data_channel_interface.h"
+#include "api/make_ref_counted.h"
 #include "api/priority.h"
+#include "api/rtc_error.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/pending_task_safety_flag.h"
+#include "api/transport/data_channel_transport_interface.h"
 #include "media/sctp/sctp_transport_internal.h"
+#include "pc/data_channel_utils.h"
 #include "pc/proxy.h"
+#include "pc/sctp_utils.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/system/unused.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
+#include "rtc_base/weak_ptr.h"
 
 namespace webrtc {
 

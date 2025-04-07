@@ -47,7 +47,6 @@
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/transport_description.h"
 #include "p2p/base/transport_info.h"
-#include "p2p/dtls/dtls_transport.h"
 #include "p2p/dtls/dtls_transport_factory.h"
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "pc/dtls_srtp_transport.h"

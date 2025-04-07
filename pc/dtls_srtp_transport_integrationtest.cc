@@ -14,6 +14,7 @@
 #include <memory>
 #include <optional>
 
+#include "absl/strings/str_cat.h"
 #include "api/crypto/crypto_options.h"
 #include "api/dtls_transport_interface.h"
 #include "api/scoped_refptr.h"
@@ -36,7 +37,6 @@
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/thread.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

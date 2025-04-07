@@ -12,11 +12,20 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <set>
-#include <type_traits>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "absl/strings/string_view.h"
+#include "api/jsep.h"
+#include "api/peer_connection_interface.h"
+#include "api/sequence_checker.h"
 #include "p2p/base/p2p_constants.h"
+#include "pc/jsep_transport.h"
+#include "pc/session_description.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
 namespace webrtc {

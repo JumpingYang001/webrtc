@@ -10,8 +10,16 @@
 
 #include "pc/session_description.h"
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "absl/algorithm/container.h"
 #include "absl/memory/memory.h"
+#include "absl/strings/string_view.h"
+#include "p2p/base/transport_info.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 

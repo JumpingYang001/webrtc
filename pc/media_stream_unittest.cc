@@ -12,6 +12,8 @@
 
 #include <stddef.h>
 
+#include "api/media_stream_interface.h"
+#include "api/scoped_refptr.h"
 #include "pc/audio_track.h"
 #include "pc/test/fake_video_track_source.h"
 #include "pc/video_track.h"

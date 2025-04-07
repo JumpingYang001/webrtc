@@ -12,6 +12,8 @@
 
 #include <optional>
 
+#include "api/audio_options.h"
+#include "api/scoped_refptr.h"
 #include "test/gtest.h"
 
 using webrtc::LocalAudioSource;

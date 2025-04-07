@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
 #include "api/audio/audio_device.h"
 #include "api/audio/audio_processing_statistics.h"
@@ -89,7 +90,6 @@
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"

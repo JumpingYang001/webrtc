@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
 #include "api/jsep_ice_candidate.h"
@@ -30,7 +31,6 @@
 #include "rtc_base/crypto_random.h"
 #include "rtc_base/net_helper.h"
 #include "rtc_base/socket_address.h"
-#include "rtc_base/string_encode.h"
 #include "test/gtest.h"
 
 using ::testing::Values;

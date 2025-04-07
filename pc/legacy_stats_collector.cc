@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/audio/audio_processing_statistics.h"
 #include "api/audio_codecs/audio_encoder.h"

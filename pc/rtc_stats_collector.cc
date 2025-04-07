@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "absl/functional/bind_front.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "api/audio/audio_device.h"
@@ -75,7 +76,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread.h"

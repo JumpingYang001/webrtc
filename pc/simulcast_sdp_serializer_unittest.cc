@@ -14,9 +14,12 @@
 
 #include <map>
 #include <string>
-#include <utility>
 #include <vector>
 
+#include "media/base/codec.h"
+#include "media/base/rid_description.h"
+#include "pc/session_description.h"
+#include "pc/simulcast_description.h"
 #include "test/gtest.h"
 
 using cricket::RidDescription;

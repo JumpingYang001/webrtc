@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "absl/strings/string_view.h"
 #include "api/media_stream_interface.h"
 #include "api/media_stream_track.h"
 #include "api/scoped_refptr.h"

@@ -11,6 +11,8 @@
 #include "pc/used_ids.h"
 
 #include "absl/strings/string_view.h"
+#include "api/rtp_parameters.h"
+#include "rtc_base/checks.h"
 #include "test/gtest.h"
 
 using ::webrtc::UsedIds;

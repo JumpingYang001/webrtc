@@ -12,11 +12,14 @@
 
 #include <optional>
 
+#include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"
 #include "api/units/timestamp.h"
 #include "api/video/color_space.h"
 #include "api/video/encoded_image.h"
+#include "api/video/recordable_encoded_frame.h"
 #include "api/video/video_codec_type.h"
+#include "api/video/video_sink_interface.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

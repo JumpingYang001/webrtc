@@ -9,6 +9,9 @@
  */
 #include "pc/session_description.h"
 
+#include <memory>
+#include <utility>
+
 #include "test/gtest.h"
 
 namespace webrtc {

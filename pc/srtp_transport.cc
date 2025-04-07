@@ -20,6 +20,7 @@
 #include "call/rtp_demuxer.h"
 #include "media/base/rtp_utils.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
+#include "p2p/base/packet_transport_internal.h"
 #include "pc/rtp_transport.h"
 #include "pc/srtp_session.h"
 #include "rtc_base/async_packet_socket.h"

@@ -13,9 +13,17 @@
 #include <stddef.h>
 
 #include <cctype>  // For std::isdigit.
+#include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "absl/strings/string_view.h"
+#include "api/candidate.h"
+#include "api/peer_connection_interface.h"
+#include "api/rtc_error.h"
+#include "p2p/base/port.h"
+#include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
 #include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"

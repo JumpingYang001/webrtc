@@ -11,6 +11,9 @@
 #ifndef PC_DATA_CHANNEL_CONTROLLER_H_
 #define PC_DATA_CHANNEL_CONTROLLER_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +26,7 @@
 #include "api/transport/data_channel_transport_interface.h"
 #include "pc/data_channel_utils.h"
 #include "pc/sctp_data_channel.h"
-#include "rtc_base/checks.h"
+#include "pc/sctp_utils.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/thread.h"

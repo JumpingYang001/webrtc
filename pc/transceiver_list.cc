@@ -10,8 +10,16 @@
 
 #include "pc/transceiver_list.h"
 
+#include <cstddef>
+#include <optional>
 #include <string>
+#include <vector>
 
+#include "api/rtp_parameters.h"
+#include "api/rtp_sender_interface.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "pc/rtp_transceiver.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

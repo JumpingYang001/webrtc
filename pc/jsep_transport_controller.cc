@@ -43,6 +43,7 @@
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "p2p/base/ice_transport_internal.h"
 #include "p2p/base/p2p_constants.h"
+#include "p2p/base/packet_transport_internal.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/transport_description.h"

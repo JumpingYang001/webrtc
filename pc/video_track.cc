@@ -10,12 +10,22 @@
 
 #include "pc/video_track.h"
 
+#include <string>
 #include <utility>
-#include <vector>
 
+#include "absl/strings/string_view.h"
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
+#include "api/media_stream_track.h"
 #include "api/notifier.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
-#include "rtc_base/checks.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video/video_source_interface.h"
+#include "media/base/video_source_base.h"
+#include "pc/video_track_source_proxy.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 

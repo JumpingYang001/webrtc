@@ -10,7 +10,14 @@
 
 #include "pc/audio_track.h"
 
-#include "rtc_base/checks.h"
+#include <string>
+
+#include "absl/strings/string_view.h"
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
+#include "api/media_stream_track.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
 
 namespace webrtc {
 

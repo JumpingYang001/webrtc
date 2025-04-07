@@ -13,8 +13,11 @@
 #include <stdlib.h>  // For malloc/free.
 #include <string.h>
 
+#include <cstdint>
+
 #include "rtc_base/logging.h"
 #include "rtc_base/zero_memory.h"
+#include "third_party/libsrtp/crypto/include/auth.h"
 #include "third_party/libsrtp/include/srtp.h"
 
 // Begin test case 0 */

@@ -21,7 +21,6 @@
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/task_queue/task_queue_base.h"
 #include "pc/proxy.h"
-#include "rtc_base/ref_count.h"
 #include "rtc_base/thread_annotations.h"
 
 // DtmfSender is the native implementation of the RTCDTMFSender defined by

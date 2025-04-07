@@ -12,10 +12,14 @@
 
 #include <memory>
 
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
+#include "api/scoped_refptr.h"
 #include "media/base/fake_frame_source.h"
 #include "pc/test/fake_video_track_renderer.h"
 #include "pc/test/fake_video_track_source.h"
 #include "pc/video_track_source.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
 #include "test/gtest.h"
 

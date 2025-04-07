@@ -10,6 +10,7 @@
 
 #include "pc/rtcp_mux_filter.h"
 
+#include "pc/session_description.h"
 #include "test/gtest.h"
 
 TEST(RtcpMuxFilterTest, IsActiveSender) {

@@ -10,15 +10,23 @@
 
 #include "pc/video_rtp_receiver.h"
 
+#include <cstdint>
 #include <functional>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
+#include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/video/recordable_encoded_frame.h"
 #include "api/video/test/mock_recordable_encoded_frame.h"
+#include "api/video/video_sink_interface.h"
 #include "media/base/fake_media_engine.h"
 #include "media/base/media_channel.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

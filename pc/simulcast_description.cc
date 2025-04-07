@@ -10,6 +10,10 @@
 
 #include "pc/simulcast_description.h"
 
+#include <cstddef>
+#include <vector>
+
+#include "absl/strings/string_view.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

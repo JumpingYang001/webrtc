@@ -10,8 +10,9 @@
 
 #include "pc/jitter_buffer_delay.h"
 
+#include <optional>
+
 #include "api/sequence_checker.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/numerics/safe_minmax.h"
 

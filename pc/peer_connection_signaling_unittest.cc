@@ -23,6 +23,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
 #include "api/audio/audio_device.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"

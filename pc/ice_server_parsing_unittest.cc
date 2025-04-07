@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+#include "api/peer_connection_interface.h"
+#include "p2p/base/port.h"
+#include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/socket_address.h"

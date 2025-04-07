@@ -38,7 +38,6 @@
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp8_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp9_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_open_h264_adapter.h"
-#include "p2p/base/basic_packet_socket_factory.h"
 #include "p2p/base/port_interface.h"
 #include "p2p/test/test_turn_server.h"
 #include "pc/peer_connection.h"

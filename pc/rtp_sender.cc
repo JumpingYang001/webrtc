@@ -12,21 +12,42 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/algorithm/container.h"
 #include "api/audio_options.h"
+#include "api/crypto/frame_encryptor_interface.h"
+#include "api/dtmf_sender_interface.h"
 #include "api/environment/environment.h"
+#include "api/frame_transformer_interface.h"
+#include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
 #include "api/priority.h"
 #include "api/rtc_error.h"
+#include "api/rtp_parameters.h"
+#include "api/rtp_sender_interface.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/video_codecs/video_encoder_factory.h"
+#include "media/base/audio_source.h"
+#include "media/base/codec.h"
+#include "media/base/media_channel.h"
 #include "media/base/media_engine.h"
+#include "pc/dtmf_sender.h"
 #include "pc/legacy_stats_collector_interface.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/crypto_random.h"
+#include "rtc_base/event.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/synchronization/mutex.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/trace_event.h"
 
 namespace webrtc {

@@ -16,6 +16,9 @@
 #include <utility>
 #include <vector>
 
+#include "api/scoped_refptr.h"
+#include "api/stats/rtc_stats.h"
+#include "api/stats/rtc_stats_report.h"
 #include "api/stats/rtcstats_objects.h"
 #include "rtc_base/checks.h"
 

@@ -14,9 +14,11 @@
 #include <string>
 
 #include "api/make_ref_counted.h"
-#include "rtc_base/gunit.h"
-#include "rtc_base/ref_count.h"
+#include "api/ref_count.h"
+#include "api/scoped_refptr.h"
+#include "rtc_base/thread.h"
 #include "test/gmock.h"
+#include "test/gtest.h"
 
 using ::testing::_;
 using ::testing::DoAll;

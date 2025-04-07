@@ -10,13 +10,24 @@
 
 #include "pc/data_channel_controller.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 
+#include "api/data_channel_interface.h"
+#include "api/make_ref_counted.h"
 #include "api/priority.h"
+#include "api/rtc_error.h"
+#include "api/scoped_refptr.h"
+#include "api/transport/data_channel_transport_interface.h"
+#include "media/sctp/sctp_transport_internal.h"
 #include "pc/peer_connection_internal.h"
 #include "pc/sctp_data_channel.h"
 #include "pc/test/mock_peer_connection_internal.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/null_socket_server.h"
+#include "rtc_base/ssl_stream_adapter.h"
+#include "rtc_base/thread.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/run_loop.h"

@@ -14,7 +14,14 @@
 
 #include <algorithm>
 
+#include "api/sequence_checker.h"
+#include "api/video/recordable_encoded_frame.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video/video_source_interface.h"
+#include "pc/video_track_source.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/synchronization/mutex.h"
 
 namespace webrtc {
 

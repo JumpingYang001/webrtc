@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "absl/strings/str_cat.h"
 #include "api/audio/audio_processing_statistics.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/candidate.h"
@@ -55,7 +56,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/third_party/base64/base64.h"
 #include "rtc_base/thread.h"
 #include "test/gmock.h"

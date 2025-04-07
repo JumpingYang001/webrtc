@@ -12,14 +12,29 @@
 
 #include <stddef.h>
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "api/crypto/frame_decryptor_interface.h"
+#include "api/dtls_transport_interface.h"
+#include "api/frame_transformer_interface.h"
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
+#include "api/rtp_parameters.h"
+#include "api/rtp_receiver_interface.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
+#include "api/task_queue/pending_task_safety_flag.h"
+#include "api/transport/rtp/rtp_source.h"
+#include "media/base/media_channel.h"
 #include "pc/audio_track.h"
 #include "pc/media_stream_track_proxy.h"
+#include "pc/remote_audio_source.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 

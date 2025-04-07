@@ -10,12 +10,18 @@
 
 #include "pc/dtls_srtp_transport.h"
 
-#include <string.h>
-
+#include <cstdint>
+#include <functional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "api/dtls_transport_interface.h"
+#include "api/field_trials_view.h"
+#include "p2p/base/packet_transport_internal.h"
+#include "p2p/dtls/dtls_transport_internal.h"
+#include "pc/srtp_transport.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_stream_adapter.h"

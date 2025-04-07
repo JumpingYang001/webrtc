@@ -23,6 +23,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/functional/any_invocable.h"
+#include "absl/strings/str_cat.h"
 #include "api/field_trials_view.h"
 #include "api/jsep.h"
 #include "api/jsep_session_description.h"
@@ -42,7 +43,6 @@
 #include "rtc_base/rtc_certificate_generator.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/unique_id_generator.h"
 
 using rtc::UniqueRandomIdGenerator;

@@ -11,9 +11,14 @@
 #include "pc/rtc_stats_traversal.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "api/scoped_refptr.h"
+#include "api/stats/rtc_stats.h"
+#include "api/stats/rtc_stats_report.h"
 #include "api/stats/rtcstats_objects.h"
+#include "api/units/timestamp.h"
 #include "test/gtest.h"
 
 // This file contains tests for TakeReferencedStats().

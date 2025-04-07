@@ -16,19 +16,28 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "absl/strings/str_cat.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_encoder_factory.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/jsep.h"
 #include "api/peer_connection_interface.h"
+#include "api/scoped_refptr.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/video_decoder_factory.h"
+#include "api/video_codecs/video_encoder_factory.h"
 #include "pc/session_description.h"
 #include "pc/test/integration_test_helpers.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

@@ -12,17 +12,22 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
-#include <string>
+#include <optional>
 #include <utility>
 
 #include "absl/algorithm/container.h"
+#include "api/call/audio_sink.h"
+#include "api/media_stream_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/task_queue_base.h"
+#include "media/base/media_channel.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_format.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/trace_event.h"
 
 namespace webrtc {

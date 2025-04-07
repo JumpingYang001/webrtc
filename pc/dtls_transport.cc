@@ -10,16 +10,22 @@
 
 #include "pc/dtls_transport.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "api/dtls_transport_interface.h"
+#include "api/ice_transport_interface.h"
 #include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
+#include "p2p/dtls/dtls_transport_internal.h"
 #include "pc/ice_transport.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_stream_adapter.h"
+#include "rtc_base/synchronization/mutex.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 

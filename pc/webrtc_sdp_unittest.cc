@@ -22,6 +22,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/memory/memory.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
@@ -47,7 +48,6 @@
 #include "rtc_base/message_digest.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_fingerprint.h"
-#include "rtc_base/string_encode.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
