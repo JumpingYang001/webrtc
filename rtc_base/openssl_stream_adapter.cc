@@ -268,8 +268,15 @@ static long stream_ctrl(BIO* b, int cmd, long num, void* ptr) {
     case BIO_CTRL_WPENDING:
     case BIO_CTRL_PENDING:
       return 0;
-    case BIO_CTRL_FLUSH:
+    case BIO_CTRL_FLUSH: {
+      StreamInterface* stream = static_cast<StreamInterface*>(BIO_get_data(b));
+      RTC_DCHECK(stream);
+      if (stream->Flush()) {
+        RTC_LOG(LS_WARNING) << "Failed to flush stream";
+        return 0;
+      }
       return 1;
+    }
     case BIO_CTRL_DGRAM_QUERY_MTU:
       // openssl defaults to mtu=256 unless we return something here.
       // The handshake doesn't actually need to send packets above 1k,
@@ -1116,7 +1123,6 @@ SSL_CTX* OpenSSLStreamAdapter::SetupSSLContext() {
 #if defined(OPENSSL_IS_BORINGSSL) || (OPENSSL_VERSION_NUMBER >= 0x30000000L)
   SSL_CTX_set_options(ctx, SSL_OP_NO_TICKET);
 #endif
-
   return ctx;
 }
 

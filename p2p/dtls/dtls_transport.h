@@ -74,6 +74,8 @@ class StreamInterfaceChannel : public rtc::StreamInterface {
                           size_t& written,
                           int& error) override;
 
+  bool Flush() override;
+
  private:
   webrtc::IceTransportInternal* const ice_transport_;  // owned by DtlsTransport
   DtlsStunPiggybackController* dtls_stun_piggyback_controller_ =

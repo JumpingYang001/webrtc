@@ -153,6 +153,14 @@ rtc::StreamResult StreamInterfaceChannel::Write(
   return webrtc::SR_SUCCESS;
 }
 
+bool StreamInterfaceChannel::Flush() {
+  RTC_DCHECK_RUN_ON(&callback_sequence_);
+
+  // TODO (webrtc:367395350): Hookup to DtlsStunPiggybackController
+  // to let it know about end of flight.
+  return false;
+}
+
 bool StreamInterfaceChannel::OnPacketReceived(const char* data, size_t size) {
   RTC_DCHECK_RUN_ON(&callback_sequence_);
   if (packets_.size() > 0) {
