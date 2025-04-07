@@ -62,6 +62,14 @@ void DtlsStunPiggybackController::CapturePacket(
     return;
   }
 
+  // BoringSSL writes burst of packets...but the interface
+  // is made for 1-packet at a time. Use the writing_packets_ variable to keep
+  // track of a full batch. The writing_packets_ is reset in Flush.
+  if (!writing_packets_) {
+    pending_packet_.Clear();
+    writing_packets_ = true;
+  }
+
   // Note: this overwrites the existing packets which is an issue
   // if this gets called with fragmented DTLS flights.
   pending_packet_.SetData(data);
@@ -72,6 +80,11 @@ void DtlsStunPiggybackController::ClearCachedPacketForTesting() {
   pending_packet_.Clear();
 }
 
+void DtlsStunPiggybackController::Flush() {
+  RTC_DCHECK_RUN_ON(&sequence_checker_);
+  writing_packets_ = false;
+}
+
 std::optional<absl::string_view>
 DtlsStunPiggybackController::GetDataToPiggyback(
     StunMessageType stun_message_type) {
@@ -79,6 +92,9 @@ DtlsStunPiggybackController::GetDataToPiggyback(
   RTC_DCHECK(stun_message_type == STUN_BINDING_REQUEST ||
              stun_message_type == STUN_BINDING_RESPONSE ||
              stun_message_type == STUN_BINDING_INDICATION);
+
+  // No longer writing packets...since we're now about to send them.
+  RTC_DCHECK(!writing_packets_);
 
   if (state_ == State::COMPLETE) {
     return std::nullopt;

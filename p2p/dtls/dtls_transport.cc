@@ -156,8 +156,9 @@ rtc::StreamResult StreamInterfaceChannel::Write(
 bool StreamInterfaceChannel::Flush() {
   RTC_DCHECK_RUN_ON(&callback_sequence_);
 
-  // TODO (webrtc:367395350): Hookup to DtlsStunPiggybackController
-  // to let it know about end of flight.
+  if (dtls_stun_piggyback_controller_) {
+    dtls_stun_piggyback_controller_->Flush();
+  }
   return false;
 }
 

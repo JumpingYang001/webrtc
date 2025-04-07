@@ -67,6 +67,9 @@ class DtlsStunPiggybackController {
   void CapturePacket(rtc::ArrayView<const uint8_t> data);
   void ClearCachedPacketForTesting();
 
+  // Inform piggybackcontroller that a flight is complete.
+  void Flush();
+
   // Called by Connection, when sending a STUN BINDING { REQUEST / RESPONSE }
   // to obtain optional DTLS data or ACKs.
   std::optional<absl::string_view> GetDataToPiggyback(
@@ -82,6 +85,7 @@ class DtlsStunPiggybackController {
 
  private:
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
+  bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
   rtc::Buffer pending_packet_ RTC_GUARDED_BY(sequence_checker_);
   absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback_;
   absl::AnyInvocable<void()> disable_piggybacking_callback_;

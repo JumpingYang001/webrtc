@@ -69,6 +69,7 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
                           StunMessageType type) {
     if (!data.empty()) {
       client_.CapturePacket(data);
+      client_.Flush();
     } else {
       client_.ClearCachedPacketForTesting();
     }
@@ -88,6 +89,7 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
                           StunMessageType type) {
     if (!data.empty()) {
       server_.CapturePacket(data);
+      server_.Flush();
     } else {
       server_.ClearCachedPacketForTesting();
     }
