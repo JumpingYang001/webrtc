@@ -39,6 +39,7 @@
 #include "pc/rtp_media_utils.h"
 #include "pc/session_description.h"
 #include "pc/typed_codec_vendor.h"
+#include "pc/used_ids.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/string_encode.h"
@@ -632,6 +633,14 @@ RTCErrorOr<std::vector<Codec>> CodecVendor::GetNegotiatedCodecsForOffer(
           }
         }
       }
+      // Note what PTs are already in use.
+      UsedPayloadTypes
+          used_pltypes;  // Used to avoid pt collisions in filtered_codecs
+      for (auto& codec : filtered_codecs) {
+        // Note: This may change PTs. Doing so woud indicate an error, but
+        // UsedPayloadTypes doesn't offer a means to make the distinction.
+        used_pltypes.FindAndSetIdUsed(&codec);
+      }
       // Add other supported codecs.
       for (const Codec& codec : supported_codecs) {
         std::optional<Codec> found_codec =
@@ -658,11 +667,8 @@ RTCErrorOr<std::vector<Codec>> CodecVendor::GetNegotiatedCodecsForOffer(
                                     changed_referenced_codec->id);
             }
           }
-          auto pt_or_error = pt_suggester.SuggestPayloadType(mid, *found_codec);
-          if (!pt_or_error.ok()) {
-            return pt_or_error.MoveError();
-          }
-          found_codec->id = pt_or_error.value();
+          // Quick fix for b/395077842: Remap the codec if it collides.
+          used_pltypes.FindAndSetIdUsed(&(*found_codec));
           filtered_codecs.push_back(*found_codec);
         }
       }
