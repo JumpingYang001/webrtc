@@ -120,6 +120,9 @@ class TestFrame : public RecordableEncodedFrame {
   std::optional<ColorSpace> color_space() const override {
     return std::nullopt;
   }
+  std::optional<VideoRotation> video_rotation() const override {
+    return std::nullopt;
+  }
   VideoCodecType codec() const override { return kVideoCodecGeneric; }
   bool is_key_frame() const override { return false; }
   EncodedResolution resolution() const override {

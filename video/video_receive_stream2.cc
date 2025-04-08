@@ -85,6 +85,9 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
     if (frame.ColorSpace()) {
       color_space_ = *frame.ColorSpace();
     }
+    if (frame.rotation() != VideoRotation::kVideoRotation_0) {
+      video_rotation_ = frame.rotation();
+    }
   }
 
   // VideoEncodedSinkInterface::FrameBuffer
@@ -95,6 +98,10 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
 
   std::optional<webrtc::ColorSpace> color_space() const override {
     return color_space_;
+  }
+
+  std::optional<webrtc::VideoRotation> video_rotation() const override {
+    return video_rotation_;
   }
 
   VideoCodecType codec() const override { return codec_; }
@@ -114,6 +121,7 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
   bool is_key_frame_;
   EncodedResolution resolution_;
   std::optional<webrtc::ColorSpace> color_space_;
+  std::optional<webrtc::VideoRotation> video_rotation_;
 };
 
 RenderResolution InitialDecoderResolution(const FieldTrialsView& field_trials) {
