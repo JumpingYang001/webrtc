@@ -42,7 +42,7 @@ class TestStunServer : StunServer {
   TestStunServer(AsyncUDPSocket* socket, Thread& network_thread)
       : StunServer(socket), network_thread_(network_thread) {}
 
-  void OnBindingRequest(cricket::StunMessage* msg,
+  void OnBindingRequest(StunMessage* msg,
                         const SocketAddress& remote_addr) override;
 
  private:

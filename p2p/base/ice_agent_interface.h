@@ -18,7 +18,7 @@
 #include "p2p/base/ice_switch_reason.h"
 #include "p2p/base/transport_description.h"
 
-namespace cricket {
+namespace webrtc {
 
 // IceAgentInterface provides methods that allow an ICE controller to manipulate
 // the connections available to a transport, and used by the transport to
@@ -78,6 +78,12 @@ class IceAgentInterface {
       rtc::ArrayView<const Connection* const> connections) = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::IceAgentInterface;
 }  // namespace cricket
 
 #endif  // P2P_BASE_ICE_AGENT_INTERFACE_H_

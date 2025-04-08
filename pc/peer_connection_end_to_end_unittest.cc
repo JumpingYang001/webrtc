@@ -126,12 +126,12 @@ class PeerConnectionEndToEndBaseTest : public sigslot::has_slots<>,
   }
 
   void GetAndAddUserMedia() {
-    cricket::AudioOptions audio_options;
+    webrtc::AudioOptions audio_options;
     GetAndAddUserMedia(true, audio_options, true);
   }
 
   void GetAndAddUserMedia(bool audio,
-                          const cricket::AudioOptions& audio_options,
+                          const webrtc::AudioOptions& audio_options,
                           bool video) {
     caller_->GetAndAddUserMedia(audio, audio_options, video);
     callee_->GetAndAddUserMedia(audio, audio_options, video);
@@ -771,7 +771,7 @@ TEST_P(PeerConnectionEndToEndTest, TooManyDataChannelsOpenedBeforeConnecting) {
 
   webrtc::DataChannelInit init;
   std::vector<rtc::scoped_refptr<DataChannelInterface>> channels;
-  for (int i = 0; i <= cricket::kMaxSctpStreams / 2; i++) {
+  for (int i = 0; i <= webrtc::kMaxSctpStreams / 2; i++) {
     rtc::scoped_refptr<DataChannelInterface> caller_dc(
         caller_->CreateDataChannel("data", init));
     channels.push_back(std::move(caller_dc));
@@ -780,13 +780,13 @@ TEST_P(PeerConnectionEndToEndTest, TooManyDataChannelsOpenedBeforeConnecting) {
   WaitForConnection();
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return callee_signaled_data_channels_; },
-                        ::testing::SizeIs(cricket::kMaxSctpStreams / 2),
+                        ::testing::SizeIs(webrtc::kMaxSctpStreams / 2),
                         {.timeout = webrtc::TimeDelta::Millis(kMaxWait)}),
       webrtc::IsRtcOk());
   EXPECT_EQ(DataChannelInterface::kOpen,
-            channels[(cricket::kMaxSctpStreams / 2) - 1]->state());
+            channels[(webrtc::kMaxSctpStreams / 2) - 1]->state());
   EXPECT_EQ(DataChannelInterface::kClosed,
-            channels[cricket::kMaxSctpStreams / 2]->state());
+            channels[webrtc::kMaxSctpStreams / 2]->state());
 }
 
 #endif  // WEBRTC_HAVE_SCTP

@@ -32,12 +32,12 @@ class TestTurnCustomizer : public TurnCustomizer {
   };
 
   void MaybeModifyOutgoingStunMessage(PortInterface* port,
-                                      cricket::StunMessage* message) override {
+                                      StunMessage* message) override {
     modify_cnt_++;
 
     ASSERT_NE(0, message->type());
     if (add_counter_) {
-      message->AddAttribute(std::make_unique<cricket::StunUInt32Attribute>(
+      message->AddAttribute(std::make_unique<StunUInt32Attribute>(
           STUN_ATTR_COUNTER, modify_cnt_));
     }
     return;

@@ -99,7 +99,7 @@ PeerConnectionObserver* RtpTransmissionManager::Observer() const {
   return observer_;
 }
 
-cricket::VoiceMediaSendChannelInterface*
+VoiceMediaSendChannelInterface*
 RtpTransmissionManager::voice_media_send_channel() const {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(!IsUnifiedPlan());
@@ -111,7 +111,7 @@ RtpTransmissionManager::voice_media_send_channel() const {
   }
 }
 
-cricket::VideoMediaSendChannelInterface*
+VideoMediaSendChannelInterface*
 RtpTransmissionManager::video_media_send_channel() const {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(!IsUnifiedPlan());
@@ -122,7 +122,7 @@ RtpTransmissionManager::video_media_send_channel() const {
     return nullptr;
   }
 }
-cricket::VoiceMediaReceiveChannelInterface*
+VoiceMediaReceiveChannelInterface*
 RtpTransmissionManager::voice_media_receive_channel() const {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(!IsUnifiedPlan());
@@ -134,7 +134,7 @@ RtpTransmissionManager::voice_media_receive_channel() const {
   }
 }
 
-cricket::VideoMediaReceiveChannelInterface*
+VideoMediaReceiveChannelInterface*
 RtpTransmissionManager::video_media_receive_channel() const {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(!IsUnifiedPlan());
@@ -749,7 +749,7 @@ RtpTransmissionManager::FindReceiverById(const std::string& receiver_id) const {
   return nullptr;
 }
 
-cricket::MediaEngineInterface* RtpTransmissionManager::media_engine() const {
+MediaEngineInterface* RtpTransmissionManager::media_engine() const {
   return context_->media_engine();
 }
 

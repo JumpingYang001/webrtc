@@ -135,7 +135,7 @@ TEST(PayloadTypePicker, RollbackAndCommit) {
 
 TEST(PayloadTypePicker, StaticValueIsGood) {
   PayloadTypePicker picker;
-  Codec a_codec = CreateAudioCodec(-1, cricket::kPcmuCodecName, 8000, 1);
+  Codec a_codec = CreateAudioCodec(-1, kPcmuCodecName, 8000, 1);
   auto result = picker.SuggestMapping(a_codec, nullptr);
   // In the absence of existing mappings, PCMU always has 0 as PT.
   ASSERT_TRUE(result.ok());
@@ -192,23 +192,23 @@ TEST(PayloadTypePicker, AudioRedGetsLowerRange) {
 
 TEST(PayloadTypePicker, VideoGetsTreatedSpecially) {
   PayloadTypePicker picker;
-  Codec h264_constrained = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH264CodecName, {{cricket::kH264FmtpProfileLevelId, "42e01f"},
-                                {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                                {cricket::kH264FmtpPacketizationMode, "1"}}));
-  Codec h264_yuv444 = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH264CodecName, {{cricket::kH264FmtpProfileLevelId, "f4001f"},
-                                {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                                {cricket::kH264FmtpPacketizationMode, "1"}}));
-  Codec vp9_profile_2 = CreateVideoCodec(
-      {cricket::kVp9CodecName, {{cricket::kVP9ProfileId, "2"}}});
-  Codec vp9_profile_3 = CreateVideoCodec(
-      {cricket::kVp9CodecName, {{cricket::kVP9ProfileId, "3"}}});
-  Codec h265 = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH265CodecName, {{cricket::kH265FmtpProfileId, "1"},
-                                {cricket::kH265FmtpTierFlag, "0"},
-                                {cricket::kH265FmtpLevelId, "93"},
-                                {cricket::kH265FmtpTxMode, "SRST"}}));
+  Codec h264_constrained = CreateVideoCodec(
+      SdpVideoFormat(kH264CodecName, {{kH264FmtpProfileLevelId, "42e01f"},
+                                      {kH264FmtpLevelAsymmetryAllowed, "1"},
+                                      {kH264FmtpPacketizationMode, "1"}}));
+  Codec h264_yuv444 = CreateVideoCodec(
+      SdpVideoFormat(kH264CodecName, {{kH264FmtpProfileLevelId, "f4001f"},
+                                      {kH264FmtpLevelAsymmetryAllowed, "1"},
+                                      {kH264FmtpPacketizationMode, "1"}}));
+  Codec vp9_profile_2 =
+      CreateVideoCodec({kVp9CodecName, {{kVP9ProfileId, "2"}}});
+  Codec vp9_profile_3 =
+      CreateVideoCodec({kVp9CodecName, {{kVP9ProfileId, "3"}}});
+  Codec h265 = CreateVideoCodec(
+      SdpVideoFormat(kH265CodecName, {{kH265FmtpProfileId, "1"},
+                                      {kH265FmtpTierFlag, "0"},
+                                      {kH265FmtpLevelId, "93"},
+                                      {kH265FmtpTxMode, "SRST"}}));
   // Valid for high range only.
   EXPECT_THAT(picker.SuggestMapping(h264_constrained, nullptr).value(), Ge(96));
   EXPECT_THAT(picker.SuggestMapping(vp9_profile_2, nullptr).value(), Ge(96));
@@ -226,18 +226,18 @@ TEST(PayloadTypePicker, ChoosingH264Profiles) {
   // No opinion on whether these are right or wrong, just that their
   // behavior is consistent.
   PayloadTypePicker picker;
-  Codec h264_constrained = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH264CodecName, {{cricket::kH264FmtpProfileLevelId, "42e01f"},
-                                {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                                {cricket::kH264FmtpPacketizationMode, "1"}}));
-  Codec h264_high_1f = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH264CodecName, {{cricket::kH264FmtpProfileLevelId, "640c1f"},
-                                {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                                {cricket::kH264FmtpPacketizationMode, "1"}}));
-  Codec h264_high_2a = CreateVideoCodec(SdpVideoFormat(
-      cricket::kH264CodecName, {{cricket::kH264FmtpProfileLevelId, "640c2a"},
-                                {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                                {cricket::kH264FmtpPacketizationMode, "1"}}));
+  Codec h264_constrained = CreateVideoCodec(
+      SdpVideoFormat(kH264CodecName, {{kH264FmtpProfileLevelId, "42e01f"},
+                                      {kH264FmtpLevelAsymmetryAllowed, "1"},
+                                      {kH264FmtpPacketizationMode, "1"}}));
+  Codec h264_high_1f = CreateVideoCodec(
+      SdpVideoFormat(kH264CodecName, {{kH264FmtpProfileLevelId, "640c1f"},
+                                      {kH264FmtpLevelAsymmetryAllowed, "1"},
+                                      {kH264FmtpPacketizationMode, "1"}}));
+  Codec h264_high_2a = CreateVideoCodec(
+      SdpVideoFormat(kH264CodecName, {{kH264FmtpProfileLevelId, "640c2a"},
+                                      {kH264FmtpLevelAsymmetryAllowed, "1"},
+                                      {kH264FmtpPacketizationMode, "1"}}));
   PayloadType pt_constrained =
       picker.SuggestMapping(h264_constrained, nullptr).value();
   PayloadType pt_high_1f = picker.SuggestMapping(h264_high_1f, nullptr).value();

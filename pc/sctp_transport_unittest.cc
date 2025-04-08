@@ -45,13 +45,13 @@ using ::testing::ElementsAre;
 
 namespace {
 
-class FakeCricketSctpTransport : public cricket::SctpTransportInternal {
+class FakeCricketSctpTransport : public SctpTransportInternal {
  public:
   void SetOnConnectedCallback(std::function<void()> callback) override {
     on_connected_callback_ = std::move(callback);
   }
   void SetDataChannelSink(DataChannelSink* sink) override {}
-  void SetDtlsTransport(cricket::DtlsTransportInternal* transport) override {}
+  void SetDtlsTransport(DtlsTransportInternal* transport) override {}
   bool Start(const SctpOptions& options) override { return true; }
   bool OpenStream(int sid, PriorityValue priority) override { return true; }
   bool ResetStream(int sid) override { return true; }
@@ -123,9 +123,9 @@ class SctpTransportTest : public ::testing::Test {
   SctpTransportObserverInterface* observer() { return &observer_; }
 
   void CreateTransport() {
-    std::unique_ptr<cricket::DtlsTransportInternal> cricket_transport =
-        std::make_unique<FakeDtlsTransport>(
-            "audio", cricket::ICE_CANDIDATE_COMPONENT_RTP);
+    std::unique_ptr<DtlsTransportInternal> cricket_transport =
+        std::make_unique<FakeDtlsTransport>("audio",
+                                            ICE_CANDIDATE_COMPONENT_RTP);
     dtls_transport_ =
         rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
 
@@ -155,13 +155,12 @@ class SctpTransportTest : public ::testing::Test {
 
 TEST(SctpTransportSimpleTest, CreateClearDelete) {
   AutoThread main_thread;
-  std::unique_ptr<cricket::DtlsTransportInternal> cricket_transport =
-      std::make_unique<FakeDtlsTransport>("audio",
-                                          cricket::ICE_CANDIDATE_COMPONENT_RTP);
+  std::unique_ptr<DtlsTransportInternal> cricket_transport =
+      std::make_unique<FakeDtlsTransport>("audio", ICE_CANDIDATE_COMPONENT_RTP);
   rtc::scoped_refptr<DtlsTransport> dtls_transport =
       rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
 
-  std::unique_ptr<cricket::SctpTransportInternal> fake_cricket_sctp_transport =
+  std::unique_ptr<SctpTransportInternal> fake_cricket_sctp_transport =
       absl::WrapUnique(new FakeCricketSctpTransport());
   rtc::scoped_refptr<SctpTransport> sctp_transport =
       rtc::make_ref_counted<SctpTransport>(

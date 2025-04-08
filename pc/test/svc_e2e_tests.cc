@@ -55,10 +55,6 @@
 namespace webrtc {
 namespace {
 
-using ::cricket::kAv1CodecName;
-using ::cricket::kH264CodecName;
-using ::cricket::kVp8CodecName;
-using ::cricket::kVp9CodecName;
 using ::testing::Combine;
 using ::testing::Optional;
 using ::testing::UnitTest;
@@ -133,9 +129,9 @@ class SvcTest : public testing::TestWithParam<
   }
 
   static VideoCodecConfig ToVideoCodecConfig(absl::string_view codec) {
-    if (codec == cricket::kVp9CodecName) {
+    if (codec == kVp9CodecName) {
       return VideoCodecConfig(
-          cricket::kVp9CodecName,
+          kVp9CodecName,
           {{kVP9FmtpProfileId, VP9ProfileToString(VP9Profile::kProfile0)}});
     }
 

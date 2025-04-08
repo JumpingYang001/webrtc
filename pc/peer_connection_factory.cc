@@ -198,7 +198,7 @@ RtpCapabilities PeerConnectionFactory::GetRtpReceiverCapabilities(
 }
 
 rtc::scoped_refptr<AudioSourceInterface>
-PeerConnectionFactory::CreateAudioSource(const cricket::AudioOptions& options) {
+PeerConnectionFactory::CreateAudioSource(const AudioOptions& options) {
   RTC_DCHECK(signaling_thread()->IsCurrent());
   rtc::scoped_refptr<LocalAudioSource> source(
       LocalAudioSource::Create(&options));
@@ -216,7 +216,7 @@ void PeerConnectionFactory::StopAecDump() {
   media_engine()->voice().StopAecDump();
 }
 
-cricket::MediaEngineInterface* PeerConnectionFactory::media_engine() const {
+MediaEngineInterface* PeerConnectionFactory::media_engine() const {
   RTC_DCHECK(context_);
   return context_->media_engine();
 }
@@ -283,7 +283,7 @@ PeerConnectionFactory::CreatePeerConnectionOrError(
   }
 
   if (!dependencies.allocator) {
-    dependencies.allocator = std::make_unique<cricket::BasicPortAllocator>(
+    dependencies.allocator = std::make_unique<BasicPortAllocator>(
         env, context_->default_network_manager(),
         context_->default_socket_factory(), configuration.turn_customizer);
     dependencies.allocator->SetPortRange(

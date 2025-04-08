@@ -111,12 +111,12 @@ std::vector<RtpCodecCapability> FilterVideoCodecCapabilities(
 
   // Add required FEC and RTX codecs to output.
   for (auto& codec : supported_codecs) {
-    if (codec.name == cricket::kRtxCodecName && use_rtx) {
+    if (codec.name == kRtxCodecName && use_rtx) {
       output_codecs.push_back(codec);
-    } else if (codec.name == cricket::kFlexfecCodecName && use_flexfec) {
+    } else if (codec.name == kFlexfecCodecName && use_flexfec) {
       output_codecs.push_back(codec);
-    } else if ((codec.name == cricket::kRedCodecName ||
-                codec.name == cricket::kUlpfecCodecName) &&
+    } else if ((codec.name == kRedCodecName ||
+                codec.name == kUlpfecCodecName) &&
                use_ulpfec) {
       // Red and ulpfec should be enabled or disabled together.
       output_codecs.push_back(codec);
@@ -146,10 +146,10 @@ void SignalingInterceptor::FillSimulcastContext(
                                 media_desc->mutable_streams()[0].rids());
 
       // Set new rids basing on created SimulcastSectionInfo.
-      std::vector<cricket::RidDescription> rids;
+      std::vector<RidDescription> rids;
       SimulcastDescription simulcast_description;
       for (std::string& rid : info.rids) {
-        rids.emplace_back(rid, cricket::RidDirection::kSend);
+        rids.emplace_back(rid, RidDirection::kSend);
         simulcast_description.send_layers().AddLayer(
             SimulcastLayer(rid, false));
       }
@@ -204,11 +204,11 @@ LocalAndRemoteSdp SignalingInterceptor::PatchOffer(
 
   if (!params_.stream_label_to_simulcast_streams_count.empty()) {
     // Because simulcast enabled `params_.video_codecs` has only 1 element.
-    if (first_codec.name == cricket::kVp8CodecName) {
+    if (first_codec.name == kVp8CodecName) {
       return PatchVp8Offer(std::move(offer));
     }
 
-    if (first_codec.name == cricket::kVp9CodecName) {
+    if (first_codec.name == kVp9CodecName) {
       return PatchVp9Offer(std::move(offer));
     }
   }
@@ -288,17 +288,17 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp8Offer(
   }
 
   // Now we need to add bundle line to have all media bundled together.
-  ContentGroup bundle_group(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup bundle_group(GROUP_TYPE_BUNDLE);
   for (auto& content : desc->contents()) {
     bundle_group.AddContentName(content.mid());
   }
-  if (desc->HasGroup(cricket::GROUP_TYPE_BUNDLE)) {
-    desc->RemoveGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  if (desc->HasGroup(GROUP_TYPE_BUNDLE)) {
+    desc->RemoveGroupByName(GROUP_TYPE_BUNDLE);
   }
   desc->AddGroup(bundle_group);
 
   // Update transport_infos to add TransportInfo for each new media section.
-  std::vector<cricket::TransportInfo> transport_infos = desc->transport_infos();
+  std::vector<TransportInfo> transport_infos = desc->transport_infos();
   transport_infos.erase(std::remove_if(
       transport_infos.begin(), transport_infos.end(),
       [this](const cricket::TransportInfo& ti) {
@@ -344,8 +344,7 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp9Offer(
       continue;
     }
     RTC_CHECK_EQ(content.media_description()->streams().size(), 1);
-    cricket::StreamParams& stream =
-        content.media_description()->mutable_streams()[0];
+    StreamParams& stream = content.media_description()->mutable_streams()[0];
     RTC_CHECK_EQ(stream.stream_ids().size(), 2)
         << "Expected 2 stream ids in video stream: 1st - sync_group, 2nd - "
            "unique label";
@@ -371,7 +370,7 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp9Offer(
       stream.AddFidSsrc(ssrc, ssrcs_generator.GenerateId());
     }
     stream.ssrc_groups.push_back(
-        cricket::SsrcGroup(cricket::kSimSsrcGroupSemantics, primary_ssrcs));
+        SsrcGroup(kSimSsrcGroupSemantics, primary_ssrcs));
   }
   auto offer_for_remote = CloneSessionDescription(offer.get());
   return LocalAndRemoteSdp(std::move(offer), std::move(offer_for_remote));
@@ -394,11 +393,11 @@ LocalAndRemoteSdp SignalingInterceptor::PatchAnswer(
 
   if (!params_.stream_label_to_simulcast_streams_count.empty()) {
     // Because simulcast enabled `params_.video_codecs` has only 1 element.
-    if (first_codec.name == cricket::kVp8CodecName) {
+    if (first_codec.name == kVp8CodecName) {
       return PatchVp8Answer(std::move(answer));
     }
 
-    if (first_codec.name == cricket::kVp9CodecName) {
+    if (first_codec.name == kVp9CodecName) {
       return PatchVp9Answer(std::move(answer));
     }
   }
@@ -454,11 +453,11 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp8Answer(
 
     // Add StreamParams with rids for receive.
     RTC_CHECK_EQ(media_desc->mutable_streams().size(), 0);
-    std::vector<cricket::RidDescription> rids;
+    std::vector<RidDescription> rids;
     for (auto& rid : info.rids) {
-      rids.emplace_back(rid, cricket::RidDirection::kReceive);
+      rids.emplace_back(rid, RidDirection::kReceive);
     }
-    cricket::StreamParams stream_params;
+    StreamParams stream_params;
     stream_params.set_rids(rids);
     media_desc->mutable_streams().push_back(stream_params);
 
@@ -478,19 +477,18 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp8Answer(
   desc = RestoreMediaSectionsOrder(std::move(desc));
 
   // Now we need to add bundle line to have all media bundled together.
-  ContentGroup bundle_group(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup bundle_group(GROUP_TYPE_BUNDLE);
   for (auto& content : desc->contents()) {
     bundle_group.AddContentName(content.mid());
   }
-  if (desc->HasGroup(cricket::GROUP_TYPE_BUNDLE)) {
-    desc->RemoveGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  if (desc->HasGroup(GROUP_TYPE_BUNDLE)) {
+    desc->RemoveGroupByName(GROUP_TYPE_BUNDLE);
   }
   desc->AddGroup(bundle_group);
 
   // Fix transport_infos: it have to have single info for simulcast section.
-  std::vector<cricket::TransportInfo> transport_infos = desc->transport_infos();
-  std::map<std::string, cricket::TransportDescription>
-      mid_to_transport_description;
+  std::vector<TransportInfo> transport_infos = desc->transport_infos();
+  std::map<std::string, TransportDescription> mid_to_transport_description;
   for (auto info_it = transport_infos.begin();
        info_it != transport_infos.end();) {
     auto it = context_.simulcast_infos_by_rid.find(info_it->content_name);
@@ -591,7 +589,7 @@ SignalingInterceptor::PatchAnswererIceCandidates(
 SignalingInterceptor::SimulcastSectionInfo::SimulcastSectionInfo(
     const std::string& mid,
     MediaProtocolType media_protocol_type,
-    const std::vector<cricket::RidDescription>& rids_desc)
+    const std::vector<RidDescription>& rids_desc)
     : mid(mid), media_protocol_type(media_protocol_type) {
   for (auto& rid : rids_desc) {
     rids.push_back(rid.rid);

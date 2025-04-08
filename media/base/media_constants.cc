@@ -12,7 +12,7 @@
 
 #include <cstddef>
 
-namespace cricket {
+namespace webrtc {
 
 const int kVideoCodecClockrate = 90000;
 
@@ -150,4 +150,4 @@ const size_t kConferenceDefaultNumTemporalLayers = 3;
 // RFC 3556 and RFC 3890
 const char kApplicationSpecificBandwidth[] = "AS";
 const char kTransportSpecificBandwidth[] = "TIAS";
-}  // namespace cricket
+}  // namespace webrtc

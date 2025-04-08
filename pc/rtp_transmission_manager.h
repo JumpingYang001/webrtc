@@ -204,12 +204,10 @@ class RtpTransmissionManager : public RtpSenderBase::SetStreamsObserver {
 
   // Plan B helpers for getting the voice/video media channels for the single
   // audio/video transceiver, if it exists.
-  cricket::VoiceMediaSendChannelInterface* voice_media_send_channel() const;
-  cricket::VideoMediaSendChannelInterface* video_media_send_channel() const;
-  cricket::VoiceMediaReceiveChannelInterface* voice_media_receive_channel()
-      const;
-  cricket::VideoMediaReceiveChannelInterface* video_media_receive_channel()
-      const;
+  VoiceMediaSendChannelInterface* voice_media_send_channel() const;
+  VideoMediaSendChannelInterface* video_media_send_channel() const;
+  VoiceMediaReceiveChannelInterface* voice_media_receive_channel() const;
+  VideoMediaReceiveChannelInterface* video_media_receive_channel() const;
 
  private:
   Thread* signaling_thread() const { return context_->signaling_thread(); }
@@ -245,7 +243,7 @@ class RtpTransmissionManager : public RtpSenderBase::SetStreamsObserver {
   PeerConnectionObserver* Observer() const;
   void OnNegotiationNeeded();
 
-  cricket::MediaEngineInterface* media_engine() const;
+  MediaEngineInterface* media_engine() const;
 
   UniqueRandomIdGenerator* ssrc_generator() const {
     return context_->ssrc_generator();

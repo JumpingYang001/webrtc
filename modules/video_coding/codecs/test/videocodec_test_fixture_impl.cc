@@ -193,11 +193,11 @@ SdpVideoFormat CreateSdpVideoFormat(
             ? "1"
             : "0";
     CodecParameterMap codec_params = {
-        {cricket::kH264FmtpProfileLevelId,
+        {kH264FmtpProfileLevelId,
          *H264ProfileLevelIdToString(H264ProfileLevelId(
              config.h264_codec_settings.profile, H264Level::kLevel3_1))},
-        {cricket::kH264FmtpPacketizationMode, packetization_mode},
-        {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
+        {kH264FmtpPacketizationMode, packetization_mode},
+        {kH264FmtpLevelAsymmetryAllowed, "1"}};
 
     return SdpVideoFormat(config.codec_name, codec_params);
   } else if (config.codec_settings.codecType == kVideoCodecVP9) {
@@ -206,7 +206,7 @@ SdpVideoFormat CreateSdpVideoFormat(
     // Extra condition to not fallback to the default creation of
     // SdpVideoFormat. This is needed for backwards compatibility in downstream
     // projects that still use the preliminary codec name AV1X.
-    if (absl::EqualsIgnoreCase(config.codec_name, cricket::kAv1CodecName)) {
+    if (absl::EqualsIgnoreCase(config.codec_name, kAv1CodecName)) {
       return SdpVideoFormat::AV1Profile0();
     }
   }

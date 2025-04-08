@@ -104,17 +104,17 @@
 #include "system_wrappers/include/metrics.h"
 
 using cricket::MediaContentDescription;
-using cricket::RidDescription;
-using cricket::RidDirection;
-using cricket::StreamParams;
-using cricket::TransportInfo;
 using ::webrtc::ContentInfo;
 using ::webrtc::ContentInfos;
 using ::webrtc::MediaProtocolType;
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 using ::webrtc::SessionDescription;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
 using ::webrtc::SimulcastLayerList;
+using ::webrtc::StreamParams;
+using ::webrtc::TransportInfo;
 
 namespace webrtc {
 
@@ -162,7 +162,7 @@ void NoteAddIceCandidateResult(int result) {
 std::map<std::string, const ContentGroup*> GetBundleGroupsByMid(
     const SessionDescription* desc) {
   std::vector<const ContentGroup*> bundle_groups =
-      desc->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      desc->GetGroupsByName(GROUP_TYPE_BUNDLE);
   std::map<std::string, const ContentGroup*> bundle_groups_by_mid;
   for (const cricket::ContentGroup* bundle_group : bundle_groups) {
     for (const std::string& content_name : bundle_group->content_names()) {
@@ -186,15 +186,15 @@ bool CheckForRemoteIceRestart(const SessionDescriptionInterface* old_desc,
     return false;
   }
   // If the content isn't rejected, check if ufrag and password has changed.
-  const cricket::TransportDescription* new_transport_desc =
+  const TransportDescription* new_transport_desc =
       new_sd->GetTransportDescriptionByName(content_name);
-  const cricket::TransportDescription* old_transport_desc =
+  const TransportDescription* old_transport_desc =
       old_sd->GetTransportDescriptionByName(content_name);
   if (!new_transport_desc || !old_transport_desc) {
     // No transport description exists. This is not an ICE restart.
     return false;
   }
-  if (cricket::IceCredentialsChanged(
+  if (IceCredentialsChanged(
           old_transport_desc->ice_ufrag, old_transport_desc->ice_pwd,
           new_transport_desc->ice_ufrag, new_transport_desc->ice_pwd)) {
     RTC_LOG(LS_INFO) << "Remote peer requests ICE restart for " << content_name
@@ -240,11 +240,11 @@ const ContentInfo* FindTransceiverMSection(
 // If the direction is "recvonly" or "inactive", treat the description
 // as containing no streams.
 // See: https://code.google.com/p/webrtc/issues/detail?id=5054
-std::vector<cricket::StreamParams> GetActiveStreams(
+std::vector<StreamParams> GetActiveStreams(
     const MediaContentDescription* desc) {
   return RtpTransceiverDirectionHasSend(desc->direction())
              ? desc->streams()
-             : std::vector<cricket::StreamParams>();
+             : std::vector<StreamParams>();
 }
 
 // Logic to decide if an m= section can be recycled. This means that the new
@@ -439,7 +439,7 @@ RTCError ValidateBundledPayloadTypes(const SessionDescription& description) {
   // the same media type, encoding name, clock rate, and any parameter
   // that can affect the codec configuration and packetization.
   std::vector<const ContentGroup*> bundle_groups =
-      description.GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      description.GetGroupsByName(GROUP_TYPE_BUNDLE);
   for (const cricket::ContentGroup* bundle_group : bundle_groups) {
     std::map<int, RtpCodecParameters> payload_to_codec_parameters;
     for (const std::string& content_name : bundle_group->content_names()) {
@@ -497,7 +497,7 @@ RTCError ValidateBundledRtpHeaderExtensions(
   // ... the identifier used for a given extension MUST identify the same
   // extension across all the bundled media descriptions.
   std::vector<const ContentGroup*> bundle_groups =
-      description.GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      description.GetGroupsByName(GROUP_TYPE_BUNDLE);
   for (const cricket::ContentGroup* bundle_group : bundle_groups) {
     std::map<int, RtpExtension> id_to_extension;
     for (const std::string& content_name : bundle_group->content_names()) {
@@ -561,11 +561,11 @@ RTCError ValidateSsrcGroups(const SessionDescription& description) {
       for (const cricket::SsrcGroup& group : stream.ssrc_groups) {
         // Validate the number of SSRCs for standard SSRC group semantics such
         // as FID and FEC-FR and the non-standard SIM group.
-        if ((group.semantics == cricket::kFidSsrcGroupSemantics &&
+        if ((group.semantics == kFidSsrcGroupSemantics &&
              group.ssrcs.size() != 2) ||
-            (group.semantics == cricket::kFecFrSsrcGroupSemantics &&
+            (group.semantics == kFecFrSsrcGroupSemantics &&
              group.ssrcs.size() != 2) ||
-            (group.semantics == cricket::kSimSsrcGroupSemantics &&
+            (group.semantics == kSimSsrcGroupSemantics &&
              group.ssrcs.size() > kMaxSimulcastStreams)) {
           LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,
                                "The media section with MID='" + content.mid() +
@@ -721,11 +721,11 @@ RTCError DisableSimulcastInSender(
 absl::string_view GetDefaultMidForPlanB(webrtc::MediaType media_type) {
   switch (media_type) {
     case webrtc::MediaType::AUDIO:
-      return cricket::CN_AUDIO;
+      return CN_AUDIO;
     case webrtc::MediaType::VIDEO:
-      return cricket::CN_VIDEO;
+      return CN_VIDEO;
     case webrtc::MediaType::DATA:
-      return cricket::CN_DATA;
+      return CN_DATA;
     case webrtc::MediaType::UNSUPPORTED:
       return "not supported";
     default:
@@ -1495,7 +1495,7 @@ void SdpOfferAnswerHandler::Initialize(
 
 // ==================================================================
 // Access to pc_ variables
-cricket::MediaEngineInterface* SdpOfferAnswerHandler::media_engine() const {
+MediaEngineInterface* SdpOfferAnswerHandler::media_engine() const {
   RTC_DCHECK(context_);
   return context_->media_engine();
 }
@@ -4308,7 +4308,7 @@ void SdpOfferAnswerHandler::GetOptionsForPlanBOffer(
     // Add audio/video/data m= sections to the end if needed.
     if (!audio_index && offer_new_audio_description) {
       MediaDescriptionOptions options(
-          webrtc::MediaType::AUDIO, cricket::CN_AUDIO,
+          webrtc::MediaType::AUDIO, CN_AUDIO,
           RtpTransceiverDirectionFromSendRecv(send_audio, recv_audio), false);
       options.header_extensions =
           media_engine()->voice().GetRtpHeaderExtensions();
@@ -4317,7 +4317,7 @@ void SdpOfferAnswerHandler::GetOptionsForPlanBOffer(
     }
     if (!video_index && offer_new_video_description) {
       MediaDescriptionOptions options(
-          webrtc::MediaType::VIDEO, cricket::CN_VIDEO,
+          webrtc::MediaType::VIDEO, CN_VIDEO,
           RtpTransceiverDirectionFromSendRecv(send_video, recv_video), false);
       options.header_extensions =
           media_engine()->video().GetRtpHeaderExtensions();
@@ -4340,7 +4340,7 @@ void SdpOfferAnswerHandler::GetOptionsForPlanBOffer(
   }
   if (!data_index && offer_new_data_description) {
     session_options->media_description_options.push_back(
-        GetMediaDescriptionOptionsForActiveData(cricket::CN_DATA));
+        GetMediaDescriptionOptionsForActiveData(CN_DATA));
   }
 }
 
@@ -4774,13 +4774,13 @@ void SdpOfferAnswerHandler::RemoveRemoteStreamsIfEmpty(
 
 void SdpOfferAnswerHandler::RemoveSenders(webrtc::MediaType media_type) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  UpdateLocalSenders(std::vector<cricket::StreamParams>(), media_type);
-  UpdateRemoteSendersList(std::vector<cricket::StreamParams>(), false,
-                          media_type, nullptr);
+  UpdateLocalSenders(std::vector<StreamParams>(), media_type);
+  UpdateRemoteSendersList(std::vector<StreamParams>(), false, media_type,
+                          nullptr);
 }
 
 void SdpOfferAnswerHandler::UpdateLocalSenders(
-    const std::vector<cricket::StreamParams>& streams,
+    const std::vector<StreamParams>& streams,
     webrtc::MediaType media_type) {
   TRACE_EVENT0("webrtc", "SdpOfferAnswerHandler::UpdateLocalSenders");
   RTC_DCHECK_RUN_ON(signaling_thread());
@@ -4793,8 +4793,7 @@ void SdpOfferAnswerHandler::UpdateLocalSenders(
        sender_it != current_senders->end();
        /* incremented manually */) {
     const RtpSenderInfo& info = *sender_it;
-    const cricket::StreamParams* params =
-        cricket::GetStreamBySsrc(streams, info.first_ssrc);
+    const StreamParams* params = GetStreamBySsrc(streams, info.first_ssrc);
     if (!params || params->id != info.sender_id ||
         params->first_stream_id() != info.stream_id) {
       rtp_manager()->OnLocalSenderRemoved(info, media_type);
@@ -4838,8 +4837,7 @@ void SdpOfferAnswerHandler::UpdateRemoteSendersList(
        sender_it != current_senders->end();
        /* incremented manually */) {
     const RtpSenderInfo& info = *sender_it;
-    const cricket::StreamParams* params =
-        cricket::GetStreamBySsrc(streams, info.first_ssrc);
+    const StreamParams* params = GetStreamBySsrc(streams, info.first_ssrc);
     std::string params_stream_id;
     if (params) {
       params_stream_id =

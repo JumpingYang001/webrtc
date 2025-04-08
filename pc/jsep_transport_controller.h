@@ -117,7 +117,7 @@ class JsepTransportController : public PayloadTypeSuggester,
     bool enable_external_auth = false;
     // Used to inject the ICE/DTLS transports created externally.
     IceTransportFactory* ice_transport_factory = nullptr;
-    cricket::DtlsTransportFactory* dtls_transport_factory = nullptr;
+    DtlsTransportFactory* dtls_transport_factory = nullptr;
     Observer* transport_observer = nullptr;
     // Must be provided and valid for the lifetime of the
     // JsepTransportController instance.
@@ -178,8 +178,8 @@ class JsepTransportController : public PayloadTypeSuggester,
   // Get transports to be used for the provided `mid`. If bundling is enabled,
   // calling GetRtpTransport for multiple MIDs may yield the same object.
   RtpTransportInternal* GetRtpTransport(absl::string_view mid) const;
-  cricket::DtlsTransportInternal* GetDtlsTransport(const std::string& mid);
-  const cricket::DtlsTransportInternal* GetRtcpDtlsTransport(
+  DtlsTransportInternal* GetDtlsTransport(const std::string& mid);
+  const DtlsTransportInternal* GetRtcpDtlsTransport(
       const std::string& mid) const;
   // Gets the externally sharable version of the DtlsTransport.
   rtc::scoped_refptr<DtlsTransport> LookupDtlsTransportByMid(
@@ -332,13 +332,13 @@ class JsepTransportController : public PayloadTypeSuggester,
   CallbackList<const std::string&, const std::vector<Candidate>&>
       signal_ice_candidates_gathered_ RTC_GUARDED_BY(network_thread_);
 
-  CallbackList<const cricket::IceCandidateErrorEvent&>
-      signal_ice_candidate_error_ RTC_GUARDED_BY(network_thread_);
+  CallbackList<const IceCandidateErrorEvent&> signal_ice_candidate_error_
+      RTC_GUARDED_BY(network_thread_);
 
   CallbackList<const std::vector<Candidate>&> signal_ice_candidates_removed_
       RTC_GUARDED_BY(network_thread_);
 
-  CallbackList<const cricket::CandidatePairChangeEvent&>
+  CallbackList<const CandidatePairChangeEvent&>
       signal_ice_candidate_pair_changed_ RTC_GUARDED_BY(network_thread_);
 
   // Called from SetLocalDescription and SetRemoteDescription.
@@ -367,7 +367,7 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   JsepTransportDescription CreateJsepTransportDescription(
       const ContentInfo& content_info,
-      const cricket::TransportInfo& transport_info,
+      const TransportInfo& transport_info,
       const std::vector<int>& encrypted_extension_ids,
       int rtp_abs_sendtime_extn_id);
 
@@ -410,15 +410,14 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   void DestroyAllJsepTransports_n() RTC_RUN_ON(network_thread_);
 
-  void SetIceRole_n(cricket::IceRole ice_role) RTC_RUN_ON(network_thread_);
+  void SetIceRole_n(IceRole ice_role) RTC_RUN_ON(network_thread_);
 
-  cricket::IceRole DetermineIceRole(
-      JsepTransport* jsep_transport,
-      const cricket::TransportInfo& transport_info,
-      SdpType type,
-      bool local);
+  IceRole DetermineIceRole(JsepTransport* jsep_transport,
+                           const TransportInfo& transport_info,
+                           SdpType type,
+                           bool local);
 
-  std::unique_ptr<cricket::DtlsTransportInternal> CreateDtlsTransport(
+  std::unique_ptr<DtlsTransportInternal> CreateDtlsTransport(
       const ContentInfo& content_info,
       IceTransportInternal* ice);
   rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
@@ -431,21 +430,21 @@ class JsepTransportController : public PayloadTypeSuggester,
       PacketTransportInternal* rtcp_packet_transport);
   std::unique_ptr<SrtpTransport> CreateSdesTransport(
       const std::string& transport_name,
-      cricket::DtlsTransportInternal* rtp_dtls_transport,
-      cricket::DtlsTransportInternal* rtcp_dtls_transport);
+      DtlsTransportInternal* rtp_dtls_transport,
+      DtlsTransportInternal* rtcp_dtls_transport);
   std::unique_ptr<DtlsSrtpTransport> CreateDtlsSrtpTransport(
       const std::string& transport_name,
-      cricket::DtlsTransportInternal* rtp_dtls_transport,
-      cricket::DtlsTransportInternal* rtcp_dtls_transport);
+      DtlsTransportInternal* rtp_dtls_transport,
+      DtlsTransportInternal* rtcp_dtls_transport);
 
   // Collect all the DtlsTransports, including RTP and RTCP, from the
   // JsepTransports, including those not mapped to a MID because they are being
   // kept alive in case of rollback.
-  std::vector<cricket::DtlsTransportInternal*> GetDtlsTransports();
+  std::vector<DtlsTransportInternal*> GetDtlsTransports();
   // Same as the above, but doesn't include rollback transports.
   // JsepTransportController can iterate all the DtlsTransports and update the
   // aggregate states.
-  std::vector<cricket::DtlsTransportInternal*> GetActiveDtlsTransports();
+  std::vector<DtlsTransportInternal*> GetActiveDtlsTransports();
 
   // Handlers for signals from Transport.
   void OnTransportWritableState_n(PacketTransportInternal* transport)
@@ -458,7 +457,7 @@ class JsepTransportController : public PayloadTypeSuggester,
                                       const Candidate& candidate)
       RTC_RUN_ON(network_thread_);
   void OnTransportCandidateError_n(IceTransportInternal* transport,
-                                   const cricket::IceCandidateErrorEvent& event)
+                                   const IceCandidateErrorEvent& event)
       RTC_RUN_ON(network_thread_);
   void OnTransportCandidatesRemoved_n(IceTransportInternal* transport,
                                       const cricket::Candidates& candidates)
@@ -467,8 +466,7 @@ class JsepTransportController : public PayloadTypeSuggester,
       RTC_RUN_ON(network_thread_);
   void OnTransportStateChanged_n(IceTransportInternal* transport)
       RTC_RUN_ON(network_thread_);
-  void OnTransportCandidatePairChanged_n(
-      const cricket::CandidatePairChangeEvent& event)
+  void OnTransportCandidatePairChanged_n(const CandidatePairChangeEvent& event)
       RTC_RUN_ON(network_thread_);
   void UpdateAggregateStates_n() RTC_RUN_ON(network_thread_);
 
@@ -506,7 +504,7 @@ class JsepTransportController : public PayloadTypeSuggester,
   std::optional<bool> initial_offerer_;
 
   IceConfig ice_config_;
-  cricket::IceRole ice_role_ = cricket::ICEROLE_CONTROLLING;
+  IceRole ice_role_ = ICEROLE_CONTROLLING;
   rtc::scoped_refptr<RTCCertificate> certificate_;
 
   BundleManager bundles_;

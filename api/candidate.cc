@@ -46,7 +46,7 @@ namespace webrtc {
 
 Candidate::Candidate()
     : id_(CreateRandomString(8)),
-      component_(cricket::ICE_CANDIDATE_COMPONENT_DEFAULT),
+      component_(ICE_CANDIDATE_COMPONENT_DEFAULT),
       priority_(0),
       network_type_(webrtc::ADAPTER_TYPE_UNKNOWN),
       underlying_type_for_vpn_(webrtc::ADAPTER_TYPE_UNKNOWN),

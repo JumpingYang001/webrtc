@@ -33,9 +33,9 @@
 #include "media/base/stream_params.h"
 #include "rtc_base/checks.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
-bool SupportsMode(const webrtc::Codec& codec,
+bool SupportsMode(const Codec& codec,
                   std::optional<std::string> scalability_mode) {
   if (!scalability_mode.has_value()) {
     return true;
@@ -48,22 +48,19 @@ bool SupportsMode(const webrtc::Codec& codec,
 
 }  // namespace
 
-RtpCapabilities::RtpCapabilities() = default;
-RtpCapabilities::~RtpCapabilities() = default;
-
-webrtc::RtpParameters CreateRtpParametersWithOneEncoding() {
-  webrtc::RtpParameters parameters;
-  webrtc::RtpEncodingParameters encoding;
+RtpParameters CreateRtpParametersWithOneEncoding() {
+  RtpParameters parameters;
+  RtpEncodingParameters encoding;
   parameters.encodings.push_back(encoding);
   return parameters;
 }
 
-webrtc::RtpParameters CreateRtpParametersWithEncodings(StreamParams sp) {
+RtpParameters CreateRtpParametersWithEncodings(StreamParams sp) {
   std::vector<uint32_t> primary_ssrcs;
   sp.GetPrimarySsrcs(&primary_ssrcs);
   size_t encoding_count = primary_ssrcs.size();
 
-  std::vector<webrtc::RtpEncodingParameters> encodings(encoding_count);
+  std::vector<RtpEncodingParameters> encodings(encoding_count);
   for (size_t i = 0; i < encodings.size(); ++i) {
     encodings[i].ssrc = primary_ssrcs[i];
   }
@@ -74,32 +71,31 @@ webrtc::RtpParameters CreateRtpParametersWithEncodings(StreamParams sp) {
     encodings[i].rid = rids[i].rid;
   }
 
-  webrtc::RtpParameters parameters;
+  RtpParameters parameters;
   parameters.encodings = encodings;
   parameters.rtcp.cname = sp.cname;
   return parameters;
 }
 
-std::vector<webrtc::RtpExtension> GetDefaultEnabledRtpHeaderExtensions(
+std::vector<RtpExtension> GetDefaultEnabledRtpHeaderExtensions(
     const RtpHeaderExtensionQueryInterface& query_interface) {
-  std::vector<webrtc::RtpExtension> extensions;
+  std::vector<RtpExtension> extensions;
   for (const auto& entry : query_interface.GetRtpHeaderExtensions()) {
-    if (entry.direction != webrtc::RtpTransceiverDirection::kStopped)
+    if (entry.direction != RtpTransceiverDirection::kStopped)
       extensions.emplace_back(entry.uri, *entry.preferred_id);
   }
   return extensions;
 }
 
-webrtc::RTCError CheckScalabilityModeValues(
-    const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<webrtc::Codec> send_codecs,
-    std::optional<webrtc::Codec> send_codec) {
+RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
+                                    rtc::ArrayView<Codec> send_codecs,
+                                    std::optional<Codec> send_codec) {
   using webrtc::RTCErrorType;
 
   if (send_codecs.empty()) {
     // This is an audio sender or an extra check in the stack where the codec
     // list is not available and we can't check the scalability_mode values.
-    return webrtc::RTCError::OK();
+    return RTCError::OK();
   }
 
   for (size_t i = 0; i < rtp_parameters.encodings.size(); ++i) {
@@ -161,14 +157,13 @@ webrtc::RTCError CheckScalabilityModeValues(
     }
   }
 
-  return webrtc::RTCError::OK();
+  return RTCError::OK();
 }
 
-webrtc::RTCError CheckRtpParametersValues(
-    const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<webrtc::Codec> send_codecs,
-    std::optional<webrtc::Codec> send_codec,
-    const webrtc::FieldTrialsView& field_trials) {
+RTCError CheckRtpParametersValues(const RtpParameters& rtp_parameters,
+                                  rtc::ArrayView<Codec> send_codecs,
+                                  std::optional<Codec> send_codec,
+                                  const FieldTrialsView& field_trials) {
   using webrtc::RTCErrorType;
 
   bool has_scale_resolution_down_to = false;
@@ -195,7 +190,7 @@ webrtc::RTCError CheckRtpParametersValues(
         rtp_parameters.encodings[i].max_bitrate_bps) {
       if (*rtp_parameters.encodings[i].max_bitrate_bps <
           *rtp_parameters.encodings[i].min_bitrate_bps) {
-        LOG_AND_RETURN_ERROR(webrtc::RTCErrorType::INVALID_RANGE,
+        LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_RANGE,
                              "Attempted to set RtpParameters min bitrate "
                              "larger than max bitrate.");
       }
@@ -243,20 +238,20 @@ webrtc::RTCError CheckRtpParametersValues(
   return CheckScalabilityModeValues(rtp_parameters, send_codecs, send_codec);
 }
 
-webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
-    const webrtc::RtpParameters& old_rtp_parameters,
-    const webrtc::RtpParameters& rtp_parameters,
-    const webrtc::FieldTrialsView& field_trials) {
+RTCError CheckRtpParametersInvalidModificationAndValues(
+    const RtpParameters& old_rtp_parameters,
+    const RtpParameters& rtp_parameters,
+    const FieldTrialsView& field_trials) {
   return CheckRtpParametersInvalidModificationAndValues(
       old_rtp_parameters, rtp_parameters, {}, std::nullopt, field_trials);
 }
 
-webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
-    const webrtc::RtpParameters& old_rtp_parameters,
-    const webrtc::RtpParameters& rtp_parameters,
-    rtc::ArrayView<webrtc::Codec> send_codecs,
-    std::optional<webrtc::Codec> send_codec,
-    const webrtc::FieldTrialsView& field_trials) {
+RTCError CheckRtpParametersInvalidModificationAndValues(
+    const RtpParameters& old_rtp_parameters,
+    const RtpParameters& rtp_parameters,
+    rtc::ArrayView<Codec> send_codecs,
+    std::optional<Codec> send_codec,
+    const FieldTrialsView& field_trials) {
   using webrtc::RTCErrorType;
   if (rtp_parameters.encodings.size() != old_rtp_parameters.encodings.size()) {
     LOG_AND_RETURN_ERROR(
@@ -296,7 +291,7 @@ webrtc::RTCError CheckRtpParametersInvalidModificationAndValues(
 }
 
 CompositeMediaEngine::CompositeMediaEngine(
-    std::unique_ptr<webrtc::FieldTrialsView> trials,
+    std::unique_ptr<FieldTrialsView> trials,
     std::unique_ptr<VoiceEngineInterface> audio_engine,
     std::unique_ptr<VideoEngineInterface> video_engine)
     : trials_(std::move(trials)),
@@ -333,4 +328,4 @@ const VideoEngineInterface& CompositeMediaEngine::video() const {
   return *video_engine_.get();
 }
 
-}  // namespace cricket
+}  // namespace webrtc

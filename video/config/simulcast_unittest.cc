@@ -141,7 +141,7 @@ TEST(SimulcastTest, GetConfig) {
 
   for (size_t i = 0; i < streams.size(); ++i) {
     EXPECT_EQ(size_t{kDefaultTemporalLayers}, streams[i].num_temporal_layers);
-    EXPECT_EQ(cricket::kDefaultVideoMaxFramerate, streams[i].max_framerate);
+    EXPECT_EQ(kDefaultVideoMaxFramerate, streams[i].max_framerate);
     EXPECT_EQ(-1, streams[i].max_qp);
     EXPECT_EQ(kExpected[i].min_bitrate_bps, streams[i].min_bitrate_bps);
     EXPECT_EQ(kExpected[i].target_bitrate_bps, streams[i].target_bitrate_bps);
@@ -170,7 +170,7 @@ TEST(SimulcastTest, GetConfigH265) {
   for (size_t i = 0; i < streams.size(); ++i) {
     EXPECT_EQ(size_t{kDefaultH265TemporalLayers},
               streams[i].num_temporal_layers);
-    EXPECT_EQ(cricket::kDefaultVideoMaxFramerate, streams[i].max_framerate);
+    EXPECT_EQ(kDefaultVideoMaxFramerate, streams[i].max_framerate);
     EXPECT_EQ(-1, streams[i].max_qp);
     EXPECT_EQ(kExpected[i].min_bitrate_bps, streams[i].min_bitrate_bps);
     EXPECT_EQ(kExpected[i].target_bitrate_bps, streams[i].target_bitrate_bps);

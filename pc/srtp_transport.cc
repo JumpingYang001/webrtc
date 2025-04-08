@@ -105,7 +105,7 @@ bool SrtpTransport::SendRtcpPacket(rtc::CopyOnWriteBuffer* packet,
   TRACE_EVENT0("webrtc", "SRTP Encode");
   if (!ProtectRtcp(*packet)) {
     int type = -1;
-    cricket::GetRtcpType(packet->data(), packet->size(), &type);
+    GetRtcpType(packet->data(), packet->size(), &type);
     RTC_LOG(LS_ERROR) << "Failed to protect RTCP packet: size="
                       << packet->size() << ", type=" << type;
     return false;
@@ -153,7 +153,7 @@ void SrtpTransport::OnRtcpPacketReceived(const rtc::ReceivedPacket& packet) {
   rtc::CopyOnWriteBuffer payload(packet.payload());
   if (!UnprotectRtcp(payload)) {
     int type = -1;
-    cricket::GetRtcpType(payload.data(), payload.size(), &type);
+    GetRtcpType(payload.data(), payload.size(), &type);
     RTC_LOG(LS_ERROR) << "Failed to unprotect RTCP packet: size="
                       << payload.size() << ", type=" << type;
     return;

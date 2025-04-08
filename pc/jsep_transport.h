@@ -42,9 +42,6 @@
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
-namespace cricket {
-class DtlsTransportInternal;
-}  // namespace cricket
 
 namespace webrtc {
 
@@ -55,7 +52,7 @@ struct JsepTransportDescription {
       bool rtcp_mux_enabled,
       const std::vector<int>& encrypted_header_extension_ids,
       int rtp_abs_sendtime_extn_id,
-      const cricket::TransportDescription& transport_description);
+      const TransportDescription& transport_description);
   JsepTransportDescription(const JsepTransportDescription& from);
   ~JsepTransportDescription();
 
@@ -66,7 +63,7 @@ struct JsepTransportDescription {
   int rtp_abs_sendtime_extn_id = -1;
   // TODO(zhihuang): Add the ICE and DTLS related variables and methods from
   // TransportDescription and remove this extra layer of abstraction.
-  cricket::TransportDescription transport_desc;
+  TransportDescription transport_desc;
 };
 
 // Helper class used by JsepTransportController that processes
@@ -82,19 +79,18 @@ class JsepTransport {
   // `mid` is just used for log statements in order to identify the Transport.
   // Note that `local_certificate` is allowed to be null since a remote
   // description may be set before a local certificate is generated.
-  JsepTransport(
-      const std::string& mid,
-      const scoped_refptr<RTCCertificate>& local_certificate,
-      scoped_refptr<IceTransportInterface> ice_transport,
-      scoped_refptr<IceTransportInterface> rtcp_ice_transport,
-      std::unique_ptr<RtpTransport> unencrypted_rtp_transport,
-      std::unique_ptr<SrtpTransport> sdes_transport,
-      std::unique_ptr<DtlsSrtpTransport> dtls_srtp_transport,
-      std::unique_ptr<cricket::DtlsTransportInternal> rtp_dtls_transport,
-      std::unique_ptr<cricket::DtlsTransportInternal> rtcp_dtls_transport,
-      std::unique_ptr<cricket::SctpTransportInternal> sctp_transport,
-      std::function<void()> rtcp_mux_active_callback,
-      PayloadTypePicker& suggester);
+  JsepTransport(const std::string& mid,
+                const scoped_refptr<RTCCertificate>& local_certificate,
+                scoped_refptr<IceTransportInterface> ice_transport,
+                scoped_refptr<IceTransportInterface> rtcp_ice_transport,
+                std::unique_ptr<RtpTransport> unencrypted_rtp_transport,
+                std::unique_ptr<SrtpTransport> sdes_transport,
+                std::unique_ptr<DtlsSrtpTransport> dtls_srtp_transport,
+                std::unique_ptr<DtlsTransportInternal> rtp_dtls_transport,
+                std::unique_ptr<DtlsTransportInternal> rtcp_dtls_transport,
+                std::unique_ptr<SctpTransportInternal> sctp_transport,
+                std::function<void()> rtcp_mux_active_callback,
+                PayloadTypePicker& suggester);
 
   ~JsepTransport();
 
@@ -174,21 +170,21 @@ class JsepTransport {
     return nullptr;
   }
 
-  const cricket::DtlsTransportInternal* rtp_dtls_transport() const {
+  const DtlsTransportInternal* rtp_dtls_transport() const {
     if (rtp_dtls_transport_) {
       return rtp_dtls_transport_->internal();
     }
     return nullptr;
   }
 
-  cricket::DtlsTransportInternal* rtp_dtls_transport() {
+  DtlsTransportInternal* rtp_dtls_transport() {
     if (rtp_dtls_transport_) {
       return rtp_dtls_transport_->internal();
     }
     return nullptr;
   }
 
-  const cricket::DtlsTransportInternal* rtcp_dtls_transport() const {
+  const DtlsTransportInternal* rtcp_dtls_transport() const {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (rtcp_dtls_transport_) {
       return rtcp_dtls_transport_->internal();
@@ -196,7 +192,7 @@ class JsepTransport {
     return nullptr;
   }
 
-  cricket::DtlsTransportInternal* rtcp_dtls_transport() {
+  DtlsTransportInternal* rtcp_dtls_transport() {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (rtcp_dtls_transport_) {
       return rtcp_dtls_transport_->internal();
@@ -263,21 +259,21 @@ class JsepTransport {
   // RFC 4145, section-4.1. Returns an RTCError if role cannot be determined
   // from the local description and remote description.
   RTCError NegotiateDtlsRole(SdpType local_description_type,
-                             cricket::ConnectionRole local_connection_role,
-                             cricket::ConnectionRole remote_connection_role,
+                             ConnectionRole local_connection_role,
+                             ConnectionRole remote_connection_role,
                              std::optional<SSLRole>* negotiated_dtls_role);
 
   // Pushes down the ICE parameters from the remote description.
-  void SetRemoteIceParameters(const cricket::IceParameters& ice_parameters,
+  void SetRemoteIceParameters(const IceParameters& ice_parameters,
                               IceTransportInternal* ice);
 
   // Pushes down the DTLS parameters obtained via negotiation.
   static RTCError SetNegotiatedDtlsParameters(
-      cricket::DtlsTransportInternal* dtls_transport,
+      DtlsTransportInternal* dtls_transport,
       std::optional<SSLRole> dtls_role,
       SSLFingerprint* remote_fingerprint);
 
-  bool GetTransportStats(cricket::DtlsTransportInternal* dtls_transport,
+  bool GetTransportStats(DtlsTransportInternal* dtls_transport,
                          int component,
                          TransportStats* stats) const;
 

@@ -26,7 +26,7 @@
 #include "system_wrappers/include/metrics.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 
 class StunTest : public ::testing::Test {
  protected:
@@ -49,7 +49,7 @@ class StunTest : public ::testing::Test {
   void CheckStunAddressAttribute(const StunAddressAttribute* addr,
                                  StunAddressFamily expected_family,
                                  int expected_port,
-                                 const webrtc::IPAddress& expected_address) {
+                                 const IPAddress& expected_address) {
     ASSERT_EQ(expected_family, addr->family());
     ASSERT_EQ(expected_port, addr->port());
 
@@ -70,7 +70,7 @@ class StunTest : public ::testing::Test {
   size_t ReadStunMessageTestCase(StunMessage* msg,
                                  const uint8_t* testcase,
                                  size_t size) {
-    webrtc::ByteBufferReader buf(rtc::MakeArrayView(testcase, size));
+    ByteBufferReader buf(rtc::MakeArrayView(testcase, size));
     if (msg->Read(&buf)) {
       // Returns the size the stun message should report itself as being
       return (size - 20);
@@ -275,9 +275,9 @@ static const char kRfc5769SampleMsgClientSoftware[] = "STUN test client";
 static const char kRfc5769SampleMsgServerSoftware[] = "test vector";
 static const char kRfc5769SampleMsgUsername[] = "evtj:h6vY";
 static const char kRfc5769SampleMsgPassword[] = "VOkJxbRl1RmTxUk/WvJxBt";
-static const webrtc::SocketAddress kRfc5769SampleMsgMappedAddress(
+static const SocketAddress kRfc5769SampleMsgMappedAddress(
     "192.0.2.1", 32853);
-static const webrtc::SocketAddress kRfc5769SampleMsgIPv6MappedAddress(
+static const SocketAddress kRfc5769SampleMsgIPv6MappedAddress(
     "2001:db8:1234:5678:11:2233:4455:6677", 32853);
 
 static const uint8_t kRfc5769SampleMsgWithAuthTransactionId[] = {
@@ -582,7 +582,7 @@ TEST_F(StunTest, ReadMessageWithIPv4AddressAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
   const StunAddressAttribute* addr = msg.GetAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::IPAddress test_address(kIPv4TestAddress1);
+  IPAddress test_address(kIPv4TestAddress1);
   CheckStunAddressAttribute(addr, STUN_ADDRESS_IPV4, kTestMessagePort4,
                             test_address);
 }
@@ -596,7 +596,7 @@ TEST_F(StunTest, ReadMessageWithIPv4XorAddressAttribute) {
 
   const StunAddressAttribute* addr =
       msg.GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  webrtc::IPAddress test_address(kIPv4TestAddress1);
+  IPAddress test_address(kIPv4TestAddress1);
   CheckStunAddressAttribute(addr, STUN_ADDRESS_IPV4, kTestMessagePort3,
                             test_address);
 }
@@ -607,7 +607,7 @@ TEST_F(StunTest, ReadMessageWithIPv6AddressAttribute) {
   CheckStunHeader(msg, STUN_BINDING_REQUEST, size);
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
-  webrtc::IPAddress test_address(kIPv6TestAddress1);
+  IPAddress test_address(kIPv6TestAddress1);
 
   const StunAddressAttribute* addr = msg.GetAddress(STUN_ATTR_MAPPED_ADDRESS);
   CheckStunAddressAttribute(addr, STUN_ADDRESS_IPV6, kTestMessagePort2,
@@ -620,7 +620,7 @@ TEST_F(StunTest, ReadMessageWithInvalidAddressAttribute) {
   CheckStunHeader(msg, STUN_BINDING_REQUEST, size);
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
-  webrtc::IPAddress test_address(kIPv6TestAddress1);
+  IPAddress test_address(kIPv6TestAddress1);
 
   const StunAddressAttribute* addr = msg.GetAddress(STUN_ATTR_MAPPED_ADDRESS);
   CheckStunAddressAttribute(addr, STUN_ADDRESS_IPV6, kTestMessagePort2,
@@ -631,7 +631,7 @@ TEST_F(StunTest, ReadMessageWithIPv6XorAddressAttribute) {
   StunMessage msg;
   size_t size = ReadStunMessage(&msg, kStunMessageWithIPv6XorMappedAddress);
 
-  webrtc::IPAddress test_address(kIPv6TestAddress1);
+  IPAddress test_address(kIPv6TestAddress1);
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, size);
   CheckStunTransactionID(msg, kTestTransactionId2, kStunTransactionIdLength);
@@ -757,7 +757,7 @@ TEST_F(StunTest, ReadLegacyMessage) {
   CheckStunTransactionID(msg, &rfc3489_packet[4], kStunTransactionIdLength + 4);
 
   const StunAddressAttribute* addr = msg.GetAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::IPAddress test_address(kIPv4TestAddress1);
+  IPAddress test_address(kIPv4TestAddress1);
   CheckStunAddressAttribute(addr, STUN_ADDRESS_IPV4, kTestMessagePort4,
                             test_address);
 }
@@ -766,7 +766,7 @@ TEST_F(StunTest, SetIPv6XorAddressAttributeOwner) {
   StunMessage msg;
   size_t size = ReadStunMessage(&msg, kStunMessageWithIPv6XorMappedAddress);
 
-  webrtc::IPAddress test_address(kIPv6TestAddress1);
+  IPAddress test_address(kIPv6TestAddress1);
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, size);
   CheckStunTransactionID(msg, kTestTransactionId2, kStunTransactionIdLength);
@@ -785,15 +785,15 @@ TEST_F(StunTest, SetIPv6XorAddressAttributeOwner) {
   // The internal IP address shouldn't change.
   ASSERT_EQ(addr2.ipaddr(), addr->ipaddr());
 
-  webrtc::ByteBufferWriter correct_buf;
-  webrtc::ByteBufferWriter wrong_buf;
+  ByteBufferWriter correct_buf;
+  ByteBufferWriter wrong_buf;
   EXPECT_TRUE(addr->Write(&correct_buf));
   EXPECT_TRUE(addr2.Write(&wrong_buf));
   // But when written out, the buffers should look different.
   ASSERT_NE(0,
             memcmp(correct_buf.Data(), wrong_buf.Data(), wrong_buf.Length()));
   // And when reading a known good value, the address should be wrong.
-  webrtc::ByteBufferReader read_buf(correct_buf);
+  ByteBufferReader read_buf(correct_buf);
   addr2.Read(&read_buf);
   ASSERT_NE(addr->ipaddr(), addr2.ipaddr());
   addr2.SetIP(addr->ipaddr());
@@ -813,7 +813,7 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
   StunMessage msg;
   size_t size = ReadStunMessage(&msg, kStunMessageWithIPv4XorMappedAddress);
 
-  webrtc::IPAddress test_address(kIPv4TestAddress1);
+  IPAddress test_address(kIPv4TestAddress1);
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, size);
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
@@ -832,8 +832,8 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
   // The internal IP address shouldn't change.
   ASSERT_EQ(addr2.ipaddr(), addr->ipaddr());
 
-  webrtc::ByteBufferWriter correct_buf;
-  webrtc::ByteBufferWriter wrong_buf;
+  ByteBufferWriter correct_buf;
+  ByteBufferWriter wrong_buf;
   EXPECT_TRUE(addr->Write(&correct_buf));
   EXPECT_TRUE(addr2.Write(&wrong_buf));
   // The same address data should be written.
@@ -841,7 +841,7 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
             memcmp(correct_buf.Data(), wrong_buf.Data(), wrong_buf.Length()));
   // And an attribute should be able to un-XOR an address belonging to a message
   // with a different transaction ID.
-  webrtc::ByteBufferReader read_buf(correct_buf);
+  ByteBufferReader read_buf(correct_buf);
   EXPECT_TRUE(addr2.Read(&read_buf));
   ASSERT_EQ(addr->ipaddr(), addr2.ipaddr());
 
@@ -853,10 +853,10 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
 }
 
 TEST_F(StunTest, CreateIPv6AddressAttribute) {
-  webrtc::IPAddress test_ip(kIPv6TestAddress2);
+  IPAddress test_ip(kIPv6TestAddress2);
 
   auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort2);
+  SocketAddress test_addr(test_ip, kTestMessagePort2);
   addr->SetAddress(test_addr);
 
   CheckStunAddressAttribute(addr.get(), STUN_ADDRESS_IPV6, kTestMessagePort2,
@@ -866,10 +866,10 @@ TEST_F(StunTest, CreateIPv6AddressAttribute) {
 TEST_F(StunTest, CreateIPv4AddressAttribute) {
   struct in_addr test_in_addr;
   test_in_addr.s_addr = 0xBEB0B0BE;
-  webrtc::IPAddress test_ip(test_in_addr);
+  IPAddress test_ip(test_in_addr);
 
   auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort2);
+  SocketAddress test_addr(test_ip, kTestMessagePort2);
   addr->SetAddress(test_addr);
 
   CheckStunAddressAttribute(addr.get(), STUN_ADDRESS_IPV4, kTestMessagePort2,
@@ -881,22 +881,22 @@ TEST_F(StunTest, CreateAddressInArbitraryOrder) {
   auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
   // Port first
   addr->SetPort(kTestMessagePort1);
-  addr->SetIP(webrtc::IPAddress(kIPv4TestAddress1));
+  addr->SetIP(IPAddress(kIPv4TestAddress1));
   ASSERT_EQ(kTestMessagePort1, addr->port());
-  ASSERT_EQ(webrtc::IPAddress(kIPv4TestAddress1), addr->ipaddr());
+  ASSERT_EQ(IPAddress(kIPv4TestAddress1), addr->ipaddr());
 
   auto addr2 = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
   // IP first
-  addr2->SetIP(webrtc::IPAddress(kIPv4TestAddress1));
+  addr2->SetIP(IPAddress(kIPv4TestAddress1));
   addr2->SetPort(kTestMessagePort2);
   ASSERT_EQ(kTestMessagePort2, addr2->port());
-  ASSERT_EQ(webrtc::IPAddress(kIPv4TestAddress1), addr2->ipaddr());
+  ASSERT_EQ(IPAddress(kIPv4TestAddress1), addr2->ipaddr());
 }
 
 TEST_F(StunTest, WriteMessageWithIPv6AddressAttribute) {
   size_t size = sizeof(kStunMessageWithIPv6MappedAddress);
 
-  webrtc::IPAddress test_ip(kIPv6TestAddress1);
+  IPAddress test_ip(kIPv6TestAddress1);
 
   StunMessage msg(
       STUN_BINDING_REQUEST,
@@ -905,17 +905,17 @@ TEST_F(StunTest, WriteMessageWithIPv6AddressAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
   auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort2);
+  SocketAddress test_addr(test_ip, kTestMessagePort2);
   addr->SetAddress(test_addr);
   msg.AddAttribute(std::move(addr));
 
   CheckStunHeader(msg, STUN_BINDING_REQUEST, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(out.Length(), sizeof(kStunMessageWithIPv6MappedAddress));
   int len1 = static_cast<int>(out.Length());
-  webrtc::ByteBufferReader read_buf(out);
+  ByteBufferReader read_buf(out);
   std::string bytes;
   read_buf.ReadString(&bytes, len1);
   ASSERT_EQ(0, memcmp(bytes.c_str(), kStunMessageWithIPv6MappedAddress, len1));
@@ -924,7 +924,7 @@ TEST_F(StunTest, WriteMessageWithIPv6AddressAttribute) {
 TEST_F(StunTest, WriteMessageWithIPv4AddressAttribute) {
   size_t size = sizeof(kStunMessageWithIPv4MappedAddress);
 
-  webrtc::IPAddress test_ip(kIPv4TestAddress1);
+  IPAddress test_ip(kIPv4TestAddress1);
 
   StunMessage msg(
       STUN_BINDING_RESPONSE,
@@ -933,17 +933,17 @@ TEST_F(StunTest, WriteMessageWithIPv4AddressAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
   auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort4);
+  SocketAddress test_addr(test_ip, kTestMessagePort4);
   addr->SetAddress(test_addr);
   msg.AddAttribute(std::move(addr));
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(out.Length(), sizeof(kStunMessageWithIPv4MappedAddress));
   int len1 = static_cast<int>(out.Length());
-  webrtc::ByteBufferReader read_buf(out);
+  ByteBufferReader read_buf(out);
   std::string bytes;
   read_buf.ReadString(&bytes, len1);
   ASSERT_EQ(0, memcmp(bytes.c_str(), kStunMessageWithIPv4MappedAddress, len1));
@@ -952,7 +952,7 @@ TEST_F(StunTest, WriteMessageWithIPv4AddressAttribute) {
 TEST_F(StunTest, WriteMessageWithIPv6XorAddressAttribute) {
   size_t size = sizeof(kStunMessageWithIPv6XorMappedAddress);
 
-  webrtc::IPAddress test_ip(kIPv6TestAddress1);
+  IPAddress test_ip(kIPv6TestAddress1);
 
   StunMessage msg(
       STUN_BINDING_RESPONSE,
@@ -961,17 +961,17 @@ TEST_F(StunTest, WriteMessageWithIPv6XorAddressAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId2, kStunTransactionIdLength);
 
   auto addr = StunAttribute::CreateXorAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort1);
+  SocketAddress test_addr(test_ip, kTestMessagePort1);
   addr->SetAddress(test_addr);
   msg.AddAttribute(std::move(addr));
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(out.Length(), sizeof(kStunMessageWithIPv6XorMappedAddress));
   int len1 = static_cast<int>(out.Length());
-  webrtc::ByteBufferReader read_buf(out);
+  ByteBufferReader read_buf(out);
   std::string bytes;
   read_buf.ReadString(&bytes, len1);
   ASSERT_EQ(0,
@@ -981,7 +981,7 @@ TEST_F(StunTest, WriteMessageWithIPv6XorAddressAttribute) {
 TEST_F(StunTest, WriteMessageWithIPv4XoreAddressAttribute) {
   size_t size = sizeof(kStunMessageWithIPv4XorMappedAddress);
 
-  webrtc::IPAddress test_ip(kIPv4TestAddress1);
+  IPAddress test_ip(kIPv4TestAddress1);
 
   StunMessage msg(
       STUN_BINDING_RESPONSE,
@@ -990,17 +990,17 @@ TEST_F(StunTest, WriteMessageWithIPv4XoreAddressAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
 
   auto addr = StunAttribute::CreateXorAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  webrtc::SocketAddress test_addr(test_ip, kTestMessagePort3);
+  SocketAddress test_addr(test_ip, kTestMessagePort3);
   addr->SetAddress(test_addr);
   msg.AddAttribute(std::move(addr));
 
   CheckStunHeader(msg, STUN_BINDING_RESPONSE, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(out.Length(), sizeof(kStunMessageWithIPv4XorMappedAddress));
   int len1 = static_cast<int>(out.Length());
-  webrtc::ByteBufferReader read_buf(out);
+  ByteBufferReader read_buf(out);
   std::string bytes;
   read_buf.ReadString(&bytes, len1);
   ASSERT_EQ(0,
@@ -1093,7 +1093,7 @@ TEST_F(StunTest, WriteMessageWithAnErrorCodeAttribute) {
   msg.AddAttribute(std::move(errorcode));
   CheckStunHeader(msg, STUN_BINDING_ERROR_RESPONSE, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(size, out.Length());
   // No padding.
@@ -1115,7 +1115,7 @@ TEST_F(StunTest, WriteMessageWithAUInt16ListAttribute) {
   msg.AddAttribute(std::move(list));
   CheckStunHeader(msg, STUN_BINDING_REQUEST, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(size, out.Length());
   // Check everything up to the padding.
@@ -1126,7 +1126,7 @@ TEST_F(StunTest, WriteMessageWithAUInt16ListAttribute) {
 // Test that we fail to read messages with invalid lengths.
 void CheckFailureToRead(const uint8_t* testcase, size_t length) {
   StunMessage msg;
-  webrtc::ByteBufferReader buf(rtc::MakeArrayView(testcase, length));
+  ByteBufferReader buf(rtc::MakeArrayView(testcase, length));
   ASSERT_FALSE(msg.Read(&buf));
 }
 
@@ -1229,7 +1229,7 @@ TEST_F(StunTest, ValidateMessageIntegrity) {
 // the RFC5769 test messages used include attributes not found in basic STUN.
 TEST_F(StunTest, AddMessageIntegrity) {
   IceMessage msg;
-  webrtc::ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
+  ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
   EXPECT_TRUE(msg.Read(&buf));
   EXPECT_TRUE(msg.AddMessageIntegrity(kRfc5769SampleMsgPassword));
   const StunByteStringAttribute* mi_attr =
@@ -1238,14 +1238,14 @@ TEST_F(StunTest, AddMessageIntegrity) {
   EXPECT_EQ(0, memcmp(mi_attr->array_view().data(), kCalculatedHmac1,
                       sizeof(kCalculatedHmac1)));
 
-  webrtc::ByteBufferWriter buf1;
+  ByteBufferWriter buf1;
   EXPECT_TRUE(msg.Write(&buf1));
   EXPECT_TRUE(StunMessage::ValidateMessageIntegrityForTesting(
       reinterpret_cast<const char*>(buf1.Data()), buf1.Length(),
       kRfc5769SampleMsgPassword));
 
   IceMessage msg2;
-  webrtc::ByteBufferReader buf2(kRfc5769SampleResponseWithoutMI);
+  ByteBufferReader buf2(kRfc5769SampleResponseWithoutMI);
   EXPECT_TRUE(msg2.Read(&buf2));
   EXPECT_TRUE(msg2.AddMessageIntegrity(kRfc5769SampleMsgPassword));
   const StunByteStringAttribute* mi_attr2 =
@@ -1254,7 +1254,7 @@ TEST_F(StunTest, AddMessageIntegrity) {
   EXPECT_EQ(0, memcmp(mi_attr2->array_view().data(), kCalculatedHmac2,
                       sizeof(kCalculatedHmac2)));
 
-  webrtc::ByteBufferWriter buf3;
+  ByteBufferWriter buf3;
   EXPECT_TRUE(msg2.Write(&buf3));
   EXPECT_TRUE(StunMessage::ValidateMessageIntegrityForTesting(
       reinterpret_cast<const char*>(buf3.Data()), buf3.Length(),
@@ -1318,7 +1318,7 @@ TEST_F(StunTest, ValidateMessageIntegrity32) {
 // Validate that we generate correct MESSAGE-INTEGRITY-32 attributes.
 TEST_F(StunTest, AddMessageIntegrity32) {
   IceMessage msg;
-  webrtc::ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
+  ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
   EXPECT_TRUE(msg.Read(&buf));
   EXPECT_TRUE(msg.AddMessageIntegrity32(kRfc5769SampleMsgPassword));
   const StunByteStringAttribute* mi_attr =
@@ -1327,14 +1327,14 @@ TEST_F(StunTest, AddMessageIntegrity32) {
   EXPECT_EQ(0, memcmp(mi_attr->array_view().data(), kCalculatedHmac1_32,
                       sizeof(kCalculatedHmac1_32)));
 
-  webrtc::ByteBufferWriter buf1;
+  ByteBufferWriter buf1;
   EXPECT_TRUE(msg.Write(&buf1));
   EXPECT_TRUE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(buf1.Data()), buf1.Length(),
       kRfc5769SampleMsgPassword));
 
   IceMessage msg2;
-  webrtc::ByteBufferReader buf2(kRfc5769SampleResponseWithoutMI);
+  ByteBufferReader buf2(kRfc5769SampleResponseWithoutMI);
   EXPECT_TRUE(msg2.Read(&buf2));
   EXPECT_TRUE(msg2.AddMessageIntegrity32(kRfc5769SampleMsgPassword));
   const StunByteStringAttribute* mi_attr2 =
@@ -1343,7 +1343,7 @@ TEST_F(StunTest, AddMessageIntegrity32) {
   EXPECT_EQ(0, memcmp(mi_attr2->array_view().data(), kCalculatedHmac2_32,
                       sizeof(kCalculatedHmac2_32)));
 
-  webrtc::ByteBufferWriter buf3;
+  ByteBufferWriter buf3;
   EXPECT_TRUE(msg2.Write(&buf3));
   EXPECT_TRUE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(buf3.Data()), buf3.Length(),
@@ -1361,7 +1361,7 @@ TEST_F(StunTest, AddMessageIntegrity32AndMessageIntegrity) {
   msg.AddMessageIntegrity32("password1");
   msg.AddMessageIntegrity("password2");
 
-  webrtc::ByteBufferWriter buf1;
+  ByteBufferWriter buf1;
   EXPECT_TRUE(msg.Write(&buf1));
   EXPECT_TRUE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(buf1.Data()), buf1.Length(), "password1"));
@@ -1413,11 +1413,11 @@ TEST_F(StunTest, ValidateFingerprint) {
 
 TEST_F(StunTest, AddFingerprint) {
   IceMessage msg;
-  webrtc::ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
+  ByteBufferReader buf(kRfc5769SampleRequestWithoutMI);
   EXPECT_TRUE(msg.Read(&buf));
   EXPECT_TRUE(msg.AddFingerprint());
 
-  webrtc::ByteBufferWriter buf1;
+  ByteBufferWriter buf1;
   EXPECT_TRUE(msg.Write(&buf1));
   EXPECT_TRUE(StunMessage::ValidateFingerprint(
       reinterpret_cast<const char*>(buf1.Data()), buf1.Length()));
@@ -1500,8 +1500,8 @@ TEST_F(StunTest, ClearAttributes) {
 
 // Test CopyStunAttribute
 TEST_F(StunTest, CopyAttribute) {
-  webrtc::ByteBufferWriter buf;
-  webrtc::ByteBufferWriter* buffer_ptrs[] = {&buf, nullptr};
+  ByteBufferWriter buf;
+  ByteBufferWriter* buffer_ptrs[] = {&buf, nullptr};
   // Test both with and without supplied ByteBufferWriter.
   for (auto buffer_ptr : buffer_ptrs) {
     {  // Test StunByteStringAttribute.
@@ -1516,9 +1516,9 @@ TEST_F(StunTest, CopyAttribute) {
     }
 
     {  // Test StunAddressAttribute.
-      webrtc::IPAddress test_ip(kIPv6TestAddress2);
+      IPAddress test_ip(kIPv6TestAddress2);
       auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-      webrtc::SocketAddress test_addr(test_ip, kTestMessagePort2);
+      SocketAddress test_addr(test_ip, kTestMessagePort2);
       addr->SetAddress(test_addr);
       CheckStunAddressAttribute(addr.get(), STUN_ADDRESS_IPV6,
                                 kTestMessagePort2, test_ip);
@@ -1530,9 +1530,9 @@ TEST_F(StunTest, CopyAttribute) {
     }
 
     {  // Test StunAddressAttribute.
-      webrtc::IPAddress test_ip(kIPv6TestAddress2);
+      IPAddress test_ip(kIPv6TestAddress2);
       auto addr = StunAttribute::CreateAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-      webrtc::SocketAddress test_addr(test_ip, kTestMessagePort2);
+      SocketAddress test_addr(test_ip, kTestMessagePort2);
       addr->SetAddress(test_addr);
       CheckStunAddressAttribute(addr.get(), STUN_ADDRESS_IPV6,
                                 kTestMessagePort2, test_ip);
@@ -1566,16 +1566,16 @@ TEST_F(StunTest, Clone) {
   }
   {
     auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-    addr->SetIP(webrtc::IPAddress(kIPv6TestAddress1));
+    addr->SetIP(IPAddress(kIPv6TestAddress1));
     addr->SetPort(kTestMessagePort1);
     msg.AddAttribute(std::move(addr));
   }
   auto copy = msg.Clone();
   ASSERT_NE(nullptr, copy.get());
 
-  webrtc::ByteBufferWriter out1;
+  ByteBufferWriter out1;
   EXPECT_TRUE(msg.Write(&out1));
-  webrtc::ByteBufferWriter out2;
+  ByteBufferWriter out2;
   EXPECT_TRUE(copy->Write(&out2));
 
   ASSERT_EQ(out1.Length(), out2.Length());
@@ -1603,7 +1603,7 @@ TEST_F(StunTest, EqualAttributes) {
   }
   {
     auto addr = StunAttribute::CreateAddress(STUN_ATTR_MAPPED_ADDRESS);
-    addr->SetIP(webrtc::IPAddress(kIPv6TestAddress1));
+    addr->SetIP(IPAddress(kIPv6TestAddress1));
     addr->SetPort(kTestMessagePort1);
     msg.AddAttribute(std::move(addr));
   }
@@ -1670,7 +1670,7 @@ TEST_F(StunTest, GoogMiscInfo) {
   msg.AddAttribute(std::move(list));
   CheckStunHeader(msg, STUN_BINDING_REQUEST, (size - 20));
 
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   EXPECT_TRUE(msg.Write(&out));
   ASSERT_EQ(size, out.Length());
 
@@ -1701,7 +1701,7 @@ TEST_F(StunTest, SizeRestrictionOnAttributes) {
   std::string long_string(509, 'x');
   long_username->CopyBytes(long_string.c_str(), long_string.size());
   msg.AddAttribute(std::move(long_username));
-  webrtc::ByteBufferWriter out;
+  ByteBufferWriter out;
   ASSERT_FALSE(msg.Write(&out));
 }
 
@@ -1709,7 +1709,7 @@ TEST_F(StunTest, ValidateMessageIntegrityWithParser) {
   webrtc::metrics::Reset();  // Ensure counters start from zero.
   // Try the messages from RFC 5769.
   StunMessage message;
-  webrtc::ByteBufferReader reader(kRfc5769SampleRequest);
+  ByteBufferReader reader(kRfc5769SampleRequest);
   EXPECT_TRUE(message.Read(&reader));
   EXPECT_EQ(message.ValidateMessageIntegrity(kRfc5769SampleMsgPassword),
             StunMessage::IntegrityStatus::kIntegrityOk);
@@ -1726,4 +1726,4 @@ TEST_F(StunTest, ValidateMessageIntegrityWithParser) {
   EXPECT_EQ(webrtc::metrics::NumSamples("WebRTC.Stun.Integrity.Request"), 2);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

@@ -80,7 +80,7 @@ struct IceTransportStats {
   uint64_t packets_sent = 0;
   uint64_t packets_received = 0;
 
-  cricket::IceRole ice_role = cricket::ICEROLE_UNKNOWN;
+  IceRole ice_role = ICEROLE_UNKNOWN;
   std::string ice_local_username_fragment;
   IceTransportState ice_state = IceTransportState::kNew;
 };
@@ -269,9 +269,9 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   virtual int component() const = 0;
 
-  virtual cricket::IceRole GetIceRole() const = 0;
+  virtual IceRole GetIceRole() const = 0;
 
-  virtual void SetIceRole(cricket::IceRole role) = 0;
+  virtual void SetIceRole(IceRole role) = 0;
 
   // Default implementation in order to allow downstream usage deletion.
   // TODO: bugs.webrtc.org/42224914 - Remove when all downstream overrides are
@@ -288,12 +288,11 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   // The ufrag and pwd in `ice_params` must be set
   // before candidate gathering can start.
-  virtual void SetIceParameters(const cricket::IceParameters& ice_params) = 0;
+  virtual void SetIceParameters(const IceParameters& ice_params) = 0;
 
-  virtual void SetRemoteIceParameters(
-      const cricket::IceParameters& ice_params) = 0;
+  virtual void SetRemoteIceParameters(const IceParameters& ice_params) = 0;
 
-  virtual void SetRemoteIceMode(cricket::IceMode mode) = 0;
+  virtual void SetRemoteIceMode(IceMode mode) = 0;
 
   virtual void SetIceConfig(const IceConfig& config) = 0;
   // Default implementation in order to allow downstream usage deletion.
@@ -321,14 +320,14 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
   virtual std::optional<int> GetRttEstimate() = 0;
 
   // TODO(qingsi): Remove this method once Chrome does not depend on it anymore.
-  virtual const cricket::Connection* selected_connection() const = 0;
+  virtual const Connection* selected_connection() const = 0;
 
   // Returns the selected candidate pair, or an empty std::optional if there is
   // none.
-  virtual std::optional<const cricket::CandidatePair> GetSelectedCandidatePair()
+  virtual std::optional<const CandidatePair> GetSelectedCandidatePair()
       const = 0;
 
-  virtual std::optional<std::reference_wrapper<cricket::StunDictionaryWriter>>
+  virtual std::optional<std::reference_wrapper<StunDictionaryWriter>>
   GetDictionaryWriter() {
     return std::nullopt;
   }
@@ -344,7 +343,7 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   void SetCandidateErrorCallback(
       absl::AnyInvocable<void(webrtc::IceTransportInternal*,
-                              const cricket::IceCandidateErrorEvent&)>
+                              const webrtc::IceCandidateErrorEvent&)>
           callback) {
     RTC_DCHECK(!candidate_error_callback_);
     candidate_error_callback_ = std::move(callback);
@@ -366,7 +365,7 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
   sigslot::signal2<IceTransportInternal*, const Candidate&> SignalRouteChange;
 
   void SetCandidatePairChangeCallback(
-      absl::AnyInvocable<void(const cricket::CandidatePairChangeEvent&)>
+      absl::AnyInvocable<void(const webrtc::CandidatePairChangeEvent&)>
           callback) {
     RTC_DCHECK(!candidate_pair_change_callback_);
     candidate_pair_change_callback_ = std::move(callback);
@@ -414,28 +413,28 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   virtual void ResetDtlsStunPiggybackCallbacks() {}
   virtual void SetDtlsStunPiggybackCallbacks(
-      cricket::DtlsStunPiggybackCallbacks&& callbacks) {}
+      DtlsStunPiggybackCallbacks&& callbacks) {}
 
  protected:
   void SendGatheringStateEvent() { gathering_state_callback_list_.Send(this); }
 
   CallbackList<IceTransportInternal*,
-               const cricket::StunDictionaryView&,
+               const StunDictionaryView&,
                rtc::ArrayView<uint16_t>>
       dictionary_view_updated_callback_list_;
-  CallbackList<IceTransportInternal*, const cricket::StunDictionaryWriter&>
+  CallbackList<IceTransportInternal*, const StunDictionaryWriter&>
       dictionary_writer_synced_callback_list_;
 
   CallbackList<IceTransportInternal*> gathering_state_callback_list_;
 
   absl::AnyInvocable<void(webrtc::IceTransportInternal*,
-                          const cricket::IceCandidateErrorEvent&)>
+                          const webrtc::IceCandidateErrorEvent&)>
       candidate_error_callback_;
 
   absl::AnyInvocable<void(webrtc::IceTransportInternal*, const Candidates&)>
       candidates_removed_callback_;
 
-  absl::AnyInvocable<void(const cricket::CandidatePairChangeEvent&)>
+  absl::AnyInvocable<void(const webrtc::CandidatePairChangeEvent&)>
       candidate_pair_change_callback_;
 };
 

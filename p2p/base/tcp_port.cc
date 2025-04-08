@@ -101,7 +101,7 @@
 #include "rtc_base/time_utils.h"
 #include "rtc_base/weak_ptr.h"
 
-namespace cricket {
+namespace webrtc {
 using ::webrtc::IceCandidateType;
 using ::webrtc::SafeTask;
 using ::webrtc::TimeDelta;
@@ -121,7 +121,7 @@ TCPPort::TCPPort(const PortParametersRef& args,
   // Set TCP_NODELAY (via OPT_NODELAY) for improved performance; this causes
   // small media packets to be sent immediately rather than being buffered up,
   // reducing latency.
-  SetOption(webrtc::Socket::OPT_NODELAY, 1);
+  SetOption(Socket::OPT_NODELAY, 1);
 }
 
 TCPPort::~TCPPort() {
@@ -132,7 +132,7 @@ TCPPort::~TCPPort() {
   incoming_.clear();
 }
 
-Connection* TCPPort::CreateConnection(const webrtc::Candidate& address,
+Connection* TCPPort::CreateConnection(const Candidate& address,
                                       CandidateOrigin origin) {
   if (!SupportsProtocol(address.protocol())) {
     return NULL;
@@ -160,8 +160,7 @@ Connection* TCPPort::CreateConnection(const webrtc::Candidate& address,
   }
 
   TCPConnection* conn = NULL;
-  if (webrtc::AsyncPacketSocket* socket =
-          GetIncoming(address.address(), true)) {
+  if (AsyncPacketSocket* socket = GetIncoming(address.address(), true)) {
     // Incoming connection; we already created a socket and connected signals,
     // so we need to hand off the "read packet" responsibility to
     // TCPConnection.
@@ -181,11 +180,10 @@ void TCPPort::PrepareAddress() {
     // failed, we still want to add the socket address.
     RTC_LOG(LS_VERBOSE) << "Preparing TCP address, current state: "
                         << static_cast<int>(listen_socket_->GetState());
-    AddAddress(listen_socket_->GetLocalAddress(),
-               listen_socket_->GetLocalAddress(), webrtc::SocketAddress(),
-               webrtc::TCP_PROTOCOL_NAME, "", TCPTYPE_PASSIVE_STR,
-               IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST_TCP, 0, "",
-               true);
+    AddAddress(
+        listen_socket_->GetLocalAddress(), listen_socket_->GetLocalAddress(),
+        SocketAddress(), webrtc::TCP_PROTOCOL_NAME, "", TCPTYPE_PASSIVE_STR,
+        IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST_TCP, 0, "", true);
   } else {
     RTC_LOG(LS_INFO) << ToString()
                      << ": Not listening due to firewall restrictions.";
@@ -197,20 +195,20 @@ void TCPPort::PrepareAddress() {
     // can do.
     // TODO(deadbeef): We could do something like create a dummy socket just to
     // see what IP we get. But that may be overkill.
-    AddAddress(webrtc::SocketAddress(Network()->GetBestIP(), DISCARD_PORT),
-               webrtc::SocketAddress(Network()->GetBestIP(), 0),
-               webrtc::SocketAddress(), webrtc::TCP_PROTOCOL_NAME, "",
-               TCPTYPE_ACTIVE_STR, IceCandidateType::kHost,
-               ICE_TYPE_PREFERENCE_HOST_TCP, 0, "", true);
+    AddAddress(SocketAddress(Network()->GetBestIP(), DISCARD_PORT),
+               SocketAddress(Network()->GetBestIP(), 0), SocketAddress(),
+               webrtc::TCP_PROTOCOL_NAME, "", TCPTYPE_ACTIVE_STR,
+               IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST_TCP, 0, "",
+               true);
   }
 }
 
 int TCPPort::SendTo(const void* data,
                     size_t size,
-                    const webrtc::SocketAddress& addr,
+                    const SocketAddress& addr,
                     const rtc::PacketOptions& options,
                     bool payload) {
-  webrtc::AsyncPacketSocket* socket = NULL;
+  AsyncPacketSocket* socket = NULL;
   TCPConnection* conn = static_cast<TCPConnection*>(GetConnection(addr));
 
   // For Connection, this is the code path used by Ping() to establish
@@ -255,7 +253,7 @@ int TCPPort::SendTo(const void* data,
   return sent;
 }
 
-int TCPPort::GetOption(webrtc::Socket::Option opt, int* value) {
+int TCPPort::GetOption(Socket::Option opt, int* value) {
   auto const& it = socket_options_.find(opt);
   if (it == socket_options_.end()) {
     return -1;
@@ -264,7 +262,7 @@ int TCPPort::GetOption(webrtc::Socket::Option opt, int* value) {
   return 0;
 }
 
-int TCPPort::SetOption(webrtc::Socket::Option opt, int value) {
+int TCPPort::SetOption(Socket::Option opt, int value) {
   socket_options_[opt] = value;
   return 0;
 }
@@ -278,12 +276,12 @@ bool TCPPort::SupportsProtocol(absl::string_view protocol) const {
          protocol == webrtc::SSLTCP_PROTOCOL_NAME;
 }
 
-webrtc::ProtocolType TCPPort::GetProtocol() const {
+ProtocolType TCPPort::GetProtocol() const {
   return webrtc::PROTO_TCP;
 }
 
-void TCPPort::OnNewConnection(webrtc::AsyncListenSocket* socket,
-                              webrtc::AsyncPacketSocket* new_socket) {
+void TCPPort::OnNewConnection(AsyncListenSocket* socket,
+                              AsyncPacketSocket* new_socket) {
   RTC_DCHECK_EQ(socket, listen_socket_.get());
 
   for (const auto& option : socket_options_) {
@@ -306,7 +304,7 @@ void TCPPort::OnNewConnection(webrtc::AsyncListenSocket* socket,
 
 void TCPPort::TryCreateServerSocket() {
   listen_socket_ = absl::WrapUnique(socket_factory()->CreateServerTcpSocket(
-      webrtc::SocketAddress(Network()->GetBestIP(), 0), min_port(), max_port(),
+      SocketAddress(Network()->GetBestIP(), 0), min_port(), max_port(),
       false /* ssl */));
   if (!listen_socket_) {
     RTC_LOG(LS_WARNING)
@@ -317,10 +315,9 @@ void TCPPort::TryCreateServerSocket() {
   listen_socket_->SignalNewConnection.connect(this, &TCPPort::OnNewConnection);
 }
 
-webrtc::AsyncPacketSocket* TCPPort::GetIncoming(
-    const webrtc::SocketAddress& addr,
-    bool remove) {
-  webrtc::AsyncPacketSocket* socket = NULL;
+AsyncPacketSocket* TCPPort::GetIncoming(const SocketAddress& addr,
+                                        bool remove) {
+  AsyncPacketSocket* socket = NULL;
   for (std::list<Incoming>::iterator it = incoming_.begin();
        it != incoming_.end(); ++it) {
     if (it->addr == addr) {
@@ -333,17 +330,17 @@ webrtc::AsyncPacketSocket* TCPPort::GetIncoming(
   return socket;
 }
 
-void TCPPort::OnReadPacket(webrtc::AsyncPacketSocket* socket,
+void TCPPort::OnReadPacket(AsyncPacketSocket* socket,
                            const rtc::ReceivedPacket& packet) {
   Port::OnReadPacket(packet, webrtc::PROTO_TCP);
 }
 
-void TCPPort::OnSentPacket(webrtc::AsyncPacketSocket* socket,
+void TCPPort::OnSentPacket(AsyncPacketSocket* socket,
                            const rtc::SentPacket& sent_packet) {
-  webrtc::PortInterface::SignalSentPacket(sent_packet);
+  PortInterface::SignalSentPacket(sent_packet);
 }
 
-void TCPPort::OnReadyToSend(webrtc::AsyncPacketSocket* socket) {
+void TCPPort::OnReadyToSend(AsyncPacketSocket* socket) {
   Port::OnReadyToSend();
 }
 
@@ -351,16 +348,16 @@ void TCPPort::OnReadyToSend(webrtc::AsyncPacketSocket* socket) {
 // `ice_unwritable_timeout` in IceConfig when determining the writability state.
 // Replace this constant with the config parameter assuming the default value if
 // we decide it is also applicable here.
-TCPConnection::TCPConnection(rtc::WeakPtr<Port> tcp_port,
-                             const webrtc::Candidate& candidate,
-                             webrtc::AsyncPacketSocket* socket)
+TCPConnection::TCPConnection(WeakPtr<Port> tcp_port,
+                             const Candidate& candidate,
+                             AsyncPacketSocket* socket)
     : Connection(std::move(tcp_port), 0, candidate),
       socket_(socket),
       error_(0),
       outgoing_(socket == NULL),
       connection_pending_(false),
       pretending_to_be_writable_(false),
-      reconnection_timeout_(cricket::CONNECTION_WRITE_CONNECT_TIMEOUT) {
+      reconnection_timeout_(CONNECTION_WRITE_CONNECT_TIMEOUT) {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_DCHECK_EQ(port()->GetProtocol(),
                 webrtc::PROTO_TCP);  // Needs to be TCPPort.
@@ -431,7 +428,7 @@ int TCPConnection::GetError() {
   return error_;
 }
 
-void TCPConnection::OnSentPacket(webrtc::AsyncPacketSocket* socket,
+void TCPConnection::OnSentPacket(AsyncPacketSocket* socket,
                                  const rtc::SentPacket& sent_packet) {
   RTC_DCHECK_RUN_ON(network_thread());
   if (port()) {
@@ -454,7 +451,7 @@ void TCPConnection::OnConnectionRequestResponse(StunRequest* req,
   RTC_DCHECK(write_state() == STATE_WRITABLE);
 }
 
-void TCPConnection::OnConnect(webrtc::AsyncPacketSocket* socket) {
+void TCPConnection::OnConnect(AsyncPacketSocket* socket) {
   RTC_DCHECK_EQ(socket, socket_.get());
 
   if (!port_) {
@@ -476,7 +473,7 @@ void TCPConnection::OnConnect(webrtc::AsyncPacketSocket* socket) {
   //
   // Note that, aside from minor differences in log statements, this logic is
   // identical to that in TurnPort.
-  const webrtc::SocketAddress& socket_address = socket->GetLocalAddress();
+  const SocketAddress& socket_address = socket->GetLocalAddress();
   if (absl::c_any_of(port_->Network()->GetIPs(),
                      [socket_address](const rtc::InterfaceAddress& addr) {
                        return socket_address.ipaddr() == addr;
@@ -513,7 +510,7 @@ void TCPConnection::OnConnect(webrtc::AsyncPacketSocket* socket) {
   connection_pending_ = false;
 }
 
-void TCPConnection::OnClose(webrtc::AsyncPacketSocket* socket, int error) {
+void TCPConnection::OnClose(AsyncPacketSocket* socket, int error) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK_EQ(socket, socket_.get());
   RTC_LOG(LS_INFO) << ToString() << ": Connection closed with error " << error;
@@ -572,14 +569,14 @@ void TCPConnection::MaybeReconnect() {
   error_ = EPIPE;
 }
 
-void TCPConnection::OnReadPacket(webrtc::AsyncPacketSocket* socket,
+void TCPConnection::OnReadPacket(AsyncPacketSocket* socket,
                                  const rtc::ReceivedPacket& packet) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK_EQ(socket, socket_.get());
   Connection::OnReadPacket(packet);
 }
 
-void TCPConnection::OnReadyToSend(webrtc::AsyncPacketSocket* socket) {
+void TCPConnection::OnReadyToSend(AsyncPacketSocket* socket) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK_EQ(socket, socket_.get());
   Connection::OnReadyToSend();
@@ -596,17 +593,17 @@ void TCPConnection::OnDestroyed(Connection* c) {
 void TCPConnection::CreateOutgoingTcpSocket() {
   RTC_DCHECK(outgoing_);
   int opts = (remote_candidate().protocol() == webrtc::SSLTCP_PROTOCOL_NAME)
-                 ? webrtc::PacketSocketFactory::OPT_TLS_FAKE
+                 ? PacketSocketFactory::OPT_TLS_FAKE
                  : 0;
 
   if (socket_) {
     DisconnectSocketSignals(socket_.get());
   }
 
-  webrtc::PacketSocketTcpOptions tcp_opts;
+  PacketSocketTcpOptions tcp_opts;
   tcp_opts.opts = opts;
   socket_.reset(port()->socket_factory()->CreateClientTcpSocket(
-      webrtc::SocketAddress(port()->Network()->GetBestIP(), 0),
+      SocketAddress(port()->Network()->GetBestIP(), 0),
       remote_candidate().address(), tcp_opts));
   if (socket_) {
     RTC_LOG(LS_VERBOSE) << ToString() << ": Connecting from "
@@ -629,7 +626,7 @@ void TCPConnection::CreateOutgoingTcpSocket() {
   }
 }
 
-void TCPConnection::ConnectSocketSignals(webrtc::AsyncPacketSocket* socket) {
+void TCPConnection::ConnectSocketSignals(AsyncPacketSocket* socket) {
   // Incoming connections register SignalSentPacket and SignalReadyToSend
   // directly on the port in TCPPort::OnNewConnection.
   if (outgoing_) {
@@ -651,7 +648,7 @@ void TCPConnection::ConnectSocketSignals(webrtc::AsyncPacketSocket* socket) {
   });
 }
 
-void TCPConnection::DisconnectSocketSignals(webrtc::AsyncPacketSocket* socket) {
+void TCPConnection::DisconnectSocketSignals(AsyncPacketSocket* socket) {
   if (outgoing_) {
     // Incoming connections do not register these signals in TCPConnection.
     socket->SignalConnect.disconnect(this);
@@ -662,4 +659,4 @@ void TCPConnection::DisconnectSocketSignals(webrtc::AsyncPacketSocket* socket) {
   socket->UnsubscribeCloseEvent(this);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

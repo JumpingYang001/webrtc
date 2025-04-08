@@ -28,24 +28,24 @@ using ::testing::Ne;
 static const uint32_t kSsrcs1[] = {1};
 static const uint32_t kSsrcs2[] = {1, 2};
 
-static cricket::StreamParams CreateStreamParamsWithSsrcGroup(
+static webrtc::StreamParams CreateStreamParamsWithSsrcGroup(
     const std::string& semantics,
     const uint32_t ssrcs_in[],
     size_t len) {
-  cricket::StreamParams stream;
+  webrtc::StreamParams stream;
   std::vector<uint32_t> ssrcs(ssrcs_in, ssrcs_in + len);
-  cricket::SsrcGroup sg(semantics, ssrcs);
+  webrtc::SsrcGroup sg(semantics, ssrcs);
   stream.ssrcs = ssrcs;
   stream.ssrc_groups.push_back(sg);
   return stream;
 }
 
 TEST(SsrcGroup, EqualNotEqual) {
-  cricket::SsrcGroup ssrc_groups[] = {
-      cricket::SsrcGroup("ABC", MAKE_VECTOR(kSsrcs1)),
-      cricket::SsrcGroup("ABC", MAKE_VECTOR(kSsrcs2)),
-      cricket::SsrcGroup("Abc", MAKE_VECTOR(kSsrcs2)),
-      cricket::SsrcGroup("abc", MAKE_VECTOR(kSsrcs2)),
+  webrtc::SsrcGroup ssrc_groups[] = {
+      webrtc::SsrcGroup("ABC", MAKE_VECTOR(kSsrcs1)),
+      webrtc::SsrcGroup("ABC", MAKE_VECTOR(kSsrcs2)),
+      webrtc::SsrcGroup("Abc", MAKE_VECTOR(kSsrcs2)),
+      webrtc::SsrcGroup("abc", MAKE_VECTOR(kSsrcs2)),
   };
 
   for (size_t i = 0; i < arraysize(ssrc_groups); ++i) {
@@ -57,24 +57,24 @@ TEST(SsrcGroup, EqualNotEqual) {
 }
 
 TEST(SsrcGroup, HasSemantics) {
-  cricket::SsrcGroup sg1("ABC", MAKE_VECTOR(kSsrcs1));
+  webrtc::SsrcGroup sg1("ABC", MAKE_VECTOR(kSsrcs1));
   EXPECT_TRUE(sg1.has_semantics("ABC"));
 
-  cricket::SsrcGroup sg2("Abc", MAKE_VECTOR(kSsrcs1));
+  webrtc::SsrcGroup sg2("Abc", MAKE_VECTOR(kSsrcs1));
   EXPECT_FALSE(sg2.has_semantics("ABC"));
 
-  cricket::SsrcGroup sg3("abc", MAKE_VECTOR(kSsrcs1));
+  webrtc::SsrcGroup sg3("abc", MAKE_VECTOR(kSsrcs1));
   EXPECT_FALSE(sg3.has_semantics("ABC"));
 }
 
 TEST(SsrcGroup, ToString) {
-  cricket::SsrcGroup sg1("ABC", MAKE_VECTOR(kSsrcs1));
+  webrtc::SsrcGroup sg1("ABC", MAKE_VECTOR(kSsrcs1));
   EXPECT_STREQ("{semantics:ABC;ssrcs:[1]}", sg1.ToString().c_str());
 }
 
 TEST(StreamParams, CreateLegacy) {
   const uint32_t ssrc = 7;
-  cricket::StreamParams one_sp = cricket::StreamParams::CreateLegacy(ssrc);
+  webrtc::StreamParams one_sp = webrtc::StreamParams::CreateLegacy(ssrc);
   EXPECT_EQ(1U, one_sp.ssrcs.size());
   EXPECT_EQ(ssrc, one_sp.first_ssrc());
   EXPECT_TRUE(one_sp.has_ssrcs());
@@ -85,7 +85,7 @@ TEST(StreamParams, CreateLegacy) {
 }
 
 TEST(StreamParams, HasSsrcGroup) {
-  cricket::StreamParams sp =
+  webrtc::StreamParams sp =
       CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
   EXPECT_EQ(2U, sp.ssrcs.size());
   EXPECT_EQ(kSsrcs2[0], sp.first_ssrc());
@@ -100,35 +100,35 @@ TEST(StreamParams, HasSsrcGroup) {
 }
 
 TEST(StreamParams, GetSsrcGroup) {
-  cricket::StreamParams sp =
+  webrtc::StreamParams sp =
       CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
   EXPECT_EQ(NULL, sp.get_ssrc_group("xyz"));
   EXPECT_EQ(&sp.ssrc_groups[0], sp.get_ssrc_group("XYZ"));
 }
 
 TEST(StreamParams, HasStreamWithNoSsrcs) {
-  cricket::StreamParams sp_1 = cricket::StreamParams::CreateLegacy(kSsrcs1[0]);
-  cricket::StreamParams sp_2 = cricket::StreamParams::CreateLegacy(kSsrcs2[0]);
-  std::vector<cricket::StreamParams> streams({sp_1, sp_2});
-  EXPECT_FALSE(HasStreamWithNoSsrcs(streams));
+  webrtc::StreamParams sp_1 = webrtc::StreamParams::CreateLegacy(kSsrcs1[0]);
+  webrtc::StreamParams sp_2 = webrtc::StreamParams::CreateLegacy(kSsrcs2[0]);
+  std::vector<webrtc::StreamParams> streams({sp_1, sp_2});
+  EXPECT_FALSE(webrtc::HasStreamWithNoSsrcs(streams));
 
-  cricket::StreamParams unsignaled_stream;
+  webrtc::StreamParams unsignaled_stream;
   streams.push_back(unsignaled_stream);
-  EXPECT_TRUE(HasStreamWithNoSsrcs(streams));
+  EXPECT_TRUE(webrtc::HasStreamWithNoSsrcs(streams));
 }
 
 TEST(StreamParams, EqualNotEqual) {
-  cricket::StreamParams l1 = cricket::StreamParams::CreateLegacy(1);
-  cricket::StreamParams l2 = cricket::StreamParams::CreateLegacy(2);
-  cricket::StreamParams sg1 =
+  webrtc::StreamParams l1 = webrtc::StreamParams::CreateLegacy(1);
+  webrtc::StreamParams l2 = webrtc::StreamParams::CreateLegacy(2);
+  webrtc::StreamParams sg1 =
       CreateStreamParamsWithSsrcGroup("ABC", kSsrcs1, arraysize(kSsrcs1));
-  cricket::StreamParams sg2 =
+  webrtc::StreamParams sg2 =
       CreateStreamParamsWithSsrcGroup("ABC", kSsrcs2, arraysize(kSsrcs2));
-  cricket::StreamParams sg3 =
+  webrtc::StreamParams sg3 =
       CreateStreamParamsWithSsrcGroup("Abc", kSsrcs2, arraysize(kSsrcs2));
-  cricket::StreamParams sg4 =
+  webrtc::StreamParams sg4 =
       CreateStreamParamsWithSsrcGroup("abc", kSsrcs2, arraysize(kSsrcs2));
-  cricket::StreamParams sps[] = {l1, l2, sg1, sg2, sg3, sg4};
+  webrtc::StreamParams sps[] = {l1, l2, sg1, sg2, sg3, sg4};
 
   for (size_t i = 0; i < arraysize(sps); ++i) {
     for (size_t j = 0; j < arraysize(sps); ++j) {
@@ -141,7 +141,7 @@ TEST(StreamParams, EqualNotEqual) {
 TEST(StreamParams, FidFunctions) {
   uint32_t fid_ssrc;
 
-  cricket::StreamParams sp = cricket::StreamParams::CreateLegacy(1);
+  webrtc::StreamParams sp = webrtc::StreamParams::CreateLegacy(1);
   EXPECT_FALSE(sp.AddFidSsrc(10, 20));
   EXPECT_TRUE(sp.AddFidSsrc(1, 2));
   EXPECT_TRUE(sp.GetFidSsrc(1, &fid_ssrc));
@@ -158,16 +158,16 @@ TEST(StreamParams, FidFunctions) {
   // for this.
   std::vector<uint32_t> fid_vector;
   fid_vector.push_back(13);
-  cricket::SsrcGroup invalid_fid_group(cricket::kFidSsrcGroupSemantics,
-                                       fid_vector);
-  cricket::StreamParams sp_invalid;
+  webrtc::SsrcGroup invalid_fid_group(webrtc::kFidSsrcGroupSemantics,
+                                      fid_vector);
+  webrtc::StreamParams sp_invalid;
   sp_invalid.add_ssrc(13);
   sp_invalid.ssrc_groups.push_back(invalid_fid_group);
   EXPECT_FALSE(sp_invalid.GetFidSsrc(13, &fid_ssrc));
 }
 
 TEST(StreamParams, GetPrimaryAndFidSsrcs) {
-  cricket::StreamParams sp;
+  webrtc::StreamParams sp;
   sp.ssrcs.push_back(1);
   sp.ssrcs.push_back(2);
   sp.ssrcs.push_back(3);
@@ -181,7 +181,7 @@ TEST(StreamParams, GetPrimaryAndFidSsrcs) {
   ASSERT_EQ(0u, fid_ssrcs.size());
 
   sp.ssrc_groups.push_back(
-      cricket::SsrcGroup(cricket::kSimSsrcGroupSemantics, sp.ssrcs));
+      webrtc::SsrcGroup(webrtc::kSimSsrcGroupSemantics, sp.ssrcs));
   sp.AddFidSsrc(1, 10);
   sp.AddFidSsrc(2, 20);
 
@@ -201,7 +201,7 @@ TEST(StreamParams, GetPrimaryAndFidSsrcs) {
 TEST(StreamParams, FecFrFunctions) {
   uint32_t fecfr_ssrc;
 
-  cricket::StreamParams sp = cricket::StreamParams::CreateLegacy(1);
+  webrtc::StreamParams sp = webrtc::StreamParams::CreateLegacy(1);
   EXPECT_FALSE(sp.AddFecFrSsrc(10, 20));
   EXPECT_TRUE(sp.AddFecFrSsrc(1, 2));
   EXPECT_TRUE(sp.GetFecFrSsrc(1, &fecfr_ssrc));
@@ -218,16 +218,16 @@ TEST(StreamParams, FecFrFunctions) {
   // for this.
   std::vector<uint32_t> fecfr_vector;
   fecfr_vector.push_back(13);
-  cricket::SsrcGroup invalid_fecfr_group(cricket::kFecFrSsrcGroupSemantics,
-                                         fecfr_vector);
-  cricket::StreamParams sp_invalid;
+  webrtc::SsrcGroup invalid_fecfr_group(webrtc::kFecFrSsrcGroupSemantics,
+                                        fecfr_vector);
+  webrtc::StreamParams sp_invalid;
   sp_invalid.add_ssrc(13);
   sp_invalid.ssrc_groups.push_back(invalid_fecfr_group);
   EXPECT_FALSE(sp_invalid.GetFecFrSsrc(13, &fecfr_ssrc));
 }
 
 TEST(StreamParams, ToString) {
-  cricket::StreamParams sp =
+  webrtc::StreamParams sp =
       CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
   sp.set_stream_ids({"stream_id"});
   EXPECT_STREQ(
@@ -238,7 +238,7 @@ TEST(StreamParams, ToString) {
 
 TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithRtxAndFlex) {
   webrtc::UniqueRandomIdGenerator generator;
-  cricket::StreamParams stream;
+  webrtc::StreamParams stream;
   stream.GenerateSsrcs(1, true, true, &generator);
   uint32_t primary_ssrc = stream.first_ssrc();
   ASSERT_NE(0u, primary_ssrc);
@@ -249,14 +249,14 @@ TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithRtxAndFlex) {
   EXPECT_NE(0u, rtx_ssrc);
   EXPECT_TRUE(stream.GetFecFrSsrc(primary_ssrc, &flex_ssrc));
   EXPECT_NE(0u, flex_ssrc);
-  EXPECT_FALSE(stream.has_ssrc_group(cricket::kSimSsrcGroupSemantics));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kFidSsrcGroupSemantics));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kFecFrSsrcGroupSemantics));
+  EXPECT_FALSE(stream.has_ssrc_group(webrtc::kSimSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kFidSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kFecFrSsrcGroupSemantics));
 }
 
 TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithRtx) {
   webrtc::UniqueRandomIdGenerator generator;
-  cricket::StreamParams stream;
+  webrtc::StreamParams stream;
   stream.GenerateSsrcs(1, true, false, &generator);
   uint32_t primary_ssrc = stream.first_ssrc();
   ASSERT_NE(0u, primary_ssrc);
@@ -267,13 +267,13 @@ TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithRtx) {
   EXPECT_NE(0u, rtx_ssrc);
   EXPECT_FALSE(stream.GetFecFrSsrc(primary_ssrc, &flex_ssrc));
   EXPECT_EQ(0u, flex_ssrc);
-  EXPECT_FALSE(stream.has_ssrc_group(cricket::kSimSsrcGroupSemantics));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kFidSsrcGroupSemantics));
+  EXPECT_FALSE(stream.has_ssrc_group(webrtc::kSimSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kFidSsrcGroupSemantics));
 }
 
 TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithFlex) {
   webrtc::UniqueRandomIdGenerator generator;
-  cricket::StreamParams stream;
+  webrtc::StreamParams stream;
   stream.GenerateSsrcs(1, false, true, &generator);
   uint32_t primary_ssrc = stream.first_ssrc();
   ASSERT_NE(0u, primary_ssrc);
@@ -284,14 +284,14 @@ TEST(StreamParams, TestGenerateSsrcs_SingleStreamWithFlex) {
   EXPECT_EQ(0u, rtx_ssrc);
   EXPECT_TRUE(stream.GetFecFrSsrc(primary_ssrc, &flex_ssrc));
   EXPECT_NE(0u, flex_ssrc);
-  EXPECT_FALSE(stream.has_ssrc_group(cricket::kSimSsrcGroupSemantics));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kFecFrSsrcGroupSemantics));
+  EXPECT_FALSE(stream.has_ssrc_group(webrtc::kSimSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kFecFrSsrcGroupSemantics));
 }
 
 TEST(StreamParams, TestGenerateSsrcs_SimulcastLayersAndRtx) {
   const size_t kNumStreams = 3;
   webrtc::UniqueRandomIdGenerator generator;
-  cricket::StreamParams stream;
+  webrtc::StreamParams stream;
   stream.GenerateSsrcs(kNumStreams, true, false, &generator);
   EXPECT_EQ(kNumStreams * 2, stream.ssrcs.size());
   std::vector<uint32_t> primary_ssrcs, rtx_ssrcs;
@@ -301,6 +301,6 @@ TEST(StreamParams, TestGenerateSsrcs_SimulcastLayersAndRtx) {
   stream.GetFidSsrcs(primary_ssrcs, &rtx_ssrcs);
   EXPECT_EQ(kNumStreams, rtx_ssrcs.size());
   EXPECT_THAT(rtx_ssrcs, Each(Ne(0u)));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kSimSsrcGroupSemantics));
-  EXPECT_TRUE(stream.has_ssrc_group(cricket::kFidSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kSimSsrcGroupSemantics));
+  EXPECT_TRUE(stream.has_ssrc_group(webrtc::kFidSsrcGroupSemantics));
 }

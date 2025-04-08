@@ -516,7 +516,7 @@ class RTC_EXPORT PeerConnectionInterface : public webrtc::RefCountInterface {
     // Implementation defined settings. A public member only for the benefit of
     // the implementation. Applications must not access it directly, and should
     // instead use provided accessor methods, e.g., set_cpu_adaptation.
-    struct cricket::MediaConfig media_config;
+    struct MediaConfig media_config;
 
     // If set to true, only one preferred TURN allocation will be used per
     // network interface. UDP is preferred over TCP and IPv6 over IPv4. This
@@ -1329,7 +1329,7 @@ class PeerConnectionObserver {
 
   // Called when the selected candidate pair for the ICE connection changes.
   virtual void OnIceSelectedCandidatePairChanged(
-      const cricket::CandidatePairChangeEvent& /* event */) {}
+      const CandidatePairChangeEvent& /* event */) {}
 
   // This is called when a receiver and its track are created.
   // TODO(zhihuang): Make this pure virtual when all subclasses implement it.
@@ -1561,7 +1561,7 @@ class RTC_EXPORT PeerConnectionFactoryInterface
   // Creates an AudioSourceInterface.
   // `options` decides audio processing settings.
   virtual rtc::scoped_refptr<AudioSourceInterface> CreateAudioSource(
-      const cricket::AudioOptions& options) = 0;
+      const AudioOptions& options) = 0;
 
   // Creates a new local VideoTrack. The same `source` can be used in several
   // tracks.

@@ -57,26 +57,23 @@
 #include "pc/webrtc_sdp.h"
 
 using cricket::Candidate;
-using cricket::ICE_CANDIDATE_COMPONENT_RTCP;
-using cricket::ICE_CANDIDATE_COMPONENT_RTP;
-using cricket::kFecSsrcGroupSemantics;
-using cricket::RidDescription;
-using cricket::RidDirection;
-using cricket::StreamParams;
-using cricket::TransportDescription;
-using cricket::TransportInfo;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Property;
 using ::webrtc::AudioContentDescription;
 using ::webrtc::ContentGroup;
 using ::webrtc::ContentInfo;
+using ::webrtc::ICE_CANDIDATE_COMPONENT_RTCP;
+using ::webrtc::ICE_CANDIDATE_COMPONENT_RTP;
 using webrtc::IceCandidateCollection;
 using webrtc::IceCandidateInterface;
 using webrtc::IceCandidateType;
 using webrtc::JsepIceCandidate;
 using webrtc::JsepSessionDescription;
+using ::webrtc::kFecSsrcGroupSemantics;
 using ::webrtc::MediaProtocolType;
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 using webrtc::RtpExtension;
 using webrtc::RtpTransceiverDirection;
 using ::webrtc::SctpDataContentDescription;
@@ -86,6 +83,9 @@ using ::webrtc::SessionDescription;
 using webrtc::SessionDescriptionInterface;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
+using ::webrtc::StreamParams;
+using ::webrtc::TransportDescription;
+using ::webrtc::TransportInfo;
 using ::webrtc::VideoContentDescription;
 
 static const uint32_t kDefaultSctpPort = 5000;
@@ -953,8 +953,8 @@ static TransportDescription MakeTransportDescription(std::string ufrag,
                                                      std::string pwd) {
   webrtc::SSLFingerprint fingerprint(webrtc::DIGEST_SHA_1, kIdentityDigest);
   return TransportDescription(std::vector<std::string>(), ufrag, pwd,
-                              cricket::ICEMODE_FULL,
-                              cricket::CONNECTIONROLE_NONE, &fingerprint);
+                              webrtc::ICEMODE_FULL, webrtc::CONNECTIONROLE_NONE,
+                              &fingerprint);
 }
 
 // WebRtcSdpTest
@@ -986,7 +986,8 @@ class WebRtcSdpTest : public ::testing::Test {
     video_stream.set_stream_ids({kStreamId1});
     video_stream.ssrcs.push_back(kVideoTrack1Ssrc1);
     video_stream.ssrcs.push_back(kVideoTrack1Ssrc2);
-    cricket::SsrcGroup ssrc_group(kFecSsrcGroupSemantics, video_stream.ssrcs);
+    webrtc::SsrcGroup ssrc_group(webrtc::kFecSsrcGroupSemantics,
+                                 video_stream.ssrcs);
     video_stream.ssrc_groups.push_back(ssrc_group);
     video_desc_->AddStream(video_stream);
     webrtc::SocketAddress video_addr("74.125.224.39", 3457);
@@ -1004,40 +1005,40 @@ class WebRtcSdpTest : public ::testing::Test {
     // v4 host
     int port = 1234;
     webrtc::SocketAddress address("192.168.1.5", port++);
-    Candidate candidate1(ICE_CANDIDATE_COMPONENT_RTP, "udp", address,
+    Candidate candidate1(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp", address,
                          kCandidatePriority, "", "", IceCandidateType::kHost,
                          kCandidateGeneration, kCandidateFoundation1);
     address.SetPort(port++);
-    Candidate candidate2(ICE_CANDIDATE_COMPONENT_RTCP, "udp", address,
+    Candidate candidate2(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp", address,
                          kCandidatePriority, "", "", IceCandidateType::kHost,
                          kCandidateGeneration, kCandidateFoundation1);
     address.SetPort(port++);
-    Candidate candidate3(ICE_CANDIDATE_COMPONENT_RTCP, "udp", address,
+    Candidate candidate3(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp", address,
                          kCandidatePriority, "", "", IceCandidateType::kHost,
                          kCandidateGeneration, kCandidateFoundation1);
     address.SetPort(port++);
-    Candidate candidate4(ICE_CANDIDATE_COMPONENT_RTP, "udp", address,
+    Candidate candidate4(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp", address,
                          kCandidatePriority, "", "", IceCandidateType::kHost,
                          kCandidateGeneration, kCandidateFoundation1);
 
     // v6 host
     webrtc::SocketAddress v6_address("::1", port++);
-    webrtc::Candidate candidate5(cricket::ICE_CANDIDATE_COMPONENT_RTP, "udp",
+    webrtc::Candidate candidate5(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",
                                  v6_address, kCandidatePriority, "", "",
                                  IceCandidateType::kHost, kCandidateGeneration,
                                  kCandidateFoundation2);
     v6_address.SetPort(port++);
-    webrtc::Candidate candidate6(cricket::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
+    webrtc::Candidate candidate6(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
                                  v6_address, kCandidatePriority, "", "",
                                  IceCandidateType::kHost, kCandidateGeneration,
                                  kCandidateFoundation2);
     v6_address.SetPort(port++);
-    webrtc::Candidate candidate7(cricket::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
+    webrtc::Candidate candidate7(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
                                  v6_address, kCandidatePriority, "", "",
                                  IceCandidateType::kHost, kCandidateGeneration,
                                  kCandidateFoundation2);
     v6_address.SetPort(port++);
-    webrtc::Candidate candidate8(cricket::ICE_CANDIDATE_COMPONENT_RTP, "udp",
+    webrtc::Candidate candidate8(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",
                                  v6_address, kCandidatePriority, "", "",
                                  IceCandidateType::kHost, kCandidateGeneration,
                                  kCandidateFoundation2);
@@ -1046,7 +1047,7 @@ class WebRtcSdpTest : public ::testing::Test {
     int port_stun = 2345;
     webrtc::SocketAddress address_stun("74.125.127.126", port_stun++);
     webrtc::SocketAddress rel_address_stun("192.168.1.5", port_stun++);
-    webrtc::Candidate candidate9(cricket::ICE_CANDIDATE_COMPONENT_RTP, "udp",
+    webrtc::Candidate candidate9(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",
                                  address_stun, kCandidatePriority, "", "",
                                  IceCandidateType::kSrflx, kCandidateGeneration,
                                  kCandidateFoundation3);
@@ -1054,7 +1055,7 @@ class WebRtcSdpTest : public ::testing::Test {
 
     address_stun.SetPort(port_stun++);
     rel_address_stun.SetPort(port_stun++);
-    webrtc::Candidate candidate10(cricket::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
+    webrtc::Candidate candidate10(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
                                   address_stun, kCandidatePriority, "", "",
                                   IceCandidateType::kSrflx,
                                   kCandidateGeneration, kCandidateFoundation3);
@@ -1063,12 +1064,12 @@ class WebRtcSdpTest : public ::testing::Test {
     // relay
     int port_relay = 3456;
     webrtc::SocketAddress address_relay("74.125.224.39", port_relay++);
-    webrtc::Candidate candidate11(cricket::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
+    webrtc::Candidate candidate11(webrtc::ICE_CANDIDATE_COMPONENT_RTCP, "udp",
                                   address_relay, kCandidatePriority, "", "",
                                   IceCandidateType::kRelay,
                                   kCandidateGeneration, kCandidateFoundation4);
     address_relay.SetPort(port_relay++);
-    webrtc::Candidate candidate12(cricket::ICE_CANDIDATE_COMPONENT_RTP, "udp",
+    webrtc::Candidate candidate12(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",
                                   address_relay, kCandidatePriority, "", "",
                                   IceCandidateType::kRelay,
                                   kCandidateGeneration, kCandidateFoundation4);
@@ -1130,13 +1131,13 @@ class WebRtcSdpTest : public ::testing::Test {
     desc_.transport_infos()[1].description.ice_ufrag.clear();
     desc_.transport_infos()[1].description.ice_pwd.clear();
     desc_.transport_infos()[1].description.connection_role =
-        cricket::CONNECTIONROLE_NONE;
+        webrtc::CONNECTIONROLE_NONE;
 
     // Set bundle-only flag.
     desc_.contents()[1].bundle_only = true;
 
     // Add BUNDLE group.
-    ContentGroup group(cricket::GROUP_TYPE_BUNDLE);
+    ContentGroup group(webrtc::GROUP_TYPE_BUNDLE);
     group.AddContentName(kAudioContentName);
     group.AddContentName(kVideoContentName);
     desc_.AddGroup(group);
@@ -1485,8 +1486,8 @@ class WebRtcSdpTest : public ::testing::Test {
       return;
     }
     for (size_t i = 0; i < transports1.size(); ++i) {
-      const cricket::TransportInfo transport1 = transports1.at(i);
-      const cricket::TransportInfo transport2 = transports2.at(i);
+      const webrtc::TransportInfo transport1 = transports1.at(i);
+      const webrtc::TransportInfo transport2 = transports2.at(i);
       EXPECT_EQ(transport1.content_name, transport2.content_name);
       EXPECT_EQ(transport1.description.ice_ufrag,
                 transport2.description.ice_ufrag);
@@ -1582,7 +1583,7 @@ class WebRtcSdpTest : public ::testing::Test {
   void AddIceOptions(const std::string& content_name,
                      const std::vector<std::string>& transport_options) {
     ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != NULL);
-    cricket::TransportInfo transport_info =
+    webrtc::TransportInfo transport_info =
         *(desc_.GetTransportInfoByName(content_name));
     desc_.RemoveTransportInfoByName(content_name);
     transport_info.description.transport_options = transport_options;
@@ -1593,7 +1594,7 @@ class WebRtcSdpTest : public ::testing::Test {
                       const std::string& ice_ufrag,
                       const std::string& ice_pwd) {
     ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != NULL);
-    cricket::TransportInfo transport_info =
+    webrtc::TransportInfo transport_info =
         *(desc_.GetTransportInfoByName(content_name));
     desc_.RemoveTransportInfoByName(content_name);
     transport_info.description.ice_ufrag = ice_ufrag;
@@ -1932,7 +1933,7 @@ class WebRtcSdpTest : public ::testing::Test {
     webrtc::Codec opus = acd->codecs()[0];
     EXPECT_EQ(111, opus.id);
     EXPECT_TRUE(opus.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamNack, cricket::kParamValueEmpty)));
+        webrtc::kRtcpFbParamNack, webrtc::kParamValueEmpty)));
 
     const VideoContentDescription* vcd =
         webrtc::GetFirstVideoContentDescription(jdesc_output->description());
@@ -1942,15 +1943,15 @@ class WebRtcSdpTest : public ::testing::Test {
     EXPECT_EQ(vp8.name, "VP8");
     EXPECT_EQ(101, vp8.id);
     EXPECT_TRUE(vp8.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamLntf, cricket::kParamValueEmpty)));
+        webrtc::kRtcpFbParamLntf, webrtc::kParamValueEmpty)));
     EXPECT_TRUE(vp8.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamNack, cricket::kParamValueEmpty)));
+        webrtc::kRtcpFbParamNack, webrtc::kParamValueEmpty)));
     EXPECT_TRUE(vp8.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamNack, cricket::kRtcpFbNackParamPli)));
+        webrtc::kRtcpFbParamNack, webrtc::kRtcpFbNackParamPli)));
     EXPECT_TRUE(vp8.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamRemb, cricket::kParamValueEmpty)));
+        webrtc::kRtcpFbParamRemb, webrtc::kParamValueEmpty)));
     EXPECT_TRUE(vp8.HasFeedbackParam(webrtc::FeedbackParam(
-        cricket::kRtcpFbParamCcm, cricket::kRtcpFbCcmParamFir)));
+        webrtc::kRtcpFbParamCcm, webrtc::kRtcpFbCcmParamFir)));
   }
 
   // Two SDP messages can mean the same thing but be different strings, e.g.
@@ -2026,11 +2027,11 @@ TEST_F(WebRtcSdpTest, SerializeSessionDescriptionWithoutCandidates) {
 }
 
 TEST_F(WebRtcSdpTest, SerializeSessionDescriptionWithBundles) {
-  ContentGroup group1(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup group1(webrtc::GROUP_TYPE_BUNDLE);
   group1.AddContentName(kAudioContentName);
   group1.AddContentName(kVideoContentName);
   desc_.AddGroup(group1);
-  ContentGroup group2(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup group2(webrtc::GROUP_TYPE_BUNDLE);
   group2.AddContentName(kAudioContentName2);
   desc_.AddGroup(group2);
   ASSERT_TRUE(jdesc_.Initialize(desc_.Clone(), jdesc_.session_id(),
@@ -2237,7 +2238,7 @@ TEST_F(WebRtcSdpTest, SerializeCandidates) {
 
 TEST_F(WebRtcSdpTest, SerializeHostnameCandidate) {
   webrtc::SocketAddress address("a.test", 1234);
-  webrtc::Candidate candidate(cricket::ICE_CANDIDATE_COMPONENT_RTP, "udp",
+  webrtc::Candidate candidate(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",
                               address, kCandidatePriority, "", "",
                               IceCandidateType::kHost, kCandidateGeneration,
                               kCandidateFoundation1);
@@ -2247,11 +2248,11 @@ TEST_F(WebRtcSdpTest, SerializeHostnameCandidate) {
 }
 
 TEST_F(WebRtcSdpTest, SerializeTcpCandidates) {
-  Candidate candidate(ICE_CANDIDATE_COMPONENT_RTP, "tcp",
+  Candidate candidate(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "tcp",
                       webrtc::SocketAddress("192.168.1.5", 9),
                       kCandidatePriority, "", "", IceCandidateType::kHost,
                       kCandidateGeneration, kCandidateFoundation1);
-  candidate.set_tcptype(cricket::TCPTYPE_ACTIVE_STR);
+  candidate.set_tcptype(webrtc::TCPTYPE_ACTIVE_STR);
   std::unique_ptr<IceCandidateInterface> jcandidate(
       new JsepIceCandidate(std::string("audio_content_name"), 0, candidate));
 
@@ -2271,7 +2272,7 @@ TEST_F(WebRtcSdpTest, ParseTcpCandidateWithoutTcptype) {
   JsepIceCandidate jcandidate(kDummyMid, kDummyIndex);
   EXPECT_TRUE(SdpDeserializeCandidate(missing_tcptype, &jcandidate));
 
-  EXPECT_EQ(std::string(cricket::TCPTYPE_PASSIVE_STR),
+  EXPECT_EQ(std::string(webrtc::TCPTYPE_PASSIVE_STR),
             jcandidate.candidate().tcptype());
 }
 
@@ -2435,7 +2436,7 @@ TEST_F(WebRtcSdpTest, DeserializeSessionDescriptionWithBundle) {
               "a=group:BUNDLE audio_content_name video_content_name\r\n",
               &sdp_with_bundle);
   EXPECT_TRUE(SdpDeserialize(sdp_with_bundle, &jdesc_with_bundle));
-  ContentGroup group(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup group(webrtc::GROUP_TYPE_BUNDLE);
   group.AddContentName(kAudioContentName);
   group.AddContentName(kVideoContentName);
   desc_.AddGroup(group);
@@ -2659,7 +2660,7 @@ TEST_F(WebRtcSdpTest, DeserializeCandidate) {
   sdp = kSdpTcpActiveCandidate;
   EXPECT_TRUE(SdpDeserializeCandidate(sdp, &jcandidate));
   // Make a cricket::Candidate equivalent to kSdpTcpCandidate string.
-  Candidate candidate(ICE_CANDIDATE_COMPONENT_RTP, "tcp",
+  Candidate candidate(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "tcp",
                       webrtc::SocketAddress("192.168.1.5", 9),
                       kCandidatePriority, "", "", IceCandidateType::kHost,
                       kCandidateGeneration, kCandidateFoundation1);
@@ -3493,23 +3494,23 @@ TEST_F(WebRtcSdpTest, DeserializeAndSerializeSdpWithIceLite) {
   std::string sdp_with_icelite = kSdpFullString;
   EXPECT_TRUE(SdpDeserialize(sdp_with_icelite, &jdesc_with_icelite));
   webrtc::SessionDescription* desc = jdesc_with_icelite.description();
-  const cricket::TransportInfo* tinfo1 =
+  const webrtc::TransportInfo* tinfo1 =
       desc->GetTransportInfoByName("audio_content_name");
-  EXPECT_EQ(cricket::ICEMODE_FULL, tinfo1->description.ice_mode);
-  const cricket::TransportInfo* tinfo2 =
+  EXPECT_EQ(webrtc::ICEMODE_FULL, tinfo1->description.ice_mode);
+  const webrtc::TransportInfo* tinfo2 =
       desc->GetTransportInfoByName("video_content_name");
-  EXPECT_EQ(cricket::ICEMODE_FULL, tinfo2->description.ice_mode);
+  EXPECT_EQ(webrtc::ICEMODE_FULL, tinfo2->description.ice_mode);
 
   // Add "a=ice-lite" and deserialize, making sure it's ICE lite.
   InjectAfter(kSessionTime, "a=ice-lite\r\n", &sdp_with_icelite);
   EXPECT_TRUE(SdpDeserialize(sdp_with_icelite, &jdesc_with_icelite));
   desc = jdesc_with_icelite.description();
-  const cricket::TransportInfo* atinfo =
+  const webrtc::TransportInfo* atinfo =
       desc->GetTransportInfoByName("audio_content_name");
-  EXPECT_EQ(cricket::ICEMODE_LITE, atinfo->description.ice_mode);
-  const cricket::TransportInfo* vtinfo =
+  EXPECT_EQ(webrtc::ICEMODE_LITE, atinfo->description.ice_mode);
+  const webrtc::TransportInfo* vtinfo =
       desc->GetTransportInfoByName("video_content_name");
-  EXPECT_EQ(cricket::ICEMODE_LITE, vtinfo->description.ice_mode);
+  EXPECT_EQ(webrtc::ICEMODE_LITE, vtinfo->description.ice_mode);
 
   // Now that we know deserialization works, we can use TestSerialize to test
   // serialization.
@@ -3530,17 +3531,17 @@ TEST_F(WebRtcSdpTest, RoundTripSdpWithSctpDataChannelsWithCandidates) {
 TEST_F(WebRtcSdpTest, SerializeDtlsSetupAttribute) {
   TransportInfo audio_transport_info =
       *(desc_.GetTransportInfoByName(kAudioContentName));
-  EXPECT_EQ(cricket::CONNECTIONROLE_NONE,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_NONE,
             audio_transport_info.description.connection_role);
   audio_transport_info.description.connection_role =
-      cricket::CONNECTIONROLE_ACTIVE;
+      webrtc::CONNECTIONROLE_ACTIVE;
 
   TransportInfo video_transport_info =
       *(desc_.GetTransportInfoByName(kVideoContentName));
-  EXPECT_EQ(cricket::CONNECTIONROLE_NONE,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_NONE,
             video_transport_info.description.connection_role);
   video_transport_info.description.connection_role =
-      cricket::CONNECTIONROLE_ACTIVE;
+      webrtc::CONNECTIONROLE_ACTIVE;
 
   desc_.RemoveTransportInfoByName(kAudioContentName);
   desc_.RemoveTransportInfoByName(kVideoContentName);
@@ -3564,13 +3565,13 @@ TEST_F(WebRtcSdpTest, DeserializeDtlsSetupAttributeActpass) {
   InjectAfter(kSessionTime, "a=setup:actpass\r\n", &sdp_with_dtlssetup);
   EXPECT_TRUE(SdpDeserialize(sdp_with_dtlssetup, &jdesc_with_dtlssetup));
   webrtc::SessionDescription* desc = jdesc_with_dtlssetup.description();
-  const cricket::TransportInfo* atinfo =
+  const webrtc::TransportInfo* atinfo =
       desc->GetTransportInfoByName("audio_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_ACTPASS,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_ACTPASS,
             atinfo->description.connection_role);
-  const cricket::TransportInfo* vtinfo =
+  const webrtc::TransportInfo* vtinfo =
       desc->GetTransportInfoByName("video_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_ACTPASS,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_ACTPASS,
             vtinfo->description.connection_role);
 }
 
@@ -3580,14 +3581,12 @@ TEST_F(WebRtcSdpTest, DeserializeDtlsSetupAttributeActive) {
   InjectAfter(kSessionTime, "a=setup:active\r\n", &sdp_with_dtlssetup);
   EXPECT_TRUE(SdpDeserialize(sdp_with_dtlssetup, &jdesc_with_dtlssetup));
   webrtc::SessionDescription* desc = jdesc_with_dtlssetup.description();
-  const cricket::TransportInfo* atinfo =
+  const webrtc::TransportInfo* atinfo =
       desc->GetTransportInfoByName("audio_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_ACTIVE,
-            atinfo->description.connection_role);
-  const cricket::TransportInfo* vtinfo =
+  EXPECT_EQ(webrtc::CONNECTIONROLE_ACTIVE, atinfo->description.connection_role);
+  const webrtc::TransportInfo* vtinfo =
       desc->GetTransportInfoByName("video_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_ACTIVE,
-            vtinfo->description.connection_role);
+  EXPECT_EQ(webrtc::CONNECTIONROLE_ACTIVE, vtinfo->description.connection_role);
 }
 TEST_F(WebRtcSdpTest, DeserializeDtlsSetupAttributePassive) {
   JsepSessionDescription jdesc_with_dtlssetup(kDummyType);
@@ -3595,13 +3594,13 @@ TEST_F(WebRtcSdpTest, DeserializeDtlsSetupAttributePassive) {
   InjectAfter(kSessionTime, "a=setup:passive\r\n", &sdp_with_dtlssetup);
   EXPECT_TRUE(SdpDeserialize(sdp_with_dtlssetup, &jdesc_with_dtlssetup));
   webrtc::SessionDescription* desc = jdesc_with_dtlssetup.description();
-  const cricket::TransportInfo* atinfo =
+  const webrtc::TransportInfo* atinfo =
       desc->GetTransportInfoByName("audio_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_PASSIVE,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_PASSIVE,
             atinfo->description.connection_role);
-  const cricket::TransportInfo* vtinfo =
+  const webrtc::TransportInfo* vtinfo =
       desc->GetTransportInfoByName("video_content_name");
-  EXPECT_EQ(cricket::CONNECTIONROLE_PASSIVE,
+  EXPECT_EQ(webrtc::CONNECTIONROLE_PASSIVE,
             vtinfo->description.connection_role);
 }
 

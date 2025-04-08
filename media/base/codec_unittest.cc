@@ -27,10 +27,6 @@
 namespace webrtc {
 namespace {
 
-using cricket::kCodecParamAssociatedPayloadType;
-using cricket::kCodecParamMaxBitrate;
-using cricket::kCodecParamMinBitrate;
-
 class TestCodec : public Codec {
  public:
   TestCodec(int id, const std::string& name, int clockrate)
@@ -138,9 +134,9 @@ TEST(CodecTest, TestVideoCodecOperators) {
 }
 
 TEST(CodecTest, TestVideoCodecEqualsWithDifferentPacketization) {
-  Codec c0 = CreateVideoCodec(100, cricket::kVp8CodecName);
-  Codec c1 = CreateVideoCodec(100, cricket::kVp8CodecName);
-  Codec c2 = CreateVideoCodec(100, cricket::kVp8CodecName);
+  Codec c0 = CreateVideoCodec(100, kVp8CodecName);
+  Codec c1 = CreateVideoCodec(100, kVp8CodecName);
+  Codec c2 = CreateVideoCodec(100, kVp8CodecName);
   c2.packetization = "raw";
 
   EXPECT_EQ(c0, c1);
@@ -262,7 +258,7 @@ TEST(CodecTest, TestToCodecParameters) {
   EXPECT_EQ(96, codec_params_1.payload_type);
   EXPECT_EQ(webrtc::MediaType::VIDEO, codec_params_1.kind);
   EXPECT_EQ("V", codec_params_1.name);
-  EXPECT_EQ(cricket::kVideoCodecClockrate, codec_params_1.clock_rate);
+  EXPECT_EQ(kVideoCodecClockrate, codec_params_1.clock_rate);
   EXPECT_EQ(std::nullopt, codec_params_1.num_channels);
   ASSERT_EQ(1u, codec_params_1.parameters.size());
   EXPECT_EQ("p1", codec_params_1.parameters.begin()->first);
@@ -307,7 +303,7 @@ TEST(CodecTest, H264CostrainedBaselineIsAddedIfH264IsSupported) {
 
 TEST(CodecTest, H264CostrainedBaselineIsNotAddedIfH264IsUnsupported) {
   const std::vector<webrtc::SdpVideoFormat> kExplicitlySupportedFormats = {
-      {cricket::kVp9CodecName,
+      {kVp9CodecName,
        {{webrtc::kVP9FmtpProfileId,
          VP9ProfileToString(webrtc::VP9Profile::kProfile0)}}}};
 

@@ -54,7 +54,7 @@ const std::vector<uint8_t> dtls_flight4 = {
 const std::vector<uint8_t> empty = {};
 }  // namespace
 
-namespace cricket {
+namespace webrtc {
 
 using ::testing::MockFunction;
 using State = DtlsStunPiggybackController::State;
@@ -296,4 +296,4 @@ TEST_F(DtlsStunPiggybackControllerTest, AckDataNoDuplicates) {
             std::string("\x12\x34\x44\x44", 4));
 }
 
-}  // namespace cricket
+}  // namespace webrtc

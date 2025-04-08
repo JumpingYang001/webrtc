@@ -673,7 +673,7 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
   void RequestRefreshFrame() override { ++refresh_frames_requested_; }
 
   TimeController* const time_controller_;
-  cricket::VideoAdapter adapter_;
+  VideoAdapter adapter_;
   bool adaptation_enabled_ RTC_GUARDED_BY(mutex_);
   VideoSinkWants last_wants_ RTC_GUARDED_BY(mutex_);
   std::optional<int> last_width_;

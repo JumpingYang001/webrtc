@@ -148,9 +148,8 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
 
   // Helper method for creating IceCandidate report. `is_local` indicates
   // whether this candidate is local or remote.
-  StatsReport* AddCandidateReport(
-      const cricket::CandidateStats& candidate_stats,
-      bool local);
+  StatsReport* AddCandidateReport(const CandidateStats& candidate_stats,
+                                  bool local);
 
   // Adds a report for this certificate and every certificate in its chain, and
   // returns the leaf certificate's report (`cert_stats`'s report).
@@ -161,7 +160,7 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
                                        int component,
                                        int connection_id,
                                        const StatsReport::Id& channel_report_id,
-                                       const cricket::ConnectionInfo& info);
+                                       const ConnectionInfo& info);
 
   void ExtractDataInfo_n(StatsCollection* reports);
 

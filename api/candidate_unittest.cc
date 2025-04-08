@@ -32,9 +32,9 @@ TEST(CandidateTest, Id) {
 
 TEST(CandidateTest, Component) {
   Candidate c;
-  EXPECT_EQ(c.component(), cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
-  c.set_component(cricket::ICE_CANDIDATE_COMPONENT_RTCP);
-  EXPECT_EQ(c.component(), cricket::ICE_CANDIDATE_COMPONENT_RTCP);
+  EXPECT_EQ(c.component(), ICE_CANDIDATE_COMPONENT_DEFAULT);
+  c.set_component(ICE_CANDIDATE_COMPONENT_RTCP);
+  EXPECT_EQ(c.component(), ICE_CANDIDATE_COMPONENT_RTCP);
 }
 
 TEST(CandidateTest, TypeName) {

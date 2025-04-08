@@ -19,7 +19,7 @@
 using webrtc::LocalAudioSource;
 
 TEST(LocalAudioSourceTest, InitWithAudioOptions) {
-  cricket::AudioOptions audio_options;
+  webrtc::AudioOptions audio_options;
   audio_options.highpass_filter = true;
   rtc::scoped_refptr<LocalAudioSource> source =
       LocalAudioSource::Create(&audio_options);

@@ -114,8 +114,8 @@ void GetAudioAndVideoTrackBySsrc(
 TrackMediaInfoMap::TrackMediaInfoMap() = default;
 
 void TrackMediaInfoMap::Initialize(
-    std::optional<cricket::VoiceMediaInfo> voice_media_info,
-    std::optional<cricket::VideoMediaInfo> video_media_info,
+    std::optional<VoiceMediaInfo> voice_media_info,
+    std::optional<VideoMediaInfo> video_media_info,
     rtc::ArrayView<rtc::scoped_refptr<RtpSenderInternal>> rtp_senders,
     rtc::ArrayView<rtc::scoped_refptr<RtpReceiverInternal>> rtp_receivers) {
   Thread::ScopedDisallowBlockingCalls no_blocking_calls;
@@ -222,49 +222,49 @@ void TrackMediaInfoMap::Initialize(
   }
 }
 
-const cricket::VoiceSenderInfo* TrackMediaInfoMap::GetVoiceSenderInfoBySsrc(
+const VoiceSenderInfo* TrackMediaInfoMap::GetVoiceSenderInfoBySsrc(
     uint32_t ssrc) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(voice_info_by_sender_ssrc_, ssrc);
 }
-const cricket::VoiceReceiverInfo* TrackMediaInfoMap::GetVoiceReceiverInfoBySsrc(
+const VoiceReceiverInfo* TrackMediaInfoMap::GetVoiceReceiverInfoBySsrc(
     uint32_t ssrc) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(voice_info_by_receiver_ssrc_, ssrc);
 }
 
-const cricket::VideoSenderInfo* TrackMediaInfoMap::GetVideoSenderInfoBySsrc(
+const VideoSenderInfo* TrackMediaInfoMap::GetVideoSenderInfoBySsrc(
     uint32_t ssrc) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_info_by_sender_ssrc_, ssrc);
 }
 
-const cricket::VideoReceiverInfo* TrackMediaInfoMap::GetVideoReceiverInfoBySsrc(
+const VideoReceiverInfo* TrackMediaInfoMap::GetVideoReceiverInfoBySsrc(
     uint32_t ssrc) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_info_by_receiver_ssrc_, ssrc);
 }
 
 rtc::scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
-    const cricket::VoiceSenderInfo& voice_sender_info) const {
+    const VoiceSenderInfo& voice_sender_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(audio_track_by_sender_info_, &voice_sender_info);
 }
 
 rtc::scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
-    const cricket::VoiceReceiverInfo& voice_receiver_info) const {
+    const VoiceReceiverInfo& voice_receiver_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(audio_track_by_receiver_info_, &voice_receiver_info);
 }
 
 rtc::scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
-    const cricket::VideoSenderInfo& video_sender_info) const {
+    const VideoSenderInfo& video_sender_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_track_by_sender_info_, &video_sender_info);
 }
 
 rtc::scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
-    const cricket::VideoReceiverInfo& video_receiver_info) const {
+    const VideoReceiverInfo& video_receiver_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_track_by_receiver_info_, &video_receiver_info);
 }

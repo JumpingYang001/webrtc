@@ -94,12 +94,11 @@ TEST(InternalDecoderFactoryTest, Av1Profile0) {
   InternalDecoderFactory factory;
   if (kDav1dIsIncluded) {
     EXPECT_THAT(factory.GetSupportedFormats(),
-                Contains(Field(&SdpVideoFormat::name, cricket::kAv1CodecName)));
+                Contains(Field(&SdpVideoFormat::name, kAv1CodecName)));
     EXPECT_TRUE(factory.Create(env, SdpVideoFormat::AV1Profile0()));
   } else {
-    EXPECT_THAT(
-        factory.GetSupportedFormats(),
-        Not(Contains(Field(&SdpVideoFormat::name, cricket::kAv1CodecName))));
+    EXPECT_THAT(factory.GetSupportedFormats(),
+                Not(Contains(Field(&SdpVideoFormat::name, kAv1CodecName))));
   }
 }
 
@@ -108,7 +107,7 @@ TEST(InternalDecoderFactoryTest, H265IsNotEnabled) {
   const Environment env = CreateEnvironment();
   InternalDecoderFactory factory;
   std::unique_ptr<VideoDecoder> decoder =
-      factory.Create(env, SdpVideoFormat(cricket::kH265CodecName));
+      factory.Create(env, SdpVideoFormat(kH265CodecName));
   EXPECT_EQ(static_cast<bool>(decoder), kH265Enabled);
 }
 

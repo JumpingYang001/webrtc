@@ -57,9 +57,8 @@ class RegatheringControllerTest : public ::testing::Test,
       : vss_(std::make_unique<VirtualSocketServer>()),
         thread_(vss_.get()),
         ice_transport_(std::make_unique<MockIceTransport>()),
-        allocator_(
-            std::make_unique<cricket::FakePortAllocator>(CreateEnvironment(),
-                                                         vss_.get())) {
+        allocator_(std::make_unique<FakePortAllocator>(CreateEnvironment(),
+                                                       vss_.get())) {
     BasicRegatheringController::Config regathering_config;
     regathering_config.regather_on_failed_networks_interval = 0;
     regathering_controller_.reset(new BasicRegatheringController(
@@ -73,13 +72,13 @@ class RegatheringControllerTest : public ::testing::Test,
     RelayServerConfig turn_server;
     turn_server.credentials = kRelayCredentials;
     turn_server.ports.push_back(
-        cricket::ProtocolAddress(kTurnUdpIntAddr, cricket::PROTO_UDP));
+        ProtocolAddress(kTurnUdpIntAddr, cricket::PROTO_UDP));
     std::vector<RelayServerConfig> turn_servers(1, turn_server);
     allocator_->set_flags(kOnlyLocalPorts);
     allocator_->SetConfiguration(stun_servers, turn_servers, 0 /* pool size */,
                                  webrtc::NO_PRUNE);
     allocator_session_ = allocator_->CreateSession(
-        "test", cricket::ICE_CANDIDATE_COMPONENT_RTP, kIceUfrag, kIcePwd);
+        "test", ICE_CANDIDATE_COMPONENT_RTP, kIceUfrag, kIcePwd);
     // The gathering will take place on the current thread and the following
     // call of StartGettingPorts is blocking. We will not ClearGettingPorts
     // prematurely.

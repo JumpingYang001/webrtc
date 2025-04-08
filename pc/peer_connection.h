@@ -513,8 +513,7 @@ class PeerConnection : public PeerConnectionInternal,
   void OnIceCandidatesRemoved(const std::vector<Candidate>& candidates)
       RTC_RUN_ON(signaling_thread());
 
-  void OnSelectedCandidatePairChanged(
-      const cricket::CandidatePairChangeEvent& event)
+  void OnSelectedCandidatePairChanged(const CandidatePairChangeEvent& event)
       RTC_RUN_ON(signaling_thread());
 
   void OnNegotiationNeeded();
@@ -552,7 +551,7 @@ class PeerConnection : public PeerConnectionInternal,
   // from `description`. Returns false if it's not available.
   static bool GetTransportDescription(const SessionDescription* description,
                                       const std::string& content_name,
-                                      cricket::TransportDescription* info);
+                                      TransportDescription* info);
 
   // Returns the media index for a local ice candidate given the content name.
   // Returns false if the local session description does not have a media
@@ -569,14 +568,12 @@ class PeerConnection : public PeerConnectionInternal,
   void OnTransportControllerCandidatesGathered(
       const std::string& transport_name,
       const std::vector<Candidate>& candidates) RTC_RUN_ON(signaling_thread());
-  void OnTransportControllerCandidateError(
-      const cricket::IceCandidateErrorEvent& event)
+  void OnTransportControllerCandidateError(const IceCandidateErrorEvent& event)
       RTC_RUN_ON(signaling_thread());
   void OnTransportControllerCandidatesRemoved(
       const std::vector<Candidate>& candidates) RTC_RUN_ON(signaling_thread());
   void OnTransportControllerCandidateChanged(
-      const cricket::CandidatePairChangeEvent& event)
-      RTC_RUN_ON(signaling_thread());
+      const CandidatePairChangeEvent& event) RTC_RUN_ON(signaling_thread());
   void OnTransportControllerDtlsHandshakeError(SSLHandshakeError error);
 
   // Invoked when TransportController connection completion is signaled.

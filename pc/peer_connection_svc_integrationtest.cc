@@ -104,7 +104,7 @@ TEST_F(PeerConnectionSVCIntegrationTest, SetParametersAcceptsL1T3WithVP8) {
           webrtc::MediaType::VIDEO);
   std::vector<RtpCodecCapability> vp8_codec;
   for (const RtpCodecCapability& codec_capability : capabilities.codecs) {
-    if (codec_capability.name == cricket::kVp8CodecName)
+    if (codec_capability.name == kVp8CodecName)
       vp8_codec.push_back(codec_capability);
   }
 
@@ -136,7 +136,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
       caller()->pc()->AddTransceiver(caller()->CreateLocalVideoTrack(), init);
   ASSERT_TRUE(transceiver_or_error.ok());
   auto transceiver = transceiver_or_error.MoveValue();
-  EXPECT_TRUE(SetCodecPreferences(transceiver, cricket::kVp8CodecName).ok());
+  EXPECT_TRUE(SetCodecPreferences(transceiver, kVp8CodecName).ok());
 
   caller()->CreateAndSetAndSignalOffer();
   ASSERT_THAT(
@@ -162,7 +162,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
       caller()->pc()->AddTransceiver(caller()->CreateLocalVideoTrack(), init);
   ASSERT_TRUE(transceiver_or_error.ok());
   auto transceiver = transceiver_or_error.MoveValue();
-  EXPECT_TRUE(SetCodecPreferences(transceiver, cricket::kVp9CodecName).ok());
+  EXPECT_TRUE(SetCodecPreferences(transceiver, kVp9CodecName).ok());
 
   caller()->CreateAndSetAndSignalOffer();
   ASSERT_THAT(
@@ -188,7 +188,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
       caller()->pc()->AddTransceiver(caller()->CreateLocalVideoTrack(), init);
   ASSERT_TRUE(transceiver_or_error.ok());
   auto transceiver = transceiver_or_error.MoveValue();
-  EXPECT_TRUE(SetCodecPreferences(transceiver, cricket::kVp8CodecName).ok());
+  EXPECT_TRUE(SetCodecPreferences(transceiver, kVp8CodecName).ok());
 
   caller()->CreateAndSetAndSignalOffer();
   ASSERT_THAT(
@@ -215,7 +215,7 @@ TEST_F(PeerConnectionSVCIntegrationTest,
       caller()->pc()->AddTransceiver(caller()->CreateLocalVideoTrack(), init);
   ASSERT_TRUE(transceiver_or_error.ok());
   auto transceiver = transceiver_or_error.MoveValue();
-  EXPECT_TRUE(SetCodecPreferences(transceiver, cricket::kVp9CodecName).ok());
+  EXPECT_TRUE(SetCodecPreferences(transceiver, kVp9CodecName).ok());
 
   caller()->CreateAndSetAndSignalOffer();
   ASSERT_THAT(
@@ -249,8 +249,7 @@ TEST_F(PeerConnectionSVCIntegrationTest, FallbackToL1Tx) {
   // Only keep VP9 in the caller
   send_codecs.erase(std::partition(send_codecs.begin(), send_codecs.end(),
                                    [](const auto& codec) -> bool {
-                                     return codec.name ==
-                                            cricket::kVp9CodecName;
+                                     return codec.name == kVp9CodecName;
                                    }),
                     send_codecs.end());
   ASSERT_FALSE(send_codecs.empty());
@@ -277,8 +276,7 @@ TEST_F(PeerConnectionSVCIntegrationTest, FallbackToL1Tx) {
   send_codecs = capabilities.codecs;
   send_codecs.erase(std::partition(send_codecs.begin(), send_codecs.end(),
                                    [](const auto& codec) -> bool {
-                                     return codec.name ==
-                                            cricket::kVp8CodecName;
+                                     return codec.name == kVp8CodecName;
                                    }),
                     send_codecs.end());
   ASSERT_FALSE(send_codecs.empty());

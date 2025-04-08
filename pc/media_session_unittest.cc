@@ -104,7 +104,7 @@ class CodecLookupHelperForTesting : public CodecLookupHelper {
 
 Codec CreateRedAudioCodec(absl::string_view encoding_id) {
   Codec red = CreateAudioCodec(63, "red", 48000, 2);
-  red.SetParam(cricket::kCodecParamNotInNameValueFormat,
+  red.SetParam(kCodecParamNotInNameValueFormat,
                std::string(encoding_id) + '/' + std::string(encoding_id));
   return red;
 }
@@ -472,7 +472,7 @@ void AttachSenderToMediaDescriptionOptions(
     webrtc::MediaType type,
     const std::string& track_id,
     const std::vector<std::string>& stream_ids,
-    const std::vector<cricket::RidDescription>& rids,
+    const std::vector<RidDescription>& rids,
     const SimulcastLayerList& simulcast_layers,
     int num_sim_layer,
     MediaSessionOptions* session_options) {
@@ -555,18 +555,18 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
   // Create a video StreamParamsVec object with:
   // - one video stream with 3 simulcast streams and FEC,
   cricket::StreamParamsVec CreateComplexVideoStreamParamsVec() {
-    cricket::SsrcGroup sim_group("SIM", MAKE_VECTOR(kSimSsrc));
-    cricket::SsrcGroup fec_group1("FEC", MAKE_VECTOR(kFec1Ssrc));
-    cricket::SsrcGroup fec_group2("FEC", MAKE_VECTOR(kFec2Ssrc));
-    cricket::SsrcGroup fec_group3("FEC", MAKE_VECTOR(kFec3Ssrc));
+    SsrcGroup sim_group("SIM", MAKE_VECTOR(kSimSsrc));
+    SsrcGroup fec_group1("FEC", MAKE_VECTOR(kFec1Ssrc));
+    SsrcGroup fec_group2("FEC", MAKE_VECTOR(kFec2Ssrc));
+    SsrcGroup fec_group3("FEC", MAKE_VECTOR(kFec3Ssrc));
 
-    std::vector<cricket::SsrcGroup> ssrc_groups;
+    std::vector<SsrcGroup> ssrc_groups;
     ssrc_groups.push_back(sim_group);
     ssrc_groups.push_back(fec_group1);
     ssrc_groups.push_back(fec_group2);
     ssrc_groups.push_back(fec_group3);
 
-    cricket::StreamParams simulcast_params;
+    StreamParams simulcast_params;
     simulcast_params.id = kVideoTrack1;
     simulcast_params.ssrcs = MAKE_VECTOR(kSimulcastParamsSsrc);
     simulcast_params.ssrc_groups = ssrc_groups;
@@ -581,7 +581,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
 
   // Returns true if the transport info contains "renomination" as an
   // ICE option.
-  bool GetIceRenomination(const cricket::TransportInfo* transport_info) {
+  bool GetIceRenomination(const TransportInfo* transport_info) {
     return absl::c_linear_search(transport_info->description.transport_options,
                                  "renomination");
   }
@@ -599,15 +599,14 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
     std::unique_ptr<SessionDescription> desc;
     if (has_current_desc) {
       current_desc = std::make_unique<SessionDescription>();
-      current_desc->AddTransportInfo(cricket::TransportInfo(
-          "audio", cricket::TransportDescription(current_audio_ufrag,
-                                                 current_audio_pwd)));
-      current_desc->AddTransportInfo(cricket::TransportInfo(
-          "video", cricket::TransportDescription(current_video_ufrag,
-                                                 current_video_pwd)));
-      current_desc->AddTransportInfo(cricket::TransportInfo(
-          "data",
-          cricket::TransportDescription(current_data_ufrag, current_data_pwd)));
+      current_desc->AddTransportInfo(TransportInfo(
+          "audio",
+          TransportDescription(current_audio_ufrag, current_audio_pwd)));
+      current_desc->AddTransportInfo(TransportInfo(
+          "video",
+          TransportDescription(current_video_ufrag, current_video_pwd)));
+      current_desc->AddTransportInfo(TransportInfo(
+          "data", TransportDescription(current_data_ufrag, current_data_pwd)));
     }
     if (offer) {
       desc = f1_.CreateOfferOrError(options, current_desc.get()).MoveValue();
@@ -619,16 +618,15 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
               .MoveValue();
     }
     ASSERT_TRUE(desc);
-    const cricket::TransportInfo* ti_audio =
-        desc->GetTransportInfoByName("audio");
+    const TransportInfo* ti_audio = desc->GetTransportInfoByName("audio");
     if (options.has_audio()) {
       if (has_current_desc) {
         EXPECT_EQ(current_audio_ufrag, ti_audio->description.ice_ufrag);
         EXPECT_EQ(current_audio_pwd, ti_audio->description.ice_pwd);
       } else {
-        EXPECT_EQ(static_cast<size_t>(cricket::ICE_UFRAG_LENGTH),
+        EXPECT_EQ(static_cast<size_t>(ICE_UFRAG_LENGTH),
                   ti_audio->description.ice_ufrag.size());
-        EXPECT_EQ(static_cast<size_t>(cricket::ICE_PWD_LENGTH),
+        EXPECT_EQ(static_cast<size_t>(ICE_PWD_LENGTH),
                   ti_audio->description.ice_pwd.size());
       }
       auto media_desc_options_it =
@@ -637,8 +635,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
           media_desc_options_it->transport_options.enable_ice_renomination,
           GetIceRenomination(ti_audio));
     }
-    const cricket::TransportInfo* ti_video =
-        desc->GetTransportInfoByName("video");
+    const TransportInfo* ti_video = desc->GetTransportInfoByName("video");
     if (options.has_video()) {
       auto media_desc_options_it =
           FindFirstMediaDescriptionByMid("video", options);
@@ -651,9 +648,9 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
           EXPECT_EQ(current_video_ufrag, ti_video->description.ice_ufrag);
           EXPECT_EQ(current_video_pwd, ti_video->description.ice_pwd);
         } else {
-          EXPECT_EQ(static_cast<size_t>(cricket::ICE_UFRAG_LENGTH),
+          EXPECT_EQ(static_cast<size_t>(ICE_UFRAG_LENGTH),
                     ti_video->description.ice_ufrag.size());
-          EXPECT_EQ(static_cast<size_t>(cricket::ICE_PWD_LENGTH),
+          EXPECT_EQ(static_cast<size_t>(ICE_PWD_LENGTH),
                     ti_video->description.ice_pwd.size());
         }
       }
@@ -661,8 +658,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
           media_desc_options_it->transport_options.enable_ice_renomination,
           GetIceRenomination(ti_video));
     }
-    const cricket::TransportInfo* ti_data =
-        desc->GetTransportInfoByName("data");
+    const TransportInfo* ti_data = desc->GetTransportInfoByName("data");
     if (options.has_data()) {
       if (options.bundle_enabled) {
         EXPECT_EQ(ti_audio->description.ice_ufrag,
@@ -673,9 +669,9 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
           EXPECT_EQ(current_data_ufrag, ti_data->description.ice_ufrag);
           EXPECT_EQ(current_data_pwd, ti_data->description.ice_pwd);
         } else {
-          EXPECT_EQ(static_cast<size_t>(cricket::ICE_UFRAG_LENGTH),
+          EXPECT_EQ(static_cast<size_t>(ICE_UFRAG_LENGTH),
                     ti_data->description.ice_ufrag.size());
-          EXPECT_EQ(static_cast<size_t>(cricket::ICE_PWD_LENGTH),
+          EXPECT_EQ(static_cast<size_t>(ICE_PWD_LENGTH),
                     ti_data->description.ice_pwd.size());
         }
       }
@@ -1126,7 +1122,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, ReOfferNoBundleGroupIfAllRejected) {
   std::unique_ptr<SessionDescription> reoffer =
       f1_.CreateOfferOrError(opts, offer.get()).MoveValue();
 
-  EXPECT_FALSE(reoffer->GetGroupByName(cricket::GROUP_TYPE_BUNDLE));
+  EXPECT_FALSE(reoffer->GetGroupByName(GROUP_TYPE_BUNDLE));
 }
 
 // Test that if BUNDLE is enabled and the remote re-offer does not include a
@@ -1149,7 +1145,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, ReAnswerNoBundleGroupIfAllRejected) {
   std::unique_ptr<SessionDescription> reanswer =
       f2_.CreateAnswerOrError(reoffer.get(), opts, answer.get()).MoveValue();
 
-  EXPECT_FALSE(reanswer->GetGroupByName(cricket::GROUP_TYPE_BUNDLE));
+  EXPECT_FALSE(reanswer->GetGroupByName(GROUP_TYPE_BUNDLE));
 }
 
 // Test that if BUNDLE is enabled and the previous offerer-tagged media section
@@ -1172,8 +1168,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, ReOfferChangeBundleOffererTagged) {
   std::unique_ptr<SessionDescription> reoffer =
       f1_.CreateOfferOrError(opts, offer.get()).MoveValue();
 
-  const ContentGroup* bundle_group =
-      reoffer->GetGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  const ContentGroup* bundle_group = reoffer->GetGroupByName(GROUP_TYPE_BUNDLE);
   ASSERT_TRUE(bundle_group);
   EXPECT_FALSE(bundle_group->HasContentName("audio"));
   EXPECT_TRUE(bundle_group->HasContentName("video"));
@@ -1204,7 +1199,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, ReAnswerChangedBundleOffererTagged) {
       f2_.CreateAnswerOrError(reoffer.get(), opts, answer.get()).MoveValue();
 
   const ContentGroup* bundle_group =
-      reanswer->GetGroupByName(cricket::GROUP_TYPE_BUNDLE);
+      reanswer->GetGroupByName(GROUP_TYPE_BUNDLE);
   ASSERT_TRUE(bundle_group);
   EXPECT_FALSE(bundle_group->HasContentName("audio"));
   EXPECT_TRUE(bundle_group->HasContentName("video"));
@@ -1234,10 +1229,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   // Munge the offer to have two groups. Offers like these cannot be generated
   // without munging, but it is valid to receive such offers from remote
   // endpoints.
-  ContentGroup bundle_group1(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup bundle_group1(GROUP_TYPE_BUNDLE);
   bundle_group1.AddContentName("1");
   bundle_group1.AddContentName("2");
-  ContentGroup bundle_group2(cricket::GROUP_TYPE_BUNDLE);
+  ContentGroup bundle_group2(GROUP_TYPE_BUNDLE);
   bundle_group2.AddContentName("3");
   bundle_group2.AddContentName("4");
   offer->AddGroup(bundle_group1);
@@ -1250,7 +1245,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
       f2_.CreateAnswerOrError(offer.get(), opts, nullptr).MoveValue();
 
   std::vector<const ContentGroup*> answer_groups =
-      answer->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      answer->GetGroupsByName(GROUP_TYPE_BUNDLE);
   ASSERT_EQ(answer_groups.size(), 2u);
   EXPECT_EQ(answer_groups[0]->content_names().size(), 2u);
   EXPECT_TRUE(answer_groups[0]->HasContentName("1"));
@@ -1264,7 +1259,7 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   opts.bundle_enabled = false;
   answer = f2_.CreateAnswerOrError(offer.get(), opts, nullptr).MoveValue();
 
-  answer_groups = answer->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+  answer_groups = answer->GetGroupsByName(GROUP_TYPE_BUNDLE);
   // Rejected groups are still listed, but they are empty.
   ASSERT_EQ(answer_groups.size(), 2u);
   EXPECT_TRUE(answer_groups[0]->content_names().empty());
@@ -1290,10 +1285,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   std::unique_ptr<SessionDescription> reoffer =
       f1_.CreateOfferOrError(opts, offer.get()).MoveValue();
 
-  const cricket::TransportDescription* offer_tagged =
+  const TransportDescription* offer_tagged =
       offer->GetTransportDescriptionByName("audio");
   ASSERT_TRUE(offer_tagged);
-  const cricket::TransportDescription* reoffer_tagged =
+  const TransportDescription* reoffer_tagged =
       reoffer->GetTransportDescriptionByName("video");
   ASSERT_TRUE(reoffer_tagged);
   EXPECT_EQ(offer_tagged->ice_ufrag, reoffer_tagged->ice_ufrag);
@@ -1321,10 +1316,10 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   std::unique_ptr<SessionDescription> reanswer =
       f2_.CreateAnswerOrError(reoffer.get(), opts, answer.get()).MoveValue();
 
-  const cricket::TransportDescription* answer_tagged =
+  const TransportDescription* answer_tagged =
       answer->GetTransportDescriptionByName("audio");
   ASSERT_TRUE(answer_tagged);
-  const cricket::TransportDescription* reanswer_tagged =
+  const TransportDescription* reanswer_tagged =
       reanswer->GetTransportDescriptionByName("video");
   ASSERT_TRUE(reanswer_tagged);
   EXPECT_EQ(answer_tagged->ice_ufrag, reanswer_tagged->ice_ufrag);
@@ -2786,22 +2781,22 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateSimulcastVideoOffer) {
   const cricket::StreamParamsVec& video_streams = vcd->streams();
   ASSERT_EQ(1U, video_streams.size());
   EXPECT_EQ(kVideoTrack1, video_streams[0].id);
-  const cricket::SsrcGroup* sim_ssrc_group =
-      video_streams[0].get_ssrc_group(cricket::kSimSsrcGroupSemantics);
+  const SsrcGroup* sim_ssrc_group =
+      video_streams[0].get_ssrc_group(kSimSsrcGroupSemantics);
   ASSERT_TRUE(sim_ssrc_group);
   EXPECT_EQ(static_cast<size_t>(num_sim_layers), sim_ssrc_group->ssrcs.size());
 }
 
 MATCHER(RidDescriptionEquals, "Verifies that two RidDescriptions are equal.") {
-  const cricket::RidDescription& rid1 = std::get<0>(arg);
-  const cricket::RidDescription& rid2 = std::get<1>(arg);
+  const RidDescription& rid1 = std::get<0>(arg);
+  const RidDescription& rid2 = std::get<1>(arg);
   return rid1.rid == rid2.rid && rid1.direction == rid2.direction;
 }
 
 void CheckSimulcastInSessionDescription(
     const SessionDescription* description,
     const std::string& content_name,
-    const std::vector<cricket::RidDescription>& send_rids,
+    const std::vector<RidDescription>& send_rids,
     const SimulcastLayerList& send_layers) {
   ASSERT_NE(description, nullptr);
   const ContentInfo* content = description->GetContentByName(content_name);
@@ -2810,10 +2805,10 @@ void CheckSimulcastInSessionDescription(
   ASSERT_NE(cd, nullptr);
   const cricket::StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
-  const cricket::StreamParams& stream = streams[0];
+  const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
   EXPECT_TRUE(stream.has_rids());
-  const std::vector<cricket::RidDescription> rids = stream.rids();
+  const std::vector<RidDescription> rids = stream.rids();
 
   EXPECT_THAT(rids, Pointwise(RidDescriptionEquals(), send_rids));
 
@@ -2831,13 +2826,10 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateCompliantSimulcastOffer) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &opts);
-  std::vector<cricket::RidDescription> send_rids;
-  send_rids.push_back(
-      cricket::RidDescription("f", cricket::RidDirection::kSend));
-  send_rids.push_back(
-      cricket::RidDescription("h", cricket::RidDirection::kSend));
-  send_rids.push_back(
-      cricket::RidDescription("q", cricket::RidDirection::kSend));
+  std::vector<RidDescription> send_rids;
+  send_rids.push_back(RidDescription("f", RidDirection::kSend));
+  send_rids.push_back(RidDescription("h", RidDirection::kSend));
+  send_rids.push_back(RidDescription("q", RidDirection::kSend));
   SimulcastLayerList simulcast_layers;
   simulcast_layers.AddLayer(SimulcastLayer(send_rids[0].rid, false));
   simulcast_layers.AddLayer(SimulcastLayer(send_rids[1].rid, true));
@@ -2859,7 +2851,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestOfferWithRidsNoSimulcast) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &opts);
-  cricket::RidDescription rid("f", cricket::RidDirection::kSend);
+  RidDescription rid("f", RidDirection::kSend);
   AttachSenderToMediaDescriptionOptions("video", webrtc::MediaType::VIDEO,
                                         kVideoTrack1, {kMediaStream1}, {rid},
                                         SimulcastLayerList(), 0, &opts);
@@ -2873,7 +2865,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestOfferWithRidsNoSimulcast) {
   ASSERT_NE(cd, nullptr);
   const cricket::StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
-  const cricket::StreamParams& stream = streams[0];
+  const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
   EXPECT_FALSE(stream.has_rids());
   EXPECT_FALSE(cd->HasSimulcast());
@@ -2897,10 +2889,10 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateCompliantSimulcastAnswer) {
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &answer_opts);
 
-  std::vector<cricket::RidDescription> rid_descriptions{
-      cricket::RidDescription("f", cricket::RidDirection::kSend),
-      cricket::RidDescription("h", cricket::RidDirection::kSend),
-      cricket::RidDescription("q", cricket::RidDirection::kSend),
+  std::vector<RidDescription> rid_descriptions{
+      RidDescription("f", RidDirection::kSend),
+      RidDescription("h", RidDirection::kSend),
+      RidDescription("q", RidDirection::kSend),
   };
   SimulcastLayerList simulcast_layers;
   simulcast_layers.AddLayer(SimulcastLayer(rid_descriptions[0].rid, false));
@@ -2924,7 +2916,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestAnswerWithRidsNoSimulcast) {
   AddMediaDescriptionOptions(webrtc::MediaType::VIDEO, "video",
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &offer_opts);
-  cricket::RidDescription rid_offer("f", cricket::RidDirection::kSend);
+  RidDescription rid_offer("f", RidDirection::kSend);
   AttachSenderToMediaDescriptionOptions(
       "video", webrtc::MediaType::VIDEO, kVideoTrack1, {kMediaStream1},
       {rid_offer}, SimulcastLayerList(), 0, &offer_opts);
@@ -2936,7 +2928,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestAnswerWithRidsNoSimulcast) {
                              RtpTransceiverDirection::kSendRecv, kActive,
                              &answer_opts);
 
-  cricket::RidDescription rid_answer("f", cricket::RidDirection::kReceive);
+  RidDescription rid_answer("f", RidDirection::kReceive);
   AttachSenderToMediaDescriptionOptions(
       "video", webrtc::MediaType::VIDEO, kVideoTrack1, {kMediaStream1},
       {rid_answer}, SimulcastLayerList(), 0, &answer_opts);
@@ -2950,7 +2942,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestAnswerWithRidsNoSimulcast) {
   ASSERT_NE(cd, nullptr);
   const cricket::StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
-  const cricket::StreamParams& stream = streams[0];
+  const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
   EXPECT_FALSE(stream.has_rids());
   EXPECT_FALSE(cd->HasSimulcast());
@@ -3414,12 +3406,12 @@ TEST_F(MediaSessionDescriptionFactoryTest,
       GetFirstVideoContentDescription(updated_answer.get());
 
   ASSERT_EQ("H264", updated_vcd->codecs()[0].name);
-  ASSERT_EQ(cricket::kRtxCodecName, updated_vcd->codecs()[1].name);
+  ASSERT_EQ(kRtxCodecName, updated_vcd->codecs()[1].name);
   int new_h264_pl_type = updated_vcd->codecs()[0].id;
   EXPECT_NE(used_pl_type, new_h264_pl_type);
   Codec rtx = updated_vcd->codecs()[1];
   int pt_referenced_by_rtx =
-      FromString<int>(rtx.params[cricket::kCodecParamAssociatedPayloadType]);
+      FromString<int>(rtx.params[kCodecParamAssociatedPayloadType]);
   EXPECT_EQ(new_h264_pl_type, pt_referenced_by_rtx);
 }
 
@@ -3473,7 +3465,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtxWithoutApt) {
                              &opts);
   std::vector<Codec> f1_codecs = MAKE_VECTOR(kVideoCodecs1);
   // This creates RTX without associated payload type parameter.
-  AddRtxCodec(CreateVideoCodec(126, cricket::kRtxCodecName), &f1_codecs);
+  AddRtxCodec(CreateVideoCodec(126, kRtxCodecName), &f1_codecs);
   codec_lookup_helper_1_.CodecVendor("")->set_video_codecs(f1_codecs,
                                                            f1_codecs);
 
@@ -3491,11 +3483,11 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtxWithoutApt) {
   // is possible to test that that RTX is dropped when
   // kCodecParamAssociatedPayloadType is missing in the offer.
   MediaContentDescription* media_desc =
-      offer->GetContentDescriptionByName(cricket::CN_VIDEO);
+      offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
   std::vector<Codec> codecs = media_desc->codecs();
   for (Codec& codec : codecs) {
-    if (absl::StartsWith(codec.name, cricket::kRtxCodecName)) {
+    if (absl::StartsWith(codec.name, kRtxCodecName)) {
       codec.params.clear();
     }
   }
@@ -3506,7 +3498,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtxWithoutApt) {
 
   EXPECT_THAT(
       GetCodecNames(GetFirstVideoContentDescription(answer.get())->codecs()),
-      Not(Contains(cricket::kRtxCodecName)));
+      Not(Contains(kRtxCodecName)));
 }
 
 // Test that RTX will be filtered out in the answer if its associated payload
@@ -3538,7 +3530,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, FilterOutRtxIfAptDoesntMatch) {
 
   EXPECT_THAT(
       GetCodecNames(GetFirstVideoContentDescription(answer.get())->codecs()),
-      Not(Contains(cricket::kRtxCodecName)));
+      Not(Contains(kRtxCodecName)));
 }
 
 // Test that when multiple RTX codecs are offered, only the matched RTX codec
@@ -3642,7 +3634,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateMultipleRtxSsrcs) {
       f1_.CreateOfferOrError(opts, nullptr).MoveValue();
   ASSERT_TRUE(offer.get());
   MediaContentDescription* media_desc =
-      offer->GetContentDescriptionByName(cricket::CN_VIDEO);
+      offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
   const cricket::StreamParamsVec& streams = media_desc->streams();
   // Single stream.
@@ -3687,7 +3679,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, GenerateFlexfecSsrc) {
       f1_.CreateOfferOrError(opts, nullptr).MoveValue();
   ASSERT_TRUE(offer.get());
   MediaContentDescription* media_desc =
-      offer->GetContentDescriptionByName(cricket::CN_VIDEO);
+      offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
   const cricket::StreamParamsVec& streams = media_desc->streams();
   // Single stream.
@@ -3731,7 +3723,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateNoFlexfecSsrcs) {
       f1_.CreateOfferOrError(opts, nullptr).MoveValue();
   ASSERT_TRUE(offer.get());
   MediaContentDescription* media_desc =
-      offer->GetContentDescriptionByName(cricket::CN_VIDEO);
+      offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
   const cricket::StreamParamsVec& streams = media_desc->streams();
   // Single stream.
@@ -3848,22 +3840,22 @@ TEST_F(MediaSessionDescriptionFactoryTest, RtpExtensionIdReused) {
 
 TEST(MediaSessionDescription, CopySessionDescription) {
   SessionDescription source;
-  ContentGroup group(cricket::CN_AUDIO);
+  ContentGroup group(CN_AUDIO);
   source.AddGroup(group);
   std::unique_ptr<AudioContentDescription> acd =
       std::make_unique<AudioContentDescription>();
   acd->set_codecs(MAKE_VECTOR(kAudioCodecs1));
   acd->AddLegacyStream(1);
-  source.AddContent(cricket::CN_AUDIO, MediaProtocolType::kRtp, acd->Clone());
+  source.AddContent(CN_AUDIO, MediaProtocolType::kRtp, acd->Clone());
   std::unique_ptr<VideoContentDescription> vcd =
       std::make_unique<VideoContentDescription>();
   vcd->set_codecs(MAKE_VECTOR(kVideoCodecs1));
   vcd->AddLegacyStream(2);
-  source.AddContent(cricket::CN_VIDEO, MediaProtocolType::kRtp, vcd->Clone());
+  source.AddContent(CN_VIDEO, MediaProtocolType::kRtp, vcd->Clone());
 
   std::unique_ptr<SessionDescription> copy = source.Clone();
   ASSERT_TRUE(copy.get());
-  EXPECT_TRUE(copy->HasGroup(cricket::CN_AUDIO));
+  EXPECT_TRUE(copy->HasGroup(CN_AUDIO));
   const ContentInfo* ac = copy->GetContentByName("audio");
   const ContentInfo* vc = copy->GetContentByName("video");
   ASSERT_TRUE(ac);
@@ -4035,10 +4027,10 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCryptoOfferDtlsButNotSdes) {
       f1_.CreateOfferOrError(options, nullptr).MoveValue();
   ASSERT_TRUE(offer.get());
 
-  const cricket::TransportDescription* audio_offer_trans_desc =
+  const TransportDescription* audio_offer_trans_desc =
       offer->GetTransportDescriptionByName("audio");
   ASSERT_TRUE(audio_offer_trans_desc->identity_fingerprint.get());
-  const cricket::TransportDescription* video_offer_trans_desc =
+  const TransportDescription* video_offer_trans_desc =
       offer->GetTransportDescriptionByName("video");
   ASSERT_TRUE(video_offer_trans_desc->identity_fingerprint.get());
 
@@ -4047,10 +4039,10 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCryptoOfferDtlsButNotSdes) {
       f2_.CreateAnswerOrError(offer.get(), options, nullptr).MoveValue();
   ASSERT_TRUE(answer.get());
 
-  const cricket::TransportDescription* audio_answer_trans_desc =
+  const TransportDescription* audio_answer_trans_desc =
       answer->GetTransportDescriptionByName("audio");
   EXPECT_TRUE(audio_answer_trans_desc->identity_fingerprint.get());
-  const cricket::TransportDescription* video_answer_trans_desc =
+  const TransportDescription* video_answer_trans_desc =
       answer->GetTransportDescriptionByName("video");
   EXPECT_TRUE(video_answer_trans_desc->identity_fingerprint.get());
 }
@@ -4690,11 +4682,11 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   // Create two H264 codecs with the same profile level ID and different
   // packetization modes.
   Codec h264_pm0 = CreateVideoCodec(96, "H264");
-  h264_pm0.params[cricket::kH264FmtpProfileLevelId] = "42c01f";
-  h264_pm0.params[cricket::kH264FmtpPacketizationMode] = "0";
+  h264_pm0.params[kH264FmtpProfileLevelId] = "42c01f";
+  h264_pm0.params[kH264FmtpPacketizationMode] = "0";
   Codec h264_pm1 = CreateVideoCodec(97, "H264");
-  h264_pm1.params[cricket::kH264FmtpProfileLevelId] = "42c01f";
-  h264_pm1.params[cricket::kH264FmtpPacketizationMode] = "1";
+  h264_pm1.params[kH264FmtpProfileLevelId] = "42c01f";
+  h264_pm1.params[kH264FmtpPacketizationMode] = "1";
 
   // Offerer will send both codecs, answerer should choose the one with matching
   // packetization mode (and not the first one it sees).

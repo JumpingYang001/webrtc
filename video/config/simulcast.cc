@@ -301,7 +301,7 @@ std::vector<VideoStream> GetNormalSimulcastLayers(
     layers[s].target_bitrate_bps =
         std::max(layers[s].min_bitrate_bps, layers[s].target_bitrate_bps);
 
-    layers[s].max_framerate = cricket::kDefaultVideoMaxFramerate;
+    layers[s].max_framerate = kDefaultVideoMaxFramerate;
   }
 
   return layers;
@@ -350,7 +350,7 @@ std::vector<VideoStream> GetScreenshareLayers(size_t max_layers,
 
     layers[1].width = width;
     layers[1].height = height;
-    layers[1].max_framerate = cricket::kDefaultVideoMaxFramerate;
+    layers[1].max_framerate = kDefaultVideoMaxFramerate;
     layers[1].num_temporal_layers =
         temporal_layers_supported ? kScreenshareTemporalLayers : 1;
     layers[1].min_bitrate_bps = using_boosted_bitrate

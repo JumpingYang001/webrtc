@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace cricket {
+namespace webrtc {
 
 const char CN_AUDIO[] = "audio";
 const char CN_VIDEO[] = "video";
@@ -75,4 +75,4 @@ const int CONNECTION_WRITE_TIMEOUT = 15 * 1000;         // 15 seconds
 // of increased memory, but in some networks (2G), we observe up to 60s RTTs.
 const int CONNECTION_RESPONSE_TIMEOUT = 60 * 1000;  // 60 seconds
 
-}  // namespace cricket
+}  // namespace webrtc

@@ -18,7 +18,7 @@
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "rtc_base/ssl_stream_adapter.h"
 
-namespace cricket {
+namespace webrtc {
 
 // This interface is used to create DTLS transports. The external transports
 // can be injected into the JsepTransportController through it.
@@ -31,11 +31,17 @@ class DtlsTransportFactory {
   virtual ~DtlsTransportFactory() = default;
 
   virtual std::unique_ptr<DtlsTransportInternal> CreateDtlsTransport(
-      webrtc::IceTransportInternal* ice,
-      const webrtc::CryptoOptions& crypto_options,
-      webrtc::SSLProtocolVersion max_version) = 0;
+      IceTransportInternal* ice,
+      const CryptoOptions& crypto_options,
+      SSLProtocolVersion max_version) = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::DtlsTransportFactory;
 }  // namespace cricket
 
 #endif  // P2P_DTLS_DTLS_TRANSPORT_FACTORY_H_

@@ -70,16 +70,15 @@ static const char kIcePwd2[] = "TESTIEPWD00000000000002";
 static const char kTransportName[] = "Test Transport";
 
 struct NegotiateRoleParams {
-  cricket::ConnectionRole local_role;
-  cricket::ConnectionRole remote_role;
+  ConnectionRole local_role;
+  ConnectionRole remote_role;
   SdpType local_type;
   SdpType remote_type;
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         const cricket::ConnectionRole& role) {
+std::ostream& operator<<(std::ostream& os, const ConnectionRole& role) {
   std::string str = "invalid";
-  cricket::ConnectionRoleToString(role, &str);
+  ConnectionRoleToString(role, &str);
   os << str;
   return os;
 }
@@ -92,13 +91,12 @@ std::ostream& operator<<(std::ostream& os, const NegotiateRoleParams& param) {
 }
 
 scoped_refptr<IceTransportInterface> CreateIceTransport(
-    std::unique_ptr<cricket::FakeIceTransport> internal) {
+    std::unique_ptr<FakeIceTransport> internal) {
   if (!internal) {
     return nullptr;
   }
 
-  return rtc::make_ref_counted<cricket::FakeIceTransportWrapper>(
-      std::move(internal));
+  return rtc::make_ref_counted<FakeIceTransportWrapper>(std::move(internal));
 }
 
 class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
@@ -117,8 +115,8 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
   }
 
   std::unique_ptr<DtlsSrtpTransport> CreateDtlsSrtpTransport(
-      cricket::DtlsTransportInternal* rtp_dtls_transport,
-      cricket::DtlsTransportInternal* rtcp_dtls_transport) {
+      DtlsTransportInternal* rtp_dtls_transport,
+      DtlsTransportInternal* rtcp_dtls_transport) {
     auto dtls_srtp_transport = std::make_unique<DtlsSrtpTransport>(
         rtcp_dtls_transport == nullptr, field_trials_);
     dtls_srtp_transport->SetDtlsTransports(rtp_dtls_transport,
@@ -129,17 +127,17 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
   // Create a new JsepTransport with a FakeDtlsTransport and a
   // FakeIceTransport.
   std::unique_ptr<JsepTransport> CreateJsepTransport2(bool rtcp_mux_enabled) {
-    auto ice_internal = std::make_unique<cricket::FakeIceTransport>(
-        kTransportName, cricket::ICE_CANDIDATE_COMPONENT_RTP);
+    auto ice_internal = std::make_unique<FakeIceTransport>(
+        kTransportName, ICE_CANDIDATE_COMPONENT_RTP);
     auto rtp_dtls_transport =
         std::make_unique<FakeDtlsTransport>(ice_internal.get());
     auto ice = CreateIceTransport(std::move(ice_internal));
 
-    std::unique_ptr<cricket::FakeIceTransport> rtcp_ice_internal;
+    std::unique_ptr<FakeIceTransport> rtcp_ice_internal;
     std::unique_ptr<FakeDtlsTransport> rtcp_dtls_transport;
     if (!rtcp_mux_enabled) {
-      rtcp_ice_internal = std::make_unique<cricket::FakeIceTransport>(
-          kTransportName, cricket::ICE_CANDIDATE_COMPONENT_RTCP);
+      rtcp_ice_internal = std::make_unique<FakeIceTransport>(
+          kTransportName, ICE_CANDIDATE_COMPONENT_RTCP);
       rtcp_dtls_transport =
           std::make_unique<FakeDtlsTransport>(rtcp_ice_internal.get());
     }
@@ -169,7 +167,7 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
       const char* ufrag,
       const char* pwd,
       const scoped_refptr<RTCCertificate>& cert,
-      cricket::ConnectionRole role = cricket::CONNECTIONROLE_NONE) {
+      ConnectionRole role = CONNECTIONROLE_NONE) {
     JsepTransportDescription jsep_description;
     jsep_description.rtcp_mux_enabled = rtcp_mux_enabled;
 
@@ -177,9 +175,9 @@ class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
     if (cert) {
       fingerprint = SSLFingerprint::CreateFromCertificate(*cert);
     }
-    jsep_description.transport_desc = cricket::TransportDescription(
-        std::vector<std::string>(), ufrag, pwd, cricket::ICEMODE_FULL, role,
-        fingerprint.get());
+    jsep_description.transport_desc =
+        TransportDescription(std::vector<std::string>(), ufrag, pwd,
+                             ICEMODE_FULL, role, fingerprint.get());
     return jsep_description;
   }
 
@@ -216,43 +214,41 @@ TEST_P(JsepTransport2WithRtcpMux, SetIceParameters) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
 
   JsepTransportDescription jsep_description;
-  jsep_description.transport_desc =
-      cricket::TransportDescription(kIceUfrag1, kIcePwd1);
+  jsep_description.transport_desc = TransportDescription(kIceUfrag1, kIcePwd1);
   jsep_description.rtcp_mux_enabled = rtcp_mux_enabled;
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(jsep_description, SdpType::kOffer)
           .ok());
-  auto fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+  auto fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
-  EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+  EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
   EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
   EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
   if (!rtcp_mux_enabled) {
-    fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+    fake_ice_transport = static_cast<FakeIceTransport*>(
         jsep_transport_->rtcp_dtls_transport()->ice_transport());
     ASSERT_TRUE(fake_ice_transport);
-    EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+    EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
     EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
     EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
   }
 
-  jsep_description.transport_desc =
-      cricket::TransportDescription(kIceUfrag2, kIcePwd2);
+  jsep_description.transport_desc = TransportDescription(kIceUfrag2, kIcePwd2);
   ASSERT_TRUE(jsep_transport_
                   ->SetRemoteJsepTransportDescription(jsep_description,
                                                       SdpType::kAnswer)
                   .ok());
-  fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+  fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
-  EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+  EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
   EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
   EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
   if (!rtcp_mux_enabled) {
-    fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+    fake_ice_transport = static_cast<FakeIceTransport*>(
         jsep_transport_->rtcp_dtls_transport()->ice_transport());
     ASSERT_TRUE(fake_ice_transport);
-    EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+    EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
     EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
     EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
   }
@@ -273,7 +269,7 @@ TEST_P(JsepTransport2WithRtcpMux, SetDtlsParameters) {
   // Apply offer.
   JsepTransportDescription local_description =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
-                                   local_cert, cricket::CONNECTIONROLE_ACTPASS);
+                                   local_cert, CONNECTIONROLE_ACTPASS);
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(local_description, SdpType::kOffer)
@@ -281,7 +277,7 @@ TEST_P(JsepTransport2WithRtcpMux, SetDtlsParameters) {
   // Apply Answer.
   JsepTransportDescription remote_description =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   remote_cert, cricket::CONNECTIONROLE_ACTIVE);
+                                   remote_cert, CONNECTIONROLE_ACTIVE);
   ASSERT_TRUE(jsep_transport_
                   ->SetRemoteJsepTransportDescription(remote_description,
                                                       SdpType::kAnswer)
@@ -323,15 +319,15 @@ TEST_P(JsepTransport2WithRtcpMux, SetDtlsParametersWithPassiveAnswer) {
   // Apply offer.
   JsepTransportDescription local_description =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
-                                   local_cert, cricket::CONNECTIONROLE_ACTPASS);
+                                   local_cert, CONNECTIONROLE_ACTPASS);
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(local_description, SdpType::kOffer)
           .ok());
   // Apply Answer.
-  JsepTransportDescription remote_description = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag2, kIcePwd2, remote_cert,
-      cricket::CONNECTIONROLE_PASSIVE);
+  JsepTransportDescription remote_description =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
+                                   remote_cert, CONNECTIONROLE_PASSIVE);
   ASSERT_TRUE(jsep_transport_
                   ->SetRemoteJsepTransportDescription(remote_description,
                                                       SdpType::kAnswer)
@@ -365,8 +361,7 @@ TEST_P(JsepTransport2WithRtcpMux, NeedsIceRestart) {
 
   // Use the same JsepTransportDescription for both offer and answer.
   JsepTransportDescription description;
-  description.transport_desc =
-      cricket::TransportDescription(kIceUfrag1, kIcePwd1);
+  description.transport_desc = TransportDescription(kIceUfrag1, kIcePwd1);
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(description, SdpType::kOffer)
@@ -393,8 +388,7 @@ TEST_P(JsepTransport2WithRtcpMux, NeedsIceRestart) {
   EXPECT_TRUE(jsep_transport_->needs_ice_restart());
 
   // Doing an offer/answer that restarts ICE should clear the flag.
-  description.transport_desc =
-      cricket::TransportDescription(kIceUfrag2, kIcePwd2);
+  description.transport_desc = TransportDescription(kIceUfrag2, kIcePwd2);
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(description, SdpType::kOffer)
@@ -414,11 +408,9 @@ TEST_P(JsepTransport2WithRtcpMux, GetStats) {
   TransportStats stats;
   EXPECT_TRUE(jsep_transport_->GetStats(&stats));
   EXPECT_EQ(expected_stats_size, stats.channel_stats.size());
-  EXPECT_EQ(cricket::ICE_CANDIDATE_COMPONENT_RTP,
-            stats.channel_stats[0].component);
+  EXPECT_EQ(ICE_CANDIDATE_COMPONENT_RTP, stats.channel_stats[0].component);
   if (!rtcp_mux_enabled) {
-    EXPECT_EQ(cricket::ICE_CANDIDATE_COMPONENT_RTCP,
-              stats.channel_stats[1].component);
+    EXPECT_EQ(ICE_CANDIDATE_COMPONENT_RTCP, stats.channel_stats[1].component);
   }
 }
 
@@ -482,19 +474,19 @@ TEST_P(JsepTransport2WithRtcpMux, ValidDtlsRoleNegotiation) {
 
   // Parameters which set the SSL role to SSL_CLIENT.
   NegotiateRoleParams valid_client_params[] = {
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kPrAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kPrAnswer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTPASS, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTPASS, SdpType::kPrAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kPrAnswer},
       // Combinations permitted by RFC 8842 section 5.3
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kPrAnswer, SdpType::kOffer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_PASSIVE, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_PASSIVE, SdpType::kPrAnswer,
+       SdpType::kOffer},
   };
 
   for (auto& param : valid_client_params) {
@@ -529,17 +521,17 @@ TEST_P(JsepTransport2WithRtcpMux, ValidDtlsRoleNegotiation) {
 
   // Parameters which set the SSL role to SSL_SERVER.
   NegotiateRoleParams valid_server_params[] = {
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kPrAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kPrAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTPASS, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTPASS, SdpType::kPrAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kPrAnswer},
       // Combinations permitted by RFC 8842 section 5.3
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kPrAnswer, SdpType::kOffer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTIVE, SdpType::kPrAnswer,
+       SdpType::kOffer},
   };
 
   for (auto& param : valid_server_params) {
@@ -587,30 +579,30 @@ TEST_P(JsepTransport2WithRtcpMux, InvalidDtlsRoleNegotiation) {
       rtcp_mux_enabled, kIceUfrag2, kIcePwd2, certificate);
 
   NegotiateRoleParams duplicate_params[] = {
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kPrAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kPrAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kPrAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kPrAnswer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kOffer, SdpType::kPrAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kPrAnswer}};
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTIVE, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTPASS, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_PASSIVE, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTIVE, SdpType::kPrAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTPASS, SdpType::kPrAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_PASSIVE, SdpType::kPrAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTPASS, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kPrAnswer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_ACTPASS, SdpType::kOffer,
+       SdpType::kPrAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kPrAnswer}};
 
   for (auto& param : duplicate_params) {
     jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
@@ -644,23 +636,23 @@ TEST_P(JsepTransport2WithRtcpMux, InvalidDtlsRoleNegotiation) {
   // state
   NegotiateRoleParams offerer_without_actpass_params[] = {
       // Cannot use ACTPASS in an answer
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kAnswer, SdpType::kOffer},
-      {cricket::CONNECTIONROLE_ACTPASS, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kPrAnswer, SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_PASSIVE, SdpType::kAnswer,
+       SdpType::kOffer},
+      {CONNECTIONROLE_ACTPASS, CONNECTIONROLE_PASSIVE, SdpType::kPrAnswer,
+       SdpType::kOffer},
       // Cannot send ACTIVE or PASSIVE in an offer (must handle, must not send)
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kOffer, SdpType::kAnswer},
-      {cricket::CONNECTIONROLE_ACTIVE, cricket::CONNECTIONROLE_PASSIVE,
-       SdpType::kOffer, SdpType::kPrAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTIVE,
-       SdpType::kOffer, SdpType::kPrAnswer},
-      {cricket::CONNECTIONROLE_PASSIVE, cricket::CONNECTIONROLE_ACTPASS,
-       SdpType::kOffer, SdpType::kPrAnswer}};
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTPASS, SdpType::kOffer,
+       SdpType::kAnswer},
+      {CONNECTIONROLE_ACTIVE, CONNECTIONROLE_PASSIVE, SdpType::kOffer,
+       SdpType::kPrAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTIVE, SdpType::kOffer,
+       SdpType::kPrAnswer},
+      {CONNECTIONROLE_PASSIVE, CONNECTIONROLE_ACTPASS, SdpType::kOffer,
+       SdpType::kPrAnswer}};
 
   for (auto& param : offerer_without_actpass_params) {
     jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
@@ -711,12 +703,12 @@ TEST_F(JsepTransport2Test, ValidDtlsReofferFromAnswerer) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription local_offer = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription local_offer =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
   JsepTransportDescription remote_answer =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   EXPECT_TRUE(
       jsep_transport_
@@ -729,12 +721,12 @@ TEST_F(JsepTransport2Test, ValidDtlsReofferFromAnswerer) {
 
   // We were actpass->active previously, now in the other direction it's
   // actpass->passive.
-  JsepTransportDescription remote_offer = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag2, kIcePwd2, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
-  JsepTransportDescription local_answer = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_PASSIVE);
+  JsepTransportDescription remote_offer =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
+                                   certificate, CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription local_answer =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_PASSIVE);
 
   EXPECT_TRUE(
       jsep_transport_
@@ -757,12 +749,12 @@ TEST_F(JsepTransport2Test, InvalidDtlsReofferFromAnswerer) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription local_offer = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription local_offer =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
   JsepTransportDescription remote_answer =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   EXPECT_TRUE(
       jsep_transport_
@@ -775,12 +767,12 @@ TEST_F(JsepTransport2Test, InvalidDtlsReofferFromAnswerer) {
 
   // Changing role to passive here isn't allowed. Though for some reason this
   // only fails in SetLocalTransportDescription.
-  JsepTransportDescription remote_offer = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag2, kIcePwd2, certificate,
-      cricket::CONNECTIONROLE_PASSIVE);
+  JsepTransportDescription remote_offer =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
+                                   certificate, CONNECTIONROLE_PASSIVE);
   JsepTransportDescription local_answer =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   EXPECT_TRUE(
       jsep_transport_
@@ -802,12 +794,12 @@ TEST_F(JsepTransport2Test, RemoteOfferWithCurrentNegotiatedDtlsRole) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription remote_desc = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription remote_desc =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
   JsepTransportDescription local_desc =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   // Normal initial offer/answer with "actpass" in the offer and "active" in
   // the answer.
@@ -826,7 +818,7 @@ TEST_F(JsepTransport2Test, RemoteOfferWithCurrentNegotiatedDtlsRole) {
   EXPECT_EQ(webrtc::SSL_CLIENT, *role);
 
   // Subsequent offer with current negotiated role of "passive".
-  remote_desc.transport_desc.connection_role = cricket::CONNECTIONROLE_PASSIVE;
+  remote_desc.transport_desc.connection_role = CONNECTIONROLE_PASSIVE;
   EXPECT_TRUE(
       jsep_transport_
           ->SetRemoteJsepTransportDescription(remote_desc, SdpType::kOffer)
@@ -846,12 +838,12 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesNegotiatedDtlsRole) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription remote_desc = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription remote_desc =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
   JsepTransportDescription local_desc =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   // Normal initial offer/answer with "actpass" in the offer and "active" in
   // the answer.
@@ -870,7 +862,7 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesNegotiatedDtlsRole) {
   EXPECT_EQ(webrtc::SSL_CLIENT, *role);
 
   // Subsequent offer with current negotiated role of "passive".
-  remote_desc.transport_desc.connection_role = cricket::CONNECTIONROLE_ACTIVE;
+  remote_desc.transport_desc.connection_role = CONNECTIONROLE_ACTIVE;
   EXPECT_TRUE(
       jsep_transport_
           ->SetRemoteJsepTransportDescription(remote_desc, SdpType::kOffer)
@@ -891,16 +883,16 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesFingerprintAndDtlsRole) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription remote_desc = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
-  JsepTransportDescription remote_desc2 = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate2,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription remote_desc =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription remote_desc2 =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate2, CONNECTIONROLE_ACTPASS);
 
   JsepTransportDescription local_desc =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
   // Normal initial offer/answer with "actpass" in the offer and "active" in
   // the answer.
@@ -919,7 +911,7 @@ TEST_F(JsepTransport2Test, RemoteOfferThatChangesFingerprintAndDtlsRole) {
   EXPECT_EQ(webrtc::SSL_CLIENT, *role);
 
   // Subsequent exchange with new remote fingerprint and different role.
-  local_desc.transport_desc.connection_role = cricket::CONNECTIONROLE_PASSIVE;
+  local_desc.transport_desc.connection_role = CONNECTIONROLE_PASSIVE;
   EXPECT_TRUE(
       jsep_transport_
           ->SetRemoteJsepTransportDescription(remote_desc2, SdpType::kOffer)
@@ -943,20 +935,20 @@ TEST_F(JsepTransport2Test, DtlsSetupWithLegacyAsAnswerer) {
   jsep_transport_ = CreateJsepTransport2(rtcp_mux_enabled);
   jsep_transport_->SetLocalCertificate(certificate);
 
-  JsepTransportDescription remote_desc = MakeJsepTransportDescription(
-      rtcp_mux_enabled, kIceUfrag1, kIcePwd1, certificate,
-      cricket::CONNECTIONROLE_ACTPASS);
+  JsepTransportDescription remote_desc =
+      MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag1, kIcePwd1,
+                                   certificate, CONNECTIONROLE_ACTPASS);
   JsepTransportDescription local_desc =
       MakeJsepTransportDescription(rtcp_mux_enabled, kIceUfrag2, kIcePwd2,
-                                   certificate, cricket::CONNECTIONROLE_ACTIVE);
+                                   certificate, CONNECTIONROLE_ACTIVE);
 
-  local_desc.transport_desc.connection_role = cricket::CONNECTIONROLE_ACTPASS;
+  local_desc.transport_desc.connection_role = CONNECTIONROLE_ACTPASS;
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(local_desc, SdpType::kOffer)
           .ok());
   // Use CONNECTIONROLE_NONE to simulate legacy endpoint.
-  remote_desc.transport_desc.connection_role = cricket::CONNECTIONROLE_NONE;
+  remote_desc.transport_desc.connection_role = CONNECTIONROLE_NONE;
   ASSERT_TRUE(
       jsep_transport_
           ->SetRemoteJsepTransportDescription(remote_desc, SdpType::kAnswer)
@@ -1014,7 +1006,7 @@ TEST_F(JsepTransport2Test, RtcpMuxNegotiation) {
 // local and remote descriptions are set.
 TEST_F(JsepTransport2Test, AddRemoteCandidates) {
   jsep_transport_ = CreateJsepTransport2(/*rtcp_mux_enabled=*/true);
-  auto fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+  auto fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
 
   Candidates candidates;
@@ -1139,7 +1131,7 @@ class JsepTransport2HeaderExtensionTest
     // Send a packet and verify that the packet can be successfully received and
     // decrypted.
     ASSERT_TRUE(sender_transport->rtp_transport()->SendRtpPacket(
-        &rtp_packet, options, cricket::PF_SRTP_BYPASS));
+        &rtp_packet, options, PF_SRTP_BYPASS));
     EXPECT_EQ(packet_count_before + 1, received_packet_count_);
   }
 
@@ -1256,30 +1248,28 @@ TEST_F(JsepTransport2Test, SetIceParametersWithRenomination) {
   jsep_transport_ = CreateJsepTransport2(/* rtcp_mux_enabled= */ true);
 
   JsepTransportDescription jsep_description;
-  jsep_description.transport_desc =
-      cricket::TransportDescription(kIceUfrag1, kIcePwd1);
-  jsep_description.transport_desc.AddOption(cricket::ICE_OPTION_RENOMINATION);
+  jsep_description.transport_desc = TransportDescription(kIceUfrag1, kIcePwd1);
+  jsep_description.transport_desc.AddOption(ICE_OPTION_RENOMINATION);
   ASSERT_TRUE(
       jsep_transport_
           ->SetLocalJsepTransportDescription(jsep_description, SdpType::kOffer)
           .ok());
-  auto fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+  auto fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
-  EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+  EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
   EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
   EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
   EXPECT_TRUE(fake_ice_transport->ice_parameters().renomination);
 
-  jsep_description.transport_desc =
-      cricket::TransportDescription(kIceUfrag2, kIcePwd2);
-  jsep_description.transport_desc.AddOption(cricket::ICE_OPTION_RENOMINATION);
+  jsep_description.transport_desc = TransportDescription(kIceUfrag2, kIcePwd2);
+  jsep_description.transport_desc.AddOption(ICE_OPTION_RENOMINATION);
   ASSERT_TRUE(jsep_transport_
                   ->SetRemoteJsepTransportDescription(jsep_description,
                                                       SdpType::kAnswer)
                   .ok());
-  fake_ice_transport = static_cast<cricket::FakeIceTransport*>(
+  fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
-  EXPECT_EQ(cricket::ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
+  EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
   EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
   EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
   EXPECT_TRUE(fake_ice_transport->remote_ice_parameters().renomination);

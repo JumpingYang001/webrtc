@@ -48,7 +48,7 @@
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/weak_ptr.h"
 
-namespace cricket {
+namespace webrtc {
 
 // RFC 6544, TCP candidate encoding rules.
 extern const int DISCARD_PORT;
@@ -89,33 +89,33 @@ class CandidateStats {
   CandidateStats() = default;
   CandidateStats(const CandidateStats&) = default;
   CandidateStats(CandidateStats&&) = default;
-  CandidateStats(webrtc::Candidate candidate,
+  CandidateStats(Candidate candidate,
                  std::optional<StunStats> stats = std::nullopt)
       : candidate_(std::move(candidate)), stun_stats_(std::move(stats)) {}
   ~CandidateStats() = default;
 
   CandidateStats& operator=(const CandidateStats& other) = default;
 
-  const webrtc::Candidate& candidate() const { return candidate_; }
+  const Candidate& candidate() const { return candidate_; }
 
   const std::optional<StunStats>& stun_stats() const { return stun_stats_; }
 
  private:
-  webrtc::Candidate candidate_;
+  Candidate candidate_;
   // STUN port stats if this candidate is a STUN candidate.
   std::optional<StunStats> stun_stats_;
 };
 
 typedef std::vector<CandidateStats> CandidateStatsList;
 
-const char* ProtoToString(webrtc::ProtocolType proto);
-std::optional<webrtc::ProtocolType> StringToProto(absl::string_view proto_name);
+const char* ProtoToString(ProtocolType proto);
+std::optional<ProtocolType> StringToProto(absl::string_view proto_name);
 
 struct ProtocolAddress {
-  webrtc::SocketAddress address;
-  webrtc::ProtocolType proto;
+  SocketAddress address;
+  ProtocolType proto;
 
-  ProtocolAddress(const webrtc::SocketAddress& a, webrtc::ProtocolType p)
+  ProtocolAddress(const SocketAddress& a, ProtocolType p)
       : address(a), proto(p) {}
 
   bool operator==(const ProtocolAddress& o) const {
@@ -152,30 +152,29 @@ struct CandidatePairChangeEvent {
   int64_t estimated_disconnected_time_ms;
 };
 
-typedef std::set<webrtc::SocketAddress> ServerAddresses;
+typedef std::set<SocketAddress> ServerAddresses;
 
 // Represents a local communication mechanism that can be used to create
 // connections to similar mechanisms of the other client.  Subclasses of this
 // one add support for specific mechanisms like local UDP ports.
-class RTC_EXPORT Port : public webrtc::PortInterface,
-                        public sigslot::has_slots<> {
+class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
  public:
   // A struct containing common arguments to creating a port. See also
   // CreateRelayPortArgs.
   struct PortParametersRef {
-    webrtc::Environment env;
-    webrtc::TaskQueueBase* network_thread;
-    webrtc::PacketSocketFactory* socket_factory;
-    const webrtc::Network* network;
+    Environment env;
+    TaskQueueBase* network_thread;
+    PacketSocketFactory* socket_factory;
+    const ::webrtc::Network* network;
     absl::string_view ice_username_fragment;
     absl::string_view ice_password;
   };
 
  protected:
   // Constructors for use only by via constructors in derived classes.
-  Port(const PortParametersRef& args, webrtc::IceCandidateType type);
+  Port(const PortParametersRef& args, IceCandidateType type);
   Port(const PortParametersRef& args,
-       webrtc::IceCandidateType type,
+       IceCandidateType type,
        uint16_t min_port,
        uint16_t max_port,
        bool shared_socket = false);
@@ -188,8 +187,8 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // uniquely identify subclasses. Whenever a new subclass of Port introduces a
   // conflict in the value of the 2-tuple, make sure that the implementation
   // that relies on this 2-tuple for RTTI is properly changed.
-  webrtc::IceCandidateType Type() const override;
-  const webrtc::Network* Network() const override;
+  IceCandidateType Type() const override;
+  const ::webrtc::Network* Network() const override;
 
   // Methods to set/get ICE role and tiebreaker values.
   IceRole GetIceRole() const override;
@@ -211,12 +210,10 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   void CancelPendingTasks();
 
   // The thread on which this port performs its I/O.
-  webrtc::TaskQueueBase* thread() override { return thread_; }
+  TaskQueueBase* thread() override { return thread_; }
 
   // The factory used to create the sockets of this port.
-  webrtc::PacketSocketFactory* socket_factory() const override {
-    return factory_;
-  }
+  PacketSocketFactory* socket_factory() const override { return factory_; }
 
   // For debugging purposes.
   const std::string& content_name() const override { return content_name_; }
@@ -252,9 +249,9 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
 
   // Fired when candidates are discovered by the port. When all candidates
   // are discovered that belong to port SignalAddressReady is fired.
-  sigslot::signal2<Port*, const webrtc::Candidate&> SignalCandidateReady;
+  sigslot::signal2<Port*, const Candidate&> SignalCandidateReady;
   // Provides all of the above information in one handy object.
-  const std::vector<webrtc::Candidate>& Candidates() const override;
+  const std::vector<Candidate>& Candidates() const override;
   // Fired when candidate discovery failed using certain server.
   sigslot::signal2<Port*, const IceCandidateErrorEvent&> SignalCandidateError;
 
@@ -269,15 +266,15 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   sigslot::signal1<Port*> SignalPortError;
 
   void SubscribePortDestroyed(
-      std::function<void(webrtc::PortInterface*)> callback) override;
+      std::function<void(PortInterface*)> callback) override;
   void SendPortDestroyed(Port* port);
   // Returns a map containing all of the connections of this port, keyed by the
   // remote address.
-  typedef std::map<webrtc::SocketAddress, Connection*> AddressMap;
+  typedef std::map<SocketAddress, Connection*> AddressMap;
   const AddressMap& connections() { return connections_; }
 
   // Returns the connection to the given address or NULL if none exists.
-  Connection* GetConnection(const webrtc::SocketAddress& remote_addr) override;
+  Connection* GetConnection(const SocketAddress& remote_addr) override;
 
   // Removes and deletes a connection object. `DestroyConnection` will
   // delete the connection object directly whereas `DestroyConnectionAsync`
@@ -296,22 +293,22 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // to accept the packet based on the `remote_addr`. Currently only UDP
   // port implemented this method.
   // TODO(mallinath) - Make it pure virtual.
-  virtual bool HandleIncomingPacket(webrtc::AsyncPacketSocket* socket,
+  virtual bool HandleIncomingPacket(AsyncPacketSocket* socket,
                                     const rtc::ReceivedPacket& packet);
 
   // Shall the port handle packet from this `remote_addr`.
   // This method is overridden by TurnPort.
   virtual bool CanHandleIncomingPacketsFrom(
-      const webrtc::SocketAddress& remote_addr) const;
+      const SocketAddress& remote_addr) const;
 
   // Sends a response error to the given request.
   void SendBindingErrorResponse(StunMessage* message,
-                                const webrtc::SocketAddress& addr,
+                                const SocketAddress& addr,
                                 int error_code,
                                 absl::string_view reason) override;
   void SendUnknownAttributesErrorResponse(
       StunMessage* message,
-      const webrtc::SocketAddress& addr,
+      const SocketAddress& addr,
       const std::vector<uint16_t>& unknown_types);
 
   void EnablePortPackets() override;
@@ -327,7 +324,7 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // Timeout shortening function to speed up unit tests.
   void set_timeout_delay(int delay);
 
-  // This method will return local and remote username fragements from the
+  // This method will return local and remote username fragments from the
   // stun username attribute if present.
   bool ParseStunUsername(const StunMessage* stun_msg,
                          std::string* local_username,
@@ -335,7 +332,7 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   std::string CreateStunUsername(
       absl::string_view remote_username) const override;
 
-  bool MaybeIceRoleConflict(const webrtc::SocketAddress& addr,
+  bool MaybeIceRoleConflict(const SocketAddress& addr,
                             IceMessage* stun_msg,
                             absl::string_view remote_ufrag) override;
 
@@ -343,14 +340,14 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // This is made pure virtual to notify subclasses of Port that they MUST
   // listen to AsyncPacketSocket::SignalSentPacket and then call
   // PortInterface::OnSentPacket.
-  virtual void OnSentPacket(webrtc::AsyncPacketSocket* socket,
+  virtual void OnSentPacket(AsyncPacketSocket* socket,
                             const rtc::SentPacket& sent_packet) = 0;
 
   // Called when the socket is currently able to send.
   void OnReadyToSend();
 
   // Called when the Connection discovers a local peer reflexive candidate.
-  void AddPrflxCandidate(const webrtc::Candidate& local) override;
+  void AddPrflxCandidate(const Candidate& local) override;
 
   int16_t network_cost() const override { return network_cost_; }
 
@@ -359,21 +356,21 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
  protected:
   void UpdateNetworkCost() override;
 
-  rtc::WeakPtr<Port> NewWeakPtr() { return weak_factory_.GetWeakPtr(); }
+  WeakPtr<Port> NewWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
-  void AddAddress(const webrtc::SocketAddress& address,
-                  const webrtc::SocketAddress& base_address,
-                  const webrtc::SocketAddress& related_address,
+  void AddAddress(const SocketAddress& address,
+                  const SocketAddress& base_address,
+                  const SocketAddress& related_address,
                   absl::string_view protocol,
                   absl::string_view relay_protocol,
                   absl::string_view tcptype,
-                  webrtc::IceCandidateType type,
+                  IceCandidateType type,
                   uint32_t type_preference,
                   uint32_t relay_preference,
                   absl::string_view url,
                   bool is_final);
 
-  void FinishAddingAddress(const webrtc::Candidate& c, bool is_final)
+  void FinishAddingAddress(const Candidate& c, bool is_final)
       RTC_RUN_ON(thread_);
 
   virtual void PostAddAddress(bool is_final);
@@ -386,16 +383,15 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // Called when a packet is received from an unknown address that is not
   // currently a connection.  If this is an authenticated STUN binding request,
   // then we will signal the client.
-  void OnReadPacket(const rtc::ReceivedPacket& packet,
-                    webrtc::ProtocolType proto);
+  void OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType proto);
 
   [[deprecated(
       "Use OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType "
       "proto)")]] void
   OnReadPacket(const char* data,
                size_t size,
-               const webrtc::SocketAddress& addr,
-               webrtc::ProtocolType proto) {
+               const SocketAddress& addr,
+               ProtocolType proto) {
     OnReadPacket(rtc::ReceivedPacket::CreateFromLegacy(
                      data, size, /*packet_time_us = */ -1, addr),
                  proto);
@@ -408,22 +404,22 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // remote_username contains the remote fragment of the STUN username.
   bool GetStunMessage(const char* data,
                       size_t size,
-                      const webrtc::SocketAddress& addr,
+                      const SocketAddress& addr,
                       std::unique_ptr<IceMessage>* out_msg,
                       std::string* out_username) override;
 
   // Checks if the address in addr is compatible with the port's ip.
-  bool IsCompatibleAddress(const webrtc::SocketAddress& addr);
+  bool IsCompatibleAddress(const SocketAddress& addr);
 
   // Returns DSCP value packets generated by the port itself should use.
-  webrtc::DiffServCodePoint StunDscpValue() const override;
+  DiffServCodePoint StunDscpValue() const override;
 
   // Extra work to be done in subclasses when a connection is destroyed.
   virtual void HandleConnectionDestroyed(Connection* /* conn */) {}
 
   void DestroyAllConnections();
 
-  void CopyPortInformationToPacketInfo(webrtc::PacketInfo* info) const;
+  void CopyPortInformationToPacketInfo(PacketInfo* info) const;
 
   MdnsNameRegistrationStatus mdns_name_registration_status() const {
     return mdns_name_registration_status_;
@@ -432,14 +428,12 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
     mdns_name_registration_status_ = status;
   }
 
-  const webrtc::FieldTrialsView& field_trials() const {
-    return env_.field_trials();
-  }
+  const FieldTrialsView& field_trials() const { return env_.field_trials(); }
 
-  webrtc::IceCandidateType type() const { return type_; }
+  IceCandidateType type() const { return type_; }
 
  private:
-  bool MaybeObfuscateAddress(const webrtc::Candidate& c, bool is_final)
+  bool MaybeObfuscateAddress(const Candidate& c, bool is_final)
       RTC_RUN_ON(thread_);
 
   void PostDestroyIfDead(bool delayed);
@@ -458,14 +452,14 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // distinct.
   void DestroyConnectionInternal(Connection* conn, bool async);
 
-  void OnNetworkTypeChanged(const webrtc::Network* network);
+  void OnNetworkTypeChanged(const ::webrtc::Network* network);
 
-  const webrtc::Environment env_;
-  webrtc::TaskQueueBase* const thread_;
-  webrtc::PacketSocketFactory* const factory_;
-  const webrtc::IceCandidateType type_;
+  const Environment env_;
+  TaskQueueBase* const thread_;
+  PacketSocketFactory* const factory_;
+  const IceCandidateType type_;
   bool send_retransmit_count_attribute_;
-  const webrtc::Network* network_;
+  const ::webrtc::Network* network_;
   uint16_t min_port_;
   uint16_t max_port_;
   std::string content_name_;
@@ -477,7 +471,7 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   // PortAllocatorSession will provide these username_fragment and password.
   std::string ice_username_fragment_ RTC_GUARDED_BY(thread_);
   std::string password_ RTC_GUARDED_BY(thread_);
-  std::vector<webrtc::Candidate> candidates_ RTC_GUARDED_BY(thread_);
+  std::vector<Candidate> candidates_ RTC_GUARDED_BY(thread_);
   AddressMap connections_;
   int timeout_delay_;
   bool enable_port_packets_;
@@ -500,12 +494,32 @@ class RTC_EXPORT Port : public webrtc::PortInterface,
   MdnsNameRegistrationStatus mdns_name_registration_status_ =
       MdnsNameRegistrationStatus::kNotStarted;
 
-  webrtc::CallbackList<webrtc::PortInterface*> port_destroyed_callback_list_;
+  CallbackList<PortInterface*> port_destroyed_callback_list_;
 
   // Keep as the last member variable.
-  rtc::WeakPtrFactory<Port> weak_factory_;
+  WeakPtrFactory<Port> weak_factory_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::CandidatePairChangeEvent;
+using ::webrtc::CandidateStats;
+using ::webrtc::CandidateStatsList;
+using ::webrtc::DISCARD_PORT;
+using ::webrtc::IceCandidateErrorEvent;
+using ::webrtc::MdnsNameRegistrationStatus;
+using ::webrtc::Port;
+using ::webrtc::ProtocolAddress;
+using ::webrtc::ProtoToString;
+using ::webrtc::ServerAddresses;
+using ::webrtc::StringToProto;
+using ::webrtc::StunStats;
+using ::webrtc::TCPTYPE_ACTIVE_STR;
+using ::webrtc::TCPTYPE_PASSIVE_STR;
+using ::webrtc::TCPTYPE_SIMOPEN_STR;
 }  // namespace cricket
 
 #endif  // P2P_BASE_PORT_H_

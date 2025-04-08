@@ -106,8 +106,8 @@ class PeerConnectionCryptoBaseTest : public ::testing::Test {
   WrapperPtr CreatePeerConnection(
       const RTCConfiguration& config,
       std::unique_ptr<RTCCertificateGeneratorInterface> cert_gen) {
-    auto fake_port_allocator = std::make_unique<cricket::FakePortAllocator>(
-        CreateEnvironment(), vss_.get());
+    auto fake_port_allocator =
+        std::make_unique<FakePortAllocator>(CreateEnvironment(), vss_.get());
     auto observer = std::make_unique<MockPeerConnectionObserver>();
     RTCConfiguration modified_config = config;
     modified_config.sdp_semantics = sdp_semantics_;
@@ -138,16 +138,16 @@ class PeerConnectionCryptoBaseTest : public ::testing::Test {
     return wrapper;
   }
 
-  cricket::ConnectionRole& AudioConnectionRole(SessionDescription* desc) {
+  ConnectionRole& AudioConnectionRole(SessionDescription* desc) {
     return ConnectionRoleFromContent(desc, GetFirstAudioContent(desc));
   }
 
-  cricket::ConnectionRole& VideoConnectionRole(SessionDescription* desc) {
+  ConnectionRole& VideoConnectionRole(SessionDescription* desc) {
     return ConnectionRoleFromContent(desc, GetFirstVideoContent(desc));
   }
 
-  cricket::ConnectionRole& ConnectionRoleFromContent(SessionDescription* desc,
-                                                     ContentInfo* content) {
+  ConnectionRole& ConnectionRoleFromContent(SessionDescription* desc,
+                                            ContentInfo* content) {
     RTC_DCHECK(content);
     auto* transport_info = desc->GetTransportInfoByName(content->mid());
     RTC_DCHECK(transport_info);
@@ -161,10 +161,9 @@ class PeerConnectionCryptoBaseTest : public ::testing::Test {
 };
 
 SdpContentPredicate HaveDtlsFingerprint() {
-  return
-      [](const ContentInfo* content, const cricket::TransportInfo* transport) {
-        return transport->description.identity_fingerprint != nullptr;
-      };
+  return [](const ContentInfo* content, const TransportInfo* transport) {
+    return transport->description.identity_fingerprint != nullptr;
+  };
 }
 
 SdpContentPredicate HaveProtocol(const std::string& protocol) {
@@ -182,7 +181,7 @@ class PeerConnectionCryptoTest
 };
 
 SdpContentMutator RemoveDtlsFingerprint() {
-  return [](ContentInfo* content, cricket::TransportInfo* transport) {
+  return [](ContentInfo* content, TransportInfo* transport) {
     transport->description.identity_fingerprint.reset();
   };
 }
@@ -435,8 +434,8 @@ TEST_P(PeerConnectionCryptoTest, CreateAnswerWithDifferentSslRoles) {
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
   auto answer = callee->CreateAnswer(options_no_bundle);
 
-  AudioConnectionRole(answer->description()) = cricket::CONNECTIONROLE_ACTIVE;
-  VideoConnectionRole(answer->description()) = cricket::CONNECTIONROLE_PASSIVE;
+  AudioConnectionRole(answer->description()) = CONNECTIONROLE_ACTIVE;
+  VideoConnectionRole(answer->description()) = CONNECTIONROLE_PASSIVE;
 
   ASSERT_TRUE(
       callee->SetLocalDescription(CloneSessionDescription(answer.get())));
@@ -447,10 +446,8 @@ TEST_P(PeerConnectionCryptoTest, CreateAnswerWithDifferentSslRoles) {
   ASSERT_TRUE(caller->SetRemoteDescription(callee->CreateOfferAndSetAsLocal()));
   answer = caller->CreateAnswer(options_no_bundle);
 
-  EXPECT_EQ(cricket::CONNECTIONROLE_PASSIVE,
-            AudioConnectionRole(answer->description()));
-  EXPECT_EQ(cricket::CONNECTIONROLE_ACTIVE,
-            VideoConnectionRole(answer->description()));
+  EXPECT_EQ(CONNECTIONROLE_PASSIVE, AudioConnectionRole(answer->description()));
+  EXPECT_EQ(CONNECTIONROLE_ACTIVE, VideoConnectionRole(answer->description()));
 
   ASSERT_TRUE(
       caller->SetLocalDescription(CloneSessionDescription(answer.get())));
@@ -465,10 +462,8 @@ TEST_P(PeerConnectionCryptoTest, CreateAnswerWithDifferentSslRoles) {
   ASSERT_TRUE(caller->SetRemoteDescription(callee->CreateOfferAndSetAsLocal()));
   answer = caller->CreateAnswer(options_bundle);
 
-  EXPECT_EQ(cricket::CONNECTIONROLE_PASSIVE,
-            AudioConnectionRole(answer->description()));
-  EXPECT_EQ(cricket::CONNECTIONROLE_PASSIVE,
-            VideoConnectionRole(answer->description()));
+  EXPECT_EQ(CONNECTIONROLE_PASSIVE, AudioConnectionRole(answer->description()));
+  EXPECT_EQ(CONNECTIONROLE_PASSIVE, VideoConnectionRole(answer->description()));
 
   ASSERT_TRUE(
       caller->SetLocalDescription(CloneSessionDescription(answer.get())));

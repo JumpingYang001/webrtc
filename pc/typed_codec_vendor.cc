@@ -44,8 +44,8 @@ std::vector<Codec> CollectAudioCodecs(
   for (const auto& spec : specs) {
     Codec codec = CreateAudioCodec(spec.format);
     if (spec.info.supports_network_adaption) {
-      codec.AddFeedbackParam(FeedbackParam(cricket::kRtcpFbParamTransportCc,
-                                           cricket::kParamValueEmpty));
+      codec.AddFeedbackParam(
+          FeedbackParam(kRtcpFbParamTransportCc, kParamValueEmpty));
     }
 
     if (spec.info.allow_comfort_noise) {
@@ -67,10 +67,10 @@ std::vector<Codec> CollectAudioCodecs(
 
     // TODO(hta):  Don't assign RED codecs until we know that the PT for Opus
     // is final
-    if (codec.name == cricket::kOpusCodecName) {
+    if (codec.name == kOpusCodecName) {
       // We don't know the PT to put into the RED fmtp parameter yet.
       // Leave it out.
-      Codec red_codec = CreateAudioCodec({cricket::kRedCodecName, 48000, 2});
+      Codec red_codec = CreateAudioCodec({kRedCodecName, 48000, 2});
       out.push_back(red_codec);
     }
   }
@@ -78,7 +78,7 @@ std::vector<Codec> CollectAudioCodecs(
   // Add CN codecs after "proper" audio codecs.
   for (const auto& cn : generate_cn) {
     if (cn.second) {
-      Codec cn_codec = CreateAudioCodec({cricket::kCnCodecName, cn.first, 1});
+      Codec cn_codec = CreateAudioCodec({kCnCodecName, cn.first, 1});
       out.push_back(cn_codec);
     }
   }
@@ -86,8 +86,7 @@ std::vector<Codec> CollectAudioCodecs(
   // Add telephone-event codecs last.
   for (const auto& dtmf : generate_dtmf) {
     if (dtmf.second) {
-      Codec dtmf_codec =
-          CreateAudioCodec({cricket::kDtmfCodecName, dtmf.first, 1});
+      Codec dtmf_codec = CreateAudioCodec({kDtmfCodecName, dtmf.first, 1});
       out.push_back(dtmf_codec);
     }
   }
@@ -96,7 +95,7 @@ std::vector<Codec> CollectAudioCodecs(
 
 }  // namespace
 
-TypedCodecVendor::TypedCodecVendor(cricket::MediaEngineInterface* media_engine,
+TypedCodecVendor::TypedCodecVendor(MediaEngineInterface* media_engine,
                                    MediaType type,
                                    bool is_sender,
                                    bool rtx_enabled,

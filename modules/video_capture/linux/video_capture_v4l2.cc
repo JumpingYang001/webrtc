@@ -172,8 +172,7 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   RTC_LOG(LS_INFO) << "Video Capture enumerats supported image formats:";
   while (ioctl(_deviceFd, VIDIOC_ENUM_FMT, &fmt) == 0) {
-    RTC_LOG(LS_INFO) << "  { pixelformat = "
-                     << cricket::GetFourccName(fmt.pixelformat)
+    RTC_LOG(LS_INFO) << "  { pixelformat = " << GetFourccName(fmt.pixelformat)
                      << ", description = '" << fmt.description << "' }";
     // Match the preferred order.
     for (int i = 0; i < nFormats; i++) {
@@ -188,8 +187,7 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     RTC_LOG(LS_INFO) << "no supporting video formats found";
     return -1;
   } else {
-    RTC_LOG(LS_INFO) << "We prefer format "
-                     << cricket::GetFourccName(fmts[fmtsIdx]);
+    RTC_LOG(LS_INFO) << "We prefer format " << GetFourccName(fmts[fmtsIdx]);
   }
 
   struct v4l2_format video_fmt;

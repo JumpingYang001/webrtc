@@ -93,7 +93,7 @@ class SignalingInterceptor {
   struct SimulcastSectionInfo {
     SimulcastSectionInfo(const std::string& mid,
                          MediaProtocolType media_protocol_type,
-                         const std::vector<cricket::RidDescription>& rids_desc);
+                         const std::vector<RidDescription>& rids_desc);
 
     const std::string mid;
     const MediaProtocolType media_protocol_type;
@@ -102,7 +102,7 @@ class SignalingInterceptor {
     webrtc::RtpExtension mid_extension;
     webrtc::RtpExtension rid_extension;
     webrtc::RtpExtension rrid_extension;
-    cricket::TransportDescription transport_description;
+    TransportDescription transport_description;
   };
 
   struct SignalingContext {

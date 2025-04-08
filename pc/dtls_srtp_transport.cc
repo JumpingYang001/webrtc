@@ -33,8 +33,8 @@ DtlsSrtpTransport::DtlsSrtpTransport(bool rtcp_mux_enabled,
     : SrtpTransport(rtcp_mux_enabled, field_trials) {}
 
 void DtlsSrtpTransport::SetDtlsTransports(
-    cricket::DtlsTransportInternal* rtp_dtls_transport,
-    cricket::DtlsTransportInternal* rtcp_dtls_transport) {
+    DtlsTransportInternal* rtp_dtls_transport,
+    DtlsTransportInternal* rtcp_dtls_transport) {
   // Transport names should be the same.
   if (rtp_dtls_transport && rtcp_dtls_transport) {
     RTC_DCHECK(rtp_dtls_transport->transport_name() ==
@@ -202,7 +202,7 @@ void DtlsSrtpTransport::SetupRtcpDtlsSrtp() {
 }
 
 bool DtlsSrtpTransport::ExtractParams(
-    cricket::DtlsTransportInternal* dtls_transport,
+    DtlsTransportInternal* dtls_transport,
     int* selected_crypto_suite,
     rtc::ZeroOnFreeBuffer<uint8_t>* send_key,
     rtc::ZeroOnFreeBuffer<uint8_t>* recv_key) {
@@ -266,8 +266,8 @@ bool DtlsSrtpTransport::ExtractParams(
 }
 
 void DtlsSrtpTransport::SetDtlsTransport(
-    cricket::DtlsTransportInternal* new_dtls_transport,
-    cricket::DtlsTransportInternal** old_dtls_transport) {
+    DtlsTransportInternal* new_dtls_transport,
+    DtlsTransportInternal** old_dtls_transport) {
   if (*old_dtls_transport == new_dtls_transport) {
     return;
   }
@@ -287,16 +287,16 @@ void DtlsSrtpTransport::SetDtlsTransport(
 }
 
 void DtlsSrtpTransport::SetRtpDtlsTransport(
-    cricket::DtlsTransportInternal* rtp_dtls_transport) {
+    DtlsTransportInternal* rtp_dtls_transport) {
   SetDtlsTransport(rtp_dtls_transport, &rtp_dtls_transport_);
 }
 
 void DtlsSrtpTransport::SetRtcpDtlsTransport(
-    cricket::DtlsTransportInternal* rtcp_dtls_transport) {
+    DtlsTransportInternal* rtcp_dtls_transport) {
   SetDtlsTransport(rtcp_dtls_transport, &rtcp_dtls_transport_);
 }
 
-void DtlsSrtpTransport::OnDtlsState(cricket::DtlsTransportInternal* transport,
+void DtlsSrtpTransport::OnDtlsState(DtlsTransportInternal* transport,
                                     DtlsTransportState state) {
   RTC_DCHECK(transport == rtp_dtls_transport_ ||
              transport == rtcp_dtls_transport_);

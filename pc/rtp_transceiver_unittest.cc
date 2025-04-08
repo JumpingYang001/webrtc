@@ -74,10 +74,10 @@ class RtpTransceiverTest : public testing::Test {
         codec_lookup_helper_(context_.get()) {}
 
  protected:
-  cricket::FakeMediaEngine* media_engine() {
+  FakeMediaEngine* media_engine() {
     // We know this cast is safe because we supplied the fake implementation
     // in MakeDependencies().
-    return static_cast<cricket::FakeMediaEngine*>(context_->media_engine());
+    return static_cast<FakeMediaEngine*>(context_->media_engine());
   }
   ConnectionContext* context() { return context_.get(); }
   CodecLookupHelper* codec_lookup_helper() { return &codec_lookup_helper_; }
@@ -93,7 +93,7 @@ class RtpTransceiverTest : public testing::Test {
     d.network_thread = Thread::Current();
     d.worker_thread = Thread::Current();
     d.signaling_thread = Thread::Current();
-    EnableFakeMedia(d, std::make_unique<cricket::FakeMediaEngine>());
+    EnableFakeMedia(d, std::make_unique<FakeMediaEngine>());
     return d;
   }
 

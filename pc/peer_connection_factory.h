@@ -74,7 +74,7 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
       const std::string& stream_id) override;
 
   rtc::scoped_refptr<AudioSourceInterface> CreateAudioSource(
-      const cricket::AudioOptions& options) override;
+      const AudioOptions& options) override;
 
   rtc::scoped_refptr<VideoTrackInterface> CreateVideoTrack(
       rtc::scoped_refptr<VideoTrackSourceInterface> video_source,
@@ -108,7 +108,7 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
     return context_->env().field_trials();
   }
 
-  cricket::MediaEngineInterface* media_engine() const;
+  MediaEngineInterface* media_engine() const;
   CodecVendor& CodecVendorForTesting() { return codec_vendor_; }
 
  protected:

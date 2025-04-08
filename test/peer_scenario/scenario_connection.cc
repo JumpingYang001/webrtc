@@ -72,7 +72,7 @@ class ScenarioIceConnectionImpl : public ScenarioIceConnection,
   void SetLocalSdp(SdpType type, const std::string& local_sdp) override;
 
   EmulatedEndpoint* endpoint() override { return endpoint_; }
-  const cricket::TransportDescription& transport_description() const override {
+  const TransportDescription& transport_description() const override {
     return transport_description_;
   }
 
@@ -95,11 +95,11 @@ class ScenarioIceConnectionImpl : public ScenarioIceConnection,
   Thread* const network_thread_;
   rtc::scoped_refptr<RTCCertificate> const certificate_
       RTC_GUARDED_BY(network_thread_);
-  cricket::TransportDescription const transport_description_
+  TransportDescription const transport_description_
       RTC_GUARDED_BY(signaling_thread_);
   std::unique_ptr<NetworkManager> network_manager_;
   BasicPacketSocketFactory packet_socket_factory_;
-  std::unique_ptr<cricket::BasicPortAllocator> port_allocator_
+  std::unique_ptr<BasicPortAllocator> port_allocator_
       RTC_GUARDED_BY(network_thread_);
   PayloadTypePicker payload_type_picker_;
   std::unique_ptr<JsepTransportController> jsep_controller_;
@@ -131,17 +131,17 @@ ScenarioIceConnectionImpl::ScenarioIceConnectionImpl(
           rtc::SSLIdentity::Create("", ::rtc::KT_DEFAULT))),
       transport_description_(
           /*transport_options*/ {},
-          CreateRandomString(cricket::ICE_UFRAG_LENGTH),
-          CreateRandomString(cricket::ICE_PWD_LENGTH),
-          cricket::IceMode::ICEMODE_FULL,
-          cricket::ConnectionRole::CONNECTIONROLE_PASSIVE,
+          CreateRandomString(ICE_UFRAG_LENGTH),
+          CreateRandomString(ICE_PWD_LENGTH),
+          IceMode::ICEMODE_FULL,
+          ConnectionRole::CONNECTIONROLE_PASSIVE,
           SSLFingerprint::CreateFromCertificate(*certificate_.get()).get()),
       network_manager_(manager_->ReleaseNetworkManager()),
       packet_socket_factory_(manager_->socket_factory()),
-      port_allocator_(std::make_unique<cricket::BasicPortAllocator>(
-          env,
-          network_manager_.get(),
-          &packet_socket_factory_)),
+      port_allocator_(
+          std::make_unique<BasicPortAllocator>(env,
+                                               network_manager_.get(),
+                                               &packet_socket_factory_)),
       jsep_controller_(
           new JsepTransportController(env,
                                       network_thread_,
@@ -186,7 +186,7 @@ JsepTransportController::Config ScenarioIceConnectionImpl::CreateJsepConfig() {
 void ScenarioIceConnectionImpl::SendRtpPacket(
     rtc::ArrayView<const uint8_t> packet_view) {
   rtc::CopyOnWriteBuffer packet(packet_view.data(), packet_view.size(),
-                                ::cricket::kMaxRtpPacketLen);
+                                kMaxRtpPacketLen);
   network_thread_->PostTask([this, packet = std::move(packet)]() mutable {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (rtp_transport_ != nullptr)
@@ -198,7 +198,7 @@ void ScenarioIceConnectionImpl::SendRtpPacket(
 void ScenarioIceConnectionImpl::SendRtcpPacket(
     rtc::ArrayView<const uint8_t> packet_view) {
   rtc::CopyOnWriteBuffer packet(packet_view.data(), packet_view.size(),
-                                ::cricket::kMaxRtpPacketLen);
+                                kMaxRtpPacketLen);
   network_thread_->PostTask([this, packet = std::move(packet)]() mutable {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (rtp_transport_ != nullptr)

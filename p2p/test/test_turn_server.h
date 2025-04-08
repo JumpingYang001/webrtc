@@ -154,8 +154,8 @@ class TestTurnServer : public TurnAuthInterface {
                       absl::string_view realm,
                       std::string* key) {
     RTC_DCHECK(thread_checker_.IsCurrent());
-    return cricket::ComputeStunCredentialHash(
-        std::string(username), std::string(realm), std::string(username), key);
+    return ComputeStunCredentialHash(std::string(username), std::string(realm),
+                                     std::string(username), key);
   }
 
   TurnServer server_;

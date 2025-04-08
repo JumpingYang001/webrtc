@@ -118,7 +118,7 @@ void CopyConstraintsIntoRtcConfiguration(
 
 // Copy all relevant constraints into an AudioOptions object.
 void CopyConstraintsIntoAudioOptions(const MediaConstraints* constraints,
-                                     cricket::AudioOptions* options);
+                                     AudioOptions* options);
 
 bool CopyConstraintsIntoOfferAnswerOptions(
     const MediaConstraints* constraints,

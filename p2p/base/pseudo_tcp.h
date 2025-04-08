@@ -21,7 +21,7 @@
 #include "rtc_base/system/rtc_export.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace cricket {
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // IPseudoTcpNotify
@@ -239,7 +239,7 @@ class RTC_EXPORT PseudoTcp {
     size_t data_length_ RTC_GUARDED_BY(mutex_);
     // offset to the readable data
     size_t read_position_ RTC_GUARDED_BY(mutex_);
-    mutable webrtc::Mutex mutex_;
+    mutable Mutex mutex_;
   };
 
   IPseudoTcpNotify* m_notify;
@@ -291,6 +291,13 @@ class RTC_EXPORT PseudoTcp {
   bool m_support_wnd_scale;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::IPseudoTcpNotify;
+using ::webrtc::PseudoTcp;
 }  // namespace cricket
 
 #endif  // P2P_BASE_PSEUDO_TCP_H_

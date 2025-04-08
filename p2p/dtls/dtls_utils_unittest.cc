@@ -17,7 +17,7 @@
 #include "test/gmock.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 
 TEST(DtlsUtils, GetDtlsHandshakeAcksRejectsTooShort) {
   std::vector<uint8_t> packet = {
@@ -198,4 +198,4 @@ TEST(DtlsUtils, GetDtls13HandshakeAcks) {
   EXPECT_EQ(acks->size(), 0u);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

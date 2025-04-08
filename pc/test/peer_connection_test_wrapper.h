@@ -118,7 +118,7 @@ class PeerConnectionTestWrapper
   bool WaitForAudio();
   bool WaitForVideo();
   void GetAndAddUserMedia(bool audio,
-                          const cricket::AudioOptions& audio_options,
+                          const webrtc::AudioOptions& audio_options,
                           bool video);
 
   // sigslots
@@ -129,7 +129,7 @@ class PeerConnectionTestWrapper
 
   rtc::scoped_refptr<webrtc::MediaStreamInterface> GetUserMedia(
       bool audio,
-      const cricket::AudioOptions& audio_options,
+      const webrtc::AudioOptions& audio_options,
       bool video,
       webrtc::Resolution resolution = {
           .width = webrtc::FakePeriodicVideoSource::kDefaultWidth,

@@ -30,25 +30,24 @@ TransportDescriptionFactory::TransportDescriptionFactory(
 
 TransportDescriptionFactory::~TransportDescriptionFactory() = default;
 
-std::unique_ptr<cricket::TransportDescription>
-TransportDescriptionFactory::CreateOffer(
+std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateOffer(
     const TransportOptions& options,
-    const cricket::TransportDescription* current_description,
-    cricket::IceCredentialsIterator* ice_credentials) const {
-  auto desc = std::make_unique<cricket::TransportDescription>();
+    const TransportDescription* current_description,
+    IceCredentialsIterator* ice_credentials) const {
+  auto desc = std::make_unique<TransportDescription>();
 
   // Generate the ICE credentials if we don't already have them.
   if (!current_description || options.ice_restart) {
-    cricket::IceParameters credentials = ice_credentials->GetIceCredentials();
+    IceParameters credentials = ice_credentials->GetIceCredentials();
     desc->ice_ufrag = credentials.ufrag;
     desc->ice_pwd = credentials.pwd;
   } else {
     desc->ice_ufrag = current_description->ice_ufrag;
     desc->ice_pwd = current_description->ice_pwd;
   }
-  desc->AddOption(cricket::ICE_OPTION_TRICKLE);
+  desc->AddOption(ICE_OPTION_TRICKLE);
   if (options.enable_ice_renomination) {
-    desc->AddOption(cricket::ICE_OPTION_RENOMINATION);
+    desc->AddOption(ICE_OPTION_RENOMINATION);
   }
 
   // If we are not trying to establish a secure transport, don't add a
@@ -58,20 +57,19 @@ TransportDescriptionFactory::CreateOffer(
   }
   // Fail if we can't create the fingerprint.
   // If we are the initiator set role to "actpass".
-  if (!SetSecurityInfo(desc.get(), cricket::CONNECTIONROLE_ACTPASS)) {
+  if (!SetSecurityInfo(desc.get(), CONNECTIONROLE_ACTPASS)) {
     return NULL;
   }
 
   return desc;
 }
 
-std::unique_ptr<cricket::TransportDescription>
-TransportDescriptionFactory::CreateAnswer(
-    const cricket::TransportDescription* offer,
+std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateAnswer(
+    const TransportDescription* offer,
     const TransportOptions& options,
     bool require_transport_attributes,
-    const cricket::TransportDescription* current_description,
-    cricket::IceCredentialsIterator* ice_credentials) const {
+    const TransportDescription* current_description,
+    IceCredentialsIterator* ice_credentials) const {
   // TODO(juberti): Figure out why we get NULL offers, and fix this upstream.
   if (!offer) {
     RTC_LOG(LS_WARNING) << "Failed to create TransportDescription answer "
@@ -79,20 +77,20 @@ TransportDescriptionFactory::CreateAnswer(
     return NULL;
   }
 
-  auto desc = std::make_unique<cricket::TransportDescription>();
+  auto desc = std::make_unique<TransportDescription>();
   // Generate the ICE credentials if we don't already have them or ice is
   // being restarted.
   if (!current_description || options.ice_restart) {
-    cricket::IceParameters credentials = ice_credentials->GetIceCredentials();
+    IceParameters credentials = ice_credentials->GetIceCredentials();
     desc->ice_ufrag = credentials.ufrag;
     desc->ice_pwd = credentials.pwd;
   } else {
     desc->ice_ufrag = current_description->ice_ufrag;
     desc->ice_pwd = current_description->ice_pwd;
   }
-  desc->AddOption(cricket::ICE_OPTION_TRICKLE);
+  desc->AddOption(ICE_OPTION_TRICKLE);
   if (options.enable_ice_renomination) {
-    desc->AddOption(cricket::ICE_OPTION_RENOMINATION);
+    desc->AddOption(ICE_OPTION_RENOMINATION);
   }
   // Special affordance for testing: Answer without DTLS params
   // if we are insecure without a certificate, or if we are
@@ -113,21 +111,21 @@ TransportDescriptionFactory::CreateAnswer(
   // Negotiate security params.
   // The offer supports DTLS, so answer with DTLS.
   RTC_CHECK(certificate_);
-  cricket::ConnectionRole role = cricket::CONNECTIONROLE_NONE;
+  ConnectionRole role = CONNECTIONROLE_NONE;
   // If the offer does not constrain the role, go with preference.
-  if (offer->connection_role == cricket::CONNECTIONROLE_ACTPASS) {
-    role = (options.prefer_passive_role) ? cricket::CONNECTIONROLE_PASSIVE
-                                         : cricket::CONNECTIONROLE_ACTIVE;
-  } else if (offer->connection_role == cricket::CONNECTIONROLE_ACTIVE) {
-    role = cricket::CONNECTIONROLE_PASSIVE;
-  } else if (offer->connection_role == cricket::CONNECTIONROLE_PASSIVE) {
-    role = cricket::CONNECTIONROLE_ACTIVE;
-  } else if (offer->connection_role == cricket::CONNECTIONROLE_NONE) {
+  if (offer->connection_role == CONNECTIONROLE_ACTPASS) {
+    role = (options.prefer_passive_role) ? CONNECTIONROLE_PASSIVE
+                                         : CONNECTIONROLE_ACTIVE;
+  } else if (offer->connection_role == CONNECTIONROLE_ACTIVE) {
+    role = CONNECTIONROLE_PASSIVE;
+  } else if (offer->connection_role == CONNECTIONROLE_PASSIVE) {
+    role = CONNECTIONROLE_ACTIVE;
+  } else if (offer->connection_role == CONNECTIONROLE_NONE) {
     // This case may be reached if a=setup is not present in the SDP.
     RTC_LOG(LS_WARNING) << "Remote offer connection role is NONE, which is "
                            "a protocol violation";
-    role = (options.prefer_passive_role) ? cricket::CONNECTIONROLE_PASSIVE
-                                         : cricket::CONNECTIONROLE_ACTIVE;
+    role = (options.prefer_passive_role) ? CONNECTIONROLE_PASSIVE
+                                         : CONNECTIONROLE_ACTIVE;
   } else {
     RTC_LOG(LS_ERROR) << "Remote offer connection role is " << role
                       << " which is a protocol violation";
@@ -140,9 +138,8 @@ TransportDescriptionFactory::CreateAnswer(
   return desc;
 }
 
-bool TransportDescriptionFactory::SetSecurityInfo(
-    cricket::TransportDescription* desc,
-    cricket::ConnectionRole role) const {
+bool TransportDescriptionFactory::SetSecurityInfo(TransportDescription* desc,
+                                                  ConnectionRole role) const {
   if (!certificate_) {
     RTC_LOG(LS_ERROR) << "Cannot create identity digest with no certificate";
     return false;

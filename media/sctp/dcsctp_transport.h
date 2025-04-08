@@ -46,23 +46,23 @@
 
 namespace webrtc {
 
-class DcSctpTransport : public cricket::SctpTransportInternal,
+class DcSctpTransport : public SctpTransportInternal,
                         public dcsctp::DcSctpSocketCallbacks,
                         public sigslot::has_slots<> {
  public:
   DcSctpTransport(const Environment& env,
                   Thread* network_thread,
-                  cricket::DtlsTransportInternal* transport);
+                  DtlsTransportInternal* transport);
   DcSctpTransport(const Environment& env,
                   Thread* network_thread,
-                  cricket::DtlsTransportInternal* transport,
+                  DtlsTransportInternal* transport,
                   std::unique_ptr<dcsctp::DcSctpSocketFactory> socket_factory);
   ~DcSctpTransport() override;
 
   // cricket::SctpTransportInternal
   void SetOnConnectedCallback(std::function<void()> callback) override;
   void SetDataChannelSink(DataChannelSink* sink) override;
-  void SetDtlsTransport(cricket::DtlsTransportInternal* transport) override;
+  void SetDtlsTransport(DtlsTransportInternal* transport) override;
   bool Start(const SctpOptions& options) override;
   bool OpenStream(int sid, PriorityValue priority) override;
   bool ResetStream(int sid) override;
@@ -108,12 +108,12 @@ class DcSctpTransport : public cricket::SctpTransportInternal,
   void OnTransportWritableState(PacketTransportInternal* transport);
   void OnTransportReadPacket(PacketTransportInternal* transport,
                              const rtc::ReceivedPacket& packet);
-  void OnDtlsTransportState(cricket::DtlsTransportInternal* transport,
+  void OnDtlsTransportState(DtlsTransportInternal* transport,
                             webrtc::DtlsTransportState);
   void MaybeConnectSocket();
 
   Thread* network_thread_;
-  cricket::DtlsTransportInternal* transport_;
+  DtlsTransportInternal* transport_;
   Environment env_;
   Random random_;
 

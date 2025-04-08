@@ -102,8 +102,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   void SetJitterBufferMinimumDelay(
       std::optional<double> delay_seconds) override;
 
-  void SetMediaChannel(
-      cricket::MediaReceiveChannelInterface* media_channel) override;
+  void SetMediaChannel(MediaReceiveChannelInterface* media_channel) override;
 
   int AttachmentId() const override { return attachment_id_; }
 
@@ -112,7 +111,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   // Combines SetMediaChannel, SetupMediaChannel and
   // SetupUnsignaledMediaChannel.
   void SetupMediaChannel(std::optional<uint32_t> ssrc,
-                         cricket::MediaReceiveChannelInterface* media_channel);
+                         MediaReceiveChannelInterface* media_channel);
 
  private:
   void RestartMediaChannel(std::optional<uint32_t> ssrc)
@@ -121,7 +120,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
                              MediaSourceInterface::SourceState state)
       RTC_RUN_ON(worker_thread_);
   void SetSink(VideoSinkInterface<VideoFrame>* sink) RTC_RUN_ON(worker_thread_);
-  void SetMediaChannel_w(cricket::MediaReceiveChannelInterface* media_channel)
+  void SetMediaChannel_w(MediaReceiveChannelInterface* media_channel)
       RTC_RUN_ON(worker_thread_);
 
   // VideoRtpTrackSource::Callback
@@ -148,7 +147,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   Thread* const worker_thread_;
 
   const std::string id_;
-  cricket::VideoMediaReceiveChannelInterface* media_channel_
+  VideoMediaReceiveChannelInterface* media_channel_
       RTC_GUARDED_BY(worker_thread_) = nullptr;
   std::optional<uint32_t> signaled_ssrc_ RTC_GUARDED_BY(worker_thread_);
   // `source_` is held here to be able to change the state of the source when

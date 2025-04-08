@@ -15,7 +15,7 @@
 
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Invalid TURN send indication messages. Messages are proper STUN
 // messages with incorrect values in attributes.
@@ -127,4 +127,4 @@ TEST(TurnUtilsTest, ChannelMessageZeroLength) {
   EXPECT_EQ(0u, content_size);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

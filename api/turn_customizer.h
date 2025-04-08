@@ -22,9 +22,8 @@ class TurnCustomizer {
  public:
   // This is called before a TURN message is sent.
   // This could be used to add implementation specific attributes to a request.
-  virtual void MaybeModifyOutgoingStunMessage(
-      PortInterface* port,
-      cricket::StunMessage* message) = 0;
+  virtual void MaybeModifyOutgoingStunMessage(PortInterface* port,
+                                              StunMessage* message) = 0;
 
   // TURN can send data using channel data messages or Send indication.
   // This method should return false if `data` should be sent using

@@ -52,22 +52,21 @@
 #include "rtc_base/time_utils.h"
 #include "test/explicit_key_value_config.h"
 
-namespace cricket {
+namespace webrtc {
 using ::webrtc::SafeTask;
 using ::webrtc::TimeDelta;
 
 // All methods must be called on the network thread (which is either the thread
 // calling the constructor, or the separate thread explicitly passed to the
 // constructor).
-class FakeIceTransport : public webrtc::IceTransportInternal {
+class FakeIceTransport : public IceTransportInternal {
  public:
   explicit FakeIceTransport(absl::string_view name,
                             int component,
-                            webrtc::Thread* network_thread = nullptr)
+                            Thread* network_thread = nullptr)
       : name_(name),
         component_(component),
-        network_thread_(network_thread ? network_thread
-                                       : webrtc::Thread::Current()),
+        network_thread_(network_thread ? network_thread : Thread::Current()),
         field_trials_("") {
     RTC_DCHECK(network_thread_);
   }
@@ -144,8 +143,8 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     dest_ = dest;
   }
 
-  void SetTransportState(webrtc::IceTransportState state,
-                         IceTransportState legacy_state) {
+  void SetTransportState(IceTransportState state,
+                         cricket::IceTransportState legacy_state) {
     RTC_DCHECK_RUN_ON(network_thread_);
     transport_state_ = state;
     legacy_transport_state_ = legacy_state;
@@ -208,40 +207,40 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     return remote_ice_parameters_;
   }
 
-  IceTransportState GetState() const override {
+  cricket::IceTransportState GetState() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (legacy_transport_state_) {
       return *legacy_transport_state_;
     }
 
     if (connection_count_ == 0) {
-      return had_connection_ ? IceTransportState::STATE_FAILED
-                             : IceTransportState::STATE_INIT;
+      return had_connection_ ? cricket::IceTransportState::STATE_FAILED
+                             : cricket::IceTransportState::STATE_INIT;
     }
 
     if (connection_count_ == 1) {
-      return IceTransportState::STATE_COMPLETED;
+      return cricket::IceTransportState::STATE_COMPLETED;
     }
 
-    return IceTransportState::STATE_CONNECTING;
+    return cricket::IceTransportState::STATE_CONNECTING;
   }
 
-  webrtc::IceTransportState GetIceTransportState() const override {
+  IceTransportState GetIceTransportState() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (transport_state_) {
       return *transport_state_;
     }
 
     if (connection_count_ == 0) {
-      return had_connection_ ? webrtc::IceTransportState::kFailed
-                             : webrtc::IceTransportState::kNew;
+      return had_connection_ ? IceTransportState::kFailed
+                             : IceTransportState::kNew;
     }
 
     if (connection_count_ == 1) {
-      return webrtc::IceTransportState::kCompleted;
+      return IceTransportState::kCompleted;
     }
 
-    return webrtc::IceTransportState::kConnected;
+    return IceTransportState::kConnected;
   }
 
   void SetIceRole(IceRole role) override {
@@ -274,23 +273,23 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     }
   }
 
-  webrtc::IceGatheringState gathering_state() const override {
+  IceGatheringState gathering_state() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     return gathering_state_;
   }
 
-  void SetIceConfig(const webrtc::IceConfig& config) override {
+  void SetIceConfig(const IceConfig& config) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     ice_config_ = config;
   }
 
-  const webrtc::IceConfig& config() const override { return ice_config_; }
+  const IceConfig& config() const override { return ice_config_; }
 
-  void AddRemoteCandidate(const webrtc::Candidate& candidate) override {
+  void AddRemoteCandidate(const Candidate& candidate) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     remote_candidates_.push_back(candidate);
   }
-  void RemoveRemoteCandidate(const webrtc::Candidate& candidate) override {
+  void RemoveRemoteCandidate(const Candidate& candidate) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     auto it = absl::c_find(remote_candidates_, candidate);
     if (it == remote_candidates_.end()) {
@@ -306,7 +305,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     remote_candidates_.clear();
   }
 
-  bool GetStats(webrtc::IceTransportStats* ice_transport_stats) override {
+  bool GetStats(IceTransportStats* ice_transport_stats) override {
     CandidateStats candidate_stats;
     ConnectionInfo candidate_pair_stats;
     ice_transport_stats->candidate_stats_list.clear();
@@ -349,7 +348,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
 
     send_packet_.AppendData(data, len);
     if (!combine_outgoing_packets_ || send_packet_.size() > len) {
-      rtc::CopyOnWriteBuffer packet(std::move(send_packet_));
+      CopyOnWriteBuffer packet(std::move(send_packet_));
       if (!SendPacketInternal(packet, options, flags)) {
         return -1;
       }
@@ -360,12 +359,12 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     return static_cast<int>(len);
   }
 
-  int SetOption(webrtc::Socket::Option opt, int value) override {
+  int SetOption(Socket::Option opt, int value) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     socket_options_[opt] = value;
     return true;
   }
-  bool GetOption(webrtc::Socket::Option opt, int* value) override {
+  bool GetOption(Socket::Option opt, int* value) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     auto it = socket_options_.find(opt);
     if (it != socket_options_.end()) {
@@ -378,16 +377,16 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
 
   int GetError() override { return 0; }
 
-  rtc::CopyOnWriteBuffer last_sent_packet() {
+  CopyOnWriteBuffer last_sent_packet() {
     RTC_DCHECK_RUN_ON(network_thread_);
     return last_sent_packet_;
   }
 
-  std::optional<webrtc::NetworkRoute> network_route() const override {
+  std::optional<NetworkRoute> network_route() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     return network_route_;
   }
-  void SetNetworkRoute(std::optional<webrtc::NetworkRoute> network_route) {
+  void SetNetworkRoute(std::optional<NetworkRoute> network_route) {
     RTC_DCHECK_RUN_ON(network_thread_);
     network_route_ = network_route;
     SendTask(network_thread_, [this] {
@@ -408,7 +407,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
 
   // If `func` return TRUE means that packet will be dropped.
   void set_packet_recv_filter(
-      absl::AnyInvocable<bool(const rtc::CopyOnWriteBuffer& packet,
+      absl::AnyInvocable<bool(const CopyOnWriteBuffer& packet,
                               uint32_t time_ms)> func) {
     RTC_DCHECK_RUN_ON(network_thread_);
     packet_recv_filter_func_ = std::move(func);
@@ -442,12 +441,12 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     auto msg = std::make_unique<IceMessage>(STUN_BINDING_REQUEST);
     MaybeAddDtlsPiggybackingAttributes(msg.get());
     msg->AddFingerprint();
-    webrtc::ByteBufferWriter buf;
+    ByteBufferWriter buf;
     msg->Write(&buf);
     rtc::PacketOptions options;
     options.info_signaled_after_sent.packet_type =
-        webrtc::PacketType::kIceConnectivityCheck;
-    SendPacketInternal(rtc::CopyOnWriteBuffer(buf.DataView()), options, 0);
+        PacketType::kIceConnectivityCheck;
+    SendPacketInternal(CopyOnWriteBuffer(buf.DataView()), options, 0);
     return true;
   }
 
@@ -479,12 +478,12 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     auto msg = std::make_unique<IceMessage>(STUN_BINDING_RESPONSE);
     MaybeAddDtlsPiggybackingAttributes(msg.get());
     msg->AddFingerprint();
-    webrtc::ByteBufferWriter buf;
+    ByteBufferWriter buf;
     msg->Write(&buf);
     rtc::PacketOptions options;
     options.info_signaled_after_sent.packet_type =
-        webrtc::PacketType::kIceConnectivityCheckResponse;
-    SendPacketInternal(rtc::CopyOnWriteBuffer(buf.DataView()), options, 0);
+        PacketType::kIceConnectivityCheckResponse;
+    SendPacketInternal(CopyOnWriteBuffer(buf.DataView()), options, 0);
     return true;
   }
 
@@ -494,7 +493,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
 
   int GetCountOfReceivedPackets() { return received_packets_; }
 
-  const webrtc::FieldTrialsView* field_trials() const { return &field_trials_; }
+  const FieldTrialsView* field_trials() const { return &field_trials_; }
 
   void set_drop_non_stun_unless_writable(bool value) {
     drop_non_stun_unless_writable_ = value;
@@ -523,7 +522,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     SignalReceivingState(this);
   }
 
-  bool SendPacketInternal(const rtc::CopyOnWriteBuffer& packet,
+  bool SendPacketInternal(const CopyOnWriteBuffer& packet,
                           const rtc::PacketOptions& options,
                           int flags)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(network_thread_) {
@@ -564,7 +563,7 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     return true;
   }
 
-  void ReceivePacketInternal(const rtc::CopyOnWriteBuffer& packet) {
+  void ReceivePacketInternal(const CopyOnWriteBuffer& packet) {
     RTC_DCHECK_RUN_ON(network_thread_);
     auto now = webrtc::TimeMicros();
     if (auto msg = GetStunMessage(packet)) {
@@ -608,15 +607,13 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
     }
   }
 
-  std::unique_ptr<IceMessage> GetStunMessage(
-      const rtc::CopyOnWriteBuffer& packet) {
+  std::unique_ptr<IceMessage> GetStunMessage(const CopyOnWriteBuffer& packet) {
     if (!StunMessage::ValidateFingerprint(packet.data<char>(), packet.size())) {
       return nullptr;
     }
 
     std::unique_ptr<IceMessage> stun_msg(new IceMessage());
-    webrtc::ByteBufferReader buf(
-        rtc::MakeArrayView(packet.data(), packet.size()));
+    ByteBufferReader buf(rtc::MakeArrayView(packet.data(), packet.size()));
     RTC_CHECK(stun_msg->Read(&buf));
     return stun_msg;
   }
@@ -627,57 +624,63 @@ class FakeIceTransport : public webrtc::IceTransportInternal {
   bool async_ RTC_GUARDED_BY(network_thread_) = false;
   int async_delay_ms_ RTC_GUARDED_BY(network_thread_) = 0;
   Candidates remote_candidates_ RTC_GUARDED_BY(network_thread_);
-  webrtc::IceConfig ice_config_ RTC_GUARDED_BY(network_thread_);
+  IceConfig ice_config_ RTC_GUARDED_BY(network_thread_);
   IceRole role_ RTC_GUARDED_BY(network_thread_) = ICEROLE_UNKNOWN;
   IceParameters ice_parameters_ RTC_GUARDED_BY(network_thread_);
   IceParameters remote_ice_parameters_ RTC_GUARDED_BY(network_thread_);
   IceMode remote_ice_mode_ RTC_GUARDED_BY(network_thread_) = ICEMODE_FULL;
   size_t connection_count_ RTC_GUARDED_BY(network_thread_) = 0;
-  std::optional<webrtc::IceTransportState> transport_state_
+  std::optional<IceTransportState> transport_state_
       RTC_GUARDED_BY(network_thread_);
-  std::optional<IceTransportState> legacy_transport_state_
+  std::optional<cricket::IceTransportState> legacy_transport_state_
       RTC_GUARDED_BY(network_thread_);
-  webrtc::IceGatheringState gathering_state_ RTC_GUARDED_BY(network_thread_) =
+  IceGatheringState gathering_state_ RTC_GUARDED_BY(network_thread_) =
       webrtc::kIceGatheringNew;
   bool had_connection_ RTC_GUARDED_BY(network_thread_) = false;
   bool writable_ RTC_GUARDED_BY(network_thread_) = false;
   bool receiving_ RTC_GUARDED_BY(network_thread_) = false;
   bool combine_outgoing_packets_ RTC_GUARDED_BY(network_thread_) = false;
-  rtc::CopyOnWriteBuffer send_packet_ RTC_GUARDED_BY(network_thread_);
-  std::optional<webrtc::NetworkRoute> network_route_
-      RTC_GUARDED_BY(network_thread_);
-  std::map<webrtc::Socket::Option, int> socket_options_
-      RTC_GUARDED_BY(network_thread_);
-  rtc::CopyOnWriteBuffer last_sent_packet_ RTC_GUARDED_BY(network_thread_);
-  webrtc::Thread* const network_thread_;
-  webrtc::ScopedTaskSafetyDetached task_safety_;
+  CopyOnWriteBuffer send_packet_ RTC_GUARDED_BY(network_thread_);
+  std::optional<NetworkRoute> network_route_ RTC_GUARDED_BY(network_thread_);
+  std::map<Socket::Option, int> socket_options_ RTC_GUARDED_BY(network_thread_);
+  CopyOnWriteBuffer last_sent_packet_ RTC_GUARDED_BY(network_thread_);
+  Thread* const network_thread_;
+  ScopedTaskSafetyDetached task_safety_;
   std::optional<int> rtt_estimate_;
   std::optional<int64_t> last_sent_ping_timestamp_;
 
   // If filter func return TRUE means that packet will be dropped.
   absl::AnyInvocable<bool(const char*, size_t, const rtc::PacketOptions&, int)>
       packet_send_filter_func_ RTC_GUARDED_BY(network_thread_) = nullptr;
-  absl::AnyInvocable<bool(const rtc::CopyOnWriteBuffer&, uint64_t)>
+  absl::AnyInvocable<bool(const CopyOnWriteBuffer&, uint64_t)>
       packet_recv_filter_func_ RTC_GUARDED_BY(network_thread_) = nullptr;
   DtlsStunPiggybackCallbacks dtls_stun_piggyback_callbacks_;
   std::map<int, int> received_stun_messages_per_type;
   int received_packets_ = 0;
-  webrtc::test::ExplicitKeyValueConfig field_trials_;
+  test::ExplicitKeyValueConfig field_trials_;
   bool drop_non_stun_unless_writable_ = false;
 };
 
-class FakeIceTransportWrapper : public webrtc::IceTransportInterface {
+class FakeIceTransportWrapper : public IceTransportInterface {
  public:
-  explicit FakeIceTransportWrapper(
-      std::unique_ptr<cricket::FakeIceTransport> internal)
+  explicit FakeIceTransportWrapper(std::unique_ptr<FakeIceTransport> internal)
       : internal_(std::move(internal)) {}
 
-  webrtc::IceTransportInternal* internal() override { return internal_.get(); }
+  IceTransportInternal* internal() override { return internal_.get(); }
 
  private:
-  std::unique_ptr<cricket::FakeIceTransport> internal_;
+  std::unique_ptr<FakeIceTransport> internal_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::FakeIceTransport;
+using ::webrtc::FakeIceTransportWrapper;
+using ::webrtc::SafeTask;
+using ::webrtc::TimeDelta;
 }  // namespace cricket
 
 #endif  // P2P_TEST_FAKE_ICE_TRANSPORT_H_

@@ -211,8 +211,7 @@ void RtpSenderBase::SetEncoderSelectorOnChannel() {
   }
 }
 
-void RtpSenderBase::SetMediaChannel(
-    cricket::MediaSendChannelInterface* media_channel) {
+void RtpSenderBase::SetMediaChannel(MediaSendChannelInterface* media_channel) {
   RTC_DCHECK(media_channel == nullptr ||
              media_channel->media_type() == media_type());
   media_channel_ = media_channel;
@@ -271,7 +270,7 @@ void RtpSenderBase::SetParametersInternal(const RtpParameters& parameters,
     return;
   }
   if (!media_channel_ || !ssrc_) {
-    auto result = cricket::CheckRtpParametersInvalidModificationAndValues(
+    auto result = CheckRtpParametersInvalidModificationAndValues(
         init_parameters_, parameters, send_codecs_, std::nullopt,
         env_.field_trials());
     if (result.ok()) {
@@ -290,7 +289,7 @@ void RtpSenderBase::SetParametersInternal(const RtpParameters& parameters,
                                              old_parameters.encodings);
     }
 
-    RTCError result = cricket::CheckRtpParametersInvalidModificationAndValues(
+    RTCError result = CheckRtpParametersInvalidModificationAndValues(
         old_parameters, rtp_parameters, env_.field_trials());
     if (!result.ok()) {
       InvokeSetParametersCallback(callback, result);
@@ -323,7 +322,7 @@ RTCError RtpSenderBase::SetParametersInternalWithAllLayers(
         "Attempted to set an unimplemented parameter of RtpParameters.");
   }
   if (!media_channel_ || !ssrc_) {
-    auto result = cricket::CheckRtpParametersInvalidModificationAndValues(
+    auto result = CheckRtpParametersInvalidModificationAndValues(
         init_parameters_, parameters, send_codecs_, std::nullopt,
         env_.field_trials());
     if (result.ok()) {
@@ -378,8 +377,8 @@ RTCError RtpSenderBase::CheckCodecParameters(const RtpParameters& parameters) {
     }
   }
 
-  return cricket::CheckScalabilityModeValues(parameters, send_codecs_,
-                                             send_codec_with_svc_info);
+  return CheckScalabilityModeValues(parameters, send_codecs_,
+                                    send_codec_with_svc_info);
 }
 
 RTCError RtpSenderBase::SetParameters(const RtpParameters& parameters) {
@@ -660,7 +659,7 @@ void LocalAudioSinkAdapter::OnData(
   }
 }
 
-void LocalAudioSinkAdapter::SetSink(cricket::AudioSource::Sink* sink) {
+void LocalAudioSinkAdapter::SetSink(AudioSource::Sink* sink) {
   MutexLock lock(&lock_);
   RTC_DCHECK(!sink || !sink_);
   sink_ = sink;
@@ -781,7 +780,7 @@ void AudioRtpSender::SetSend() {
     RTC_LOG(LS_ERROR) << "SetAudioSend: No audio channel exists.";
     return;
   }
-  cricket::AudioOptions options;
+  AudioOptions options;
 #if !defined(WEBRTC_CHROMIUM_BUILD) && !defined(WEBRTC_WEBKIT_BUILD)
   // TODO(tommi): Remove this hack when we move CreateAudioSource out of
   // PeerConnection.  This is a bit of a strange way to apply local audio
@@ -812,7 +811,7 @@ void AudioRtpSender::ClearSend() {
     RTC_LOG(LS_WARNING) << "ClearAudioSend: No audio channel exists.";
     return;
   }
-  cricket::AudioOptions options;
+  AudioOptions options;
   bool success = worker_thread_->BlockingCall([&] {
     return voice_media_channel()->SetAudioSend(ssrc_, false, &options, nullptr);
   });
@@ -901,7 +900,7 @@ void VideoRtpSender::SetSend() {
     RTC_LOG(LS_ERROR) << "SetVideoSend: No video channel exists.";
     return;
   }
-  cricket::VideoOptions options;
+  VideoOptions options;
   VideoTrackSourceInterface* source = video_track()->GetSource();
   if (source) {
     options.is_screencast = source->is_screencast();

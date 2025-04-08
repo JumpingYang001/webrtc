@@ -17,7 +17,7 @@
 #include "p2p/base/ice_transport_internal.h"
 #include "p2p/base/transport_description.h"
 
-namespace cricket {
+namespace webrtc {
 
 // ActiveIceControllerInterface defines the methods for a module that actively
 // manages the connection used by an ICE transport.
@@ -34,7 +34,7 @@ class ActiveIceControllerInterface {
   virtual ~ActiveIceControllerInterface() = default;
 
   // Sets the current ICE configuration.
-  virtual void SetIceConfig(const webrtc::IceConfig& config) = 0;
+  virtual void SetIceConfig(const IceConfig& config) = 0;
 
   // Called when a new connection is added to the ICE transport.
   virtual void OnConnectionAdded(const Connection* connection) = 0;
@@ -59,7 +59,7 @@ class ActiveIceControllerInterface {
 
   // Compute "STUN_ATTR_USE_CANDIDATE" for a STUN ping on the given connection.
   virtual bool GetUseCandidateAttribute(const Connection* connection,
-                                        webrtc::NominationMode mode,
+                                        NominationMode mode,
                                         IceMode remote_ice_mode) const = 0;
 
   // Called to enque a request to pick and switch to the best available
@@ -78,6 +78,12 @@ class ActiveIceControllerInterface {
   virtual const Connection* FindNextPingableConnection() = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::ActiveIceControllerInterface;
 }  // namespace cricket
 
 #endif  // P2P_BASE_ACTIVE_ICE_CONTROLLER_INTERFACE_H_

@@ -374,7 +374,7 @@ DataChannelController::CreateDataChannel(const std::string& label,
                                          InternalDataChannelInit& config) {
   std::optional<StreamId> sid = std::nullopt;
   if (config.id != -1) {
-    if (config.id < 0 || config.id > cricket::kMaxSctpSid) {
+    if (config.id < 0 || config.id > kMaxSctpSid) {
       return RTCError(RTCErrorType::INVALID_RANGE, "StreamId out of range.");
     }
     sid = StreamId(config.id);

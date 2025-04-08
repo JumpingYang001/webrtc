@@ -164,7 +164,7 @@ void CopyConstraintsIntoRtcConfiguration(
 }
 
 void CopyConstraintsIntoAudioOptions(const MediaConstraints* constraints,
-                                     cricket::AudioOptions* options) {
+                                     AudioOptions* options) {
   if (!constraints) {
     return;
   }

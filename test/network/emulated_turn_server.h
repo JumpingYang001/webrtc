@@ -66,8 +66,8 @@ class EmulatedTURNServer : public EmulatedTURNServerInterface,
   bool GetKey(absl::string_view username,
               absl::string_view realm,
               std::string* key) override {
-    return cricket::ComputeStunCredentialHash(
-        std::string(username), std::string(realm), std::string(username), key);
+    return ComputeStunCredentialHash(std::string(username), std::string(realm),
+                                     std::string(username), key);
   }
 
   AsyncPacketSocket* CreatePeerSocket() { return Wrap(peer_); }

@@ -459,7 +459,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // StreamParams since last time this method was called.
   // For each new or removed StreamParam, OnLocalSenderSeen or
   // OnLocalSenderRemoved is invoked.
-  void UpdateLocalSenders(const std::vector<cricket::StreamParams>& streams,
+  void UpdateLocalSenders(const std::vector<StreamParams>& streams,
                           webrtc::MediaType media_type);
 
   // Makes sure a MediaStreamTrack is created for each StreamParam in `streams`,
@@ -468,11 +468,10 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // is created if it doesn't exist; if false, it's removed if it exists.
   // `media_type` is the type of the `streams` and can be either audio or video.
   // If a new MediaStream is created it is added to `new_streams`.
-  void UpdateRemoteSendersList(
-      const std::vector<cricket::StreamParams>& streams,
-      bool default_track_needed,
-      webrtc::MediaType media_type,
-      StreamCollection* new_streams);
+  void UpdateRemoteSendersList(const std::vector<StreamParams>& streams,
+                               bool default_track_needed,
+                               webrtc::MediaType media_type,
+                               StreamCollection* new_streams);
 
   // Enables media channels to allow sending of media.
   // This enables media to flow on all configured audio/video channels.
@@ -562,7 +561,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
 
   // ==================================================================
   // Access to pc_ variables
-  cricket::MediaEngineInterface* media_engine() const;
+  MediaEngineInterface* media_engine() const;
   TransceiverList* transceivers();
   const TransceiverList* transceivers() const;
   DataChannelController* data_channel_controller();
@@ -580,8 +579,8 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   const JsepTransportController* transport_controller_n() const
       RTC_RUN_ON(network_thread());
   // ===================================================================
-  const cricket::AudioOptions& audio_options() { return audio_options_; }
-  const cricket::VideoOptions& video_options() { return video_options_; }
+  const AudioOptions& audio_options() { return audio_options_; }
+  const VideoOptions& video_options() { return video_options_; }
   bool ConfiguredForMedia() const;
 
   PeerConnectionSdpMethods* const pc_;
@@ -668,8 +667,8 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   std::string session_error_desc_ RTC_GUARDED_BY(signaling_thread());
 
   // Member variables for caching global options.
-  cricket::AudioOptions audio_options_ RTC_GUARDED_BY(signaling_thread());
-  cricket::VideoOptions video_options_ RTC_GUARDED_BY(signaling_thread());
+  AudioOptions audio_options_ RTC_GUARDED_BY(signaling_thread());
+  VideoOptions video_options_ RTC_GUARDED_BY(signaling_thread());
 
   // A video bitrate allocator factory.
   // This can be injected using the PeerConnectionDependencies,

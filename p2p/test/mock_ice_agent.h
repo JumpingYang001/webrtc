@@ -27,22 +27,22 @@ class MockIceAgent : public cricket::IceAgentInterface {
   ~MockIceAgent() override = default;
 
   MOCK_METHOD(int64_t, GetLastPingSentMs, (), (override, const));
-  MOCK_METHOD(cricket::IceRole, GetIceRole, (), (override, const));
+  MOCK_METHOD(IceRole, GetIceRole, (), (override, const));
   MOCK_METHOD(void, OnStartedPinging, (), (override));
   MOCK_METHOD(void, UpdateConnectionStates, (), (override));
   MOCK_METHOD(void, UpdateState, (), (override));
   MOCK_METHOD(void,
               ForgetLearnedStateForConnections,
-              (rtc::ArrayView<const cricket::Connection* const>),
+              (rtc::ArrayView<const webrtc::Connection* const>),
               (override));
-  MOCK_METHOD(void, SendPingRequest, (const cricket::Connection*), (override));
+  MOCK_METHOD(void, SendPingRequest, (const webrtc::Connection*), (override));
   MOCK_METHOD(void,
               SwitchSelectedConnection,
-              (const cricket::Connection*, cricket::IceSwitchReason),
+              (const webrtc::Connection*, webrtc::IceSwitchReason),
               (override));
   MOCK_METHOD(bool,
               PruneConnections,
-              (rtc::ArrayView<const cricket::Connection* const>),
+              (rtc::ArrayView<const webrtc::Connection* const>),
               (override));
 };
 

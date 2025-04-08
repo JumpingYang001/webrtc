@@ -60,15 +60,15 @@ using webrtc::RTCErrorOr;
 using webrtc::RtpTransceiverDirection;
 
 bool IsRtxCodec(const RtpCodecCapability& capability) {
-  return absl::EqualsIgnoreCase(capability.name, cricket::kRtxCodecName);
+  return absl::EqualsIgnoreCase(capability.name, kRtxCodecName);
 }
 
 bool IsRedCodec(const RtpCodecCapability& capability) {
-  return absl::EqualsIgnoreCase(capability.name, cricket::kRedCodecName);
+  return absl::EqualsIgnoreCase(capability.name, kRedCodecName);
 }
 
 bool IsComfortNoiseCodec(const Codec& codec) {
-  return absl::EqualsIgnoreCase(codec.name, cricket::kComfortNoiseCodecName);
+  return absl::EqualsIgnoreCase(codec.name, kComfortNoiseCodecName);
 }
 
 // Wrapper for FindMatchingCodecs that uses CodecList
@@ -97,7 +97,7 @@ bool IsMediaContentOfType(const ContentInfo* content, MediaType media_type) {
 const Codec* GetAssociatedCodecForRtx(const CodecList& codec_list,
                                       const Codec& rtx_codec) {
   std::string associated_pt_str;
-  if (!rtx_codec.GetParam(cricket::kCodecParamAssociatedPayloadType,
+  if (!rtx_codec.GetParam(kCodecParamAssociatedPayloadType,
                           &associated_pt_str)) {
     RTC_LOG(LS_WARNING) << "RTX codec " << rtx_codec.id
                         << " is missing an associated payload type.";
@@ -127,7 +127,7 @@ const Codec* GetAssociatedCodecForRtx(const CodecList& codec_list,
 const Codec* GetAssociatedCodecForRed(const CodecList& codec_list,
                                       const Codec& red_codec) {
   std::string fmtp;
-  if (!red_codec.GetParam(cricket::kCodecParamNotInNameValueFormat, &fmtp)) {
+  if (!red_codec.GetParam(kCodecParamNotInNameValueFormat, &fmtp)) {
     // Don't log for video/RED where this is normal.
     if (red_codec.type == Codec::Type::kAudio) {
       RTC_LOG(LS_WARNING) << "RED codec " << red_codec.id
@@ -206,7 +206,7 @@ RTCError MergeCodecs(const CodecList& reference_codecs,
         continue;
       }
 
-      rtx_codec.params[cricket::kCodecParamAssociatedPayloadType] =
+      rtx_codec.params[kCodecParamAssociatedPayloadType] =
           absl::StrCat(matching_codec->id);
       RTCErrorOr<PayloadType> suggestion =
           pt_suggester.SuggestPayloadType(mid, rtx_codec);
@@ -231,7 +231,7 @@ RTCError MergeCodecs(const CodecList& reference_codecs,
           continue;
         }
         std::string red_param = absl::StrCat(matching_codec->id);
-        red_codec.params[cricket::kCodecParamNotInNameValueFormat] =
+        red_codec.params[kCodecParamNotInNameValueFormat] =
             webrtc::StrJoin(std::vector{red_param, red_param}, "/");
       }
       RTCErrorOr<PayloadType> suggestion =
@@ -368,7 +368,7 @@ CodecList MatchCodecPreference(
             if (want_rtx &&
                 codec.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
               const auto apt =
-                  codec.params.find(cricket::kCodecParamAssociatedPayloadType);
+                  codec.params.find(kCodecParamAssociatedPayloadType);
               if (apt != codec.params.end() && apt->second == id) {
                 filtered_codecs.push_back(codec);
                 break;
@@ -379,7 +379,7 @@ CodecList MatchCodecPreference(
               // inserted. audio/red for opus gets enabled by having RED before
               // the primary codec.
               const auto fmtp =
-                  codec.params.find(cricket::kCodecParamNotInNameValueFormat);
+                  codec.params.find(kCodecParamNotInNameValueFormat);
               if (fmtp != codec.params.end()) {
                 std::vector<absl::string_view> redundant_payloads =
                     webrtc::split(fmtp->second, '/');
@@ -441,8 +441,7 @@ void NegotiateVideoCodecLevelsForOffer(
     // are already with highest level for that profile in both
     // |supported_codecs| and |filtered_codecs|.
     for (const Codec& supported_codec : supported_codecs) {
-      if (absl::EqualsIgnoreCase(supported_codec.name,
-                                 cricket::kH265CodecName)) {
+      if (absl::EqualsIgnoreCase(supported_codec.name, kH265CodecName)) {
         std::optional<H265ProfileTierLevel> supported_ptl =
             webrtc::ParseSdpForH265ProfileTierLevel(supported_codec.params);
         if (supported_ptl.has_value()) {
@@ -457,8 +456,7 @@ void NegotiateVideoCodecLevelsForOffer(
     }
 
     for (auto& filtered_codec : filtered_codecs) {
-      if (absl::EqualsIgnoreCase(filtered_codec.name,
-                                 cricket::kH265CodecName)) {
+      if (absl::EqualsIgnoreCase(filtered_codec.name, kH265CodecName)) {
         std::optional<H265ProfileTierLevel> filtered_ptl =
             webrtc::ParseSdpForH265ProfileTierLevel(filtered_codec.params);
         if (filtered_ptl.has_value()) {
@@ -466,7 +464,7 @@ void NegotiateVideoCodecLevelsForOffer(
 
           if (it != supported_h265_profiles.end() &&
               filtered_ptl->level != it->second) {
-            filtered_codec.params[cricket::kH265FmtpLevelId] =
+            filtered_codec.params[kH265FmtpLevelId] =
                 webrtc::H265LevelToString(it->second);
           }
         }
@@ -495,26 +493,24 @@ RTCError NegotiateCodecs(const CodecList& local_codecs,
       negotiated.IntersectFeedbackParams(*theirs);
       if (negotiated.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
         // We support parsing the declarative rtx-time parameter.
-        const auto rtx_time_it =
-            theirs->params.find(cricket::kCodecParamRtxTime);
+        const auto rtx_time_it = theirs->params.find(kCodecParamRtxTime);
         if (rtx_time_it != theirs->params.end()) {
-          negotiated.SetParam(cricket::kCodecParamRtxTime, rtx_time_it->second);
+          negotiated.SetParam(kCodecParamRtxTime, rtx_time_it->second);
         }
       } else if (negotiated.GetResiliencyType() ==
                  Codec::ResiliencyType::kRed) {
         const auto red_it =
-            theirs->params.find(cricket::kCodecParamNotInNameValueFormat);
+            theirs->params.find(kCodecParamNotInNameValueFormat);
         if (red_it != theirs->params.end()) {
-          negotiated.SetParam(cricket::kCodecParamNotInNameValueFormat,
-                              red_it->second);
+          negotiated.SetParam(kCodecParamNotInNameValueFormat, red_it->second);
         }
       }
-      if (absl::EqualsIgnoreCase(ours.name, cricket::kH264CodecName)) {
+      if (absl::EqualsIgnoreCase(ours.name, kH264CodecName)) {
         webrtc::H264GenerateProfileLevelIdForAnswer(ours.params, theirs->params,
                                                     &negotiated.params);
       }
 #ifdef RTC_ENABLE_H265
-      if (absl::EqualsIgnoreCase(ours.name, cricket::kH265CodecName)) {
+      if (absl::EqualsIgnoreCase(ours.name, kH265CodecName)) {
         webrtc::H265GenerateProfileTierLevelForAnswer(
             ours.params, theirs->params, &negotiated.params);
         NegotiateTxMode(ours, *theirs, &negotiated);
@@ -533,8 +529,7 @@ RTCError NegotiateCodecs(const CodecList& local_codecs,
       // Change the apt value according to the pt mapping table.
       // This avoids changing to apt values that don't exist any more.
       std::string apt_str;
-      if (!negotiated.GetParam(cricket::kCodecParamAssociatedPayloadType,
-                               &apt_str)) {
+      if (!negotiated.GetParam(kCodecParamAssociatedPayloadType, &apt_str)) {
         RTC_LOG(LS_WARNING) << "No apt value";
         continue;
       }
@@ -547,7 +542,7 @@ RTCError NegotiateCodecs(const CodecList& local_codecs,
         RTC_LOG(LS_WARNING) << "Unmapped apt value " << apt_value;
         continue;
       }
-      negotiated.SetParam(cricket::kCodecParamAssociatedPayloadType,
+      negotiated.SetParam(kCodecParamAssociatedPayloadType,
                           pt_mapping_table.at(apt_value));
     }
   }
@@ -597,7 +592,7 @@ RTCError AssignCodecIdsAndLinkRed(PayloadTypeSuggester* pt_suggester,
       codec.id = result.value();
     }
     // record first Opus codec id
-    if (absl::EqualsIgnoreCase(codec.name, cricket::kOpusCodecName) &&
+    if (absl::EqualsIgnoreCase(codec.name, kOpusCodecName) &&
         codec_payload_type == Codec::kIdNotSet) {
       codec_payload_type = codec.id;
     }
@@ -605,12 +600,12 @@ RTCError AssignCodecIdsAndLinkRed(PayloadTypeSuggester* pt_suggester,
   if (codec_payload_type != Codec::kIdNotSet) {
     for (Codec& codec : codecs) {
       if (codec.type == Codec::Type::kAudio &&
-          absl::EqualsIgnoreCase(codec.name, cricket::kRedCodecName)) {
+          absl::EqualsIgnoreCase(codec.name, kRedCodecName)) {
         if (codec.params.empty()) {
           char buffer[100];
           SimpleStringBuilder param(buffer);
           param << codec_payload_type << "/" << codec_payload_type;
-          codec.SetParam(cricket::kCodecParamNotInNameValueFormat, param.str());
+          codec.SetParam(kCodecParamNotInNameValueFormat, param.str());
         }
       }
     }
@@ -708,7 +703,7 @@ RTCErrorOr<std::vector<Codec>> CodecVendor::GetNegotiatedCodecsForOffer(
             std::optional<Codec> changed_referenced_codec = FindMatchingCodec(
                 supported_codecs, filtered_codecs, *referenced_codec);
             if (changed_referenced_codec) {
-              found_codec->SetParam(cricket::kCodecParamAssociatedPayloadType,
+              found_codec->SetParam(kCodecParamAssociatedPayloadType,
                                     changed_referenced_codec->id);
             }
           }
@@ -727,7 +722,7 @@ RTCErrorOr<std::vector<Codec>> CodecVendor::GetNegotiatedCodecsForOffer(
                session_options.raw_packetization_for_video) {
       for (Codec& codec : filtered_codecs) {
         if (codec.IsMediaCodec()) {
-          codec.packetization = cricket::kPacketizationParamRaw;
+          codec.packetization = kPacketizationParamRaw;
         }
       }
     }
@@ -817,7 +812,7 @@ RTCErrorOr<Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
                session_options.raw_packetization_for_video) {
       for (Codec& codec : filtered_codecs) {
         if (codec.IsMediaCodec()) {
-          codec.packetization = cricket::kPacketizationParamRaw;
+          codec.packetization = kPacketizationParamRaw;
         }
       }
     }
@@ -844,7 +839,7 @@ RTCErrorOr<Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
 }
 
 CodecVendor::CodecVendor(
-    cricket::MediaEngineInterface* media_engine,
+    MediaEngineInterface* media_engine,
     bool rtx_enabled,
     const FieldTrialsView& trials) {  // Null media_engine is permitted in
                                       // order to allow unit testing where

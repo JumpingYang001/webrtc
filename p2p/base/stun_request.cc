@@ -32,7 +32,7 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/time_utils.h"  // For TimeMillis
 
-namespace cricket {
+namespace webrtc {
 using ::webrtc::SafeTask;
 
 // RFC 5389 says SHOULD be 500ms.
@@ -53,8 +53,8 @@ const int STUN_MAX_RETRANSMISSIONS = 8;  // Total sends: 9
 const int STUN_MAX_RTO = 8000;  // milliseconds, or 5 doublings
 
 StunRequestManager::StunRequestManager(
-    webrtc::TaskQueueBase* thread,
-    std::function<void(const void*, size_t, StunRequest*)> send_packet)
+    TaskQueueBase* thread,
+    std::function<void(const void*, size_t, webrtc::StunRequest*)> send_packet)
     : thread_(thread), send_packet_(std::move(send_packet)) {}
 
 StunRequestManager::~StunRequestManager() = default;
@@ -73,7 +73,7 @@ void StunRequestManager::SendDelayed(StunRequest* request, int delay) {
   auto [iter, was_inserted] =
       requests_.emplace(request->id(), absl::WrapUnique(request));
   RTC_DCHECK(was_inserted);
-  request->Send(webrtc::TimeDelta::Millis(delay));
+  request->Send(TimeDelta::Millis(delay));
 }
 
 void StunRequestManager::FlushForTest(int msg_type) {
@@ -87,7 +87,7 @@ void StunRequestManager::FlushForTest(int msg_type) {
       // of canceling any outstanding tasks and prepare a new flag for
       // operations related to this call to `Send`.
       request->ResetTasksForTest();
-      request->Send(webrtc::TimeDelta::Zero());
+      request->Send(TimeDelta::Zero());
     }
   }
 }
@@ -211,7 +211,7 @@ bool StunRequestManager::CheckResponse(const char* data, size_t size) {
 
   // Parse the STUN message and continue processing as usual.
 
-  webrtc::ByteBufferReader buf(
+  ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   std::unique_ptr<StunMessage> response(iter->second->msg_->CreateNew());
   if (!response->Read(&buf)) {
@@ -281,20 +281,20 @@ void StunRequest::SendInternal() {
 
   tstamp_ = webrtc::TimeMillis();
 
-  webrtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
   msg_->Write(&buf);
   manager_.SendPacket(buf.Data(), buf.Length(), this);
 
   OnSent();
-  SendDelayed(webrtc::TimeDelta::Millis(resend_delay()));
+  SendDelayed(TimeDelta::Millis(resend_delay()));
 }
 
-void StunRequest::SendDelayed(webrtc::TimeDelta delay) {
+void StunRequest::SendDelayed(TimeDelta delay) {
   network_thread()->PostDelayedTask(
       SafeTask(task_safety_.flag(), [this]() { SendInternal(); }), delay);
 }
 
-void StunRequest::Send(webrtc::TimeDelta delay) {
+void StunRequest::Send(TimeDelta delay) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK_GE(delay.ms(), 0);
 
@@ -306,7 +306,7 @@ void StunRequest::Send(webrtc::TimeDelta delay) {
 
 void StunRequest::ResetTasksForTest() {
   RTC_DCHECK_RUN_ON(network_thread());
-  task_safety_.reset(webrtc::PendingTaskSafetyFlag::CreateDetachedInactive());
+  task_safety_.reset(PendingTaskSafetyFlag::CreateDetachedInactive());
   count_ = 0;
   RTC_DCHECK(!timeout_);
 }
@@ -337,4 +337,4 @@ void StunRequest::set_timed_out() {
   timeout_ = true;
 }
 
-}  // namespace cricket
+}  // namespace webrtc

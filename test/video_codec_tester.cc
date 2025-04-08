@@ -1160,22 +1160,22 @@ class Encoder : public EncodedImageCallback {
         vc.SetScalabilityMode(std::vector<ScalabilityMode>{
             ScalabilityMode::kL1T1, ScalabilityMode::kL1T2,
             ScalabilityMode::kL1T3}[num_temporal_layers - 1]);
-        vc.qpMax = cricket::kDefaultVideoMaxQpVpx;
+        vc.qpMax = kDefaultVideoMaxQpVpx;
         break;
       case kVideoCodecVP9:
         *(vc.VP9()) = VideoEncoder::GetDefaultVp9Settings();
-        vc.qpMax = cricket::kDefaultVideoMaxQpVpx;
+        vc.qpMax = kDefaultVideoMaxQpVpx;
         break;
       case kVideoCodecAV1:
-        vc.qpMax = cricket::kDefaultVideoMaxQpAv1;
+        vc.qpMax = kDefaultVideoMaxQpAv1;
         break;
       case kVideoCodecH264:
         *(vc.H264()) = VideoEncoder::GetDefaultH264Settings();
         vc.H264()->SetNumberOfTemporalLayers(num_temporal_layers);
-        vc.qpMax = cricket::kDefaultVideoMaxQpH26x;
+        vc.qpMax = kDefaultVideoMaxQpH26x;
         break;
       case kVideoCodecH265:
-        vc.qpMax = cricket::kDefaultVideoMaxQpH26x;
+        vc.qpMax = kDefaultVideoMaxQpH26x;
         break;
       case kVideoCodecGeneric:
         RTC_CHECK_NOTREACHED();

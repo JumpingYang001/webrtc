@@ -134,7 +134,7 @@ class PeerConnectionWrapperForRampUpTest : public PeerConnectionWrapper {
   }
 
   rtc::scoped_refptr<AudioTrackInterface> CreateLocalAudioTrack(
-      const cricket::AudioOptions options) {
+      const AudioOptions options) {
     rtc::scoped_refptr<AudioSourceInterface> source =
         pc_factory()->CreateAudioSource(options);
     return pc_factory()->CreateAudioTrack(CreateRandomUuid(), source.get());
@@ -216,7 +216,7 @@ class PeerConnectionRampUpTest : public ::testing::Test {
     FrameGeneratorCapturerVideoTrackSource::Config config;
     caller_->AddTrack(caller_->CreateLocalVideoTrack(config, clock_));
     // Disable highpass filter so that we can get all the test audio frames.
-    cricket::AudioOptions options;
+    AudioOptions options;
     options.highpass_filter = false;
     caller_->AddTrack(caller_->CreateLocalAudioTrack(options));
 

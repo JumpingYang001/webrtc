@@ -202,8 +202,7 @@ RTCError ParseIceServerUrl(const PeerConnectionInterface::IceServer& server,
           "ICE server parsing failed: Transport parameter missing value.");
     }
 
-    std::optional<ProtocolType> proto =
-        cricket::StringToProto(transport_tokens[1]);
+    std::optional<ProtocolType> proto = StringToProto(transport_tokens[1]);
     if (!proto || (*proto != PROTO_UDP && *proto != PROTO_TCP)) {
       LOG_AND_RETURN_ERROR(
           RTCErrorType::SYNTAX_ERROR,

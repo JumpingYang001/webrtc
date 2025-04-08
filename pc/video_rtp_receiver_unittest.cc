@@ -43,9 +43,9 @@ namespace {
 
 class VideoRtpReceiverTest : public testing::Test {
  protected:
-  class MockVideoMediaSendChannel : public cricket::FakeVideoMediaSendChannel {
+  class MockVideoMediaSendChannel : public FakeVideoMediaSendChannel {
    public:
-    MockVideoMediaSendChannel(const cricket::VideoOptions& options,
+    MockVideoMediaSendChannel(const VideoOptions& options,
                               TaskQueueBase* network_thread = Thread::Current())
         : FakeVideoMediaSendChannel(options, network_thread) {}
     MOCK_METHOD(void,
@@ -54,11 +54,10 @@ class VideoRtpReceiverTest : public testing::Test {
                 (override));
   };
 
-  class MockVideoMediaReceiveChannel
-      : public cricket::FakeVideoMediaReceiveChannel {
+  class MockVideoMediaReceiveChannel : public FakeVideoMediaReceiveChannel {
    public:
     MockVideoMediaReceiveChannel(
-        const cricket::VideoOptions& options,
+        const VideoOptions& options,
         TaskQueueBase* network_thread = Thread::Current())
         : FakeVideoMediaReceiveChannel(options, network_thread) {}
     MOCK_METHOD(void,
@@ -79,7 +78,7 @@ class VideoRtpReceiverTest : public testing::Test {
 
   VideoRtpReceiverTest()
       : worker_thread_(Thread::Create()),
-        channel_(cricket::VideoOptions()),
+        channel_(VideoOptions()),
         receiver_(rtc::make_ref_counted<VideoRtpReceiver>(
             worker_thread_.get(),
             std::string("receiver"),
@@ -96,7 +95,7 @@ class VideoRtpReceiverTest : public testing::Test {
     SetMediaChannel(nullptr);
   }
 
-  void SetMediaChannel(cricket::MediaReceiveChannelInterface* media_channel) {
+  void SetMediaChannel(MediaReceiveChannelInterface* media_channel) {
     SendTask(worker_thread_.get(),
              [&]() { receiver_->SetMediaChannel(media_channel); });
   }
@@ -124,7 +123,7 @@ TEST_F(VideoRtpReceiverTest,
        GenerateKeyFrameOnChannelSwitchUnlessGenerateKeyframeCalled) {
   // A channel switch without previous call to GenerateKeyFrame shouldn't
   // cause a call to happen on the new channel.
-  MockVideoMediaReceiveChannel channel2{cricket::VideoOptions()};
+  MockVideoMediaReceiveChannel channel2{VideoOptions()};
   EXPECT_CALL(channel_, RequestRecvKeyFrame).Times(0);
   EXPECT_CALL(channel2, RequestRecvKeyFrame).Times(0);
   SetMediaChannel(&channel2);
@@ -134,12 +133,12 @@ TEST_F(VideoRtpReceiverTest,
   // re-generate it as we don't know if it was eventually received
   EXPECT_CALL(channel2, RequestRecvKeyFrame).Times(1);
   Source()->GenerateKeyFrame();
-  MockVideoMediaReceiveChannel channel3{cricket::VideoOptions()};
+  MockVideoMediaReceiveChannel channel3{VideoOptions()};
   EXPECT_CALL(channel3, RequestRecvKeyFrame);
   SetMediaChannel(&channel3);
 
   // Switching to a new channel should now not cause calls to GenerateKeyFrame.
-  StrictMock<MockVideoMediaReceiveChannel> channel4{cricket::VideoOptions()};
+  StrictMock<MockVideoMediaReceiveChannel> channel4{VideoOptions()};
   SetMediaChannel(&channel4);
 
   // We must call SetMediaChannel(nullptr) here since the mock media channels
@@ -167,7 +166,7 @@ TEST_F(VideoRtpReceiverTest, DisablesEnablesEncodedOutputOnChannelSwitch) {
   EXPECT_CALL(channel_, ClearRecordableEncodedFrameCallback);
   MockVideoSink sink;
   Source()->AddEncodedSink(&sink);
-  MockVideoMediaReceiveChannel channel2{cricket::VideoOptions()};
+  MockVideoMediaReceiveChannel channel2{VideoOptions()};
   EXPECT_CALL(channel2, SetRecordableEncodedFrameCallback);
   SetMediaChannel(&channel2);
   Mock::VerifyAndClearExpectations(&channel2);
@@ -176,7 +175,7 @@ TEST_F(VideoRtpReceiverTest, DisablesEnablesEncodedOutputOnChannelSwitch) {
   // to NOT set the callback again.
   EXPECT_CALL(channel2, ClearRecordableEncodedFrameCallback);
   Source()->RemoveEncodedSink(&sink);
-  StrictMock<MockVideoMediaReceiveChannel> channel3{cricket::VideoOptions()};
+  StrictMock<MockVideoMediaReceiveChannel> channel3{VideoOptions()};
   SetMediaChannel(&channel3);
 
   // We must call SetMediaChannel(nullptr) here since the mock media channels

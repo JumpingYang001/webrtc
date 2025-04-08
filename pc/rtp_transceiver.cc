@@ -200,11 +200,11 @@ RtpTransceiver::~RtpTransceiver() {
 RTCError RtpTransceiver::CreateChannel(
     absl::string_view mid,
     Call* call_ptr,
-    const cricket::MediaConfig& media_config,
+    const MediaConfig& media_config,
     bool srtp_required,
     CryptoOptions crypto_options,
-    const cricket::AudioOptions& audio_options,
-    const cricket::VideoOptions& video_options,
+    const AudioOptions& audio_options,
+    const VideoOptions& video_options,
     VideoBitrateAllocatorFactory* video_bitrate_allocator_factory,
     std::function<RtpTransportInternal*(absl::string_view)> transport_lookup) {
   RTC_DCHECK_RUN_ON(thread_);
@@ -230,12 +230,12 @@ RTCError RtpTransceiver::CreateChannel(
 
       AudioCodecPairId codec_pair_id = AudioCodecPairId::Create();
 
-      std::unique_ptr<cricket::VoiceMediaSendChannelInterface>
-          media_send_channel = media_engine()->voice().CreateSendChannel(
+      std::unique_ptr<VoiceMediaSendChannelInterface> media_send_channel =
+          media_engine()->voice().CreateSendChannel(
               call_ptr, media_config, audio_options, crypto_options,
               codec_pair_id);
-      std::unique_ptr<cricket::VoiceMediaReceiveChannelInterface>
-          media_receive_channel = media_engine()->voice().CreateReceiveChannel(
+      std::unique_ptr<VoiceMediaReceiveChannelInterface> media_receive_channel =
+          media_engine()->voice().CreateReceiveChannel(
               call_ptr, media_config, audio_options, crypto_options,
               codec_pair_id);
       // Note that this is safe because both sending and
@@ -261,12 +261,12 @@ RTCError RtpTransceiver::CreateChannel(
     context()->worker_thread()->BlockingCall([&] {
       RTC_DCHECK_RUN_ON(context()->worker_thread());
 
-      std::unique_ptr<cricket::VideoMediaSendChannelInterface>
-          media_send_channel = media_engine()->video().CreateSendChannel(
+      std::unique_ptr<VideoMediaSendChannelInterface> media_send_channel =
+          media_engine()->video().CreateSendChannel(
               call_ptr, media_config, video_options, crypto_options,
               video_bitrate_allocator_factory);
-      std::unique_ptr<cricket::VideoMediaReceiveChannelInterface>
-          media_receive_channel = media_engine()->video().CreateReceiveChannel(
+      std::unique_ptr<VideoMediaReceiveChannelInterface> media_receive_channel =
+          media_engine()->video().CreateReceiveChannel(
               call_ptr, media_config, video_options, crypto_options);
       // Note that this is safe because both sending and
       // receiving channels will be deleted at the same time.

@@ -43,12 +43,12 @@ namespace {
 // The minimum improvement in RTT that justifies a switch.
 const int kMinImprovement = 10;
 
-bool IsRelayRelay(const cricket::Connection* conn) {
+bool IsRelayRelay(const webrtc::Connection* conn) {
   return conn->local_candidate().is_relay() &&
          conn->remote_candidate().is_relay();
 }
 
-bool IsUdp(const cricket::Connection* conn) {
+bool IsUdp(const webrtc::Connection* conn) {
   return conn->local_candidate().relay_protocol() == webrtc::UDP_PROTOCOL_NAME;
 }
 
@@ -59,15 +59,15 @@ static constexpr int b_is_better = -1;
 static constexpr int a_and_b_equal = 0;
 
 bool LocalCandidateUsesPreferredNetwork(
-    const cricket::Connection* conn,
+    const webrtc::Connection* conn,
     std::optional<webrtc::AdapterType> network_preference) {
   webrtc::AdapterType network_type = conn->network()->type();
   return network_preference.has_value() && (network_type == network_preference);
 }
 
 int CompareCandidatePairsByNetworkPreference(
-    const cricket::Connection* a,
-    const cricket::Connection* b,
+    const webrtc::Connection* a,
+    const webrtc::Connection* b,
     std::optional<webrtc::AdapterType> network_preference) {
   bool a_uses_preferred_network =
       LocalCandidateUsesPreferredNetwork(a, network_preference);
@@ -83,10 +83,9 @@ int CompareCandidatePairsByNetworkPreference(
 
 }  // namespace
 
-namespace cricket {
+namespace webrtc {
 
-BasicIceController::BasicIceController(
-    const webrtc::IceControllerFactoryArgs& args)
+BasicIceController::BasicIceController(const IceControllerFactoryArgs& args)
     : ice_transport_state_func_(args.ice_transport_state_func),
       ice_role_func_(args.ice_role_func),
       is_connection_pruned_func_(args.is_connection_pruned_func),
@@ -94,7 +93,7 @@ BasicIceController::BasicIceController(
 
 BasicIceController::~BasicIceController() {}
 
-void BasicIceController::SetIceConfig(const webrtc::IceConfig& config) {
+void BasicIceController::SetIceConfig(const IceConfig& config) {
   config_ = config;
 }
 
@@ -129,9 +128,9 @@ IceControllerInterface::PingResult BasicIceController::SelectConnectionToPing(
   // active connection has not been pinged enough times, use the weak ping
   // interval.
   bool need_more_pings_at_weak_interval =
-      absl::c_any_of(connections_, [](const Connection* conn) {
+      absl::c_any_of(connections_, [](const webrtc::Connection* conn) {
         return conn->active() &&
-               conn->num_pings_sent() < MIN_PINGS_AT_WEAK_PING_INTERVAL;
+               conn->num_pings_sent() < webrtc::MIN_PINGS_AT_WEAK_PING_INTERVAL;
       });
   int ping_interval = (weak() || need_more_pings_at_weak_interval)
                           ? weak_ping_interval()
@@ -181,7 +180,7 @@ const Connection* BasicIceController::FindNextPingableConnection() {
                     });
     auto iter = absl::c_min_element(
         pingable_selectable_connections,
-        [](const Connection* conn1, const Connection* conn2) {
+        [](const webrtc::Connection* conn1, const webrtc::Connection* conn2) {
           return conn1->last_ping_sent() < conn2->last_ping_sent();
         });
     if (iter != pingable_selectable_connections.end()) {
@@ -275,14 +274,15 @@ int BasicIceController::CalculateActiveWritablePingInterval(
     int64_t now) const {
   // Ping each connection at a higher rate at least
   // MIN_PINGS_AT_WEAK_PING_INTERVAL times.
-  if (conn->num_pings_sent() < MIN_PINGS_AT_WEAK_PING_INTERVAL) {
+  if (conn->num_pings_sent() < webrtc::MIN_PINGS_AT_WEAK_PING_INTERVAL) {
     return weak_ping_interval();
   }
 
   int stable_interval =
       config_.stable_writable_connection_ping_interval_or_default();
-  int weak_or_stablizing_interval = std::min(
-      stable_interval, WEAK_OR_STABILIZING_WRITABLE_CONNECTION_PING_INTERVAL);
+  int weak_or_stablizing_interval =
+      std::min(stable_interval,
+               webrtc::WEAK_OR_STABILIZING_WRITABLE_CONNECTION_PING_INTERVAL);
   // If the channel is weak or the connection is not stable yet, use the
   // weak_or_stablizing_interval.
   return (!weak() && conn->stable(now)) ? stable_interval
@@ -293,7 +293,7 @@ int BasicIceController::CalculateActiveWritablePingInterval(
 // We consider a connection pingable even if it's not connected because that's
 // how a TCP connection is kicked into reconnecting on the active side.
 bool BasicIceController::IsPingable(const Connection* conn, int64_t now) const {
-  const webrtc::Candidate& remote = conn->remote_candidate();
+  const Candidate& remote = conn->remote_candidate();
   // We should never get this far with an empty remote ufrag.
   RTC_DCHECK(!remote.username().empty());
   if (remote.username().empty() || remote.password().empty()) {
@@ -349,7 +349,8 @@ bool BasicIceController::IsPingable(const Connection* conn, int64_t now) const {
 // A connection is considered a backup connection if the channel state
 // is completed, the connection is not the selected connection and it is active.
 bool BasicIceController::IsBackupConnection(const Connection* conn) const {
-  return ice_transport_state_func_() == IceTransportState::STATE_COMPLETED &&
+  return ice_transport_state_func_() ==
+             cricket::IceTransportState::STATE_COMPLETED &&
          conn != selected_connection_ && conn->active();
 }
 
@@ -411,20 +412,19 @@ const Connection* BasicIceController::LeastRecentlyPinged(
   return nullptr;
 }
 
-std::map<const webrtc::Network*, const Connection*>
+std::map<const Network*, const Connection*>
 BasicIceController::GetBestConnectionByNetwork() const {
   // `connections_` has been sorted, so the first one in the list on a given
   // network is the best connection on the network, except that the selected
   // connection is always the best connection on the network.
-  std::map<const webrtc::Network*, const Connection*>
-      best_connection_by_network;
+  std::map<const Network*, const Connection*> best_connection_by_network;
   if (selected_connection_) {
     best_connection_by_network[selected_connection_->network()] =
         selected_connection_;
   }
   // TODO(honghaiz): Need to update this if `connections_` are not sorted.
   for (const Connection* conn : connections_) {
-    const webrtc::Network* network = conn->network();
+    const Network* network = conn->network();
     // This only inserts when the network does not exist in the map.
     best_connection_by_network.insert(std::make_pair(network, conn));
   }
@@ -571,7 +571,7 @@ BasicIceController::SortAndSwitchConnection(IceSwitchReason reason) {
 
   RTC_LOG(LS_VERBOSE) << "Sorting " << connections_.size()
                       << " available connections due to: "
-                      << IceSwitchReasonToString(reason);
+                      << webrtc::IceSwitchReasonToString(reason);
   for (size_t i = 0; i < connections_.size(); ++i) {
     RTC_LOG(LS_VERBOSE) << connections_[i]->ToString();
   }
@@ -737,7 +737,7 @@ int BasicIceController::CompareConnections(
     return state_cmp;
   }
 
-  if (ice_role_func_() == ICEROLE_CONTROLLED) {
+  if (ice_role_func_() == webrtc::ICEROLE_CONTROLLED) {
     // Compare the connections based on the nomination states and the last data
     // received time if this is on the controlled side.
     if (a->remote_nomination() > b->remote_nomination()) {
@@ -762,7 +762,7 @@ int BasicIceController::CompareConnections(
 int BasicIceController::CompareCandidatePairNetworks(
     const Connection* a,
     const Connection* b,
-    std::optional<webrtc::AdapterType> /* network_preference */) const {
+    std::optional<AdapterType> /* network_preference */) const {
   int compare_a_b_by_network_preference =
       CompareCandidatePairsByNetworkPreference(a, b,
                                                config_.network_preference);
@@ -774,18 +774,18 @@ int BasicIceController::CompareCandidatePairNetworks(
   bool a_vpn = a->network()->IsVpn();
   bool b_vpn = b->network()->IsVpn();
   switch (config_.vpn_preference) {
-    case webrtc::VpnPreference::kDefault:
+    case VpnPreference::kDefault:
       break;
-    case webrtc::VpnPreference::kOnlyUseVpn:
-    case webrtc::VpnPreference::kPreferVpn:
+    case VpnPreference::kOnlyUseVpn:
+    case VpnPreference::kPreferVpn:
       if (a_vpn && !b_vpn) {
         return a_is_better;
       } else if (!a_vpn && b_vpn) {
         return b_is_better;
       }
       break;
-    case webrtc::VpnPreference::kNeverUseVpn:
-    case webrtc::VpnPreference::kAvoidVpn:
+    case VpnPreference::kNeverUseVpn:
+    case VpnPreference::kAvoidVpn:
       if (a_vpn && !b_vpn) {
         return b_is_better;
       } else if (!a_vpn && b_vpn) {
@@ -846,19 +846,19 @@ std::vector<const Connection*> BasicIceController::PruneConnections() {
 }
 
 bool BasicIceController::GetUseCandidateAttr(const Connection* conn,
-                                             webrtc::NominationMode mode,
+                                             NominationMode mode,
                                              IceMode remote_ice_mode) const {
   switch (mode) {
-    case webrtc::NominationMode::REGULAR:
+    case NominationMode::REGULAR:
       // TODO(honghaiz): Implement regular nomination.
       return false;
-    case webrtc::NominationMode::AGGRESSIVE:
-      if (remote_ice_mode == ICEMODE_LITE) {
-        return GetUseCandidateAttr(conn, webrtc::NominationMode::REGULAR,
+    case NominationMode::AGGRESSIVE:
+      if (remote_ice_mode == webrtc::ICEMODE_LITE) {
+        return GetUseCandidateAttr(conn, NominationMode::REGULAR,
                                    remote_ice_mode);
       }
       return true;
-    case webrtc::NominationMode::SEMI_AGGRESSIVE: {
+    case NominationMode::SEMI_AGGRESSIVE: {
       // Nominate if
       // a) Remote is in FULL ICE AND
       //    a.1) `conn` is the selected connection OR
@@ -869,7 +869,7 @@ bool BasicIceController::GetUseCandidateAttr(const Connection* conn,
       //    b.1) `conn` is the selected_connection AND
       //    b.2) `conn` is writable.
       bool selected = conn == selected_connection_;
-      if (remote_ice_mode == ICEMODE_LITE) {
+      if (remote_ice_mode == webrtc::ICEMODE_LITE) {
         return selected && conn->writable();
       }
       bool better_than_selected =
@@ -883,4 +883,4 @@ bool BasicIceController::GetUseCandidateAttr(const Connection* conn,
   }
 }
 
-}  // namespace cricket
+}  // namespace webrtc

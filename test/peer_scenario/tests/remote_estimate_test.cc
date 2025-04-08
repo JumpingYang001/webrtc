@@ -75,7 +75,7 @@ TEST(RemoteEstimateEndToEnd, AudioUsesAbsSendTimeExtension) {
   s.net()->CreateRoute(callee->endpoint(), {ret_node}, caller->endpoint());
 
   auto signaling = s.ConnectSignaling(caller, callee, {send_node}, {ret_node});
-  caller->CreateAudio("AUDIO", cricket::AudioOptions());
+  caller->CreateAudio("AUDIO", AudioOptions());
   signaling.StartIceSignaling();
   RtpHeaderExtensionMap extension_map;
   std::atomic<bool> offer_exchange_done(false);

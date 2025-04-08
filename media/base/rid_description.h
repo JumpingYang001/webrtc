@@ -17,7 +17,7 @@
 
 #include "media/base/codec.h"
 
-namespace cricket {
+namespace webrtc {
 
 enum class RidDirection { kSend, kReceive };
 
@@ -79,7 +79,7 @@ struct RidDescription final {
   // When the RID is serialized/deserialized, these codecs are mapped to/from
   // the payload types listed in the media section, ensuring PT consistency in
   // the SDP even when `codecs[i].id` cannot be trusted.
-  std::vector<webrtc::Codec> codecs;
+  std::vector<Codec> codecs;
 
   // Contains key-value pairs for restrictions.
   // The keys are not validated against a known set.
@@ -92,6 +92,13 @@ struct RidDescription final {
   std::map<std::string, std::string> restrictions;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 }  // namespace cricket
 
 #endif  // MEDIA_BASE_RID_DESCRIPTION_H_

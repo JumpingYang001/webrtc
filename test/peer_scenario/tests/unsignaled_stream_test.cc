@@ -64,10 +64,10 @@ uint32_t get_ssrc(SessionDescriptionInterface* offer, size_t track_index) {
 
 void set_ssrc(SessionDescriptionInterface* offer, size_t index, uint32_t ssrc) {
   EXPECT_LT(index, offer->description()->contents().size());
-  cricket::StreamParams& new_stream_params = offer->description()
-                                                 ->contents()[index]
-                                                 .media_description()
-                                                 ->mutable_streams()[0];
+  StreamParams& new_stream_params = offer->description()
+                                        ->contents()[index]
+                                        .media_description()
+                                        ->mutable_streams()[0];
   new_stream_params.ssrcs[0] = ssrc;
   new_stream_params.ssrc_groups[0].ssrcs[0] = ssrc;
 }

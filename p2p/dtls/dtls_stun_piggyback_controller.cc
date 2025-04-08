@@ -25,7 +25,7 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/string_encode.h"
 
-namespace cricket {
+namespace webrtc {
 
 DtlsStunPiggybackController::DtlsStunPiggybackController(
     absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback)
@@ -58,7 +58,7 @@ void DtlsStunPiggybackController::SetDtlsHandshakeComplete(bool is_dtls_client,
 void DtlsStunPiggybackController::CapturePacket(
     rtc::ArrayView<const uint8_t> data) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  if (!IsDtlsPacket(data)) {
+  if (!webrtc::IsDtlsPacket(data)) {
     return;
   }
 
@@ -184,7 +184,7 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
   // Extract the received message sequence numbers of the handshake
   // from the packet and prepare the ack to be sent.
   std::optional<std::vector<uint16_t>> new_message_sequences =
-      GetDtlsHandshakeAcks(data->array_view());
+      webrtc::GetDtlsHandshakeAcks(data->array_view());
   if (!new_message_sequences) {
     RTC_LOG(LS_ERROR) << "DTLS-STUN piggybacking failed to parse DTLS packet.";
     return;
@@ -202,4 +202,4 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
   dtls_data_callback_(data->array_view());
 }
 
-}  // namespace cricket
+}  // namespace webrtc

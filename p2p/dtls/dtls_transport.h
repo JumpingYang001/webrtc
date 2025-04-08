@@ -47,7 +47,7 @@
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace cricket {
+namespace webrtc {
 
 // A bridge between a packet-oriented/transport-type interface on
 // the bottom and a StreamInterface on the top.
@@ -56,7 +56,7 @@ class StreamInterfaceChannel : public rtc::StreamInterface {
   explicit StreamInterfaceChannel(webrtc::IceTransportInternal* ice_transport);
 
   void SetDtlsStunPiggybackController(
-      DtlsStunPiggybackController* dtls_stun_piggyback_controller);
+      webrtc::DtlsStunPiggybackController* dtls_stun_piggyback_controller);
 
   StreamInterfaceChannel(const StreamInterfaceChannel&) = delete;
   StreamInterfaceChannel& operator=(const StreamInterfaceChannel&) = delete;
@@ -78,7 +78,7 @@ class StreamInterfaceChannel : public rtc::StreamInterface {
 
  private:
   webrtc::IceTransportInternal* const ice_transport_;  // owned by DtlsTransport
-  DtlsStunPiggybackController* dtls_stun_piggyback_controller_ =
+  webrtc::DtlsStunPiggybackController* dtls_stun_piggyback_controller_ =
       nullptr;  // owned by DtlsTransport
   rtc::StreamState state_ RTC_GUARDED_BY(callback_sequence_);
   webrtc::BufferQueue packets_ RTC_GUARDED_BY(callback_sequence_);
@@ -112,7 +112,7 @@ class StreamInterfaceChannel : public rtc::StreamInterface {
 //
 // This class is not thread safe; all methods must be called on the same thread
 // as the constructor.
-class DtlsTransport : public DtlsTransportInternal {
+class DtlsTransportInternalImpl : public webrtc::DtlsTransportInternal {
  public:
   // `ice_transport` is the ICE transport this DTLS transport is wrapping.  It
   // must outlive this DTLS transport.
@@ -122,16 +122,17 @@ class DtlsTransport : public DtlsTransportInternal {
   //
   // `event_log` is an optional RtcEventLog for logging state changes. It should
   // outlive the DtlsTransport.
-  DtlsTransport(
+  DtlsTransportInternalImpl(
       webrtc::IceTransportInternal* ice_transport,
       const webrtc::CryptoOptions& crypto_options,
       webrtc::RtcEventLog* event_log,
       webrtc::SSLProtocolVersion max_version = webrtc::SSL_PROTOCOL_DTLS_12);
 
-  ~DtlsTransport() override;
+  ~DtlsTransportInternalImpl() override;
 
-  DtlsTransport(const DtlsTransport&) = delete;
-  DtlsTransport& operator=(const DtlsTransport&) = delete;
+  DtlsTransportInternalImpl(const DtlsTransportInternalImpl&) = delete;
+  DtlsTransportInternalImpl& operator=(const DtlsTransportInternalImpl&) =
+      delete;
 
   webrtc::DtlsTransportState dtls_state() const override;
   const std::string& transport_name() const override;
@@ -145,9 +146,9 @@ class DtlsTransport : public DtlsTransportInternal {
 
   // SetLocalCertificate is what makes DTLS active. It must be called before
   // SetRemoteFinterprint.
-  // TODO(deadbeef): Once DtlsTransport no longer has the concept of being
-  // "active" or not (acting as a passthrough if not active), just require this
-  // certificate on construction or "Start".
+  // TODO(deadbeef): Once DtlsTransportInternalImpl no longer has the concept of
+  // being "active" or not (acting as a passthrough if not active), just require
+  // this certificate on construction or "Start".
   bool SetLocalCertificate(
       const rtc::scoped_refptr<webrtc::RTCCertificate>& certificate) override;
   rtc::scoped_refptr<webrtc::RTCCertificate> GetLocalCertificate()
@@ -307,7 +308,7 @@ class DtlsTransport : public DtlsTransportInternal {
   bool dtls_in_stun_ = false;
 
   // A controller for piggybacking DTLS in STUN.
-  DtlsStunPiggybackController dtls_stun_piggyback_controller_;
+  webrtc::DtlsStunPiggybackController dtls_stun_piggyback_controller_;
 
   absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
                           const rtc::ReceivedPacket&)>
@@ -316,11 +317,18 @@ class DtlsTransport : public DtlsTransportInternal {
   // When ICE get writable during dtls piggybacked handshake
   // there is currently no safe way of updating the timeout
   // in boringssl (that is work in progress). Therefore
-  // DtlsTransport has a "hack" to periodically retransmit.
+  // DtlsTransportInternalImpl has a "hack" to periodically retransmit.
   bool pending_periodic_retransmit_dtls_packet_ = false;
   webrtc::ScopedTaskSafetyDetached safety_flag_;
 };
 
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using DtlsTransport = ::webrtc::DtlsTransportInternalImpl;
+using ::webrtc::StreamInterfaceChannel;
 }  // namespace cricket
 
 #endif  // P2P_DTLS_DTLS_TRANSPORT_H_

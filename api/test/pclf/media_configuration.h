@@ -359,7 +359,7 @@ struct AudioConfig {
   std::optional<std::string> output_dump_file_name;
 
   // Audio options to use.
-  cricket::AudioOptions audio_options;
+  AudioOptions audio_options;
   // Sampling frequency of input audio data (from file or generated).
   int sampling_frequency_in_hz = 48000;
   // If specified, determines a sync group to which this audio stream belongs.

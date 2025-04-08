@@ -56,7 +56,7 @@ void UpdateConnectionAddress(
   for (size_t i = 0; i < candidate_collection.count(); ++i) {
     const IceCandidateInterface* jsep_candidate = candidate_collection.at(i);
     if (jsep_candidate->candidate().component() !=
-        cricket::ICE_CANDIDATE_COMPONENT_RTP) {
+        ICE_CANDIDATE_COMPONENT_RTP) {
       continue;
     }
     // Default destination should be UDP only.
@@ -231,7 +231,7 @@ bool JsepSessionDescription::AddCandidate(
     return false;
   const std::string& content_name =
       description_->contents()[mediasection_index].mid();
-  const cricket::TransportInfo* transport_info =
+  const TransportInfo* transport_info =
       description_->GetTransportInfoByName(content_name);
   if (!transport_info) {
     return false;

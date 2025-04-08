@@ -25,6 +25,7 @@
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/task_queue/task_queue_base.h"
+#include "api/transport/stun.h"
 #include "api/units/time_delta.h"
 #include "p2p/base/port_interface.h"
 #include "rtc_base/async_packet_socket.h"
@@ -36,11 +37,6 @@
 #include "rtc_base/ssl_adapter.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread_annotations.h"
-
-namespace cricket {
-class StunMessage;
-class TurnMessage;
-}  // namespace cricket
 
 namespace webrtc {
 
@@ -97,7 +93,7 @@ class TurnServerAllocation final {
 
   std::string ToString() const;
 
-  void HandleTurnMessage(const cricket::TurnMessage* msg);
+  void HandleTurnMessage(const TurnMessage* msg);
   void HandleChannelData(rtc::ArrayView<const uint8_t> payload);
 
  private:
@@ -115,25 +111,25 @@ class TurnServerAllocation final {
 
   void PostDeleteSelf(TimeDelta delay);
 
-  void HandleAllocateRequest(const cricket::TurnMessage* msg);
-  void HandleRefreshRequest(const cricket::TurnMessage* msg);
-  void HandleSendIndication(const cricket::TurnMessage* msg);
-  void HandleCreatePermissionRequest(const cricket::TurnMessage* msg);
-  void HandleChannelBindRequest(const cricket::TurnMessage* msg);
+  void HandleAllocateRequest(const TurnMessage* msg);
+  void HandleRefreshRequest(const TurnMessage* msg);
+  void HandleSendIndication(const TurnMessage* msg);
+  void HandleCreatePermissionRequest(const TurnMessage* msg);
+  void HandleChannelBindRequest(const TurnMessage* msg);
 
   void OnExternalPacket(AsyncPacketSocket* socket,
                         const rtc::ReceivedPacket& packet);
 
-  static TimeDelta ComputeLifetime(const cricket::TurnMessage& msg);
+  static TimeDelta ComputeLifetime(const TurnMessage& msg);
   bool HasPermission(const IPAddress& addr);
   void AddPermission(const IPAddress& addr);
   PermissionList::iterator FindPermission(const IPAddress& addr);
   ChannelList::iterator FindChannel(int channel_id);
   ChannelList::iterator FindChannel(const SocketAddress& addr);
 
-  void SendResponse(cricket::TurnMessage* msg);
-  void SendBadRequestResponse(const cricket::TurnMessage* req);
-  void SendErrorResponse(const cricket::TurnMessage* req,
+  void SendResponse(TurnMessage* msg);
+  void SendBadRequestResponse(const TurnMessage* req);
+  void SendErrorResponse(const TurnMessage* req,
                          int code,
                          absl::string_view reason);
   void SendExternal(const void* data, size_t size, const SocketAddress& peer);
@@ -173,7 +169,7 @@ class TurnRedirectInterface {
 
 class StunMessageObserver {
  public:
-  virtual void ReceivedMessage(const cricket::TurnMessage* msg) = 0;
+  virtual void ReceivedMessage(const TurnMessage* msg) = 0;
   virtual void ReceivedChannelData(rtc::ArrayView<const uint8_t> payload) = 0;
   virtual ~StunMessageObserver() {}
 };
@@ -289,17 +285,15 @@ class TurnServer : public sigslot::has_slots<> {
   void HandleStunMessage(TurnServerConnection* conn,
                          rtc::ArrayView<const uint8_t> payload)
       RTC_RUN_ON(thread_);
-  void HandleBindingRequest(TurnServerConnection* conn,
-                            const cricket::StunMessage* msg)
+  void HandleBindingRequest(TurnServerConnection* conn, const StunMessage* msg)
       RTC_RUN_ON(thread_);
   void HandleAllocateRequest(TurnServerConnection* conn,
-                             const cricket::TurnMessage* msg,
+                             const TurnMessage* msg,
                              absl::string_view key) RTC_RUN_ON(thread_);
 
-  bool GetKey(const cricket::StunMessage* msg, std::string* key)
-      RTC_RUN_ON(thread_);
+  bool GetKey(const StunMessage* msg, std::string* key) RTC_RUN_ON(thread_);
   bool CheckAuthorization(TurnServerConnection* conn,
-                          cricket::StunMessage* msg,
+                          StunMessage* msg,
                           absl::string_view key) RTC_RUN_ON(thread_);
   bool ValidateNonce(absl::string_view nonce) const RTC_RUN_ON(thread_);
 
@@ -311,22 +305,22 @@ class TurnServer : public sigslot::has_slots<> {
       RTC_RUN_ON(thread_);
 
   void SendErrorResponse(TurnServerConnection* conn,
-                         const cricket::StunMessage* req,
+                         const StunMessage* req,
                          int code,
                          absl::string_view reason);
 
   void SendErrorResponseWithRealmAndNonce(TurnServerConnection* conn,
-                                          const cricket::StunMessage* req,
+                                          const StunMessage* req,
                                           int code,
                                           absl::string_view reason)
       RTC_RUN_ON(thread_);
 
   void SendErrorResponseWithAlternateServer(TurnServerConnection* conn,
-                                            const cricket::StunMessage* req,
+                                            const StunMessage* req,
                                             const SocketAddress& addr)
       RTC_RUN_ON(thread_);
 
-  void SendStun(TurnServerConnection* conn, cricket::StunMessage* msg);
+  void SendStun(TurnServerConnection* conn, StunMessage* msg);
   void Send(TurnServerConnection* conn, const ByteBufferWriter& buf);
 
   void DestroyAllocation(TurnServerAllocation* allocation) RTC_RUN_ON(thread_);

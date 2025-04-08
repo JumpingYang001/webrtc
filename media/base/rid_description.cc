@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace cricket {
+namespace webrtc {
 
 RidDescription::RidDescription() = default;
 RidDescription::RidDescription(const std::string& rid, RidDirection direction)
@@ -26,4 +26,4 @@ bool RidDescription::operator==(const RidDescription& other) const {
          codecs == other.codecs && restrictions == other.restrictions;
 }
 
-}  // namespace cricket
+}  // namespace webrtc

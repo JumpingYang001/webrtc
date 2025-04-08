@@ -19,7 +19,7 @@
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace cricket {
+namespace webrtc {
 
 const size_t kMinRtpPacketLen = 12;
 const size_t kMaxRtpPacketLen = 2048;
@@ -71,9 +71,35 @@ bool UpdateRtpAbsSendTimeExtension(uint8_t* rtp,
 bool RTC_EXPORT
 ApplyPacketOptions(uint8_t* data,
                    size_t length,
-                   const webrtc::PacketTimeUpdateParams& packet_time_params,
+                   const PacketTimeUpdateParams& packet_time_params,
                    uint64_t time_us);
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::ApplyPacketOptions;
+using ::webrtc::GetRtcpSsrc;
+using ::webrtc::GetRtcpType;
+using ::webrtc::InferRtpPacketType;
+using ::webrtc::IsValidRtpPacketSize;
+using ::webrtc::IsValidRtpPayloadType;
+using ::webrtc::kMaxRtpPacketLen;
+using ::webrtc::kMinRtcpPacketLen;
+using ::webrtc::kMinRtpPacketLen;
+using ::webrtc::kRtcpTypeApp;
+using ::webrtc::kRtcpTypeBye;
+using ::webrtc::kRtcpTypePSFB;
+using ::webrtc::kRtcpTypeRR;
+using ::webrtc::kRtcpTypeRTPFB;
+using ::webrtc::kRtcpTypeSDES;
+using ::webrtc::kRtcpTypeSR;
+using ::webrtc::RtcpTypes;
+using ::webrtc::RtpPacketType;
+using ::webrtc::RtpPacketTypeToString;
+using ::webrtc::UpdateRtpAbsSendTimeExtension;
+using ::webrtc::ValidateRtpHeader;
 }  // namespace cricket
 
 #endif  // MEDIA_BASE_RTP_UTILS_H_

@@ -102,13 +102,13 @@ int GetDefaultMaxQp(VideoCodecType codec_type) {
   switch (codec_type) {
     case webrtc::kVideoCodecH264:
     case webrtc::kVideoCodecH265:
-      return cricket::kDefaultVideoMaxQpH26x;
+      return kDefaultVideoMaxQpH26x;
     case webrtc::kVideoCodecVP8:
     case webrtc::kVideoCodecVP9:
     case webrtc::kVideoCodecGeneric:
-      return cricket::kDefaultVideoMaxQpVpx;
+      return kDefaultVideoMaxQpVpx;
     case webrtc::kVideoCodecAV1:
-      return cricket::kDefaultVideoMaxQpAv1;
+      return kDefaultVideoMaxQpAv1;
   }
 }
 
@@ -346,7 +346,7 @@ std::vector<VideoStream> EncoderStreamFactory::CreateDefaultVideoStreams(
   }
   int max_framerate = (encoder_config.simulcast_layers[0].max_framerate > 0)
                           ? encoder_config.simulcast_layers[0].max_framerate
-                          : cricket::kDefaultVideoMaxFramerate;
+                          : kDefaultVideoMaxFramerate;
 
   VideoStream layer;
   layer.width = width;
@@ -491,7 +491,7 @@ Resolution EncoderStreamFactory::GetLayerResolutionFromScaleResolutionDownTo(
   Resolution frame = {.width = frame_width, .height = frame_height};
 
   // Maybe adapt further based on restrictions and encoder alignment.
-  cricket::VideoAdapter adapter(encoder_info_requested_resolution_alignment_);
+  VideoAdapter adapter(encoder_info_requested_resolution_alignment_);
   adapter.OnOutputFormatRequest(frame.ToPair(), frame.PixelCount(),
                                 std::nullopt);
   if (restrictions_) {

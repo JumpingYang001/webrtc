@@ -37,8 +37,7 @@ class DtlsTransport : public DtlsTransportInterface {
   // lives on.
   // The Information() function can be called from a different thread,
   // such as the signalling thread.
-  explicit DtlsTransport(
-      std::unique_ptr<cricket::DtlsTransportInternal> internal);
+  explicit DtlsTransport(std::unique_ptr<DtlsTransportInternal> internal);
 
   rtc::scoped_refptr<IceTransportInterface> ice_transport() override;
 
@@ -50,12 +49,12 @@ class DtlsTransport : public DtlsTransportInterface {
   void UnregisterObserver() override;
   void Clear();
 
-  cricket::DtlsTransportInternal* internal() {
+  DtlsTransportInternal* internal() {
     RTC_DCHECK_RUN_ON(owner_thread_);
     return internal_dtls_transport_.get();
   }
 
-  const cricket::DtlsTransportInternal* internal() const {
+  const DtlsTransportInternal* internal() const {
     RTC_DCHECK_RUN_ON(owner_thread_);
     return internal_dtls_transport_.get();
   }
@@ -64,7 +63,7 @@ class DtlsTransport : public DtlsTransportInterface {
   ~DtlsTransport();
 
  private:
-  void OnInternalDtlsState(cricket::DtlsTransportInternal* transport,
+  void OnInternalDtlsState(DtlsTransportInternal* transport,
                            DtlsTransportState state);
   void UpdateInformation();
 
@@ -79,7 +78,7 @@ class DtlsTransport : public DtlsTransportInterface {
   Thread* owner_thread_;
   mutable Mutex lock_;
   DtlsTransportInformation info_ RTC_GUARDED_BY(lock_);
-  std::unique_ptr<cricket::DtlsTransportInternal> internal_dtls_transport_
+  std::unique_ptr<DtlsTransportInternal> internal_dtls_transport_
       RTC_GUARDED_BY(owner_thread_);
   const rtc::scoped_refptr<IceTransportWithPointer> ice_transport_;
 };

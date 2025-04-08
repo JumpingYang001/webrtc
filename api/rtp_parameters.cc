@@ -53,12 +53,11 @@ RtpCodec::RtpCodec() = default;
 RtpCodec::RtpCodec(const RtpCodec&) = default;
 RtpCodec::~RtpCodec() = default;
 bool RtpCodec::IsResiliencyCodec() const {
-  return name == cricket::kRtxCodecName || name == cricket::kRedCodecName ||
-         name == cricket::kUlpfecCodecName ||
-         name == cricket::kFlexfecCodecName;
+  return name == kRtxCodecName || name == kRedCodecName ||
+         name == kUlpfecCodecName || name == kFlexfecCodecName;
 }
 bool RtpCodec::IsMediaCodec() const {
-  return !IsResiliencyCodec() && name != cricket::kComfortNoiseCodecName;
+  return !IsResiliencyCodec() && name != kComfortNoiseCodecName;
 }
 RtpCodecCapability::RtpCodecCapability() = default;
 RtpCodecCapability::~RtpCodecCapability() = default;

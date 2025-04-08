@@ -199,8 +199,7 @@ bool SessionDescription::RemoveContentByName(const std::string& name) {
   return false;
 }
 
-void SessionDescription::AddTransportInfo(
-    const cricket::TransportInfo& transport_info) {
+void SessionDescription::AddTransportInfo(const TransportInfo& transport_info) {
   transport_infos_.push_back(transport_info);
 }
 
@@ -216,7 +215,7 @@ bool SessionDescription::RemoveTransportInfoByName(const std::string& name) {
   return false;
 }
 
-const cricket::TransportInfo* SessionDescription::GetTransportInfoByName(
+const TransportInfo* SessionDescription::GetTransportInfoByName(
     const std::string& name) const {
   for (cricket::TransportInfos::const_iterator iter = transport_infos_.begin();
        iter != transport_infos_.end(); ++iter) {
@@ -227,7 +226,7 @@ const cricket::TransportInfo* SessionDescription::GetTransportInfoByName(
   return NULL;
 }
 
-cricket::TransportInfo* SessionDescription::GetTransportInfoByName(
+TransportInfo* SessionDescription::GetTransportInfoByName(
     const std::string& name) {
   for (cricket::TransportInfos::iterator iter = transport_infos_.begin();
        iter != transport_infos_.end(); ++iter) {

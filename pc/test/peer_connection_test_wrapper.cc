@@ -175,7 +175,7 @@ bool PeerConnectionTestWrapper::CreatePc(
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
     std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
     std::unique_ptr<webrtc::FieldTrialsView> field_trials) {
-  auto port_allocator = std::make_unique<cricket::FakePortAllocator>(
+  auto port_allocator = std::make_unique<webrtc::FakePortAllocator>(
       CreateEnvironment(field_trials.get()), socket_server_, network_thread_);
 
   RTC_DCHECK_RUN_ON(&pc_thread_checker_);
@@ -431,7 +431,7 @@ bool PeerConnectionTestWrapper::CheckForVideo() {
 
 void PeerConnectionTestWrapper::GetAndAddUserMedia(
     bool audio,
-    const cricket::AudioOptions& audio_options,
+    const webrtc::AudioOptions& audio_options,
     bool video) {
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
       GetUserMedia(audio, audio_options, video);
@@ -446,7 +446,7 @@ void PeerConnectionTestWrapper::GetAndAddUserMedia(
 rtc::scoped_refptr<webrtc::MediaStreamInterface>
 PeerConnectionTestWrapper::GetUserMedia(
     bool audio,
-    const cricket::AudioOptions& audio_options,
+    const webrtc::AudioOptions& audio_options,
     bool video,
     webrtc::Resolution resolution) {
   std::string stream_id =
@@ -455,7 +455,7 @@ PeerConnectionTestWrapper::GetUserMedia(
       peer_connection_factory_->CreateLocalMediaStream(stream_id);
 
   if (audio) {
-    cricket::AudioOptions options = audio_options;
+    webrtc::AudioOptions options = audio_options;
     // Disable highpass filter so that we can get all the test audio frames.
     options.highpass_filter = false;
     rtc::scoped_refptr<webrtc::AudioSourceInterface> source =

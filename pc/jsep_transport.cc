@@ -61,7 +61,7 @@ JsepTransportDescription::JsepTransportDescription(
     bool rtcp_mux_enabled,
     const std::vector<int>& encrypted_header_extension_ids,
     int rtp_abs_sendtime_extn_id,
-    const cricket::TransportDescription& transport_desc)
+    const TransportDescription& transport_desc)
     : rtcp_mux_enabled(rtcp_mux_enabled),
       encrypted_header_extension_ids(encrypted_header_extension_ids),
       rtp_abs_sendtime_extn_id(rtp_abs_sendtime_extn_id),
@@ -97,9 +97,9 @@ JsepTransport::JsepTransport(
     std::unique_ptr<RtpTransport> unencrypted_rtp_transport,
     std::unique_ptr<SrtpTransport> sdes_transport,
     std::unique_ptr<DtlsSrtpTransport> dtls_srtp_transport,
-    std::unique_ptr<cricket::DtlsTransportInternal> rtp_dtls_transport,
-    std::unique_ptr<cricket::DtlsTransportInternal> rtcp_dtls_transport,
-    std::unique_ptr<cricket::SctpTransportInternal> sctp_transport,
+    std::unique_ptr<DtlsTransportInternal> rtp_dtls_transport,
+    std::unique_ptr<DtlsTransportInternal> rtcp_dtls_transport,
+    std::unique_ptr<SctpTransportInternal> sctp_transport,
     std::function<void()> rtcp_mux_active_callback,
     PayloadTypePicker& suggester)
     : network_thread_(Thread::Current()),
@@ -170,7 +170,7 @@ RTCError JsepTransport::SetLocalJsepTransportDescription(
   TRACE_EVENT0("webrtc", "JsepTransport::SetLocalJsepTransportDescription");
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  cricket::IceParameters ice_parameters =
+  IceParameters ice_parameters =
       jsep_description.transport_desc.GetIceParameters();
   RTCError ice_parameters_result = ice_parameters.Validate();
   if (!ice_parameters_result.ok()) {
@@ -191,9 +191,9 @@ RTCError JsepTransport::SetLocalJsepTransportDescription(
     dtls_srtp_transport_->UpdateRecvEncryptedHeaderExtensionIds(
         jsep_description.encrypted_header_extension_ids);
   }
-  bool ice_restarting = local_description_ != nullptr &&
-                        cricket::IceCredentialsChanged(
-                            local_description_->transport_desc.ice_ufrag,
+  bool ice_restarting =
+      local_description_ != nullptr &&
+      IceCredentialsChanged(local_description_->transport_desc.ice_ufrag,
                             local_description_->transport_desc.ice_pwd,
                             ice_parameters.ufrag, ice_parameters.pwd);
   local_description_.reset(new JsepTransportDescription(jsep_description));
@@ -245,7 +245,7 @@ RTCError JsepTransport::SetRemoteJsepTransportDescription(
 
   RTC_DCHECK_RUN_ON(network_thread_);
 
-  cricket::IceParameters ice_parameters =
+  IceParameters ice_parameters =
       jsep_description.transport_desc.GetIceParameters();
   RTCError ice_parameters_result = ice_parameters.Validate();
   if (!ice_parameters_result.ok()) {
@@ -301,10 +301,9 @@ RTCError JsepTransport::AddRemoteCandidates(const Candidates& candidates) {
   }
 
   for (const cricket::Candidate& candidate : candidates) {
-    auto transport =
-        candidate.component() == cricket::ICE_CANDIDATE_COMPONENT_RTP
-            ? rtp_dtls_transport_
-            : rtcp_dtls_transport_;
+    auto transport = candidate.component() == ICE_CANDIDATE_COMPONENT_RTP
+                         ? rtp_dtls_transport_
+                         : rtcp_dtls_transport_;
     if (!transport) {
       return RTCError(RTCErrorType::INVALID_PARAMETER,
                       "Candidate has an unknown component: " +
@@ -343,12 +342,12 @@ bool JsepTransport::GetStats(TransportStats* stats) const {
   stats->channel_stats.clear();
   RTC_DCHECK(rtp_dtls_transport_->internal());
   bool ret = GetTransportStats(rtp_dtls_transport_->internal(),
-                               cricket::ICE_CANDIDATE_COMPONENT_RTP, stats);
+                               ICE_CANDIDATE_COMPONENT_RTP, stats);
 
   if (rtcp_dtls_transport_) {
     RTC_DCHECK(rtcp_dtls_transport_->internal());
     ret &= GetTransportStats(rtcp_dtls_transport_->internal(),
-                             cricket::ICE_CANDIDATE_COMPONENT_RTCP, stats);
+                             ICE_CANDIDATE_COMPONENT_RTCP, stats);
   }
   return ret;
 }
@@ -418,7 +417,7 @@ RTCError JsepTransport::RecordPayloadTypes(bool local,
 }
 
 void JsepTransport::SetRemoteIceParameters(
-    const cricket::IceParameters& ice_parameters,
+    const IceParameters& ice_parameters,
     IceTransportInternal* ice_transport) {
   TRACE_EVENT0("webrtc", "JsepTransport::SetRemoteIceParameters");
   RTC_DCHECK_RUN_ON(network_thread_);
@@ -429,7 +428,7 @@ void JsepTransport::SetRemoteIceParameters(
 }
 
 RTCError JsepTransport::SetNegotiatedDtlsParameters(
-    cricket::DtlsTransportInternal* dtls_transport,
+    DtlsTransportInternal* dtls_transport,
     std::optional<SSLRole> dtls_role,
     SSLFingerprint* remote_fingerprint) {
   RTC_DCHECK(dtls_transport);
@@ -547,8 +546,8 @@ RTCError JsepTransport::NegotiateAndSetDtlsParameters(
 
 RTCError JsepTransport::NegotiateDtlsRole(
     SdpType local_description_type,
-    cricket::ConnectionRole local_connection_role,
-    cricket::ConnectionRole remote_connection_role,
+    ConnectionRole local_connection_role,
+    ConnectionRole remote_connection_role,
     std::optional<SSLRole>* negotiated_dtls_role) {
   // From RFC 4145, section-4.1, The following are the values that the
   // 'setup' attribute can take in an offer/answer exchange:
@@ -578,16 +577,15 @@ RTCError JsepTransport::NegotiateDtlsRole(
   // as well as "actpass"
   bool is_remote_server = false;
   if (local_description_type == SdpType::kOffer) {
-    if (local_connection_role != cricket::CONNECTIONROLE_ACTPASS) {
+    if (local_connection_role != CONNECTIONROLE_ACTPASS) {
       return RTCError(RTCErrorType::INVALID_PARAMETER,
                       "Offerer must use actpass value for setup attribute.");
     }
 
-    if (remote_connection_role == cricket::CONNECTIONROLE_ACTIVE ||
-        remote_connection_role == cricket::CONNECTIONROLE_PASSIVE ||
-        remote_connection_role == cricket::CONNECTIONROLE_NONE) {
-      is_remote_server =
-          (remote_connection_role == cricket::CONNECTIONROLE_PASSIVE);
+    if (remote_connection_role == CONNECTIONROLE_ACTIVE ||
+        remote_connection_role == CONNECTIONROLE_PASSIVE ||
+        remote_connection_role == CONNECTIONROLE_NONE) {
+      is_remote_server = (remote_connection_role == CONNECTIONROLE_PASSIVE);
     } else {
       return RTCError(RTCErrorType::INVALID_PARAMETER,
                       "Answerer must use either active or passive value "
@@ -595,8 +593,8 @@ RTCError JsepTransport::NegotiateDtlsRole(
     }
     // If remote is NONE or ACTIVE it will act as client.
   } else {
-    if (remote_connection_role != cricket::CONNECTIONROLE_ACTPASS &&
-        remote_connection_role != cricket::CONNECTIONROLE_NONE) {
+    if (remote_connection_role != CONNECTIONROLE_ACTPASS &&
+        remote_connection_role != CONNECTIONROLE_NONE) {
       // Accept a remote role attribute that's not "actpass", but matches the
       // current negotiated role. This is allowed by dtls-sdp, though our
       // implementation will never generate such an offer as it's not
@@ -608,15 +606,15 @@ RTCError JsepTransport::NegotiateDtlsRole(
       if (!current_dtls_role) {
         // Role not assigned yet. Verify that local role fits with remote role.
         switch (remote_connection_role) {
-          case cricket::CONNECTIONROLE_ACTIVE:
-            if (local_connection_role != cricket::CONNECTIONROLE_PASSIVE) {
+          case CONNECTIONROLE_ACTIVE:
+            if (local_connection_role != CONNECTIONROLE_PASSIVE) {
               return RTCError(
                   RTCErrorType::INVALID_PARAMETER,
                   "Answerer must be passive when offerer is active");
             }
             break;
-          case cricket::CONNECTIONROLE_PASSIVE:
-            if (local_connection_role != cricket::CONNECTIONROLE_ACTIVE) {
+          case CONNECTIONROLE_PASSIVE:
+            if (local_connection_role != CONNECTIONROLE_ACTIVE) {
               return RTCError(
                   RTCErrorType::INVALID_PARAMETER,
                   "Answerer must be active when offerer is passive");
@@ -628,9 +626,9 @@ RTCError JsepTransport::NegotiateDtlsRole(
         }
       } else {
         if ((*current_dtls_role == webrtc::SSL_CLIENT &&
-             remote_connection_role == cricket::CONNECTIONROLE_ACTIVE) ||
+             remote_connection_role == CONNECTIONROLE_ACTIVE) ||
             (*current_dtls_role == webrtc::SSL_SERVER &&
-             remote_connection_role == cricket::CONNECTIONROLE_PASSIVE)) {
+             remote_connection_role == CONNECTIONROLE_PASSIVE)) {
           return RTCError(RTCErrorType::INVALID_PARAMETER,
                           "Offerer must use current negotiated role for "
                           "setup attribute.");
@@ -638,10 +636,9 @@ RTCError JsepTransport::NegotiateDtlsRole(
       }
     }
 
-    if (local_connection_role == cricket::CONNECTIONROLE_ACTIVE ||
-        local_connection_role == cricket::CONNECTIONROLE_PASSIVE) {
-      is_remote_server =
-          (local_connection_role == cricket::CONNECTIONROLE_ACTIVE);
+    if (local_connection_role == CONNECTIONROLE_ACTIVE ||
+        local_connection_role == CONNECTIONROLE_PASSIVE) {
+      is_remote_server = (local_connection_role == CONNECTIONROLE_ACTIVE);
     } else {
       return RTCError(RTCErrorType::INVALID_PARAMETER,
                       "Answerer must use either active or passive value "
@@ -656,10 +653,9 @@ RTCError JsepTransport::NegotiateDtlsRole(
   return RTCError::OK();
 }
 
-bool JsepTransport::GetTransportStats(
-    cricket::DtlsTransportInternal* dtls_transport,
-    int component,
-    TransportStats* stats) const {
+bool JsepTransport::GetTransportStats(DtlsTransportInternal* dtls_transport,
+                                      int component,
+                                      TransportStats* stats) const {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_DCHECK(dtls_transport);
   TransportChannelStats substats;

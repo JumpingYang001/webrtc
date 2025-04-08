@@ -143,7 +143,7 @@ TEST(RtpParametersConversionTest, ToRtpCapabilities) {
 
   Codec red = CreateVideoCodec(102, "red");
   // Note: fmtp not usually done for video-red but we want it filtered.
-  red.SetParam(cricket::kCodecParamNotInNameValueFormat, "101/101");
+  red.SetParam(kCodecParamNotInNameValueFormat, "101/101");
 
   Codec red2 = CreateVideoCodec(127, "red");
   Codec ulpfec = CreateVideoCodec(103, "ulpfec");

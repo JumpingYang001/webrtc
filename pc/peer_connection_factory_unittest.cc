@@ -162,8 +162,8 @@ class PeerConnectionFactoryTest : public ::testing::Test {
         nullptr /* audio_mixer */, nullptr /* audio_processing */);
 
     ASSERT_TRUE(factory_.get() != NULL);
-    port_allocator_ = std::make_unique<cricket::FakePortAllocator>(
-        CreateEnvironment(), socket_server_.get());
+    port_allocator_ = std::make_unique<FakePortAllocator>(CreateEnvironment(),
+                                                          socket_server_.get());
     raw_port_allocator_ = port_allocator_.get();
   }
 
@@ -262,10 +262,10 @@ class PeerConnectionFactoryTest : public ::testing::Test {
   AutoSocketServerThread main_thread_;
   rtc::scoped_refptr<PeerConnectionFactoryInterface> factory_;
   NullPeerConnectionObserver observer_;
-  std::unique_ptr<cricket::FakePortAllocator> port_allocator_;
+  std::unique_ptr<FakePortAllocator> port_allocator_;
   // Since the PC owns the port allocator after it's been initialized,
   // this should only be used when known to be safe.
-  cricket::FakePortAllocator* raw_port_allocator_;
+  FakePortAllocator* raw_port_allocator_;
 };
 
 // Since there is no public PeerConnectionFactory API to control RTX usage, need
@@ -364,7 +364,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpSenderRtxEnabledCapabilities) {
       factory_->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
-      [](const auto& c) { return c.name == cricket::kRtxCodecName; });
+      [](const auto& c) { return c.name == kRtxCodecName; });
   EXPECT_TRUE(it != video_capabilities.codecs.end());
 }
 
@@ -374,7 +374,7 @@ TEST(PeerConnectionFactoryTestInternal, CheckRtpSenderRtxDisabledCapabilities) {
       factory->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
-      [](const auto& c) { return c.name == cricket::kRtxCodecName; });
+      [](const auto& c) { return c.name == kRtxCodecName; });
   EXPECT_TRUE(it == video_capabilities.codecs.end());
 }
 
@@ -416,7 +416,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverRtxEnabledCapabilities) {
       factory_->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
-      [](const auto& c) { return c.name == cricket::kRtxCodecName; });
+      [](const auto& c) { return c.name == kRtxCodecName; });
   EXPECT_TRUE(it != video_capabilities.codecs.end());
 }
 
@@ -427,7 +427,7 @@ TEST(PeerConnectionFactoryTestInternal,
       factory->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
-      [](const auto& c) { return c.name == cricket::kRtxCodecName; });
+      [](const auto& c) { return c.name == kRtxCodecName; });
   EXPECT_TRUE(it == video_capabilities.codecs.end());
 }
 

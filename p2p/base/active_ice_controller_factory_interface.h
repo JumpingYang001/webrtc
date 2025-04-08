@@ -24,13 +24,13 @@ namespace webrtc {
 // active ICE controller to interact with.
 struct ActiveIceControllerFactoryArgs {
   IceControllerFactoryArgs legacy_args;
-  cricket::IceAgentInterface* ice_agent;
+  IceAgentInterface* ice_agent;
 };
 
 class ActiveIceControllerFactoryInterface {
  public:
   virtual ~ActiveIceControllerFactoryInterface() = default;
-  virtual std::unique_ptr<cricket::ActiveIceControllerInterface> Create(
+  virtual std::unique_ptr<ActiveIceControllerInterface> Create(
       const ActiveIceControllerFactoryArgs&) = 0;
 };
 

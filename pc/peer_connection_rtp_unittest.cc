@@ -780,7 +780,7 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, UnsignaledSsrcCreatesReceiverStreams) {
   std::vector<std::string> stream_ids =
       contents[0].media_description()->streams()[0].stream_ids();
   contents[0].media_description()->mutable_streams().clear();
-  cricket::StreamParams new_stream;
+  StreamParams new_stream;
   new_stream.set_stream_ids(stream_ids);
   contents[0].media_description()->AddStream(new_stream);
 

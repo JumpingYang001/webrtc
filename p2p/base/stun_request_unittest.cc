@@ -27,7 +27,7 @@
 #include "test/gtest.h"
 #include "test/wait_until.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
 
 using ::testing::Ne;
@@ -50,7 +50,7 @@ int TotalDelay(int sends) {
 class StunRequestTest : public ::testing::Test {
  public:
   StunRequestTest()
-      : manager_(webrtc::Thread::Current(),
+      : manager_(Thread::Current(),
                  [this](const void* data, size_t size, StunRequest* request) {
                    OnSendPacket(data, size, request);
                  }),
@@ -75,7 +75,7 @@ class StunRequestTest : public ::testing::Test {
   virtual void OnTimeout() { timeout_ = true; }
 
  protected:
-  webrtc::AutoThread main_thread_;
+  AutoThread main_thread_;
   StunRequestManager manager_;
   int request_count_;
   StunMessage* response_;
@@ -151,7 +151,7 @@ TEST_F(StunRequestTest, TestUnexpected) {
 
 // Test that requests are sent at the right times.
 TEST_F(StunRequestTest, TestBackoff) {
-  webrtc::ScopedFakeClock fake_clock;
+  ScopedFakeClock fake_clock;
   auto* request = new StunRequestThunker(manager_, this);
   std::unique_ptr<StunMessage> res =
       request->CreateResponseMessage(STUN_BINDING_RESPONSE);
@@ -159,11 +159,11 @@ TEST_F(StunRequestTest, TestBackoff) {
   int64_t start = webrtc::TimeMillis();
   manager_.Send(request);
   for (int i = 0; i < 9; ++i) {
-    EXPECT_THAT(webrtc::WaitUntil(
-                    [&] { return request_count_; }, Ne(i),
-                    {.timeout = webrtc::TimeDelta::Millis(STUN_TOTAL_TIMEOUT),
-                     .clock = &fake_clock}),
-                webrtc::IsRtcOk());
+    EXPECT_THAT(
+        webrtc::WaitUntil([&] { return request_count_; }, Ne(i),
+                          {.timeout = TimeDelta::Millis(STUN_TOTAL_TIMEOUT),
+                           .clock = &fake_clock}),
+        webrtc::IsRtcOk());
     int64_t elapsed = webrtc::TimeMillis() - start;
     RTC_DLOG(LS_INFO) << "STUN request #" << (i + 1) << " sent at " << elapsed
                       << " ms";
@@ -179,13 +179,13 @@ TEST_F(StunRequestTest, TestBackoff) {
 
 // Test that we timeout properly if no response is received.
 TEST_F(StunRequestTest, TestTimeout) {
-  webrtc::ScopedFakeClock fake_clock;
+  ScopedFakeClock fake_clock;
   auto* request = new StunRequestThunker(manager_, this);
   std::unique_ptr<StunMessage> res =
       request->CreateResponseMessage(STUN_BINDING_RESPONSE);
 
   manager_.Send(request);
-  SIMULATED_WAIT(false, cricket::STUN_TOTAL_TIMEOUT, fake_clock);
+  SIMULATED_WAIT(false, STUN_TOTAL_TIMEOUT, fake_clock);
 
   EXPECT_FALSE(manager_.CheckResponse(res.get()));
   EXPECT_TRUE(response_ == NULL);
@@ -269,4 +269,4 @@ TEST_F(StunRequestReentranceTest, TestError) {
   EXPECT_FALSE(timeout_);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

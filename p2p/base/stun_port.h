@@ -37,7 +37,7 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Lifetime chosen for STUN ports on low-cost networks.
 static const int INFINITE_LIFETIME = -1;
@@ -49,13 +49,12 @@ class RTC_EXPORT UDPPort : public Port {
  public:
   static std::unique_ptr<UDPPort> Create(
       const PortParametersRef& args,
-      webrtc::AsyncPacketSocket* socket,
+      AsyncPacketSocket* socket,
       bool emit_local_for_anyaddress,
       std::optional<int> stun_keepalive_interval) {
     // Using `new` to access a non-public constructor.
-    auto port =
-        absl::WrapUnique(new UDPPort(args, webrtc::IceCandidateType::kHost,
-                                     socket, emit_local_for_anyaddress));
+    auto port = absl::WrapUnique(new UDPPort(
+        args, IceCandidateType::kHost, socket, emit_local_for_anyaddress));
     port->set_stun_keepalive_delay(stun_keepalive_interval);
     if (!port->Init()) {
       return nullptr;
@@ -70,9 +69,9 @@ class RTC_EXPORT UDPPort : public Port {
       bool emit_local_for_anyaddress,
       std::optional<int> stun_keepalive_interval) {
     // Using `new` to access a non-public constructor.
-    auto port = absl::WrapUnique(
-        new UDPPort(args, webrtc::IceCandidateType::kHost, min_port, max_port,
-                    emit_local_for_anyaddress));
+    auto port =
+        absl::WrapUnique(new UDPPort(args, IceCandidateType::kHost, min_port,
+                                     max_port, emit_local_for_anyaddress));
     port->set_stun_keepalive_delay(stun_keepalive_interval);
     if (!port->Init()) {
       return nullptr;
@@ -82,28 +81,28 @@ class RTC_EXPORT UDPPort : public Port {
 
   ~UDPPort() override;
 
-  webrtc::SocketAddress GetLocalAddress() const {
-    return socket_->GetLocalAddress();
-  }
+  SocketAddress GetLocalAddress() const { return socket_->GetLocalAddress(); }
 
-  const ServerAddresses& server_addresses() const { return server_addresses_; }
-  void set_server_addresses(const ServerAddresses& addresses) {
+  const cricket::ServerAddresses& server_addresses() const {
+    return server_addresses_;
+  }
+  void set_server_addresses(const cricket::ServerAddresses& addresses) {
     server_addresses_ = addresses;
   }
 
   void PrepareAddress() override;
 
-  Connection* CreateConnection(const webrtc::Candidate& address,
+  Connection* CreateConnection(const Candidate& address,
                                CandidateOrigin origin) override;
-  int SetOption(webrtc::Socket::Option opt, int value) override;
-  int GetOption(webrtc::Socket::Option opt, int* value) override;
+  int SetOption(Socket::Option opt, int value) override;
+  int GetOption(Socket::Option opt, int* value) override;
   int GetError() override;
 
-  bool HandleIncomingPacket(webrtc::AsyncPacketSocket* socket,
+  bool HandleIncomingPacket(AsyncPacketSocket* socket,
                             const rtc::ReceivedPacket& packet) override;
 
   bool SupportsProtocol(absl::string_view protocol) const override;
-  webrtc::ProtocolType GetProtocol() const override;
+  ProtocolType GetProtocol() const override;
 
   void GetStunStats(std::optional<StunStats>* stats) override;
 
@@ -120,11 +119,11 @@ class RTC_EXPORT UDPPort : public Port {
 
  protected:
   UDPPort(const PortParametersRef& args,
-          webrtc::IceCandidateType type,
-          webrtc::AsyncPacketSocket* socket,
+          IceCandidateType type,
+          AsyncPacketSocket* socket,
           bool emit_local_for_anyaddress);
   UDPPort(const PortParametersRef& args,
-          webrtc::IceCandidateType type,
+          IceCandidateType type,
           uint16_t min_port,
           uint16_t max_port,
           bool emit_local_for_anyaddress);
@@ -132,26 +131,26 @@ class RTC_EXPORT UDPPort : public Port {
 
   int SendTo(const void* data,
              size_t size,
-             const webrtc::SocketAddress& addr,
+             const SocketAddress& addr,
              const rtc::PacketOptions& options,
              bool payload) override;
 
   void UpdateNetworkCost() override;
 
-  webrtc::DiffServCodePoint StunDscpValue() const override;
+  DiffServCodePoint StunDscpValue() const override;
 
-  void OnLocalAddressReady(webrtc::AsyncPacketSocket* socket,
-                           const webrtc::SocketAddress& address);
+  void OnLocalAddressReady(AsyncPacketSocket* socket,
+                           const SocketAddress& address);
 
   void PostAddAddress(bool is_final) override;
 
-  void OnReadPacket(webrtc::AsyncPacketSocket* socket,
+  void OnReadPacket(AsyncPacketSocket* socket,
                     const rtc::ReceivedPacket& packet);
 
-  void OnSentPacket(webrtc::AsyncPacketSocket* socket,
+  void OnSentPacket(AsyncPacketSocket* socket,
                     const rtc::SentPacket& sent_packet) override;
 
-  void OnReadyToSend(webrtc::AsyncPacketSocket* socket);
+  void OnReadyToSend(AsyncPacketSocket* socket);
 
   // This method will send STUN binding request if STUN server address is set.
   void MaybePrepareStunCandidate();
@@ -162,7 +161,7 @@ class RTC_EXPORT UDPPort : public Port {
   // `addr` is the "any" address and `emit_local_for_anyaddress_` is true. When
   // returning false, it indicates that the operation has failed and the
   // address shouldn't be used by any candidate.
-  bool MaybeSetDefaultLocalAddress(webrtc::SocketAddress* addr) const;
+  bool MaybeSetDefaultLocalAddress(SocketAddress* addr) const;
 
  private:
   // A helper class which can be called repeatedly to resolve multiple
@@ -171,47 +170,45 @@ class RTC_EXPORT UDPPort : public Port {
   class AddressResolver {
    public:
     explicit AddressResolver(
-        webrtc::PacketSocketFactory* factory,
-        std::function<void(const webrtc::SocketAddress&, int)> done_callback);
+        PacketSocketFactory* factory,
+        std::function<void(const SocketAddress&, int)> done_callback);
 
-    void Resolve(const webrtc::SocketAddress& address,
+    void Resolve(const SocketAddress& address,
                  int family,
-                 const webrtc::FieldTrialsView& field_trials);
-    bool GetResolvedAddress(const webrtc::SocketAddress& input,
+                 const FieldTrialsView& field_trials);
+    bool GetResolvedAddress(const SocketAddress& input,
                             int family,
-                            webrtc::SocketAddress* output) const;
+                            SocketAddress* output) const;
 
    private:
-    typedef std::map<webrtc::SocketAddress,
-                     std::unique_ptr<webrtc::AsyncDnsResolverInterface>>
+    typedef std::map<SocketAddress, std::unique_ptr<AsyncDnsResolverInterface>>
         ResolverMap;
 
-    webrtc::PacketSocketFactory* socket_factory_;
+    PacketSocketFactory* socket_factory_;
     // The function is called when resolving the specified address is finished.
     // The first argument is the input address, the second argument is the error
     // or 0 if it succeeded.
-    std::function<void(const webrtc::SocketAddress&, int)> done_;
+    std::function<void(const SocketAddress&, int)> done_;
     // Resolver may fire callbacks that refer to done_, so ensure
     // that all resolvers are destroyed first.
     ResolverMap resolvers_;
   };
 
   // DNS resolution of the STUN server.
-  void ResolveStunAddress(const webrtc::SocketAddress& stun_addr);
-  void OnResolveResult(const webrtc::SocketAddress& input, int error);
+  void ResolveStunAddress(const SocketAddress& stun_addr);
+  void OnResolveResult(const SocketAddress& input, int error);
 
   // Send a STUN binding request to the given address. Calling this method may
   // cause the set of known server addresses to be modified, eg. by replacing an
   // unresolved server address with a resolved address.
-  void SendStunBindingRequest(const webrtc::SocketAddress& stun_addr);
+  void SendStunBindingRequest(const SocketAddress& stun_addr);
 
   // Below methods handles binding request responses.
-  void OnStunBindingRequestSucceeded(
-      int rtt_ms,
-      const webrtc::SocketAddress& stun_server_addr,
-      const webrtc::SocketAddress& stun_reflected_addr);
+  void OnStunBindingRequestSucceeded(int rtt_ms,
+                                     const SocketAddress& stun_server_addr,
+                                     const SocketAddress& stun_reflected_addr);
   void OnStunBindingOrResolveRequestFailed(
-      const webrtc::SocketAddress& stun_server_addr,
+      const SocketAddress& stun_server_addr,
       int error_code,
       absl::string_view reason);
 
@@ -222,7 +219,7 @@ class RTC_EXPORT UDPPort : public Port {
   // changed to SignalPortReady.
   void MaybeSetPortCompleteOrError();
 
-  bool HasStunCandidateWithAddress(const webrtc::SocketAddress& addr) const;
+  bool HasStunCandidateWithAddress(const SocketAddress& addr) const;
 
   // If this is a low-cost network, it will keep on sending STUN binding
   // requests indefinitely to keep the NAT binding alive. Otherwise, stop
@@ -233,18 +230,18 @@ class RTC_EXPORT UDPPort : public Port {
                : INFINITE_LIFETIME;
   }
 
-  ServerAddresses server_addresses_;
-  ServerAddresses bind_request_succeeded_servers_;
-  ServerAddresses bind_request_failed_servers_;
+  cricket::ServerAddresses server_addresses_;
+  cricket::ServerAddresses bind_request_succeeded_servers_;
+  cricket::ServerAddresses bind_request_failed_servers_;
   StunRequestManager request_manager_;
-  webrtc::AsyncPacketSocket* socket_;
+  AsyncPacketSocket* socket_;
   int error_;
   int send_error_count_ = 0;
   std::unique_ptr<AddressResolver> resolver_;
   bool ready_;
   int stun_keepalive_delay_;
   int stun_keepalive_lifetime_ = INFINITE_LIFETIME;
-  webrtc::DiffServCodePoint dscp_;
+  DiffServCodePoint dscp_;
 
   StunStats stats_;
 
@@ -261,7 +258,7 @@ class StunPort : public UDPPort {
       const PortParametersRef& args,
       uint16_t min_port,
       uint16_t max_port,
-      const ServerAddresses& servers,
+      const cricket::ServerAddresses& servers,
       std::optional<int> stun_keepalive_interval);
 
   void PrepareAddress() override;
@@ -270,9 +267,18 @@ class StunPort : public UDPPort {
   StunPort(const PortParametersRef& args,
            uint16_t min_port,
            uint16_t max_port,
-           const ServerAddresses& servers);
+           const cricket::ServerAddresses& servers);
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::HIGH_COST_PORT_KEEPALIVE_LIFETIME;
+using ::webrtc::INFINITE_LIFETIME;
+using ::webrtc::StunPort;
+using ::webrtc::UDPPort;
 }  // namespace cricket
 
 #endif  // P2P_BASE_STUN_PORT_H_

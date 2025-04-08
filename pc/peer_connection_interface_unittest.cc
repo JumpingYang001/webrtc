@@ -431,7 +431,6 @@ class RtcEventLogOutputNull final : public RtcEventLogOutput {
   bool Write(const absl::string_view /*output*/) override { return true; }
 };
 
-using ::cricket::StreamParams;
 using ::testing::Eq;
 using ::testing::Exactly;
 using ::testing::SizeIs;
@@ -477,7 +476,7 @@ void SetSsrcToZero(std::string* sdp) {
 }
 
 // Check if `streams` contains the specified track.
-bool ContainsTrack(const std::vector<cricket::StreamParams>& streams,
+bool ContainsTrack(const std::vector<StreamParams>& streams,
                    const std::string& stream_id,
                    const std::string& track_id) {
   for (const cricket::StreamParams& params : streams) {
@@ -709,8 +708,8 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
       pc_->Close();
       pc_ = nullptr;
     }
-    auto port_allocator = std::make_unique<cricket::FakePortAllocator>(
-        CreateEnvironment(), vss_.get());
+    auto port_allocator =
+        std::make_unique<FakePortAllocator>(CreateEnvironment(), vss_.get());
     port_allocator_ = port_allocator.get();
 
     // Create certificate generator unless DTLS constraint is explicitly set to
@@ -1256,7 +1255,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   std::unique_ptr<VirtualSocketServer> vss_;
   AutoSocketServerThread main_;
   rtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
-  cricket::FakePortAllocator* port_allocator_ = nullptr;
+  FakePortAllocator* port_allocator_ = nullptr;
   FakeRTCCertificateGenerator* fake_certificate_generator_ = nullptr;
   rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
   rtc::scoped_refptr<PeerConnectionInterface> pc_;
@@ -1334,8 +1333,8 @@ TEST_P(PeerConnectionInterfaceTest, CreatePeerConnectionWithPooledCandidates) {
   config.ice_candidate_pool_size = 1;
   CreatePeerConnection(config);
 
-  const cricket::FakePortAllocatorSession* session =
-      static_cast<const cricket::FakePortAllocatorSession*>(
+  const FakePortAllocatorSession* session =
+      static_cast<const FakePortAllocatorSession*>(
           port_allocator_->GetPooledSession());
   ASSERT_NE(nullptr, session);
   EXPECT_EQ(1UL, session->stun_servers().size());
@@ -1356,9 +1355,9 @@ TEST_P(PeerConnectionInterfaceTest, CreatePeerConnectionWithPooledCandidates) {
 TEST_P(PeerConnectionInterfaceTest,
        CreatePeerConnectionAppliesNetworkConfigToPortAllocator) {
   // Create fake port allocator.
-  auto port_allocator = std::make_unique<cricket::FakePortAllocator>(
-      CreateEnvironment(), socket_server());
-  cricket::FakePortAllocator* raw_port_allocator = port_allocator.get();
+  auto port_allocator =
+      std::make_unique<FakePortAllocator>(CreateEnvironment(), socket_server());
+  FakePortAllocator* raw_port_allocator = port_allocator.get();
 
   // Create RTCConfiguration with some network-related fields relevant to
   // PortAllocator populated.
@@ -2040,13 +2039,13 @@ TEST_P(PeerConnectionInterfaceTest,
   channel = pc_->CreateDataChannelOrError("x", &config);
   EXPECT_FALSE(channel.ok());
 
-  config.id = cricket::kMaxSctpSid;
+  config.id = kMaxSctpSid;
   config.negotiated = true;
   channel = pc_->CreateDataChannelOrError("max", &config);
   EXPECT_TRUE(channel.ok());
   EXPECT_EQ(config.id, channel.value()->id());
 
-  config.id = cricket::kMaxSctpSid + 1;
+  config.id = kMaxSctpSid + 1;
   config.negotiated = true;
   channel = pc_->CreateDataChannelOrError("x", &config);
   EXPECT_FALSE(channel.ok());
@@ -2272,8 +2271,8 @@ TEST_P(PeerConnectionInterfaceTest,
   config.type = PeerConnectionInterface::kRelay;
   EXPECT_TRUE(pc_->SetConfiguration(config).ok());
 
-  const cricket::FakePortAllocatorSession* session =
-      static_cast<const cricket::FakePortAllocatorSession*>(
+  const FakePortAllocatorSession* session =
+      static_cast<const FakePortAllocatorSession*>(
           port_allocator_->GetPooledSession());
   ASSERT_NE(nullptr, session);
   EXPECT_EQ(1UL, session->stun_servers().size());
@@ -3598,14 +3597,14 @@ TEST_P(PeerConnectionInterfaceTest, CreateOfferWithRtpMux) {
   ASSERT_TRUE(offer);
   EXPECT_NE(nullptr, GetFirstAudioContent(offer->description()));
   EXPECT_NE(nullptr, GetFirstVideoContent(offer->description()));
-  EXPECT_TRUE(offer->description()->HasGroup(cricket::GROUP_TYPE_BUNDLE));
+  EXPECT_TRUE(offer->description()->HasGroup(GROUP_TYPE_BUNDLE));
 
   rtc_options.use_rtp_mux = false;
   offer = CreateOfferWithOptions(rtc_options);
   ASSERT_TRUE(offer);
   EXPECT_NE(nullptr, GetFirstAudioContent(offer->description()));
   EXPECT_NE(nullptr, GetFirstVideoContent(offer->description()));
-  EXPECT_FALSE(offer->description()->HasGroup(cricket::GROUP_TYPE_BUNDLE));
+  EXPECT_FALSE(offer->description()->HasGroup(GROUP_TYPE_BUNDLE));
 }
 
 // This test ensures OnRenegotiationNeeded is called when we add track with
@@ -3738,8 +3737,7 @@ class PeerConnectionMediaConfigTest : public ::testing::Test {
   void SetUp() override {
     pcf_ = PeerConnectionFactoryForTest::CreatePeerConnectionFactoryForTest();
   }
-  cricket::MediaConfig TestCreatePeerConnection(
-      const RTCConfiguration& config) {
+  MediaConfig TestCreatePeerConnection(const RTCConfiguration& config) {
     PeerConnectionDependencies pc_dependencies(&observer_);
     auto result =
         pcf_->CreatePeerConnectionOrError(config, std::move(pc_dependencies));
@@ -3771,7 +3769,7 @@ TEST_F(PeerConnectionMediaConfigTest, TestDefaults) {
   PeerConnectionInterface::RTCConfiguration config;
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
 
-  const cricket::MediaConfig& media_config = TestCreatePeerConnection(config);
+  const MediaConfig& media_config = TestCreatePeerConnection(config);
 
   EXPECT_TRUE(media_config.enable_dscp);
   EXPECT_TRUE(media_config.video.enable_cpu_adaptation);
@@ -3787,7 +3785,7 @@ TEST_F(PeerConnectionMediaConfigTest, TestDisablePrerendererSmoothingTrue) {
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
 
   config.set_prerenderer_smoothing(false);
-  const cricket::MediaConfig& media_config = TestCreatePeerConnection(config);
+  const MediaConfig& media_config = TestCreatePeerConnection(config);
 
   EXPECT_FALSE(media_config.video.enable_prerenderer_smoothing);
 }
@@ -3799,7 +3797,7 @@ TEST_F(PeerConnectionMediaConfigTest, TestEnableExperimentCpuLoadEstimator) {
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
 
   config.set_experiment_cpu_load_estimator(true);
-  const cricket::MediaConfig& media_config = TestCreatePeerConnection(config);
+  const MediaConfig& media_config = TestCreatePeerConnection(config);
 
   EXPECT_TRUE(media_config.video.experiment_cpu_load_estimator);
 }

@@ -38,7 +38,7 @@ RelayServerConfig::RelayServerConfig(const SocketAddress& address,
                                      absl::string_view password,
                                      ProtocolType proto)
     : credentials(username, password) {
-  ports.push_back(cricket::ProtocolAddress(address, proto));
+  ports.push_back(ProtocolAddress(address, proto));
 }
 
 RelayServerConfig::RelayServerConfig(absl::string_view address,
@@ -194,8 +194,8 @@ bool PortAllocator::SetConfiguration(
   // If `candidate_pool_size_` is greater than the number of pooled sessions,
   // create new sessions.
   while (static_cast<int>(pooled_sessions_.size()) < candidate_pool_size_) {
-    cricket::IceParameters iceCredentials =
-        cricket::IceCredentialsIterator::CreateRandomIceCredentials();
+    IceParameters iceCredentials =
+        IceCredentialsIterator::CreateRandomIceCredentials();
     PortAllocatorSession* pooled_session =
         CreateSessionInternal("", 0, iceCredentials.ufrag, iceCredentials.pwd);
     pooled_session->set_pooled(true);
@@ -230,7 +230,7 @@ std::unique_ptr<PortAllocatorSession> PortAllocator::TakePooledSession(
     return nullptr;
   }
 
-  cricket::IceParameters credentials(ice_ufrag, ice_pwd, false);
+  IceParameters credentials(ice_ufrag, ice_pwd, false);
   // If restrict_ice_credentials_change_ is TRUE, then call FindPooledSession
   // with ice credentials. Otherwise call it with nullptr which means
   // "find any" pooled session.
@@ -253,7 +253,7 @@ std::unique_ptr<PortAllocatorSession> PortAllocator::TakePooledSession(
 }
 
 const PortAllocatorSession* PortAllocator::GetPooledSession(
-    const cricket::IceParameters* ice_credentials) const {
+    const IceParameters* ice_credentials) const {
   CheckRunOnValidThreadAndInitialized();
   auto it = FindPooledSession(ice_credentials);
   if (it == pooled_sessions_.end()) {
@@ -264,8 +264,7 @@ const PortAllocatorSession* PortAllocator::GetPooledSession(
 }
 
 std::vector<std::unique_ptr<PortAllocatorSession>>::const_iterator
-PortAllocator::FindPooledSession(
-    const cricket::IceParameters* ice_credentials) const {
+PortAllocator::FindPooledSession(const IceParameters* ice_credentials) const {
   for (auto it = pooled_sessions_.begin(); it != pooled_sessions_.end(); ++it) {
     if (ice_credentials == nullptr ||
         ((*it)->ice_ufrag() == ice_credentials->ufrag &&
@@ -299,12 +298,12 @@ void PortAllocator::GetCandidateStatsFromPooledSessions(
   }
 }
 
-std::vector<cricket::IceParameters> PortAllocator::GetPooledIceCredentials() {
+std::vector<IceParameters> PortAllocator::GetPooledIceCredentials() {
   CheckRunOnValidThreadAndInitialized();
-  std::vector<cricket::IceParameters> list;
+  std::vector<IceParameters> list;
   for (const auto& session : pooled_sessions_) {
-    list.push_back(cricket::IceParameters(session->ice_ufrag(),
-                                          session->ice_pwd(), false));
+    list.push_back(
+        IceParameters(session->ice_ufrag(), session->ice_pwd(), false));
   }
   return list;
 }

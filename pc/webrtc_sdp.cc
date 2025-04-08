@@ -69,30 +69,30 @@
 #include "rtc_base/strings/string_builder.h"
 
 using cricket::Candidate;
-using cricket::ICE_CANDIDATE_COMPONENT_RTCP;
-using cricket::ICE_CANDIDATE_COMPONENT_RTP;
-using cricket::kApplicationSpecificBandwidth;
-using cricket::kCodecParamMaxPTime;
-using cricket::kCodecParamMinPTime;
-using cricket::kCodecParamPTime;
-using cricket::kTransportSpecificBandwidth;
-using cricket::RidDescription;
-using cricket::SsrcGroup;
-using cricket::StreamParams;
-using cricket::StreamParamsVec;
-using cricket::TransportDescription;
-using cricket::TransportInfo;
 using ::webrtc::AudioContentDescription;
 using ::webrtc::Candidates;
 using ::webrtc::ContentInfo;
+using ::webrtc::ICE_CANDIDATE_COMPONENT_RTCP;
+using ::webrtc::ICE_CANDIDATE_COMPONENT_RTP;
+using ::webrtc::kApplicationSpecificBandwidth;
+using ::webrtc::kCodecParamMaxPTime;
+using ::webrtc::kCodecParamMinPTime;
+using ::webrtc::kCodecParamPTime;
+using ::webrtc::kTransportSpecificBandwidth;
 using ::webrtc::MediaContentDescription;
 using ::webrtc::MediaProtocolType;
+using ::webrtc::RidDescription;
 using ::webrtc::RtpHeaderExtensions;
 using ::webrtc::SctpDataContentDescription;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
 using ::webrtc::SimulcastLayerList;
 using ::webrtc::SocketAddress;
+using ::webrtc::SsrcGroup;
+using ::webrtc::StreamParams;
+using ::webrtc::StreamParamsVec;
+using ::webrtc::TransportDescription;
+using ::webrtc::TransportInfo;
 using ::webrtc::UnsupportedContentDescription;
 using ::webrtc::VideoContentDescription;
 
@@ -367,7 +367,7 @@ static bool ParseFingerprintAttribute(
     std::unique_ptr<SSLFingerprint>* fingerprint,
     SdpParseError* error);
 static bool ParseDtlsSetup(absl::string_view line,
-                           cricket::ConnectionRole* role,
+                           ConnectionRole* role,
                            SdpParseError* error);
 static bool ParseMsidAttribute(absl::string_view line,
                                std::vector<std::string>* stream_ids,
@@ -666,7 +666,7 @@ static bool GetPayloadTypeFromString(absl::string_view line,
                                      int* payload_type,
                                      SdpParseError* error) {
   return GetValueFromString(line, s, payload_type, error) &&
-         cricket::IsValidRtpPayloadType(*payload_type);
+         IsValidRtpPayloadType(*payload_type);
 }
 
 // Creates a StreamParams track in the case when no SSRC lines are signaled.
@@ -872,7 +872,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
 
   // BUNDLE Groups
   std::vector<const ContentGroup*> groups =
-      desc->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      desc->GetGroupsByName(GROUP_TYPE_BUNDLE);
   for (const cricket::ContentGroup* group : groups) {
     std::string group_line = kAttrGroup;
     RTC_DCHECK(group != NULL);
@@ -921,7 +921,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
   // this, when it's a session-level attribute. It really should be moved to a
   // session-level structure like SessionDescription.
   for (const cricket::TransportInfo& transport : desc->transport_infos()) {
-    if (transport.description.ice_mode == cricket::ICEMODE_LITE) {
+    if (transport.description.ice_mode == ICEMODE_LITE) {
       InitAttrLine(kAttributeIceLite, &os);
       AddLine(os.str(), &message);
       break;
@@ -1100,7 +1100,7 @@ bool ParseCandidate(absl::string_view message,
   }
   SocketAddress address(connection_address, port);
 
-  std::optional<ProtocolType> protocol = cricket::StringToProto(transport);
+  std::optional<ProtocolType> protocol = StringToProto(transport);
   if (!protocol) {
     return ParseFailed(first_line, "Unsupported transport type.", error);
   }
@@ -1162,9 +1162,8 @@ bool ParseCandidate(absl::string_view message,
     tcptype = fields[++current_position];
     ++current_position;
 
-    if (tcptype != cricket::TCPTYPE_ACTIVE_STR &&
-        tcptype != cricket::TCPTYPE_PASSIVE_STR &&
-        tcptype != cricket::TCPTYPE_SIMOPEN_STR) {
+    if (tcptype != TCPTYPE_ACTIVE_STR && tcptype != TCPTYPE_PASSIVE_STR &&
+        tcptype != TCPTYPE_SIMOPEN_STR) {
       return ParseFailed(first_line, "Invalid TCP candidate type.", error);
     }
 
@@ -1175,7 +1174,7 @@ bool ParseCandidate(absl::string_view message,
     // We allow the tcptype to be missing, for backwards compatibility,
     // treating it as a passive candidate.
     // TODO(bugs.webrtc.org/11466): Treat a missing tcptype as an error?
-    tcptype = cricket::TCPTYPE_PASSIVE_STR;
+    tcptype = TCPTYPE_PASSIVE_STR;
   }
 
   // Extension
@@ -1213,8 +1212,8 @@ bool ParseCandidate(absl::string_view message,
     }
   }
 
-  *candidate = Candidate(component_id, cricket::ProtoToString(*protocol),
-                         address, priority, username, password, candidate_type,
+  *candidate = Candidate(component_id, ProtoToString(*protocol), address,
+                         priority, username, password, candidate_type,
                          generation, foundation, network_id, network_cost);
   candidate->set_related_address(related_address);
   candidate->set_tcptype(tcptype);
@@ -1328,8 +1327,7 @@ static void BuildSctpContentAttributes(
     // a=sctpmap:sctpmap-number  protocol  [streams]
     InitAttrLine(kAttributeSctpmap, &os);
     os << kSdpDelimiterColon << data_desc->port() << kSdpDelimiterSpace
-       << kDefaultSctpmapProtocol << kSdpDelimiterSpace
-       << cricket::kMaxSctpStreams;
+       << kDefaultSctpmapProtocol << kSdpDelimiterSpace << kMaxSctpStreams;
     AddLine(os.str(), message);
   } else {
     // draft-ietf-mmusic-sctp-sdp-23
@@ -1387,12 +1385,11 @@ void BuildDtlsFingerprintSetup(const TransportInfo* transport_info,
   AddLine(os.str(), message);
 
   // Inserting setup attribute.
-  if (transport_info->description.connection_role !=
-      cricket::CONNECTIONROLE_NONE) {
+  if (transport_info->description.connection_role != CONNECTIONROLE_NONE) {
     // Making sure we are not using "passive" mode.
-    cricket::ConnectionRole role = transport_info->description.connection_role;
+    ConnectionRole role = transport_info->description.connection_role;
     std::string dtls_role_str;
-    const bool success = cricket::ConnectionRoleToString(role, &dtls_role_str);
+    const bool success = ConnectionRoleToString(role, &dtls_role_str);
     RTC_DCHECK(success);
     InitAttrLine(kAttributeSetup, &os);
     os << kSdpDelimiterColon << dtls_role_str;
@@ -1889,7 +1886,7 @@ void BuildRtpmap(const MediaContentDescription* media_desc,
       if (codec.id != kWildcardPayloadType) {
         InitAttrLine(kAttributeRtpmap, &os);
         os << kSdpDelimiterColon << codec.id << " " << codec.name << "/"
-           << cricket::kVideoCodecClockrate;
+           << kVideoCodecClockrate;
         AddLine(os.str(), message);
       }
       AddPacketizationLine(codec, message);
@@ -2213,7 +2210,7 @@ bool ParseSessionDescription(absl::string_view message,
         return false;
       }
     } else if (HasAttribute(*aline, kAttributeIceLite)) {
-      session_td->ice_mode = cricket::ICEMODE_LITE;
+      session_td->ice_mode = ICEMODE_LITE;
     } else if (HasAttribute(*aline, kAttributeIceOption)) {
       if (!ParseIceOptions(*aline, &(session_td->transport_options), error)) {
         return false;
@@ -2308,7 +2305,7 @@ static bool ParseFingerprintAttribute(
 }
 
 static bool ParseDtlsSetup(absl::string_view line,
-                           cricket::ConnectionRole* role_ptr,
+                           ConnectionRole* role_ptr,
                            SdpParseError* error) {
   // setup-attr           =  "a=setup:" role
   // role                 =  "active" / "passive" / "actpass" / "holdconn"
@@ -2318,8 +2315,7 @@ static bool ParseDtlsSetup(absl::string_view line,
   if (fields.size() != expected_fields) {
     return ParseFailedExpectFieldNum(line, expected_fields, error);
   }
-  if (std::optional<cricket::ConnectionRole> role =
-          cricket::StringToConnectionRole(fields[1]);
+  if (std::optional<ConnectionRole> role = StringToConnectionRole(fields[1]);
       role.has_value()) {
     *role_ptr = *role;
     return true;
@@ -2464,7 +2460,7 @@ static void RemoveInvalidRidsFromSimulcast(
   for (const SimulcastLayer& send_layer : all_send_layers) {
     if (absl::c_none_of(valid_rids, [&send_layer](const RidDescription& rid) {
           return send_layer.rid == rid.rid &&
-                 rid.direction == cricket::RidDirection::kSend;
+                 rid.direction == RidDirection::kSend;
         })) {
       to_remove.insert(send_layer.rid);
     }
@@ -2472,11 +2468,11 @@ static void RemoveInvalidRidsFromSimulcast(
 
   // Add any rid that is not in the valid list to the remove set.
   for (const SimulcastLayer& receive_layer : all_receive_layers) {
-    if (absl::c_none_of(
-            valid_rids, [&receive_layer](const RidDescription& rid) {
-              return receive_layer.rid == rid.rid &&
-                     rid.direction == cricket::RidDirection::kReceive;
-            })) {
+    if (absl::c_none_of(valid_rids,
+                        [&receive_layer](const RidDescription& rid) {
+                          return receive_layer.rid == rid.rid &&
+                                 rid.direction == RidDirection::kReceive;
+                        })) {
       to_remove.insert(receive_layer.rid);
     }
   }
@@ -2546,36 +2542,36 @@ void MaybeCreateStaticPayloadAudioCodecs(const std::vector<int>& fmts,
 static void BackfillCodecParameters(std::vector<Codec>& codecs) {
   for (auto& codec : codecs) {
     std::string unused_value;
-    if (absl::EqualsIgnoreCase(cricket::kVp9CodecName, codec.name)) {
+    if (absl::EqualsIgnoreCase(kVp9CodecName, codec.name)) {
       // https://datatracker.ietf.org/doc/html/draft-ietf-payload-vp9#section-6
       // profile-id defaults to "0"
-      if (!codec.GetParam(cricket::kVP9ProfileId, &unused_value)) {
-        codec.SetParam(cricket::kVP9ProfileId, "0");
+      if (!codec.GetParam(kVP9ProfileId, &unused_value)) {
+        codec.SetParam(kVP9ProfileId, "0");
       }
-    } else if (absl::EqualsIgnoreCase(cricket::kH264CodecName, codec.name)) {
+    } else if (absl::EqualsIgnoreCase(kH264CodecName, codec.name)) {
       // https://www.rfc-editor.org/rfc/rfc6184#section-6.2
       // packetization-mode defaults to "0"
-      if (!codec.GetParam(cricket::kH264FmtpPacketizationMode, &unused_value)) {
-        codec.SetParam(cricket::kH264FmtpPacketizationMode, "0");
+      if (!codec.GetParam(kH264FmtpPacketizationMode, &unused_value)) {
+        codec.SetParam(kH264FmtpPacketizationMode, "0");
       }
-    } else if (absl::EqualsIgnoreCase(cricket::kAv1CodecName, codec.name)) {
+    } else if (absl::EqualsIgnoreCase(kAv1CodecName, codec.name)) {
       // https://aomediacodec.github.io/av1-rtp-spec/#72-sdp-parameters
-      if (!codec.GetParam(cricket::kAv1FmtpProfile, &unused_value)) {
-        codec.SetParam(cricket::kAv1FmtpProfile, "0");
+      if (!codec.GetParam(kAv1FmtpProfile, &unused_value)) {
+        codec.SetParam(kAv1FmtpProfile, "0");
       }
-      if (!codec.GetParam(cricket::kAv1FmtpLevelIdx, &unused_value)) {
-        codec.SetParam(cricket::kAv1FmtpLevelIdx, "5");
+      if (!codec.GetParam(kAv1FmtpLevelIdx, &unused_value)) {
+        codec.SetParam(kAv1FmtpLevelIdx, "5");
       }
-      if (!codec.GetParam(cricket::kAv1FmtpTier, &unused_value)) {
-        codec.SetParam(cricket::kAv1FmtpTier, "0");
+      if (!codec.GetParam(kAv1FmtpTier, &unused_value)) {
+        codec.SetParam(kAv1FmtpTier, "0");
       }
-    } else if (absl::EqualsIgnoreCase(cricket::kH265CodecName, codec.name)) {
+    } else if (absl::EqualsIgnoreCase(kH265CodecName, codec.name)) {
       // https://datatracker.ietf.org/doc/html/draft-aboba-avtcore-hevc-webrtc
-      if (!codec.GetParam(cricket::kH265FmtpLevelId, &unused_value)) {
-        codec.SetParam(cricket::kH265FmtpLevelId, "93");
+      if (!codec.GetParam(kH265FmtpLevelId, &unused_value)) {
+        codec.SetParam(kH265FmtpLevelId, "93");
       }
-      if (!codec.GetParam(cricket::kH265FmtpTxMode, &unused_value)) {
-        codec.SetParam(cricket::kH265FmtpTxMode, "SRST");
+      if (!codec.GetParam(kH265FmtpTxMode, &unused_value)) {
+        codec.SetParam(kH265FmtpTxMode, "SRST");
       }
     }
   }
@@ -2930,7 +2926,7 @@ void UpdateCodec(MediaContentDescription* content_desc,
 void UpdateVideoCodecPacketization(MediaContentDescription* desc,
                                    int payload_type,
                                    absl::string_view packetization) {
-  if (packetization != cricket::kPacketizationParamRaw) {
+  if (packetization != kPacketizationParamRaw) {
     // Ignore unsupported packetization attribute.
     return;
   }

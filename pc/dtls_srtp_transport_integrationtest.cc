@@ -53,8 +53,8 @@ static const int kTimeout = 10000;
 class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
  protected:
   DtlsSrtpTransportIntegrationTest()
-      : client_ice_transport_(MakeIceTransport(cricket::ICEROLE_CONTROLLING)),
-        server_ice_transport_(MakeIceTransport(cricket::ICEROLE_CONTROLLED)),
+      : client_ice_transport_(MakeIceTransport(webrtc::ICEROLE_CONTROLLING)),
+        server_ice_transport_(MakeIceTransport(webrtc::ICEROLE_CONTROLLED)),
         client_dtls_transport_(MakeDtlsTransport(client_ice_transport_.get())),
         server_dtls_transport_(MakeDtlsTransport(server_ice_transport_.get())),
         client_certificate_(MakeCertificate()),
@@ -82,9 +82,9 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
     return webrtc::RTCCertificate::Create(
         webrtc::SSLIdentity::Create("test", webrtc::KT_DEFAULT));
   }
-  std::unique_ptr<cricket::FakeIceTransport> MakeIceTransport(
-      cricket::IceRole role) {
-    auto ice_transport = std::make_unique<cricket::FakeIceTransport>(
+  std::unique_ptr<webrtc::FakeIceTransport> MakeIceTransport(
+      webrtc::IceRole role) {
+    auto ice_transport = std::make_unique<webrtc::FakeIceTransport>(
         "fake_" + absl::StrCat(static_cast<int>(role)), 0);
     ice_transport->SetAsync(true);
     ice_transport->SetAsyncDelay(0);
@@ -93,7 +93,7 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
   }
 
   std::unique_ptr<cricket::DtlsTransport> MakeDtlsTransport(
-      cricket::FakeIceTransport* ice_transport) {
+      webrtc::FakeIceTransport* ice_transport) {
     return std::make_unique<cricket::DtlsTransport>(
         ice_transport, webrtc::CryptoOptions(),
         /*event_log=*/nullptr, webrtc::SSL_PROTOCOL_DTLS_12);
@@ -221,8 +221,8 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
   webrtc::ScopedFakeClock fake_clock_;
   webrtc::test::ScopedKeyValueConfig field_trials_;
 
-  std::unique_ptr<cricket::FakeIceTransport> client_ice_transport_;
-  std::unique_ptr<cricket::FakeIceTransport> server_ice_transport_;
+  std::unique_ptr<webrtc::FakeIceTransport> client_ice_transport_;
+  std::unique_ptr<webrtc::FakeIceTransport> server_ice_transport_;
 
   std::unique_ptr<cricket::DtlsTransport> client_dtls_transport_;
   std::unique_ptr<cricket::DtlsTransport> server_dtls_transport_;

@@ -438,7 +438,7 @@ class TestVideoEncoderFactoryWrapper final {
 
         *(video_codec.VP8()) = VideoEncoder::GetDefaultVp8Settings();
         video_codec.VP8()->numberOfTemporalLayers = temporal_layers;
-        video_codec.qpMax = cricket::kDefaultVideoMaxQpVpx;
+        video_codec.qpMax = kDefaultVideoMaxQpVpx;
         break;
 
       case kVideoCodecVP9:
@@ -446,7 +446,7 @@ class TestVideoEncoderFactoryWrapper final {
         video_codec.VP9()->numberOfSpatialLayers = spatial_layers;
         video_codec.VP9()->numberOfTemporalLayers = temporal_layers;
         video_codec.VP9()->interLayerPred = inter_layer_pred_mode;
-        video_codec.qpMax = cricket::kDefaultVideoMaxQpVpx;
+        video_codec.qpMax = kDefaultVideoMaxQpVpx;
         break;
 
       case kVideoCodecH264:
@@ -454,7 +454,7 @@ class TestVideoEncoderFactoryWrapper final {
 
         *(video_codec.H264()) = VideoEncoder::GetDefaultH264Settings();
         video_codec.H264()->numberOfTemporalLayers = temporal_layers;
-        video_codec.qpMax = cricket::kDefaultVideoMaxQpH26x;
+        video_codec.qpMax = kDefaultVideoMaxQpH26x;
         break;
 
       case kVideoCodecAV1:
@@ -465,11 +465,11 @@ class TestVideoEncoderFactoryWrapper final {
         } else {
           RTC_LOG(LS_WARNING) << "Failed to configure svc bitrates for av1.";
         }
-        video_codec.qpMax = cricket::kDefaultVideoMaxQpAv1;
+        video_codec.qpMax = kDefaultVideoMaxQpAv1;
         break;
       case kVideoCodecH265:
         // TODO(bugs.webrtc.org/13485)
-        video_codec.qpMax = cricket::kDefaultVideoMaxQpH26x;
+        video_codec.qpMax = kDefaultVideoMaxQpH26x;
         break;
       default:
         RTC_CHECK_NOTREACHED();

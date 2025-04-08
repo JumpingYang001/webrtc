@@ -30,8 +30,7 @@
 namespace webrtc {
 
 // Implementation of DtlsTransportInterface
-DtlsTransport::DtlsTransport(
-    std::unique_ptr<cricket::DtlsTransportInternal> internal)
+DtlsTransport::DtlsTransport(std::unique_ptr<DtlsTransportInternal> internal)
     : owner_thread_(Thread::Current()),
       info_(DtlsTransportState::kNew),
       internal_dtls_transport_(std::move(internal)),
@@ -96,9 +95,8 @@ void DtlsTransport::Clear() {
   }
 }
 
-void DtlsTransport::OnInternalDtlsState(
-    cricket::DtlsTransportInternal* transport,
-    DtlsTransportState state) {
+void DtlsTransport::OnInternalDtlsState(DtlsTransportInternal* transport,
+                                        DtlsTransportState state) {
   RTC_DCHECK_RUN_ON(owner_thread_);
   RTC_DCHECK(transport == internal());
   RTC_DCHECK(state == internal()->dtls_state());

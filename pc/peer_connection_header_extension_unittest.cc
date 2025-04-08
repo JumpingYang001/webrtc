@@ -73,7 +73,7 @@ class PeerConnectionHeaderExtensionTest
   std::unique_ptr<PeerConnectionWrapper> CreatePeerConnection(
       webrtc::MediaType media_type,
       std::optional<SdpSemantics> semantics) {
-    auto media_engine = std::make_unique<cricket::FakeMediaEngine>();
+    auto media_engine = std::make_unique<FakeMediaEngine>();
     if (media_type == webrtc::MediaType::AUDIO)
       media_engine->fake_voice_engine()->SetRtpHeaderExtensions(extensions_);
     else
@@ -91,7 +91,7 @@ class PeerConnectionHeaderExtensionTest
     auto pc_factory =
         CreateModularPeerConnectionFactory(std::move(factory_dependencies));
 
-    auto fake_port_allocator = std::make_unique<cricket::FakePortAllocator>(
+    auto fake_port_allocator = std::make_unique<FakePortAllocator>(
         CreateEnvironment(), socket_server_.get());
     auto observer = std::make_unique<MockPeerConnectionObserver>();
     PeerConnectionInterface::RTCConfiguration config;

@@ -33,9 +33,8 @@
 
 namespace webrtc {
 
-SctpTransport::SctpTransport(
-    std::unique_ptr<cricket::SctpTransportInternal> internal,
-    rtc::scoped_refptr<DtlsTransport> dtls_transport)
+SctpTransport::SctpTransport(std::unique_ptr<SctpTransportInternal> internal,
+                             rtc::scoped_refptr<DtlsTransport> dtls_transport)
     : owner_thread_(Thread::Current()),
       info_(SctpTransportState::kConnecting,
             dtls_transport,
@@ -200,7 +199,7 @@ void SctpTransport::OnAssociationChangeCommunicationUp() {
   UpdateInformation(SctpTransportState::kConnected);
 }
 
-void SctpTransport::OnDtlsStateChange(cricket::DtlsTransportInternal* transport,
+void SctpTransport::OnDtlsStateChange(DtlsTransportInternal* transport,
                                       DtlsTransportState state) {
   RTC_DCHECK_RUN_ON(owner_thread_);
   RTC_CHECK(transport == dtls_transport_->internal());

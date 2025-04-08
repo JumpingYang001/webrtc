@@ -49,7 +49,7 @@ class MockAudioSource : public rtc::RefCountedObject<AudioSourceInterface> {
               (override));
   MOCK_METHOD(void, AddSink, (AudioTrackSinkInterface * sink), (override));
   MOCK_METHOD(void, RemoveSink, (AudioTrackSinkInterface * sink), (override));
-  MOCK_METHOD(const cricket::AudioOptions, options, (), (const, override));
+  MOCK_METHOD(const AudioOptions, options, (), (const, override));
 
  private:
   MockAudioSource() = default;

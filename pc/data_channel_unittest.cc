@@ -620,7 +620,7 @@ TEST_F(SctpDataChannelTest, TransportGotErrorCode) {
                  "Transport channel closed");
   error.set_error_detail(RTCErrorDetailType::SCTP_FAILURE);
   error.set_sctp_cause_code(
-      static_cast<uint16_t>(cricket::SctpErrorCauseCode::kProtocolViolation));
+      static_cast<uint16_t>(SctpErrorCauseCode::kProtocolViolation));
   network_thread_.BlockingCall(
       [&] { inner_channel_->OnTransportChannelClosed(error); });
   controller_.reset(nullptr);
@@ -630,9 +630,8 @@ TEST_F(SctpDataChannelTest, TransportGotErrorCode) {
   EXPECT_FALSE(channel_->error().ok());
   EXPECT_EQ(RTCErrorType::OPERATION_ERROR_WITH_DATA, channel_->error().type());
   EXPECT_EQ(RTCErrorDetailType::SCTP_FAILURE, channel_->error().error_detail());
-  EXPECT_EQ(
-      static_cast<uint16_t>(cricket::SctpErrorCauseCode::kProtocolViolation),
-      channel_->error().sctp_cause_code());
+  EXPECT_EQ(static_cast<uint16_t>(SctpErrorCauseCode::kProtocolViolation),
+            channel_->error().sctp_cause_code());
 }
 
 class SctpSidAllocatorTest : public ::testing::Test {

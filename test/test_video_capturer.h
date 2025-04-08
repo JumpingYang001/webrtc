@@ -71,7 +71,7 @@ class TestVideoCapturer : public VideoSourceInterface<VideoFrame> {
   std::unique_ptr<FramePreprocessor> preprocessor_ RTC_GUARDED_BY(lock_);
   bool enable_adaptation_ RTC_GUARDED_BY(lock_) = true;
   VideoBroadcaster broadcaster_;
-  cricket::VideoAdapter video_adapter_;
+  VideoAdapter video_adapter_;
 };
 }  // namespace test
 }  // namespace webrtc

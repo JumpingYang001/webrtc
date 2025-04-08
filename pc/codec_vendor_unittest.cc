@@ -30,7 +30,7 @@ namespace {
 
 Codec CreateRedAudioCodec(absl::string_view encoding_id) {
   Codec red = CreateAudioCodec(63, "red", 48000, 2);
-  red.SetParam(cricket::kCodecParamNotInNameValueFormat,
+  red.SetParam(kCodecParamNotInNameValueFormat,
                std::string(encoding_id) + '/' + std::string(encoding_id));
   return red;
 }

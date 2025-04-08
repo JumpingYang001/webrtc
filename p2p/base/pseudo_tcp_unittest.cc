@@ -34,8 +34,8 @@
 #include "test/gtest.h"
 #include "test/wait_until.h"
 
-using ::cricket::PseudoTcp;
 using ::testing::IsTrue;
+using ::webrtc::PseudoTcp;
 using ::webrtc::ScopedTaskSafety;
 using ::webrtc::TaskQueueBase;
 using ::webrtc::TimeDelta;
@@ -44,18 +44,20 @@ static const int kConnectTimeoutMs = 10000;  // ~3 * default RTO of 3000ms
 static const int kTransferTimeoutMs = 15000;
 static const int kBlockSize = 4096;
 
-class PseudoTcpForTest : public cricket::PseudoTcp {
+class PseudoTcpForTest : public webrtc::PseudoTcp {
  public:
-  PseudoTcpForTest(cricket::IPseudoTcpNotify* notify, uint32_t conv)
-      : PseudoTcp(notify, conv) {}
+  PseudoTcpForTest(webrtc::IPseudoTcpNotify* notify, uint32_t conv)
+      : webrtc::PseudoTcp(notify, conv) {}
 
-  bool isReceiveBufferFull() const { return PseudoTcp::isReceiveBufferFull(); }
+  bool isReceiveBufferFull() const {
+    return webrtc::PseudoTcp::isReceiveBufferFull();
+  }
 
-  void disableWindowScale() { PseudoTcp::disableWindowScale(); }
+  void disableWindowScale() { webrtc::PseudoTcp::disableWindowScale(); }
 };
 
 class PseudoTcpTestBase : public ::testing::Test,
-                          public cricket::IPseudoTcpNotify {
+                          public webrtc::IPseudoTcpNotify {
  public:
   PseudoTcpTestBase()
       : local_(this, 1),

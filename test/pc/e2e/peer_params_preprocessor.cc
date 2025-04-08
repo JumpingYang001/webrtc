@@ -106,7 +106,7 @@ void PeerParamsPreprocessor::SetDefaultValuesForMissingParams(
   }
 
   if (params->video_codecs.empty()) {
-    params->video_codecs.push_back(VideoCodecConfig(cricket::kVp8CodecName));
+    params->video_codecs.push_back(VideoCodecConfig(kVp8CodecName));
   }
 }
 

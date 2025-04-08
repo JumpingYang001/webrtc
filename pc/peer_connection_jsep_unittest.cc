@@ -1185,13 +1185,13 @@ static void RenameSection(size_t mline_index,
   std::string old_mid(desc->contents()[mline_index].mid());
   desc->contents()[mline_index].set_mid(new_mid);
   desc->transport_infos()[mline_index].content_name = new_mid;
-  const ContentGroup* bundle = desc->GetGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  const ContentGroup* bundle = desc->GetGroupByName(GROUP_TYPE_BUNDLE);
   if (bundle) {
     ContentGroup new_bundle = *bundle;
     if (new_bundle.RemoveContentName(old_mid)) {
       new_bundle.AddContentName(new_mid);
     }
-    desc->RemoveGroupByName(cricket::GROUP_TYPE_BUNDLE);
+    desc->RemoveGroupByName(GROUP_TYPE_BUNDLE);
     desc->AddGroup(new_bundle);
   }
 }
@@ -1668,7 +1668,7 @@ static void RemoveRtpHeaderExtensionByUri(
 // support a=mid, BUNDLE, and the MID header extension.
 static void ClearMids(SessionDescriptionInterface* sdesc) {
   SessionDescription* desc = sdesc->description();
-  desc->RemoveGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  desc->RemoveGroupByName(GROUP_TYPE_BUNDLE);
   ContentInfo* audio_content = GetFirstAudioContent(desc);
   if (audio_content) {
     desc->GetTransportInfoByName(audio_content->mid())->content_name = "";

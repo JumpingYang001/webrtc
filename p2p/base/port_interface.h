@@ -33,17 +33,15 @@
 #include "rtc_base/third_party/sigslot/sigslot.h"
 
 namespace rtc {
-
 struct PacketOptions;
 }  // namespace rtc
-namespace cricket {
+
+namespace webrtc {
+
 class Connection;
 class IceMessage;
 class StunMessage;
 class StunStats;
-}  // namespace cricket
-
-namespace webrtc {
 
 enum ProtocolType {
   PROTO_UDP,
@@ -64,8 +62,8 @@ class PortInterface {
   virtual const Network* Network() const = 0;
 
   // Methods to set/get ICE role and tiebreaker values.
-  virtual void SetIceRole(cricket::IceRole role) = 0;
-  virtual cricket::IceRole GetIceRole() const = 0;
+  virtual void SetIceRole(IceRole role) = 0;
+  virtual IceRole GetIceRole() const = 0;
 
   virtual void SetIceTiebreaker(uint64_t tiebreaker) = 0;
   virtual uint64_t IceTiebreaker() const = 0;
@@ -82,14 +80,12 @@ class PortInterface {
   virtual void PrepareAddress() = 0;
 
   // Returns the connection to the given address or NULL if none exists.
-  virtual cricket::Connection* GetConnection(
-      const SocketAddress& remote_addr) = 0;
+  virtual Connection* GetConnection(const SocketAddress& remote_addr) = 0;
 
   // Creates a new connection to the given address.
   enum CandidateOrigin { ORIGIN_THIS_PORT, ORIGIN_OTHER_PORT, ORIGIN_MESSAGE };
-  virtual cricket::Connection* CreateConnection(
-      const Candidate& remote_candidate,
-      CandidateOrigin origin) = 0;
+  virtual Connection* CreateConnection(const Candidate& remote_candidate,
+                                       CandidateOrigin origin) = 0;
 
   // Functions on the underlying socket(s).
   virtual int SetOption(Socket::Option opt, int value) = 0;
@@ -114,14 +110,14 @@ class PortInterface {
   sigslot::signal6<PortInterface*,
                    const SocketAddress&,
                    ProtocolType,
-                   cricket::IceMessage*,
+                   IceMessage*,
                    const std::string&,
                    bool>
       SignalUnknownAddress;
 
   // Sends a response message (normal or error) to the given request.  One of
   // these methods should be called as a response to SignalUnknownAddress.
-  virtual void SendBindingErrorResponse(cricket::StunMessage* message,
+  virtual void SendBindingErrorResponse(StunMessage* message,
                                         const SocketAddress& addr,
                                         int error_code,
                                         absl::string_view reason) = 0;
@@ -147,16 +143,16 @@ class PortInterface {
 
   virtual std::string ToString() const = 0;
 
-  virtual void GetStunStats(std::optional<cricket::StunStats>* stats) = 0;
+  virtual void GetStunStats(std::optional<StunStats>* stats) = 0;
 
   // Removes and deletes a connection object. `DestroyConnection` will
   // delete the connection object directly whereas `DestroyConnectionAsync`
   // defers the `delete` operation to when the call stack has been unwound.
   // Async may be needed when deleting a connection object from within a
   // callback.
-  virtual void DestroyConnection(cricket::Connection* conn) = 0;
+  virtual void DestroyConnection(Connection* conn) = 0;
 
-  virtual void DestroyConnectionAsync(cricket::Connection* conn) = 0;
+  virtual void DestroyConnectionAsync(Connection* conn) = 0;
 
   // The thread on which this port performs its I/O.
   virtual TaskQueueBase* thread() = 0;
@@ -189,26 +185,26 @@ class PortInterface {
   virtual bool GetStunMessage(const char* data,
                               size_t size,
                               const SocketAddress& addr,
-                              std::unique_ptr<cricket::IceMessage>* out_msg,
+                              std::unique_ptr<IceMessage>* out_msg,
                               std::string* out_username) = 0;
 
   // This method will return local and remote username fragements from the
   // stun username attribute if present.
-  virtual bool ParseStunUsername(const cricket::StunMessage* stun_msg,
+  virtual bool ParseStunUsername(const StunMessage* stun_msg,
                                  std::string* local_username,
                                  std::string* remote_username) const = 0;
   virtual std::string CreateStunUsername(
       absl::string_view remote_username) const = 0;
 
   virtual bool MaybeIceRoleConflict(const SocketAddress& addr,
-                                    cricket::IceMessage* stun_msg,
+                                    IceMessage* stun_msg,
                                     absl::string_view remote_ufrag) = 0;
 
   virtual int16_t network_cost() const = 0;
 
   // Connection and Port are entangled; functions exposed to Port only
   // should not be public.
-  friend class cricket::Connection;
+  friend class Connection;
 };
 
 }  //  namespace webrtc

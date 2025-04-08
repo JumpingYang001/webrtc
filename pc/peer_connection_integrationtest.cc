@@ -3625,9 +3625,8 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
       if (codec.name == "H264") {
         std::string value;
         // The parameter is not supposed to be present in SDP by default.
-        EXPECT_FALSE(
-            codec.GetParam(cricket::kH264FmtpSpsPpsIdrInKeyframe, &value));
-        codec.SetParam(std::string(cricket::kH264FmtpSpsPpsIdrInKeyframe),
+        EXPECT_FALSE(codec.GetParam(kH264FmtpSpsPpsIdrInKeyframe, &value));
+        codec.SetParam(std::string(kH264FmtpSpsPpsIdrInKeyframe),
                        std::string(""));
       }
     }
@@ -3649,8 +3648,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
         for (auto&& codec : video->codecs()) {
           if (codec.name == "H264") {
             std::string value;
-            EXPECT_TRUE(
-                codec.GetParam(cricket::kH264FmtpSpsPpsIdrInKeyframe, &value));
+            EXPECT_TRUE(codec.GetParam(kH264FmtpSpsPpsIdrInKeyframe, &value));
           }
         }
       });
@@ -4278,10 +4276,10 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
           std::vector<Codec> codecs_out;
           for (Codec codec : codecs) {
             if (codec.name == "opus") {
-              codec.AddFeedbackParam(FeedbackParam(cricket::kRtcpFbParamNack,
-                                                   cricket::kParamValueEmpty));
-              codec.AddFeedbackParam(FeedbackParam(cricket::kRtcpFbParamRrtr,
-                                                   cricket::kParamValueEmpty));
+              codec.AddFeedbackParam(
+                  FeedbackParam(kRtcpFbParamNack, kParamValueEmpty));
+              codec.AddFeedbackParam(
+                  FeedbackParam(kRtcpFbParamRrtr, kParamValueEmpty));
               codecs_out.push_back(codec);
             }
           }
@@ -4333,8 +4331,8 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan, VideoPacketLossCausesNack) {
           std::vector<Codec> codecs_out;
           for (const Codec& codec : codecs) {
             if (codec.name == "VP8") {
-              ASSERT_TRUE(codec.HasFeedbackParam(FeedbackParam(
-                  cricket::kRtcpFbParamNack, cricket::kParamValueEmpty)));
+              ASSERT_TRUE(codec.HasFeedbackParam(
+                  FeedbackParam(kRtcpFbParamNack, kParamValueEmpty)));
               codecs_out.push_back(codec);
             }
           }
@@ -4860,8 +4858,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   std::vector<int> apt_values;
   for (const Codec& codec : codecs) {
     if (codec.GetResiliencyType() == Codec::ResiliencyType::kRtx) {
-      const auto apt_it =
-          codec.params.find(cricket::kCodecParamAssociatedPayloadType);
+      const auto apt_it = codec.params.find(kCodecParamAssociatedPayloadType);
       int apt_value;
       ASSERT_TRUE(FromString(apt_it->second, &apt_value));
       apt_values.push_back(apt_value);

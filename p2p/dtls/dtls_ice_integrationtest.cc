@@ -148,7 +148,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
       const rtc::scoped_refptr<webrtc::RTCCertificate> server_certificate) {
     thread(ep)->BlockingCall([&]() {
       if (network_emulation_manager_ == nullptr) {
-        ep.allocator = std::make_unique<BasicPortAllocator>(
+        ep.allocator = std::make_unique<webrtc::BasicPortAllocator>(
             ep.env, &network_manager_, socket_factory_.get());
       } else {
         ep.network_manager =
@@ -156,12 +156,12 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
         ep.packet_socket_factory =
             std::make_unique<webrtc::BasicPacketSocketFactory>(
                 ep.emulated_network_manager->socket_factory());
-        ep.allocator = std::make_unique<BasicPortAllocator>(
+        ep.allocator = std::make_unique<webrtc::BasicPortAllocator>(
             ep.env, ep.network_manager.get(), ep.packet_socket_factory.get());
       }
       ep.allocator->set_flags(ep.allocator->flags() |
                               webrtc::PORTALLOCATOR_DISABLE_TCP);
-      ep.ice = std::make_unique<P2PTransportChannel>(
+      ep.ice = std::make_unique<webrtc::P2PTransportChannel>(
           client ? "client_transport" : "server_transport", 0,
           ep.allocator.get(), &ep.env.field_trials());
       ep.dtls = std::make_unique<DtlsTransport>(
@@ -181,11 +181,13 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
       ep.ice->SetRemoteIceParameters(client ? server_ice_parameters_
                                             : client_ice_parameters_);
       if (client) {
-        ep.ice->SetIceRole(std::get<3>(GetParam()) ? ICEROLE_CONTROLLED
-                                                   : ICEROLE_CONTROLLING);
+        ep.ice->SetIceRole(std::get<3>(GetParam())
+                               ? webrtc::ICEROLE_CONTROLLED
+                               : webrtc::ICEROLE_CONTROLLING);
       } else {
-        ep.ice->SetIceRole(std::get<3>(GetParam()) ? ICEROLE_CONTROLLING
-                                                   : ICEROLE_CONTROLLED);
+        ep.ice->SetIceRole(std::get<3>(GetParam())
+                               ? webrtc::ICEROLE_CONTROLLING
+                               : webrtc::ICEROLE_CONTROLLED);
       }
       if (client) {
         ep.ice->SignalCandidateGathered.connect(
@@ -250,7 +252,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
 
   static int CountConnectionsWithFilter(
       webrtc::IceTransportInternal* ice,
-      std::function<bool(const ConnectionInfo&)> filter) {
+      std::function<bool(const webrtc::ConnectionInfo&)> filter) {
     webrtc::IceTransportStats stats;
     ice->GetStats(&stats);
     int count = 0;
@@ -337,8 +339,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
   Endpoint client_;
   Endpoint server_;
 
-  IceParameters client_ice_parameters_;
-  IceParameters server_ice_parameters_;
+  webrtc::IceParameters client_ice_parameters_;
+  webrtc::IceParameters server_ice_parameters_;
 };
 
 TEST_P(DtlsIceIntegrationTest, SmokeTest) {

@@ -24,7 +24,7 @@
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Whether our side of the call is driving the negotiation, or the other side.
 enum IceRole { ICEROLE_CONTROLLING = 0, ICEROLE_CONTROLLED, ICEROLE_UNKNOWN };
@@ -51,9 +51,8 @@ enum ConnectionRole {
 struct IceParameters {
   // Constructs an IceParameters from a user-provided ufrag/pwd combination.
   // Returns a SyntaxError if the ufrag or pwd are malformed.
-  static RTC_EXPORT webrtc::RTCErrorOr<IceParameters> Parse(
-      absl::string_view raw_ufrag,
-      absl::string_view raw_pwd);
+  static RTC_EXPORT RTCErrorOr<IceParameters> Parse(absl::string_view raw_ufrag,
+                                                    absl::string_view raw_pwd);
 
   // TODO(honghaiz): Include ICE mode in this structure to match the ORTC
   // struct:
@@ -77,13 +76,8 @@ struct IceParameters {
 
   // Validate IceParameters, returns a SyntaxError if the ufrag or pwd are
   // malformed.
-  webrtc::RTCError Validate() const;
+  RTCError Validate() const;
 };
-
-extern const char CONNECTIONROLE_ACTIVE_STR[];
-extern const char CONNECTIONROLE_PASSIVE_STR[];
-extern const char CONNECTIONROLE_ACTPASS_STR[];
-extern const char CONNECTIONROLE_HOLDCONN_STR[];
 
 constexpr auto* ICE_OPTION_TRICKLE = "trickle";
 constexpr auto* ICE_OPTION_RENOMINATION = "renomination";
@@ -99,7 +93,7 @@ struct TransportDescription {
                        absl::string_view ice_pwd,
                        IceMode ice_mode,
                        ConnectionRole role,
-                       const webrtc::SSLFingerprint* identity_fingerprint);
+                       const SSLFingerprint* identity_fingerprint);
   TransportDescription(absl::string_view ice_ufrag, absl::string_view ice_pwd);
   TransportDescription(const TransportDescription& from);
   ~TransportDescription();
@@ -120,12 +114,11 @@ struct TransportDescription {
                          HasOption(ICE_OPTION_RENOMINATION));
   }
 
-  static webrtc::SSLFingerprint* CopyFingerprint(
-      const webrtc::SSLFingerprint* from) {
+  static SSLFingerprint* CopyFingerprint(const SSLFingerprint* from) {
     if (!from)
       return NULL;
 
-    return new webrtc::SSLFingerprint(*from);
+    return new SSLFingerprint(*from);
   }
 
   // These are actually ICE options (appearing in the ice-options attribute in
@@ -137,9 +130,33 @@ struct TransportDescription {
   IceMode ice_mode;
   ConnectionRole connection_role;
 
-  std::unique_ptr<webrtc::SSLFingerprint> identity_fingerprint;
+  std::unique_ptr<SSLFingerprint> identity_fingerprint;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::ConnectionRole;
+using ::webrtc::CONNECTIONROLE_ACTIVE;
+using ::webrtc::CONNECTIONROLE_ACTPASS;
+using ::webrtc::CONNECTIONROLE_HOLDCONN;
+using ::webrtc::CONNECTIONROLE_NONE;
+using ::webrtc::CONNECTIONROLE_PASSIVE;
+using ::webrtc::ConnectionRoleToString;
+using ::webrtc::ICE_OPTION_RENOMINATION;
+using ::webrtc::ICE_OPTION_TRICKLE;
+using ::webrtc::IceMode;
+using ::webrtc::ICEMODE_FULL;
+using ::webrtc::ICEMODE_LITE;
+using ::webrtc::IceParameters;
+using ::webrtc::IceRole;
+using ::webrtc::ICEROLE_CONTROLLED;
+using ::webrtc::ICEROLE_CONTROLLING;
+using ::webrtc::ICEROLE_UNKNOWN;
+using ::webrtc::StringToConnectionRole;
+using ::webrtc::TransportDescription;
 }  // namespace cricket
 
 #endif  // P2P_BASE_TRANSPORT_DESCRIPTION_H_

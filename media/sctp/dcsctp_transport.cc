@@ -104,18 +104,17 @@ std::optional<DataMessageType> ToDataMessageType(dcsctp::PPID ppid) {
   return std::nullopt;
 }
 
-std::optional<cricket::SctpErrorCauseCode> ToErrorCauseCode(
-    dcsctp::ErrorKind error) {
+std::optional<SctpErrorCauseCode> ToErrorCauseCode(dcsctp::ErrorKind error) {
   switch (error) {
     case dcsctp::ErrorKind::kParseFailed:
-      return cricket::SctpErrorCauseCode::kUnrecognizedParameters;
+      return SctpErrorCauseCode::kUnrecognizedParameters;
     case dcsctp::ErrorKind::kPeerReported:
-      return cricket::SctpErrorCauseCode::kUserInitiatedAbort;
+      return SctpErrorCauseCode::kUserInitiatedAbort;
     case dcsctp::ErrorKind::kWrongSequence:
     case dcsctp::ErrorKind::kProtocolViolation:
-      return cricket::SctpErrorCauseCode::kProtocolViolation;
+      return SctpErrorCauseCode::kProtocolViolation;
     case dcsctp::ErrorKind::kResourceExhaustion:
-      return cricket::SctpErrorCauseCode::kOutOfResource;
+      return SctpErrorCauseCode::kOutOfResource;
     case dcsctp::ErrorKind::kTooManyRetries:
     case dcsctp::ErrorKind::kUnsupportedOperation:
     case dcsctp::ErrorKind::kNoError:
@@ -135,7 +134,7 @@ bool IsEmptyPPID(dcsctp::PPID ppid) {
 
 DcSctpTransport::DcSctpTransport(const Environment& env,
                                  Thread* network_thread,
-                                 cricket::DtlsTransportInternal* transport)
+                                 DtlsTransportInternal* transport)
     : DcSctpTransport(env,
                       network_thread,
                       transport,
@@ -144,7 +143,7 @@ DcSctpTransport::DcSctpTransport(const Environment& env,
 DcSctpTransport::DcSctpTransport(
     const Environment& env,
     Thread* network_thread,
-    cricket::DtlsTransportInternal* transport,
+    DtlsTransportInternal* transport,
     std::unique_ptr<dcsctp::DcSctpSocketFactory> socket_factory)
     : network_thread_(network_thread),
       transport_(transport),
@@ -184,8 +183,7 @@ void DcSctpTransport::SetDataChannelSink(DataChannelSink* sink) {
   }
 }
 
-void DcSctpTransport::SetDtlsTransport(
-    cricket::DtlsTransportInternal* transport) {
+void DcSctpTransport::SetDtlsTransport(DtlsTransportInternal* transport) {
   RTC_DCHECK_RUN_ON(network_thread_);
   DisconnectTransportSignals();
   transport_ = transport;
@@ -708,9 +706,8 @@ void DcSctpTransport::OnTransportWritableState(
   MaybeConnectSocket();
 }
 
-void DcSctpTransport::OnDtlsTransportState(
-    cricket::DtlsTransportInternal* transport,
-    webrtc::DtlsTransportState state) {
+void DcSctpTransport::OnDtlsTransportState(DtlsTransportInternal* transport,
+                                           webrtc::DtlsTransportState state) {
   if (state == DtlsTransportState::kNew && socket_) {
     // IF DTLS restart (DtlsTransportState::kNew)
     // THEN

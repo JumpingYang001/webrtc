@@ -125,17 +125,17 @@
 #include "system_wrappers/include/metrics.h"
 
 using cricket::MediaContentDescription;
-using cricket::RidDescription;
-using cricket::RidDirection;
-using cricket::StreamParams;
-using cricket::TransportInfo;
 using ::webrtc::ContentInfo;
 using ::webrtc::ContentInfos;
 using ::webrtc::MediaProtocolType;
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 using ::webrtc::SessionDescription;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
 using ::webrtc::SimulcastLayerList;
+using ::webrtc::StreamParams;
+using ::webrtc::TransportInfo;
 
 namespace webrtc {
 
@@ -407,7 +407,7 @@ bool PeerConnectionInterface::RTCConfiguration::operator==(
     int ice_backup_candidate_pair_ping_interval;
     ContinualGatheringPolicy continual_gathering_policy;
     bool prioritize_most_likely_ice_candidate_pairs;
-    struct cricket::MediaConfig media_config;
+    struct MediaConfig media_config;
     bool prune_turn_ports;
     PortPrunePolicy turn_port_prune_policy;
     bool presume_writable_when_fully_relayed;
@@ -1118,8 +1118,8 @@ PeerConnection::AddTransceiver(
     codecs = codec_vendor.audio_send_codecs().codecs();
   }
 
-  auto result = cricket::CheckRtpParametersValues(
-      parameters, codecs, std::nullopt, env_.field_trials());
+  auto result = CheckRtpParametersValues(parameters, codecs, std::nullopt,
+                                         env_.field_trials());
   if (!result.ok()) {
     if (result.type() == RTCErrorType::INVALID_MODIFICATION) {
       result.set_type(RTCErrorType::UNSUPPORTED_OPERATION);
@@ -2088,7 +2088,7 @@ void PeerConnection::OnIceCandidatesRemoved(
 }
 
 void PeerConnection::OnSelectedCandidatePairChanged(
-    const cricket::CandidatePairChangeEvent& event) {
+    const CandidatePairChangeEvent& event) {
   if (IsClosed()) {
     return;
   }
@@ -2270,7 +2270,7 @@ bool PeerConnection::GetSslRole(const std::string& content_name,
 bool PeerConnection::GetTransportDescription(
     const SessionDescription* description,
     const std::string& content_name,
-    cricket::TransportDescription* tdesc) {
+    TransportDescription* tdesc) {
   if (!description || !tdesc) {
     return false;
   }
@@ -2450,7 +2450,7 @@ void PeerConnection::OnTransportControllerCandidatesGathered(
 }
 
 void PeerConnection::OnTransportControllerCandidateError(
-    const cricket::IceCandidateErrorEvent& event) {
+    const IceCandidateErrorEvent& event) {
   OnIceCandidateError(event.address, event.port, event.url, event.error_code,
                       event.error_text);
 }
@@ -2471,7 +2471,7 @@ void PeerConnection::OnTransportControllerCandidatesRemoved(
 }
 
 void PeerConnection::OnTransportControllerCandidateChanged(
-    const cricket::CandidatePairChangeEvent& event) {
+    const CandidatePairChangeEvent& event) {
   OnSelectedCandidatePairChanged(event);
 }
 
@@ -2536,7 +2536,7 @@ std::optional<std::string> PeerConnection::SetupDataChannelTransport_n(
   }
 
   std::optional<std::string> transport_name;
-  cricket::DtlsTransportInternal* dtls_transport =
+  DtlsTransportInternal* dtls_transport =
       transport_controller_->GetDtlsTransport(*sctp_mid_n_);
   if (dtls_transport) {
     transport_name = dtls_transport->transport_name();
@@ -2591,7 +2591,7 @@ void PeerConnection::ReportSdpBundleUsage(
   RTC_DCHECK_RUN_ON(signaling_thread());
 
   bool using_bundle =
-      remote_description.description()->HasGroup(cricket::GROUP_TYPE_BUNDLE);
+      remote_description.description()->HasGroup(GROUP_TYPE_BUNDLE);
   int num_audio_mlines = 0;
   int num_video_mlines = 0;
   int num_data_mlines = 0;
@@ -2760,7 +2760,7 @@ void PeerConnection::ReportTransportStats(
   }
 
   if (sctp_mid_n_) {
-    cricket::DtlsTransportInternal* dtls_transport =
+    DtlsTransportInternal* dtls_transport =
         transport_controller_->GetDtlsTransport(*sctp_mid_n_);
     if (dtls_transport) {
       media_types_by_transport_name[dtls_transport->transport_name()].insert(

@@ -198,10 +198,10 @@ TEST_F(DataChannelControllerTest, MaxChannels) {
 
   // Allocate the maximum number of channels + 1. Inside the loop, the creation
   // process will allocate a stream id for each channel.
-  for (channel_id = 0; channel_id <= cricket::kMaxSctpStreams; ++channel_id) {
+  for (channel_id = 0; channel_id <= kMaxSctpStreams; ++channel_id) {
     auto ret = dcc.InternalCreateDataChannelWithProxy(
         "label", InternalDataChannelInit(DataChannelInit()));
-    if (channel_id == cricket::kMaxSctpStreams) {
+    if (channel_id == kMaxSctpStreams) {
       // We've reached the maximum and the previous call should have failed.
       EXPECT_FALSE(ret.ok());
     } else {

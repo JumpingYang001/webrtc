@@ -45,7 +45,7 @@ PROXY_METHOD1(rtc::scoped_refptr<MediaStreamInterface>,
               const std::string&)
 PROXY_METHOD1(rtc::scoped_refptr<AudioSourceInterface>,
               CreateAudioSource,
-              const cricket::AudioOptions&)
+              const AudioOptions&)
 PROXY_METHOD2(rtc::scoped_refptr<VideoTrackInterface>,
               CreateVideoTrack,
               rtc::scoped_refptr<VideoTrackSourceInterface>,

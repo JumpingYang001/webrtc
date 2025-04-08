@@ -42,7 +42,7 @@ class IceTransportTest : public ::testing::Test {
 
 TEST_F(IceTransportTest, CreateNonSelfDeletingTransport) {
   auto cricket_transport =
-      std::make_unique<cricket::FakeIceTransport>("name", 0, nullptr);
+      std::make_unique<FakeIceTransport>("name", 0, nullptr);
   auto ice_transport =
       rtc::make_ref_counted<IceTransportWithPointer>(cricket_transport.get());
   EXPECT_EQ(ice_transport->internal(), cricket_transport.get());
@@ -51,8 +51,7 @@ TEST_F(IceTransportTest, CreateNonSelfDeletingTransport) {
 }
 
 TEST_F(IceTransportTest, CreateSelfDeletingTransport) {
-  cricket::FakePortAllocator port_allocator(CreateEnvironment(),
-                                            socket_server());
+  FakePortAllocator port_allocator(CreateEnvironment(), socket_server());
   IceTransportInit init;
   init.set_port_allocator(&port_allocator);
   auto ice_transport = CreateIceTransport(std::move(init));

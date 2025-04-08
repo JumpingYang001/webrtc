@@ -11,7 +11,7 @@
 #ifndef MEDIA_BASE_MEDIA_CONFIG_H_
 #define MEDIA_BASE_MEDIA_CONFIG_H_
 
-namespace cricket {
+namespace webrtc {
 
 // Construction-time settings, passed on when creating
 // MediaChannels.
@@ -104,6 +104,12 @@ struct MediaConfig {
   bool operator!=(const MediaConfig& o) const { return !(*this == o); }
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::MediaConfig;
 }  // namespace cricket
 
 #endif  // MEDIA_BASE_MEDIA_CONFIG_H_

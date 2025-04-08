@@ -157,7 +157,7 @@ constexpr int64_t kRtcpIntervalMs = 1000;
 // Use a shorter timeout window than the default one for those.
 constexpr TimeDelta kReducedTimeout = TimeDelta::Seconds(10);
 
-enum VideoFormat {
+enum TestVideoFormat {
   kGeneric,
   kVP8,
 };
@@ -192,7 +192,7 @@ class VideoSendStreamTest : public test::CallTest {
   void TestNackRetransmission(uint32_t media_ssrc,
                               uint32_t retransmit_ssrc,
                               uint8_t retransmit_payload_type);
-  void TestPacketFragmentationSize(VideoFormat format, bool with_fec);
+  void TestPacketFragmentationSize(TestVideoFormat format, bool with_fec);
 
   void TestVp9NonFlexMode(const Vp9TestParams& params,
                           bool use_scalability_mode_identifier);
@@ -1143,7 +1143,7 @@ TEST_F(VideoSendStreamTest, RetransmitsNackOverRtx) {
                          test::VideoTestConstants::kSendRtxPayloadType);
 }
 
-void VideoSendStreamTest::TestPacketFragmentationSize(VideoFormat format,
+void VideoSendStreamTest::TestPacketFragmentationSize(TestVideoFormat format,
                                                       bool with_fec) {
   // Use a fake encoder to output a frame of every size in the range [90, 290],
   // for each size making sure that the exact number of payload bytes received

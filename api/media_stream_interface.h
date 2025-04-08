@@ -264,7 +264,7 @@ class RTC_EXPORT AudioSourceInterface : public MediaSourceInterface {
   // Returns options for the AudioSource.
   // (for some of the settings this approach is broken, e.g. setting
   // audio network adaptation on the source is the wrong layer of abstraction).
-  virtual const cricket::AudioOptions options() const;
+  virtual const AudioOptions options() const;
 };
 
 // Interface of the audio processor used by the audio track to collect

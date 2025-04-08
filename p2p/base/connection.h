@@ -48,7 +48,7 @@
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/weak_ptr.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Version number for GOOG_PING, this is added to have the option of
 // adding other flavors in the future.
@@ -77,16 +77,16 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   // A unique ID assigned when the connection is created.
   uint32_t id() const { return id_; }
 
-  webrtc::TaskQueueBase* network_thread() const;
+  TaskQueueBase* network_thread() const;
 
   // Implementation of virtual methods in CandidatePairInterface.
   // Returns the description of the local port
-  const webrtc::Candidate& local_candidate() const override;
+  const Candidate& local_candidate() const override;
   // Returns the description of the remote port to which we communicate.
-  const webrtc::Candidate& remote_candidate() const override;
+  const Candidate& remote_candidate() const override;
 
   // Return local network for this connection.
-  virtual const webrtc::Network* network() const;
+  virtual const Network* network() const;
   // Return generation for this connection.
   virtual int generation() const;
 
@@ -104,7 +104,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   bool writable() const;
   bool receiving() const;
 
-  const webrtc::PortInterface* port() const {
+  const PortInterface* port() const {
     RTC_DCHECK_RUN_ON(network_thread_);
     return port_.get();
   }
@@ -151,7 +151,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
 
   // Register as a recipient of received packets. There can only be one.
   void RegisterReceivedPacketCallback(
-      absl::AnyInvocable<void(Connection*, const rtc::ReceivedPacket&)>
+      absl::AnyInvocable<void(webrtc::Connection*, const rtc::ReceivedPacket&)>
           received_packet_callback);
   void DeregisterReceivedPacketCallback();
 
@@ -253,8 +253,8 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   std::string ToString() const;
   std::string ToSensitiveString() const;
   // Structured description of this candidate pair.
-  const webrtc::IceCandidatePairDescription& ToLogDescription();
-  void set_ice_event_log(webrtc::IceEventLog* ice_event_log);
+  const IceCandidatePairDescription& ToLogDescription();
+  void set_ice_event_log(IceEventLog* ice_event_log);
 
   // Prints pings_since_last_response_ into a string.
   void PrintPingsSinceLastResponse(std::string* pings, size_t max);
@@ -284,8 +284,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   // If `remote_candidate_` is peer reflexive and is equivalent to
   // `new_candidate` except the type, update `remote_candidate_` to
   // `new_candidate`.
-  void MaybeUpdatePeerReflexiveCandidate(
-      const webrtc::Candidate& new_candidate);
+  void MaybeUpdatePeerReflexiveCandidate(const Candidate& new_candidate);
 
   // Returns the last received time of any data, stun request, or stun
   // response in milliseconds
@@ -306,7 +305,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   void SetLocalCandidateNetworkCost(uint16_t cost);
 
   void SetIceFieldTrials(const IceFieldTrials* field_trials);
-  const rtc::EventBasedExponentialMovingAverage& GetRttEstimate() const {
+  const EventBasedExponentialMovingAverage& GetRttEstimate() const {
     return rtt_estimate_;
   }
 
@@ -329,8 +328,8 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   void SendResponseMessage(const StunMessage& response);
 
   // An accessor for unit tests.
-  webrtc::PortInterface* PortForTest() { return port_.get(); }
-  const webrtc::PortInterface* PortForTest() const { return port_.get(); }
+  PortInterface* PortForTest() { return port_.get(); }
+  const PortInterface* PortForTest() const { return port_.get(); }
 
   std::unique_ptr<IceMessage> BuildPingRequestForTest() {
     RTC_DCHECK_RUN_ON(network_thread_);
@@ -350,8 +349,8 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
 
   void SetStunDictConsumer(
       std::function<std::unique_ptr<StunAttribute>(
-          const StunByteStringAttribute*)> goog_delta_consumer,
-      std::function<void(webrtc::RTCErrorOr<const StunUInt64Attribute*>)>
+          const webrtc::StunByteStringAttribute*)> goog_delta_consumer,
+      std::function<void(RTCErrorOr<const webrtc::StunUInt64Attribute*>)>
           goog_delta_ack_consumer) {
     goog_delta_consumer_ = std::move(goog_delta_consumer);
     goog_delta_ack_consumer_ = std::move(goog_delta_ack_consumer);
@@ -373,9 +372,9 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   class ConnectionRequest;
 
   // Constructs a new connection to the given remote port.
-  Connection(rtc::WeakPtr<webrtc::PortInterface> port,
+  Connection(WeakPtr<PortInterface> port,
              size_t index,
-             const webrtc::Candidate& candidate);
+             const Candidate& candidate);
 
   // Called back when StunRequestManager has a stun packet to send
   void OnSendStunPacket(const void* data, size_t size, StunRequest* req);
@@ -404,22 +403,22 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   void set_connected(bool value);
 
   // The local port where this connection sends and receives packets.
-  webrtc::PortInterface* port() { return port_.get(); }
+  PortInterface* port() { return port_.get(); }
 
   // NOTE: A pointer to the network thread is held by `port_` so in theory we
   // shouldn't need to hold on to this pointer here, but rather defer to
   // port_->thread(). However, some tests delete the classes in the wrong order
   // so `port_` may be deleted before an instance of this class is deleted.
   // TODO(tommi): This ^^^ should be fixed.
-  webrtc::TaskQueueBase* const network_thread_;
+  TaskQueueBase* const network_thread_;
   const uint32_t id_;
-  rtc::WeakPtr<webrtc::PortInterface> port_;
-  webrtc::Candidate local_candidate_ RTC_GUARDED_BY(network_thread_);
-  webrtc::Candidate remote_candidate_;
+  WeakPtr<PortInterface> port_;
+  Candidate local_candidate_ RTC_GUARDED_BY(network_thread_);
+  Candidate remote_candidate_;
 
   ConnectionInfo stats_;
-  webrtc::RateTracker recv_rate_tracker_;
-  webrtc::RateTracker send_rate_tracker_;
+  RateTracker recv_rate_tracker_;
+  RateTracker send_rate_tracker_;
   int64_t last_send_data_ = 0;
 
  private:
@@ -428,9 +427,9 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   void MaybeUpdateLocalCandidate(StunRequest* request, StunMessage* response)
       RTC_RUN_ON(network_thread_);
 
-  void LogCandidatePairConfig(webrtc::IceCandidatePairConfigType type)
+  void LogCandidatePairConfig(IceCandidatePairConfigType type)
       RTC_RUN_ON(network_thread_);
-  void LogCandidatePairEvent(webrtc::IceCandidatePairEventType type,
+  void LogCandidatePairEvent(IceCandidatePairEventType type,
                              uint32_t transaction_id)
       RTC_RUN_ON(network_thread_);
 
@@ -496,9 +495,9 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   const int64_t delta_internal_unix_epoch_ms_ RTC_GUARDED_BY(network_thread_);
   int num_pings_sent_ RTC_GUARDED_BY(network_thread_) = 0;
 
-  std::optional<webrtc::IceCandidatePairDescription> log_description_
+  std::optional<IceCandidatePairDescription> log_description_
       RTC_GUARDED_BY(network_thread_);
-  webrtc::IceEventLog* ice_event_log_ RTC_GUARDED_BY(network_thread_) = nullptr;
+  IceEventLog* ice_event_log_ RTC_GUARDED_BY(network_thread_) = nullptr;
 
   // GOOG_PING_REQUEST is sent in place of STUN_BINDING_REQUEST
   // if configured via field trial, the remote peer supports it (signaled
@@ -509,16 +508,16 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
       RTC_GUARDED_BY(network_thread_);
 
   const IceFieldTrials* field_trials_;
-  rtc::EventBasedExponentialMovingAverage rtt_estimate_
+  EventBasedExponentialMovingAverage rtt_estimate_
       RTC_GUARDED_BY(network_thread_);
 
   std::optional<std::function<std::unique_ptr<StunAttribute>(
-      const StunByteStringAttribute*)>>
+      const webrtc::StunByteStringAttribute*)>>
       goog_delta_consumer_;
   std::optional<
-      std::function<void(webrtc::RTCErrorOr<const StunUInt64Attribute*>)>>
+      std::function<void(RTCErrorOr<const webrtc::StunUInt64Attribute*>)>>
       goog_delta_ack_consumer_;
-  absl::AnyInvocable<void(Connection*, const rtc::ReceivedPacket&)>
+  absl::AnyInvocable<void(webrtc::Connection*, const rtc::ReceivedPacket&)>
       received_packet_callback_;
 
   void MaybeAddDtlsPiggybackingAttributes(StunMessage* msg);
@@ -528,9 +527,9 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
 // ProxyConnection defers all the interesting work to the port.
 class ProxyConnection : public Connection {
  public:
-  ProxyConnection(rtc::WeakPtr<webrtc::PortInterface> port,
+  ProxyConnection(WeakPtr<PortInterface> port,
                   size_t index,
-                  const webrtc::Candidate& remote_candidate);
+                  const Candidate& remote_candidate);
 
   int Send(const void* data,
            size_t size,
@@ -541,6 +540,15 @@ class ProxyConnection : public Connection {
   int error_ = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::Connection;
+using ::webrtc::kGoogPingVersion;
+using ::webrtc::kMaxStunBindingLength;
+using ::webrtc::ProxyConnection;
 }  // namespace cricket
 
 #endif  // P2P_BASE_CONNECTION_H_

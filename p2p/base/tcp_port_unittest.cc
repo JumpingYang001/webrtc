@@ -42,16 +42,16 @@
 #include "test/gtest.h"
 #include "test/wait_until.h"
 
-using cricket::Connection;
-using cricket::ICE_PWD_LENGTH;
-using cricket::ICE_UFRAG_LENGTH;
-using cricket::Port;
-using cricket::TCPPort;
 using ::testing::Eq;
 using ::testing::IsTrue;
+using ::webrtc::Connection;
 using ::webrtc::CreateEnvironment;
 using ::webrtc::Environment;
+using ::webrtc::ICE_PWD_LENGTH;
+using ::webrtc::ICE_UFRAG_LENGTH;
+using ::webrtc::Port;
 using ::webrtc::SocketAddress;
+using ::webrtc::TCPPort;
 
 static int kTimeout = 1000;
 static const SocketAddress kLocalAddr("11.11.11.11", 0);
@@ -92,8 +92,8 @@ class TCPPortTest : public ::testing::Test, public sigslot::has_slots<> {
       : ss_(new webrtc::VirtualSocketServer()),
         main_(ss_.get()),
         socket_factory_(ss_.get()),
-        username_(webrtc::CreateRandomString(ICE_UFRAG_LENGTH)),
-        password_(webrtc::CreateRandomString(ICE_PWD_LENGTH)) {}
+        username_(webrtc::CreateRandomString(webrtc::ICE_UFRAG_LENGTH)),
+        password_(webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH)) {}
 
   webrtc::Network* MakeNetwork(const SocketAddress& addr) {
     networks_.emplace_back("unittest", "unittest", addr.ipaddr(), 32);
@@ -280,7 +280,7 @@ TEST_F(TCPPortTest, SignalSentPacket) {
 
   // Need to get the port of the actual outgoing socket, not the server socket..
   webrtc::Candidate client_candidate = client->Candidates()[0];
-  client_candidate.set_address(static_cast<cricket::TCPConnection*>(client_conn)
+  client_candidate.set_address(static_cast<webrtc::TCPConnection*>(client_conn)
                                    ->socket()
                                    ->GetLocalAddress());
   Connection* server_conn =
@@ -342,7 +342,7 @@ TEST_F(TCPPortTest, SignalSentPacketAfterReconnect) {
 
   // Need to get the port of the actual outgoing socket.
   webrtc::Candidate client_candidate = client->Candidates()[0];
-  client_candidate.set_address(static_cast<cricket::TCPConnection*>(client_conn)
+  client_candidate.set_address(static_cast<webrtc::TCPConnection*>(client_conn)
                                    ->socket()
                                    ->GetLocalAddress());
   client_candidate.set_tcptype("");
@@ -402,7 +402,7 @@ TEST_F(TCPPortTest, SignalSentPacketAfterReconnect) {
   // Client outgoing socket port will have changed since the client create a new
   // socket when it reconnect.
   client_candidate = client->Candidates()[0];
-  client_candidate.set_address(static_cast<cricket::TCPConnection*>(client_conn)
+  client_candidate.set_address(static_cast<webrtc::TCPConnection*>(client_conn)
                                    ->socket()
                                    ->GetLocalAddress());
   client_candidate.set_tcptype("");

@@ -50,19 +50,18 @@ class AudioRtpReceiver : public ObserverInterface,
   // However, when using that, the assumption is that right after construction,
   // a call to either `SetupUnsignaledMediaChannel` or `SetupMediaChannel`
   // will be made, which will internally start the source on the worker thread.
-  AudioRtpReceiver(
-      Thread* worker_thread,
-      std::string receiver_id,
-      std::vector<std::string> stream_ids,
-      bool is_unified_plan,
-      cricket::VoiceMediaReceiveChannelInterface* voice_channel = nullptr);
+  AudioRtpReceiver(Thread* worker_thread,
+                   std::string receiver_id,
+                   std::vector<std::string> stream_ids,
+                   bool is_unified_plan,
+                   VoiceMediaReceiveChannelInterface* voice_channel = nullptr);
   // TODO(https://crbug.com/webrtc/9480): Remove this when streams() is removed.
   AudioRtpReceiver(
       Thread* worker_thread,
       const std::string& receiver_id,
       const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams,
       bool is_unified_plan,
-      cricket::VoiceMediaReceiveChannelInterface* media_channel = nullptr);
+      VoiceMediaReceiveChannelInterface* media_channel = nullptr);
   virtual ~AudioRtpReceiver();
 
   // ObserverInterface implementation
@@ -112,8 +111,7 @@ class AudioRtpReceiver : public ObserverInterface,
   void SetJitterBufferMinimumDelay(
       std::optional<double> delay_seconds) override;
 
-  void SetMediaChannel(
-      cricket::MediaReceiveChannelInterface* media_channel) override;
+  void SetMediaChannel(MediaReceiveChannelInterface* media_channel) override;
 
   std::vector<RtpSource> GetSources() const override;
   int AttachmentId() const override { return attachment_id_; }
@@ -135,7 +133,7 @@ class AudioRtpReceiver : public ObserverInterface,
   const std::string id_;
   const rtc::scoped_refptr<RemoteAudioSource> source_;
   const rtc::scoped_refptr<AudioTrackProxyWithInternal<AudioTrack>> track_;
-  cricket::VoiceMediaReceiveChannelInterface* media_channel_
+  VoiceMediaReceiveChannelInterface* media_channel_
       RTC_GUARDED_BY(worker_thread_) = nullptr;
   std::optional<uint32_t> signaled_ssrc_ RTC_GUARDED_BY(worker_thread_);
   std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams_

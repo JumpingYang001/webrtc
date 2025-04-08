@@ -35,7 +35,7 @@
 #define _DBG_VERBOSE 2
 #define _DEBUGMSG _DBG_NONE
 
-namespace cricket {
+namespace webrtc {
 
 //////////////////////////////////////////////////////////////////////
 // Network Constants
@@ -1177,7 +1177,7 @@ void PseudoTcp::disableWindowScale() {
 }
 
 void PseudoTcp::queueConnectMessage() {
-  webrtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
 
   buf.WriteUInt8(CTL_CONNECT);
   if (m_support_wnd_scale) {
@@ -1195,7 +1195,7 @@ void PseudoTcp::parseOptions(const char* data, uint32_t len) {
 
   // See http://www.freesoft.org/CIE/Course/Section4/8.htm for
   // parsing the options list.
-  webrtc::ByteBufferReader buf(
+  ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), len));
   while (buf.Length()) {
     uint8_t kind = TCP_OPT_EOL;
@@ -1298,12 +1298,12 @@ PseudoTcp::LockedFifoBuffer::LockedFifoBuffer(size_t size)
 PseudoTcp::LockedFifoBuffer::~LockedFifoBuffer() {}
 
 size_t PseudoTcp::LockedFifoBuffer::GetBuffered() const {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   return data_length_;
 }
 
 bool PseudoTcp::LockedFifoBuffer::SetCapacity(size_t size) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   if (data_length_ > size)
     return false;
 
@@ -1325,7 +1325,7 @@ bool PseudoTcp::LockedFifoBuffer::ReadOffset(void* buffer,
                                              size_t bytes,
                                              size_t offset,
                                              size_t* bytes_read) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   return ReadOffsetLocked(buffer, bytes, offset, bytes_read);
 }
 
@@ -1333,14 +1333,14 @@ bool PseudoTcp::LockedFifoBuffer::WriteOffset(const void* buffer,
                                               size_t bytes,
                                               size_t offset,
                                               size_t* bytes_written) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   return WriteOffsetLocked(buffer, bytes, offset, bytes_written);
 }
 
 bool PseudoTcp::LockedFifoBuffer::Read(void* buffer,
                                        size_t bytes,
                                        size_t* bytes_read) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   size_t copy = 0;
   if (!ReadOffsetLocked(buffer, bytes, 0, &copy))
     return false;
@@ -1358,7 +1358,7 @@ bool PseudoTcp::LockedFifoBuffer::Read(void* buffer,
 bool PseudoTcp::LockedFifoBuffer::Write(const void* buffer,
                                         size_t bytes,
                                         size_t* bytes_written) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   size_t copy = 0;
   if (!WriteOffsetLocked(buffer, bytes, 0, &copy))
     return false;
@@ -1373,20 +1373,20 @@ bool PseudoTcp::LockedFifoBuffer::Write(const void* buffer,
 }
 
 void PseudoTcp::LockedFifoBuffer::ConsumeReadData(size_t size) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   RTC_DCHECK(size <= data_length_);
   read_position_ = (read_position_ + size) % buffer_length_;
   data_length_ -= size;
 }
 
 void PseudoTcp::LockedFifoBuffer::ConsumeWriteBuffer(size_t size) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   RTC_DCHECK(size <= buffer_length_ - data_length_);
   data_length_ += size;
 }
 
 bool PseudoTcp::LockedFifoBuffer::GetWriteRemaining(size_t* size) const {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   *size = buffer_length_ - data_length_;
   return true;
 }
@@ -1434,4 +1434,4 @@ bool PseudoTcp::LockedFifoBuffer::WriteOffsetLocked(const void* buffer,
   return true;
 }
 
-}  // namespace cricket
+}  // namespace webrtc

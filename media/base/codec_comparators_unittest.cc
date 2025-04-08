@@ -22,8 +22,6 @@
 
 namespace webrtc {
 
-using cricket::kH264CodecName;
-using cricket::kH264FmtpPacketizationMode;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
@@ -79,13 +77,13 @@ TEST(CodecComparatorsTest, StaticPayloadTypesIgnoreName) {
 
 TEST(CodecComparatorsTest, MatchesWithReferenceAttributesRed) {
   // Test that RED codecs' reference attributes get parsed correctly.
-  Codec codec_1 = CreateAudioCodec(101, cricket::kRedCodecName, 48000, 2);
-  codec_1.SetParam(cricket::kCodecParamNotInNameValueFormat, "100/100");
-  Codec codec_2 = CreateAudioCodec(102, cricket::kRedCodecName, 48000, 2);
-  codec_2.SetParam(cricket::kCodecParamNotInNameValueFormat, "101/101");
+  Codec codec_1 = CreateAudioCodec(101, kRedCodecName, 48000, 2);
+  codec_1.SetParam(kCodecParamNotInNameValueFormat, "100/100");
+  Codec codec_2 = CreateAudioCodec(102, kRedCodecName, 48000, 2);
+  codec_2.SetParam(kCodecParamNotInNameValueFormat, "101/101");
   // Mixed codecs in RED
-  Codec codec_3 = CreateAudioCodec(103, cricket::kRedCodecName, 48000, 2);
-  codec_3.SetParam(cricket::kCodecParamNotInNameValueFormat, "100/101");
+  Codec codec_3 = CreateAudioCodec(103, kRedCodecName, 48000, 2);
+  codec_3.SetParam(kCodecParamNotInNameValueFormat, "100/101");
   // Identical codecs always match.
   EXPECT_TRUE(MatchesWithReferenceAttributes(codec_1, codec_1));
   EXPECT_TRUE(MatchesWithReferenceAttributes(codec_2, codec_2));
@@ -96,13 +94,13 @@ TEST(CodecComparatorsTest, MatchesWithReferenceAttributesRed) {
   EXPECT_FALSE(MatchesWithReferenceAttributes(codec_2, codec_3));
   // Overflow of longer lists are ignored.
   // Overlong list - overflow should be ignored.
-  Codec codec_4 = CreateAudioCodec(103, cricket::kRedCodecName, 48000, 2);
-  codec_4.SetParam(cricket::kCodecParamNotInNameValueFormat, "100/100/101/102");
+  Codec codec_4 = CreateAudioCodec(103, kRedCodecName, 48000, 2);
+  codec_4.SetParam(kCodecParamNotInNameValueFormat, "100/100/101/102");
   EXPECT_TRUE(MatchesWithReferenceAttributes(codec_4, codec_4));
   EXPECT_TRUE(MatchesWithReferenceAttributes(codec_1, codec_4));
   // Broken syntax will cause a non-match with anything except itself.
-  Codec codec_5 = CreateAudioCodec(103, cricket::kRedCodecName, 48000, 2);
-  codec_5.SetParam(cricket::kCodecParamNotInNameValueFormat, "");
+  Codec codec_5 = CreateAudioCodec(103, kRedCodecName, 48000, 2);
+  codec_5.SetParam(kCodecParamNotInNameValueFormat, "");
   EXPECT_TRUE(MatchesWithReferenceAttributes(codec_5, codec_5));
   EXPECT_FALSE(MatchesWithReferenceAttributes(codec_1, codec_5));
 }
@@ -158,7 +156,7 @@ INSTANTIATE_TEST_SUITE_P(
          .codec2 = {"AV1", {}},
          .expected_result = true},
         {.name = "Av1WithoutProfileTreatedAsProfile0",
-         .codec1 = {"AV1", {{cricket::kAv1FmtpProfile, "0"}, {"x", "1"}}},
+         .codec1 = {"AV1", {{kAv1FmtpProfile, "0"}, {"x", "1"}}},
          .codec2 = {"AV1", {{"x", "1"}}},
          .expected_result = true},
         {.name = "Av1WithDifferentProfile",
@@ -166,8 +164,8 @@ INSTANTIATE_TEST_SUITE_P(
          .codec2 = {"AV1", SdpVideoFormat::AV1Profile1().parameters},
          .expected_result = false},
         {.name = "Av1WithDifferentParameters",
-         .codec1 = {"AV1", {{cricket::kAv1FmtpProfile, "0"}, {"x", "1"}}},
-         .codec2 = {"AV1", {{cricket::kAv1FmtpProfile, "0"}, {"x", "2"}}},
+         .codec1 = {"AV1", {{kAv1FmtpProfile, "0"}, {"x", "1"}}},
+         .codec2 = {"AV1", {{kAv1FmtpProfile, "0"}, {"x", "2"}}},
          .expected_result = false},
         {.name = "Vp9WithSameProfile",
          .codec1 = {"VP9", SdpVideoFormat::VP9Profile0().parameters},
@@ -196,35 +194,35 @@ INSTANTIATE_TEST_SUITE_P(
 #ifdef RTC_ENABLE_H265
         {.name = "H265WithSameProfile",
          .codec1 = {"H265",
-                    {{cricket::kH265FmtpProfileId, "1"},
-                     {cricket::kH265FmtpTierFlag, "0"},
-                     {cricket::kH265FmtpLevelId, "93"},
-                     {cricket::kH265FmtpTxMode, "SRST"}}},
+                    {{kH265FmtpProfileId, "1"},
+                     {kH265FmtpTierFlag, "0"},
+                     {kH265FmtpLevelId, "93"},
+                     {kH265FmtpTxMode, "SRST"}}},
          .codec2 = {"H265",
-                    {{cricket::kH265FmtpProfileId, "1"},
-                     {cricket::kH265FmtpTierFlag, "0"},
-                     {cricket::kH265FmtpLevelId, "93"},
-                     {cricket::kH265FmtpTxMode, "SRST"}}},
+                    {{kH265FmtpProfileId, "1"},
+                     {kH265FmtpTierFlag, "0"},
+                     {kH265FmtpLevelId, "93"},
+                     {kH265FmtpTxMode, "SRST"}}},
          .expected_result = true},
         {.name = "H265WithoutParametersTreatedAsDefault",
          .codec1 = {"H265",
-                    {{cricket::kH265FmtpProfileId, "1"},
-                     {cricket::kH265FmtpTierFlag, "0"},
-                     {cricket::kH265FmtpLevelId, "93"},
-                     {cricket::kH265FmtpTxMode, "SRST"}}},
+                    {{kH265FmtpProfileId, "1"},
+                     {kH265FmtpTierFlag, "0"},
+                     {kH265FmtpLevelId, "93"},
+                     {kH265FmtpTxMode, "SRST"}}},
          .codec2 = {"H265", {}},
          .expected_result = true},
         {.name = "H265WithDifferentProfile",
          .codec1 = {"H265",
-                    {{cricket::kH265FmtpProfileId, "1"},
-                     {cricket::kH265FmtpTierFlag, "0"},
-                     {cricket::kH265FmtpLevelId, "93"},
-                     {cricket::kH265FmtpTxMode, "SRST"}}},
+                    {{kH265FmtpProfileId, "1"},
+                     {kH265FmtpTierFlag, "0"},
+                     {kH265FmtpLevelId, "93"},
+                     {kH265FmtpTxMode, "SRST"}}},
          .codec2 = {"H265",
-                    {{cricket::kH265FmtpProfileId, "1"},
-                     {cricket::kH265FmtpTierFlag, "1"},
-                     {cricket::kH265FmtpLevelId, "93"},
-                     {cricket::kH265FmtpTxMode, "SRST"}}},
+                    {{kH265FmtpProfileId, "1"},
+                     {kH265FmtpTierFlag, "1"},
+                     {kH265FmtpLevelId, "93"},
+                     {kH265FmtpTxMode, "SRST"}}},
          .expected_result = false},
 #endif
     }),
@@ -237,40 +235,40 @@ INSTANTIATE_TEST_SUITE_P(
 // See https://cconcolato.github.io/media-mime-support/ for inspiration.
 TEST(IsSameRtpCodecIgnoringLevelTest, IgnoresH264Levels) {
   // AVC Baseline Level 3.1
-  Codec baseline_3_1 = CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                      {cricket::kH264FmtpPacketizationMode, "1"},
-                      {cricket::kH264FmtpProfileLevelId, "42001f"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec baseline_3_1 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{kH264FmtpLevelAsymmetryAllowed, "1"},
+                                       {kH264FmtpPacketizationMode, "1"},
+                                       {kH264FmtpProfileLevelId, "42001f"}},
+                                      {ScalabilityMode::kL1T1}));
   // AVC Baseline Level 5.2
-  Codec baseline_5_2 = CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                      {cricket::kH264FmtpPacketizationMode, "1"},
-                      {cricket::kH264FmtpProfileLevelId, "420034"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec baseline_5_2 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{kH264FmtpLevelAsymmetryAllowed, "1"},
+                                       {kH264FmtpPacketizationMode, "1"},
+                                       {kH264FmtpProfileLevelId, "420034"}},
+                                      {ScalabilityMode::kL1T1}));
   // AVC High Level 3.1
-  Codec high_3_1 = CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                      {cricket::kH264FmtpPacketizationMode, "1"},
-                      {cricket::kH264FmtpProfileLevelId, "64001f"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec high_3_1 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{kH264FmtpLevelAsymmetryAllowed, "1"},
+                                       {kH264FmtpPacketizationMode, "1"},
+                                       {kH264FmtpProfileLevelId, "64001f"}},
+                                      {ScalabilityMode::kL1T1}));
   // AVC High Level 5.2
-  Codec high_5_2 = CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                      {cricket::kH264FmtpPacketizationMode, "1"},
-                      {cricket::kH264FmtpProfileLevelId, "640034"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec high_5_2 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{kH264FmtpLevelAsymmetryAllowed, "1"},
+                                       {kH264FmtpPacketizationMode, "1"},
+                                       {kH264FmtpProfileLevelId, "640034"}},
+                                      {ScalabilityMode::kL1T1}));
   // AVC High 4:4:4 Predictive Level 3.1
-  Codec high_444_predictive_3_1 = CreateVideoCodec(
-      SdpVideoFormat("H264",
-                     {{cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
-                      {cricket::kH264FmtpPacketizationMode, "1"},
-                      {cricket::kH264FmtpProfileLevelId, "f4001f"}},
-                     {ScalabilityMode::kL1T1}));
+  Codec high_444_predictive_3_1 =
+      CreateVideoCodec(SdpVideoFormat("H264",
+                                      {{kH264FmtpLevelAsymmetryAllowed, "1"},
+                                       {kH264FmtpPacketizationMode, "1"},
+                                       {kH264FmtpProfileLevelId, "f4001f"}},
+                                      {ScalabilityMode::kL1T1}));
 
   // AVC Baseline Level 5.2 is compatible with AVC Baseline Level 3.1.
   EXPECT_TRUE(IsSameRtpCodecIgnoringLevel(baseline_5_2,
@@ -306,26 +304,26 @@ TEST(IsSameRtpCodecIgnoringLevelTest, IgnoresH265Levels) {
   // Profile 1, Level 5.2
   Codec profile_1_level_5_2 =
       CreateVideoCodec(SdpVideoFormat("H265",
-                                      {{cricket::kH265FmtpProfileId, "1"},
-                                       {cricket::kH265FmtpTierFlag, "0"},
-                                       {cricket::kH265FmtpLevelId, "156"},
-                                       {cricket::kH265FmtpTxMode, "SRST"}},
+                                      {{kH265FmtpProfileId, "1"},
+                                       {kH265FmtpTierFlag, "0"},
+                                       {kH265FmtpLevelId, "156"},
+                                       {kH265FmtpTxMode, "SRST"}},
                                       {ScalabilityMode::kL1T1}));
   // Profile 1, Level 6.0
   Codec profile_1_level_6_0 =
       CreateVideoCodec(SdpVideoFormat("H265",
-                                      {{cricket::kH265FmtpProfileId, "1"},
-                                       {cricket::kH265FmtpTierFlag, "0"},
-                                       {cricket::kH265FmtpLevelId, "180"},
-                                       {cricket::kH265FmtpTxMode, "SRST"}},
+                                      {{kH265FmtpProfileId, "1"},
+                                       {kH265FmtpTierFlag, "0"},
+                                       {kH265FmtpLevelId, "180"},
+                                       {kH265FmtpTxMode, "SRST"}},
                                       {ScalabilityMode::kL1T1}));
   // Profile 2, Level 6.0
   Codec profile_2_level_6_0 =
       CreateVideoCodec(SdpVideoFormat("H265",
-                                      {{cricket::kH265FmtpProfileId, "2"},
-                                       {cricket::kH265FmtpTierFlag, "0"},
-                                       {cricket::kH265FmtpLevelId, "180"},
-                                       {cricket::kH265FmtpTxMode, "SRST"}},
+                                      {{kH265FmtpProfileId, "2"},
+                                       {kH265FmtpTierFlag, "0"},
+                                       {kH265FmtpLevelId, "180"},
+                                       {kH265FmtpTxMode, "SRST"}},
                                       {ScalabilityMode::kL1T1}));
   // Profile 1 codecs are compatible with each other.
   EXPECT_TRUE(IsSameRtpCodecIgnoringLevel(
@@ -421,8 +419,8 @@ TEST(CodecTest, TestVideoCodecMatches) {
 }
 
 TEST(CodecTest, TestVideoCodecMatchesWithDifferentPacketization) {
-  Codec c0 = CreateVideoCodec(100, cricket::kVp8CodecName);
-  Codec c1 = CreateVideoCodec(101, cricket::kVp8CodecName);
+  Codec c0 = CreateVideoCodec(100, kVp8CodecName);
+  Codec c1 = CreateVideoCodec(101, kVp8CodecName);
   c1.packetization = "raw";
 
   EXPECT_TRUE(c0.Matches(c1));
@@ -435,34 +433,34 @@ TEST(CodecTest, TestAV1CodecMatches) {
   const char kProfile1[] = "1";
   const char kProfile2[] = "2";
 
-  Codec c_no_profile = CreateVideoCodec(95, cricket::kAv1CodecName);
-  Codec c_profile0 = CreateVideoCodec(95, cricket::kAv1CodecName);
-  c_profile0.params[cricket::kAv1FmtpProfile] = kProfile0;
-  Codec c_profile1 = CreateVideoCodec(95, cricket::kAv1CodecName);
-  c_profile1.params[cricket::kAv1FmtpProfile] = kProfile1;
-  Codec c_profile2 = CreateVideoCodec(95, cricket::kAv1CodecName);
-  c_profile2.params[cricket::kAv1FmtpProfile] = kProfile2;
+  Codec c_no_profile = CreateVideoCodec(95, kAv1CodecName);
+  Codec c_profile0 = CreateVideoCodec(95, kAv1CodecName);
+  c_profile0.params[kAv1FmtpProfile] = kProfile0;
+  Codec c_profile1 = CreateVideoCodec(95, kAv1CodecName);
+  c_profile1.params[kAv1FmtpProfile] = kProfile1;
+  Codec c_profile2 = CreateVideoCodec(95, kAv1CodecName);
+  c_profile2.params[kAv1FmtpProfile] = kProfile2;
 
   // An AV1 entry with no profile specified should be treated as profile-0.
   EXPECT_TRUE(c_profile0.Matches(c_no_profile));
 
   {
     // Two AV1 entries without a profile specified are treated as duplicates.
-    Codec c_no_profile_eq = CreateVideoCodec(95, cricket::kAv1CodecName);
+    Codec c_no_profile_eq = CreateVideoCodec(95, kAv1CodecName);
     EXPECT_TRUE(c_no_profile.Matches(c_no_profile_eq));
   }
 
   {
     // Two AV1 entries with profile 0 specified are treated as duplicates.
-    Codec c_profile0_eq = CreateVideoCodec(95, cricket::kAv1CodecName);
-    c_profile0_eq.params[cricket::kAv1FmtpProfile] = kProfile0;
+    Codec c_profile0_eq = CreateVideoCodec(95, kAv1CodecName);
+    c_profile0_eq.params[kAv1FmtpProfile] = kProfile0;
     EXPECT_TRUE(c_profile0.Matches(c_profile0_eq));
   }
 
   {
     // Two AV1 entries with profile 1 specified are treated as duplicates.
-    Codec c_profile1_eq = CreateVideoCodec(95, cricket::kAv1CodecName);
-    c_profile1_eq.params[cricket::kAv1FmtpProfile] = kProfile1;
+    Codec c_profile1_eq = CreateVideoCodec(95, kAv1CodecName);
+    c_profile1_eq.params[kAv1FmtpProfile] = kProfile1;
     EXPECT_TRUE(c_profile1.Matches(c_profile1_eq));
   }
 
@@ -480,27 +478,27 @@ TEST(CodecTest, TestVP9CodecMatches) {
   const char kProfile0[] = "0";
   const char kProfile2[] = "2";
 
-  Codec c_no_profile = CreateVideoCodec(95, cricket::kVp9CodecName);
-  Codec c_profile0 = CreateVideoCodec(95, cricket::kVp9CodecName);
+  Codec c_no_profile = CreateVideoCodec(95, kVp9CodecName);
+  Codec c_profile0 = CreateVideoCodec(95, kVp9CodecName);
   c_profile0.params[webrtc::kVP9FmtpProfileId] = kProfile0;
 
   EXPECT_TRUE(c_profile0.Matches(c_no_profile));
 
   {
-    Codec c_profile0_eq = CreateVideoCodec(95, cricket::kVp9CodecName);
+    Codec c_profile0_eq = CreateVideoCodec(95, kVp9CodecName);
     c_profile0_eq.params[webrtc::kVP9FmtpProfileId] = kProfile0;
     EXPECT_TRUE(c_profile0.Matches(c_profile0_eq));
   }
 
   {
-    Codec c_profile2 = CreateVideoCodec(95, cricket::kVp9CodecName);
+    Codec c_profile2 = CreateVideoCodec(95, kVp9CodecName);
     c_profile2.params[webrtc::kVP9FmtpProfileId] = kProfile2;
     EXPECT_FALSE(c_profile0.Matches(c_profile2));
     EXPECT_FALSE(c_no_profile.Matches(c_profile2));
   }
 
   {
-    Codec c_no_profile_eq = CreateVideoCodec(95, cricket::kVp9CodecName);
+    Codec c_no_profile_eq = CreateVideoCodec(95, kVp9CodecName);
     EXPECT_TRUE(c_no_profile.Matches(c_no_profile_eq));
   }
 }
@@ -513,14 +511,14 @@ TEST(CodecTest, TestH264CodecMatches) {
   const char kProfileLevelId3[] = "42e01e";
 
   Codec pli_1_pm_0 = CreateVideoCodec(95, "H264");
-  pli_1_pm_0.params[cricket::kH264FmtpProfileLevelId] = kProfileLevelId1;
-  pli_1_pm_0.params[cricket::kH264FmtpPacketizationMode] = "0";
+  pli_1_pm_0.params[kH264FmtpProfileLevelId] = kProfileLevelId1;
+  pli_1_pm_0.params[kH264FmtpPacketizationMode] = "0";
 
   {
     Codec pli_1_pm_blank = CreateVideoCodec(95, "H264");
-    pli_1_pm_blank.params[cricket::kH264FmtpProfileLevelId] = kProfileLevelId1;
+    pli_1_pm_blank.params[kH264FmtpProfileLevelId] = kProfileLevelId1;
     pli_1_pm_blank.params.erase(
-        pli_1_pm_blank.params.find(cricket::kH264FmtpPacketizationMode));
+        pli_1_pm_blank.params.find(kH264FmtpPacketizationMode));
 
     // Matches since if packetization-mode is not specified it defaults to "0".
     EXPECT_TRUE(pli_1_pm_0.Matches(pli_1_pm_blank));
@@ -532,8 +530,8 @@ TEST(CodecTest, TestH264CodecMatches) {
 
   {
     Codec pli_1_pm_1 = CreateVideoCodec(95, "H264");
-    pli_1_pm_1.params[cricket::kH264FmtpProfileLevelId] = kProfileLevelId1;
-    pli_1_pm_1.params[cricket::kH264FmtpPacketizationMode] = "1";
+    pli_1_pm_1.params[kH264FmtpProfileLevelId] = kProfileLevelId1;
+    pli_1_pm_1.params[kH264FmtpPacketizationMode] = "1";
 
     // Does not match since packetization-mode is different.
     EXPECT_FALSE(pli_1_pm_0.Matches(pli_1_pm_1));
@@ -543,8 +541,8 @@ TEST(CodecTest, TestH264CodecMatches) {
 
   {
     Codec pli_2_pm_0 = CreateVideoCodec(95, "H264");
-    pli_2_pm_0.params[cricket::kH264FmtpProfileLevelId] = kProfileLevelId2;
-    pli_2_pm_0.params[cricket::kH264FmtpPacketizationMode] = "0";
+    pli_2_pm_0.params[kH264FmtpProfileLevelId] = kProfileLevelId2;
+    pli_2_pm_0.params[kH264FmtpPacketizationMode] = "0";
 
     // Does not match since profile-level-id is different.
     EXPECT_FALSE(pli_1_pm_0.Matches(pli_2_pm_0));
@@ -554,8 +552,8 @@ TEST(CodecTest, TestH264CodecMatches) {
 
   {
     Codec pli_3_pm_0_asym = CreateVideoCodec(95, "H264");
-    pli_3_pm_0_asym.params[cricket::kH264FmtpProfileLevelId] = kProfileLevelId3;
-    pli_3_pm_0_asym.params[cricket::kH264FmtpPacketizationMode] = "0";
+    pli_3_pm_0_asym.params[kH264FmtpProfileLevelId] = kProfileLevelId3;
+    pli_3_pm_0_asym.params[kH264FmtpPacketizationMode] = "0";
 
     // Does match, profile-level-id is different but the level is not compared.
     // and the profile matches.
@@ -577,43 +575,43 @@ TEST(CodecTest, TestH265CodecMatches) {
   constexpr char kLevel4[] = "120";
   constexpr char kTxMrst[] = "MRST";
 
-  Codec c_ptl_blank = CreateVideoCodec(95, cricket::kH265CodecName);
+  Codec c_ptl_blank = CreateVideoCodec(95, kH265CodecName);
 
   {
-    Codec c_profile_1 = CreateVideoCodec(95, cricket::kH265CodecName);
-    c_profile_1.params[cricket::kH265FmtpProfileId] = kProfile1;
+    Codec c_profile_1 = CreateVideoCodec(95, kH265CodecName);
+    c_profile_1.params[kH265FmtpProfileId] = kProfile1;
 
     // Matches since profile-id unspecified defaults to "1".
     EXPECT_TRUE(c_ptl_blank.Matches(c_profile_1));
   }
 
   {
-    Codec c_tier_flag_1 = CreateVideoCodec(95, cricket::kH265CodecName);
-    c_tier_flag_1.params[cricket::kH265FmtpTierFlag] = kTier1;
+    Codec c_tier_flag_1 = CreateVideoCodec(95, kH265CodecName);
+    c_tier_flag_1.params[kH265FmtpTierFlag] = kTier1;
 
     // Does not match since profile-space unspecified defaults to "0".
     EXPECT_FALSE(c_ptl_blank.Matches(c_tier_flag_1));
   }
 
   {
-    Codec c_level_id_3_1 = CreateVideoCodec(95, cricket::kH265CodecName);
-    c_level_id_3_1.params[cricket::kH265FmtpLevelId] = kLevel3_1;
+    Codec c_level_id_3_1 = CreateVideoCodec(95, kH265CodecName);
+    c_level_id_3_1.params[kH265FmtpLevelId] = kLevel3_1;
 
     // Matches since level-id unspecified defaults to "93".
     EXPECT_TRUE(c_ptl_blank.Matches(c_level_id_3_1));
   }
 
   {
-    Codec c_level_id_4 = CreateVideoCodec(95, cricket::kH265CodecName);
-    c_level_id_4.params[cricket::kH265FmtpLevelId] = kLevel4;
+    Codec c_level_id_4 = CreateVideoCodec(95, kH265CodecName);
+    c_level_id_4.params[kH265FmtpLevelId] = kLevel4;
 
     // Matches since we ignore level-id when matching H.265 codecs.
     EXPECT_TRUE(c_ptl_blank.Matches(c_level_id_4));
   }
 
   {
-    Codec c_tx_mode_mrst = CreateVideoCodec(95, cricket::kH265CodecName);
-    c_tx_mode_mrst.params[cricket::kH265FmtpTxMode] = kTxMrst;
+    Codec c_tx_mode_mrst = CreateVideoCodec(95, kH265CodecName);
+    c_tx_mode_mrst.params[kH265FmtpTxMode] = kTxMrst;
 
     // Does not match since tx-mode implies to "SRST" and must be not specified
     // when it is the only mode supported:

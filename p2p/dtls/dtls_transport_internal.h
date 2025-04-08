@@ -31,7 +31,7 @@
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_stream_adapter.h"
 
-namespace cricket {
+namespace webrtc {
 
 enum PacketFlags {
   PF_NORMAL = 0x00,       // A normal packet.
@@ -45,22 +45,22 @@ enum PacketFlags {
 // Once the public interface is supported,
 // (https://www.w3.org/TR/webrtc/#rtcdtlstransport-interface)
 // the DtlsTransportInterface will be split from this class.
-class DtlsTransportInternal : public webrtc::PacketTransportInternal {
+class DtlsTransportInternal : public PacketTransportInternal {
  public:
   ~DtlsTransportInternal() override;
 
   DtlsTransportInternal(const DtlsTransportInternal&) = delete;
   DtlsTransportInternal& operator=(const DtlsTransportInternal&) = delete;
 
-  virtual webrtc::DtlsTransportState dtls_state() const = 0;
+  virtual DtlsTransportState dtls_state() const = 0;
 
   virtual int component() const = 0;
 
   virtual bool IsDtlsActive() const = 0;
 
-  virtual bool GetDtlsRole(webrtc::SSLRole* role) const = 0;
+  virtual bool GetDtlsRole(SSLRole* role) const = 0;
 
-  virtual bool SetDtlsRole(webrtc::SSLRole role) = 0;
+  virtual bool SetDtlsRole(SSLRole role) = 0;
 
   // Finds out which TLS/DTLS version is running.
   virtual bool GetSslVersionBytes(int* version) const = 0;
@@ -80,15 +80,13 @@ class DtlsTransportInternal : public webrtc::PacketTransportInternal {
   virtual uint16_t GetSslPeerSignatureAlgorithm() const = 0;
 
   // Gets the local RTCCertificate used for DTLS.
-  virtual rtc::scoped_refptr<webrtc::RTCCertificate> GetLocalCertificate()
-      const = 0;
+  virtual scoped_refptr<RTCCertificate> GetLocalCertificate() const = 0;
 
   virtual bool SetLocalCertificate(
-      const rtc::scoped_refptr<webrtc::RTCCertificate>& certificate) = 0;
+      const scoped_refptr<RTCCertificate>& certificate) = 0;
 
   // Gets a copy of the remote side's SSL certificate chain.
-  virtual std::unique_ptr<webrtc::SSLCertChain> GetRemoteSSLCertChain()
-      const = 0;
+  virtual std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain() const = 0;
 
   // Allows key material to be extracted for external encryption.
   virtual bool ExportSrtpKeyingMaterial(
@@ -101,19 +99,18 @@ class DtlsTransportInternal : public webrtc::PacketTransportInternal {
                                     size_t digest_len) = 0;
 
   // Set DTLS remote fingerprint and role. Must be after local identity set.
-  virtual webrtc::RTCError SetRemoteParameters(
-      absl::string_view digest_alg,
-      const uint8_t* digest,
-      size_t digest_len,
-      std::optional<webrtc::SSLRole> role) = 0;
+  virtual RTCError SetRemoteParameters(absl::string_view digest_alg,
+                                       const uint8_t* digest,
+                                       size_t digest_len,
+                                       std::optional<SSLRole> role) = 0;
 
   ABSL_DEPRECATED("Set the max version via construction.")
-  bool SetSslMaxProtocolVersion(webrtc::SSLProtocolVersion /* version */) {
+  bool SetSslMaxProtocolVersion(SSLProtocolVersion /* version */) {
     return true;
   }
 
   // Expose the underneath IceTransport.
-  virtual webrtc::IceTransportInternal* ice_transport() = 0;
+  virtual IceTransportInternal* ice_transport() = 0;
 
   // F: void(DtlsTransportInternal*, const webrtc::DtlsTransportState)
   template <typename F>
@@ -132,7 +129,7 @@ class DtlsTransportInternal : public webrtc::PacketTransportInternal {
   }
 
   void SendDtlsState(DtlsTransportInternal* transport,
-                     webrtc::DtlsTransportState state) {
+                     DtlsTransportState state) {
     dtls_transport_state_callback_list_.Send(transport, state);
   }
 
@@ -143,7 +140,7 @@ class DtlsTransportInternal : public webrtc::PacketTransportInternal {
     dtls_handshake_error_callback_list_.AddReceiver(std::forward<F>(callback));
   }
 
-  void SendDtlsHandshakeError(webrtc::SSLHandshakeError error) {
+  void SendDtlsHandshakeError(SSLHandshakeError error) {
     dtls_handshake_error_callback_list_.Send(error);
   }
 
@@ -151,12 +148,20 @@ class DtlsTransportInternal : public webrtc::PacketTransportInternal {
   DtlsTransportInternal();
 
  private:
-  webrtc::CallbackList<const webrtc::SSLHandshakeError>
-      dtls_handshake_error_callback_list_;
-  webrtc::CallbackList<DtlsTransportInternal*, const webrtc::DtlsTransportState>
+  CallbackList<const SSLHandshakeError> dtls_handshake_error_callback_list_;
+  CallbackList<DtlsTransportInternal*, const DtlsTransportState>
       dtls_transport_state_callback_list_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::DtlsTransportInternal;
+using ::webrtc::PacketFlags;
+using ::webrtc::PF_NORMAL;
+using ::webrtc::PF_SRTP_BYPASS;
 }  // namespace cricket
 
 #endif  // P2P_DTLS_DTLS_TRANSPORT_INTERNAL_H_

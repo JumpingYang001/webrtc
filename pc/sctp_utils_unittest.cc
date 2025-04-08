@@ -206,9 +206,8 @@ TEST_F(SctpUtilsTest, TestIsOpenMessage) {
 TEST(SctpSidTest, Basics) {
   // These static asserts are mostly here to aid with readability (i.e. knowing
   // what these constants represent).
-  static_assert(cricket::kMinSctpSid == 0, "Min stream id should be 0");
-  static_assert(cricket::kMaxSctpSid <= cricket::kSpecMaxSctpSid, "");
-  static_assert(
-      cricket::kSpecMaxSctpSid == std::numeric_limits<uint16_t>::max(),
-      "Max legal sctp stream value should be 0xffff");
+  static_assert(webrtc::kMinSctpSid == 0, "Min stream id should be 0");
+  static_assert(webrtc::kMaxSctpSid <= webrtc::kSpecMaxSctpSid, "");
+  static_assert(webrtc::kSpecMaxSctpSid == std::numeric_limits<uint16_t>::max(),
+                "Max legal sctp stream value should be 0xffff");
 }

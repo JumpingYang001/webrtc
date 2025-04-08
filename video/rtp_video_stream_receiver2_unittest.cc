@@ -857,8 +857,7 @@ TEST_P(RtpVideoStreamReceiver2TestH264, OutOfBandFmtpSpsPps) {
   webrtc::CodecParameterMap codec_params;
   // Example parameter sets from https://tools.ietf.org/html/rfc3984#section-8.2
   // .
-  codec_params.insert(
-      {cricket::kH264FmtpSpropParameterSets, "Z0IACpZTBYmI,aMljiA=="});
+  codec_params.insert({kH264FmtpSpropParameterSets, "Z0IACpZTBYmI,aMljiA=="});
   rtp_video_stream_receiver_->AddReceiveCodec(kH264PayloadType, kVideoCodecH264,
                                               codec_params,
                                               /*raw_payload=*/false);
@@ -905,7 +904,7 @@ TEST_P(RtpVideoStreamReceiver2TestH264, ForceSpsPpsIdrIsKeyframe) {
   webrtc::CodecParameterMap codec_params;
   // Forcing can be done either with field trial or codec_params.
   if (!env_.field_trials().IsEnabled("WebRTC-SpsPpsIdrIsH264Keyframe")) {
-    codec_params.insert({cricket::kH264FmtpSpsPpsIdrInKeyframe, ""});
+    codec_params.insert({kH264FmtpSpsPpsIdrInKeyframe, ""});
   }
   rtp_video_stream_receiver_->AddReceiveCodec(kPayloadType, kVideoCodecH264,
                                               codec_params,

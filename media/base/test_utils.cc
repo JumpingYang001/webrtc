@@ -19,11 +19,10 @@
 
 namespace webrtc {
 
-cricket::StreamParams CreateSimStreamParams(
-    const std::string& cname,
-    const std::vector<uint32_t>& ssrcs) {
-  cricket::StreamParams sp;
-  cricket::SsrcGroup sg(cricket::kSimSsrcGroupSemantics, ssrcs);
+StreamParams CreateSimStreamParams(const std::string& cname,
+                                   const std::vector<uint32_t>& ssrcs) {
+  StreamParams sp;
+  SsrcGroup sg(kSimSsrcGroupSemantics, ssrcs);
   sp.ssrcs = ssrcs;
   sp.ssrc_groups.push_back(sg);
   sp.cname = cname;
@@ -31,11 +30,11 @@ cricket::StreamParams CreateSimStreamParams(
 }
 
 // There should be an rtx_ssrc per ssrc.
-cricket::StreamParams CreateSimWithRtxStreamParams(
+StreamParams CreateSimWithRtxStreamParams(
     const std::string& cname,
     const std::vector<uint32_t>& ssrcs,
     const std::vector<uint32_t>& rtx_ssrcs) {
-  cricket::StreamParams sp = CreateSimStreamParams(cname, ssrcs);
+  StreamParams sp = CreateSimStreamParams(cname, ssrcs);
   for (size_t i = 0; i < ssrcs.size(); ++i) {
     sp.AddFidSsrc(ssrcs[i], rtx_ssrcs[i]);
   }
@@ -43,11 +42,10 @@ cricket::StreamParams CreateSimWithRtxStreamParams(
 }
 
 // There should be one fec ssrc per ssrc.
-cricket::StreamParams CreatePrimaryWithFecFrStreamParams(
-    const std::string& cname,
-    uint32_t primary_ssrc,
-    uint32_t flexfec_ssrc) {
-  cricket::StreamParams sp;
+StreamParams CreatePrimaryWithFecFrStreamParams(const std::string& cname,
+                                                uint32_t primary_ssrc,
+                                                uint32_t flexfec_ssrc) {
+  StreamParams sp;
   sp.ssrcs = {primary_ssrc};
   sp.cname = cname;
   sp.AddFecFrSsrc(primary_ssrc, flexfec_ssrc);

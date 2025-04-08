@@ -23,7 +23,7 @@ namespace webrtc {
 
 namespace {
 // note: function duplicated in media_session.cc
-bool ValidateSimulcastLayers(const std::vector<cricket::RidDescription>& rids,
+bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
                              const SimulcastLayerList& simulcast_layers) {
   return absl::c_all_of(simulcast_layers.GetAllLayers(),
                         [&rids](const cricket::SimulcastLayer& layer) {
@@ -47,7 +47,7 @@ void MediaDescriptionOptions::AddAudioSender(
 void MediaDescriptionOptions::AddVideoSender(
     const std::string& track_id,
     const std::vector<std::string>& stream_ids,
-    const std::vector<cricket::RidDescription>& rids,
+    const std::vector<RidDescription>& rids,
     const SimulcastLayerList& simulcast_layers,
     int num_sim_layers) {
   RTC_DCHECK(type == MediaType::VIDEO);
@@ -61,7 +61,7 @@ void MediaDescriptionOptions::AddVideoSender(
 void MediaDescriptionOptions::AddSenderInternal(
     const std::string& track_id,
     const std::vector<std::string>& stream_ids,
-    const std::vector<cricket::RidDescription>& rids,
+    const std::vector<RidDescription>& rids,
     const SimulcastLayerList& simulcast_layers,
     int num_sim_layers) {
   // TODO(steveanton): Support any number of stream ids.

@@ -317,6 +317,7 @@ rtc_library("media_channel_impl") {
 rtc_source_set("media_channel") {
   sources = [ "base/media_channel.h" ]
   deps = [
+    ":audio_source",
     ":codec",
     ":media_constants",
     ":rtp_utils",

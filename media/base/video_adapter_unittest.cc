@@ -29,7 +29,7 @@
 #include "test/gmock.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
 constexpr int kWidth = 1280;
 constexpr int kHeight = 720;
@@ -38,35 +38,35 @@ constexpr int kDefaultFps = 30;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Pair;
-using webrtc::Resolution;
+using ::webrtc::test::ScopedFieldTrials;
 
-webrtc::VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
-                                      int max_pixel_count,
-                                      int max_framerate_fps,
-                                      int sink_alignment = 1) {
-  webrtc::VideoSinkWants wants;
+VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
+                              int max_pixel_count,
+                              int max_framerate_fps,
+                              int sink_alignment = 1) {
+  VideoSinkWants wants;
   wants.target_pixel_count = target_pixel_count;
   wants.max_pixel_count = max_pixel_count;
   wants.max_framerate_fps = max_framerate_fps;
   wants.resolution_alignment = sink_alignment;
   wants.is_active = true;
-  wants.aggregates.emplace(webrtc::VideoSinkWants::Aggregates());
+  wants.aggregates.emplace(VideoSinkWants::Aggregates());
   wants.aggregates->any_active_without_requested_resolution = false;
   return wants;
 }
 
-webrtc::VideoSinkWants BuildSinkWants(
-    std::optional<webrtc::Resolution> scale_resolution_down_to,
+VideoSinkWants BuildSinkWants(
+    std::optional<Resolution> scale_resolution_down_to,
     bool any_active_without_requested_resolution) {
-  webrtc::VideoSinkWants wants;
+  VideoSinkWants wants;
   wants.max_framerate_fps = kDefaultFps;
   wants.resolution_alignment = 1;
   wants.is_active = true;
   if (scale_resolution_down_to) {
-    wants.requested_resolution.emplace(webrtc::VideoSinkWants::FrameSize(
+    wants.requested_resolution.emplace(VideoSinkWants::FrameSize(
         scale_resolution_down_to->width, scale_resolution_down_to->height));
   }
-  wants.aggregates.emplace(webrtc::VideoSinkWants::Aggregates());
+  wants.aggregates.emplace(VideoSinkWants::Aggregates());
   wants.aggregates->any_active_without_requested_resolution =
       any_active_without_requested_resolution;
   return wants;
@@ -81,7 +81,7 @@ class VideoAdapterTest : public ::testing::Test,
   explicit VideoAdapterTest(const std::string& field_trials,
                             int source_resolution_alignment)
       : override_field_trials_(field_trials),
-        frame_source_(std::make_unique<webrtc::FakeFrameSource>(
+        frame_source_(std::make_unique<FakeFrameSource>(
             kWidth,
             kHeight,
             VideoFormat::FpsToInterval(kDefaultFps) /
@@ -108,7 +108,7 @@ class VideoAdapterTest : public ::testing::Test,
     explicit VideoAdapterWrapper(VideoAdapter* adapter)
         : video_adapter_(adapter) {}
 
-    void AdaptFrame(const webrtc::VideoFrame& frame) {
+    void AdaptFrame(const VideoFrame& frame) {
       const int in_width = frame.width();
       const int in_height = frame.height();
       int cropped_width;
@@ -164,14 +164,13 @@ class VideoAdapterTest : public ::testing::Test,
     }
     adapter_.OnOutputFormatRequest(
         VideoFormat(width, height, fps ? VideoFormat::FpsToInterval(*fps) : 0,
-                    cricket::FOURCC_I420));
+                    webrtc::FOURCC_I420));
   }
 
   // Return pair of <out resolution, cropping>
-  std::pair<webrtc::Resolution, webrtc::Resolution> AdaptFrameResolution(
-      webrtc::Resolution res) {
-    webrtc::Resolution out;
-    webrtc::Resolution cropped;
+  std::pair<Resolution, Resolution> AdaptFrameResolution(Resolution res) {
+    Resolution out;
+    Resolution cropped;
     timestamp_ns_ += 1000000000;
     EXPECT_TRUE(adapter_.AdaptFrameResolution(
         res.width, res.height, timestamp_ns_, &cropped.width, &cropped.height,
@@ -179,8 +178,8 @@ class VideoAdapterTest : public ::testing::Test,
     return std::make_pair(out, cropped);
   }
 
-  webrtc::test::ScopedFieldTrials override_field_trials_;
-  const std::unique_ptr<webrtc::FakeFrameSource> frame_source_;
+  ScopedFieldTrials override_field_trials_;
+  const std::unique_ptr<FakeFrameSource> frame_source_;
   VideoAdapter adapter_;
   int64_t timestamp_ns_ = 0;
   int cropped_width_;
@@ -1393,4 +1392,4 @@ INSTANTIATE_TEST_SUITE_P(OnOutputFormatRequests,
                          VideoAdapterWithSourceAlignmentTest,
                          ::testing::Values(true, false));
 
-}  // namespace cricket
+}  // namespace webrtc

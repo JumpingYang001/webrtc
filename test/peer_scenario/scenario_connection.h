@@ -56,8 +56,7 @@ class ScenarioIceConnection {
   virtual void SetLocalSdp(SdpType type, const std::string& local_sdp) = 0;
 
   virtual EmulatedEndpoint* endpoint() = 0;
-  virtual const cricket::TransportDescription& transport_description()
-      const = 0;
+  virtual const TransportDescription& transport_description() const = 0;
 
   webrtc::test::ScopedKeyValueConfig field_trials;
 };

@@ -244,8 +244,8 @@ TEST_P(PeerConnectionDataChannelTest,
   auto caller = CreatePeerConnection();
   auto offer = caller->CreateOffer();
 
-  EXPECT_FALSE(offer->description()->GetContentByName(cricket::CN_DATA));
-  EXPECT_FALSE(offer->description()->GetTransportInfoByName(cricket::CN_DATA));
+  EXPECT_FALSE(offer->description()->GetContentByName(CN_DATA));
+  EXPECT_FALSE(offer->description()->GetTransportInfoByName(CN_DATA));
 }
 
 TEST_P(PeerConnectionDataChannelTest,

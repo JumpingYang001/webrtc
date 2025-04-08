@@ -13,7 +13,7 @@
 #include "rtc_base/time_utils.h"
 #include "test/gtest.h"
 
-namespace cricket {
+namespace webrtc {
 
 TEST(VideoCommonTest, TestCanonicalFourCC) {
   // Canonical fourccs are not changed.
@@ -93,4 +93,4 @@ TEST(VideoCommonTest, TestVideoFormatCompare) {
   EXPECT_TRUE(format.IsPixelRateLess(format2));
 }
 
-}  // namespace cricket
+}  // namespace webrtc

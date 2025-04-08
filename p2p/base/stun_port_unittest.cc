@@ -61,7 +61,6 @@
 
 namespace {
 
-using cricket::ServerAddresses;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -71,6 +70,7 @@ using ::testing::ReturnPointee;
 using ::testing::SetArgPointee;
 using ::webrtc::CreateEnvironment;
 using ::webrtc::IceCandidateType;
+using ::webrtc::ServerAddresses;
 using ::webrtc::SocketAddress;
 
 static const SocketAddress kPrivateIP("192.168.1.12", 0);
@@ -94,7 +94,7 @@ static const SocketAddress kValidHostnameAddr("valid-hostname", 5000);
 static const SocketAddress kBadHostnameAddr("not-a-real-hostname", 5000);
 // STUN timeout (with all retries) is cricket::STUN_TOTAL_TIMEOUT.
 // Add some margin of error for slow bots.
-static const int kTimeoutMs = cricket::STUN_TOTAL_TIMEOUT;
+static const int kTimeoutMs = webrtc::STUN_TOTAL_TIMEOUT;
 // stun prio = 100 (srflx) << 24 | 30 (IPv4) << 8 | 256 - 1 (component)
 static const uint32_t kStunCandidatePriority =
     (100 << 24) | (30 << 8) | (256 - 1);
@@ -171,7 +171,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   }
 
   webrtc::SocketServer* ss() const { return ss_.get(); }
-  cricket::UDPPort* port() const { return stun_port_.get(); }
+  webrtc::UDPPort* port() const { return stun_port_.get(); }
   webrtc::AsyncPacketSocket* socket() const { return socket_.get(); }
   bool done() const { return done_; }
   bool error() const { return error_; }
@@ -193,7 +193,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
 
   void CreateStunPort(const ServerAddresses& stun_servers,
                       const webrtc::FieldTrialsView* field_trials = nullptr) {
-    stun_port_ = cricket::StunPort::Create(
+    stun_port_ = webrtc::StunPort::Create(
         {.env = CreateEnvironment(field_trials),
          .network_thread = &thread_,
          .socket_factory = socket_factory(),
@@ -232,7 +232,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
         });
     ServerAddresses stun_servers;
     stun_servers.insert(server_addr);
-    stun_port_ = cricket::UDPPort::Create(
+    stun_port_ = webrtc::UDPPort::Create(
         {.env = CreateEnvironment(field_trials),
          .network_thread = &thread_,
          .socket_factory = socket_factory(),
@@ -272,17 +272,17 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
     webrtc::InitRandom(NULL, 0);
   }
 
-  void OnPortComplete(cricket::Port* /* port */) {
+  void OnPortComplete(webrtc::Port* /* port */) {
     ASSERT_FALSE(done_);
     done_ = true;
     error_ = false;
   }
-  void OnPortError(cricket::Port* /* port */) {
+  void OnPortError(webrtc::Port* /* port */) {
     done_ = true;
     error_ = true;
   }
-  void OnCandidateError(cricket::Port* /* port */,
-                        const cricket::IceCandidateErrorEvent& event) {
+  void OnCandidateError(webrtc::Port* /* port */,
+                        const webrtc::IceCandidateErrorEvent& event) {
     error_event_ = event;
   }
   void SetKeepaliveDelay(int delay) { stun_keepalive_delay_ = delay; }
@@ -311,7 +311,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   webrtc::AutoSocketServerThread thread_;
   webrtc::NATSocketFactory nat_factory_;
   webrtc::BasicPacketSocketFactory nat_socket_factory_;
-  std::unique_ptr<cricket::UDPPort> stun_port_;
+  std::unique_ptr<webrtc::UDPPort> stun_port_;
   std::vector<webrtc::TestStunServer::StunServerPtr> stun_servers_;
   std::unique_ptr<webrtc::AsyncPacketSocket> socket_;
   std::unique_ptr<webrtc::MdnsResponderProvider> mdns_responder_provider_;
@@ -322,7 +322,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
   int stun_keepalive_lifetime_;
 
  protected:
-  cricket::IceCandidateErrorEvent error_event_;
+  webrtc::IceCandidateErrorEvent error_event_;
 };
 
 class StunPortTestWithRealClock : public StunPortTestBase {};
@@ -376,7 +376,7 @@ TEST_F(StunPortTest, TestPrepareAddressFail) {
   EXPECT_EQ(0U, port()->Candidates().size());
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return error_event_.error_code; },
-                        Eq(cricket::STUN_ERROR_SERVER_NOT_REACHABLE),
+                        Eq(webrtc::STUN_ERROR_SERVER_NOT_REACHABLE),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeoutMs),
                          .clock = &fake_clock}),
       webrtc::IsRtcOk());
@@ -490,7 +490,7 @@ TEST_F(StunPortTestWithRealClock, TestPrepareAddressHostnameFail) {
   EXPECT_EQ(0U, port()->Candidates().size());
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return error_event_.error_code; },
-                        Eq(cricket::STUN_ERROR_SERVER_NOT_REACHABLE),
+                        Eq(webrtc::STUN_ERROR_SERVER_NOT_REACHABLE),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeoutMs)}),
       webrtc::IsRtcOk());
 }
@@ -694,7 +694,7 @@ TEST_F(StunPortTest, TestStunBindingRequestShortLifetime) {
       webrtc::IsRtcOk());
   EXPECT_THAT(
       webrtc::WaitUntil(
-          [&] { return !HasPendingRequest(cricket::STUN_BINDING_REQUEST); },
+          [&] { return !HasPendingRequest(webrtc::STUN_BINDING_REQUEST); },
           IsTrue(), {.clock = &fake_clock}),
       webrtc::IsRtcOk());
 }
@@ -711,7 +711,7 @@ TEST_F(StunPortTest, TestStunBindingRequestLongLifetime) {
       webrtc::IsRtcOk());
   EXPECT_THAT(
       webrtc::WaitUntil(
-          [&] { return HasPendingRequest(cricket::STUN_BINDING_REQUEST); },
+          [&] { return HasPendingRequest(webrtc::STUN_BINDING_REQUEST); },
           IsTrue(), {.clock = &fake_clock}),
       webrtc::IsRtcOk());
 }
@@ -817,7 +817,7 @@ TEST_F(StunIPv6PortTest, TestPrepareAddressFail) {
   EXPECT_EQ(0U, port()->Candidates().size());
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return error_event_.error_code; },
-                        Eq(cricket::STUN_ERROR_SERVER_NOT_REACHABLE),
+                        Eq(webrtc::STUN_ERROR_SERVER_NOT_REACHABLE),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeoutMs),
                          .clock = &fake_clock}),
       webrtc::IsRtcOk());
@@ -855,7 +855,7 @@ TEST_F(StunIPv6PortTestWithRealClock, TestPrepareAddressHostnameFail) {
   EXPECT_EQ(0U, port()->Candidates().size());
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return error_event_.error_code; },
-                        Eq(cricket::STUN_ERROR_SERVER_NOT_REACHABLE),
+                        Eq(webrtc::STUN_ERROR_SERVER_NOT_REACHABLE),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeoutMs)}),
       webrtc::IsRtcOk());
 }

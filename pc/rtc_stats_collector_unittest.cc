@@ -180,9 +180,9 @@ std::unique_ptr<Candidate> CreateFakeCandidate(
     uint32_t priority,
     const AdapterType underlying_type_for_vpn = ADAPTER_TYPE_UNKNOWN) {
   std::unique_ptr<Candidate> candidate(new Candidate(
-      cricket::ICE_CANDIDATE_COMPONENT_RTP, protocol,
-      SocketAddress(hostname, port), priority, "iceusernamefragment",
-      "" /* pwd */, candidate_type, 0 /* generation */, "foundationIsAString"));
+      ICE_CANDIDATE_COMPONENT_RTP, protocol, SocketAddress(hostname, port),
+      priority, "iceusernamefragment", "" /* pwd */, candidate_type,
+      0 /* generation */, "foundationIsAString"));
 
   candidate->set_network_type(adapter_type);
   candidate->set_underlying_type_for_vpn(underlying_type_for_vpn);
@@ -506,26 +506,26 @@ class RTCStatsCollectorWrapper {
   // Senders get assigned attachment ID "ssrc + 10".
   void CreateMockRtpSendersReceiversAndChannels(
       std::initializer_list<
-          std::pair<MediaStreamTrackInterface*, cricket::VoiceSenderInfo>>
+          std::pair<MediaStreamTrackInterface*, VoiceSenderInfo>>
           local_audio_track_info_pairs,
       std::initializer_list<
-          std::pair<MediaStreamTrackInterface*, cricket::VoiceReceiverInfo>>
+          std::pair<MediaStreamTrackInterface*, VoiceReceiverInfo>>
           remote_audio_track_info_pairs,
       std::initializer_list<
-          std::pair<MediaStreamTrackInterface*, cricket::VideoSenderInfo>>
+          std::pair<MediaStreamTrackInterface*, VideoSenderInfo>>
           local_video_track_info_pairs,
       std::initializer_list<
-          std::pair<MediaStreamTrackInterface*, cricket::VideoReceiverInfo>>
+          std::pair<MediaStreamTrackInterface*, VideoReceiverInfo>>
           remote_video_track_info_pairs,
       std::vector<std::string> local_stream_ids,
       std::vector<rtc::scoped_refptr<MediaStreamInterface>> remote_streams) {
-    cricket::VoiceMediaInfo voice_media_info;
-    cricket::VideoMediaInfo video_media_info;
+    VoiceMediaInfo voice_media_info;
+    VideoMediaInfo video_media_info;
 
     // Local audio tracks and voice sender infos
     for (auto& pair : local_audio_track_info_pairs) {
       MediaStreamTrackInterface* local_audio_track = pair.first;
-      const cricket::VoiceSenderInfo& voice_sender_info = pair.second;
+      const VoiceSenderInfo& voice_sender_info = pair.second;
       RTC_DCHECK_EQ(local_audio_track->kind(),
                     MediaStreamTrackInterface::kAudioKind);
 
@@ -544,7 +544,7 @@ class RTCStatsCollectorWrapper {
     // Remote audio tracks and voice receiver infos
     for (auto& pair : remote_audio_track_info_pairs) {
       MediaStreamTrackInterface* remote_audio_track = pair.first;
-      const cricket::VoiceReceiverInfo& voice_receiver_info = pair.second;
+      const VoiceReceiverInfo& voice_receiver_info = pair.second;
       RTC_DCHECK_EQ(remote_audio_track->kind(),
                     MediaStreamTrackInterface::kAudioKind);
 
@@ -563,7 +563,7 @@ class RTCStatsCollectorWrapper {
     // Local video tracks and video sender infos
     for (auto& pair : local_video_track_info_pairs) {
       MediaStreamTrackInterface* local_video_track = pair.first;
-      const cricket::VideoSenderInfo& video_sender_info = pair.second;
+      const VideoSenderInfo& video_sender_info = pair.second;
       RTC_DCHECK_EQ(local_video_track->kind(),
                     MediaStreamTrackInterface::kVideoKind);
 
@@ -583,7 +583,7 @@ class RTCStatsCollectorWrapper {
     // Remote video tracks and video receiver infos
     for (auto& pair : remote_video_track_info_pairs) {
       MediaStreamTrackInterface* remote_video_track = pair.first;
-      const cricket::VideoReceiverInfo& video_receiver_info = pair.second;
+      const VideoReceiverInfo& video_receiver_info = pair.second;
       RTC_DCHECK_EQ(remote_video_track->kind(),
                     MediaStreamTrackInterface::kVideoKind);
 
@@ -693,7 +693,7 @@ class RTCStatsCollectorTest : public ::testing::Test {
 
     // codec (send)
     graph.send_codec_id = "COTTransportName1_1";
-    cricket::VideoMediaInfo video_media_info;
+    VideoMediaInfo video_media_info;
     RtpCodecParameters send_codec;
     send_codec.payload_type = 1;
     send_codec.clock_rate = 0;
@@ -708,17 +708,15 @@ class RTCStatsCollectorTest : public ::testing::Test {
         std::make_pair(recv_codec.payload_type, recv_codec));
     // outbound-rtp
     graph.outbound_rtp_id = "OTTransportName1V3";
-    video_media_info.senders.push_back(cricket::VideoSenderInfo());
-    video_media_info.senders[0].local_stats.push_back(
-        cricket::SsrcSenderInfo());
+    video_media_info.senders.push_back(VideoSenderInfo());
+    video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
     video_media_info.senders[0].local_stats[0].ssrc = 3;
     video_media_info.senders[0].codec_payload_type = send_codec.payload_type;
     video_media_info.aggregated_senders.push_back(video_media_info.senders[0]);
     // inbound-rtp
     graph.inbound_rtp_id = "ITTransportName1V4";
-    video_media_info.receivers.push_back(cricket::VideoReceiverInfo());
-    video_media_info.receivers[0].local_stats.push_back(
-        cricket::SsrcReceiverInfo());
+    video_media_info.receivers.push_back(VideoReceiverInfo());
+    video_media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
     video_media_info.receivers[0].local_stats[0].ssrc = 4;
     video_media_info.receivers[0].codec_payload_type = recv_codec.payload_type;
     // transport
@@ -783,7 +781,7 @@ class RTCStatsCollectorTest : public ::testing::Test {
 
     // codec (send)
     graph.send_codec_id = "COTTransportName1_1";
-    cricket::VoiceMediaInfo media_info;
+    VoiceMediaInfo media_info;
     RtpCodecParameters send_codec;
     send_codec.payload_type = 1;
     send_codec.clock_rate = 0;
@@ -798,14 +796,14 @@ class RTCStatsCollectorTest : public ::testing::Test {
         std::make_pair(recv_codec.payload_type, recv_codec));
     // outbound-rtp
     graph.outbound_rtp_id = "OTTransportName1A3";
-    media_info.senders.push_back(cricket::VoiceSenderInfo());
-    media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+    media_info.senders.push_back(VoiceSenderInfo());
+    media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
     media_info.senders[0].local_stats[0].ssrc = kLocalSsrc;
     media_info.senders[0].codec_payload_type = send_codec.payload_type;
     // inbound-rtp
     graph.inbound_rtp_id = "ITTransportName1A4";
-    media_info.receivers.push_back(cricket::VoiceReceiverInfo());
-    media_info.receivers[0].local_stats.push_back(cricket::SsrcReceiverInfo());
+    media_info.receivers.push_back(VoiceReceiverInfo());
+    media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
     media_info.receivers[0].local_stats[0].ssrc = kRemoteSsrc;
     media_info.receivers[0].codec_payload_type = recv_codec.payload_type;
     // remote-outbound-rtp
@@ -1007,13 +1005,13 @@ TEST_F(RTCStatsCollectorTest, CollectRTCCertificateStatsSingle) {
 // These SSRC collisions are legal.
 TEST_F(RTCStatsCollectorTest, ValidSsrcCollisionDoesNotCrash) {
   // BUNDLE audio/video inbound/outbound. Unique SSRCs needed within the BUNDLE.
-  cricket::VoiceMediaInfo mid1_info;
+  VoiceMediaInfo mid1_info;
   mid1_info.receivers.emplace_back();
   mid1_info.receivers[0].add_ssrc(1);
   mid1_info.senders.emplace_back();
   mid1_info.senders[0].add_ssrc(2);
   pc_->AddVoiceChannel("Mid1", "Transport1", mid1_info);
-  cricket::VideoMediaInfo mid2_info;
+  VideoMediaInfo mid2_info;
   mid2_info.receivers.emplace_back();
   mid2_info.receivers[0].add_ssrc(3);
   mid2_info.senders.emplace_back();
@@ -1021,13 +1019,13 @@ TEST_F(RTCStatsCollectorTest, ValidSsrcCollisionDoesNotCrash) {
   pc_->AddVideoChannel("Mid2", "Transport1", mid2_info);
   // Now create a second BUNDLE group with SSRCs colliding with the first group
   // (but again no collisions within the group).
-  cricket::VoiceMediaInfo mid3_info;
+  VoiceMediaInfo mid3_info;
   mid3_info.receivers.emplace_back();
   mid3_info.receivers[0].add_ssrc(1);
   mid3_info.senders.emplace_back();
   mid3_info.senders[0].add_ssrc(2);
   pc_->AddVoiceChannel("Mid3", "Transport2", mid3_info);
-  cricket::VideoMediaInfo mid4_info;
+  VideoMediaInfo mid4_info;
   mid4_info.receivers.emplace_back();
   mid4_info.receivers[0].add_ssrc(3);
   mid4_info.senders.emplace_back();
@@ -1047,25 +1045,25 @@ TEST_F(RTCStatsCollectorTest, ValidSsrcCollisionDoesNotCrash) {
 // collisions just to make sure we don't crash in even the most extreme cases.
 TEST_F(RTCStatsCollectorTest, InvalidSsrcCollisionDoesNotCrash) {
   // One SSRC to rule them all.
-  cricket::VoiceMediaInfo mid1_info;
+  VoiceMediaInfo mid1_info;
   mid1_info.receivers.emplace_back();
   mid1_info.receivers[0].add_ssrc(1);
   mid1_info.senders.emplace_back();
   mid1_info.senders[0].add_ssrc(1);
   pc_->AddVoiceChannel("Mid1", "BundledTransport", mid1_info);
-  cricket::VideoMediaInfo mid2_info;
+  VideoMediaInfo mid2_info;
   mid2_info.receivers.emplace_back();
   mid2_info.receivers[0].add_ssrc(1);
   mid2_info.senders.emplace_back();
   mid2_info.senders[0].add_ssrc(1);
   pc_->AddVideoChannel("Mid2", "BundledTransport", mid2_info);
-  cricket::VoiceMediaInfo mid3_info;
+  VoiceMediaInfo mid3_info;
   mid3_info.receivers.emplace_back();
   mid3_info.receivers[0].add_ssrc(1);
   mid3_info.senders.emplace_back();
   mid3_info.senders[0].add_ssrc(1);
   pc_->AddVoiceChannel("Mid3", "BundledTransport", mid3_info);
-  cricket::VideoMediaInfo mid4_info;
+  VideoMediaInfo mid4_info;
   mid4_info.receivers.emplace_back();
   mid4_info.receivers[0].add_ssrc(1);
   mid4_info.senders.emplace_back();
@@ -1080,7 +1078,7 @@ TEST_F(RTCStatsCollectorTest, InvalidSsrcCollisionDoesNotCrash) {
 
 TEST_F(RTCStatsCollectorTest, CollectRTCCodecStatsOnlyIfReferenced) {
   // Audio
-  cricket::VoiceMediaInfo voice_media_info;
+  VoiceMediaInfo voice_media_info;
 
   RtpCodecParameters inbound_audio_codec;
   inbound_audio_codec.payload_type = 1;
@@ -1102,7 +1100,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCCodecStatsOnlyIfReferenced) {
       std::make_pair(outbound_audio_codec.payload_type, outbound_audio_codec));
 
   // Video
-  cricket::VideoMediaInfo video_media_info;
+  VideoMediaInfo video_media_info;
 
   RtpCodecParameters inbound_video_codec;
   inbound_video_codec.payload_type = 3;
@@ -1124,22 +1122,22 @@ TEST_F(RTCStatsCollectorTest, CollectRTCCodecStatsOnlyIfReferenced) {
       std::make_pair(outbound_video_codec.payload_type, outbound_video_codec));
 
   // Ensure the above codecs are referenced.
-  cricket::VoiceReceiverInfo inbound_audio_info;
+  VoiceReceiverInfo inbound_audio_info;
   inbound_audio_info.add_ssrc(10);
   inbound_audio_info.codec_payload_type = 1;
   voice_media_info.receivers.push_back(inbound_audio_info);
 
-  cricket::VoiceSenderInfo outbound_audio_info;
+  VoiceSenderInfo outbound_audio_info;
   outbound_audio_info.add_ssrc(20);
   outbound_audio_info.codec_payload_type = 2;
   voice_media_info.senders.push_back(outbound_audio_info);
 
-  cricket::VideoReceiverInfo inbound_video_info;
+  VideoReceiverInfo inbound_video_info;
   inbound_video_info.add_ssrc(30);
   inbound_video_info.codec_payload_type = 3;
   video_media_info.receivers.push_back(inbound_video_info);
 
-  cricket::VideoSenderInfo outbound_video_info;
+  VideoSenderInfo outbound_video_info;
   outbound_video_info.add_ssrc(40);
   outbound_video_info.codec_payload_type = 4;
   video_media_info.senders.push_back(outbound_video_info);
@@ -1242,21 +1240,21 @@ TEST_F(RTCStatsCollectorTest, CodecStatsAreCollectedPerTransport) {
 
   // Insert codecs into `send_codecs` and ensure the PTs are referenced by RTP
   // streams.
-  cricket::VideoMediaInfo info_pt10;
+  VideoMediaInfo info_pt10;
   info_pt10.send_codecs.insert(
       std::make_pair(outbound_codec_pt10.payload_type, outbound_codec_pt10));
   info_pt10.senders.emplace_back();
   info_pt10.senders[0].add_ssrc(42);
   info_pt10.senders[0].codec_payload_type = outbound_codec_pt10.payload_type;
 
-  cricket::VideoMediaInfo info_pt11;
+  VideoMediaInfo info_pt11;
   info_pt11.send_codecs.insert(
       std::make_pair(outbound_codec_pt11.payload_type, outbound_codec_pt11));
   info_pt11.senders.emplace_back();
   info_pt11.senders[0].add_ssrc(43);
   info_pt11.senders[0].codec_payload_type = outbound_codec_pt11.payload_type;
 
-  cricket::VideoMediaInfo info_pt10_pt11;
+  VideoMediaInfo info_pt10_pt11;
   info_pt10_pt11.send_codecs.insert(
       std::make_pair(outbound_codec_pt10.payload_type, outbound_codec_pt10));
   info_pt10_pt11.send_codecs.insert(
@@ -1309,14 +1307,14 @@ TEST_F(RTCStatsCollectorTest, SamePayloadTypeButDifferentFmtpLines) {
   inbound_codec_pt111_fec.parameters.insert(
       std::make_pair("useinbandfec", "1"));
 
-  cricket::VideoMediaInfo info_nofec;
+  VideoMediaInfo info_nofec;
   info_nofec.receive_codecs.insert(std::make_pair(
       inbound_codec_pt111_nofec.payload_type, inbound_codec_pt111_nofec));
   info_nofec.receivers.emplace_back();
   info_nofec.receivers[0].add_ssrc(123);
   info_nofec.receivers[0].codec_payload_type =
       inbound_codec_pt111_nofec.payload_type;
-  cricket::VideoMediaInfo info_fec;
+  VideoMediaInfo info_fec;
   info_fec.receive_codecs.insert(std::make_pair(
       inbound_codec_pt111_fec.payload_type, inbound_codec_pt111_fec));
   info_fec.receivers.emplace_back();
@@ -1356,7 +1354,7 @@ TEST_F(RTCStatsCollectorTest, SamePayloadTypeButDifferentFmtpLines) {
   inbound_codec_pt112_fec.clock_rate = 48000;
   inbound_codec_pt112_fec.parameters.insert(
       std::make_pair("useinbandfec", "1"));
-  cricket::VideoMediaInfo info_fec_pt112;
+  VideoMediaInfo info_fec_pt112;
   info_fec_pt112.receive_codecs.insert(std::make_pair(
       inbound_codec_pt112_fec.payload_type, inbound_codec_pt112_fec));
   info_fec_pt112.receivers.emplace_back();
@@ -1822,38 +1820,38 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidateStats) {
   // Add candidate pairs to connection.
   TransportChannelStats a_transport_channel_stats;
   a_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
-      cricket::ConnectionInfo());
+      ConnectionInfo());
   a_transport_channel_stats.ice_transport_stats.connection_infos[0]
       .local_candidate = *a_local_host;
   a_transport_channel_stats.ice_transport_stats.connection_infos[0]
       .remote_candidate = *a_remote_srflx;
   a_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
-      cricket::ConnectionInfo());
+      ConnectionInfo());
   a_transport_channel_stats.ice_transport_stats.connection_infos[1]
       .local_candidate = *a_local_prflx;
   a_transport_channel_stats.ice_transport_stats.connection_infos[1]
       .remote_candidate = *a_remote_relay;
   a_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
-      cricket::ConnectionInfo());
+      ConnectionInfo());
   a_transport_channel_stats.ice_transport_stats.connection_infos[2]
       .local_candidate = *a_local_relay;
   a_transport_channel_stats.ice_transport_stats.connection_infos[2]
       .remote_candidate = *a_remote_relay;
   a_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
-      cricket::ConnectionInfo());
+      ConnectionInfo());
   a_transport_channel_stats.ice_transport_stats.connection_infos[3]
       .local_candidate = *a_local_relay_prflx;
   a_transport_channel_stats.ice_transport_stats.connection_infos[3]
       .remote_candidate = *a_remote_relay;
   a_transport_channel_stats.ice_transport_stats.candidate_stats_list.push_back(
-      cricket::CandidateStats(*a_local_host_not_paired));
+      CandidateStats(*a_local_host_not_paired));
 
   pc_->AddVoiceChannel("audio", "a");
   pc_->SetTransportStats("a", a_transport_channel_stats);
 
   TransportChannelStats b_transport_channel_stats;
   b_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
-      cricket::ConnectionInfo());
+      ConnectionInfo());
   b_transport_channel_stats.ice_transport_stats.connection_infos[0]
       .local_candidate = *b_local;
   b_transport_channel_stats.ice_transport_stats.connection_infos[0]
@@ -1916,7 +1914,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidatePairStats) {
   remote_candidate->set_related_address(SocketAddress("192.168.2.1", 43));
   remote_candidate->set_username("remote_iceusernamefragment");
 
-  cricket::ConnectionInfo connection_info;
+  ConnectionInfo connection_info;
   connection_info.best_connection = false;
   connection_info.local_candidate = *local_candidate;
   connection_info.remote_candidate = *remote_candidate;
@@ -1934,14 +1932,14 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidatePairStats) {
   connection_info.sent_ping_requests_before_first_response = 2000;
   connection_info.recv_ping_responses = 4321;
   connection_info.sent_ping_responses = 1000;
-  connection_info.state = cricket::IceCandidatePairState::IN_PROGRESS;
+  connection_info.state = IceCandidatePairState::IN_PROGRESS;
   connection_info.priority = 5555;
   connection_info.nominated = false;
   connection_info.last_data_received = Timestamp::Millis(2500);
   connection_info.last_data_sent = Timestamp::Millis(5200);
 
   TransportChannelStats transport_channel_stats;
-  transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
+  transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTP;
   transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       connection_info);
 
@@ -1954,7 +1952,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCIceCandidatePairStats) {
       "CP" + local_candidate->id() + "_" + remote_candidate->id(),
       report->timestamp());
   expected_pair.transport_id =
-      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP);
+      "Ttransport" + absl::StrCat(ICE_CANDIDATE_COMPONENT_RTP);
   expected_pair.local_candidate_id = "I" + local_candidate->id();
   expected_pair.remote_candidate_id = "I" + remote_candidate->id();
   expected_pair.state = "in-progress";
@@ -2162,11 +2160,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCPeerConnectionStats) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Audio) {
-  cricket::VoiceMediaInfo voice_media_info;
+  VoiceMediaInfo voice_media_info;
 
-  voice_media_info.receivers.push_back(cricket::VoiceReceiverInfo());
-  voice_media_info.receivers[0].local_stats.push_back(
-      cricket::SsrcReceiverInfo());
+  voice_media_info.receivers.push_back(VoiceReceiverInfo());
+  voice_media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
   voice_media_info.receivers[0].local_stats[0].ssrc = 1;
   voice_media_info.receivers[0].packets_lost = -1;  // Signed per RFC3550
   voice_media_info.receivers[0].packets_discarded = 7788;
@@ -2282,11 +2279,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Audio) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Audio_PlayoutId) {
-  cricket::VoiceMediaInfo voice_media_info;
+  VoiceMediaInfo voice_media_info;
 
-  voice_media_info.receivers.push_back(cricket::VoiceReceiverInfo());
-  voice_media_info.receivers[0].local_stats.push_back(
-      cricket::SsrcReceiverInfo());
+  voice_media_info.receivers.push_back(VoiceReceiverInfo());
+  voice_media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
   voice_media_info.receivers[0].local_stats[0].ssrc = 1;
 
   pc_->AddVoiceChannel("AudioMid", "TransportName", voice_media_info);
@@ -2320,11 +2316,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Audio_PlayoutId) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Video) {
-  cricket::VideoMediaInfo video_media_info;
+  VideoMediaInfo video_media_info;
 
-  video_media_info.receivers.push_back(cricket::VideoReceiverInfo());
-  video_media_info.receivers[0].local_stats.push_back(
-      cricket::SsrcReceiverInfo());
+  video_media_info.receivers.push_back(VideoReceiverInfo());
+  video_media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
   video_media_info.receivers[0].local_stats[0].ssrc = 1;
   video_media_info.receivers[0].packets_received = 2;
   video_media_info.receivers[0].packets_lost = 42;
@@ -2368,9 +2363,9 @@ TEST_F(RTCStatsCollectorTest, CollectRTCInboundRtpStreamStats_Video) {
   video_media_info.receivers[0].fec_packets_received = 32;
   video_media_info.receivers[0].fec_bytes_received = 54;
   video_media_info.receivers[0].ssrc_groups.push_back(
-      {cricket::kFidSsrcGroupSemantics, {1, 4404}});
+      {kFidSsrcGroupSemantics, {1, 4404}});
   video_media_info.receivers[0].ssrc_groups.push_back(
-      {cricket::kFecFrSsrcGroupSemantics, {1, 5505}});
+      {kFecFrSsrcGroupSemantics, {1, 5505}});
 
   // Note: these two values intentionally differ,
   // only the decoded one should show up.
@@ -2509,11 +2504,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCAudioPlayoutStats) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectGoogTimingFrameInfo) {
-  cricket::VideoMediaInfo video_media_info;
+  VideoMediaInfo video_media_info;
 
-  video_media_info.receivers.push_back(cricket::VideoReceiverInfo());
-  video_media_info.receivers[0].local_stats.push_back(
-      cricket::SsrcReceiverInfo());
+  video_media_info.receivers.push_back(VideoReceiverInfo());
+  video_media_info.receivers[0].local_stats.push_back(SsrcReceiverInfo());
   video_media_info.receivers[0].local_stats[0].ssrc = 1;
   TimingFrameInfo timing_frame_info;
   timing_frame_info.rtp_timestamp = 1;
@@ -2545,10 +2539,10 @@ TEST_F(RTCStatsCollectorTest, CollectGoogTimingFrameInfo) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectRTCOutboundRtpStreamStats_Audio) {
-  cricket::VoiceMediaInfo voice_media_info;
+  VoiceMediaInfo voice_media_info;
 
-  voice_media_info.senders.push_back(cricket::VoiceSenderInfo());
-  voice_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  voice_media_info.senders.push_back(VoiceSenderInfo());
+  voice_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   voice_media_info.senders[0].local_stats[0].ssrc = 1;
   voice_media_info.senders[0].packets_sent = 2;
   voice_media_info.senders[0].total_packet_send_delay = TimeDelta::Seconds(1);
@@ -2609,10 +2603,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCOutboundRtpStreamStats_Audio) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectRTCOutboundRtpStreamStats_Video) {
-  cricket::VideoMediaInfo video_media_info;
+  VideoMediaInfo video_media_info;
 
-  video_media_info.senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  video_media_info.senders.push_back(VideoSenderInfo());
+  video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   video_media_info.senders[0].local_stats[0].ssrc = 1;
   video_media_info.senders[0].rid = "q";
   video_media_info.senders[0].encoding_index = 0;
@@ -2648,7 +2642,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCOutboundRtpStreamStats_Video) {
   video_media_info.senders[0].active = false;
   video_media_info.senders[0].scalability_mode = ScalabilityMode::kL3T3_KEY;
   video_media_info.senders[0].ssrc_groups.push_back(
-      {cricket::kFidSsrcGroupSemantics, {1, 4404}});
+      {kFidSsrcGroupSemantics, {1, 4404}});
   video_media_info.aggregated_senders.push_back(video_media_info.senders[0]);
   RtpCodecParameters codec_parameters;
   codec_parameters.payload_type = 42;
@@ -2770,7 +2764,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
       CreateFakeCandidate("42.42.42.42", 42, "protocol", ADAPTER_TYPE_UNKNOWN,
                           IceCandidateType::kHost, 42);
 
-  cricket::ConnectionInfo rtp_connection_info;
+  ConnectionInfo rtp_connection_info;
   rtp_connection_info.best_connection = false;
   rtp_connection_info.local_candidate = *rtp_local_candidate;
   rtp_connection_info.remote_candidate = *rtp_remote_candidate;
@@ -2780,7 +2774,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtp_connection_info.sent_discarded_packets = 2;
   rtp_connection_info.packets_received = 4;
   TransportChannelStats rtp_transport_channel_stats;
-  rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
+  rtp_transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       rtp_connection_info);
   rtp_transport_channel_stats.dtls_state = DtlsTransportState::kNew;
@@ -2798,7 +2792,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtc::scoped_refptr<const RTCStatsReport> report = stats_->GetStatsReport();
 
   RTCTransportStats expected_rtp_transport(
-      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP),
+      "Ttransport" + absl::StrCat(ICE_CANDIDATE_COMPONENT_RTP),
       report->timestamp());
   expected_rtp_transport.bytes_sent = 42;
   expected_rtp_transport.packets_sent = 1;
@@ -2816,7 +2810,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
       expected_rtp_transport,
       report->Get(expected_rtp_transport.id())->cast_to<RTCTransportStats>());
 
-  cricket::ConnectionInfo rtcp_connection_info;
+  ConnectionInfo rtcp_connection_info;
   rtcp_connection_info.best_connection = false;
   rtcp_connection_info.local_candidate = *rtcp_local_candidate;
   rtcp_connection_info.remote_candidate = *rtcp_remote_candidate;
@@ -2826,8 +2820,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   rtcp_connection_info.sent_discarded_packets = 2;
   rtcp_connection_info.packets_received = 4;
   TransportChannelStats rtcp_transport_channel_stats;
-  rtcp_transport_channel_stats.component =
-      cricket::ICE_CANDIDATE_COMPONENT_RTCP;
+  rtcp_transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTCP;
   rtcp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       rtcp_connection_info);
   rtcp_transport_channel_stats.dtls_state = DtlsTransportState::kConnecting;
@@ -2846,7 +2839,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStats) {
   report = stats_->GetFreshStatsReport();
 
   RTCTransportStats expected_rtcp_transport(
-      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTCP),
+      "Ttransport" + absl::StrCat(ICE_CANDIDATE_COMPONENT_RTCP),
       report->timestamp());
   expected_rtcp_transport.bytes_sent = 1337;
   expected_rtcp_transport.packets_sent = 1;
@@ -2940,12 +2933,12 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStatsWithCrypto) {
       CreateFakeCandidate("42.42.42.42", 42, "protocol", ADAPTER_TYPE_UNKNOWN,
                           IceCandidateType::kHost, 42);
 
-  cricket::ConnectionInfo rtp_connection_info;
+  ConnectionInfo rtp_connection_info;
   rtp_connection_info.best_connection = false;
   rtp_connection_info.local_candidate = *rtp_local_candidate;
   rtp_connection_info.remote_candidate = *rtp_remote_candidate;
   TransportChannelStats rtp_transport_channel_stats;
-  rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
+  rtp_transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.ice_transport_stats.connection_infos.push_back(
       rtp_connection_info);
   // The state must be connected in order for crypto parameters to show up.
@@ -2969,7 +2962,7 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStatsWithCrypto) {
   rtc::scoped_refptr<const RTCStatsReport> report = stats_->GetStatsReport();
 
   RTCTransportStats expected_rtp_transport(
-      "Ttransport" + absl::StrCat(cricket::ICE_CANDIDATE_COMPONENT_RTP),
+      "Ttransport" + absl::StrCat(ICE_CANDIDATE_COMPONENT_RTP),
       report->timestamp());
   expected_rtp_transport.dtls_state = "connected";
   expected_rtp_transport.selected_candidate_pair_changes = 1;
@@ -2994,10 +2987,10 @@ TEST_F(RTCStatsCollectorTest, CollectRTCTransportStatsWithCrypto) {
 }
 
 TEST_F(RTCStatsCollectorTest, CollectNoStreamRTCOutboundRtpStreamStats_Audio) {
-  cricket::VoiceMediaInfo voice_media_info;
+  VoiceMediaInfo voice_media_info;
 
-  voice_media_info.senders.push_back(cricket::VoiceSenderInfo());
-  voice_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  voice_media_info.senders.push_back(VoiceSenderInfo());
+  voice_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   voice_media_info.senders[0].local_stats[0].ssrc = 1;
   voice_media_info.senders[0].packets_sent = 2;
   voice_media_info.senders[0].total_packet_send_delay = TimeDelta::Seconds(0.5);
@@ -3054,9 +3047,9 @@ TEST_F(RTCStatsCollectorTest, RTCAudioSourceStatsCollectedForSenderWithTrack) {
   const uint32_t kSsrc = 4;
   const int kAttachmentId = 42;
 
-  cricket::VoiceMediaInfo voice_media_info;
-  voice_media_info.senders.push_back(cricket::VoiceSenderInfo());
-  voice_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VoiceMediaInfo voice_media_info;
+  voice_media_info.senders.push_back(VoiceSenderInfo());
+  voice_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   voice_media_info.senders[0].local_stats[0].ssrc = kSsrc;
   voice_media_info.senders[0].audio_level = 32767;  // [0,32767]
   voice_media_info.senders[0].total_input_energy = 2.0;
@@ -3091,14 +3084,14 @@ TEST_F(RTCStatsCollectorTest, RTCVideoSourceStatsCollectedForSenderWithTrack) {
   const int kVideoSourceWidth = 12;
   const int kVideoSourceHeight = 34;
 
-  cricket::VideoMediaInfo video_media_info;
-  video_media_info.aggregated_senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VideoMediaInfo video_media_info;
+  video_media_info.aggregated_senders.push_back(VideoSenderInfo());
+  video_media_info.senders.push_back(VideoSenderInfo());
+  video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   video_media_info.senders[0].local_stats[0].ssrc = kSsrc;
   video_media_info.senders[0].framerate_input = 29.0;
   video_media_info.aggregated_senders[0].local_stats.push_back(
-      cricket::SsrcSenderInfo());
+      SsrcSenderInfo());
   video_media_info.aggregated_senders[0].local_stats[0].ssrc = kSsrc;
   video_media_info.aggregated_senders[0].framerate_input = 29.0;
   video_media_info.aggregated_senders[0].frames = 10001;
@@ -3143,9 +3136,9 @@ TEST_F(RTCStatsCollectorTest,
   const int kVideoSourceWidth = 12;
   const int kVideoSourceHeight = 34;
 
-  cricket::VideoMediaInfo video_media_info;
-  video_media_info.senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VideoMediaInfo video_media_info;
+  video_media_info.senders.push_back(VideoSenderInfo());
+  video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   video_media_info.senders[0].framerate_input = 29.0;
   pc_->AddVideoChannel("VideoMid", "TransportName", video_media_info);
 
@@ -3174,9 +3167,9 @@ TEST_F(RTCStatsCollectorTest,
   const uint32_t kSsrc = 4;
   const int kAttachmentId = 42;
 
-  cricket::VideoMediaInfo video_media_info;
-  video_media_info.senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VideoMediaInfo video_media_info;
+  video_media_info.senders.push_back(VideoSenderInfo());
+  video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   video_media_info.senders[0].local_stats[0].ssrc = kSsrc;
   video_media_info.senders[0].framerate_input = 29.0;
   pc_->AddVideoChannel("VideoMid", "TransportName", video_media_info);
@@ -3203,9 +3196,9 @@ TEST_F(RTCStatsCollectorTest,
   const uint32_t kSsrc = 4;
   const int kAttachmentId = 42;
 
-  cricket::VoiceMediaInfo voice_media_info;
-  voice_media_info.senders.push_back(cricket::VoiceSenderInfo());
-  voice_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VoiceMediaInfo voice_media_info;
+  voice_media_info.senders.push_back(VoiceSenderInfo());
+  voice_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   voice_media_info.senders[0].local_stats[0].ssrc = kSsrc;
   pc_->AddVoiceChannel("AudioMid", "TransportName", voice_media_info);
   rtc::scoped_refptr<MockRtpSenderInternal> sender = CreateMockSender(
@@ -3261,10 +3254,10 @@ class RTCStatsCollectorTestWithParamKind
       std::optional<RtpCodecParameters> codec) {
     switch (media_type_) {
       case webrtc::MediaType::AUDIO: {
-        cricket::VoiceMediaInfo voice_media_info;
+        VoiceMediaInfo voice_media_info;
         for (const auto& report_block_data : report_block_datas) {
-          cricket::VoiceSenderInfo sender;
-          sender.local_stats.push_back(cricket::SsrcSenderInfo());
+          VoiceSenderInfo sender;
+          sender.local_stats.push_back(SsrcSenderInfo());
           sender.local_stats[0].ssrc = report_block_data.source_ssrc();
           if (codec.has_value()) {
             sender.codec_payload_type = codec->payload_type;
@@ -3278,10 +3271,10 @@ class RTCStatsCollectorTestWithParamKind
         return;
       }
       case webrtc::MediaType::VIDEO: {
-        cricket::VideoMediaInfo video_media_info;
+        VideoMediaInfo video_media_info;
         for (const auto& report_block_data : report_block_datas) {
-          cricket::VideoSenderInfo sender;
-          sender.local_stats.push_back(cricket::SsrcSenderInfo());
+          VideoSenderInfo sender;
+          sender.local_stats.push_back(SsrcSenderInfo());
           sender.local_stats[0].ssrc = report_block_data.source_ssrc();
           if (codec.has_value()) {
             sender.codec_payload_type = codec->payload_type;
@@ -3491,11 +3484,10 @@ TEST_P(RTCStatsCollectorTestWithParamKind,
                                    kReportBlockTimestamp);
 
   TransportChannelStats rtp_transport_channel_stats;
-  rtp_transport_channel_stats.component = cricket::ICE_CANDIDATE_COMPONENT_RTP;
+  rtp_transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTP;
   rtp_transport_channel_stats.dtls_state = DtlsTransportState::kNew;
   TransportChannelStats rtcp_transport_channel_stats;
-  rtcp_transport_channel_stats.component =
-      cricket::ICE_CANDIDATE_COMPONENT_RTCP;
+  rtcp_transport_channel_stats.component = ICE_CANDIDATE_COMPONENT_RTCP;
   rtcp_transport_channel_stats.dtls_state = DtlsTransportState::kNew;
   pc_->SetTransportStats("TransportName", {rtp_transport_channel_stats,
                                            rtcp_transport_channel_stats});
@@ -3561,9 +3553,9 @@ TEST_F(RTCStatsCollectorTest,
   const uint32_t kSsrc = 4;
   const int kAttachmentId = 42;
 
-  cricket::VideoMediaInfo video_media_info;
-  video_media_info.senders.push_back(cricket::VideoSenderInfo());
-  video_media_info.senders[0].local_stats.push_back(cricket::SsrcSenderInfo());
+  VideoMediaInfo video_media_info;
+  video_media_info.senders.push_back(VideoSenderInfo());
+  video_media_info.senders[0].local_stats.push_back(SsrcSenderInfo());
   video_media_info.senders[0].local_stats[0].ssrc = kSsrc;
   video_media_info.senders[0].framerate_input = 29.0;
   pc_->AddVideoChannel("VideoMid", "TransportName", video_media_info);
@@ -3594,8 +3586,8 @@ TEST_F(RTCStatsCollectorTest, CollectEchoReturnLossFromTrackAudioProcessor) {
   local_stream->AddTrack(rtc::scoped_refptr<AudioTrackInterface>(
       static_cast<AudioTrackInterface*>(local_audio_track.get())));
 
-  cricket::VoiceSenderInfo voice_sender_info_ssrc1;
-  voice_sender_info_ssrc1.local_stats.push_back(cricket::SsrcSenderInfo());
+  VoiceSenderInfo voice_sender_info_ssrc1;
+  voice_sender_info_ssrc1.local_stats.push_back(SsrcSenderInfo());
   voice_sender_info_ssrc1.local_stats[0].ssrc = 1;
 
   stats_->CreateMockRtpSendersReceiversAndChannels(

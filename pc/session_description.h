@@ -158,15 +158,15 @@ class MediaContentDescription {
   // TODO(pthatcher): Remove this by giving mediamessage.cc access
   // to MediaContentDescription
   cricket::StreamParamsVec& mutable_streams() { return send_streams_; }
-  void AddStream(const cricket::StreamParams& stream) {
+  void AddStream(const StreamParams& stream) {
     send_streams_.push_back(stream);
   }
   // Legacy streams have an ssrc, but nothing else.
   void AddLegacyStream(uint32_t ssrc) {
-    AddStream(cricket::StreamParams::CreateLegacy(ssrc));
+    AddStream(StreamParams::CreateLegacy(ssrc));
   }
   void AddLegacyStream(uint32_t ssrc, uint32_t fid_ssrc) {
-    cricket::StreamParams sp = cricket::StreamParams::CreateLegacy(ssrc);
+    StreamParams sp = StreamParams::CreateLegacy(ssrc);
     sp.AddFidSsrc(ssrc, fid_ssrc);
     AddStream(sp);
   }
@@ -222,10 +222,10 @@ class MediaContentDescription {
   void set_simulcast_description(const SimulcastDescription& simulcast) {
     simulcast_ = simulcast;
   }
-  const std::vector<cricket::RidDescription>& receive_rids() const {
+  const std::vector<RidDescription>& receive_rids() const {
     return receive_rids_;
   }
-  void set_receive_rids(const std::vector<cricket::RidDescription>& rids) {
+  void set_receive_rids(const std::vector<RidDescription>& rids) {
     receive_rids_ = rids;
   }
 
@@ -266,7 +266,7 @@ class MediaContentDescription {
   bool remote_estimate_ = false;
   bool rtcp_fb_ack_ccfb_ = false;
   int bandwidth_ = kAutoBandwidth;
-  std::string bandwidth_type_ = cricket::kApplicationSpecificBandwidth;
+  std::string bandwidth_type_ = kApplicationSpecificBandwidth;
 
   std::vector<RtpExtension> rtp_header_extensions_;
   bool rtp_header_extensions_set_ = false;
@@ -277,7 +277,7 @@ class MediaContentDescription {
   ExtmapAllowMixed extmap_allow_mixed_enum_ = kMedia;
 
   SimulcastDescription simulcast_;
-  std::vector<cricket::RidDescription> receive_rids_;
+  std::vector<RidDescription> receive_rids_;
 
   // Copy function that returns a raw pointer. Caller will assert ownership.
   // Should only be called by the Clone() function. Must be implemented
@@ -534,12 +534,11 @@ class SessionDescription {
     return transport_infos_;
   }
   cricket::TransportInfos& transport_infos() { return transport_infos_; }
-  const cricket::TransportInfo* GetTransportInfoByName(
-      const std::string& name) const;
-  cricket::TransportInfo* GetTransportInfoByName(const std::string& name);
-  const cricket::TransportDescription* GetTransportDescriptionByName(
+  const TransportInfo* GetTransportInfoByName(const std::string& name) const;
+  TransportInfo* GetTransportInfoByName(const std::string& name);
+  const TransportDescription* GetTransportDescriptionByName(
       const std::string& name) const {
-    const cricket::TransportInfo* tinfo = GetTransportInfoByName(name);
+    const TransportInfo* tinfo = GetTransportInfoByName(name);
     return tinfo ? &tinfo->description : NULL;
   }
 
@@ -548,7 +547,7 @@ class SessionDescription {
     transport_infos_ = transport_infos;
   }
   // Adds a TransportInfo to this description.
-  void AddTransportInfo(const cricket::TransportInfo& transport_info);
+  void AddTransportInfo(const TransportInfo& transport_info);
   bool RemoveTransportInfoByName(const std::string& name);
 
   // Group accessors.

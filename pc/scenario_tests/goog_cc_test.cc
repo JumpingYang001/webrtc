@@ -51,7 +51,7 @@ TEST(GoogCcPeerScenarioTest, MAYBE_NoBweChangeFromVideoUnmute) {
   PeerScenarioClient::VideoSendTrackConfig video_conf;
   video_conf.generator.squares_video->framerate = 15;
   auto video = caller->CreateVideo("VIDEO", video_conf);
-  auto audio = caller->CreateAudio("AUDIO", cricket::AudioOptions());
+  auto audio = caller->CreateAudio("AUDIO", AudioOptions());
 
   // Start ICE and exchange SDP.
   s.SimpleConnection(caller, callee, {send_node}, {ret_node});

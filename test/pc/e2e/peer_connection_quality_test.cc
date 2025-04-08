@@ -535,7 +535,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
       transceiver_params.direction = RtpTransceiverDirection::kSendOnly;
       // Because simulcast enabled `alice_->params().video_codecs` has only 1
       // element.
-      if (alice_->params().video_codecs[0].name == cricket::kVp8CodecName) {
+      if (alice_->params().video_codecs[0].name == kVp8CodecName) {
         // For Vp8 simulcast we need to add as many RtpEncodingParameters to the
         // track as many simulcast streams requested. If they specified in
         // `video_config.simulcast_config` it should be copied from there.

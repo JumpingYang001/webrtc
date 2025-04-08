@@ -129,18 +129,18 @@ class TrackMediaInfoMapTest : public ::testing::Test {
     rtp_senders_.push_back(rtp_sender);
 
     if (local_track->kind() == MediaStreamTrackInterface::kAudioKind) {
-      cricket::VoiceSenderInfo voice_sender_info;
+      VoiceSenderInfo voice_sender_info;
       size_t i = 0;
       for (uint32_t ssrc : ssrcs) {
-        voice_sender_info.local_stats.push_back(cricket::SsrcSenderInfo());
+        voice_sender_info.local_stats.push_back(SsrcSenderInfo());
         voice_sender_info.local_stats[i++].ssrc = ssrc;
       }
       voice_media_info_.senders.push_back(voice_sender_info);
     } else {
-      cricket::VideoSenderInfo video_sender_info;
+      VideoSenderInfo video_sender_info;
       size_t i = 0;
       for (uint32_t ssrc : ssrcs) {
-        video_sender_info.local_stats.push_back(cricket::SsrcSenderInfo());
+        video_sender_info.local_stats.push_back(SsrcSenderInfo());
         video_sender_info.local_stats[i++].ssrc = ssrc;
       }
       video_media_info_.senders.push_back(video_sender_info);
@@ -158,18 +158,18 @@ class TrackMediaInfoMapTest : public ::testing::Test {
     rtp_receivers_.push_back(rtp_receiver);
 
     if (remote_track->kind() == MediaStreamTrackInterface::kAudioKind) {
-      cricket::VoiceReceiverInfo voice_receiver_info;
+      VoiceReceiverInfo voice_receiver_info;
       size_t i = 0;
       for (uint32_t ssrc : ssrcs) {
-        voice_receiver_info.local_stats.push_back(cricket::SsrcReceiverInfo());
+        voice_receiver_info.local_stats.push_back(SsrcReceiverInfo());
         voice_receiver_info.local_stats[i++].ssrc = ssrc;
       }
       voice_media_info_.receivers.push_back(voice_receiver_info);
     } else {
-      cricket::VideoReceiverInfo video_receiver_info;
+      VideoReceiverInfo video_receiver_info;
       size_t i = 0;
       for (uint32_t ssrc : ssrcs) {
-        video_receiver_info.local_stats.push_back(cricket::SsrcReceiverInfo());
+        video_receiver_info.local_stats.push_back(SsrcReceiverInfo());
         video_receiver_info.local_stats[i++].ssrc = ssrc;
       }
       video_media_info_.receivers.push_back(video_receiver_info);
@@ -185,8 +185,8 @@ class TrackMediaInfoMapTest : public ::testing::Test {
 
  private:
   AutoThread main_thread_;
-  cricket::VoiceMediaInfo voice_media_info_;
-  cricket::VideoMediaInfo video_media_info_;
+  VoiceMediaInfo voice_media_info_;
+  VideoMediaInfo video_media_info_;
 
  protected:
   std::vector<rtc::scoped_refptr<RtpSenderInternal>> rtp_senders_;

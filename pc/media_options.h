@@ -36,7 +36,7 @@ struct SenderOptions {
   std::string track_id;
   std::vector<std::string> stream_ids;
   // Use RIDs and Simulcast Layers to indicate spec-compliant Simulcast.
-  std::vector<cricket::RidDescription> rids;
+  std::vector<RidDescription> rids;
   SimulcastLayerList simulcast_layers;
   // Use `num_sim_layers` to indicate legacy simulcast.
   int num_sim_layers;
@@ -56,7 +56,7 @@ struct MediaDescriptionOptions {
                       const std::vector<std::string>& stream_ids);
   void AddVideoSender(const std::string& track_id,
                       const std::vector<std::string>& stream_ids,
-                      const std::vector<cricket::RidDescription>& rids,
+                      const std::vector<RidDescription>& rids,
                       const SimulcastLayerList& simulcast_layers,
                       int num_sim_layers);
 
@@ -78,7 +78,7 @@ struct MediaDescriptionOptions {
   // Doesn't DCHECK on `type`.
   void AddSenderInternal(const std::string& track_id,
                          const std::vector<std::string>& stream_ids,
-                         const std::vector<cricket::RidDescription>& rids,
+                         const std::vector<RidDescription>& rids,
                          const SimulcastLayerList& simulcast_layers,
                          int num_sim_layers);
 };
@@ -106,7 +106,7 @@ struct MediaSessionOptions {
   // List of media description options in the same order that the media
   // descriptions will be generated.
   std::vector<MediaDescriptionOptions> media_description_options;
-  std::vector<cricket::IceParameters> pooled_ice_credentials;
+  std::vector<IceParameters> pooled_ice_credentials;
 
   // Use the draft-ietf-mmusic-sctp-sdp-03 obsolete syntax for SCTP
   // datachannels.

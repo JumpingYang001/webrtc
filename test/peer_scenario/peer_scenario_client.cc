@@ -217,8 +217,7 @@ class FakeVideoEncoderFactory : public VideoEncoderFactory {
         kSupportedScalabilityModes = {webrtc::ScalabilityMode::kL1T1,
                                       webrtc::ScalabilityMode::kL1T2,
                                       webrtc::ScalabilityMode::kL1T3};
-    return {
-        SdpVideoFormat(cricket::kVp8CodecName, {}, kSupportedScalabilityModes)};
+    return {SdpVideoFormat(kVp8CodecName, {}, kSupportedScalabilityModes)};
   }
   std::unique_ptr<VideoEncoder> Create(const Environment& env,
                                        const SdpVideoFormat& format) override {
@@ -345,7 +344,7 @@ EmulatedEndpoint* PeerScenarioClient::endpoint(int index) {
 
 PeerScenarioClient::AudioSendTrack PeerScenarioClient::CreateAudio(
     std::string track_id,
-    cricket::AudioOptions options) {
+    AudioOptions options) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   AudioSendTrack res;
   auto source = pc_factory_->CreateAudioSource(options);

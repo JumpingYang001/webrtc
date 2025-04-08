@@ -149,7 +149,7 @@ struct RelayCredentials {
   std::string password;
 };
 
-typedef std::vector<cricket::ProtocolAddress> PortList;
+typedef std::vector<ProtocolAddress> PortList;
 // TODO(deadbeef): Rename to TurnServerConfig.
 struct RTC_EXPORT RelayServerConfig {
   RelayServerConfig();
@@ -271,8 +271,7 @@ class RTC_EXPORT PortAllocatorSession : public sigslot::has_slots<> {
       SignalPortsPruned;
   sigslot::signal2<PortAllocatorSession*, const std::vector<Candidate>&>
       SignalCandidatesReady;
-  sigslot::signal2<PortAllocatorSession*,
-                   const cricket::IceCandidateErrorEvent&>
+  sigslot::signal2<PortAllocatorSession*, const IceCandidateErrorEvent&>
       SignalCandidateError;
   // Candidates should be signaled to be removed when the port that generated
   // the candidates is removed.
@@ -434,7 +433,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
   // Returns the next session that would be returned by TakePooledSession
   // optionally restricting it to sessions with specified ice credentials.
   const PortAllocatorSession* GetPooledSession(
-      const cricket::IceParameters* ice_credentials = nullptr) const;
+      const IceParameters* ice_credentials = nullptr) const;
 
   // Discard any remaining pooled sessions.
   void DiscardCandidatePool();
@@ -571,7 +570,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
       cricket::CandidateStatsList* candidate_stats_list);
 
   // Return IceParameters of the pooled sessions.
-  std::vector<cricket::IceParameters> GetPooledIceCredentials();
+  std::vector<IceParameters> GetPooledIceCredentials();
 
   // Fired when `candidate_filter_` changes.
   sigslot::signal2<uint32_t /* prev_filter */, uint32_t /* cur_filter */>
@@ -636,8 +635,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
   // Returns iterator to pooled session with specified ice_credentials or first
   // if ice_credentials is nullptr.
   std::vector<std::unique_ptr<PortAllocatorSession>>::const_iterator
-  FindPooledSession(
-      const cricket::IceParameters* ice_credentials = nullptr) const;
+  FindPooledSession(const IceParameters* ice_credentials = nullptr) const;
 
   // ICE tie breaker.
   uint64_t tiebreaker_;

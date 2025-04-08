@@ -16,12 +16,11 @@
 #include "api/environment/environment.h"
 
 // These classes are not part of the API, and are treated as opaque pointers.
-namespace cricket {
-class SctpTransportInternal;
-class DtlsTransportInternal;
-}  // namespace cricket
 
 namespace webrtc {
+
+class DtlsTransportInternal;
+class SctpTransportInternal;
 
 // Factory class which can be used to allow fake SctpTransports to be injected
 // for testing. An application is not intended to implement this interface nor
@@ -32,9 +31,9 @@ class SctpTransportFactoryInterface {
   virtual ~SctpTransportFactoryInterface() = default;
 
   // Create an SCTP transport using `channel` for the underlying transport.
-  virtual std::unique_ptr<cricket::SctpTransportInternal> CreateSctpTransport(
+  virtual std::unique_ptr<SctpTransportInternal> CreateSctpTransport(
       const Environment& env,
-      cricket::DtlsTransportInternal* channel) = 0;
+      DtlsTransportInternal* channel) = 0;
 };
 
 }  // namespace webrtc

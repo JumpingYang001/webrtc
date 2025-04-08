@@ -42,7 +42,7 @@ namespace webrtc {
 // - Thread guard
 class CodecVendor {
  public:
-  CodecVendor(cricket::MediaEngineInterface* media_engine,
+  CodecVendor(MediaEngineInterface* media_engine,
               bool rtx_enabled,
               const FieldTrialsView& trials);
 

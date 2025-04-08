@@ -30,7 +30,7 @@ using webrtc::RTCError;
 using webrtc::RTCErrorOr;
 using webrtc::RTCErrorType;
 
-namespace cricket {
+namespace webrtc {
 namespace {
 
 bool IsIceChar(char c) {
@@ -50,7 +50,7 @@ bool IsIceChar(char c) {
 RTCError ValidateIceUfrag(absl::string_view raw_ufrag) {
   if (!(ICE_UFRAG_MIN_LENGTH <= raw_ufrag.size() &&
         raw_ufrag.size() <= ICE_UFRAG_MAX_LENGTH)) {
-    rtc::StringBuilder sb;
+    StringBuilder sb;
     sb << "ICE ufrag must be between " << ICE_UFRAG_MIN_LENGTH << " and "
        << ICE_UFRAG_MAX_LENGTH << " characters long.";
     return RTCError(RTCErrorType::SYNTAX_ERROR, sb.Release());
@@ -68,7 +68,7 @@ RTCError ValidateIceUfrag(absl::string_view raw_ufrag) {
 RTCError ValidateIcePwd(absl::string_view raw_pwd) {
   if (!(ICE_PWD_MIN_LENGTH <= raw_pwd.size() &&
         raw_pwd.size() <= ICE_PWD_MAX_LENGTH)) {
-    rtc::StringBuilder sb;
+    StringBuilder sb;
     sb << "ICE pwd must be between " << ICE_PWD_MIN_LENGTH << " and "
        << ICE_PWD_MAX_LENGTH << " characters long.";
     return RTCError(RTCErrorType::SYNTAX_ERROR, sb.Release());
@@ -133,17 +133,17 @@ std::optional<ConnectionRole> StringToConnectionRole(
 
 bool ConnectionRoleToString(const ConnectionRole& role, std::string* role_str) {
   switch (role) {
-    case cricket::CONNECTIONROLE_ACTIVE:
-      *role_str = cricket::CONNECTIONROLE_ACTIVE_STR;
+    case CONNECTIONROLE_ACTIVE:
+      *role_str = CONNECTIONROLE_ACTIVE_STR;
       break;
-    case cricket::CONNECTIONROLE_ACTPASS:
-      *role_str = cricket::CONNECTIONROLE_ACTPASS_STR;
+    case CONNECTIONROLE_ACTPASS:
+      *role_str = CONNECTIONROLE_ACTPASS_STR;
       break;
-    case cricket::CONNECTIONROLE_PASSIVE:
-      *role_str = cricket::CONNECTIONROLE_PASSIVE_STR;
+    case CONNECTIONROLE_PASSIVE:
+      *role_str = CONNECTIONROLE_PASSIVE_STR;
       break;
-    case cricket::CONNECTIONROLE_HOLDCONN:
-      *role_str = cricket::CONNECTIONROLE_HOLDCONN_STR;
+    case CONNECTIONROLE_HOLDCONN:
+      *role_str = CONNECTIONROLE_HOLDCONN_STR;
       break;
     default:
       return false;
@@ -160,7 +160,7 @@ TransportDescription::TransportDescription(
     absl::string_view ice_pwd,
     IceMode ice_mode,
     ConnectionRole role,
-    const webrtc::SSLFingerprint* identity_fingerprint)
+    const SSLFingerprint* identity_fingerprint)
     : transport_options(transport_options),
       ice_ufrag(ice_ufrag),
       ice_pwd(ice_pwd),
@@ -201,4 +201,4 @@ TransportDescription& TransportDescription::operator=(
   return *this;
 }
 
-}  // namespace cricket
+}  // namespace webrtc

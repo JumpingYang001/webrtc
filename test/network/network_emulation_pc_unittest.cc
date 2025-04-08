@@ -163,7 +163,7 @@ TEST(NetworkEmulationManagerPCTest, Run) {
 
   SendTask(signaling_thread.get(), [&]() {
     rtc::scoped_refptr<webrtc::AudioSourceInterface> source =
-        alice_pcf->CreateAudioSource(cricket::AudioOptions());
+        alice_pcf->CreateAudioSource(AudioOptions());
     rtc::scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());
     alice->AddTransceiver(track);
@@ -274,7 +274,7 @@ TEST(NetworkEmulationManagerPCTest, RunTURN) {
 
   SendTask(signaling_thread.get(), [&]() {
     rtc::scoped_refptr<webrtc::AudioSourceInterface> source =
-        alice_pcf->CreateAudioSource(cricket::AudioOptions());
+        alice_pcf->CreateAudioSource(AudioOptions());
     rtc::scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());
     alice->AddTransceiver(track);

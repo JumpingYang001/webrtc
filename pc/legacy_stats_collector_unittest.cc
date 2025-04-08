@@ -61,19 +61,19 @@
 #include "test/gmock.h"
 #include "test/gtest.h"
 
-using cricket::ConnectionInfo;
-using cricket::SsrcReceiverInfo;
-using cricket::VideoMediaInfo;
-using cricket::VideoReceiverInfo;
-using cricket::VideoSenderInfo;
-using cricket::VoiceMediaInfo;
-using cricket::VoiceReceiverInfo;
-using cricket::VoiceSenderInfo;
 using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+using ::webrtc::ConnectionInfo;
+using ::webrtc::SsrcReceiverInfo;
 using ::webrtc::TransportChannelStats;
+using ::webrtc::VideoMediaInfo;
+using ::webrtc::VideoReceiverInfo;
+using ::webrtc::VideoSenderInfo;
+using ::webrtc::VoiceMediaInfo;
+using ::webrtc::VoiceReceiverInfo;
+using ::webrtc::VoiceSenderInfo;
 
 namespace webrtc {
 
@@ -327,7 +327,7 @@ void CheckCertChainReports(const StatsReports& reports,
 }
 
 void VerifyVoiceReceiverInfoReport(const StatsReport* report,
-                                   const cricket::VoiceReceiverInfo& info) {
+                                   const VoiceReceiverInfo& info) {
   std::string value_in_report;
   EXPECT_TRUE(GetValue(report, StatsReport::kStatsValueNameAudioOutputLevel,
                        &value_in_report));
@@ -402,7 +402,7 @@ void VerifyVoiceReceiverInfoReport(const StatsReport* report,
 }
 
 void VerifyVoiceSenderInfoReport(const StatsReport* report,
-                                 const cricket::VoiceSenderInfo& sinfo) {
+                                 const VoiceSenderInfo& sinfo) {
   std::string value_in_report;
   EXPECT_TRUE(GetValue(report, StatsReport::kStatsValueNameCodecName,
                        &value_in_report));
@@ -534,7 +534,7 @@ void VerifyVoiceSenderInfoReport(const StatsReport* report,
 }
 
 // Helper methods to avoid duplication of code.
-void InitVoiceSenderInfo(cricket::VoiceSenderInfo* voice_sender_info,
+void InitVoiceSenderInfo(VoiceSenderInfo* voice_sender_info,
                          uint32_t ssrc = kSsrcOfTrack) {
   voice_sender_info->add_ssrc(ssrc);
   voice_sender_info->codec_name = "fake_codec";
@@ -559,17 +559,16 @@ void InitVoiceSenderInfo(cricket::VoiceSenderInfo* voice_sender_info,
   voice_sender_info->ana_statistics.uplink_packet_loss_fraction = 118.0;
 }
 
-void UpdateVoiceSenderInfoFromAudioTrack(
-    AudioTrackInterface* audio_track,
-    cricket::VoiceSenderInfo* voice_sender_info,
-    bool has_remote_tracks) {
+void UpdateVoiceSenderInfoFromAudioTrack(AudioTrackInterface* audio_track,
+                                         VoiceSenderInfo* voice_sender_info,
+                                         bool has_remote_tracks) {
   audio_track->GetSignalLevel(&voice_sender_info->audio_level);
   AudioProcessorInterface::AudioProcessorStatistics audio_processor_stats =
       audio_track->GetAudioProcessor()->GetStats(has_remote_tracks);
   voice_sender_info->apm_statistics = audio_processor_stats.apm_statistics;
 }
 
-void InitVoiceReceiverInfo(cricket::VoiceReceiverInfo* voice_receiver_info) {
+void InitVoiceReceiverInfo(VoiceReceiverInfo* voice_receiver_info) {
   voice_receiver_info->add_ssrc(kSsrcOfTrack);
   voice_receiver_info->payload_bytes_received = 98;
   voice_receiver_info->header_and_padding_bytes_received = 12;

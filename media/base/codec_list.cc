@@ -50,8 +50,7 @@ RTCError CheckInputConsistency(const std::vector<Codec>& codecs) {
         break;
       case Codec::ResiliencyType::kRtx: {
         // Check that the target codec exists
-        const auto apt_it =
-            codec.params.find(cricket::kCodecParamAssociatedPayloadType);
+        const auto apt_it = codec.params.find(kCodecParamAssociatedPayloadType);
         // Not true - there's a test that deliberately injects a wrong
         // RTX codec (MediaSessionDescriptionFactoryTest.RtxWithoutApt)
         // TODO: https://issues.webrtc.org/384756622 - reject codec earlier and

@@ -120,11 +120,11 @@ class RtpTransceiver : public RtpTransceiverInterface {
   RTCError CreateChannel(
       absl::string_view mid,
       Call* call_ptr,
-      const cricket::MediaConfig& media_config,
+      const MediaConfig& media_config,
       bool srtp_required,
       CryptoOptions crypto_options,
-      const cricket::AudioOptions& audio_options,
-      const cricket::VideoOptions& video_options,
+      const AudioOptions& audio_options,
+      const VideoOptions& video_options,
       VideoBitrateAllocatorFactory* video_bitrate_allocator_factory,
       std::function<RtpTransportInternal*(absl::string_view)> transport_lookup);
 
@@ -301,7 +301,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
                            const MediaContentDescription* content);
 
  private:
-  cricket::MediaEngineInterface* media_engine() const {
+  MediaEngineInterface* media_engine() const {
     return context_->media_engine();
   }
   ConnectionContext* context() const { return context_; }

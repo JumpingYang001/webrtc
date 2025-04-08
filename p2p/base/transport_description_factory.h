@@ -51,10 +51,10 @@ class TransportDescriptionFactory {
   }
 
   // Creates a transport description suitable for use in an offer.
-  std::unique_ptr<cricket::TransportDescription> CreateOffer(
+  std::unique_ptr<TransportDescription> CreateOffer(
       const TransportOptions& options,
-      const cricket::TransportDescription* current_description,
-      cricket::IceCredentialsIterator* ice_credentials) const;
+      const TransportDescription* current_description,
+      IceCredentialsIterator* ice_credentials) const;
   // Create a transport description that is a response to an offer.
   //
   // If `require_transport_attributes` is true, then TRANSPORT category
@@ -62,12 +62,12 @@ class TransportDescriptionFactory {
   // sdp-mux-attributes, and null will be returned otherwise. It's expected
   // that this will be set to false for an m= section that's in a BUNDLE group
   // but isn't the first m= section in the group.
-  std::unique_ptr<cricket::TransportDescription> CreateAnswer(
-      const cricket::TransportDescription* offer,
+  std::unique_ptr<TransportDescription> CreateAnswer(
+      const TransportDescription* offer,
       const TransportOptions& options,
       bool require_transport_attributes,
-      const cricket::TransportDescription* current_description,
-      cricket::IceCredentialsIterator* ice_credentials) const;
+      const TransportDescription* current_description,
+      IceCredentialsIterator* ice_credentials) const;
 
   const FieldTrialsView& trials() const { return field_trials_; }
   // Functions for disabling encryption - test only!
@@ -79,8 +79,8 @@ class TransportDescriptionFactory {
   void SetInsecureForTesting() { insecure_ = true; }
 
  private:
-  bool SetSecurityInfo(cricket::TransportDescription* description,
-                       cricket::ConnectionRole role) const;
+  bool SetSecurityInfo(TransportDescription* description,
+                       ConnectionRole role) const;
   bool insecure_ = false;
   scoped_refptr<RTCCertificate> certificate_;
   const FieldTrialsView& field_trials_;

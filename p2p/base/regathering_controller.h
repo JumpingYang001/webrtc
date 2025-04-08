@@ -50,7 +50,7 @@ class BasicRegatheringController : public sigslot::has_slots<> {
  public:
   struct Config {
     int regather_on_failed_networks_interval =
-        cricket::REGATHER_ON_FAILED_NETWORKS_INTERVAL;
+        REGATHER_ON_FAILED_NETWORKS_INTERVAL;
   };
 
   BasicRegatheringController() = delete;

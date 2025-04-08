@@ -31,18 +31,18 @@
 
 namespace {
 
-using ::cricket::Connection;
-using ::cricket::IceControllerInterface;
-using ::cricket::IceMode;
-using ::cricket::IceRecheckEvent;
-using ::cricket::IceSwitchReason;
-using ::cricket::WrappingActiveIceController;
+using ::webrtc::Connection;
 using ::webrtc::IceConfig;
 using ::webrtc::IceControllerFactoryArgs;
+using ::webrtc::IceControllerInterface;
+using ::webrtc::IceMode;
+using ::webrtc::IceRecheckEvent;
+using ::webrtc::IceSwitchReason;
 using ::webrtc::MockIceAgent;
 using ::webrtc::MockIceController;
 using ::webrtc::MockIceControllerFactory;
 using ::webrtc::NominationMode;
+using ::webrtc::WrappingActiveIceController;
 
 using ::testing::_;
 using ::testing::ElementsAreArray;
@@ -95,10 +95,10 @@ TEST(WrappingActiveIceControllerTest, PassthroughIceControllerInterface) {
 
   EXPECT_CALL(*wrapped,
               GetUseCandidateAttr(kConnection, NominationMode::AGGRESSIVE,
-                                  IceMode::ICEMODE_LITE))
+                                  webrtc::ICEMODE_LITE))
       .WillOnce(Return(true));
   EXPECT_TRUE(controller.GetUseCandidateAttribute(
-      kConnection, NominationMode::AGGRESSIVE, IceMode::ICEMODE_LITE));
+      kConnection, NominationMode::AGGRESSIVE, webrtc::ICEMODE_LITE));
 
   EXPECT_CALL(*wrapped, AddConnection(kConnection));
   controller.OnConnectionAdded(kConnection);

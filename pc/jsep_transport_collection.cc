@@ -47,7 +47,7 @@ void BundleManager::Update(const SessionDescription* description,
     bundle_groups_changed = true;
     bundle_groups_.clear();
     for (const cricket::ContentGroup* new_bundle_group :
-         description->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE)) {
+         description->GetGroupsByName(GROUP_TYPE_BUNDLE)) {
       bundle_groups_.push_back(
           std::make_unique<ContentGroup>(*new_bundle_group));
       RTC_DLOG(LS_VERBOSE) << "Establishing bundle group "
@@ -61,7 +61,7 @@ void BundleManager::Update(const SessionDescription* description,
     // preemptively start using the bundled transport, as there is no possible
     // non-bundled fallback.
     for (const cricket::ContentGroup* new_bundle_group :
-         description->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE)) {
+         description->GetGroupsByName(GROUP_TYPE_BUNDLE)) {
       // Attempt to find a matching existing group.
       for (const std::string& mid : new_bundle_group->content_names()) {
         auto it = established_bundle_groups_by_mid_.find(mid);

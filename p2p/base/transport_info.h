@@ -16,7 +16,7 @@
 
 #include "p2p/base/transport_description.h"
 
-namespace cricket {
+namespace webrtc {
 
 // A TransportInfo is NOT a transport-info message.  It is comparable
 // to a "ContentInfo". A transport-infos message is basically just a
@@ -34,6 +34,13 @@ struct TransportInfo {
 
 typedef std::vector<TransportInfo> TransportInfos;
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::TransportInfo;
+using ::webrtc::TransportInfos;
 }  // namespace cricket
 
 #endif  // P2P_BASE_TRANSPORT_INFO_H_

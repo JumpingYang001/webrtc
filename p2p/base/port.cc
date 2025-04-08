@@ -55,36 +55,28 @@
 #include "rtc_base/trace_event.h"
 #include "rtc_base/weak_ptr.h"
 
-using webrtc::IceCandidateType;
-
-namespace cricket {
+namespace webrtc {
 namespace {
 
-using ::webrtc::IceCandidateType;
-using ::webrtc::RTCError;
-using ::webrtc::RTCErrorType;
-using ::webrtc::TaskQueueBase;
-using ::webrtc::TimeDelta;
-
-webrtc::PacketInfoProtocolType ConvertProtocolTypeToPacketInfoProtocolType(
-    webrtc::ProtocolType type) {
+PacketInfoProtocolType ConvertProtocolTypeToPacketInfoProtocolType(
+    ProtocolType type) {
   switch (type) {
-    case webrtc::ProtocolType::PROTO_UDP:
-      return webrtc::PacketInfoProtocolType::kUdp;
-    case webrtc::ProtocolType::PROTO_TCP:
-      return webrtc::PacketInfoProtocolType::kTcp;
-    case webrtc::ProtocolType::PROTO_SSLTCP:
-      return webrtc::PacketInfoProtocolType::kSsltcp;
-    case webrtc::ProtocolType::PROTO_TLS:
-      return webrtc::PacketInfoProtocolType::kTls;
+    case ProtocolType::PROTO_UDP:
+      return PacketInfoProtocolType::kUdp;
+    case ProtocolType::PROTO_TCP:
+      return PacketInfoProtocolType::kTcp;
+    case ProtocolType::PROTO_SSLTCP:
+      return PacketInfoProtocolType::kSsltcp;
+    case ProtocolType::PROTO_TLS:
+      return PacketInfoProtocolType::kTls;
     default:
-      return webrtc::PacketInfoProtocolType::kUnknown;
+      return PacketInfoProtocolType::kUnknown;
   }
 }
 
 // The delay before we begin checking if this port is useless. We set
 // it to a little higher than a total STUN timeout.
-const int kPortTimeoutDelay = cricket::STUN_TOTAL_TIMEOUT + 5000;
+const int kPortTimeoutDelay = webrtc::STUN_TOTAL_TIMEOUT + 5000;
 
 }  // namespace
 
@@ -92,15 +84,14 @@ static const char* const PROTO_NAMES[] = {
     webrtc::UDP_PROTOCOL_NAME, webrtc::TCP_PROTOCOL_NAME,
     webrtc::SSLTCP_PROTOCOL_NAME, webrtc::TLS_PROTOCOL_NAME};
 
-const char* ProtoToString(webrtc::ProtocolType proto) {
+const char* ProtoToString(ProtocolType proto) {
   return PROTO_NAMES[proto];
 }
 
-std::optional<webrtc::ProtocolType> StringToProto(
-    absl::string_view proto_name) {
+std::optional<ProtocolType> StringToProto(absl::string_view proto_name) {
   for (size_t i = 0; i <= webrtc::PROTO_LAST; ++i) {
     if (absl::EqualsIgnoreCase(PROTO_NAMES[i], proto_name)) {
-      return static_cast<webrtc::ProtocolType>(i);
+      return static_cast<ProtocolType>(i);
     }
   }
   return std::nullopt;
@@ -112,11 +103,11 @@ const char TCPTYPE_ACTIVE_STR[] = "active";
 const char TCPTYPE_PASSIVE_STR[] = "passive";
 const char TCPTYPE_SIMOPEN_STR[] = "so";
 
-Port::Port(const PortParametersRef& args, webrtc::IceCandidateType type)
+Port::Port(const PortParametersRef& args, IceCandidateType type)
     : Port(args, type, 0, 0, true) {}
 
 Port::Port(const PortParametersRef& args,
-           webrtc::IceCandidateType type,
+           IceCandidateType type,
            uint16_t min_port,
            uint16_t max_port,
            bool shared_socket /*= false*/)
@@ -134,7 +125,7 @@ Port::Port(const PortParametersRef& args,
       password_(args.ice_password),
       timeout_delay_(kPortTimeoutDelay),
       enable_port_packets_(false),
-      ice_role_(ICEROLE_UNKNOWN),
+      ice_role_(webrtc::ICEROLE_UNKNOWN),
       tiebreaker_(0),
       shared_socket_(shared_socket),
       network_cost_(args.network->GetCost(env_.field_trials())),
@@ -165,7 +156,7 @@ Port::~Port() {
 IceCandidateType Port::Type() const {
   return type_;
 }
-const webrtc::Network* Port::Network() const {
+const Network* Port::Network() const {
   return network_;
 }
 
@@ -209,11 +200,11 @@ void Port::SetIceParameters(int component,
   }
 }
 
-const std::vector<webrtc::Candidate>& Port::Candidates() const {
+const std::vector<Candidate>& Port::Candidates() const {
   return candidates_;
 }
 
-Connection* Port::GetConnection(const webrtc::SocketAddress& remote_addr) {
+Connection* Port::GetConnection(const SocketAddress& remote_addr) {
   AddressMap::const_iterator iter = connections_.find(remote_addr);
   if (iter != connections_.end())
     return iter->second;
@@ -221,9 +212,9 @@ Connection* Port::GetConnection(const webrtc::SocketAddress& remote_addr) {
     return NULL;
 }
 
-void Port::AddAddress(const webrtc::SocketAddress& address,
-                      const webrtc::SocketAddress& base_address,
-                      const webrtc::SocketAddress& related_address,
+void Port::AddAddress(const SocketAddress& address,
+                      const SocketAddress& base_address,
+                      const SocketAddress& related_address,
                       absl::string_view protocol,
                       absl::string_view relay_protocol,
                       absl::string_view tcptype,
@@ -237,9 +228,8 @@ void Port::AddAddress(const webrtc::SocketAddress& address,
   // TODO(tommi): Set relay_protocol and optionally provide the base address
   // to automatically compute the foundation in the ctor? It would be a good
   // thing for the Candidate class to know the base address and keep it const.
-  webrtc::Candidate c(component_, protocol, address, 0U, username_fragment(),
-                      password_, type, generation_, "", network_->id(),
-                      network_cost_);
+  Candidate c(component_, protocol, address, 0U, username_fragment(), password_,
+              type, generation_, "", network_->id(), network_cost_);
   // Set the relay protocol before computing the foundation field.
   c.set_relay_protocol(relay_protocol);
   // TODO(bugs.webrtc.org/14605): ensure IceTiebreaker() is set.
@@ -268,7 +258,7 @@ void Port::AddAddress(const webrtc::SocketAddress& address,
   }
 }
 
-bool Port::MaybeObfuscateAddress(const webrtc::Candidate& c, bool is_final) {
+bool Port::MaybeObfuscateAddress(const Candidate& c, bool is_final) {
   // TODO(bugs.webrtc.org/9723): Use a config to control the feature of IP
   // handling with mDNS.
   if (network_->GetMdnsResponder() == nullptr) {
@@ -283,14 +273,14 @@ bool Port::MaybeObfuscateAddress(const webrtc::Candidate& c, bool is_final) {
   auto callback = [weak_ptr, copy, is_final](const rtc::IPAddress& addr,
                                              absl::string_view name) mutable {
     RTC_DCHECK(copy.address().ipaddr() == addr);
-    webrtc::SocketAddress hostname_address(name, copy.address().port());
+    SocketAddress hostname_address(name, copy.address().port());
     // In Port and Connection, we need the IP address information to
     // correctly handle the update of candidate type to prflx. The removal
     // of IP address when signaling this candidate will take place in
     // BasicPortAllocatorSession::OnCandidateReady, via SanitizeCandidate.
     hostname_address.SetResolvedIP(addr);
     copy.set_address(hostname_address);
-    copy.set_related_address(webrtc::SocketAddress());
+    copy.set_related_address(SocketAddress());
     if (weak_ptr != nullptr) {
       RTC_DCHECK_RUN_ON(weak_ptr->thread_);
       weak_ptr->set_mdns_name_registration_status(
@@ -304,7 +294,7 @@ bool Port::MaybeObfuscateAddress(const webrtc::Candidate& c, bool is_final) {
   return true;
 }
 
-void Port::FinishAddingAddress(const webrtc::Candidate& c, bool is_final) {
+void Port::FinishAddingAddress(const Candidate& c, bool is_final) {
   candidates_.push_back(c);
   SignalCandidateReady(this, c);
 
@@ -335,11 +325,10 @@ void Port::AddOrReplaceConnection(Connection* conn) {
   }
 }
 
-void Port::OnReadPacket(const rtc::ReceivedPacket& packet,
-                        webrtc::ProtocolType proto) {
+void Port::OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType proto) {
   const char* data = reinterpret_cast<const char*>(packet.payload().data());
   size_t size = packet.payload().size();
-  const webrtc::SocketAddress& addr = packet.source_address();
+  const SocketAddress& addr = packet.source_address();
   // If the user has enabled port packets, just hand this over.
   if (enable_port_packets_) {
     SignalReadPacket(this, data, size, addr);
@@ -398,14 +387,14 @@ void Port::OnReadyToSend() {
   }
 }
 
-void Port::AddPrflxCandidate(const webrtc::Candidate& local) {
+void Port::AddPrflxCandidate(const Candidate& local) {
   RTC_DCHECK_RUN_ON(thread_);
   candidates_.push_back(local);
 }
 
 bool Port::GetStunMessage(const char* data,
                           size_t size,
-                          const webrtc::SocketAddress& addr,
+                          const SocketAddress& addr,
                           std::unique_ptr<IceMessage>* out_msg,
                           std::string* out_username) {
   RTC_DCHECK_RUN_ON(thread_);
@@ -429,7 +418,7 @@ bool Port::GetStunMessage(const char* data,
   // Parse the request message.  If the packet is not a complete and correct
   // STUN message, then ignore it.
   std::unique_ptr<IceMessage> stun_msg(new IceMessage());
-  webrtc::ByteBufferReader buf(
+  ByteBufferReader buf(
       rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   if (!stun_msg->Read(&buf) || (buf.Length() > 0)) {
     return false;
@@ -571,9 +560,9 @@ bool Port::GetStunMessage(const char* data,
   return true;
 }
 
-bool Port::IsCompatibleAddress(const webrtc::SocketAddress& addr) {
+bool Port::IsCompatibleAddress(const SocketAddress& addr) {
   // Get a representative IP for the Network this port is configured to use.
-  webrtc::IPAddress ip = network_->GetBestIP();
+  IPAddress ip = network_->GetBestIP();
   // We use single-stack sockets, so families must match.
   if (addr.family() != ip.family()) {
     return false;
@@ -586,7 +575,7 @@ bool Port::IsCompatibleAddress(const webrtc::SocketAddress& addr) {
   return true;
 }
 
-webrtc::DiffServCodePoint Port::StunDscpValue() const {
+DiffServCodePoint Port::StunDscpValue() const {
   // By default, inherit from whatever the MediaChannel sends.
   return webrtc::DSCP_NO_CHANGE;
 }
@@ -635,18 +624,18 @@ bool Port::ParseStunUsername(const StunMessage* stun_msg,
   return true;
 }
 
-bool Port::MaybeIceRoleConflict(const webrtc::SocketAddress& addr,
+bool Port::MaybeIceRoleConflict(const SocketAddress& addr,
                                 IceMessage* stun_msg,
                                 absl::string_view remote_ufrag) {
   RTC_DCHECK_RUN_ON(thread_);
   // Validate ICE_CONTROLLING or ICE_CONTROLLED attributes.
   bool ret = true;
-  IceRole remote_ice_role = ICEROLE_UNKNOWN;
+  IceRole remote_ice_role = webrtc::ICEROLE_UNKNOWN;
   uint64_t remote_tiebreaker = 0;
   const StunUInt64Attribute* stun_attr =
       stun_msg->GetUInt64(STUN_ATTR_ICE_CONTROLLING);
   if (stun_attr) {
-    remote_ice_role = ICEROLE_CONTROLLING;
+    remote_ice_role = webrtc::ICEROLE_CONTROLLING;
     remote_tiebreaker = stun_attr->value();
   }
 
@@ -654,7 +643,7 @@ bool Port::MaybeIceRoleConflict(const webrtc::SocketAddress& addr,
   // tie breaker value received in the ping message matches port
   // tiebreaker value this must be a loopback call.
   // We will treat this as valid scenario.
-  if (remote_ice_role == ICEROLE_CONTROLLING &&
+  if (remote_ice_role == webrtc::ICEROLE_CONTROLLING &&
       username_fragment() == remote_ufrag &&
       remote_tiebreaker == IceTiebreaker()) {
     return true;
@@ -662,13 +651,13 @@ bool Port::MaybeIceRoleConflict(const webrtc::SocketAddress& addr,
 
   stun_attr = stun_msg->GetUInt64(STUN_ATTR_ICE_CONTROLLED);
   if (stun_attr) {
-    remote_ice_role = ICEROLE_CONTROLLED;
+    remote_ice_role = webrtc::ICEROLE_CONTROLLED;
     remote_tiebreaker = stun_attr->value();
   }
 
   switch (ice_role_) {
-    case ICEROLE_CONTROLLING:
-      if (ICEROLE_CONTROLLING == remote_ice_role) {
+    case webrtc::ICEROLE_CONTROLLING:
+      if (webrtc::ICEROLE_CONTROLLING == remote_ice_role) {
         if (remote_tiebreaker >= tiebreaker_) {
           SignalRoleConflict(this);
         } else {
@@ -679,8 +668,8 @@ bool Port::MaybeIceRoleConflict(const webrtc::SocketAddress& addr,
         }
       }
       break;
-    case ICEROLE_CONTROLLED:
-      if (ICEROLE_CONTROLLED == remote_ice_role) {
+    case webrtc::ICEROLE_CONTROLLED:
+      if (webrtc::ICEROLE_CONTROLLED == remote_ice_role) {
         if (remote_tiebreaker < tiebreaker_) {
           SignalRoleConflict(this);
         } else {
@@ -702,18 +691,18 @@ std::string Port::CreateStunUsername(absl::string_view remote_username) const {
   return std::string(remote_username) + ":" + username_fragment();
 }
 
-bool Port::HandleIncomingPacket(webrtc::AsyncPacketSocket* /* socket */,
+bool Port::HandleIncomingPacket(AsyncPacketSocket* /* socket */,
                                 const rtc::ReceivedPacket& /* packet */) {
   RTC_DCHECK_NOTREACHED();
   return false;
 }
 
-bool Port::CanHandleIncomingPacketsFrom(const webrtc::SocketAddress&) const {
+bool Port::CanHandleIncomingPacketsFrom(const SocketAddress&) const {
   return false;
 }
 
 void Port::SendBindingErrorResponse(StunMessage* message,
-                                    const webrtc::SocketAddress& addr,
+                                    const SocketAddress& addr,
                                     int error_code,
                                     absl::string_view reason) {
   RTC_DCHECK_RUN_ON(thread_);
@@ -727,7 +716,7 @@ void Port::SendBindingErrorResponse(StunMessage* message,
                        message->transaction_id());
 
   // When doing GICE, we need to write out the error code incorrectly to
-  // maintain backwards compatiblility.
+  // maintain backwards compatibility.
   auto error_attr = StunAttribute::CreateErrorCode();
   error_attr->SetCode(error_code);
   error_attr->SetReason(std::string(reason));
@@ -750,11 +739,11 @@ void Port::SendBindingErrorResponse(StunMessage* message,
   }
 
   // Send the response message.
-  webrtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
   response.Write(&buf);
   rtc::PacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      webrtc::PacketType::kIceConnectivityCheckResponse;
+      PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
   RTC_LOG(LS_INFO) << ToString() << ": Sending STUN "
                    << StunMethodToString(response.type())
@@ -764,7 +753,7 @@ void Port::SendBindingErrorResponse(StunMessage* message,
 
 void Port::SendUnknownAttributesErrorResponse(
     StunMessage* message,
-    const webrtc::SocketAddress& addr,
+    const SocketAddress& addr,
     const std::vector<uint16_t>& unknown_types) {
   RTC_DCHECK_RUN_ON(thread_);
   RTC_DCHECK(message->type() == STUN_BINDING_REQUEST);
@@ -788,11 +777,11 @@ void Port::SendUnknownAttributesErrorResponse(
   response.AddFingerprint();
 
   // Send the response message.
-  webrtc::ByteBufferWriter buf;
+  ByteBufferWriter buf;
   response.Write(&buf);
   rtc::PacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
-      webrtc::PacketType::kIceConnectivityCheckResponse;
+      PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
   RTC_LOG(LS_ERROR) << ToString() << ": Sending STUN binding error: reason="
                     << STUN_ERROR_UNKNOWN_ATTRIBUTE << " to "
@@ -819,7 +808,7 @@ void Port::CancelPendingTasks() {
 }
 
 void Port::PostDestroyIfDead(bool delayed) {
-  rtc::WeakPtr<Port> weak_ptr = NewWeakPtr();
+  WeakPtr<Port> weak_ptr = NewWeakPtr();
   auto task = [weak_ptr = std::move(weak_ptr)] {
     if (weak_ptr) {
       weak_ptr->DestroyIfDead();
@@ -845,21 +834,21 @@ void Port::DestroyIfDead() {
 }
 
 void Port::SubscribePortDestroyed(
-    std::function<void(webrtc::PortInterface*)> callback) {
+    std::function<void(PortInterface*)> callback) {
   port_destroyed_callback_list_.AddReceiver(callback);
 }
 
 void Port::SendPortDestroyed(Port* port) {
   port_destroyed_callback_list_.Send(port);
 }
-void Port::OnNetworkTypeChanged(const webrtc::Network* network) {
+void Port::OnNetworkTypeChanged(const ::webrtc::Network* network) {
   RTC_DCHECK(network == network_);
 
   UpdateNetworkCost();
 }
 
 std::string Port::ToString() const {
-  rtc::StringBuilder ss;
+  StringBuilder ss;
   ss << "Port[" << webrtc::ToHex(reinterpret_cast<uintptr_t>(this)) << ":"
      << content_name_ << ":" << component_ << ":" << generation_ << ":"
      << webrtc::IceCandidateTypeToString(type_) << ":" << network_->ToString()
@@ -946,9 +935,9 @@ const std::string& Port::username_fragment() const {
   return ice_username_fragment_;
 }
 
-void Port::CopyPortInformationToPacketInfo(webrtc::PacketInfo* info) const {
+void Port::CopyPortInformationToPacketInfo(PacketInfo* info) const {
   info->protocol = ConvertProtocolTypeToPacketInfoProtocolType(GetProtocol());
   info->network_id = Network()->id();
 }
 
-}  // namespace cricket
+}  // namespace webrtc

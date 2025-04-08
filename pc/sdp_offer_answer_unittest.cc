@@ -659,12 +659,10 @@ TEST_F(SdpOfferAnswerTest, SimulcastOfferWithMixedCodec) {
       FieldTrials::CreateNoGlobal("WebRTC-MixedCodecSimulcast/Enabled/"));
 
   std::optional<RtpCodecCapability> vp8_codec_capability =
-      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO,
-                                 cricket::kVp8CodecName);
+      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO, kVp8CodecName);
   ASSERT_TRUE(vp8_codec_capability);
   std::optional<RtpCodecCapability> vp9_codec_capability =
-      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO,
-                                 cricket::kVp9CodecName);
+      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO, kVp9CodecName);
   ASSERT_TRUE(vp9_codec_capability);
 
   RtpTransceiverInit init;
@@ -966,7 +964,7 @@ TEST_F(SdpOfferAnswerTest,
   ASSERT_EQ(video_stream.ssrc_groups.size(), 1u);
   video_stream.ssrcs[1] = audio_ssrc;
   video_stream.ssrc_groups[0].ssrcs[1] = audio_ssrc;
-  video_stream.ssrc_groups[0].semantics = cricket::kSimSsrcGroupSemantics;
+  video_stream.ssrc_groups[0].semantics = kSimSsrcGroupSemantics;
   std::string sdp;
   offer->ToString(&sdp);
 
@@ -1007,7 +1005,7 @@ TEST_F(SdpOfferAnswerTest,
   ASSERT_EQ(video_stream.ssrc_groups.size(), 1u);
   video_stream.ssrcs.push_back(audio_ssrc);
   video_stream.ssrc_groups[0].ssrcs.push_back(audio_ssrc);
-  video_stream.ssrc_groups[0].semantics = cricket::kSimSsrcGroupSemantics;
+  video_stream.ssrc_groups[0].semantics = kSimSsrcGroupSemantics;
   std::string sdp;
   offer->ToString(&sdp);
 
@@ -1047,7 +1045,7 @@ TEST_F(SdpOfferAnswerTest, AllowOnlyOneSsrcGroupPerSemanticAndPrimarySsrc) {
   ASSERT_EQ(video_stream.ssrc_groups.size(), 1u);
   video_stream.ssrcs.push_back(audio_ssrc);
   video_stream.ssrc_groups.push_back(
-      {cricket::kFidSsrcGroupSemantics, {video_stream.ssrcs[0], audio_ssrc}});
+      {kFidSsrcGroupSemantics, {video_stream.ssrcs[0], audio_ssrc}});
   std::string sdp;
   offer->ToString(&sdp);
 
@@ -1861,7 +1859,7 @@ TEST_F(SdpOfferAnswerMungingTest,
   RTCError error;
   auto answer = CreateSessionDescription(SdpType::kAnswer, sdp);
   answer->description()->transport_infos()[0].description.connection_role =
-      cricket::CONNECTIONROLE_ACTIVE;
+      CONNECTIONROLE_ACTIVE;
   EXPECT_TRUE(pc->SetLocalDescription(std::move(answer), &error));
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Answer.Initial"),
@@ -1905,7 +1903,7 @@ TEST_F(SdpOfferAnswerMungingTest, IceMode) {
   auto offer = pc->CreateOffer();
   auto& transport_infos = offer->description()->transport_infos();
   ASSERT_EQ(transport_infos.size(), 1u);
-  transport_infos[0].description.ice_mode = cricket::ICEMODE_LITE;
+  transport_infos[0].description.ice_mode = ICEMODE_LITE;
   RTCError error;
   EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
   EXPECT_THAT(
@@ -1937,7 +1935,7 @@ TEST_F(SdpOfferAnswerMungingTest, IceOptionsRenomination) {
   auto& transport_infos = offer->description()->transport_infos();
   ASSERT_EQ(transport_infos.size(), 1u);
   transport_infos[0].description.transport_options.push_back(
-      cricket::ICE_OPTION_RENOMINATION);
+      ICE_OPTION_RENOMINATION);
   RTCError error;
   EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
   EXPECT_THAT(
@@ -1952,8 +1950,7 @@ TEST_F(SdpOfferAnswerMungingTest, DtlsRole) {
   auto offer = pc->CreateOffer();
   auto& transport_infos = offer->description()->transport_infos();
   ASSERT_EQ(transport_infos.size(), 1u);
-  transport_infos[0].description.connection_role =
-      cricket::CONNECTIONROLE_PASSIVE;
+  transport_infos[0].description.connection_role = CONNECTIONROLE_PASSIVE;
   RTCError error;
   EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
   EXPECT_THAT(
@@ -2079,8 +2076,8 @@ TEST_F(SdpOfferAnswerMungingTest, OpusStereo) {
   ASSERT_TRUE(media_description);
   std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
-    if (codec.name == cricket::kOpusCodecName) {
-      codec.SetParam(cricket::kCodecParamStereo, cricket::kParamValueTrue);
+    if (codec.name == kOpusCodecName) {
+      codec.SetParam(kCodecParamStereo, kParamValueTrue);
     }
   }
   media_description->set_codecs(codecs);
@@ -2102,9 +2099,9 @@ TEST_F(SdpOfferAnswerMungingTest, OpusFec) {
   ASSERT_TRUE(media_description);
   std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
-    if (codec.name == cricket::kOpusCodecName) {
+    if (codec.name == kOpusCodecName) {
       // Enabled by default so we need to remove the parameter.
-      EXPECT_TRUE(codec.RemoveParam(cricket::kCodecParamUseInbandFec));
+      EXPECT_TRUE(codec.RemoveParam(kCodecParamUseInbandFec));
     }
   }
   media_description->set_codecs(codecs);
@@ -2126,8 +2123,8 @@ TEST_F(SdpOfferAnswerMungingTest, OpusDtx) {
   ASSERT_TRUE(media_description);
   std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
-    if (codec.name == cricket::kOpusCodecName) {
-      codec.SetParam(cricket::kCodecParamUseDtx, cricket::kParamValueTrue);
+    if (codec.name == kOpusCodecName) {
+      codec.SetParam(kCodecParamUseDtx, kParamValueTrue);
     }
   }
   media_description->set_codecs(codecs);
@@ -2149,8 +2146,8 @@ TEST_F(SdpOfferAnswerMungingTest, OpusCbr) {
   ASSERT_TRUE(media_description);
   std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
-    if (codec.name == cricket::kOpusCodecName) {
-      codec.SetParam(cricket::kCodecParamCbr, cricket::kParamValueTrue);
+    if (codec.name == kOpusCodecName) {
+      codec.SetParam(kCodecParamCbr, kParamValueTrue);
     }
   }
   media_description->set_codecs(codecs);

@@ -285,24 +285,22 @@ void RtpTransport::OnReadPacket(PacketTransportInternal* transport,
 
   // When using RTCP multiplexing we might get RTCP packets on the RTP
   // transport. We check the RTP payload type to determine if it is RTCP.
-  cricket::RtpPacketType packet_type =
-      cricket::InferRtpPacketType(received_packet.payload());
+  RtpPacketType packet_type = InferRtpPacketType(received_packet.payload());
   // Filter out the packet that is neither RTP nor RTCP.
-  if (packet_type == cricket::RtpPacketType::kUnknown) {
+  if (packet_type == RtpPacketType::kUnknown) {
     return;
   }
 
   // Protect ourselves against crazy data.
-  if (!cricket::IsValidRtpPacketSize(packet_type,
-                                     received_packet.payload().size())) {
+  if (!IsValidRtpPacketSize(packet_type, received_packet.payload().size())) {
     RTC_LOG(LS_ERROR) << "Dropping incoming "
-                      << cricket::RtpPacketTypeToString(packet_type)
+                      << RtpPacketTypeToString(packet_type)
                       << " packet: wrong size="
                       << received_packet.payload().size();
     return;
   }
 
-  if (packet_type == cricket::RtpPacketType::kRtcp) {
+  if (packet_type == RtpPacketType::kRtcp) {
     OnRtcpPacketReceived(received_packet);
   } else {
     OnRtpPacketReceived(received_packet);

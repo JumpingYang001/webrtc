@@ -67,7 +67,7 @@ RTCError VerifyCandidate(const Candidate& cand) {
   // Disallow all ports below 1024, except for 80 and 443 on public addresses.
   int port = cand.address().port();
   if (cand.protocol() == TCP_PROTOCOL_NAME &&
-      (cand.tcptype() == cricket::TCPTYPE_ACTIVE_STR || port == 0)) {
+      (cand.tcptype() == TCPTYPE_ACTIVE_STR || port == 0)) {
     // Expected for active-only candidates per
     // http://tools.ietf.org/html/rfc6544#section-4.5 so no error.
     // Libjingle clients emit port 0, in "active" mode.
@@ -148,53 +148,48 @@ IceConfig::IceConfig(const PeerConnectionInterface::RTCConfiguration& config)
 IceConfig::~IceConfig() = default;
 
 int IceConfig::receiving_timeout_or_default() const {
-  return receiving_timeout.value_or(cricket::RECEIVING_TIMEOUT);
+  return receiving_timeout.value_or(RECEIVING_TIMEOUT);
 }
 int IceConfig::backup_connection_ping_interval_or_default() const {
   return backup_connection_ping_interval.value_or(
-      cricket::BACKUP_CONNECTION_PING_INTERVAL);
+      BACKUP_CONNECTION_PING_INTERVAL);
 }
 int IceConfig::stable_writable_connection_ping_interval_or_default() const {
   return stable_writable_connection_ping_interval.value_or(
-      cricket::STRONG_AND_STABLE_WRITABLE_CONNECTION_PING_INTERVAL);
+      STRONG_AND_STABLE_WRITABLE_CONNECTION_PING_INTERVAL);
 }
 int IceConfig::regather_on_failed_networks_interval_or_default() const {
   return regather_on_failed_networks_interval.value_or(
-      cricket::REGATHER_ON_FAILED_NETWORKS_INTERVAL);
+      REGATHER_ON_FAILED_NETWORKS_INTERVAL);
 }
 int IceConfig::receiving_switching_delay_or_default() const {
-  return receiving_switching_delay.value_or(cricket::RECEIVING_SWITCHING_DELAY);
+  return receiving_switching_delay.value_or(RECEIVING_SWITCHING_DELAY);
 }
 int IceConfig::ice_check_interval_strong_connectivity_or_default() const {
-  return ice_check_interval_strong_connectivity.value_or(
-      cricket::STRONG_PING_INTERVAL);
+  return ice_check_interval_strong_connectivity.value_or(STRONG_PING_INTERVAL);
 }
 int IceConfig::ice_check_interval_weak_connectivity_or_default() const {
-  return ice_check_interval_weak_connectivity.value_or(
-      cricket::WEAK_PING_INTERVAL);
+  return ice_check_interval_weak_connectivity.value_or(WEAK_PING_INTERVAL);
 }
 int IceConfig::ice_check_min_interval_or_default() const {
   return ice_check_min_interval.value_or(-1);
 }
 int IceConfig::ice_unwritable_timeout_or_default() const {
-  return ice_unwritable_timeout.value_or(
-      cricket::CONNECTION_WRITE_CONNECT_TIMEOUT);
+  return ice_unwritable_timeout.value_or(CONNECTION_WRITE_CONNECT_TIMEOUT);
 }
 int IceConfig::ice_unwritable_min_checks_or_default() const {
-  return ice_unwritable_min_checks.value_or(
-      cricket::CONNECTION_WRITE_CONNECT_FAILURES);
+  return ice_unwritable_min_checks.value_or(CONNECTION_WRITE_CONNECT_FAILURES);
 }
 int IceConfig::ice_inactive_timeout_or_default() const {
-  return ice_inactive_timeout.value_or(cricket::CONNECTION_WRITE_TIMEOUT);
+  return ice_inactive_timeout.value_or(CONNECTION_WRITE_TIMEOUT);
 }
 int IceConfig::stun_keepalive_interval_or_default() const {
-  return stun_keepalive_interval.value_or(cricket::STUN_KEEPALIVE_INTERVAL);
+  return stun_keepalive_interval.value_or(STUN_KEEPALIVE_INTERVAL);
 }
 
 RTCError IceConfig::IsValid() const {
   if (ice_check_interval_strong_connectivity_or_default() <
-      ice_check_interval_weak_connectivity.value_or(
-          cricket::WEAK_PING_INTERVAL)) {
+      ice_check_interval_weak_connectivity.value_or(WEAK_PING_INTERVAL)) {
     return RTCError(RTCErrorType::INVALID_PARAMETER,
                     "Ping interval of candidate pairs is shorter when ICE is "
                     "strongly connected than that when ICE is weakly "
@@ -240,12 +235,12 @@ IceTransportInternal::~IceTransportInternal() = default;
 
 void IceTransportInternal::SetIceCredentials(absl::string_view ice_ufrag,
                                              absl::string_view ice_pwd) {
-  SetIceParameters(cricket::IceParameters(ice_ufrag, ice_pwd, false));
+  SetIceParameters(IceParameters(ice_ufrag, ice_pwd, false));
 }
 
 void IceTransportInternal::SetRemoteIceCredentials(absl::string_view ice_ufrag,
                                                    absl::string_view ice_pwd) {
-  SetRemoteIceParameters(cricket::IceParameters(ice_ufrag, ice_pwd, false));
+  SetRemoteIceParameters(IceParameters(ice_ufrag, ice_pwd, false));
 }
 
 void IceTransportInternal::AddGatheringStateCallback(

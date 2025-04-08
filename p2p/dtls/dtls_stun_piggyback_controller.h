@@ -25,7 +25,7 @@
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
 
-namespace cricket {
+namespace webrtc {
 
 // This class is not thread safe; all methods must be called on the same thread
 // as the constructor.
@@ -86,22 +86,27 @@ class DtlsStunPiggybackController {
  private:
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
   bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
-  rtc::Buffer pending_packet_ RTC_GUARDED_BY(sequence_checker_);
+  Buffer pending_packet_ RTC_GUARDED_BY(sequence_checker_);
   absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback_;
   absl::AnyInvocable<void()> disable_piggybacking_callback_;
 
   std::set<uint16_t> handshake_messages_received_
       RTC_GUARDED_BY(sequence_checker_);
-  webrtc::ByteBufferWriter handshake_ack_writer_
-      RTC_GUARDED_BY(sequence_checker_);
+  ByteBufferWriter handshake_ack_writer_ RTC_GUARDED_BY(sequence_checker_);
 
   // Count of data attributes received.
   int data_recv_count_ = 0;
 
   // In practice this will be the network thread.
-  RTC_NO_UNIQUE_ADDRESS webrtc::SequenceChecker sequence_checker_;
+  RTC_NO_UNIQUE_ADDRESS SequenceChecker sequence_checker_;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::DtlsStunPiggybackController;
 }  // namespace cricket
 
 #endif  // P2P_DTLS_DTLS_STUN_PIGGYBACK_CONTROLLER_H_

@@ -34,12 +34,12 @@ using ::webrtc::SafeTask;
 using ::webrtc::TimeDelta;
 }  // unnamed namespace
 
-namespace cricket {
+namespace webrtc {
 
 WrappingActiveIceController::WrappingActiveIceController(
     IceAgentInterface* ice_agent,
     std::unique_ptr<IceControllerInterface> wrapped)
-    : network_thread_(webrtc::Thread::Current()),
+    : network_thread_(Thread::Current()),
       wrapped_(std::move(wrapped)),
       agent_(*ice_agent) {
   RTC_DCHECK(ice_agent != nullptr);
@@ -47,9 +47,9 @@ WrappingActiveIceController::WrappingActiveIceController(
 
 WrappingActiveIceController::WrappingActiveIceController(
     IceAgentInterface* ice_agent,
-    webrtc::IceControllerFactoryInterface* wrapped_factory,
-    const webrtc::IceControllerFactoryArgs& wrapped_factory_args)
-    : network_thread_(webrtc::Thread::Current()), agent_(*ice_agent) {
+    IceControllerFactoryInterface* wrapped_factory,
+    const IceControllerFactoryArgs& wrapped_factory_args)
+    : network_thread_(Thread::Current()), agent_(*ice_agent) {
   RTC_DCHECK(ice_agent != nullptr);
   if (wrapped_factory) {
     wrapped_ = wrapped_factory->Create(wrapped_factory_args);
@@ -60,15 +60,14 @@ WrappingActiveIceController::WrappingActiveIceController(
 
 WrappingActiveIceController::~WrappingActiveIceController() {}
 
-void WrappingActiveIceController::SetIceConfig(
-    const webrtc::IceConfig& config) {
+void WrappingActiveIceController::SetIceConfig(const IceConfig& config) {
   RTC_DCHECK_RUN_ON(network_thread_);
   wrapped_->SetIceConfig(config);
 }
 
 bool WrappingActiveIceController::GetUseCandidateAttribute(
     const Connection* connection,
-    webrtc::NominationMode mode,
+    NominationMode mode,
     IceMode remote_ice_mode) const {
   RTC_DCHECK_RUN_ON(network_thread_);
   return wrapped_->GetUseCandidateAttr(connection, mode, remote_ice_mode);
@@ -252,4 +251,4 @@ const Connection* WrappingActiveIceController::FindNextPingableConnection() {
   return wrapped_->FindNextPingableConnection();
 }
 
-}  // namespace cricket
+}  // namespace webrtc

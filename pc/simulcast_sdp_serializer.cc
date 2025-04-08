@@ -33,8 +33,8 @@
 #include "rtc_base/string_to_number.h"
 #include "rtc_base/strings/string_builder.h"
 
-using cricket::RidDescription;
-using cricket::RidDirection;
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
 using ::webrtc::SimulcastLayerList;

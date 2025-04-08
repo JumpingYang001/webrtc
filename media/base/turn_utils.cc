@@ -16,7 +16,7 @@
 #include "api/transport/stun.h"
 #include "rtc_base/byte_order.h"
 
-namespace cricket {
+namespace webrtc {
 
 namespace {
 
@@ -126,4 +126,4 @@ bool UnwrapTurnPacket(const uint8_t* packet,
   return true;
 }
 
-}  // namespace cricket
+}  // namespace webrtc

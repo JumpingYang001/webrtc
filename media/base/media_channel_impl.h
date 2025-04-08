@@ -31,31 +31,29 @@
 // These implementation classes used to be the exposed interface names,
 // but this is in the process of being changed.
 
-namespace cricket {
+namespace webrtc {
 
 // The `MediaChannelUtil` class provides functionality that is used by
 // multiple MediaChannel-like objects, of both sending and receiving
 // types.
 class MediaChannelUtil {
  public:
-  MediaChannelUtil(webrtc::TaskQueueBase* network_thread,
-                   bool enable_dscp = false);
+  explicit MediaChannelUtil(TaskQueueBase* network_thread,
+                            bool enable_dscp = false);
   virtual ~MediaChannelUtil();
   // Returns the absolute sendtime extension id value from media channel.
   virtual int GetRtpSendTimeExtnId() const;
 
-  webrtc::Transport* transport() { return &transport_; }
+  Transport* transport() { return &transport_; }
 
   // Base methods to send packet using MediaChannelNetworkInterface.
   // These methods are used by some tests only.
-  bool SendPacket(rtc::CopyOnWriteBuffer* packet,
-                  const rtc::PacketOptions& options);
+  bool SendPacket(CopyOnWriteBuffer* packet, const rtc::PacketOptions& options);
 
-  bool SendRtcp(rtc::CopyOnWriteBuffer* packet,
-                const rtc::PacketOptions& options);
+  bool SendRtcp(CopyOnWriteBuffer* packet, const rtc::PacketOptions& options);
 
   int SetOption(MediaChannelNetworkInterface::SocketType type,
-                webrtc::Socket::Option opt,
+                Socket::Option opt,
                 int option);
 
   // Functions that form part of one or more interface classes.
@@ -77,31 +75,30 @@ class MediaChannelUtil {
  protected:
   bool DscpEnabled() const;
 
-  void SetPreferredDscp(webrtc::DiffServCodePoint new_dscp);
+  void SetPreferredDscp(DiffServCodePoint new_dscp);
 
  private:
   // Implementation of the webrtc::Transport interface required
   // by Call().
-  class TransportForMediaChannels : public webrtc::Transport {
+  class TransportForMediaChannels : public Transport {
    public:
-    TransportForMediaChannels(webrtc::TaskQueueBase* network_thread,
-                              bool enable_dscp);
+    TransportForMediaChannels(TaskQueueBase* network_thread, bool enable_dscp);
 
     virtual ~TransportForMediaChannels();
 
     // Implementation of webrtc::Transport
     bool SendRtp(rtc::ArrayView<const uint8_t> packet,
-                 const webrtc::PacketOptions& options) override;
+                 const PacketOptions& options) override;
     bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
 
     // Not implementation of webrtc::Transport
     void SetInterface(MediaChannelNetworkInterface* iface);
 
     int SetOption(MediaChannelNetworkInterface::SocketType type,
-                  webrtc::Socket::Option opt,
+                  Socket::Option opt,
                   int option);
 
-    bool DoSendPacket(rtc::CopyOnWriteBuffer* packet,
+    bool DoSendPacket(CopyOnWriteBuffer* packet,
                       bool rtcp,
                       const rtc::PacketOptions& options);
 
@@ -111,12 +108,12 @@ class MediaChannelUtil {
     }
     bool DscpEnabled() const { return enable_dscp_; }
 
-    void SetPreferredDscp(webrtc::DiffServCodePoint new_dscp);
+    void SetPreferredDscp(DiffServCodePoint new_dscp);
 
    private:
     // This is the DSCP value used for both RTP and RTCP channels if DSCP is
     // enabled. It can be changed at any time via `SetPreferredDscp`.
-    webrtc::DiffServCodePoint PreferredDscp() const {
+    DiffServCodePoint PreferredDscp() const {
       RTC_DCHECK_RUN_ON(network_thread_);
       return preferred_dscp_;
     }
@@ -127,16 +124,16 @@ class MediaChannelUtil {
     void UpdateDscp() RTC_RUN_ON(network_thread_);
 
     int SetOptionLocked(MediaChannelNetworkInterface::SocketType type,
-                        webrtc::Socket::Option opt,
+                        Socket::Option opt,
                         int option) RTC_RUN_ON(network_thread_);
 
-    const rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> network_safety_
+    const scoped_refptr<PendingTaskSafetyFlag> network_safety_
         RTC_PT_GUARDED_BY(network_thread_);
-    webrtc::TaskQueueBase* const network_thread_;
+    TaskQueueBase* const network_thread_;
     const bool enable_dscp_;
     MediaChannelNetworkInterface* network_interface_
         RTC_GUARDED_BY(network_thread_) = nullptr;
-    webrtc::DiffServCodePoint preferred_dscp_ RTC_GUARDED_BY(network_thread_) =
+    DiffServCodePoint preferred_dscp_ RTC_GUARDED_BY(network_thread_) =
         webrtc::DSCP_DEFAULT;
   };
 
@@ -144,6 +141,6 @@ class MediaChannelUtil {
   TransportForMediaChannels transport_;
 };
 
-}  // namespace cricket
+}  // namespace webrtc
 
 #endif  // MEDIA_BASE_MEDIA_CHANNEL_IMPL_H_

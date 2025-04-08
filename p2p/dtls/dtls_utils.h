@@ -18,7 +18,7 @@
 
 #include "api/array_view.h"
 
-namespace cricket {
+namespace webrtc {
 
 const size_t kDtlsRecordHeaderLen = 13;
 const size_t kMaxDtlsPacketLen = 2048;
@@ -30,6 +30,17 @@ bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload);
 std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
     rtc::ArrayView<const uint8_t> dtls_packet);
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::GetDtlsHandshakeAcks;
+using ::webrtc::IsDtlsClientHelloPacket;
+using ::webrtc::IsDtlsHandshakePacket;
+using ::webrtc::IsDtlsPacket;
+using ::webrtc::kDtlsRecordHeaderLen;
+using ::webrtc::kMaxDtlsPacketLen;
 }  // namespace cricket
 
 #endif  // P2P_DTLS_DTLS_UTILS_H_

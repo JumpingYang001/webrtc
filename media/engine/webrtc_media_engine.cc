@@ -27,11 +27,11 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
-namespace cricket {
+namespace webrtc {
 namespace {
 // Remove mutually exclusive extensions with lower priority.
 void DiscardRedundantExtensions(
-    std::vector<webrtc::RtpExtension>* extensions,
+    std::vector<RtpExtension>* extensions,
     rtc::ArrayView<const char* const> extensions_decreasing_prio) {
   RTC_DCHECK(extensions);
   bool found = false;
@@ -49,13 +49,12 @@ void DiscardRedundantExtensions(
 }
 }  // namespace
 
-bool ValidateRtpExtensions(
-    rtc::ArrayView<const webrtc::RtpExtension> extensions,
-    rtc::ArrayView<const webrtc::RtpExtension> old_extensions) {
-  bool id_used[1 + webrtc::RtpExtension::kMaxId] = {false};
+bool ValidateRtpExtensions(rtc::ArrayView<const RtpExtension> extensions,
+                           rtc::ArrayView<const RtpExtension> old_extensions) {
+  bool id_used[1 + RtpExtension::kMaxId] = {false};
   for (const auto& extension : extensions) {
-    if (extension.id < webrtc::RtpExtension::kMinId ||
-        extension.id > webrtc::RtpExtension::kMaxId) {
+    if (extension.id < RtpExtension::kMinId ||
+        extension.id > RtpExtension::kMaxId) {
       RTC_LOG(LS_ERROR) << "Bad RTP extension ID: " << extension.ToString();
       return false;
     }
@@ -82,7 +81,7 @@ bool ValidateRtpExtensions(
   //
   // Getting at this seems like a hard slog.
   if (!old_extensions.empty()) {
-    absl::string_view urimap[1 + webrtc::RtpExtension::kMaxId];
+    absl::string_view urimap[1 + RtpExtension::kMaxId];
     std::map<absl::string_view, int> idmap;
     for (const auto& old_extension : old_extensions) {
       urimap[old_extension.id] = old_extension.uri;
@@ -108,15 +107,15 @@ bool ValidateRtpExtensions(
   return true;
 }
 
-std::vector<webrtc::RtpExtension> FilterRtpExtensions(
-    const std::vector<webrtc::RtpExtension>& extensions,
+std::vector<RtpExtension> FilterRtpExtensions(
+    const std::vector<RtpExtension>& extensions,
     bool (*supported)(absl::string_view),
     bool filter_redundant_extensions,
-    const webrtc::FieldTrialsView& trials) {
+    const FieldTrialsView& trials) {
   // Don't check against old parameters; this should have been done earlier.
   RTC_DCHECK(ValidateRtpExtensions(extensions, {}));
   RTC_DCHECK(supported);
-  std::vector<webrtc::RtpExtension> result;
+  std::vector<RtpExtension> result;
 
   // Ignore any extensions that we don't recognize.
   for (const auto& extension : extensions) {
@@ -150,23 +149,20 @@ std::vector<webrtc::RtpExtension> FilterRtpExtensions(
     if (absl::StartsWith(trials.Lookup("WebRTC-FilterAbsSendTimeExtension"),
                          "Enabled")) {
       static const char* const kBweExtensionPriorities[] = {
-          webrtc::RtpExtension::kTransportSequenceNumberUri,
-          webrtc::RtpExtension::kAbsSendTimeUri,
-          webrtc::RtpExtension::kTimestampOffsetUri};
+          RtpExtension::kTransportSequenceNumberUri,
+          RtpExtension::kAbsSendTimeUri, RtpExtension::kTimestampOffsetUri};
       DiscardRedundantExtensions(&result, kBweExtensionPriorities);
     } else {
       static const char* const kBweExtensionPriorities[] = {
-          webrtc::RtpExtension::kAbsSendTimeUri,
-          webrtc::RtpExtension::kTimestampOffsetUri};
+          RtpExtension::kAbsSendTimeUri, RtpExtension::kTimestampOffsetUri};
       DiscardRedundantExtensions(&result, kBweExtensionPriorities);
     }
   }
   return result;
 }
 
-webrtc::BitrateConstraints GetBitrateConfigForCodec(
-    const webrtc::Codec& codec) {
-  webrtc::BitrateConstraints config;
+BitrateConstraints GetBitrateConfigForCodec(const Codec& codec) {
+  BitrateConstraints config;
   int bitrate_kbps = 0;
   if (codec.GetParam(kCodecParamMinBitrate, &bitrate_kbps) &&
       bitrate_kbps > 0) {
@@ -189,4 +185,4 @@ webrtc::BitrateConstraints GetBitrateConfigForCodec(
   }
   return config;
 }
-}  // namespace cricket
+}  // namespace webrtc

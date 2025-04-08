@@ -70,7 +70,7 @@ class VoiceChannel;
 class BaseChannel : public ChannelInterface,
                     // TODO(tommi): Consider implementing these interfaces
                     // via composition.
-                    public cricket::MediaChannelNetworkInterface,
+                    public MediaChannelNetworkInterface,
                     public RtpPacketSinkInterface {
  public:
   // If `srtp_required` is true, the channel will not send or receive any
@@ -85,9 +85,8 @@ class BaseChannel : public ChannelInterface,
       TaskQueueBase* worker_thread,
       Thread* network_thread,
       TaskQueueBase* signaling_thread,
-      std::unique_ptr<cricket::MediaSendChannelInterface> media_send_channel,
-      std::unique_ptr<cricket::MediaReceiveChannelInterface>
-          media_receive_channel,
+      std::unique_ptr<MediaSendChannelInterface> media_send_channel,
+      std::unique_ptr<MediaReceiveChannelInterface> media_receive_channel,
       absl::string_view mid,
       bool srtp_required,
       CryptoOptions crypto_options,
@@ -141,10 +140,10 @@ class BaseChannel : public ChannelInterface,
 
   void Enable(bool enable) override;
 
-  const std::vector<cricket::StreamParams>& local_streams() const override {
+  const std::vector<StreamParams>& local_streams() const override {
     return local_streams_;
   }
-  const std::vector<cricket::StreamParams>& remote_streams() const override {
+  const std::vector<StreamParams>& remote_streams() const override {
     return remote_streams_;
   }
 
@@ -161,21 +160,19 @@ class BaseChannel : public ChannelInterface,
   // RtpPacketSinkInterface overrides.
   void OnRtpPacket(const RtpPacketReceived& packet) override;
 
-  cricket::VideoMediaSendChannelInterface* video_media_send_channel() override {
+  VideoMediaSendChannelInterface* video_media_send_channel() override {
     RTC_CHECK(false) << "Attempt to fetch video channel from non-video";
     return nullptr;
   }
-  cricket::VoiceMediaSendChannelInterface* voice_media_send_channel() override {
+  VoiceMediaSendChannelInterface* voice_media_send_channel() override {
     RTC_CHECK(false) << "Attempt to fetch voice channel from non-voice";
     return nullptr;
   }
-  cricket::VideoMediaReceiveChannelInterface* video_media_receive_channel()
-      override {
+  VideoMediaReceiveChannelInterface* video_media_receive_channel() override {
     RTC_CHECK(false) << "Attempt to fetch video channel from non-video";
     return nullptr;
   }
-  cricket::VoiceMediaReceiveChannelInterface* voice_media_receive_channel()
-      override {
+  VoiceMediaReceiveChannelInterface* voice_media_receive_channel() override {
     RTC_CHECK(false) << "Attempt to fetch voice channel from non-voice";
     return nullptr;
   }
@@ -254,7 +251,7 @@ class BaseChannel : public ChannelInterface,
   // Updates the send/recv state of the media channel.
   virtual void UpdateMediaSendRecvState_w() RTC_RUN_ON(worker_thread()) = 0;
 
-  bool UpdateLocalStreams_w(const std::vector<cricket::StreamParams>& streams,
+  bool UpdateLocalStreams_w(const std::vector<StreamParams>& streams,
                             SdpType type,
                             std::string& error_desc)
       RTC_RUN_ON(worker_thread());
@@ -305,9 +302,8 @@ class BaseChannel : public ChannelInterface,
   // Return description of media channel to facilitate logging
   std::string ToString() const;
 
-  const std::unique_ptr<cricket::MediaSendChannelInterface> media_send_channel_;
-  const std::unique_ptr<cricket::MediaReceiveChannelInterface>
-      media_receive_channel_;
+  const std::unique_ptr<MediaSendChannelInterface> media_send_channel_;
+  const std::unique_ptr<MediaReceiveChannelInterface> media_receive_channel_;
 
  private:
   bool ConnectToRtpTransport_n() RTC_RUN_ON(network_thread());
@@ -346,10 +342,8 @@ class BaseChannel : public ChannelInterface,
   bool enabled_ RTC_GUARDED_BY(worker_thread()) = false;
   bool enabled_s_ RTC_GUARDED_BY(signaling_thread()) = false;
   bool payload_type_demuxing_enabled_ RTC_GUARDED_BY(worker_thread()) = true;
-  std::vector<cricket::StreamParams> local_streams_
-      RTC_GUARDED_BY(worker_thread());
-  std::vector<cricket::StreamParams> remote_streams_
-      RTC_GUARDED_BY(worker_thread());
+  std::vector<StreamParams> local_streams_ RTC_GUARDED_BY(worker_thread());
+  std::vector<StreamParams> remote_streams_ RTC_GUARDED_BY(worker_thread());
   RtpTransceiverDirection local_content_direction_
       RTC_GUARDED_BY(worker_thread()) = RtpTransceiverDirection::kInactive;
   RtpTransceiverDirection remote_content_direction_
@@ -373,17 +367,16 @@ class BaseChannel : public ChannelInterface,
 // and input/output level monitoring.
 class VoiceChannel : public BaseChannel {
  public:
-  VoiceChannel(TaskQueueBase* worker_thread,
-               Thread* network_thread,
-               TaskQueueBase* signaling_thread,
-               std::unique_ptr<cricket::VoiceMediaSendChannelInterface>
-                   send_channel_impl,
-               std::unique_ptr<cricket::VoiceMediaReceiveChannelInterface>
-                   receive_channel_impl,
-               absl::string_view mid,
-               bool srtp_required,
-               CryptoOptions crypto_options,
-               UniqueRandomIdGenerator* ssrc_generator);
+  VoiceChannel(
+      TaskQueueBase* worker_thread,
+      Thread* network_thread,
+      TaskQueueBase* signaling_thread,
+      std::unique_ptr<VoiceMediaSendChannelInterface> send_channel_impl,
+      std::unique_ptr<VoiceMediaReceiveChannelInterface> receive_channel_impl,
+      absl::string_view mid,
+      bool srtp_required,
+      CryptoOptions crypto_options,
+      UniqueRandomIdGenerator* ssrc_generator);
 
   ~VoiceChannel();
 
@@ -393,28 +386,27 @@ class VoiceChannel : public BaseChannel {
   }
   VoiceChannel* AsVoiceChannel() override { return this; }
 
-  cricket::VoiceMediaSendChannelInterface* send_channel() {
+  VoiceMediaSendChannelInterface* send_channel() {
     return media_send_channel_->AsVoiceSendChannel();
   }
 
-  cricket::VoiceMediaReceiveChannelInterface* receive_channel() {
+  VoiceMediaReceiveChannelInterface* receive_channel() {
     return media_receive_channel_->AsVoiceReceiveChannel();
   }
 
-  cricket::VoiceMediaSendChannelInterface* media_send_channel() override {
+  VoiceMediaSendChannelInterface* media_send_channel() override {
     return send_channel();
   }
 
-  cricket::VoiceMediaSendChannelInterface* voice_media_send_channel() override {
+  VoiceMediaSendChannelInterface* voice_media_send_channel() override {
     return send_channel();
   }
 
-  cricket::VoiceMediaReceiveChannelInterface* media_receive_channel() override {
+  VoiceMediaReceiveChannelInterface* media_receive_channel() override {
     return receive_channel();
   }
 
-  cricket::VoiceMediaReceiveChannelInterface* voice_media_receive_channel()
-      override {
+  VoiceMediaReceiveChannelInterface* voice_media_receive_channel() override {
     return receive_channel();
   }
 
@@ -434,28 +426,25 @@ class VoiceChannel : public BaseChannel {
 
   // Last AudioSenderParameter sent down to the media_channel() via
   // SetSenderParameters.
-  cricket::AudioSenderParameter last_send_params_
-      RTC_GUARDED_BY(worker_thread());
+  AudioSenderParameter last_send_params_ RTC_GUARDED_BY(worker_thread());
   // Last AudioReceiverParameters sent down to the media_channel() via
   // SetReceiverParameters.
-  cricket::AudioReceiverParameters last_recv_params_
-      RTC_GUARDED_BY(worker_thread());
+  AudioReceiverParameters last_recv_params_ RTC_GUARDED_BY(worker_thread());
 };
 
 // VideoChannel is a specialization for video.
 class VideoChannel : public BaseChannel {
  public:
-  VideoChannel(TaskQueueBase* worker_thread,
-               Thread* network_thread,
-               TaskQueueBase* signaling_thread,
-               std::unique_ptr<cricket::VideoMediaSendChannelInterface>
-                   media_send_channel,
-               std::unique_ptr<cricket::VideoMediaReceiveChannelInterface>
-                   media_receive_channel,
-               absl::string_view mid,
-               bool srtp_required,
-               CryptoOptions crypto_options,
-               UniqueRandomIdGenerator* ssrc_generator);
+  VideoChannel(
+      TaskQueueBase* worker_thread,
+      Thread* network_thread,
+      TaskQueueBase* signaling_thread,
+      std::unique_ptr<VideoMediaSendChannelInterface> media_send_channel,
+      std::unique_ptr<VideoMediaReceiveChannelInterface> media_receive_channel,
+      absl::string_view mid,
+      bool srtp_required,
+      CryptoOptions crypto_options,
+      UniqueRandomIdGenerator* ssrc_generator);
   ~VideoChannel();
 
   VideoChannel* AsVideoChannel() override { return this; }
@@ -464,28 +453,27 @@ class VideoChannel : public BaseChannel {
     return nullptr;
   }
 
-  cricket::VideoMediaSendChannelInterface* send_channel() {
+  VideoMediaSendChannelInterface* send_channel() {
     return media_send_channel_->AsVideoSendChannel();
   }
 
-  cricket::VideoMediaReceiveChannelInterface* receive_channel() {
+  VideoMediaReceiveChannelInterface* receive_channel() {
     return media_receive_channel_->AsVideoReceiveChannel();
   }
 
-  cricket::VideoMediaSendChannelInterface* media_send_channel() override {
+  VideoMediaSendChannelInterface* media_send_channel() override {
     return send_channel();
   }
 
-  cricket::VideoMediaSendChannelInterface* video_media_send_channel() override {
+  VideoMediaSendChannelInterface* video_media_send_channel() override {
     return send_channel();
   }
 
-  cricket::VideoMediaReceiveChannelInterface* media_receive_channel() override {
+  VideoMediaReceiveChannelInterface* media_receive_channel() override {
     return receive_channel();
   }
 
-  cricket::VideoMediaReceiveChannelInterface* video_media_receive_channel()
-      override {
+  VideoMediaReceiveChannelInterface* video_media_receive_channel() override {
     return receive_channel();
   }
 
@@ -505,12 +493,10 @@ class VideoChannel : public BaseChannel {
 
   // Last VideoSenderParameters sent down to the media_channel() via
   // SetSenderParameters.
-  cricket::VideoSenderParameters last_send_params_
-      RTC_GUARDED_BY(worker_thread());
+  VideoSenderParameters last_send_params_ RTC_GUARDED_BY(worker_thread());
   // Last VideoReceiverParameters sent down to the media_channel() via
   // SetReceiverParameters.
-  cricket::VideoReceiverParameters last_recv_params_
-      RTC_GUARDED_BY(worker_thread());
+  VideoReceiverParameters last_recv_params_ RTC_GUARDED_BY(worker_thread());
 };
 
 }  //  namespace webrtc

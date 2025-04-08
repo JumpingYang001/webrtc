@@ -53,7 +53,7 @@ void EnableMediaWithDefaultsAndTimeController(
       return media_factory_->CreateCall(std::move(config));
     }
 
-    std::unique_ptr<cricket::MediaEngineInterface> CreateMediaEngine(
+    std::unique_ptr<MediaEngineInterface> CreateMediaEngine(
         const Environment& env,
         PeerConnectionFactoryDependencies& dependencies) override {
       return media_factory_->CreateMediaEngine(env, dependencies);

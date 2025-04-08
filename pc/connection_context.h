@@ -55,9 +55,7 @@ class ConnectionContext final : public RefCountedNonVirtual<ConnectionContext> {
     return sctp_factory_.get();
   }
 
-  cricket::MediaEngineInterface* media_engine() const {
-    return media_engine_.get();
-  }
+  MediaEngineInterface* media_engine() const { return media_engine_.get(); }
 
   Thread* signaling_thread() { return signaling_thread_; }
   const Thread* signaling_thread() const { return signaling_thread_; }
@@ -116,7 +114,7 @@ class ConnectionContext final : public RefCountedNonVirtual<ConnectionContext> {
 
   // This object is const over the lifetime of the ConnectionContext, and is
   // only altered in the destructor.
-  std::unique_ptr<cricket::MediaEngineInterface> media_engine_;
+  std::unique_ptr<MediaEngineInterface> media_engine_;
 
   // This object should be used to generate any SSRC that is not explicitly
   // specified by the user (or by the remote party).

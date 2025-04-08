@@ -107,7 +107,7 @@ class MockRtpSenderInternal : public RtpSenderInternal {
   MOCK_METHOD(void, SetObserver, (RtpSenderObserverInterface*), (override));
 
   // RtpSenderInternal methods.
-  MOCK_METHOD1(SetMediaChannel, void(cricket::MediaSendChannelInterface*));
+  MOCK_METHOD1(SetMediaChannel, void(webrtc::MediaSendChannelInterface*));
   MOCK_METHOD1(SetSsrc, void(uint32_t));
   MOCK_METHOD1(set_stream_ids, void(const std::vector<std::string>&));
   MOCK_METHOD1(SetStreams, void(const std::vector<std::string>&));

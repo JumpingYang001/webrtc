@@ -35,7 +35,7 @@ class FeedbackParam {
   FeedbackParam(absl::string_view id, const std::string& param)
       : id_(id), param_(param) {}
   explicit FeedbackParam(absl::string_view id)
-      : id_(id), param_(cricket::kParamValueEmpty) {}
+      : id_(id), param_(kParamValueEmpty) {}
 
   bool operator==(const FeedbackParam& other) const;
   bool operator!=(const FeedbackParam& c) const { return !(*this == c); }

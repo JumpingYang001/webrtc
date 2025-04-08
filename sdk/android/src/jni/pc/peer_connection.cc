@@ -128,7 +128,7 @@ SdpSemantics JavaToNativeSdpSemantics(
 
 ScopedJavaLocalRef<jobject> NativeToJavaCandidatePairChange(
     JNIEnv* env,
-    const cricket::CandidatePairChangeEvent& event) {
+    const CandidatePairChangeEvent& event) {
   const auto& selected_pair = event.selected_candidate_pair;
   return Java_CandidatePairChangeEvent_Constructor(
       env, NativeToJavaCandidate(env, selected_pair.local_candidate()),
@@ -372,7 +372,7 @@ void PeerConnectionObserverJni::OnIceConnectionReceivingChange(bool receiving) {
 }
 
 void PeerConnectionObserverJni::OnIceSelectedCandidatePairChanged(
-    const cricket::CandidatePairChangeEvent& event) {
+    const CandidatePairChangeEvent& event) {
   JNIEnv* env = AttachCurrentThreadIfNeeded();
   Java_Observer_onSelectedCandidatePairChanged(
       env, j_observer_global_, NativeToJavaCandidatePairChange(env, event));

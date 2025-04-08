@@ -19,13 +19,12 @@
 #include "p2p/client/relay_port_factory_interface.h"
 #include "rtc_base/async_packet_socket.h"
 
-namespace cricket {
+namespace webrtc {
 
 TurnPortFactory::~TurnPortFactory() {}
 
-std::unique_ptr<Port> TurnPortFactory::Create(
-    const CreateRelayPortArgs& args,
-    webrtc::AsyncPacketSocket* udp_socket) {
+std::unique_ptr<Port> TurnPortFactory::Create(const CreateRelayPortArgs& args,
+                                              AsyncPacketSocket* udp_socket) {
   auto port = TurnPort::Create(args, udp_socket);
   if (!port)
     return nullptr;
@@ -45,4 +44,4 @@ std::unique_ptr<Port> TurnPortFactory::Create(const CreateRelayPortArgs& args,
   return std::move(port);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

@@ -22,10 +22,10 @@
 #include "pc/simulcast_description.h"
 #include "test/gtest.h"
 
-using cricket::RidDescription;
-using cricket::RidDirection;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
+using ::webrtc::RidDescription;
+using ::webrtc::RidDirection;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
 using ::webrtc::SimulcastLayerList;

@@ -37,7 +37,7 @@ static const size_t kMaxPacketSize = 64 * 1024;
 typedef uint16_t PacketLength;
 static const size_t kPacketLenSize = sizeof(PacketLength);
 static const size_t kPacketLenOffset = 2;
-static const size_t kBufSize = kMaxPacketSize + cricket::kStunHeaderSize;
+static const size_t kBufSize = kMaxPacketSize + kStunHeaderSize;
 static const size_t kTurnChannelDataHdrSize = 4;
 
 inline bool IsStunMessage(uint16_t msg_type) {
@@ -145,7 +145,7 @@ size_t AsyncStunTCPSocket::GetExpectedLength(const void* data,
   uint16_t msg_type = webrtc::GetBE16(data);
   if (IsStunMessage(msg_type)) {
     // STUN message.
-    expected_pkt_len = cricket::kStunHeaderSize + pkt_len;
+    expected_pkt_len = kStunHeaderSize + pkt_len;
   } else {
     // TURN ChannelData message.
     expected_pkt_len = kTurnChannelDataHdrSize + pkt_len;

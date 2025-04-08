@@ -99,8 +99,6 @@
 
 namespace webrtc {
 
-using ::cricket::StreamParams;
-
 using ::testing::_;
 using ::testing::Combine;
 using ::testing::Contains;
@@ -323,8 +321,8 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   ice_gathering_state_history() const {
     return ice_gathering_state_history_;
   }
-  std::vector<cricket::CandidatePairChangeEvent>
-  ice_candidate_pair_change_history() const {
+  std::vector<CandidatePairChangeEvent> ice_candidate_pair_change_history()
+      const {
     return ice_candidate_pair_change_history_;
   }
 
@@ -350,7 +348,7 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   }
 
   rtc::scoped_refptr<AudioTrackInterface> CreateLocalAudioTrack() {
-    cricket::AudioOptions options;
+    AudioOptions options;
     // Disable highpass filter so that we can get all the test audio frames.
     options.highpass_filter = false;
     rtc::scoped_refptr<AudioSourceInterface> source =
@@ -657,9 +655,7 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   const IceCandidateInterface* last_gathered_ice_candidate() const {
     return last_gathered_ice_candidate_.get();
   }
-  const cricket::IceCandidateErrorEvent& error_event() const {
-    return error_event_;
-  }
+  const IceCandidateErrorEvent& error_event() const { return error_event_; }
 
   // Sets the mDNS responder for the owned fake network manager and keeps a
   // reference to the responder.
@@ -1073,7 +1069,7 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   }
 
   void OnIceSelectedCandidatePairChanged(
-      const cricket::CandidatePairChangeEvent& event) {
+      const CandidatePairChangeEvent& event) {
     ice_candidate_pair_change_history_.push_back(event);
   }
 
@@ -1120,8 +1116,8 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
                            const std::string& url,
                            int error_code,
                            const std::string& error_text) override {
-    error_event_ = cricket::IceCandidateErrorEvent(address, port, url,
-                                                   error_code, error_text);
+    error_event_ =
+        IceCandidateErrorEvent(address, port, url, error_code, error_text);
   }
   void OnDataChannel(
       rtc::scoped_refptr<DataChannelInterface> data_channel) override {
@@ -1165,7 +1161,7 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   int signaling_delay_ms_ = 0;
   bool signal_ice_candidates_ = true;
   std::unique_ptr<IceCandidateInterface> last_gathered_ice_candidate_;
-  cricket::IceCandidateErrorEvent error_event_;
+  IceCandidateErrorEvent error_event_;
 
   // Store references to the video sources we've created, so that we can stop
   // them, if required.
@@ -1200,8 +1196,7 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
       peer_connection_state_history_;
   std::vector<PeerConnectionInterface::IceGatheringState>
       ice_gathering_state_history_;
-  std::vector<cricket::CandidatePairChangeEvent>
-      ice_candidate_pair_change_history_;
+  std::vector<CandidatePairChangeEvent> ice_candidate_pair_change_history_;
   std::vector<PeerConnectionInterface::SignalingState>
       peer_connection_signaling_state_history_;
   FakeRtcEventLogFactory* event_log_factory_;
@@ -1339,15 +1334,15 @@ class MediaExpectations {
 class MockIceTransport : public IceTransportInterface {
  public:
   MockIceTransport(const std::string& name, int component)
-      : internal_(std::make_unique<cricket::FakeIceTransport>(
-            name,
-            component,
-            nullptr /* network_thread */)) {}
+      : internal_(
+            std::make_unique<FakeIceTransport>(name,
+                                               component,
+                                               nullptr /* network_thread */)) {}
   ~MockIceTransport() = default;
   IceTransportInternal* internal() { return internal_.get(); }
 
  private:
-  std::unique_ptr<cricket::FakeIceTransport> internal_;
+  std::unique_ptr<FakeIceTransport> internal_;
 };
 
 class MockIceTransportFactory : public IceTransportFactory {

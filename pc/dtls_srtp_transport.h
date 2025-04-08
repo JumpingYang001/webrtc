@@ -34,8 +34,8 @@ class DtlsSrtpTransport : public SrtpTransport {
 
   // Set P2P layer RTP/RTCP DtlsTransports. When using RTCP-muxing,
   // `rtcp_dtls_transport` is null.
-  void SetDtlsTransports(cricket::DtlsTransportInternal* rtp_dtls_transport,
-                         cricket::DtlsTransportInternal* rtcp_dtls_transport);
+  void SetDtlsTransports(DtlsTransportInternal* rtp_dtls_transport,
+                         DtlsTransportInternal* rtcp_dtls_transport);
 
   void SetRtcpMuxEnabled(bool enable) override;
 
@@ -62,25 +62,24 @@ class DtlsSrtpTransport : public SrtpTransport {
   void MaybeSetupDtlsSrtp();
   void SetupRtpDtlsSrtp();
   void SetupRtcpDtlsSrtp();
-  bool ExtractParams(cricket::DtlsTransportInternal* dtls_transport,
+  bool ExtractParams(DtlsTransportInternal* dtls_transport,
                      int* selected_crypto_suite,
                      rtc::ZeroOnFreeBuffer<uint8_t>* send_key,
                      rtc::ZeroOnFreeBuffer<uint8_t>* recv_key);
-  void SetDtlsTransport(cricket::DtlsTransportInternal* new_dtls_transport,
-                        cricket::DtlsTransportInternal** old_dtls_transport);
-  void SetRtpDtlsTransport(cricket::DtlsTransportInternal* rtp_dtls_transport);
-  void SetRtcpDtlsTransport(
-      cricket::DtlsTransportInternal* rtcp_dtls_transport);
+  void SetDtlsTransport(DtlsTransportInternal* new_dtls_transport,
+                        DtlsTransportInternal** old_dtls_transport);
+  void SetRtpDtlsTransport(DtlsTransportInternal* rtp_dtls_transport);
+  void SetRtcpDtlsTransport(DtlsTransportInternal* rtcp_dtls_transport);
 
-  void OnDtlsState(cricket::DtlsTransportInternal* dtls_transport,
+  void OnDtlsState(DtlsTransportInternal* dtls_transport,
                    DtlsTransportState state);
 
   // Override the SrtpTransport::OnWritableState.
   void OnWritableState(PacketTransportInternal* packet_transport) override;
 
   // Owned by the TransportController.
-  cricket::DtlsTransportInternal* rtp_dtls_transport_ = nullptr;
-  cricket::DtlsTransportInternal* rtcp_dtls_transport_ = nullptr;
+  DtlsTransportInternal* rtp_dtls_transport_ = nullptr;
+  DtlsTransportInternal* rtcp_dtls_transport_ = nullptr;
 
   // The encrypted header extension IDs.
   std::optional<std::vector<int>> send_extension_ids_;

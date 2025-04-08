@@ -210,7 +210,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
   Candidate CreateLocalUdpCandidate(const SocketAddress& address) {
     Candidate candidate;
     RTC_DCHECK_EQ(candidate.type(), IceCandidateType::kHost);
-    candidate.set_component(cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
+    candidate.set_component(ICE_CANDIDATE_COMPONENT_DEFAULT);
     candidate.set_protocol(UDP_PROTOCOL_NAME);
     candidate.set_address(address);
     return candidate;
@@ -234,8 +234,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
   }
 
   // Set ICE mode on the given session description.
-  void SetIceMode(SessionDescriptionInterface* sdesc,
-                  const cricket::IceMode ice_mode) {
+  void SetIceMode(SessionDescriptionInterface* sdesc, const IceMode ice_mode) {
     auto* desc = sdesc->description();
     for (const auto& content : desc->contents()) {
       auto* transport_info = desc->GetTransportInfoByName(content.mid());
@@ -243,7 +242,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
     }
   }
 
-  cricket::TransportDescription* GetFirstTransportDescription(
+  TransportDescription* GetFirstTransportDescription(
       SessionDescriptionInterface* sdesc) {
     auto* desc = sdesc->description();
     RTC_DCHECK(!desc->contents().empty());
@@ -253,7 +252,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
     return &transport_info->description;
   }
 
-  const cricket::TransportDescription* GetFirstTransportDescription(
+  const TransportDescription* GetFirstTransportDescription(
       const SessionDescriptionInterface* sdesc) {
     auto* desc = sdesc->description();
     RTC_DCHECK(!desc->contents().empty());
@@ -265,7 +264,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
 
   // TODO(qingsi): Rewrite this method in terms of the standard IceTransport
   // after it is implemented.
-  cricket::IceRole GetIceRole(const WrapperPtr& pc_wrapper_ptr) {
+  IceRole GetIceRole(const WrapperPtr& pc_wrapper_ptr) {
     auto* pc_proxy =
         static_cast<PeerConnectionProxyWithInternal<PeerConnectionInterface>*>(
             pc_wrapper_ptr->pc());
@@ -278,7 +277,7 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
       }
     }
     RTC_DCHECK_NOTREACHED();
-    return cricket::ICEROLE_UNKNOWN;
+    return ICEROLE_UNKNOWN;
   }
 
   // Returns a list of (ufrag, pwd) pairs in the order that they appear in
@@ -494,7 +493,7 @@ TEST_P(PeerConnectionIceTest, CannotAddCandidateWhenRemoteDescriptionNotSet) {
   auto caller = CreatePeerConnectionWithAudioVideo();
   Candidate candidate = CreateLocalUdpCandidate(kCalleeAddress);
   std::unique_ptr<IceCandidateInterface> jsep_candidate =
-      CreateIceCandidate(cricket::CN_AUDIO, 0, candidate);
+      CreateIceCandidate(CN_AUDIO, 0, candidate);
 
   EXPECT_FALSE(caller->pc()->AddIceCandidate(jsep_candidate.get()));
 
@@ -851,7 +850,7 @@ TEST_P(PeerConnectionIceTest,
 
   auto caller = CreatePeerConnectionWithAudioVideo();
   std::unique_ptr<IceCandidateInterface> jsep_candidate =
-      CreateIceCandidate(cricket::CN_AUDIO, 0, candidate);
+      CreateIceCandidate(CN_AUDIO, 0, candidate);
 
   bool operation_completed = false;
   caller->pc()->AddIceCandidate(
@@ -1402,19 +1401,19 @@ TEST_P(PeerConnectionIceTest,
   auto callee = CreatePeerConnectionWithAudioVideo();
 
   auto offer = caller->CreateOffer();
-  SetIceMode(offer.get(), cricket::IceMode::ICEMODE_LITE);
+  SetIceMode(offer.get(), IceMode::ICEMODE_LITE);
   ASSERT_TRUE(
       caller->SetLocalDescription(CloneSessionDescription(offer.get())));
   ASSERT_TRUE(callee->SetRemoteDescription(std::move(offer)));
 
   auto answer = callee->CreateAnswer();
-  SetIceMode(answer.get(), cricket::IceMode::ICEMODE_FULL);
+  SetIceMode(answer.get(), IceMode::ICEMODE_FULL);
   ASSERT_TRUE(
       callee->SetLocalDescription(CloneSessionDescription(answer.get())));
   ASSERT_TRUE(caller->SetRemoteDescription(std::move(answer)));
 
-  EXPECT_EQ(cricket::ICEROLE_CONTROLLED, GetIceRole(caller));
-  EXPECT_EQ(cricket::ICEROLE_CONTROLLING, GetIceRole(callee));
+  EXPECT_EQ(ICEROLE_CONTROLLED, GetIceRole(caller));
+  EXPECT_EQ(ICEROLE_CONTROLLING, GetIceRole(callee));
 }
 
 // Test that when the caller and the callee both use the lite implementation of
@@ -1426,19 +1425,19 @@ TEST_P(PeerConnectionIceTest,
   auto callee = CreatePeerConnectionWithAudioVideo();
 
   auto offer = caller->CreateOffer();
-  SetIceMode(offer.get(), cricket::IceMode::ICEMODE_LITE);
+  SetIceMode(offer.get(), IceMode::ICEMODE_LITE);
   ASSERT_TRUE(
       caller->SetLocalDescription(CloneSessionDescription(offer.get())));
   ASSERT_TRUE(callee->SetRemoteDescription(std::move(offer)));
 
   auto answer = callee->CreateAnswer();
-  SetIceMode(answer.get(), cricket::IceMode::ICEMODE_LITE);
+  SetIceMode(answer.get(), IceMode::ICEMODE_LITE);
   ASSERT_TRUE(
       callee->SetLocalDescription(CloneSessionDescription(answer.get())));
   ASSERT_TRUE(caller->SetRemoteDescription(std::move(answer)));
 
-  EXPECT_EQ(cricket::ICEROLE_CONTROLLING, GetIceRole(caller));
-  EXPECT_EQ(cricket::ICEROLE_CONTROLLED, GetIceRole(callee));
+  EXPECT_EQ(ICEROLE_CONTROLLING, GetIceRole(caller));
+  EXPECT_EQ(ICEROLE_CONTROLLED, GetIceRole(callee));
 }
 
 INSTANTIATE_TEST_SUITE_P(PeerConnectionIceTest,
@@ -1467,7 +1466,7 @@ class PeerConnectionIceConfigTest : public ::testing::Test {
         nullptr /* audio_mixer */, nullptr /* audio_processing */);
   }
   void CreatePeerConnection(const RTCConfiguration& config) {
-    auto port_allocator = std::make_unique<cricket::FakePortAllocator>(
+    auto port_allocator = std::make_unique<FakePortAllocator>(
         CreateEnvironment(), socket_server_.get());
     port_allocator_ = port_allocator.get();
     PeerConnectionDependencies pc_dependencies(&observer_);
@@ -1482,7 +1481,7 @@ class PeerConnectionIceConfigTest : public ::testing::Test {
   AutoSocketServerThread main_thread_;
   rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_ = nullptr;
   rtc::scoped_refptr<PeerConnectionInterface> pc_ = nullptr;
-  cricket::FakePortAllocator* port_allocator_ = nullptr;
+  FakePortAllocator* port_allocator_ = nullptr;
 
   MockPeerConnectionObserver observer_;
 };

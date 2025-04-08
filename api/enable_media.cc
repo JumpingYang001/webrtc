@@ -27,11 +27,6 @@
 namespace webrtc {
 namespace {
 
-using ::cricket::CompositeMediaEngine;
-using ::cricket::MediaEngineInterface;
-using ::cricket::WebRtcVideoEngine;
-using ::cricket::WebRtcVoiceEngine;
-
 class MediaFactoryImpl : public MediaFactory {
  public:
   MediaFactoryImpl() = default;

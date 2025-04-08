@@ -19,7 +19,7 @@
 #include "api/candidate.h"
 #include "api/units/timestamp.h"
 
-namespace cricket {
+namespace webrtc {
 
 // States are from RFC 5245. http://tools.ietf.org/html/rfc5245#section-5.7.4
 enum class IceCandidatePairState {
@@ -62,10 +62,8 @@ struct ConnectionInfo {
   size_t packets_received;     // Number of packets that were received.
   size_t recv_ping_requests;   // Number of STUN ping request received.
   size_t recv_ping_responses;  // Number of STUN ping response received.
-  webrtc::Candidate
-      local_candidate;  // The local candidate for this connection.
-  webrtc::Candidate
-      remote_candidate;        // The remote candidate for this connection.
+  Candidate local_candidate;   // The local candidate for this connection.
+  Candidate remote_candidate;  // The remote candidate for this connection.
   void* key;                   // A static value that identifies this conn.
   // https://w3c.github.io/webrtc-stats/#dom-rtcicecandidatepairstats-state
   IceCandidatePairState state;
@@ -79,13 +77,21 @@ struct ConnectionInfo {
   std::optional<uint32_t> current_round_trip_time_ms;
 
   // https://w3c.github.io/webrtc-stats/#dom-rtcicecandidatepairstats-lastpacketreceivedtimestamp
-  std::optional<webrtc::Timestamp> last_data_received;
-  std::optional<webrtc::Timestamp> last_data_sent;
+  std::optional<Timestamp> last_data_received;
+  std::optional<Timestamp> last_data_sent;
 };
 
 // Information about all the candidate pairs of a channel.
 typedef std::vector<ConnectionInfo> ConnectionInfos;
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::ConnectionInfo;
+using ::webrtc::ConnectionInfos;
+using ::webrtc::IceCandidatePairState;
 }  // namespace cricket
 
 #endif  // P2P_BASE_CONNECTION_INFO_H_

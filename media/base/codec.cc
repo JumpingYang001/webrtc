@@ -119,7 +119,7 @@ Codec::Codec(const webrtc::SdpAudioFormat& c)
 }
 
 Codec::Codec(const webrtc::SdpVideoFormat& c)
-    : Codec(Type::kVideo, kIdNotSet, c.name, cricket::kVideoCodecClockrate) {
+    : Codec(Type::kVideo, kIdNotSet, c.name, kVideoCodecClockrate) {
   params = c.parameters;
   scalability_modes = c.scalability_modes;
 }
@@ -150,7 +150,7 @@ bool Codec::MatchesRtpCodec(const webrtc::RtpCodec& codec_capability) const {
          codec_parameters.kind == codec_capability.kind &&
          codec_parameters.num_channels == codec_capability.num_channels &&
          codec_parameters.clock_rate == codec_capability.clock_rate &&
-         (codec_parameters.name == cricket::kRtxCodecName ||
+         (codec_parameters.name == kRtxCodecName ||
           codec_parameters.parameters == codec_capability.parameters);
 }
 
@@ -217,7 +217,7 @@ webrtc::RtpCodecParameters Codec::ToCodecParameters() const {
 
 bool Codec::IsMediaCodec() const {
   return !IsResiliencyCodec() &&
-         !absl::EqualsIgnoreCase(name, cricket::kComfortNoiseCodecName);
+         !absl::EqualsIgnoreCase(name, kComfortNoiseCodecName);
 }
 
 bool Codec::IsResiliencyCodec() const {
@@ -225,16 +225,16 @@ bool Codec::IsResiliencyCodec() const {
 }
 
 Codec::ResiliencyType Codec::GetResiliencyType() const {
-  if (absl::EqualsIgnoreCase(name, cricket::kRedCodecName)) {
+  if (absl::EqualsIgnoreCase(name, kRedCodecName)) {
     return ResiliencyType::kRed;
   }
-  if (absl::EqualsIgnoreCase(name, cricket::kUlpfecCodecName)) {
+  if (absl::EqualsIgnoreCase(name, kUlpfecCodecName)) {
     return ResiliencyType::kUlpfec;
   }
-  if (absl::EqualsIgnoreCase(name, cricket::kFlexfecCodecName)) {
+  if (absl::EqualsIgnoreCase(name, kFlexfecCodecName)) {
     return ResiliencyType::kFlexfec;
   }
-  if (absl::EqualsIgnoreCase(name, cricket::kRtxCodecName)) {
+  if (absl::EqualsIgnoreCase(name, kRtxCodecName)) {
     return ResiliencyType::kRtx;
   }
   return ResiliencyType::kNone;
@@ -251,8 +251,8 @@ bool Codec::ValidateCodecFormat() const {
 
   int min_bitrate = -1;
   int max_bitrate = -1;
-  if (GetParam(cricket::kCodecParamMinBitrate, &min_bitrate) &&
-      GetParam(cricket::kCodecParamMaxBitrate, &max_bitrate)) {
+  if (GetParam(kCodecParamMinBitrate, &min_bitrate) &&
+      GetParam(kCodecParamMaxBitrate, &max_bitrate)) {
     if (max_bitrate < min_bitrate) {
       RTC_LOG(LS_ERROR) << "Codec with max < min bitrate: " << ToString();
       return false;
@@ -284,17 +284,14 @@ std::string Codec::ToString() const {
 }
 
 Codec CreateAudioRtxCodec(int rtx_payload_type, int associated_payload_type) {
-  Codec rtx_codec =
-      CreateAudioCodec(rtx_payload_type, cricket::kRtxCodecName, 0, 1);
-  rtx_codec.SetParam(cricket::kCodecParamAssociatedPayloadType,
-                     associated_payload_type);
+  Codec rtx_codec = CreateAudioCodec(rtx_payload_type, kRtxCodecName, 0, 1);
+  rtx_codec.SetParam(kCodecParamAssociatedPayloadType, associated_payload_type);
   return rtx_codec;
 }
 
 Codec CreateVideoRtxCodec(int rtx_payload_type, int associated_payload_type) {
-  Codec rtx_codec = CreateVideoCodec(rtx_payload_type, cricket::kRtxCodecName);
-  rtx_codec.SetParam(cricket::kCodecParamAssociatedPayloadType,
-                     associated_payload_type);
+  Codec rtx_codec = CreateVideoCodec(rtx_payload_type, kRtxCodecName);
+  rtx_codec.SetParam(kCodecParamAssociatedPayloadType, associated_payload_type);
   return rtx_codec;
 }
 
@@ -308,22 +305,22 @@ const Codec* FindCodecById(const std::vector<Codec>& codecs, int payload_type) {
 
 bool HasLntf(const Codec& codec) {
   return codec.HasFeedbackParam(
-      FeedbackParam(cricket::kRtcpFbParamLntf, cricket::kParamValueEmpty));
+      FeedbackParam(kRtcpFbParamLntf, kParamValueEmpty));
 }
 
 bool HasNack(const Codec& codec) {
   return codec.HasFeedbackParam(
-      FeedbackParam(cricket::kRtcpFbParamNack, cricket::kParamValueEmpty));
+      FeedbackParam(kRtcpFbParamNack, kParamValueEmpty));
 }
 
 bool HasRemb(const Codec& codec) {
   return codec.HasFeedbackParam(
-      FeedbackParam(cricket::kRtcpFbParamRemb, cricket::kParamValueEmpty));
+      FeedbackParam(kRtcpFbParamRemb, kParamValueEmpty));
 }
 
 bool HasRrtr(const Codec& codec) {
   return codec.HasFeedbackParam(
-      FeedbackParam(cricket::kRtcpFbParamRrtr, cricket::kParamValueEmpty));
+      FeedbackParam(kRtcpFbParamRrtr, kParamValueEmpty));
 }
 
 const Codec* FindMatchingVideoCodec(const std::vector<Codec>& supported_codecs,
@@ -361,7 +358,7 @@ void AddH264ConstrainedBaselineProfileToSupportedFormats(
   // profile.
   for (auto it = supported_formats->cbegin(); it != supported_formats->cend();
        ++it) {
-    if (it->name == cricket::kH264CodecName) {
+    if (it->name == kH264CodecName) {
       const std::optional<webrtc::H264ProfileLevelId> profile_level_id =
           webrtc::ParseSdpForH264ProfileLevelId(it->parameters);
       if (profile_level_id &&
@@ -370,7 +367,7 @@ void AddH264ConstrainedBaselineProfileToSupportedFormats(
         webrtc::SdpVideoFormat cbp_format = *it;
         webrtc::H264ProfileLevelId cbp_profile = *profile_level_id;
         cbp_profile.profile = webrtc::H264Profile::kProfileConstrainedBaseline;
-        cbp_format.parameters[cricket::kH264FmtpProfileLevelId] =
+        cbp_format.parameters[kH264FmtpProfileLevelId] =
             *webrtc::H264ProfileLevelIdToString(cbp_profile);
         cbr_supported_formats.push_back(cbp_format);
       }
@@ -407,13 +404,13 @@ Codec CreateVideoCodec(const std::string& name) {
 }
 
 Codec CreateVideoCodec(int id, const std::string& name) {
-  Codec c(Codec::Type::kVideo, id, name, cricket::kVideoCodecClockrate);
-  if (absl::EqualsIgnoreCase(cricket::kH264CodecName, name)) {
+  Codec c(Codec::Type::kVideo, id, name, kVideoCodecClockrate);
+  if (absl::EqualsIgnoreCase(kH264CodecName, name)) {
     // This default is set for all H.264 codecs created because
     // that was the default before packetization mode support was added.
     // TODO(hta): Move this to the places that create VideoCodecs from
     // SDP or from knowledge of implementation capabilities.
-    c.SetParam(cricket::kH264FmtpPacketizationMode, "1");
+    c.SetParam(kH264FmtpPacketizationMode, "1");
   }
   return c;
 }

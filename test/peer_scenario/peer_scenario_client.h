@@ -130,8 +130,7 @@ class PeerScenarioClient {
   // index in PeerScenarioClient::config.
   EmulatedEndpoint* endpoint(int index = 0);
 
-  AudioSendTrack CreateAudio(std::string track_id,
-                             cricket::AudioOptions options);
+  AudioSendTrack CreateAudio(std::string track_id, AudioOptions options);
   VideoSendTrack CreateVideo(std::string track_id, VideoSendTrackConfig config);
 
   void AddVideoReceiveSink(std::string track_id,

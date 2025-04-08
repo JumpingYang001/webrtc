@@ -128,7 +128,7 @@ bool ContainsFlexfecCodec(const std::vector<Codec>& codecs) {
 }
 
 bool IsComfortNoiseCodec(const Codec& codec) {
-  return absl::EqualsIgnoreCase(codec.name, cricket::kComfortNoiseCodecName);
+  return absl::EqualsIgnoreCase(codec.name, kComfortNoiseCodecName);
 }
 
 RtpTransceiverDirection NegotiateRtpTransceiverDirection(
@@ -163,14 +163,14 @@ cricket::StreamParamsVec GetCurrentStreamParams(
   return stream_params;
 }
 
-cricket::StreamParams CreateStreamParamsForNewSenderWithSsrcs(
+StreamParams CreateStreamParamsForNewSenderWithSsrcs(
     const SenderOptions& sender,
     const std::string& rtcp_cname,
     bool include_rtx_streams,
     bool include_flexfec_stream,
     UniqueRandomIdGenerator* ssrc_generator,
     const FieldTrialsView& field_trials) {
-  cricket::StreamParams result;
+  StreamParams result;
   result.id = sender.track_id;
 
   // TODO(brandtr): Update when we support multistream protection.
@@ -196,7 +196,7 @@ cricket::StreamParams CreateStreamParamsForNewSenderWithSsrcs(
   return result;
 }
 
-bool ValidateSimulcastLayers(const std::vector<cricket::RidDescription>& rids,
+bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
                              const SimulcastLayerList& simulcast_layers) {
   return absl::c_all_of(simulcast_layers.GetAllLayers(),
                         [&rids](const cricket::SimulcastLayer& layer) {
@@ -208,14 +208,14 @@ bool ValidateSimulcastLayers(const std::vector<cricket::RidDescription>& rids,
                         });
 }
 
-cricket::StreamParams CreateStreamParamsForNewSenderWithRids(
+StreamParams CreateStreamParamsForNewSenderWithRids(
     const SenderOptions& sender,
     const std::string& rtcp_cname) {
   RTC_DCHECK(!sender.rids.empty());
   RTC_DCHECK_EQ(sender.num_sim_layers, 0)
       << "RIDs are the compliant way to indicate simulcast.";
   RTC_DCHECK(ValidateSimulcastLayers(sender.rids, sender.simulcast_layers));
-  cricket::StreamParams result;
+  StreamParams result;
   result.id = sender.track_id;
   result.cname = rtcp_cname;
   result.set_stream_ids(sender.stream_ids);
@@ -236,10 +236,9 @@ void AddSimulcastToMediaDescription(
   RTC_DCHECK(description);
 
   // Check if we are using RIDs in this scenario.
-  if (absl::c_all_of(description->streams(),
-                     [](const cricket::StreamParams& params) {
-                       return !params.has_rids();
-                     })) {
+  if (absl::c_all_of(description->streams(), [](const StreamParams& params) {
+        return !params.has_rids();
+      })) {
     return;
   }
 
@@ -282,11 +281,10 @@ bool AddStreamParams(const std::vector<SenderOptions>& sender_options,
       ContainsFlexfecCodec(content_description->codecs());
 
   for (const cricket::SenderOptions& sender : sender_options) {
-    cricket::StreamParams* param =
-        cricket::GetStreamByIds(*current_streams, sender.track_id);
+    StreamParams* param = GetStreamByIds(*current_streams, sender.track_id);
     if (!param) {
       // This is a new sender.
-      cricket::StreamParams stream_param =
+      StreamParams stream_param =
           sender.rids.empty()
               ?
               // Signal SSRCs and legacy simulcast (if requested).
@@ -326,7 +324,7 @@ bool UpdateTransportInfoForBundle(const ContentGroup& bundle_group,
 
   // We should definitely have a transport for the first content.
   const std::string& selected_content_name = *bundle_group.FirstContentName();
-  const cricket::TransportInfo* selected_transport_info =
+  const TransportInfo* selected_transport_info =
       sdesc->GetTransportInfoByName(selected_content_name);
   if (!selected_transport_info) {
     return false;
@@ -337,7 +335,7 @@ bool UpdateTransportInfoForBundle(const ContentGroup& bundle_group,
       selected_transport_info->description.ice_ufrag;
   const std::string& selected_pwd =
       selected_transport_info->description.ice_pwd;
-  cricket::ConnectionRole selected_connection_role =
+  ConnectionRole selected_connection_role =
       selected_transport_info->description.connection_role;
   for (cricket::TransportInfo& transport_info : sdesc->transport_infos()) {
     if (bundle_group.HasContentName(transport_info.content_name) &&
@@ -659,12 +657,12 @@ void SetMediaProtocol(bool secure_transport, MediaContentDescription* desc) {
 
 // Gets the TransportInfo of the given `content_name` from the
 // `current_description`. If doesn't exist, returns a new one.
-const cricket::TransportDescription* GetTransportDescription(
+const TransportDescription* GetTransportDescription(
     const std::string& content_name,
     const SessionDescription* current_description) {
-  const cricket::TransportDescription* desc = NULL;
+  const TransportDescription* desc = NULL;
   if (current_description) {
-    const cricket::TransportInfo* info =
+    const TransportInfo* info =
         current_description->GetTransportInfoByName(content_name);
     if (info) {
       desc = &info->description;
@@ -676,7 +674,7 @@ const cricket::TransportDescription* GetTransportDescription(
 }  // namespace
 
 MediaSessionDescriptionFactory::MediaSessionDescriptionFactory(
-    cricket::MediaEngineInterface* media_engine,
+    MediaEngineInterface* media_engine,
     bool rtx_enabled,
     UniqueRandomIdGenerator* ssrc_generator,
     const TransportDescriptionFactory* transport_desc_factory,
@@ -718,7 +716,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
                   session_options.media_description_options.size());
   }
 
-  cricket::IceCredentialsIterator ice_credentials(
+  IceCredentialsIterator ice_credentials(
       session_options.pooled_ice_credentials);
 
   std::vector<const ContentInfo*> current_active_contents;
@@ -783,7 +781,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
   // Bundle the contents together, if we've been asked to do so, and update any
   // parameters that need to be tweaked for BUNDLE.
   if (session_options.bundle_enabled) {
-    ContentGroup offer_bundle(cricket::GROUP_TYPE_BUNDLE);
+    ContentGroup offer_bundle(GROUP_TYPE_BUNDLE);
     for (const cricket::ContentInfo& content : offer->contents()) {
       if (content.rejected) {
         continue;
@@ -838,7 +836,7 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
   RTC_DCHECK_EQ(offer->contents().size(),
                 session_options.media_description_options.size());
 
-  cricket::IceCredentialsIterator ice_credentials(
+  IceCredentialsIterator ice_credentials(
       session_options.pooled_ice_credentials);
 
   std::vector<const ContentInfo*> current_active_contents;
@@ -871,16 +869,16 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
   // If the offer supports BUNDLE, and we want to use it too, create a BUNDLE
   // group in the answer with the appropriate content names.
   std::vector<const ContentGroup*> offer_bundles =
-      offer->GetGroupsByName(cricket::GROUP_TYPE_BUNDLE);
+      offer->GetGroupsByName(GROUP_TYPE_BUNDLE);
   // There are as many answer BUNDLE groups as offer BUNDLE groups (even if
   // rejected, we respond with an empty group). `offer_bundles`,
   // `answer_bundles` and `bundle_transports` share the same size and indices.
   std::vector<ContentGroup> answer_bundles;
-  std::vector<std::unique_ptr<cricket::TransportInfo>> bundle_transports;
+  std::vector<std::unique_ptr<TransportInfo>> bundle_transports;
   answer_bundles.reserve(offer_bundles.size());
   bundle_transports.reserve(offer_bundles.size());
   for (size_t i = 0; i < offer_bundles.size(); ++i) {
-    answer_bundles.emplace_back(cricket::GROUP_TYPE_BUNDLE);
+    answer_bundles.emplace_back(GROUP_TYPE_BUNDLE);
     bundle_transports.emplace_back(nullptr);
   }
 
@@ -905,7 +903,7 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
         break;
       }
     }
-    cricket::TransportInfo* bundle_transport =
+    TransportInfo* bundle_transport =
         bundle_index.has_value() ? bundle_transports[bundle_index.value()].get()
                                  : nullptr;
 
@@ -963,8 +961,8 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
       // The `bundle_index` is for `media_description_options.mid`.
       RTC_DCHECK_EQ(media_description_options.mid, added.mid());
       answer_bundles[bundle_index.value()].AddContentName(added.mid());
-      bundle_transports[bundle_index.value()].reset(new cricket::TransportInfo(
-          *answer->GetTransportInfoByName(added.mid())));
+      bundle_transports[bundle_index.value()].reset(
+          new TransportInfo(*answer->GetTransportInfoByName(added.mid())));
     }
   }
 
@@ -1096,32 +1094,31 @@ RTCError MediaSessionDescriptionFactory::AddTransportOffer(
     const TransportOptions& transport_options,
     const SessionDescription* current_desc,
     SessionDescription* offer_desc,
-    cricket::IceCredentialsIterator* ice_credentials) const {
-  const cricket::TransportDescription* current_tdesc =
+    IceCredentialsIterator* ice_credentials) const {
+  const TransportDescription* current_tdesc =
       GetTransportDescription(content_name, current_desc);
-  std::unique_ptr<cricket::TransportDescription> new_tdesc(
+  std::unique_ptr<TransportDescription> new_tdesc(
       transport_desc_factory_->CreateOffer(transport_options, current_tdesc,
                                            ice_credentials));
   if (!new_tdesc) {
     RTC_LOG(LS_ERROR) << "Failed to AddTransportOffer, content name="
                       << content_name;
   }
-  offer_desc->AddTransportInfo(
-      cricket::TransportInfo(content_name, *new_tdesc));
+  offer_desc->AddTransportInfo(TransportInfo(content_name, *new_tdesc));
   return RTCError::OK();
 }
 
-std::unique_ptr<cricket::TransportDescription>
+std::unique_ptr<TransportDescription>
 MediaSessionDescriptionFactory::CreateTransportAnswer(
     const std::string& content_name,
     const SessionDescription* offer_desc,
     const TransportOptions& transport_options,
     const SessionDescription* current_desc,
     bool require_transport_attributes,
-    cricket::IceCredentialsIterator* ice_credentials) const {
-  const cricket::TransportDescription* offer_tdesc =
+    IceCredentialsIterator* ice_credentials) const {
+  const TransportDescription* offer_tdesc =
       GetTransportDescription(content_name, offer_desc);
-  const cricket::TransportDescription* current_tdesc =
+  const TransportDescription* current_tdesc =
       GetTransportDescription(content_name, current_desc);
   return transport_desc_factory_->CreateAnswer(offer_tdesc, transport_options,
                                                require_transport_attributes,
@@ -1130,10 +1127,9 @@ MediaSessionDescriptionFactory::CreateTransportAnswer(
 
 RTCError MediaSessionDescriptionFactory::AddTransportAnswer(
     const std::string& content_name,
-    const cricket::TransportDescription& transport_desc,
+    const TransportDescription& transport_desc,
     SessionDescription* answer_desc) const {
-  answer_desc->AddTransportInfo(
-      cricket::TransportInfo(content_name, transport_desc));
+  answer_desc->AddTransportInfo(TransportInfo(content_name, transport_desc));
   return RTCError::OK();
 }
 
@@ -1162,7 +1158,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
     const cricket::RtpHeaderExtensions& header_extensions,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* session_description,
-    cricket::IceCredentialsIterator* ice_credentials) const {
+    IceCredentialsIterator* ice_credentials) const {
   RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
              media_description_options.type == webrtc::MediaType::VIDEO);
 
@@ -1218,7 +1214,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForOffer(
     const SessionDescription* current_description,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* desc,
-    cricket::IceCredentialsIterator* ice_credentials) const {
+    IceCredentialsIterator* ice_credentials) const {
   auto data = std::make_unique<SctpDataContentDescription>();
 
   bool secure_transport = true;
@@ -1254,7 +1250,7 @@ RTCError MediaSessionDescriptionFactory::AddUnsupportedContentForOffer(
     const ContentInfo* current_content,
     const SessionDescription* current_description,
     SessionDescription* desc,
-    cricket::IceCredentialsIterator* ice_credentials) const {
+    IceCredentialsIterator* ice_credentials) const {
   RTC_CHECK(
       IsMediaContentOfType(current_content, webrtc::MediaType::UNSUPPORTED));
 
@@ -1290,11 +1286,11 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
     const SessionDescription* offer_description,
     const ContentInfo* current_content,
     const SessionDescription* current_description,
-    const cricket::TransportInfo* bundle_transport,
+    const TransportInfo* bundle_transport,
     const cricket::RtpHeaderExtensions& header_extensions,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* answer,
-    cricket::IceCredentialsIterator* ice_credentials) const {
+    IceCredentialsIterator* ice_credentials) const {
   RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
              media_description_options.type == webrtc::MediaType::VIDEO);
   RTC_CHECK(
@@ -1309,12 +1305,10 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
   // Then require_transport_attributes is false - we can handle sections
   // without the DTLS parameters. For rejected m-lines it does not matter.
   // Otherwise, transport attributes MUST be present.
-  std::unique_ptr<cricket::TransportDescription> transport =
-      CreateTransportAnswer(
-          media_description_options.mid, offer_description,
-          media_description_options.transport_options, current_description,
-          !offer_content->rejected && bundle_transport == nullptr,
-          ice_credentials);
+  std::unique_ptr<TransportDescription> transport = CreateTransportAnswer(
+      media_description_options.mid, offer_description,
+      media_description_options.transport_options, current_description,
+      !offer_content->rejected && bundle_transport == nullptr, ice_credentials);
   if (!transport) {
     LOG_AND_RETURN_ERROR(
         RTCErrorType::INTERNAL_ERROR,
@@ -1346,9 +1340,8 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
                      return c.IsMediaCodec() && !IsComfortNoiseCodec(c);
                    }) != codecs_to_include.end();
 
-  bool bundle_enabled =
-      offer_description->HasGroup(cricket::GROUP_TYPE_BUNDLE) &&
-      session_options.bundle_enabled;
+  bool bundle_enabled = offer_description->HasGroup(GROUP_TYPE_BUNDLE) &&
+                        session_options.bundle_enabled;
   std::unique_ptr<MediaContentDescription> answer_content;
   if (media_description_options.type == webrtc::MediaType::AUDIO) {
     answer_content = std::make_unique<AudioContentDescription>();
@@ -1362,8 +1355,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
         transport_desc_factory_->trials().IsEnabled(
             "WebRTC-RFC8888CongestionControlFeedback"));
     for (auto& codec : codecs_to_include) {
-      codec.feedback_params.Remove(
-          FeedbackParam(cricket::kRtcpFbParamTransportCc));
+      codec.feedback_params.Remove(FeedbackParam(kRtcpFbParamTransportCc));
     }
   }
   if (!SetCodecsInAnswer(offer_content_description, codecs_to_include,
@@ -1412,25 +1404,22 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
     const SessionDescription* offer_description,
     const ContentInfo* current_content,
     const SessionDescription* current_description,
-    const cricket::TransportInfo* bundle_transport,
+    const TransportInfo* bundle_transport,
     cricket::StreamParamsVec* current_streams,
     SessionDescription* answer,
-    cricket::IceCredentialsIterator* ice_credentials) const {
-  std::unique_ptr<cricket::TransportDescription> data_transport =
-      CreateTransportAnswer(
-          media_description_options.mid, offer_description,
-          media_description_options.transport_options, current_description,
-          !offer_content->rejected && bundle_transport == nullptr,
-          ice_credentials);
+    IceCredentialsIterator* ice_credentials) const {
+  std::unique_ptr<TransportDescription> data_transport = CreateTransportAnswer(
+      media_description_options.mid, offer_description,
+      media_description_options.transport_options, current_description,
+      !offer_content->rejected && bundle_transport == nullptr, ice_credentials);
   if (!data_transport) {
     LOG_AND_RETURN_ERROR(
         RTCErrorType::INTERNAL_ERROR,
         "Failed to create transport answer, data transport is missing");
   }
 
-  bool bundle_enabled =
-      offer_description->HasGroup(cricket::GROUP_TYPE_BUNDLE) &&
-      session_options.bundle_enabled;
+  bool bundle_enabled = offer_description->HasGroup(GROUP_TYPE_BUNDLE) &&
+                        session_options.bundle_enabled;
   RTC_CHECK(IsMediaContentOfType(offer_content, webrtc::MediaType::DATA));
   std::unique_ptr<MediaContentDescription> data_answer;
   if (offer_content->media_description()->as_sctp()) {
@@ -1491,10 +1480,10 @@ RTCError MediaSessionDescriptionFactory::AddUnsupportedContentForAnswer(
     const SessionDescription* offer_description,
     const ContentInfo* current_content,
     const SessionDescription* current_description,
-    const cricket::TransportInfo* bundle_transport,
+    const TransportInfo* bundle_transport,
     SessionDescription* answer,
-    cricket::IceCredentialsIterator* ice_credentials) const {
-  std::unique_ptr<cricket::TransportDescription> unsupported_transport =
+    IceCredentialsIterator* ice_credentials) const {
+  std::unique_ptr<TransportDescription> unsupported_transport =
       CreateTransportAnswer(
           media_description_options.mid, offer_description,
           media_description_options.transport_options, current_description,

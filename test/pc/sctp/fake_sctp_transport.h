@@ -29,11 +29,11 @@
 // Used for tests in this file to verify that PeerConnection responds to signals
 // from the SctpTransport correctly, and calls Start with the correct
 // local/remote ports.
-class FakeSctpTransport : public cricket::SctpTransportInternal {
+class FakeSctpTransport : public webrtc::SctpTransportInternal {
  public:
   void SetOnConnectedCallback(std::function<void()> callback) override {}
   void SetDataChannelSink(webrtc::DataChannelSink* sink) override {}
-  void SetDtlsTransport(cricket::DtlsTransportInternal* transport) override {}
+  void SetDtlsTransport(webrtc::DtlsTransportInternal* transport) override {}
   bool Start(const webrtc::SctpOptions& options) override {
     local_port_.emplace(options.local_port);
     remote_port_.emplace(options.remote_port);
@@ -79,11 +79,11 @@ class FakeSctpTransport : public cricket::SctpTransportInternal {
 
 class FakeSctpTransportFactory : public webrtc::SctpTransportFactoryInterface {
  public:
-  std::unique_ptr<cricket::SctpTransportInternal> CreateSctpTransport(
+  std::unique_ptr<webrtc::SctpTransportInternal> CreateSctpTransport(
       const webrtc::Environment& env,
-      cricket::DtlsTransportInternal*) override {
+      webrtc::DtlsTransportInternal*) override {
     last_fake_sctp_transport_ = new FakeSctpTransport();
-    return std::unique_ptr<cricket::SctpTransportInternal>(
+    return std::unique_ptr<webrtc::SctpTransportInternal>(
         last_fake_sctp_transport_);
   }
 

@@ -19,7 +19,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 
-namespace cricket {
+namespace webrtc {
 
 struct FourCCAliasEntry {
   uint32_t alias;
@@ -74,7 +74,7 @@ std::string VideoFormat::ToString() const {
   }
 
   char buf[256];
-  rtc::SimpleStringBuilder sb(buf);
+  SimpleStringBuilder sb(buf);
   sb << fourcc_name << width << "x" << height << "x"
      << IntervalToFpsFloat(interval);
   return sb.str();
@@ -92,4 +92,4 @@ int LeastCommonMultiple(int a, int b) {
   return std::lcm(a, b);
 }
 
-}  // namespace cricket
+}  // namespace webrtc

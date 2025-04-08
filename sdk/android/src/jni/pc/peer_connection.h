@@ -67,7 +67,7 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
   void OnIceGatheringChange(
       PeerConnectionInterface::IceGatheringState new_state) override;
   void OnIceSelectedCandidatePairChanged(
-      const cricket::CandidatePairChangeEvent& event) override;
+      const CandidatePairChangeEvent& event) override;
   void OnAddStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
   void OnRemoveStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
   void OnDataChannel(rtc::scoped_refptr<DataChannelInterface> channel) override;

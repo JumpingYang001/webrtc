@@ -277,7 +277,7 @@ void VideoRtpReceiver::SetJitterBufferMinimumDelay(
 }
 
 void VideoRtpReceiver::SetMediaChannel(
-    cricket::MediaReceiveChannelInterface* media_channel) {
+    MediaReceiveChannelInterface* media_channel) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   RTC_DCHECK(media_channel == nullptr ||
              media_channel->media_type() == media_type());
@@ -286,7 +286,7 @@ void VideoRtpReceiver::SetMediaChannel(
 }
 
 void VideoRtpReceiver::SetMediaChannel_w(
-    cricket::MediaReceiveChannelInterface* media_channel) {
+    MediaReceiveChannelInterface* media_channel) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   if (media_channel == media_channel_)
     return;
@@ -345,7 +345,7 @@ std::vector<RtpSource> VideoRtpReceiver::GetSources() const {
 
 void VideoRtpReceiver::SetupMediaChannel(
     std::optional<uint32_t> ssrc,
-    cricket::MediaReceiveChannelInterface* media_channel) {
+    MediaReceiveChannelInterface* media_channel) {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   RTC_DCHECK(media_channel);
   MediaSourceInterface::SourceState state = source_->state();

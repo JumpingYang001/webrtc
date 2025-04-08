@@ -68,10 +68,10 @@ using ::testing::SizeIs;
 using ::testing::StartsWith;
 
 using cricket::MediaContentDescription;
-using cricket::RidDescription;
-using cricket::StreamParams;
+using ::webrtc::RidDescription;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
+using ::webrtc::StreamParams;
 
 namespace webrtc {
 

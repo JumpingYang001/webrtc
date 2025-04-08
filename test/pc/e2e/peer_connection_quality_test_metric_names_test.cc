@@ -71,7 +71,7 @@ void AddDefaultAudioVideoPeer(absl::string_view peer_name,
   peer->SetName(peer_name);
   peer->SetAudioConfig(std::move(audio));
   peer->AddVideoConfig(std::move(video));
-  peer->SetVideoCodecs({VideoCodecConfig(cricket::kVp8CodecName)});
+  peer->SetVideoCodecs({VideoCodecConfig(kVp8CodecName)});
   fixture.AddPeer(std::move(peer));
 }
 

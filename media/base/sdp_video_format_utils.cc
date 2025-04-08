@@ -182,8 +182,7 @@ std::optional<int> ParseSdpForVPxMaxFrameSize(const CodecParameterMap& params) {
 bool SupportsPerLayerPictureLossIndication(const CodecParameterMap& params) {
   return absl::c_find_if(
              params, [](const std::pair<std::string, std::string>& kv) {
-               return kv.first ==
-                          cricket::kCodecParamPerLayerPictureLossIndication &&
+               return kv.first == kCodecParamPerLayerPictureLossIndication &&
                       kv.second == "1";
              }) != params.end();
 }

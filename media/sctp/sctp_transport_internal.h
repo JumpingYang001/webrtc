@@ -26,7 +26,7 @@
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "rtc_base/copy_on_write_buffer.h"
 
-namespace cricket {
+namespace webrtc {
 
 // Constants that are important to API users
 
@@ -77,18 +77,18 @@ class SctpTransportInternal {
   virtual ~SctpTransportInternal() {}
 
   virtual void SetOnConnectedCallback(std::function<void()> callback) = 0;
-  virtual void SetDataChannelSink(webrtc::DataChannelSink* sink) = 0;
+  virtual void SetDataChannelSink(DataChannelSink* sink) = 0;
 
   // Changes what underlying DTLS transport is uses. Used when switching which
   // bundled transport the SctpTransport uses.
-  virtual void SetDtlsTransport(cricket::DtlsTransportInternal* transport) = 0;
+  virtual void SetDtlsTransport(DtlsTransportInternal* transport) = 0;
 
   // When Start is called, connects as soon as possible; this can be called
   // before DTLS completes, in which case the connection will begin when DTLS
   // completes. This method can be called multiple times, though not if either
   // of the ports are changed.
   //
-  virtual bool Start(const webrtc::SctpOptions& options) = 0;
+  virtual bool Start(const SctpOptions& options) = 0;
   // TODO(deadbeef): Support calling Start with different local/remote ports
   // and create a new association? Not clear if this is something we need to
   // support though. See: https://github.com/w3c/webrtc-pc/issues/979
@@ -112,7 +112,7 @@ class SctpTransportInternal {
   // TODO(deadbeef): Actually implement the "returns false if `sid` can't be
   // used" part. See:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=619849
-  virtual bool OpenStream(int sid, webrtc::PriorityValue priority) = 0;
+  virtual bool OpenStream(int sid, PriorityValue priority) = 0;
   // The inverse of OpenStream. Begins the closing procedure, which will
   // eventually result in SignalClosingProcedureComplete on the side that
   // initiates it, and both SignalClosingProcedureStartedRemotely and
@@ -121,9 +121,9 @@ class SctpTransportInternal {
   // Send data down this channel.
   // Returns RTCError::OK() if successful an error otherwise. Notably
   // RTCErrorType::RESOURCE_EXHAUSTED for blocked operations.
-  virtual webrtc::RTCError SendData(int sid,
-                                    const webrtc::SendDataParams& params,
-                                    const rtc::CopyOnWriteBuffer& payload) = 0;
+  virtual RTCError SendData(int sid,
+                            const SendDataParams& params,
+                            const CopyOnWriteBuffer& payload) = 0;
 
   // Indicates when the SCTP socket is created and not blocked by congestion
   // control. This changes to false when SDR_BLOCK is returned from SendData,
@@ -148,6 +148,18 @@ class SctpTransportInternal {
   virtual void set_debug_name_for_testing(const char* debug_name) = 0;
 };
 
+}  //  namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace cricket {
+using ::webrtc::kMaxSctpSid;
+using ::webrtc::kMaxSctpStreams;
+using ::webrtc::kMinSctpSid;
+using ::webrtc::kSctpDefaultPort;
+using ::webrtc::kSpecMaxSctpSid;
+using ::webrtc::SctpErrorCauseCode;
+using ::webrtc::SctpTransportInternal;
 }  // namespace cricket
 
 #endif  // MEDIA_SCTP_SCTP_TRANSPORT_INTERNAL_H_

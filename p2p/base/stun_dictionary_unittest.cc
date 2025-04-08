@@ -24,8 +24,8 @@
 
 namespace {
 
-void Sync(cricket::StunDictionaryView& dictionary,
-          cricket::StunDictionaryWriter& writer) {
+void Sync(webrtc::StunDictionaryView& dictionary,
+          webrtc::StunDictionaryWriter& writer) {
   int pending = writer.Pending();
   auto delta = writer.CreateDelta();
   if (delta == nullptr) {
@@ -43,18 +43,18 @@ void Sync(cricket::StunDictionaryView& dictionary,
   }
 }
 
-void XorToggle(cricket::StunByteStringAttribute& attr, size_t byte) {
+void XorToggle(webrtc::StunByteStringAttribute& attr, size_t byte) {
   ASSERT_TRUE(attr.length() > byte);
   uint8_t val = attr.GetByte(byte);
   uint8_t new_val = val ^ (128 - (byte & 255));
   attr.SetByte(byte, new_val);
 }
 
-std::unique_ptr<cricket::StunByteStringAttribute> Crop(
-    const cricket::StunByteStringAttribute& attr,
+std::unique_ptr<webrtc::StunByteStringAttribute> Crop(
+    const webrtc::StunByteStringAttribute& attr,
     int new_length) {
   auto new_attr =
-      std::make_unique<cricket::StunByteStringAttribute>(attr.type());
+      std::make_unique<webrtc::StunByteStringAttribute>(attr.type());
   std::string content = std::string(attr.string_view());
   content.erase(new_length);
   new_attr->CopyBytes(content);
@@ -63,7 +63,7 @@ std::unique_ptr<cricket::StunByteStringAttribute> Crop(
 
 }  // namespace
 
-namespace cricket {
+namespace webrtc {
 
 constexpr int kKey1 = 100;
 
@@ -285,7 +285,7 @@ TEST(StunDictionary, DataTypes) {
   StunDictionaryWriter writer;
   StunDictionaryView dictionary;
 
-  webrtc::SocketAddress addr("127.0.0.1", 8080);
+  SocketAddress addr("127.0.0.1", 8080);
 
   writer.SetUInt32(kKey1)->SetValue(27);
   writer.SetUInt64(kKey1 + 1)->SetValue(28);
@@ -305,7 +305,7 @@ TEST(StunDictionary, ParseError) {
   StunDictionaryWriter writer;
   StunDictionaryView dictionary;
 
-  webrtc::SocketAddress addr("127.0.0.1", 8080);
+  SocketAddress addr("127.0.0.1", 8080);
 
   writer.SetUInt32(kKey1)->SetValue(27);
   writer.SetUInt64(kKey1 + 1)->SetValue(28);
@@ -340,4 +340,4 @@ TEST(StunDictionary, ParseError) {
   }
 }
 
-}  // namespace cricket
+}  // namespace webrtc

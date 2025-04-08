@@ -42,14 +42,13 @@ TestStunServer::Create(SocketServer* ss,
   return result;
 }
 
-void TestStunServer::OnBindingRequest(cricket::StunMessage* msg,
+void TestStunServer::OnBindingRequest(StunMessage* msg,
                                       const SocketAddress& remote_addr) {
   RTC_DCHECK_RUN_ON(&network_thread_);
   if (fake_stun_addr_.IsNil()) {
     StunServer::OnBindingRequest(msg, remote_addr);
   } else {
-    cricket::StunMessage response(cricket::STUN_BINDING_RESPONSE,
-                                  msg->transaction_id());
+    StunMessage response(STUN_BINDING_RESPONSE, msg->transaction_id());
     GetStunBindResponse(msg, fake_stun_addr_, &response);
     SendResponse(response, remote_addr);
   }

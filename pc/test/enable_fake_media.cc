@@ -25,9 +25,6 @@
 
 namespace webrtc {
 
-using ::cricket::FakeMediaEngine;
-using ::cricket::MediaEngineInterface;
-
 void EnableFakeMedia(
     PeerConnectionFactoryDependencies& deps,
     absl_nonnull std::unique_ptr<FakeMediaEngine> fake_media_engine) {
@@ -58,7 +55,7 @@ void EnableFakeMedia(
 }
 
 void EnableFakeMedia(PeerConnectionFactoryDependencies& deps) {
-  EnableFakeMedia(deps, std::make_unique<cricket::FakeMediaEngine>());
+  EnableFakeMedia(deps, std::make_unique<FakeMediaEngine>());
 }
 
 }  // namespace webrtc

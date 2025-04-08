@@ -26,7 +26,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/message_digest.h"
 
-namespace cricket {
+namespace webrtc {
 
 static const size_t kRtcpPayloadTypeOffset = 1;
 static const size_t kRtpExtensionHeaderLen = 4;
@@ -74,10 +74,9 @@ void UpdateAbsSendTimeExtensionValue(uint8_t* extension_data,
 
 // Assumes `length` is actual packet length + tag length. Updates HMAC at end of
 // the RTP packet.
-void UpdateRtpAuthTag(
-    uint8_t* rtp,
-    size_t length,
-    const webrtc::PacketTimeUpdateParams& packet_time_params) {
+void UpdateRtpAuthTag(uint8_t* rtp,
+                      size_t length,
+                      const PacketTimeUpdateParams& packet_time_params) {
   // If there is no key, return.
   if (packet_time_params.srtp_auth_key.empty()) {
     return;
@@ -355,11 +354,10 @@ bool UpdateRtpAbsSendTimeExtension(uint8_t* rtp,
   return found;
 }
 
-bool ApplyPacketOptions(
-    uint8_t* data,
-    size_t length,
-    const webrtc::PacketTimeUpdateParams& packet_time_params,
-    uint64_t time_us) {
+bool ApplyPacketOptions(uint8_t* data,
+                        size_t length,
+                        const PacketTimeUpdateParams& packet_time_params,
+                        uint64_t time_us) {
   RTC_DCHECK(data);
   RTC_DCHECK(length);
 
@@ -375,7 +373,7 @@ bool ApplyPacketOptions(
   // indication.
   size_t rtp_start_pos;
   size_t rtp_length;
-  if (!UnwrapTurnPacket(data, length, &rtp_start_pos, &rtp_length)) {
+  if (!webrtc::UnwrapTurnPacket(data, length, &rtp_start_pos, &rtp_length)) {
     RTC_DCHECK_NOTREACHED();
     return false;
   }
@@ -402,4 +400,4 @@ bool ApplyPacketOptions(
   return true;
 }
 
-}  // namespace cricket
+}  // namespace webrtc
