@@ -20,6 +20,7 @@
 
 #include "api/adaptation/resource.h"
 #include "api/candidate.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/jsep.h"
@@ -41,6 +42,7 @@
 #include "api/transport/bitrate_settings.h"
 #include "api/transport/network_control.h"
 #include "rtc_base/ref_counted_object.h"
+#include "rtc_base/thread.h"
 #include "test/gmock.h"
 
 namespace webrtc {
@@ -231,6 +233,10 @@ class MockPeerConnectionInterface : public webrtc::PeerConnectionInterface {
   MOCK_METHOD(bool,
               StartRtcEventLog,
               (std::unique_ptr<RtcEventLogOutput>),
+              (override));
+  MOCK_METHOD(void,
+              SetDataChannelEventObserver,
+              (std::unique_ptr<DataChannelEventObserverInterface>),
               (override));
   MOCK_METHOD(void, StopRtcEventLog, (), (override));
   MOCK_METHOD(void, Close, (), (override));

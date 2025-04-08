@@ -27,6 +27,7 @@
 #include "api/audio/audio_device.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/environment/environment.h"
@@ -261,6 +262,9 @@ class PeerConnection : public PeerConnectionInternal,
                         int64_t output_period_ms) override;
   bool StartRtcEventLog(std::unique_ptr<RtcEventLogOutput> output) override;
   void StopRtcEventLog() override;
+
+  void SetDataChannelEventObserver(
+      std::unique_ptr<DataChannelEventObserverInterface> observer) override;
 
   void Close() override;
 

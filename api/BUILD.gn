@@ -317,6 +317,7 @@ rtc_library("libjingle_peerconnection_api") {
     ":async_dns_resolver",
     ":audio_options_api",
     ":candidate",
+    ":data_channel_event_observer_interface",
     ":dtls_transport_interface",
     ":fec_controller_api",
     ":field_trials",
@@ -784,6 +785,15 @@ rtc_library("create_peer_connection_quality_test_frame_generator") {
     "../test:fileutils",
     "test/pclf:media_configuration",
     "units:time_delta",
+  ]
+}
+
+rtc_source_set("data_channel_event_observer_interface") {
+  visibility = [ "*" ]
+  sources = [ "data_channel_event_observer_interface.h" ]
+  deps = [
+    ":array_view",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 
@@ -1308,6 +1318,7 @@ if (rtc_include_tests) {
 
     deps = [
       ":candidate",
+      ":data_channel_event_observer_interface",
       ":dtls_transport_interface",
       ":libjingle_logging_api",
       ":libjingle_peerconnection_api",
@@ -1319,6 +1330,7 @@ if (rtc_include_tests) {
       ":rtp_parameters",
       "../api:scoped_refptr",
       "../rtc_base:refcount",
+      "../rtc_base:threading",
       "../test:test_support",
       "adaptation:resource_adaptation_api",
       "transport:bandwidth_estimation_settings",

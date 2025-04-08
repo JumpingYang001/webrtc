@@ -31,6 +31,7 @@
 #include "api/audio/audio_device.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/environment/environment.h"
@@ -1714,6 +1715,15 @@ bool PeerConnection::StartRtcEventLog(
 
 void PeerConnection::StopRtcEventLog() {
   worker_thread()->BlockingCall([this] { StopRtcEventLog_w(); });
+}
+
+void PeerConnection::SetDataChannelEventObserver(
+    std::unique_ptr<DataChannelEventObserverInterface> observer) {
+  network_thread()->PostTask(SafeTask(
+      network_thread_safety_, [this, obs = std::move(observer)]() mutable {
+        RTC_DCHECK_RUN_ON(network_thread());
+        data_channel_controller_.SetEventObserver(std::move(obs));
+      }));
 }
 
 rtc::scoped_refptr<DtlsTransportInterface>

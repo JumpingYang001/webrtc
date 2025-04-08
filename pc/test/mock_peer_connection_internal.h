@@ -24,6 +24,7 @@
 #include "api/audio/audio_device.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/field_trials_view.h"
@@ -250,6 +251,10 @@ class MockPeerConnectionInternal : public PeerConnectionInternal {
   MOCK_METHOD(bool,
               StartRtcEventLog,
               (std::unique_ptr<RtcEventLogOutput>),
+              (override));
+  MOCK_METHOD(void,
+              SetDataChannelEventObserver,
+              (std::unique_ptr<DataChannelEventObserverInterface>),
               (override));
   MOCK_METHOD(void, StopRtcEventLog, (), (override));
   MOCK_METHOD(void, Close, (), (override));

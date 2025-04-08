@@ -11,12 +11,16 @@
 #include "pc/data_channel_controller.h"
 
 #include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "api/array_view.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/peer_connection_interface.h"
 #include "api/priority.h"
@@ -35,8 +39,12 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/time_utils.h"
 
 namespace webrtc {
+
+using Message = DataChannelEventObserverInterface::Message;
+using Direction = DataChannelEventObserverInterface::Message::Direction;
 
 DataChannelController::~DataChannelController() {
   RTC_DCHECK(sctp_data_channels_n_.empty())
@@ -55,6 +63,12 @@ bool DataChannelController::HasUsedDataChannels() const {
   return channel_usage_ != DataChannelUsage::kNeverUsed;
 }
 
+void DataChannelController::SetEventObserver(
+    std::unique_ptr<DataChannelEventObserverInterface> observer) {
+  RTC_DCHECK_RUN_ON(network_thread());
+  event_observer_ = std::move(observer);
+}
+
 RTCError DataChannelController::SendData(
     StreamId sid,
     const SendDataParams& params,
@@ -64,8 +78,17 @@ RTCError DataChannelController::SendData(
     RTC_LOG(LS_ERROR) << "SendData called before transport is ready";
     return RTCError(RTCErrorType::INVALID_STATE);
   }
-  return data_channel_transport_->SendData(sid.stream_id_int(), params,
-                                           payload);
+  RTCError result =
+      data_channel_transport_->SendData(sid.stream_id_int(), params, payload);
+
+  if (event_observer_ && result.ok()) {
+    if (std::optional<Message> message =
+            BuildObserverMessage(sid, params.type, payload, Direction::kSend)) {
+      event_observer_->OnMessage(*message);
+    }
+  }
+
+  return result;
 }
 
 void DataChannelController::AddSctpDataStream(StreamId sid,
@@ -147,8 +170,16 @@ void DataChannelController::OnDataReceived(
     return c->sid_n().has_value() && c->sid_n()->stream_id_int() == channel_id;
   });
 
-  if (it != sctp_data_channels_n_.end())
+  if (it != sctp_data_channels_n_.end()) {
     (*it)->OnDataReceived(type, buffer);
+
+    if (event_observer_) {
+      if (std::optional<Message> message = BuildObserverMessage(
+              StreamId(channel_id), type, buffer, Direction::kReceive)) {
+        event_observer_->OnMessage(*message);
+      }
+    }
+  }
 }
 
 void DataChannelController::OnChannelClosing(int channel_id) {
@@ -481,6 +512,39 @@ void DataChannelController::set_data_channel_transport(
     NotifyDataChannelsOfTransportCreated();
     data_channel_transport_->SetDataSink(this);
   }
+}
+
+std::optional<Message> DataChannelController::BuildObserverMessage(
+    StreamId sid,
+    DataMessageType type,
+    ArrayView<const uint8_t> payload,
+    Message::Direction direction) const {
+  RTC_DCHECK_RUN_ON(network_thread());
+
+  if (type != DataMessageType::kText && type != DataMessageType::kBinary) {
+    return std::nullopt;
+  }
+
+  auto it = absl::c_find_if(sctp_data_channels_n_, [sid](const auto& channel) {
+    return channel->sid_n() == sid;
+  });
+
+  if (it == sctp_data_channels_n_.end()) {
+    return std::nullopt;
+  }
+
+  Message message;
+  Message::DataType data_type = type == DataMessageType::kBinary
+                                    ? Message::DataType::kBinary
+                                    : Message::DataType::kString;
+  message.set_data_type(data_type);
+  message.set_unix_timestamp_ms(rtc::TimeUTCMillis());
+  message.set_datachannel_id(sid.stream_id_int());
+  message.set_label((*it)->label());
+  message.set_direction(direction);
+  message.set_data(payload);
+
+  return message;
 }
 
 void DataChannelController::NotifyDataChannelsOfTransportCreated() {

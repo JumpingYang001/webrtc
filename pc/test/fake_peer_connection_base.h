@@ -25,6 +25,7 @@
 #include "api/audio/audio_device.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/field_trials_view.h"
@@ -281,6 +282,9 @@ class FakePeerConnectionBase : public PeerConnectionInternal {
   bool StartRtcEventLog(std::unique_ptr<RtcEventLogOutput> output) override {
     return false;
   }
+
+  void SetDataChannelEventObserver(
+      std::unique_ptr<DataChannelEventObserverInterface> observer) override {}
 
   void StopRtcEventLog() override {}
 

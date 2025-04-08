@@ -13,10 +13,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/data_channel_event_observer_interface.h"
 #include "api/data_channel_interface.h"
 #include "api/priority.h"
 #include "api/rtc_error.h"
@@ -102,6 +105,9 @@ class DataChannelController : public SctpDataChannelControllerInterface,
   // At some point in time, a data channel has existed.
   bool HasUsedDataChannels() const;
 
+  void SetEventObserver(
+      std::unique_ptr<DataChannelEventObserverInterface> observer);
+
  protected:
   Thread* network_thread() const;
   Thread* signaling_thread() const;
@@ -143,6 +149,14 @@ class DataChannelController : public SctpDataChannelControllerInterface,
 
   void set_data_channel_transport(DataChannelTransportInterface* transport);
 
+  std::optional<DataChannelEventObserverInterface::Message>
+  BuildObserverMessage(
+      StreamId sid,
+      DataMessageType type,
+      ArrayView<const uint8_t> payload,
+      DataChannelEventObserverInterface::Message::Direction direction) const
+      RTC_RUN_ON(network_thread());
+
   // Plugin transport used for data channels.  Pointer may be accessed and
   // checked from any thread, but the object may only be touched on the
   // network thread.
@@ -158,6 +172,8 @@ class DataChannelController : public SctpDataChannelControllerInterface,
   };
   DataChannelUsage channel_usage_ RTC_GUARDED_BY(signaling_thread()) =
       DataChannelUsage::kNeverUsed;
+
+  std::unique_ptr<DataChannelEventObserverInterface> event_observer_;
 
   // Owning PeerConnection.
   PeerConnectionInternal* const pc_;

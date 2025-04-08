@@ -11,13 +11,38 @@
 #ifndef PC_PEER_CONNECTION_PROXY_H_
 #define PC_PEER_CONNECTION_PROXY_H_
 
+#include <cstdint>
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "api/adaptation/resource.h"
+#include "api/candidate.h"
+#include "api/data_channel_event_observer_interface.h"
+#include "api/data_channel_interface.h"
+#include "api/dtls_transport_interface.h"
+#include "api/jsep.h"
+#include "api/media_stream_interface.h"
+#include "api/media_types.h"
 #include "api/peer_connection_interface.h"
+#include "api/rtc_error.h"
+#include "api/rtc_event_log_output.h"
+#include "api/rtp_parameters.h"
+#include "api/rtp_receiver_interface.h"
+#include "api/rtp_sender_interface.h"
+#include "api/rtp_transceiver_interface.h"
+#include "api/scoped_refptr.h"
+#include "api/sctp_transport_interface.h"
+#include "api/set_local_description_observer_interface.h"
+#include "api/set_remote_description_observer_interface.h"
+#include "api/stats/rtc_stats_collector_callback.h"
 #include "api/transport/bandwidth_estimation_settings.h"
+#include "api/transport/bitrate_settings.h"
+#include "api/transport/network_control.h"
 #include "pc/proxy.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 
@@ -165,6 +190,9 @@ PROXY_METHOD2(bool,
               int64_t)
 PROXY_METHOD1(bool, StartRtcEventLog, std::unique_ptr<RtcEventLogOutput>)
 PROXY_METHOD0(void, StopRtcEventLog)
+PROXY_METHOD1(void,
+              SetDataChannelEventObserver,
+              std::unique_ptr<DataChannelEventObserverInterface>)
 PROXY_METHOD0(void, Close)
 PROXY_METHOD0(NetworkControllerInterface*, GetNetworkController)
 BYPASS_PROXY_CONSTMETHOD0(Thread*, signaling_thread)
