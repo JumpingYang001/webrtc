@@ -96,6 +96,9 @@ class CodecVendor {
       const RtpTransceiverDirection& offer,
       const RtpTransceiverDirection& answer) const;
 
+  CodecList all_video_codecs() const;
+  CodecList all_audio_codecs() const;
+
   TypedCodecVendor audio_send_codecs_;
   TypedCodecVendor audio_recv_codecs_;
 
