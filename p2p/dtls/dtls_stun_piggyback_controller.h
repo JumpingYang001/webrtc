@@ -12,8 +12,10 @@
 #define P2P_DTLS_DTLS_STUN_PIGGYBACK_CONTROLLER_H_
 
 #include <cstdint>
+#include <memory>
 #include <optional>
-#include <set>
+#include <utility>
+#include <vector>
 
 #include "absl/functional/any_invocable.h"
 #include "absl/strings/string_view.h"
@@ -31,6 +33,9 @@ namespace webrtc {
 // as the constructor.
 class DtlsStunPiggybackController {
  public:
+  // Never ack more than 4 packets.
+  static constexpr unsigned kMaxAckSize = 16;
+
   // dtls_data_callback will be called with any DTLS packets received
   // piggybacked.
   DtlsStunPiggybackController(
@@ -86,11 +91,12 @@ class DtlsStunPiggybackController {
  private:
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
   bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
-  Buffer pending_packet_ RTC_GUARDED_BY(sequence_checker_);
+  std::vector<std::pair<uint32_t, std::unique_ptr<rtc::Buffer>>>
+      pending_packets_ RTC_GUARDED_BY(sequence_checker_);
   absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback_;
   absl::AnyInvocable<void()> disable_piggybacking_callback_;
 
-  std::set<uint16_t> handshake_messages_received_
+  std::vector<uint32_t> handshake_messages_received_
       RTC_GUARDED_BY(sequence_checker_);
   ByteBufferWriter handshake_ack_writer_ RTC_GUARDED_BY(sequence_checker_);
 

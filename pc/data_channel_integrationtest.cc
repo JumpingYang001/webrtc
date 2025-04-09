@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "absl/strings/match.h"
 #include "api/data_channel_interface.h"
 #include "api/dtls_transport_interface.h"
 #include "api/jsep.h"
@@ -1626,6 +1627,15 @@ class DataChannelIntegrationTestUnifiedPlanFieldTrials
   }
 
   const char* CheckSupported() {
+    const bool callee_active = std::get<0>(GetParam());
+    const bool callee_has_dtls_in_stun = absl::StrContains(
+        std::get<2>(GetParam()), "WebRTC-IceHandshakeDtls/Enabled/");
+    const bool callee2_has_dtls_in_stun = absl::StrContains(
+        std::get<3>(GetParam()), "WebRTC-IceHandshakeDtls/Enabled/");
+    if (callee_active &&
+        (callee_has_dtls_in_stun || callee2_has_dtls_in_stun)) {
+      return "dtls-in-stun when callee(s) are dtls clients";
+    }
     return nullptr;
   }
 };

@@ -30,6 +30,8 @@ bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload);
 std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
     rtc::ArrayView<const uint8_t> dtls_packet);
 
+uint32_t ComputeDtlsPacketHash(rtc::ArrayView<const uint8_t> dtls_packet);
+
 }  //  namespace webrtc
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.

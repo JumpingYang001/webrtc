@@ -707,6 +707,7 @@ rtc_library("dtls_utils") {
     "../api:array_view",
     "../rtc_base:byte_buffer",
     "../rtc_base:checks",
+    "../rtc_base:crc32",
   ]
 }
 
@@ -730,7 +731,10 @@ rtc_library("dtls_stun_piggyback_controller") {
     "../rtc_base:macromagic",
     "../rtc_base:stringutils",
     "../rtc_base/system:no_unique_address",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/functional:any_invocable",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
