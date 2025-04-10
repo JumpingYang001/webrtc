@@ -10,17 +10,25 @@
 
 #include "modules/rtp_rtcp/source/rtcp_transceiver.h"
 
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "api/array_view.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
+#include "modules/rtp_rtcp/source/rtcp_packet.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/remote_estimate.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/sender_report.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/transport_feedback.h"
+#include "modules/rtp_rtcp/source/rtcp_transceiver_config.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/event.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "system_wrappers/include/clock.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_transport.h"

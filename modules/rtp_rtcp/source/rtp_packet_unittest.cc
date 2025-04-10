@@ -7,13 +7,30 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
+#include "modules/rtp_rtcp/source/rtp_packet.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <optional>
+#include <string>
+#include <type_traits>
+#include <utility>
+
+#include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/rtp_headers.h"
+#include "api/units/time_delta.h"
+#include "api/video/color_space.h"
+#include "api/video/video_timing.h"
 #include "common_video/test/utilities.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_extension.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
-#include "rtc_base/random.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

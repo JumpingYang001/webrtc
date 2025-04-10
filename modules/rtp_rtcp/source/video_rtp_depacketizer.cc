@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstring>
+
 #include "api/array_view.h"
 #include "api/scoped_refptr.h"
 #include "api/video/encoded_image.h"

@@ -10,12 +10,20 @@
 
 #include "modules/rtp_rtcp/source/rtp_packetizer_h265.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <initializer_list>
 #include <vector>
 
+#include "absl/algorithm/container.h"
+#include "api/array_view.h"
 #include "common_video/h265/h265_common.h"
-#include "modules/rtp_rtcp/mocks/mock_rtp_rtcp.h"
-#include "modules/rtp_rtcp/source/byte_io.h"
+#include "modules/rtp_rtcp/source/rtp_format.h"
 #include "modules/rtp_rtcp/source/rtp_packet_h265_common.h"
+#include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

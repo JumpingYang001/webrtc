@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
-#include <variant>
 #include <vector>
 
 #include "api/array_view.h"

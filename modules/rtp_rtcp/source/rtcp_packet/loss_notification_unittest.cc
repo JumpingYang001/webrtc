@@ -10,6 +10,11 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/loss_notification.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

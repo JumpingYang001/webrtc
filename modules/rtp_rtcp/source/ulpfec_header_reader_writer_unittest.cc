@@ -12,14 +12,13 @@
 
 #include <string.h>
 
+#include <cstdint>
 #include <memory>
-#include <utility>
 
 #include "api/scoped_refptr.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/forward_error_correction.h"
 #include "modules/rtp_rtcp/source/forward_error_correction_internal.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/random.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

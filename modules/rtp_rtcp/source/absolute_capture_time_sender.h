@@ -11,6 +11,9 @@
 #ifndef MODULES_RTP_RTCP_SOURCE_ABSOLUTE_CAPTURE_TIME_SENDER_H_
 #define MODULES_RTP_RTCP_SOURCE_ABSOLUTE_CAPTURE_TIME_SENDER_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "api/array_view.h"
 #include "api/rtp_headers.h"
 #include "api/units/time_delta.h"

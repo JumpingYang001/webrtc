@@ -9,6 +9,9 @@
  */
 #include "modules/rtp_rtcp/source/rtcp_packet/remote_estimate.h"
 
+#include "api/transport/network_types.h"
+#include "api/units/data_rate.h"
+#include "rtc_base/buffer.h"
 #include "test/gtest.h"
 
 namespace webrtc {

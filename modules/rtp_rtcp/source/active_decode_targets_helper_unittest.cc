@@ -10,9 +10,12 @@
 
 #include "modules/rtp_rtcp/source/active_decode_targets_helper.h"
 
+#include <bitset>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "test/gtest.h"
 
 namespace webrtc {

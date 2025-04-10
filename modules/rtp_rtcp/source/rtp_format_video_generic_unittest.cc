@@ -10,15 +10,15 @@
 
 #include "modules/rtp_rtcp/source/rtp_format_video_generic.h"
 
-#include <algorithm>
-#include <limits>
-#include <memory>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "api/array_view.h"
-#include "modules/rtp_rtcp/mocks/mock_rtp_rtcp.h"
-#include "modules/rtp_rtcp/source/byte_io.h"
+#include "api/video/video_frame_type.h"
+#include "modules/rtp_rtcp/source/rtp_format.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

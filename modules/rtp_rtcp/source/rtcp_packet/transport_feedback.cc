@@ -11,13 +11,19 @@
 #include "modules/rtp_rtcp/source/rtcp_packet/transport_feedback.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
-#include <numeric>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "absl/algorithm/container.h"
+#include "api/function_view.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "modules/include/module_common_types_public.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
+#include "modules/rtp_rtcp/source/rtcp_packet.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/common_header.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"

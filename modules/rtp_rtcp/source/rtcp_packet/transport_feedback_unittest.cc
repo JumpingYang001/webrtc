@@ -10,16 +10,22 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/transport_feedback.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/common_header.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

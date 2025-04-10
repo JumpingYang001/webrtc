@@ -10,13 +10,18 @@
 
 #include "modules/rtp_rtcp/source/rtp_format_vp9.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "api/array_view.h"
+#include "api/video/video_codec_type.h"
+#include "modules/rtp_rtcp/source/rtp_format.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer_vp9.h"
-#include "test/gmock.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "test/gtest.h"
 
 namespace webrtc {

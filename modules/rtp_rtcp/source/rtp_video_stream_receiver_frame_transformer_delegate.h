@@ -11,13 +11,16 @@
 #ifndef MODULES_RTP_RTCP_SOURCE_RTP_VIDEO_STREAM_RECEIVER_FRAME_TRANSFORMER_DELEGATE_H_
 #define MODULES_RTP_RTCP_SOURCE_RTP_VIDEO_STREAM_RECEIVER_FRAME_TRANSFORMER_DELEGATE_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "api/frame_transformer_interface.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "modules/rtp_rtcp/source/frame_object.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/clock.h"
 
 namespace webrtc {

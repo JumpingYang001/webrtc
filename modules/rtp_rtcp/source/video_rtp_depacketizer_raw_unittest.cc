@@ -13,6 +13,8 @@
 #include <cstdint>
 #include <optional>
 
+#include "api/video/video_codec_type.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "test/gtest.h"
 

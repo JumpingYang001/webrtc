@@ -14,20 +14,14 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
-#include <memory>
-#include <optional>
-#include <utility>
-#include <variant>
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
-#include "common_video/h264/pps_parser.h"
-#include "common_video/h264/sps_parser.h"
-#include "common_video/h264/sps_vui_rewriter.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 

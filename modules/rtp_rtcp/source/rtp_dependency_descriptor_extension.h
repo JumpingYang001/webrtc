@@ -11,6 +11,7 @@
 #define MODULES_RTP_RTCP_SOURCE_RTP_DEPENDENCY_DESCRIPTOR_EXTENSION_H_
 
 #include <bitset>
+#include <cstddef>
 #include <cstdint>
 
 #include "absl/strings/string_view.h"

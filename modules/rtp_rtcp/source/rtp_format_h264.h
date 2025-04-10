@@ -15,14 +15,12 @@
 #include <stdint.h>
 
 #include <deque>
-#include <memory>
 #include <queue>
 
 #include "api/array_view.h"
 #include "modules/rtp_rtcp/source/rtp_format.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
 #include "modules/video_coding/codecs/h264/include/h264_globals.h"
-#include "rtc_base/buffer.h"
 
 namespace webrtc {
 

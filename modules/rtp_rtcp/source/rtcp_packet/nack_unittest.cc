@@ -10,6 +10,12 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/nack.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+
+#include "api/array_view.h"
+#include "rtc_base/buffer.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

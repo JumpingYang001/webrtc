@@ -11,18 +11,25 @@
 #ifndef MODULES_RTP_RTCP_MOCKS_MOCK_RTP_RTCP_H_
 #define MODULES_RTP_RTCP_MOCKS_MOCK_RTP_RTCP_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
-#include <set>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/rtp_headers.h"
+#include "api/transport/network_types.h"
+#include "api/units/time_delta.h"
 #include "api/video/video_bitrate_allocation.h"
+#include "modules/include/module_fec_types.h"
+#include "modules/rtp_rtcp/include/report_block_data.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/rtp_rtcp/source/rtcp_packet.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
 #include "modules/rtp_rtcp/source/rtp_rtcp_interface.h"
+#include "modules/rtp_rtcp/source/rtp_sequence_number_map.h"
 #include "test/gmock.h"
 
 namespace webrtc {

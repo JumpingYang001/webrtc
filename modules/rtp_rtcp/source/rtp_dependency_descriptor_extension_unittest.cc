@@ -10,10 +10,15 @@
 
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_extension.h"
 
+#include <bitset>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+
 #include "api/array_view.h"
 #include "api/transport/rtp/dependency_descriptor.h"
-#include "common_video/generic_frame_descriptor/generic_frame_info.h"
 #include "test/gmock.h"
+#include "test/gtest.h"
 
 namespace webrtc {
 namespace {

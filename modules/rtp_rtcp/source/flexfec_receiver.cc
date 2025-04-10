@@ -12,10 +12,18 @@
 
 #include <string.h>
 
-#include "api/array_view.h"
+#include <cstdint>
+#include <memory>
+
 #include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
+#include "modules/rtp_rtcp/include/recovered_packet_receiver.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/rtp_rtcp/source/forward_error_correction.h"
+#include "modules/rtp_rtcp/source/rtp_packet_received.h"
+#include "modules/rtp_rtcp/source/ulpfec_receiver.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 

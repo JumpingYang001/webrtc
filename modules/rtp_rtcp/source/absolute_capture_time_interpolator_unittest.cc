@@ -15,6 +15,7 @@
 
 #include "api/rtp_headers.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/ntp_time.h"

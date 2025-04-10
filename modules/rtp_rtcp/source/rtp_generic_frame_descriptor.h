@@ -13,8 +13,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
-#include <vector>
 
 #include "api/array_view.h"
 

@@ -10,7 +10,14 @@
 
 #include "modules/rtp_rtcp/source/rtp_format_vp8_test_helper.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "api/array_view.h"
+#include "modules/rtp_rtcp/source/rtp_format_vp8.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

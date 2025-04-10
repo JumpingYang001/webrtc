@@ -11,14 +11,18 @@
 #include "modules/rtp_rtcp/source/rtp_packetizer_h265.h"
 
 #include <algorithm>
-#include <optional>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <vector>
 
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/h265/h265_common.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_packet_h265_common.h"
-#include "rtc_base/logging.h"
+#include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 

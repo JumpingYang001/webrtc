@@ -10,7 +10,9 @@
 
 #include "modules/rtp_rtcp/source/rtp_header_extension_size.h"
 
+#include "api/array_view.h"
 #include "api/rtp_parameters.h"
+#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 
 namespace webrtc {
 

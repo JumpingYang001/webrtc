@@ -10,11 +10,13 @@
 #ifndef MODULES_RTP_RTCP_SOURCE_RTCP_PACKET_REMOTE_ESTIMATE_H_
 #define MODULES_RTP_RTCP_SOURCE_RTCP_PACKET_REMOTE_ESTIMATE_H_
 
-#include <memory>
-#include <vector>
+#include <cstdint>
 
+#include "api/array_view.h"
 #include "api/transport/network_types.h"
+#include "api/units/time_delta.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/app.h"
+#include "rtc_base/buffer.h"
 
 namespace webrtc {
 namespace rtcp {

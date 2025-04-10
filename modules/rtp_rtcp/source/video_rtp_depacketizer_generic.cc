@@ -16,6 +16,8 @@
 #include <optional>
 #include <utility>
 
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
 #include "rtc_base/copy_on_write_buffer.h"

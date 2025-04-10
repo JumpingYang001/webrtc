@@ -10,6 +10,9 @@
 #ifndef MODULES_RTP_RTCP_SOURCE_RTP_PACKET_H_
 #define MODULES_RTP_RTCP_SOURCE_RTP_PACKET_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <optional>
 #include <string>
 #include <utility>

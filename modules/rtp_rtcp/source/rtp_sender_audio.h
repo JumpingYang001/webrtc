@@ -14,9 +14,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
+#include <optional>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/units/timestamp.h"
 #include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/rtp_rtcp/source/absolute_capture_time_sender.h"
 #include "modules/rtp_rtcp/source/dtmf_queue.h"

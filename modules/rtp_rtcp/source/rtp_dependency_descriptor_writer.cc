@@ -9,6 +9,7 @@
  */
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_writer.h"
 
+#include <algorithm>
 #include <bitset>
 #include <cstddef>
 #include <cstdint>
@@ -18,6 +19,7 @@
 #include "absl/algorithm/container.h"
 #include "api/array_view.h"
 #include "api/transport/rtp/dependency_descriptor.h"
+#include "api/video/render_resolution.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_compare.h"

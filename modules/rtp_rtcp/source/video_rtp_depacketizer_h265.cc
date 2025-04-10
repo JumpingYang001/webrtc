@@ -12,21 +12,21 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <utility>
-#include <variant>
 #include <vector>
 
-#include "absl/base/macros.h"
+#include "absl/base/attributes.h"
+#include "api/array_view.h"
 #include "api/video/video_codec_type.h"
-#include "common_video/h264/h264_common.h"
+#include "api/video/video_frame_type.h"
 #include "common_video/h265/h265_bitstream_parser.h"
 #include "common_video/h265/h265_common.h"
+#include "common_video/h265/h265_sps_parser.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/rtp_packet_h265_common.h"
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
-#include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
 
 // RTP Payload Format for HEVC: https://datatracker.ietf.org/doc/html/rfc7798

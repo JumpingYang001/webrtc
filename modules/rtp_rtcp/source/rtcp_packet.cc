@@ -10,7 +10,12 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "api/array_view.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

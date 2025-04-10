@@ -11,8 +11,6 @@
 #define MODULES_RTP_RTCP_SOURCE_RTP_DEPENDENCY_DESCRIPTOR_READER_H_
 
 #include <cstdint>
-#include <memory>
-#include <vector>
 
 #include "api/array_view.h"
 #include "api/transport/rtp/dependency_descriptor.h"

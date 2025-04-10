@@ -10,10 +10,12 @@
 
 #include "modules/rtp_rtcp/source/rtp_video_layers_allocation_extension.h"
 
+#include <cstdint>
+
+#include "api/units/data_rate.h"
 #include "api/video/video_layers_allocation.h"
-#include "rtc_base/bit_buffer.h"
 #include "rtc_base/buffer.h"
-#include "test/gmock.h"
+#include "test/gtest.h"
 
 namespace webrtc {
 namespace {

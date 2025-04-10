@@ -22,6 +22,7 @@
 #include "api/call/transport.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials_view.h"
 #include "api/frame_transformer_factory.h"
 #include "api/frame_transformer_interface.h"
 #include "api/make_ref_counted.h"

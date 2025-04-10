@@ -10,8 +10,19 @@
 
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "absl/container/inlined_vector.h"
+#include "api/transport/rtp/dependency_descriptor.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_content_type.h"
 #include "api/video/video_frame_metadata.h"
 #include "api/video/video_frame_type.h"
+#include "api/video/video_rotation.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

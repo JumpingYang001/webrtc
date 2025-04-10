@@ -10,6 +10,13 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/remb.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <iterator>
+#include <vector>
+
+#include "rtc_base/buffer.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

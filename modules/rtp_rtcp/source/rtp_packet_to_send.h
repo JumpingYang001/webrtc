@@ -16,7 +16,6 @@
 #include <optional>
 #include <utility>
 
-#include "api/array_view.h"
 #include "api/ref_counted_base.h"
 #include "api/scoped_refptr.h"
 #include "api/units/time_delta.h"

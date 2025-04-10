@@ -12,14 +12,21 @@
 
 #include <string.h>
 
+#include <cstdint>
 #include <optional>
+#include <utility>
 
+#include "api/array_view.h"
 #include "api/video/video_codec_constants.h"
-#include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
 #include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "rtc_base/bitstream_reader.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
+#include "rtc_base/copy_on_write_buffer.h"
 
 namespace webrtc {
 namespace {

@@ -26,6 +26,7 @@
 #include "api/scoped_refptr.h"
 #include "api/transport/network_types.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/video_bitrate_allocation.h"
 #include "modules/include/module_fec_types.h"
 #include "modules/rtp_rtcp/include/receive_statistics.h"

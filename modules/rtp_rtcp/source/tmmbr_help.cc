@@ -12,9 +12,12 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <limits>
+#include <vector>
 
 #include "absl/algorithm/container.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/tmmb_item.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "api/array_view.h"
 #include "modules/rtp_rtcp/source/forward_error_correction.h"
 
 namespace webrtc {

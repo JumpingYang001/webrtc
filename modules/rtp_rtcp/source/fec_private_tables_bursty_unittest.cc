@@ -10,6 +10,11 @@
 
 #include "modules/rtp_rtcp/source/fec_private_tables_bursty.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "api/array_view.h"
+#include "modules/include/module_fec_types.h"
 #include "modules/rtp_rtcp/source/fec_private_tables_random.h"
 #include "modules/rtp_rtcp/source/forward_error_correction_internal.h"
 #include "test/gtest.h"

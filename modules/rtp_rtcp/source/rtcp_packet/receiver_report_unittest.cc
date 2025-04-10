@@ -10,8 +10,13 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/receiver_report.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <utility>
+#include <vector>
 
+#include "modules/rtp_rtcp/source/rtcp_packet/report_block.h"
+#include "rtc_base/buffer.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

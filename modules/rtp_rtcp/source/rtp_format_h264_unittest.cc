@@ -10,15 +10,19 @@
 
 #include "modules/rtp_rtcp/source/rtp_format_h264.h"
 
-#include <memory>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <initializer_list>
 #include <vector>
 
 #include "absl/algorithm/container.h"
 #include "api/array_view.h"
-#include "common_video/h264/h264_common.h"
-#include "modules/rtp_rtcp/mocks/mock_rtp_rtcp.h"
-#include "modules/rtp_rtcp/source/byte_io.h"
+#include "modules/rtp_rtcp/source/rtp_format.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/video_coding/codecs/h264/include/h264_globals.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

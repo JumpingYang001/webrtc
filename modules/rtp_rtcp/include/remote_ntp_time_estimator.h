@@ -18,6 +18,7 @@
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "rtc_base/numerics/moving_percentile_filter.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "system_wrappers/include/rtp_to_ntp_estimator.h"
 
 namespace webrtc {

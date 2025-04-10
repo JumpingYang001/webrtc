@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "api/array_view.h"
-#include "api/environment/environment.h"
+#include "api/field_trials_view.h"
 #include "api/frame_transformer_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"

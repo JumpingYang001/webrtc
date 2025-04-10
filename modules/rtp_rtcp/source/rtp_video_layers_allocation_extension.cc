@@ -13,7 +13,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <tuple>
+
 #include "absl/algorithm/container.h"
+#include "api/array_view.h"
+#include "api/units/data_rate.h"
 #include "api/video/video_layers_allocation.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/leb128.h"

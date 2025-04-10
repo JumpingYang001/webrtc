@@ -10,17 +10,24 @@
 
 #include "modules/rtp_rtcp/source/rtp_sender_audio.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/call/transport.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/rtp_headers.h"
+#include "api/units/timestamp.h"
+#include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
-#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_rtcp_impl2.h"
 #include "rtc_base/thread.h"
+#include "system_wrappers/include/clock.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

@@ -14,10 +14,16 @@
 #include <stdint.h>
 
 #include <optional>
+#include <utility>
 
 #include "api/array_view.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/logging.h"
 
 // VP8 payload descriptor

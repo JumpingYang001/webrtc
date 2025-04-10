@@ -9,14 +9,19 @@
  */
 #include "modules/rtp_rtcp/source/rtcp_packet/remote_estimate.h"
 
-#include <algorithm>
-#include <cmath>
-#include <type_traits>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <utility>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/transport/network_types.h"
+#include "api/units/data_rate.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
-#include "modules/rtp_rtcp/source/rtcp_packet/common_header.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/app.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
 namespace webrtc {

@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,12 +22,15 @@
 #include "api/array_view.h"
 #include "api/rtp_headers.h"
 #include "api/rtp_parameters.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "api/video/color_space.h"
+#include "api/video/hdr_metadata.h"
 #include "api/video/video_content_type.h"
 #include "api/video/video_rotation.h"
 #include "api/video/video_timing.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "rtc_base/checks.h"
 #include "system_wrappers/include/ntp_time.h"
 
 // This file contains class definitions for reading/writing each RTP header

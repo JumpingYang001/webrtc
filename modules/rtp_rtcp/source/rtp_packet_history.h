@@ -11,14 +11,13 @@
 #ifndef MODULES_RTP_RTCP_SOURCE_RTP_PACKET_HISTORY_H_
 #define MODULES_RTP_RTCP_SOURCE_RTP_PACKET_HISTORY_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <deque>
-#include <map>
 #include <memory>
 #include <optional>
-#include <set>
-#include <utility>
-#include <vector>
 
+#include "api/array_view.h"
 #include "api/environment/environment.h"
 #include "api/function_view.h"
 #include "api/units/time_delta.h"

@@ -12,6 +12,7 @@
 
 #include <cstdint>
 
+#include "api/array_view.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

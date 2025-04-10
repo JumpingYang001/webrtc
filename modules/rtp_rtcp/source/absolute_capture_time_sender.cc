@@ -10,9 +10,15 @@
 
 #include "modules/rtp_rtcp/source/absolute_capture_time_sender.h"
 
-#include <limits>
+#include <algorithm>
+#include <cstdint>
+#include <optional>
 
+#include "api/array_view.h"
+#include "api/rtp_headers.h"
+#include "api/units/timestamp.h"
 #include "modules/rtp_rtcp/source/absolute_capture_time_interpolator.h"
+#include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/ntp_time.h"
 
 namespace webrtc {

@@ -12,11 +12,14 @@
 
 #include <string.h>
 
-#include <optional>
+#include <cstdint>
+#include <variant>
 
+#include "api/array_view.h"
+#include "api/video/video_frame_type.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
 
 namespace webrtc {
 namespace {

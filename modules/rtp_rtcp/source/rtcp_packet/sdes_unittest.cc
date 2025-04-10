@@ -10,6 +10,11 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/sdes.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
+#include "rtc_base/buffer.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

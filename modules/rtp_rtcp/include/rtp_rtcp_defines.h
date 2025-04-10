@@ -18,15 +18,11 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
-#include <utility>
-#include <variant>
 #include <vector>
 
 #include "absl/algorithm/container.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
-#include "api/audio_codecs/audio_format.h"
-#include "api/rtp_headers.h"
 #include "api/transport/network_types.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
@@ -34,8 +30,7 @@
 #include "modules/rtp_rtcp/include/report_block_data.h"
 #include "modules/rtp_rtcp/source/rtcp_packet.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/congestion_control_feedback.h"
-#include "modules/rtp_rtcp/source/rtcp_packet/remote_estimate.h"
-#include "system_wrappers/include/clock.h"
+#include "rtc_base/checks.h"
 
 #define RTCP_CNAME_SIZE 256  // RFC 3550 page 44, including null termination
 #define IP_PACKET_SIZE 1500  // we assume ethernet

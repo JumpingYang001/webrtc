@@ -13,10 +13,15 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <list>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "absl/algorithm/container.h"
 #include "modules/include/module_common_types_public.h"
+#include "modules/include/module_fec_types.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/flexfec_03_header_reader_writer.h"

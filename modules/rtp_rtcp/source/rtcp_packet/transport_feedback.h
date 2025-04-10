@@ -12,10 +12,11 @@
 #define MODULES_RTP_RTCP_SOURCE_RTCP_PACKET_TRANSPORT_FEEDBACK_H_
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "absl/base/attributes.h"
 #include "api/function_view.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"

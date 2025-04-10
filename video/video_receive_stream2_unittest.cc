@@ -12,12 +12,12 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <deque>
 #include <limits>
 #include <memory>
 #include <optional>
-#include <queue>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -25,24 +25,30 @@
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/metronome/test/fake_metronome.h"
+#include "api/rtp_packet_info.h"
+#include "api/rtp_packet_infos.h"
 #include "api/test/mock_video_decoder.h"
 #include "api/test/mock_video_decoder_factory.h"
 #include "api/test/time_controller.h"
+#include "api/transport/rtp/rtp_source.h"
 #include "api/units/frequency.h"
 #include "api/units/time_delta.h"
-#include "api/video/encoded_image.h"
+#include "api/units/timestamp.h"
 #include "api/video/recordable_encoded_frame.h"
 #include "api/video/test/video_frame_matchers.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
+#include "api/video/video_rotation.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video/video_timing.h"
 #include "api/video_codecs/sdp_video_format.h"
-#include "api/video_codecs/video_decoder.h"
 #include "call/rtp_stream_receiver_controller.h"
 #include "call/video_receive_stream.h"
 #include "common_video/test/utilities.h"
 #include "media/engine/fake_webrtc_call.h"
 #include "modules/pacing/packet_router.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
-#include "modules/video_coding/encoded_frame.h"
+#include "modules/video_coding/nack_requester.h"
 #include "rtc_base/logging.h"
 #include "system_wrappers/include/clock.h"
 #include "test/fake_decoder.h"
@@ -54,6 +60,7 @@
 #include "test/time_controller/simulated_time_controller.h"
 #include "test/video_decoder_proxy_factory.h"
 #include "video/call_stats2.h"
+#include "video/decode_synchronizer.h"
 
 namespace webrtc {
 

@@ -12,6 +12,9 @@
 
 #include <stdint.h>
 
+#include <bitset>
+#include <cstddef>
+
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"

@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 
-#include <string>
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"

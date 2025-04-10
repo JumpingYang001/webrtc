@@ -44,10 +44,17 @@
  */
 
 #include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <memory>
+#include <string>
 
+#include "api/array_view.h"
+#include "modules/include/module_fec_types.h"
 #include "modules/rtp_rtcp/source/forward_error_correction_internal.h"
 #include "modules/rtp_rtcp/test/testFec/average_residual_loss_xor_codes.h"
+#include "rtc_base/checks.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 

@@ -10,11 +10,20 @@
 
 #include "modules/rtp_rtcp/source/video_rtp_depacketizer_vp8.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+
 #include "api/array_view.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame_type.h"
 #include "modules/rtp_rtcp/source/rtp_format_vp8.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp8/include/vp8_globals.h"
 #include "rtc_base/copy_on_write_buffer.h"
-#include "test/gmock.h"
 #include "test/gtest.h"
 
 // VP8 payload descriptor

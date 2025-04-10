@@ -12,8 +12,12 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <optional>
+#include <variant>
 
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
+#include "modules/rtp_rtcp/source/video_rtp_depacketizer.h"
 #include "rtc_base/copy_on_write_buffer.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

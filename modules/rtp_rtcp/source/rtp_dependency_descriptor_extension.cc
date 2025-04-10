@@ -11,11 +11,11 @@
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_extension.h"
 
 #include <bitset>
+#include <cstddef>
 #include <cstdint>
 
 #include "api/array_view.h"
 #include "api/transport/rtp/dependency_descriptor.h"
-#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_reader.h"
 #include "modules/rtp_rtcp/source/rtp_dependency_descriptor_writer.h"
 #include "rtc_base/numerics/divide_round.h"

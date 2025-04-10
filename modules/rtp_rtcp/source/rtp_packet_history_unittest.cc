@@ -10,16 +10,20 @@
 
 #include "modules/rtp_rtcp/source/rtp_packet_history.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "system_wrappers/include/clock.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

@@ -68,6 +68,7 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/trace_event.h"
+#include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/ntp_time.h"
 
 namespace webrtc {

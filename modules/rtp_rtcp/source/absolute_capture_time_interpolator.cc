@@ -11,6 +11,7 @@
 #include "modules/rtp_rtcp/source/absolute_capture_time_interpolator.h"
 
 #include <cstdint>
+#include <cstdlib>
 #include <optional>
 
 #include "api/array_view.h"
@@ -18,7 +19,6 @@
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"

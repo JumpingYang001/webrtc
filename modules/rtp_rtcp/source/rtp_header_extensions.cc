@@ -23,6 +23,7 @@
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "api/rtp_headers.h"
+#include "api/units/time_delta.h"
 #include "api/video/color_space.h"
 #include "api/video/hdr_metadata.h"
 #include "api/video/video_content_type.h"

@@ -12,10 +12,12 @@
 
 #include <string.h>
 
-#include "api/video/video_codec_constants.h"
+#include <cstdint>
+
+#include "api/array_view.h"
 #include "modules/rtp_rtcp/source/rtp_packet_to_send.h"
-#include "modules/rtp_rtcp/source/video_rtp_depacketizer_vp9.h"
 #include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"

@@ -10,7 +10,14 @@
 
 #include "modules/rtp_rtcp/source/rtcp_packet/extended_reports.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "modules/rtp_rtcp/source/rtcp_packet/dlrr.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/rrtr.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/random.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/rtcp_packet_parser.h"

@@ -15,7 +15,10 @@
 #include <cstdint>
 #include <vector>
 
+#include "api/rtp_headers.h"
+#include "api/units/timestamp.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
+#include "modules/rtp_rtcp/source/rtp_packet.h"
 #include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {
