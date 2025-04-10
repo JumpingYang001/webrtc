@@ -15,6 +15,13 @@
 
 #include "modules/video_coding/codecs/h264/h264_color_space.h"
 
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavutil/pixfmt.h>
+}
+
+#include "api/video/color_space.h"
+
 namespace webrtc {
 
 ColorSpace ExtractH264ColorSpace(AVCodecContext* codec) {

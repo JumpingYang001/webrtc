@@ -37,10 +37,14 @@
 
 extern "C" {
 #include <libavcodec/avcodec.h>
+#include <libavutil/frame.h>
 }  // extern "C"
 
+#include <cstdint>
 #include <memory>
 
+#include "api/video/encoded_image.h"
+#include "api/video_codecs/video_decoder.h"
 #include "common_video/h264/h264_bitstream_parser.h"
 #include "common_video/include/video_frame_buffer_pool.h"
 #include "modules/video_coding/codecs/h264/include/h264.h"
