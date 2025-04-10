@@ -92,6 +92,7 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   [[deprecated]] void SetMode(SSLMode mode) override;
   void SetMaxProtocolVersion(SSLProtocolVersion version) override;
   void SetInitialRetransmissionTimeout(int timeout_ms) override;
+  void SetMTU(int mtu) override;
 
   StreamResult Read(rtc::ArrayView<uint8_t> data,
                     size_t& read,
@@ -251,6 +252,9 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   // A 50-ms initial timeout ensures rapid setup on fast connections, but may
   // be too aggressive for low bandwidth links.
   int dtls_handshake_timeout_ms_ = 50;
+
+  // MTU configured for dtls.
+  int dtls_mtu_ = 1200;
 
   // 0 == Disabled
   // 1 == Max

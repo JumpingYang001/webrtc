@@ -282,6 +282,8 @@ static long stream_ctrl(BIO* b, int cmd, long num, void* ptr) {
       // The handshake doesn't actually need to send packets above 1k,
       // so this seems like a sensible value that should work in most cases.
       // Webrtc uses the same value for video packets.
+      RTC_DCHECK_NOTREACHED()
+          << "We should be using SSL_set_mtu instead of this!";
       return 1200;
     default:
       return 0;
@@ -576,6 +578,13 @@ void OpenSSLStreamAdapter::SetInitialRetransmissionTimeout(int timeout_ms) {
     DTLSv1_set_initial_timeout_duration(ssl_, dtls_handshake_timeout_ms_);
   }
 #endif
+}
+
+void OpenSSLStreamAdapter::SetMTU(int mtu) {
+  dtls_mtu_ = mtu;
+  if (ssl_) {
+    RTC_CHECK(SSL_set_mtu(ssl_, dtls_mtu_)) << "Call to SSL_set_mtu failed.";
+  }
 }
 
 //
@@ -890,6 +899,12 @@ int OpenSSLStreamAdapter::BeginSSL() {
   SSL_set_app_data(ssl_, this);
 
   SSL_set_bio(ssl_, bio, bio);  // the SSL object owns the bio now.
+
+  // Use SSL_set_mtu to configure MTU insted of
+  // BIO_CTRL_DGRAM_QUERY_MTU
+  SSL_set_options(ssl_, SSL_OP_NO_QUERY_MTU);
+  SSL_set_mtu(ssl_, dtls_mtu_);
+
 #ifdef OPENSSL_IS_BORINGSSL
   if (ssl_mode_ == webrtc::SSL_MODE_DTLS) {
     DTLSv1_set_initial_timeout_duration(ssl_, dtls_handshake_timeout_ms_);
@@ -1123,6 +1138,7 @@ SSL_CTX* OpenSSLStreamAdapter::SetupSSLContext() {
 #if defined(OPENSSL_IS_BORINGSSL) || (OPENSSL_VERSION_NUMBER >= 0x30000000L)
   SSL_CTX_set_options(ctx, SSL_OP_NO_TICKET);
 #endif
+
   return ctx;
 }
 

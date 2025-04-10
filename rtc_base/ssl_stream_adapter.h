@@ -159,6 +159,9 @@ class SSLStreamAdapter : public StreamInterface {
   // This should only be called before StartSSL().
   virtual void SetInitialRetransmissionTimeout(int timeout_ms) = 0;
 
+  // Set MTU to be used for next handshake flight.
+  virtual void SetMTU(int mtu) = 0;
+
   // StartSSL starts negotiation with a peer, whose certificate is verified
   // using the certificate digest. Generally, SetIdentity() and possibly
   // SetServerRole() should have been called before this.

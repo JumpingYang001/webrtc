@@ -770,6 +770,7 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       written = data_len;
       return webrtc::SR_SUCCESS;
     }
+    max_seen_mtu_ = std::max(max_seen_mtu_, data_len);
 
     // Optionally damage application data (type 23). Note that we don't damage
     // handshake packets and we damage the last byte to keep the header
@@ -800,6 +801,7 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   void SetDamage() { damage_ = true; }
 
   void SetMtu(size_t mtu) { mtu_ = mtu; }
+  size_t GetMaxSeenMtu() const { return max_seen_mtu_; }
 
   void SetHandshakeWait(int wait) {
     handshake_wait_ = webrtc::TimeDelta::Millis(wait);
@@ -895,6 +897,7 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   std::unique_ptr<webrtc::SSLStreamAdapter> server_ssl_;
   int delay_;
   size_t mtu_;
+  size_t max_seen_mtu_ = 0;
   int loss_;
   bool lose_first_packet_;
   bool damage_;
@@ -1257,6 +1260,14 @@ TEST_F(SSLStreamAdapterTestDTLS, MAYBE_TestDTLSConnectTimeout) {
 TEST_F(SSLStreamAdapterTestDTLS, TestDTLSTransfer) {
   TestHandshake();
   TestTransfer(100);
+}
+
+TEST_F(SSLStreamAdapterTestDTLS, TestSetMTU) {
+  SetMtu(400);
+  client_ssl_->SetMTU(300);
+  server_ssl_->SetMTU(300);
+  TestHandshake();
+  EXPECT_LE(GetMaxSeenMtu(), 300u);
 }
 
 TEST_F(SSLStreamAdapterTestDTLS, TestDTLSTransferWithLoss) {
