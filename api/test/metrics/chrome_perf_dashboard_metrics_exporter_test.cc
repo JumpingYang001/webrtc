@@ -10,7 +10,10 @@
 #include "api/test/metrics/chrome_perf_dashboard_metrics_exporter.h"
 
 #include <fstream>
+#include <ios>
+#include <iterator>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "api/test/metrics/metric.h"
@@ -19,6 +22,7 @@
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 #include "third_party/catapult/tracing/tracing/value/histogram.h"
+#include "tracing/tracing/proto/histogram.pb.h"
 
 namespace webrtc {
 namespace test {

@@ -9,6 +9,8 @@
  */
 #include "api/test/network_emulation/ecn_marking_counter.h"
 
+#include "api/transport/ecn_marking.h"
+
 namespace webrtc {
 
 void EcnMarkingCounter::Add(EcnMarking ecn) {

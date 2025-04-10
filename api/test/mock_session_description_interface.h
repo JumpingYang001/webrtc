@@ -11,11 +11,13 @@
 #ifndef API_TEST_MOCK_SESSION_DESCRIPTION_INTERFACE_H_
 #define API_TEST_MOCK_SESSION_DESCRIPTION_INTERFACE_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
-#include <utility>
+#include <type_traits>
 #include <vector>
 
+#include "api/candidate.h"
 #include "api/jsep.h"
 #include "test/gmock.h"
 

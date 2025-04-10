@@ -11,7 +11,15 @@
 #ifndef API_VIDEO_TEST_MOCK_RECORDABLE_ENCODED_FRAME_H_
 #define API_VIDEO_TEST_MOCK_RECORDABLE_ENCODED_FRAME_H_
 
+#include <optional>
+
+#include "api/scoped_refptr.h"
+#include "api/units/timestamp.h"
+#include "api/video/color_space.h"
+#include "api/video/encoded_image.h"
 #include "api/video/recordable_encoded_frame.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_rotation.h"
 #include "test/gmock.h"
 
 namespace webrtc {

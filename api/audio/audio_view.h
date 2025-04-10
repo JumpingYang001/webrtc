@@ -11,6 +11,9 @@
 #ifndef API_AUDIO_AUDIO_VIEW_H_
 #define API_AUDIO_AUDIO_VIEW_H_
 
+#include <cstddef>
+#include <iterator>
+
 #include "api/array_view.h"
 #include "api/audio/channel_layout.h"
 #include "rtc_base/checks.h"

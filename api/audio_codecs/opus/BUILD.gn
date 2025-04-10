@@ -59,6 +59,7 @@ rtc_library("audio_decoder_opus") {
   ]
   deps = [
     "..:audio_codecs_api",
+    "../..:field_trials_view",
     "../../../modules/audio_coding:webrtc_opus",
     "../../../rtc_base:checks",
     "../../../rtc_base/system:rtc_export",
@@ -105,6 +106,7 @@ rtc_library("unittests") {
   sources = [ "audio_decoder_opus_unittest.cc" ]
   deps = [
     ":audio_decoder_opus",
+    "..:audio_codecs_api",
     "../../../api/environment",
     "../../../api/environment:environment_factory",
     "../../../test:explicit_key_value_config",

@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <string>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "p2p/base/p2p_constants.h"
 #include "rtc_base/checks.h"
@@ -22,7 +23,6 @@
 #include "rtc_base/ip_address.h"
 #include "rtc_base/network_constants.h"
 #include "rtc_base/socket_address.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/strings/string_builder.h"
 
 using webrtc::IceCandidateType;

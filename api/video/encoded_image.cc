@@ -12,9 +12,9 @@
 
 #include <stdlib.h>
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <utility>
 
 #include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"

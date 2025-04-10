@@ -276,6 +276,7 @@ rtc_source_set("video_decoder_factory_template_dav1d_adapter") {
   deps = [
     ":video_codecs_api",
     "../../modules/video_coding/codecs/av1:dav1d_decoder",
+    "../environment",
   ]
 }
 

@@ -22,6 +22,7 @@
 #include "rtc_base/memory/aligned_malloc.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 
 namespace webrtc {

@@ -11,6 +11,8 @@
 #ifndef API_TEST_METRICS_STDOUT_METRICS_EXPORTER_H_
 #define API_TEST_METRICS_STDOUT_METRICS_EXPORTER_H_
 
+#include <cstdio>
+
 #include "api/array_view.h"
 #include "api/test/metrics/metric.h"
 #include "api/test/metrics/metrics_exporter.h"

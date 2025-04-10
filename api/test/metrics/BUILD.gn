@@ -49,7 +49,10 @@ rtc_library("metric") {
     "metric.cc",
     "metric.h",
   ]
-  deps = [ "../../units:timestamp" ]
+  deps = [
+    "../../units:timestamp",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
 }
 
 rtc_library("metrics_logger") {
@@ -169,6 +172,7 @@ rtc_library("print_result_proxy_metrics_exporter") {
     ":metrics_exporter",
     "../..:array_view",
     "../../../test:perf_test",
+    "../../numerics",
   ]
 }
 
@@ -179,6 +183,7 @@ rtc_library("global_metrics_logger_and_exporter") {
     "global_metrics_logger_and_exporter.h",
   ]
   deps = [
+    ":metric",
     ":metrics_exporter",
     ":metrics_logger",
     "../../../rtc_base:checks",
@@ -241,6 +246,7 @@ if (rtc_include_tests) {
       ":metric",
       ":metrics_exporter",
       ":metrics_logger",
+      "../..:array_view",
       "../../../system_wrappers",
       "../../../test:test_support",
     ]

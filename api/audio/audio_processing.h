@@ -26,7 +26,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 
 #include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"

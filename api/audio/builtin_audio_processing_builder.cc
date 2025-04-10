@@ -17,7 +17,6 @@
 #include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"
 #include "modules/audio_processing/audio_processing_impl.h"
-#include "rtc_base/logging.h"
 
 namespace webrtc {
 

@@ -19,6 +19,7 @@
 
 #include "api/array_view.h"
 #include "api/frame_transformer_interface.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "test/gmock.h"
 

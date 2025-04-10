@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_minmax.h"

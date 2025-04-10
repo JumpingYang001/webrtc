@@ -11,6 +11,7 @@
 #ifndef API_AUDIO_CODECS_OPUS_AUDIO_DECODER_MULTI_CHANNEL_OPUS_CONFIG_H_
 #define API_AUDIO_CODECS_OPUS_AUDIO_DECODER_MULTI_CHANNEL_OPUS_CONFIG_H_
 
+#include <cstddef>
 #include <vector>
 
 #include "api/audio_codecs/audio_decoder.h"

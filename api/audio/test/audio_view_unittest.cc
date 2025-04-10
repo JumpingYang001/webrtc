@@ -11,7 +11,10 @@
 #include "api/audio/audio_view.h"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 
+#include "api/array_view.h"
 #include "test/gtest.h"
 
 namespace webrtc {

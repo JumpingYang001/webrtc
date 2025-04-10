@@ -10,6 +10,8 @@
 
 #include "api/neteq/neteq.h"
 
+#include <string>
+
 #include "rtc_base/strings/string_builder.h"
 
 namespace webrtc {

@@ -10,8 +10,11 @@
 
 #include "api/audio_codecs/opus/audio_decoder_opus.h"
 
-#include <string>
+#include <cstddef>
+#include <memory>
+#include <optional>
 
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "test/explicit_key_value_config.h"

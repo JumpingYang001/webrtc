@@ -20,9 +20,9 @@
 #include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"
 #include "api/environment/environment.h"
-#include "api/environment/environment_factory.h"
 #include "api/test/frame_generator_interface.h"
 #include "rtc_base/checks.h"
+#include "system_wrappers/include/clock.h"
 #include "test/frame_generator.h"
 #include "test/testsupport/ivf_video_frame_generator.h"
 

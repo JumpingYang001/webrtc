@@ -11,6 +11,7 @@
 #ifndef API_AUDIO_AUDIO_DEVICE_H_
 #define API_AUDIO_AUDIO_DEVICE_H_
 
+#include <cstdint>
 #include <optional>
 #include "api/audio/audio_device_defines.h"
 #include "api/ref_count.h"

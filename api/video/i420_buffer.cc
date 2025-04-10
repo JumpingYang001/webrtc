@@ -13,7 +13,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <limits>
 #include <utility>
 
 #include "api/make_ref_counted.h"

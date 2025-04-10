@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "api/candidate.h"
+
 namespace webrtc {
 
 std::string IceCandidateInterface::server_url() const {
