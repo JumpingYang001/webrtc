@@ -32,10 +32,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 
-namespace rtc {
-struct PacketOptions;
-}  // namespace rtc
-
 namespace webrtc {
 
 class Connection;

@@ -14,7 +14,7 @@
 extern "C" void __llvm_profile_set_filename(const char* name);
 #endif
 
-namespace rtc {
+namespace webrtc {
 namespace test {
 
 void ConfigureCoverageReportPath() {
@@ -41,4 +41,4 @@ void ConfigureCoverageReportPath() {
 }
 
 }  // namespace test
-}  // namespace rtc
+}  // namespace webrtc

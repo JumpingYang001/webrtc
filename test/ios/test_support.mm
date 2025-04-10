@@ -80,7 +80,7 @@ static std::optional<std::vector<std::string>> g_metrics_to_plot;
   // root view controller. Set an empty one here.
   [_window setRootViewController:[[UIViewController alloc] init]];
 
-  if (!rtc::test::ShouldRunIOSUnittestsWithXCTest()) {
+  if (!webrtc::test::ShouldRunIOSUnittestsWithXCTest()) {
     // When running in XCTest mode, XCTest will invoke `runGoogleTest` directly.
     // Otherwise, schedule a call to `runTests`.
     [self performSelector:@selector(runTests) withObject:nil afterDelay:0.1];
@@ -90,11 +90,11 @@ static std::optional<std::vector<std::string>> g_metrics_to_plot;
 }
 
 - (BOOL)supportsRunningGoogleTests {
-  return rtc::test::ShouldRunIOSUnittestsWithXCTest();
+  return webrtc::test::ShouldRunIOSUnittestsWithXCTest();
 }
 
 - (int)runGoogleTests {
-  rtc::test::ConfigureCoverageReportPath();
+  webrtc::test::ConfigureCoverageReportPath();
 
   int exitStatus = g_test_suite();
 
@@ -162,8 +162,8 @@ static std::optional<std::vector<std::string>> g_metrics_to_plot;
 }
 
 - (void)runTests {
-  RTC_DCHECK(!rtc::test::ShouldRunIOSUnittestsWithXCTest());
-  rtc::test::ConfigureCoverageReportPath();
+  RTC_DCHECK(!webrtc::test::ShouldRunIOSUnittestsWithXCTest());
+  webrtc::test::ConfigureCoverageReportPath();
 
   int exitStatus = [self runGoogleTests];
 
@@ -182,7 +182,7 @@ static std::optional<std::vector<std::string>> g_metrics_to_plot;
 }
 
 @end
-namespace rtc {
+namespace webrtc {
 namespace test {
 
 // Note: This is not thread safe, and must be called from the same thread as
@@ -227,4 +227,4 @@ bool ShouldRunIOSUnittestsWithXCTest() {
 }
 
 }  // namespace test
-}  // namespace rtc
+}  // namespace webrtc

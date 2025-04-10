@@ -57,18 +57,9 @@ namespace {
 constexpr int kDefaultTimeout = 30000;
 }  // namespace
 
-namespace cricket {
+namespace webrtc {
 
 using ::testing::IsTrue;
-using ::webrtc::BuiltInNetworkBehaviorConfig;
-using ::webrtc::CreateEnvironment;
-using ::webrtc::EmulatedEndpoint;
-using ::webrtc::EmulatedEndpointConfig;
-using ::webrtc::EmulatedNetworkManagerInterface;
-using ::webrtc::EmulatedNetworkNode;
-using ::webrtc::Environment;
-using ::webrtc::FieldTrials;
-using ::webrtc::NetworkEmulationManager;
 
 class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
                                    /* 0 client_piggyback= */ bool,
@@ -102,7 +93,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
     std::unique_ptr<webrtc::BasicPacketSocketFactory> packet_socket_factory;
     std::unique_ptr<webrtc::PortAllocator> allocator;
     std::unique_ptr<webrtc::IceTransportInternal> ice;
-    std::unique_ptr<DtlsTransport> dtls;
+    std::unique_ptr<DtlsTransportInternalImpl> dtls;
 
     // SetRemoteFingerprintFromCert does not actually set the fingerprint,
     // but only store it for setting later.
@@ -183,7 +174,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
       ep.ice = std::make_unique<webrtc::P2PTransportChannel>(
           client ? "client_transport" : "server_transport", 0,
           ep.allocator.get(), &ep.env.field_trials());
-      ep.dtls = std::make_unique<DtlsTransport>(
+      ep.dtls = std::make_unique<DtlsTransportInternalImpl>(
           ep.ice.get(), webrtc::CryptoOptions(),
           /*event_log=*/nullptr, std::get<2>(GetParam()));
 
@@ -494,4 +485,4 @@ INSTANTIATE_TEST_SUITE_P(
                        testing::Bool(),
                        testing::Bool()));
 
-}  // namespace cricket
+}  // namespace webrtc

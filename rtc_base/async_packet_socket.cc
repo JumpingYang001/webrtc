@@ -21,16 +21,14 @@
 #include "rtc_base/network/received_packet.h"
 #include "rtc_base/network/sent_packet.h"
 
-namespace rtc {
-
-PacketOptions::PacketOptions() = default;
-PacketOptions::PacketOptions(webrtc::DiffServCodePoint dscp) : dscp(dscp) {}
-PacketOptions::PacketOptions(const PacketOptions& other) = default;
-PacketOptions::~PacketOptions() = default;
-
-}  // namespace rtc
-
 namespace webrtc {
+
+AsyncSocketPacketOptions::AsyncSocketPacketOptions() = default;
+AsyncSocketPacketOptions::AsyncSocketPacketOptions(DiffServCodePoint dscp)
+    : dscp(dscp) {}
+AsyncSocketPacketOptions::AsyncSocketPacketOptions(
+    const AsyncSocketPacketOptions& other) = default;
+AsyncSocketPacketOptions::~AsyncSocketPacketOptions() = default;
 
 PacketTimeUpdateParams::PacketTimeUpdateParams() = default;
 

@@ -46,17 +46,13 @@ struct PacketTimeUpdateParams {
   int64_t srtp_packet_index = -1;  // Required for Rtp Packet authentication.
 };
 
-}  // namespace webrtc
-
-namespace rtc {
-
 // This structure holds meta information for the packet which is about to send
 // over network.
-struct RTC_EXPORT PacketOptions {
-  PacketOptions();
-  explicit PacketOptions(DiffServCodePoint dscp);
-  PacketOptions(const PacketOptions& other);
-  ~PacketOptions();
+struct RTC_EXPORT AsyncSocketPacketOptions {
+  AsyncSocketPacketOptions();
+  explicit AsyncSocketPacketOptions(DiffServCodePoint dscp);
+  AsyncSocketPacketOptions(const AsyncSocketPacketOptions& other);
+  ~AsyncSocketPacketOptions();
 
   DiffServCodePoint dscp = DSCP_NO_CHANGE;
 
@@ -78,9 +74,6 @@ struct RTC_EXPORT PacketOptions {
   // True if this is the last packet of a batch.
   bool last_packet_in_batch = false;
 };
-}  // namespace rtc
-
-namespace webrtc {
 
 // Provides the ability to receive packets asynchronously. Sends are not
 // buffered since it is acceptable to drop packets under high load.
@@ -110,11 +103,11 @@ class RTC_EXPORT AsyncPacketSocket : public sigslot::has_slots<> {
   // Send a packet.
   virtual int Send(const void* pv,
                    size_t cb,
-                   const rtc::PacketOptions& options) = 0;
+                   const AsyncSocketPacketOptions& options) = 0;
   virtual int SendTo(const void* pv,
                      size_t cb,
                      const SocketAddress& addr,
-                     const rtc::PacketOptions& options) = 0;
+                     const AsyncSocketPacketOptions& options) = 0;
 
   // Close the socket.
   virtual int Close() = 0;
@@ -216,6 +209,7 @@ using ::webrtc::AsyncListenSocket;
 using ::webrtc::AsyncPacketSocket;
 using ::webrtc::CopySocketInformationToPacketInfo;
 using ::webrtc::PacketTimeUpdateParams;
+using PacketOptions = ::webrtc::AsyncSocketPacketOptions;
 }  // namespace rtc
 
 #endif  // RTC_BASE_ASYNC_PACKET_SOCKET_H_

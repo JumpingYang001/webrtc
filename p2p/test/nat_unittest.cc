@@ -42,10 +42,8 @@
 #include "test/gtest.h"
 #include "test/wait_until.h"
 
-namespace rtc {
+namespace webrtc {
 namespace {
-
-using ::webrtc::CreateEnvironment;
 
 bool CheckReceive(webrtc::TestClient* client,
                   bool should_receive,
@@ -441,4 +439,4 @@ TEST_F(NatTcpTest, DISABLED_TestConnectOut) {
 }
 
 }  // namespace
-}  // namespace rtc
+}  // namespace webrtc

@@ -352,8 +352,8 @@ void ScreenCapturerSck::OnNewIOSurface(IOSurfaceRef io_surface,
   RTC_LOG(LS_VERBOSE) << "ScreenCapturerSck " << this << " " << __func__
                       << " width=" << IOSurfaceGetWidth(io_surface)
                       << ", height=" << IOSurfaceGetHeight(io_surface) << ".";
-  rtc::ScopedCFTypeRef<IOSurfaceRef> scoped_io_surface(
-      io_surface, rtc::RetainPolicy::RETAIN);
+  rtc::ScopedCFTypeRef<IOSurfaceRef> scoped_io_surface(io_surface,
+                                                       RetainPolicy::RETAIN);
   std::unique_ptr<DesktopFrameIOSurface> desktop_frame_io_surface =
       DesktopFrameIOSurface::Wrap(scoped_io_surface);
   if (!desktop_frame_io_surface) {

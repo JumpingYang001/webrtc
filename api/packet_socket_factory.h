@@ -21,10 +21,6 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_certificate.h"
 #include "rtc_base/system/rtc_export.h"
-namespace rtc {
-
-class AsyncResolverInterface;
-}  // namespace rtc
 
 namespace webrtc {
 

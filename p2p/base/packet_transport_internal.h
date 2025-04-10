@@ -25,10 +25,6 @@
 #include "rtc_base/system/rtc_export.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 #include "rtc_base/thread_annotations.h"
-namespace rtc {
-struct PacketOptions;
-struct SentPacket;
-}  // namespace rtc
 
 namespace webrtc {
 

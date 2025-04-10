@@ -10,22 +10,23 @@
 #ifndef RTC_BASE_NETWORK_RECEIVED_PACKET_H_
 #define RTC_BASE_NETWORK_RECEIVED_PACKET_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 
 #include "api/array_view.h"
+#include "api/transport/ecn_marking.h"
 #include "api/units/timestamp.h"
-#include "rtc_base/network/ecn_marking.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/system/rtc_export.h"
 
-namespace rtc {
+namespace webrtc {
 
-// ReceivedPacket repressent a received IP packet.
+// ReceivedPacket represent a received IP packet.
 // It contains a payload and metadata.
 // ReceivedPacket itself does not put constraints on what payload contains. For
 // example it may contains STUN, SCTP, SRTP, RTP, RTCP.... etc.
-class RTC_EXPORT ReceivedPacket {
+class RTC_EXPORT ReceivedIpPacket {
  public:
   enum DecryptionInfo {
     kNotDecrypted,   // Payload has not yet been decrypted or encryption is not
@@ -36,13 +37,13 @@ class RTC_EXPORT ReceivedPacket {
 
   // Caller must keep memory pointed to by payload and address valid for the
   // lifetime of this ReceivedPacket.
-  ReceivedPacket(rtc::ArrayView<const uint8_t> payload,
-                 const webrtc::SocketAddress& source_address,
-                 std::optional<webrtc::Timestamp> arrival_time = std::nullopt,
-                 EcnMarking ecn = EcnMarking::kNotEct,
-                 DecryptionInfo decryption = kNotDecrypted);
+  ReceivedIpPacket(rtc::ArrayView<const uint8_t> payload,
+                   const webrtc::SocketAddress& source_address,
+                   std::optional<webrtc::Timestamp> arrival_time = std::nullopt,
+                   EcnMarking ecn = EcnMarking::kNotEct,
+                   DecryptionInfo decryption = kNotDecrypted);
 
-  ReceivedPacket CopyAndSet(DecryptionInfo decryption_info) const;
+  ReceivedIpPacket CopyAndSet(DecryptionInfo decryption_info) const;
 
   // Address/port of the packet sender.
   const webrtc::SocketAddress& source_address() const {
@@ -61,7 +62,7 @@ class RTC_EXPORT ReceivedPacket {
 
   const DecryptionInfo& decryption_info() const { return decryption_info_; }
 
-  static ReceivedPacket CreateFromLegacy(
+  static ReceivedIpPacket CreateFromLegacy(
       const char* data,
       size_t size,
       int64_t packet_time_us,
@@ -70,7 +71,7 @@ class RTC_EXPORT ReceivedPacket {
                             packet_time_us, addr);
   }
 
-  static ReceivedPacket CreateFromLegacy(
+  static ReceivedIpPacket CreateFromLegacy(
       const uint8_t* data,
       size_t size,
       int64_t packet_time_us,
@@ -84,5 +85,12 @@ class RTC_EXPORT ReceivedPacket {
   DecryptionInfo decryption_info_;
 };
 
+}  // namespace webrtc
+
+// Re-export symbols from the webrtc namespace for backwards compatibility.
+// TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+namespace rtc {
+using ReceivedPacket = ::webrtc::ReceivedIpPacket;
 }  // namespace rtc
+
 #endif  // RTC_BASE_NETWORK_RECEIVED_PACKET_H_

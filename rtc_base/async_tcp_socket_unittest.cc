@@ -16,7 +16,7 @@
 #include "rtc_base/gunit.h"
 #include "rtc_base/virtual_socket_server.h"
 
-namespace rtc {
+namespace webrtc {
 
 class AsyncTCPSocketTest : public ::testing::Test, public sigslot::has_slots<> {
  public:
@@ -44,4 +44,4 @@ TEST_F(AsyncTCPSocketTest, OnWriteEvent) {
   EXPECT_TRUE(ready_to_send_);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

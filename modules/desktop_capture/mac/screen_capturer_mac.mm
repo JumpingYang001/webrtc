@@ -130,7 +130,7 @@ DesktopRect GetExcludedWindowPixelBounds(CGWindowID window,
 // Create an image of the given region using the given `window_list`.
 // `pixel_bounds` should be in the primary display's coordinate in physical
 // pixels.
-rtc::ScopedCFTypeRef<CGImageRef> CreateExcludedWindowRegionImage(
+webrtc::ScopedCFTypeRef<CGImageRef> CreateExcludedWindowRegionImage(
     const DesktopRect& pixel_bounds,
     float dip_to_pixel_scale,
     CFArrayRef window_list) {
@@ -142,14 +142,14 @@ rtc::ScopedCFTypeRef<CGImageRef> CreateExcludedWindowRegionImage(
   window_bounds.size.width = pixel_bounds.width();
   window_bounds.size.height = pixel_bounds.height();
 
-  return rtc::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImageFromArray(
+  return webrtc::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImageFromArray(
       window_bounds, window_list, kCGWindowImageDefault));
 }
 
 }  // namespace
 
 ScreenCapturerMac::ScreenCapturerMac(
-    rtc::scoped_refptr<DesktopConfigurationMonitor> desktop_config_monitor,
+    webrtc::scoped_refptr<DesktopConfigurationMonitor> desktop_config_monitor,
     bool detect_updated_region,
     bool allow_iosurface)
     : detect_updated_region_(detect_updated_region),
@@ -201,7 +201,7 @@ void ScreenCapturerMac::Start(Callback* callback) {
 void ScreenCapturerMac::CaptureFrame() {
   RTC_DCHECK(thread_checker_.IsCurrent());
   TRACE_EVENT0("webrtc", "creenCapturerMac::CaptureFrame");
-  int64_t capture_start_time_nanos = rtc::TimeNanos();
+  int64_t capture_start_time_nanos = TimeNanos();
 
   queue_.MoveToNextFrame();
   if (queue_.current_frame() && queue_.current_frame()->IsShared()) {
@@ -270,7 +270,7 @@ void ScreenCapturerMac::CaptureFrame() {
   helper_.set_size_most_recent(new_frame->size());
 
   new_frame->set_capture_time_ms((rtc::TimeNanos() - capture_start_time_nanos) /
-                                 rtc::kNumNanosecsPerMillisec);
+                                 webrtc::kNumNanosecsPerMillisec);
   callback_->OnCaptureResult(Result::SUCCESS, std::move(new_frame));
 }
 
@@ -360,7 +360,7 @@ bool ScreenCapturerMac::CgBlit(const DesktopFrame& frame,
     copy_region.Translate(-display_bounds.left(), -display_bounds.top());
 
     DesktopRect excluded_window_bounds;
-    rtc::ScopedCFTypeRef<CGImageRef> excluded_image;
+    webrtc::ScopedCFTypeRef<CGImageRef> excluded_image;
     if (excluded_window_ && window_list) {
       // Get the region of the excluded window relative the primary display.
       excluded_window_bounds = GetExcludedWindowPixelBounds(
@@ -404,7 +404,7 @@ bool ScreenCapturerMac::CgBlit(const DesktopFrame& frame,
 
     if (excluded_image) {
       CGDataProviderRef provider = CGImageGetDataProvider(excluded_image.get());
-      rtc::ScopedCFTypeRef<CFDataRef> excluded_image_data(
+      webrtc::ScopedCFTypeRef<CFDataRef> excluded_image_data(
           CGDataProviderCopyData(provider));
       RTC_DCHECK(excluded_image_data);
       display_base_address = CFDataGetBytePtr(excluded_image_data.get());
@@ -497,7 +497,7 @@ bool ScreenCapturerMac::RegisterRefreshAndMoveHandlers() {
       }
     };
 
-    rtc::ScopedCFTypeRef<CFDictionaryRef> properties_dict(
+    webrtc::ScopedCFTypeRef<CFDictionaryRef> properties_dict(
         CFDictionaryCreate(kCFAllocatorDefault,
                            (const void*[]){kCGDisplayStreamShowCursor},
                            (const void*[]){kCFBooleanFalse},
@@ -572,8 +572,8 @@ void ScreenCapturerMac::ScreenRefresh(CGDirectDisplayID display_id,
   // See https://bugs.chromium.org/p/webrtc/issues/detail?id=8652 for details.
   desktop_frame_provider_.InvalidateIOSurface(
       display_id,
-      rtc::ScopedCFTypeRef<IOSurfaceRef>(io_surface,
-                                         rtc::RetainPolicy::RETAIN));
+      webrtc::ScopedCFTypeRef<IOSurfaceRef>(io_surface,
+                                            webrtc::RetainPolicy::RETAIN));
   helper_.InvalidateRegion(region);
 }
 

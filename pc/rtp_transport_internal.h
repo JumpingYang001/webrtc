@@ -26,10 +26,6 @@
 #include "rtc_base/socket.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
 
-namespace rtc {
-struct PacketOptions;
-}  // namespace rtc
-
 namespace webrtc {
 
 class CopyOnWriteBuffer;

@@ -34,7 +34,7 @@ struct TestTypeTraits {
 }  // namespace
 
 using ScopedTestType =
-    rtc::internal::ScopedTypeRef<TestTypeRef, TestTypeTraits>;
+    webrtc::internal::ScopedTypeRef<TestTypeRef, TestTypeTraits>;
 
 // In these tests we sometime introduce variables just to
 // observe side-effects. Ignore the compilers complaints.
@@ -54,7 +54,7 @@ using ScopedTestType =
 
 - (void)testShouldRetainWithPolicy {
   TestType a;
-  ScopedTestType ref(&a, rtc::RetainPolicy::RETAIN);
+  ScopedTestType ref(&a, webrtc::RetainPolicy::RETAIN);
   XCTAssertEqual(1, a.retain_count);
 }
 
@@ -62,7 +62,7 @@ using ScopedTestType =
   TestType a;
   XCTAssertEqual(0, a.retain_count);
   {
-    ScopedTestType ref(&a, rtc::RetainPolicy::RETAIN);
+    ScopedTestType ref(&a, webrtc::RetainPolicy::RETAIN);
     XCTAssertEqual(1, a.retain_count);
   }
   XCTAssertEqual(0, a.retain_count);
@@ -72,7 +72,7 @@ using ScopedTestType =
   TestType a;
   XCTAssertEqual(0, a.retain_count);
   {
-    ScopedTestType ref1(&a, rtc::RetainPolicy::RETAIN);
+    ScopedTestType ref1(&a, webrtc::RetainPolicy::RETAIN);
     XCTAssertEqual(1, a.retain_count);
     ScopedTestType ref2 = ref1;
     XCTAssertEqual(2, a.retain_count);
@@ -84,7 +84,7 @@ using ScopedTestType =
   TestType a;
   XCTAssertEqual(0, a.retain_count);
   {
-    ScopedTestType ref(&a, rtc::RetainPolicy::RETAIN);
+    ScopedTestType ref(&a, webrtc::RetainPolicy::RETAIN);
     XCTAssertEqual(1, a.retain_count);
     TestTypeRef b = ref.release();
   }

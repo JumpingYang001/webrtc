@@ -29,8 +29,6 @@
 
 #include <string>
 
-#include "absl/strings/string_view.h"
-
 namespace webrtc {
 
 const size_t SIZE_UNKNOWN = static_cast<size_t>(-1);

@@ -39,11 +39,9 @@
 #include "rtc_base/virtual_socket_server.h"
 #include "test/gtest.h"
 
-namespace rtc {
+namespace webrtc {
 namespace {
 
-using ::webrtc::RepeatingTaskHandle;
-using ::webrtc::TimeDelta;
 using ::webrtc::testing::SSE_CLOSE;
 using ::webrtc::testing::SSE_ERROR;
 using ::webrtc::testing::SSE_OPEN;
@@ -1137,4 +1135,4 @@ TEST_F(VirtualSocketServerTest, CreatesStandardDistribution) {
 }
 
 }  // namespace
-}  // namespace rtc
+}  // namespace webrtc

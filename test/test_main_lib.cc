@@ -148,7 +148,7 @@ class TestMainImpl : public TestMain {
     metrics::Enable();
 
 #if defined(WEBRTC_WIN)
-    winsock_init_ = std::make_unique<rtc::WinsockInitializer>();
+    winsock_init_ = std::make_unique<WinsockInitializer>();
 #endif
 
     // Initialize SSL which are used by several tests.
@@ -190,12 +190,12 @@ class TestMainImpl : public TestMain {
     }
 
 #if defined(WEBRTC_IOS)
-    rtc::test::InitTestSuite(
-        RUN_ALL_TESTS, argc, argv,
-        absl::GetFlag(FLAGS_write_perf_output_on_ios),
-        absl::GetFlag(FLAGS_export_perf_results_new_api),
-        absl::GetFlag(FLAGS_webrtc_test_metrics_output_path), metrics_to_plot);
-    rtc::test::RunTestsFromIOSApp();
+    test::InitTestSuite(RUN_ALL_TESTS, argc, argv,
+                        absl::GetFlag(FLAGS_write_perf_output_on_ios),
+                        absl::GetFlag(FLAGS_export_perf_results_new_api),
+                        absl::GetFlag(FLAGS_webrtc_test_metrics_output_path),
+                        metrics_to_plot);
+    test::RunTestsFromIOSApp();
     int exit_code = 0;
 #else
     int exit_code = RUN_ALL_TESTS();
@@ -260,7 +260,7 @@ class TestMainImpl : public TestMain {
 
  private:
 #if defined(WEBRTC_WIN)
-  std::unique_ptr<rtc::WinsockInitializer> winsock_init_;
+  std::unique_ptr<WinsockInitializer> winsock_init_;
 #endif
 #if defined(RTC_USE_PERFETTO)
   std::unique_ptr<perfetto::TracingSession> tracing_session_;

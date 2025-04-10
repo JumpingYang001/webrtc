@@ -73,9 +73,9 @@ int PASCAL wWinMain(HINSTANCE instance,
                     HINSTANCE prev_instance,
                     wchar_t* cmd_line,
                     int cmd_show) {
-  rtc::WinsockInitializer winsock_init;
-  rtc::PhysicalSocketServer ss;
-  rtc::AutoSocketServerThread main_thread(&ss);
+  webrtc::WinsockInitializer winsock_init;
+  webrtc::PhysicalSocketServer ss;
+  webrtc::AutoSocketServerThread main_thread(&ss);
 
   WindowsCommandLineArguments win_args;
   int argc = win_args.argc();
