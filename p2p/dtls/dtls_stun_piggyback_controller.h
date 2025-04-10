@@ -91,6 +91,7 @@ class DtlsStunPiggybackController {
  private:
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
   bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
+  uint32_t pending_packet_pos_ RTC_GUARDED_BY(sequence_checker_) = 0;
   std::vector<std::pair<uint32_t, std::unique_ptr<rtc::Buffer>>>
       pending_packets_ RTC_GUARDED_BY(sequence_checker_);
   absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback_;

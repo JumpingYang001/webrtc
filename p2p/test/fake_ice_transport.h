@@ -63,11 +63,12 @@ class FakeIceTransport : public IceTransportInternal {
  public:
   explicit FakeIceTransport(absl::string_view name,
                             int component,
-                            Thread* network_thread = nullptr)
+                            Thread* network_thread = nullptr,
+                            absl::string_view field_trials_string = "")
       : name_(name),
         component_(component),
         network_thread_(network_thread ? network_thread : Thread::Current()),
-        field_trials_("") {
+        field_trials_(field_trials_string) {
     RTC_DCHECK(network_thread_);
   }
 

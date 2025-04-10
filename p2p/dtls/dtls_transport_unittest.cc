@@ -113,12 +113,15 @@ class DtlsTestClient : public sigslot::has_slots<> {
   void set_async_delay(int async_delay_ms) { async_delay_ms_ = async_delay_ms; }
 
   // Set up fake ICE transport and real DTLS transport under test.
-  void SetupTransports(IceRole role, bool rtt_estimate = true) {
+  void SetupTransports(IceRole role,
+                       bool rtt_estimate = true,
+                       absl::string_view field_trials_string = "") {
     dtls_transport_ = nullptr;
     fake_ice_transport_ = nullptr;
 
-    fake_ice_transport_.reset(
-        new FakeIceTransport(absl::StrCat("fake-", name_), 0));
+    fake_ice_transport_.reset(new FakeIceTransport(
+        absl::StrCat("fake-", name_), 0,
+        /* network_thread= */ nullptr, field_trials_string));
     if (rtt_estimate) {
       fake_ice_transport_->set_rtt_estimate(
           async_delay_ms_ ? std::optional<int>(async_delay_ms_) : std::nullopt,
@@ -171,9 +174,23 @@ class DtlsTestClient : public sigslot::has_slots<> {
     return true;
   }
 
-  bool SendIcePing() { return fake_ice_transport_->SendIcePing(); }
+  bool SendIcePing(int n = 1) {
+    for (int i = 0; i < n; i++) {
+      if (!fake_ice_transport_->SendIcePing()) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-  bool SendIcePingConf() { return fake_ice_transport_->SendIcePingConf(); }
+  bool SendIcePingConf(int n = 1) {
+    for (int i = 0; i < n; i++) {
+      if (!fake_ice_transport_->SendIcePingConf()) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   int received_dtls_client_hellos() const {
     return received_dtls_client_hellos_;
@@ -666,6 +683,7 @@ struct EndpointConfig {
   bool dtls_in_stun = false;
   std::optional<IceRole> ice_role;
   std::optional<SSLRole> ssl_role;
+  bool pqc = false;
 
   template <typename Sink>
   friend void AbslStringify(Sink& sink, const EndpointConfig& config) {
@@ -688,7 +706,16 @@ struct EndpointConfig {
     absl::Format(&sink, " dtls_in_stun: %u ice: ", config.dtls_in_stun);
     sink.Append(config.ice_role == ICEROLE_CONTROLLED ? "controlled"
                                                       : "controlling");
+    absl::Format(&sink, " pqc: %u", config.pqc);
     sink.Append(" ]");
+  }
+
+  int GetFirstFlightPackets() const {
+    if (pqc) {
+      return 2;
+    } else {
+      return 1;
+    }
   }
 };
 
@@ -707,10 +734,12 @@ class DtlsTransportInternalImplVersionTest
     client1_.set_async_delay(50);
     client2_.set_async_delay(50);
 
-    client1_.SetupTransports(config1.ice_role.value_or(ICEROLE_CONTROLLING),
-                             rtt_estimate);
-    client2_.SetupTransports(config2.ice_role.value_or(ICEROLE_CONTROLLED),
-                             rtt_estimate);
+    client1_.SetupTransports(
+        config1.ice_role.value_or(ICEROLE_CONTROLLING), rtt_estimate,
+        config1.pqc ? "WebRTC-EnableDtlsPqc/Enabled/" : "");
+    client2_.SetupTransports(
+        config2.ice_role.value_or(ICEROLE_CONTROLLED), rtt_estimate,
+        config2.pqc ? "WebRTC-EnableDtlsPqc/Enabled/" : "");
     client1_.dtls_transport()->SetDtlsRole(
         config1.ssl_role.value_or(SSL_CLIENT));
     client2_.dtls_transport()->SetDtlsRole(
@@ -791,8 +820,8 @@ class DtlsTransportInternalImplVersionTest
         });
 
     EXPECT_TRUE(client1_.ConnectIceTransport(&client2_));
-    client1_.SendIcePing();
-    client2_.SendIcePingConf();
+    client1_.SendIcePing(std::get<0>(GetParam()).GetFirstFlightPackets());
+    client2_.SendIcePingConf(std::get<0>(GetParam()).GetFirstFlightPackets());
     client2_.SendIcePing();
     client1_.SendIcePingConf();
 
@@ -843,6 +872,11 @@ static const EndpointConfig kEndpointVariants[] = {
         .dtls_in_stun = false,
     },
     {
+        .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+        .dtls_in_stun = false,
+        .pqc = true,
+    },
+    {
         .max_protocol_version = SSL_PROTOCOL_DTLS_10,
         .dtls_in_stun = true,
     },
@@ -853,6 +887,11 @@ static const EndpointConfig kEndpointVariants[] = {
     {
         .max_protocol_version = SSL_PROTOCOL_DTLS_13,
         .dtls_in_stun = true,
+    },
+    {
+        .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+        .dtls_in_stun = true,
+        .pqc = true,
     },
 };
 
@@ -878,6 +917,10 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeFlights) {
        std::get<1>(GetParam()).dtls_in_stun)) {
     GTEST_SKIP() << "This test does not support dtls in stun";
   }
+  if (std::get<0>(GetParam()).GetFirstFlightPackets() > 1) {
+    GTEST_SKIP() << "This test does not support pqc";
+  }
+
   Prepare();
   auto [dtls_version_bytes, events] = RunHandshake({});
 
@@ -893,6 +936,9 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseFirstClientPacket) {
       (std::get<0>(GetParam()).dtls_in_stun &&
        std::get<1>(GetParam()).dtls_in_stun)) {
     GTEST_SKIP() << "This test does not support dtls in stun";
+  }
+  if (std::get<0>(GetParam()).GetFirstFlightPackets() > 1) {
+    GTEST_SKIP() << "This test does not support pqc";
   }
 
   Prepare();
@@ -913,6 +959,9 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseSecondClientPacket) {
       (std::get<0>(GetParam()).dtls_in_stun &&
        std::get<1>(GetParam()).dtls_in_stun)) {
     GTEST_SKIP() << "This test does not support dtls in stun";
+  }
+  if (std::get<0>(GetParam()).GetFirstFlightPackets() > 1) {
+    GTEST_SKIP() << "This test does not support pqc";
   }
 
   Prepare();
@@ -1542,12 +1591,59 @@ std::vector<std::tuple<EndpointConfig, EndpointConfig>> Dtls13WithDtlsInStun() {
               .dtls_in_stun = true,
               .ice_role = ICEROLE_CONTROLLING,
               .ssl_role = SSL_CLIENT,
+              .pqc = false,
           },
           EndpointConfig{
               .max_protocol_version = SSL_PROTOCOL_DTLS_13,
               .dtls_in_stun = true,
               .ice_role = ICEROLE_CONTROLLED,
               .ssl_role = SSL_SERVER,
+              .pqc = false,
+          }),
+      std::make_tuple(
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLING,
+              .ssl_role = SSL_CLIENT,
+              .pqc = true,
+          },
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLED,
+              .ssl_role = SSL_SERVER,
+              .pqc = false,
+          }),
+      std::make_tuple(
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLING,
+              .ssl_role = SSL_CLIENT,
+              .pqc = false,
+          },
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLED,
+              .ssl_role = SSL_SERVER,
+              .pqc = true,
+          }),
+      std::make_tuple(
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLING,
+              .ssl_role = SSL_CLIENT,
+              .pqc = true,
+          },
+          EndpointConfig{
+              .max_protocol_version = SSL_PROTOCOL_DTLS_13,
+              .dtls_in_stun = true,
+              .ice_role = ICEROLE_CONTROLLED,
+              .ssl_role = SSL_SERVER,
+              .pqc = true,
           }),
   };
 }
@@ -1560,32 +1656,39 @@ TEST_P(DtlsInStunTest, OptimalDtls13Handshake) {
   RTC_LOG(LS_INFO) << "client1: " << std::get<0>(GetParam());
   RTC_LOG(LS_INFO) << "client2: " << std::get<1>(GetParam());
 
+  int client1_first_flight_packets =
+      std::get<0>(GetParam()).GetFirstFlightPackets();
+  int client2_first_flight_packets =
+      std::get<1>(GetParam()).GetFirstFlightPackets();
+
   Prepare(/* rtt_estimate= */ true);
   AddPacketLogging();
 
   ASSERT_TRUE(client1_.ConnectIceTransport(&client2_));
 
-  client2_.SendIcePing();
-  client1_.SendIcePing();
+  client1_.SendIcePing(client1_first_flight_packets);
+  client2_.SendIcePing(client2_first_flight_packets);
+
   ASSERT_TRUE(WaitUntil([&] {
     return client1_.fake_ice_transport()->GetCountOfReceivedStunMessages(
-               STUN_BINDING_REQUEST) == 1;
+               STUN_BINDING_REQUEST) == client2_first_flight_packets;
   }));
   ASSERT_TRUE(WaitUntil([&] {
     return client2_.fake_ice_transport()->GetCountOfReceivedStunMessages(
-               STUN_BINDING_REQUEST) == 1;
+               STUN_BINDING_REQUEST) == client1_first_flight_packets;
   }));
 
-  client2_.SendIcePingConf();
-  client1_.SendIcePingConf();
+  client2_.SendIcePingConf(client1_first_flight_packets);
+  client1_.SendIcePingConf(client2_first_flight_packets);
+
   ASSERT_TRUE(WaitUntil([&] {
     return client1_.fake_ice_transport()->GetCountOfReceivedStunMessages(
-               STUN_BINDING_RESPONSE) == 1;
+               STUN_BINDING_RESPONSE) == client1_first_flight_packets;
   }));
   EXPECT_TRUE(client1_.dtls_transport()->writable());
   ASSERT_TRUE(WaitUntil([&] {
     return client2_.fake_ice_transport()->GetCountOfReceivedStunMessages(
-               STUN_BINDING_RESPONSE) == 1;
+               STUN_BINDING_RESPONSE) == client2_first_flight_packets;
   }));
   EXPECT_FALSE(client2_.dtls_transport()->writable());
 

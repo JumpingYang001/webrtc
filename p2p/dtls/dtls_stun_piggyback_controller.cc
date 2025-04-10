@@ -49,6 +49,7 @@ void DtlsStunPiggybackController::SetDtlsHandshakeComplete(bool is_dtls_client,
   // the last flight from the server.
   // For DTLS 1.3 this is reversed since the handshake has one round trip less.
   if ((is_dtls_client && !is_dtls13) || (!is_dtls_client && is_dtls13)) {
+    pending_packet_pos_ = 0;
     pending_packets_.clear();
   }
 
@@ -71,18 +72,11 @@ void DtlsStunPiggybackController::CapturePacket(
   // is made for 1-packet at a time. Use the writing_packets_ variable to keep
   // track of a full batch. The writing_packets_ is reset in Flush.
   if (!writing_packets_) {
+    pending_packet_pos_ = 0;
     pending_packets_.clear();
     writing_packets_ = true;
   }
 
-  // BoringSSL writes burst of packets...but the interface
-  // is made for 1-packet at a time. Use the writing_packets_ variable to keep
-  // track of a full batch. The writing_packets_ is reset in
-  // GetDataToPiggyback().
-  if (!writing_packets_) {
-    pending_packets_.clear();
-    writing_packets_ = true;
-  }
   pending_packets_.push_back(std::make_pair(
       ComputeDtlsPacketHash(data),
       std::make_unique<webrtc::Buffer>(data.data(), data.size())));
@@ -90,6 +84,7 @@ void DtlsStunPiggybackController::CapturePacket(
 
 void DtlsStunPiggybackController::ClearCachedPacketForTesting() {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
+  pending_packet_pos_ = 0;
   pending_packets_.clear();
 }
 
@@ -125,7 +120,9 @@ DtlsStunPiggybackController::GetDataToPiggyback(
     return std::nullopt;
   }
 
-  return absl::string_view(*pending_packets_.back().second.get());
+  auto pos = pending_packet_pos_;
+  pending_packet_pos_ = (pos + 1) % pending_packets_.size();
+  return absl::string_view(*pending_packets_[pos].second.get());
 }
 
 std::optional<absl::string_view> DtlsStunPiggybackController::GetAckToPiggyback(
@@ -165,6 +162,7 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
   if (state_ == State::PENDING && data == nullptr && ack == nullptr) {
     RTC_LOG(LS_INFO) << "DTLS-STUN piggybacking complete.";
     state_ = State::COMPLETE;
+    pending_packet_pos_ = 0;
     pending_packets_.clear();
     handshake_ack_writer_.Clear();
     handshake_messages_received_.clear();
@@ -192,12 +190,18 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
 
       // Remove all acked packets from pending_packets_.
       if (!acked_packets.empty()) {
+        uint32_t before = pending_packets_.size();
         pending_packets_.erase(
             std::remove_if(pending_packets_.begin(), pending_packets_.end(),
                            [&](const auto& val) {
                              return acked_packets.contains(val.first);
                            }),
             pending_packets_.end());
+        uint32_t after = pending_packets_.size();
+        uint32_t removed = before - after;
+        if (pending_packet_pos_ >= removed) {
+          pending_packet_pos_ -= removed;
+        }
       }
     }
   }
@@ -209,6 +213,7 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
   if (data == nullptr && ack != nullptr && state_ == State::PENDING) {
     RTC_LOG(LS_INFO) << "DTLS-STUN piggybacking complete.";
     state_ = State::COMPLETE;
+    pending_packet_pos_ = 0;
     pending_packets_.clear();
     handshake_ack_writer_.Clear();
     handshake_messages_received_.clear();

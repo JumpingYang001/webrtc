@@ -450,6 +450,16 @@ bool DtlsTransportInternalImpl::SetupDtls() {
     downward_ = downward_ptr;
   }
 
+  // TODO(jonaso,webrtc:367395350): Add more clever handling of MTU
+  // (such as automatic packetization smoothing).
+  if (dtls_in_stun_) {
+    // - This is only needed when using PQC but we don't know that here.
+    // - 800 is sufficiently small so that dtls pqc handshake packets
+    // can get put into STUN attributes.
+    const int kDtlsMtu = 800;
+    dtls_->SetMTU(kDtlsMtu);
+  }
+
   dtls_->SetIdentity(local_certificate_->identity()->Clone());
   dtls_->SetMaxProtocolVersion(ssl_max_version_);
   dtls_->SetServerRole(*dtls_role_);

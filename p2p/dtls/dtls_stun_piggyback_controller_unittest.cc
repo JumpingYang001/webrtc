@@ -378,4 +378,38 @@ TEST_F(DtlsStunPiggybackControllerTest, LimitAckSize) {
             }));
 }
 
+TEST_F(DtlsStunPiggybackControllerTest, MultiPacketRoundRobin) {
+  // Let's pretend that a flight is 3 packets...
+  server_.CapturePacket(dtls_flight1);
+  server_.CapturePacket(dtls_flight2);
+  server_.CapturePacket(dtls_flight3);
+  server_.Flush();
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight1.begin(), dtls_flight1.end()));
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight2.begin(), dtls_flight2.end()));
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight3.begin(), dtls_flight3.end()));
+
+  server_.ReportDataPiggybacked(
+      nullptr, WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK,
+                          AsAckAttribute({ComputeDtlsPacketHash(dtls_flight1)}))
+                   .get());
+
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight2.begin(), dtls_flight2.end()));
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight3.begin(), dtls_flight3.end()));
+
+  server_.ReportDataPiggybacked(
+      nullptr, WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK,
+                          AsAckAttribute({ComputeDtlsPacketHash(dtls_flight3)}))
+                   .get());
+
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight2.begin(), dtls_flight2.end()));
+  EXPECT_EQ(server_.GetDataToPiggyback(STUN_BINDING_REQUEST),
+            std::string(dtls_flight2.begin(), dtls_flight2.end()));
+}
+
 }  // namespace webrtc
