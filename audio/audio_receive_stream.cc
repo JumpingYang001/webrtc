@@ -448,7 +448,6 @@ void AudioReceiveStreamImpl::SetLocalSsrc(uint32_t local_ssrc) {
 
 uint32_t AudioReceiveStreamImpl::local_ssrc() const {
   RTC_DCHECK_RUN_ON(&packet_sequence_checker_);
-  RTC_DCHECK_EQ(config_.rtp.local_ssrc, channel_receive_->GetLocalSsrc());
   return config_.rtp.local_ssrc;
 }
 

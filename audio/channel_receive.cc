@@ -212,7 +212,6 @@ class ChannelReceive : public ChannelReceiveInterface,
                              frame_decryptor) override;
 
   void OnLocalSsrcChange(uint32_t local_ssrc) override;
-  uint32_t GetLocalSsrc() const override;
 
   void RtcpPacketTypesCounterUpdated(
       uint32_t ssrc,
@@ -965,11 +964,6 @@ void ChannelReceive::SetFrameDecryptor(
 void ChannelReceive::OnLocalSsrcChange(uint32_t local_ssrc) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   rtp_rtcp_->SetLocalSsrc(local_ssrc);
-}
-
-uint32_t ChannelReceive::GetLocalSsrc() const {
-  RTC_DCHECK_RUN_ON(&worker_thread_checker_);
-  return rtp_rtcp_->local_media_ssrc();
 }
 
 NetworkStatistics ChannelReceive::GetNetworkStatistics(
