@@ -1919,8 +1919,9 @@ TEST_F(SdpOfferAnswerMungingTest, IceUfragWithCheckDisabledForTesting) {
       ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
 }
 
-TEST_F(SdpOfferAnswerMungingTest, IcePwd) {
-  auto pc = CreatePeerConnection();
+TEST_F(SdpOfferAnswerMungingTest, IcePwdCheckDisabledByFieldTrial) {
+  auto pc = CreatePeerConnection(
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfrag/Disabled/"));
   pc->AddAudioTrack("audio_track", {});
 
   auto offer = pc->CreateOffer();
@@ -1933,6 +1934,23 @@ TEST_F(SdpOfferAnswerMungingTest, IcePwd) {
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
 }
+
+TEST_F(SdpOfferAnswerMungingTest, IcePwd) {
+  auto pc = CreatePeerConnection(
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfrag/Enabled/"));
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& transport_infos = offer->description()->transport_infos();
+  ASSERT_EQ(transport_infos.size(), 1u);
+  transport_infos[0].description.ice_pwd = "amungedicepwdthisshouldberejected";
+  RTCError error;
+  EXPECT_FALSE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+}
+
 TEST_F(SdpOfferAnswerMungingTest, IceMode) {
   auto pc = CreatePeerConnection();
   pc->AddAudioTrack("audio_track", {});
