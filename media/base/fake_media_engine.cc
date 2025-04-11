@@ -37,6 +37,7 @@
 #include "api/video/video_source_interface.h"
 #include "call/audio_state.h"
 #include "call/call.h"
+#include "media/base/audio_source.h"
 #include "media/base/codec.h"
 #include "media/base/media_channel.h"
 #include "media/base/media_config.h"
@@ -664,8 +665,18 @@ FakeVideoEngine::CreateReceiveChannel(
                                                      call->network_thread());
   return ch;
 }
-std::vector<Codec> FakeVideoEngine::LegacySendCodecs(bool /* use_rtx */) const {
-  return send_codecs_;
+std::vector<Codec> FakeVideoEngine::LegacySendCodecs(bool use_rtx) const {
+  if (use_rtx) {
+    return send_codecs_;
+  } else {
+    std::vector<Codec> non_rtx_codecs;
+    for (auto& codec : send_codecs_) {
+      if (codec.name != "rtx") {
+        non_rtx_codecs.push_back(codec);
+      }
+    }
+    return non_rtx_codecs;
+  }
 }
 
 std::vector<Codec> FakeVideoEngine::LegacyRecvCodecs(bool /* use_rtx */) const {

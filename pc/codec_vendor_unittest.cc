@@ -17,16 +17,32 @@
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/field_trials.h"
+#include "api/media_types.h"
+#include "api/rtc_error.h"
+#include "api/rtp_transceiver_direction.h"
+#include "call/fake_payload_type_suggester.h"
 #include "media/base/codec.h"
 #include "media/base/codec_list.h"
+#include "media/base/fake_media_engine.h"
 #include "media/base/media_constants.h"
 #include "media/base/test_utils.h"
+#include "pc/media_options.h"
+#include "pc/rtp_parameters_conversion.h"
 #include "rtc_base/checks.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 
 namespace webrtc {
 namespace {
+
+using cricket::FakeMediaEngine;
+
+using testing::Contains;
+using testing::Eq;
+using testing::Field;
 
 Codec CreateRedAudioCodec(absl::string_view encoding_id) {
   Codec red = CreateAudioCodec(63, "red", 48000, 2);
@@ -105,6 +121,76 @@ TEST(CodecVendorTest, TestSetAudioCodecs) {
   EXPECT_EQ(no_codecs, codec_vendor.audio_send_codecs());
   EXPECT_EQ(no_codecs, codec_vendor.audio_recv_codecs());
   EXPECT_EQ(no_codecs, codec_vendor.audio_sendrecv_codecs());
+}
+
+TEST(CodecVendorTest, VideoRtxIsIncludedWhenAskedFor) {
+  Environment env = CreateEnvironment();
+  FakeMediaEngine media_engine;
+  std::vector<Codec> video_codecs({
+      CreateVideoCodec(97, "vp8"),
+      CreateVideoRtxCodec(98, 97),
+  });
+  FakePayloadTypeSuggester pt_suggester;
+  media_engine.SetVideoSendCodecs(video_codecs);
+  CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ true,
+                           env.field_trials());
+  RTCErrorOr<std::vector<Codec>> offered_codecs =
+      codec_vendor.GetNegotiatedCodecsForOffer(
+          MediaDescriptionOptions(MediaType::VIDEO, "mid",
+                                  RtpTransceiverDirection::kSendOnly, false),
+          MediaSessionOptions(), nullptr, pt_suggester);
+  EXPECT_THAT(offered_codecs.value(),
+              Contains(Field("name", &Codec::name, "rtx")));
+}
+
+TEST(CodecVendorTest, VideoRtxIsExcludedWhenNotAskedFor) {
+  Environment env = CreateEnvironment();
+  FakeMediaEngine media_engine;
+  std::vector<Codec> video_codecs({
+      CreateVideoCodec(97, "vp8"),
+      CreateVideoRtxCodec(98, 97),
+  });
+  FakePayloadTypeSuggester pt_suggester;
+  media_engine.SetVideoSendCodecs(video_codecs);
+  CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ false,
+                           env.field_trials());
+  RTCErrorOr<std::vector<Codec>> offered_codecs =
+      codec_vendor.GetNegotiatedCodecsForOffer(
+          MediaDescriptionOptions(MediaType::VIDEO, "mid",
+                                  RtpTransceiverDirection::kSendOnly, false),
+          MediaSessionOptions(), nullptr, pt_suggester);
+  EXPECT_THAT(offered_codecs.value(),
+              Not(Contains(Field("name", &Codec::name, "rtx"))));
+}
+
+TEST(CodecVendorTest, PreferencesAffectCodecChoice) {
+  Environment env = CreateEnvironment();
+  FakeMediaEngine media_engine;
+  std::vector<Codec> video_codecs({
+      CreateVideoCodec(97, "vp8"),
+      CreateVideoRtxCodec(98, 97),
+      CreateVideoCodec(99, "vp9"),
+      CreateVideoRtxCodec(99, 100),
+  });
+  media_engine.SetVideoSendCodecs(video_codecs);
+  CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ false,
+                           env.field_trials());
+  MediaDescriptionOptions options(MediaType::VIDEO, "mid",
+                                  RtpTransceiverDirection::kSendOnly, false);
+  options.codec_preferences = {
+      ToRtpCodecCapability(CreateVideoCodec(-1, "vp9")),
+  };
+  FakePayloadTypeSuggester pt_suggester;
+
+  RTCErrorOr<std::vector<Codec>> offered_codecs =
+      codec_vendor.GetNegotiatedCodecsForOffer(options, MediaSessionOptions(),
+                                               nullptr, pt_suggester);
+  ASSERT_TRUE(offered_codecs.ok());
+  EXPECT_THAT(offered_codecs.value(),
+              Contains(Field("name", &Codec::name, "vp9")));
+  EXPECT_THAT(offered_codecs.value(),
+              Not(Contains(Field("name", &Codec::name, "vp8"))));
+  EXPECT_THAT(offered_codecs.value().size(), Eq(1));
 }
 
 }  // namespace
