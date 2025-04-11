@@ -12,11 +12,11 @@
 #define VIDEO_CORRUPTION_DETECTION_EVALUATION_UTILS_H_
 
 #include <cstdint>
-#include <cstdio>
 #include <string>
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "rtc_base/system/file_wrapper.h"
 
 namespace webrtc {
 
@@ -42,7 +42,7 @@ class TempY4mFileCreator {
  private:
   // Writes the file header. It populates file header with the width, height and
   // framerate information given by the class constructor.
-  void WriteFileHeader(FILE* video_file) const;
+  void WriteFileHeader(FileWrapper& video_file) const;
 
   const int width_;
   const int height_;

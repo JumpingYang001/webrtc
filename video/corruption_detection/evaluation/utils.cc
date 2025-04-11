@@ -19,6 +19,7 @@
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
+#include "rtc_base/system/file_wrapper.h"
 #include "test/testsupport/file_utils.h"
 
 namespace webrtc {
@@ -38,7 +39,7 @@ TempY4mFileCreator::TempY4mFileCreator(int width, int height, int framerate)
       height_(height),
       framerate_(framerate),
       frame_size_(width * height * 3 / 2),
-      y4m_filepath_(test::TempFilename(test::OutputPath(), "temp_video.y4m")) {
+      y4m_filepath_(test::TempFilename(test::OutputPath(), "temp_video")) {
   // A file with the given name path should just have been created.
   RTC_CHECK_EQ(test::GetFileSize(y4m_filepath_), 0);
 }
@@ -52,33 +53,28 @@ void TempY4mFileCreator::CreateTempY4mFile(
   RTC_CHECK_EQ(file_content.size() % frame_size_, 0)
       << "Content size is not a multiple of frame size. Probably some data is "
          "missing.";
-  FILE* video_file = fopen(y4m_filepath_.c_str(), "wb");
-  RTC_CHECK(video_file);
+  FileWrapper video_file = FileWrapper::OpenWriteOnly(y4m_filepath_);
+  RTC_CHECK(video_file.is_open());
 
   WriteFileHeader(video_file);
 
   // Write frame content.
   int frame_number = file_content.size() / frame_size_;
   for (int frame_index = 0; frame_index < frame_number; ++frame_index) {
-    size_t written_bytes_header =
-        fwrite(kFrameHeader, 1, sizeof(kFrameHeader) - 1, video_file);
+    RTC_CHECK(video_file.Write(kFrameHeader, sizeof(kFrameHeader) - 1));
     RTC_CHECK_LT(frame_size_ * frame_index, file_content.size());
-    size_t written_bytes_content =
-        fwrite(file_content.data() + frame_size_ * frame_index, 1, frame_size_,
-               video_file);
-    RTC_CHECK_EQ(written_bytes_header + written_bytes_content,
-                 sizeof(kFrameHeader) - 1 + frame_size_);
+    RTC_CHECK(video_file.Write(file_content.data() + frame_size_ * frame_index,
+                               frame_size_));
   }
 
-  // `fclose` returns 0 on success.
-  RTC_CHECK_EQ(fclose(video_file), 0);
+  RTC_CHECK(video_file.Flush());
 }
 
-void TempY4mFileCreator::WriteFileHeader(FILE* video_file) const {
+void TempY4mFileCreator::WriteFileHeader(FileWrapper& video_file) const {
   StringBuilder frame_header;
   frame_header << "YUV4MPEG2 W" << width_ << " H" << height_ << " F"
                << framerate_ << ":1 C420\n";
-  fwrite(frame_header.str().data(), 1, frame_header.size(), video_file);
+  RTC_CHECK(video_file.Write(frame_header.str().c_str(), frame_header.size()));
 }
 
 Y4mMetadata ReadMetadataFromY4mHeader(absl::string_view clip_path) {
