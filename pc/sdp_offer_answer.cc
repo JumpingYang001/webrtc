@@ -2370,6 +2370,33 @@ void SdpOfferAnswerHandler::PlanBUpdateSendersAndReceivers(
   UpdateEndedRemoteMediaStreams();
 }
 
+void SdpOfferAnswerHandler::ReportInitialSdpMunging(bool had_local_description,
+                                                    SdpType type) {
+  // Report SDP munging of the initial call to setLocalDescription separately.
+  if (!had_local_description) {
+    switch (type) {
+      case SdpType::kOffer:
+        RTC_HISTOGRAM_ENUMERATION(
+            "WebRTC.PeerConnection.SdpMunging.Offer.Initial",
+            last_sdp_munging_type_, SdpMungingType::kMaxValue);
+        break;
+      case SdpType::kAnswer:
+        RTC_HISTOGRAM_ENUMERATION(
+            "WebRTC.PeerConnection.SdpMunging.Answer.Initial",
+            last_sdp_munging_type_, SdpMungingType::kMaxValue);
+        break;
+      case SdpType::kPrAnswer:
+        RTC_HISTOGRAM_ENUMERATION(
+            "WebRTC.PeerConnection.SdpMunging.PrAnswer.Initial",
+            last_sdp_munging_type_, SdpMungingType::kMaxValue);
+        break;
+      case SdpType::kRollback:
+        // Rollback does not have SDP so can not be munged.
+        break;
+    }
+  }
+}
+
 void SdpOfferAnswerHandler::DoSetLocalDescription(
     std::unique_ptr<SessionDescriptionInterface> desc,
     rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
@@ -2429,6 +2456,19 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
                                               ? last_created_offer_.get()
                                               : last_created_answer_.get());
 
+  if (!disable_sdp_munging_checks_ &&
+      pc_->trials().IsEnabled("WebRTC-NoSdpMangleUfrag")) {
+    if (sdp_munging_type == kIceUfrag || sdp_munging_type == kIcePwd) {
+      RTC_LOG(LS_ERROR) << "Rejecting SDP because of ufrag modification";
+      observer->OnSetLocalDescriptionComplete(
+          RTCError(RTCErrorType::INVALID_PARAMETER,
+                   "SDP is modified in a non-acceptable way"));
+      last_sdp_munging_type_ = sdp_munging_type;
+      ReportInitialSdpMunging(had_local_description, desc->GetType());
+      return;
+    }
+  }
+
   // Grab the description type before moving ownership to
   // ApplyLocalDescription, which may destroy it before returning.
   const SdpType type = desc->GetType();
@@ -2463,29 +2503,10 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
   last_created_offer_.reset(nullptr);
   last_created_answer_.reset(nullptr);
   last_sdp_munging_type_ = sdp_munging_type;
+
   // Report SDP munging of the initial call to setLocalDescription separately.
-  if (!had_local_description) {
-    switch (local_description()->GetType()) {
-      case SdpType::kOffer:
-        RTC_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpMunging.Offer.Initial",
-            last_sdp_munging_type_, SdpMungingType::kMaxValue);
-        break;
-      case SdpType::kAnswer:
-        RTC_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpMunging.Answer.Initial",
-            last_sdp_munging_type_, SdpMungingType::kMaxValue);
-        break;
-      case SdpType::kPrAnswer:
-        RTC_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpMunging.PrAnswer.Initial",
-            last_sdp_munging_type_, SdpMungingType::kMaxValue);
-        break;
-      case SdpType::kRollback:
-        // Rollback does not have SDP so can not be munged.
-        break;
-    }
-  }
+  ReportInitialSdpMunging(had_local_description,
+                          local_description()->GetType());
 
   observer->OnSetLocalDescriptionComplete(RTCError::OK());
   pc_->NoteUsageEvent(UsageEvent::SET_LOCAL_DESCRIPTION_SUCCEEDED);

@@ -39,6 +39,7 @@
 #include "api/uma_metrics.h"
 #include "api/video/video_bitrate_allocator_factory.h"
 #include "media/base/media_channel.h"
+#include "media/base/media_engine.h"
 #include "media/base/stream_params.h"
 #include "p2p/base/port_allocator.h"
 #include "pc/codec_vendor.h"
@@ -183,6 +184,9 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   }
 
   SdpMungingType sdp_munging_type() const { return last_sdp_munging_type_; }
+  void DisableSdpMungingChecksForTesting() {
+    disable_sdp_munging_checks_ = true;
+  }
 
  private:
   class RemoteDescriptionOperation;
@@ -559,6 +563,8 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   AddIceCandidateResult AddIceCandidateInternal(
       const IceCandidateInterface* candidate);
 
+  void ReportInitialSdpMunging(bool had_local_description, SdpType type);
+
   // ==================================================================
   // Access to pc_ variables
   MediaEngineInterface* media_engine() const;
@@ -681,6 +687,11 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // Whether we are the initial offerer on the association. This
   // determines the SSL role.
   std::optional<bool> initial_offerer_ RTC_GUARDED_BY(signaling_thread());
+
+  // Whether SDP munging checks are enabled or not.
+  // Some tests will be detected as SDP munging, so offer the option
+  // to disable.
+  bool disable_sdp_munging_checks_ = false;
 
   WeakPtrFactory<SdpOfferAnswerHandler> weak_ptr_factory_
       RTC_GUARDED_BY(signaling_thread());

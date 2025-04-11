@@ -654,6 +654,9 @@ TEST_P(PeerConnectionIceTest, VerifyUfragPwdLength) {
   auto set_local_description_with_ufrag_pwd_length = [this](int ufrag_len,
                                                             int pwd_len) {
     auto pc = CreatePeerConnectionWithAudioVideo();
+    // Because local munging is forbidden by spec, we have to disable the
+    // check for it.
+    pc->GetInternalPeerConnection()->DisableSdpMungingChecksForTesting();
     auto offer = pc->CreateOffer();
     SetIceUfragPwd(offer.get(), std::string(ufrag_len, 'x'),
                    std::string(pwd_len, 'x'));

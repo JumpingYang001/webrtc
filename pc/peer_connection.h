@@ -458,6 +458,15 @@ class PeerConnection : public PeerConnectionInternal,
   PayloadTypePicker& payload_type_picker() override {
     return payload_type_picker_;
   }
+  void DisableSdpMungingChecksForTesting() {
+    if (!signaling_thread()->IsCurrent()) {
+      signaling_thread()->BlockingCall(
+          [&]() { DisableSdpMungingChecksForTesting(); });
+      return;
+    }
+    RTC_DCHECK_RUN_ON(signaling_thread());
+    sdp_handler_->DisableSdpMungingChecksForTesting();
+  }
 
  protected:
   // Available for rtc::scoped_refptr creation

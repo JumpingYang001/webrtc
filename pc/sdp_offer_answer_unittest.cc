@@ -1867,7 +1867,44 @@ TEST_F(SdpOfferAnswerMungingTest,
 }
 
 TEST_F(SdpOfferAnswerMungingTest, IceUfrag) {
+  auto pc = CreatePeerConnection(
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfrag/Enabled/"));
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& transport_infos = offer->description()->transport_infos();
+  ASSERT_EQ(transport_infos.size(), 1u);
+  transport_infos[0].description.ice_ufrag =
+      "amungediceufragthisshouldberejected";
+  RTCError error;
+  // Ufrag is rejected.
+  EXPECT_FALSE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+}
+
+TEST_F(SdpOfferAnswerMungingTest, IceUfragCheckDisabledByFieldTrial) {
+  auto pc = CreatePeerConnection(
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfrag/Disabled/"));
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& transport_infos = offer->description()->transport_infos();
+  ASSERT_EQ(transport_infos.size(), 1u);
+  transport_infos[0].description.ice_ufrag =
+      "amungediceufragthisshouldberejected";
+  RTCError error;
+  // Ufrag is not rejected.
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+}
+
+TEST_F(SdpOfferAnswerMungingTest, IceUfragWithCheckDisabledForTesting) {
   auto pc = CreatePeerConnection();
+  pc->GetInternalPeerConnection()->DisableSdpMungingChecksForTesting();
   pc->AddAudioTrack("audio_track", {});
 
   auto offer = pc->CreateOffer();
