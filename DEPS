@@ -320,6 +320,8 @@ deps = {
 
   'src/third_party/clang-format/script':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@37f6e68a107df43b7d7e044fd36a13cbae3413f2',
+  'src/third_party/compiler-rt/src':
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt.git@fae686d5212b002c9315849903ae10356d80bdc6',
   'src/third_party/libc++/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@024b5251a7d927941cb93cbb6f811bcb13ec5ba4',
   'src/third_party/libc++abi/src':
