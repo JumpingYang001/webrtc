@@ -23,12 +23,12 @@ both. In addition to style guides it is recommended to follow
 
 ### C++ version
 
-WebRTC is written in C++17, but with some restrictions:
+WebRTC is written in C++20, but with some restrictions:
 
-* We only allow the subset of C++17 (language and library) that is not banned by
+* We only allow the subset of C++20 (language and library) that is not banned by
   Chromium; see the [list of banned C++ features in Chromium][chr-style-cpp].
-* We only allow the subset of C++17 that is also valid C++20; otherwise, users
-  would not be able to compile WebRTC in C++20 mode.
+* We only allow the subset of C++20 that is also valid C++23; otherwise, users
+  would not be able to compile WebRTC in C++23 mode.
 
 [chr-style-cpp]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++-features.md
 
