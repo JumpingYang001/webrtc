@@ -50,48 +50,56 @@ class MockIceTransport : public IceTransportInternal {
               (webrtc::IceTransportStats * ice_transport_stats),
               (override));
 
-  cricket::IceTransportState GetState() const override {
-    return cricket::IceTransportState::STATE_INIT;
-  }
-  IceTransportState GetIceTransportState() const override {
-    return IceTransportState::kNew;
-  }
+  MOCK_METHOD(cricket::IceTransportState, GetState, (), (const override));
+  MOCK_METHOD(IceTransportState, GetIceTransportState, (), (const override));
 
-  const std::string& transport_name() const override { return transport_name_; }
-  int component() const override { return 0; }
-  void SetIceRole(cricket::IceRole /* role */) override {}
+  MOCK_METHOD(const std::string&, transport_name, (), (const override));
+  MOCK_METHOD(int, component, (), (const override));
+  MOCK_METHOD(void, SetIceRole, (cricket::IceRole), (override));
   // The ufrag and pwd in `ice_params` must be set
   // before candidate gathering can start.
-  void SetIceParameters(
-      const cricket::IceParameters& /* ice_params */) override {}
-  void SetRemoteIceParameters(
-      const cricket::IceParameters& /* ice_params */) override {}
-  void SetRemoteIceMode(cricket::IceMode /* mode */) override {}
-  void SetIceConfig(const IceConfig& config) override { ice_config_ = config; }
-  const IceConfig& config() const override { return ice_config_; }
-  std::optional<int> GetRttEstimate() override { return std::nullopt; }
-  const cricket::Connection* selected_connection() const override {
-    return nullptr;
-  }
-  std::optional<const cricket::CandidatePair> GetSelectedCandidatePair()
-      const override {
-    return std::nullopt;
-  }
-  void MaybeStartGathering() override {}
-  void AddRemoteCandidate(const cricket::Candidate& /* candidate */) override {}
-  void RemoveRemoteCandidate(
-      const cricket::Candidate& /* candidate */) override {}
-  void RemoveAllRemoteCandidates() override {}
-  IceGatheringState gathering_state() const override {
-    return IceGatheringState::kIceGatheringComplete;
-  }
+  MOCK_METHOD(void,
+              SetIceParameters,
+              (const cricket::IceParameters&),
+              (override));
+  MOCK_METHOD(void,
+              SetRemoteIceParameters,
+              (const cricket::IceParameters&),
+              (override));
+  MOCK_METHOD(cricket::IceParameters*,
+              local_ice_parameters,
+              (),
+              (const, override));
+  MOCK_METHOD(cricket::IceParameters*,
+              remote_ice_parameters,
+              (),
+              (const, override));
+  MOCK_METHOD(void, SetRemoteIceMode, (cricket::IceMode), (override));
+  MOCK_METHOD(void, SetIceConfig, (const IceConfig& config), (override));
+  MOCK_METHOD(const IceConfig&, config, (), (const override));
+  MOCK_METHOD(std::optional<int>, GetRttEstimate, (), (override));
+  MOCK_METHOD(const cricket::Connection*,
+              selected_connection,
+              (),
+              (const, override));
+  MOCK_METHOD(std::optional<const cricket::CandidatePair>,
+              GetSelectedCandidatePair,
+              (),
+              (const, override));
+  MOCK_METHOD(void, MaybeStartGathering, (), (override));
+  MOCK_METHOD(void,
+              AddRemoteCandidate,
+              (const cricket::Candidate&),
+              (override));
+  MOCK_METHOD(void,
+              RemoveRemoteCandidate,
+              (const cricket::Candidate&),
+              (override));
+  MOCK_METHOD(void, RemoveAllRemoteCandidates, (), (override));
+  MOCK_METHOD(IceGatheringState, gathering_state, (), (const override));
 
-  bool receiving() const override { return true; }
-  bool writable() const override { return true; }
-
- private:
-  std::string transport_name_;
-  IceConfig ice_config_;
+  MOCK_METHOD(bool, receiving, (), (const override));
+  MOCK_METHOD(bool, writable, (), (const override));
 };
 
 }  //  namespace webrtc

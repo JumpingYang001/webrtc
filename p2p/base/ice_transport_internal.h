@@ -283,6 +283,12 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
   virtual void SetRemoteIceCredentials(absl::string_view ice_ufrag,
                                        absl::string_view ice_pwd);
 
+  // Returns the current local ICE parameters.
+  virtual const cricket::IceParameters* local_ice_parameters() const = 0;
+  // Returns the latest remote ICE parameters or nullptr if there are no remote
+  // ICE parameters yet.
+  virtual const cricket::IceParameters* remote_ice_parameters() const = 0;
+
   // The ufrag and pwd in `ice_params` must be set
   // before candidate gathering can start.
   virtual void SetIceParameters(const IceParameters& ice_params) = 0;

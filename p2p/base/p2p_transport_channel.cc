@@ -37,10 +37,8 @@
 #include "api/ice_transport_interface.h"
 #include "api/rtc_error.h"
 #include "api/sequence_checker.h"
-#include "api/task_queue/pending_task_safety_flag.h"
 #include "api/transport/enums.h"
 #include "api/transport/stun.h"
-#include "api/units/time_delta.h"
 #include "logging/rtc_event_log/events/rtc_event_ice_candidate_pair_config.h"
 #include "logging/rtc_event_log/ice_logger.h"
 #include "p2p/base/active_ice_controller_factory_interface.h"
@@ -493,7 +491,7 @@ void P2PTransportChannel::SetRemoteIceParameters(
   RTC_LOG(LS_INFO) << "Received remote ICE parameters: ufrag="
                    << ice_params.ufrag << ", renomination "
                    << (ice_params.renomination ? "enabled" : "disabled");
-  const IceParameters* current_ice = remote_ice();
+  const IceParameters* current_ice = remote_ice_parameters();
   if (!current_ice || *current_ice != ice_params) {
     // Keep the ICE credentials so that newer connections
     // are prioritized over the older ones.
@@ -1211,13 +1209,13 @@ void P2PTransportChannel::AddRemoteCandidate(const Candidate& candidate) {
   // the code below this (specifically, ConnectionRequest::Prepare in
   // port.cc) uses the remote candidates's username.  So, we set it
   // here.
-  if (remote_ice()) {
+  if (remote_ice_parameters()) {
     if (candidate.username().empty()) {
-      new_remote_candidate.set_username(remote_ice()->ufrag);
+      new_remote_candidate.set_username(remote_ice_parameters()->ufrag);
     }
-    if (new_remote_candidate.username() == remote_ice()->ufrag) {
+    if (new_remote_candidate.username() == remote_ice_parameters()->ufrag) {
       if (candidate.password().empty()) {
-        new_remote_candidate.set_password(remote_ice()->pwd);
+        new_remote_candidate.set_password(remote_ice_parameters()->pwd);
       }
     } else {
       // The candidate belongs to the next generation. Its pwd will be set

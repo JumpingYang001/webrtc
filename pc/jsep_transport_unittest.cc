@@ -223,15 +223,15 @@ TEST_P(JsepTransport2WithRtcpMux, SetIceParameters) {
   auto fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
   EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-  EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
-  EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
+  EXPECT_EQ(kIceUfrag1, fake_ice_transport->local_ice_parameters()->ufrag);
+  EXPECT_EQ(kIcePwd1, fake_ice_transport->local_ice_parameters()->pwd);
   if (!rtcp_mux_enabled) {
     fake_ice_transport = static_cast<FakeIceTransport*>(
         jsep_transport_->rtcp_dtls_transport()->ice_transport());
     ASSERT_TRUE(fake_ice_transport);
     EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-    EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
-    EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
+    EXPECT_EQ(kIceUfrag1, fake_ice_transport->local_ice_parameters()->ufrag);
+    EXPECT_EQ(kIcePwd1, fake_ice_transport->local_ice_parameters()->pwd);
   }
 
   jsep_description.transport_desc = TransportDescription(kIceUfrag2, kIcePwd2);
@@ -242,15 +242,15 @@ TEST_P(JsepTransport2WithRtcpMux, SetIceParameters) {
   fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
   EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-  EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
-  EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
+  EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_parameters()->ufrag);
+  EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_parameters()->pwd);
   if (!rtcp_mux_enabled) {
     fake_ice_transport = static_cast<FakeIceTransport*>(
         jsep_transport_->rtcp_dtls_transport()->ice_transport());
     ASSERT_TRUE(fake_ice_transport);
     EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-    EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
-    EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
+    EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_parameters()->ufrag);
+    EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_parameters()->pwd);
   }
 }
 
@@ -1257,9 +1257,9 @@ TEST_F(JsepTransport2Test, SetIceParametersWithRenomination) {
   auto fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
   EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-  EXPECT_EQ(kIceUfrag1, fake_ice_transport->ice_ufrag());
-  EXPECT_EQ(kIcePwd1, fake_ice_transport->ice_pwd());
-  EXPECT_TRUE(fake_ice_transport->ice_parameters().renomination);
+  EXPECT_EQ(kIceUfrag1, fake_ice_transport->local_ice_parameters()->ufrag);
+  EXPECT_EQ(kIcePwd1, fake_ice_transport->local_ice_parameters()->pwd);
+  EXPECT_TRUE(fake_ice_transport->local_ice_parameters()->renomination);
 
   jsep_description.transport_desc = TransportDescription(kIceUfrag2, kIcePwd2);
   jsep_description.transport_desc.AddOption(ICE_OPTION_RENOMINATION);
@@ -1270,9 +1270,9 @@ TEST_F(JsepTransport2Test, SetIceParametersWithRenomination) {
   fake_ice_transport = static_cast<FakeIceTransport*>(
       jsep_transport_->rtp_dtls_transport()->ice_transport());
   EXPECT_EQ(ICEMODE_FULL, fake_ice_transport->remote_ice_mode());
-  EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_ufrag());
-  EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_pwd());
-  EXPECT_TRUE(fake_ice_transport->remote_ice_parameters().renomination);
+  EXPECT_EQ(kIceUfrag2, fake_ice_transport->remote_ice_parameters()->ufrag);
+  EXPECT_EQ(kIcePwd2, fake_ice_transport->remote_ice_parameters()->pwd);
+  EXPECT_TRUE(fake_ice_transport->remote_ice_parameters()->renomination);
 }
 
 }  // namespace
