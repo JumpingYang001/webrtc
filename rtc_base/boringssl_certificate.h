@@ -57,16 +57,7 @@ class BoringSSLCertificate final : public SSLCertificate {
 
   // Compute the digest of the certificate given `algorithm`.
   bool ComputeDigest(absl::string_view algorithm,
-                     unsigned char* digest,
-                     size_t size,
-                     size_t* length) const override;
-
-  // Compute the digest of a certificate as a CRYPTO_BUFFER.
-  static bool ComputeDigest(const CRYPTO_BUFFER* cert_buffer,
-                            absl::string_view algorithm,
-                            unsigned char* digest,
-                            size_t size,
-                            size_t* length);
+                     Buffer& digest) const override;
 
   bool GetSignatureDigestAlgorithm(std::string* algorithm) const override;
 

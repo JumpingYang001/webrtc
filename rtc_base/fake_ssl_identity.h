@@ -40,9 +40,7 @@ class FakeSSLCertificate : public SSLCertificate {
   int64_t CertificateExpirationTime() const override;
   bool GetSignatureDigestAlgorithm(std::string* algorithm) const override;
   bool ComputeDigest(absl::string_view algorithm,
-                     unsigned char* digest,
-                     size_t size,
-                     size_t* length) const override;
+                     Buffer& digest) const override;
 
   void SetCertificateExpirationTime(int64_t expiration_time);
 

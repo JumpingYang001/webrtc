@@ -20,6 +20,7 @@
 #include "absl/algorithm/container.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/message_digest.h"
 #include "rtc_base/rtc_certificate.h"
@@ -43,15 +44,12 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUnique(
 std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(
     absl::string_view algorithm,
     const SSLCertificate& cert) {
-  uint8_t digest_val[64];
-  size_t digest_len;
-  bool ret = cert.ComputeDigest(algorithm, digest_val, sizeof(digest_val),
-                                &digest_len);
+  Buffer digest(0, MessageDigest::kMaxSize);
+  bool ret = cert.ComputeDigest(algorithm, digest);
   if (!ret) {
     return nullptr;
   }
-  return std::make_unique<SSLFingerprint>(
-      algorithm, rtc::ArrayView<const uint8_t>(digest_val, digest_len));
+  return std::make_unique<SSLFingerprint>(algorithm, digest);
 }
 
 SSLFingerprint* SSLFingerprint::CreateFromRfc4572(

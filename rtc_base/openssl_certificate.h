@@ -15,8 +15,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
+#include "absl/strings/string_view.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/openssl_key_pair.h"
 #include "rtc_base/ssl_certificate.h"
@@ -54,16 +56,7 @@ class OpenSSLCertificate final : public SSLCertificate {
 
   // Compute the digest of the certificate given algorithm
   bool ComputeDigest(absl::string_view algorithm,
-                     unsigned char* digest,
-                     size_t size,
-                     size_t* length) const override;
-
-  // Compute the digest of a certificate as an X509 *
-  static bool ComputeDigest(const X509* x509,
-                            absl::string_view algorithm,
-                            unsigned char* digest,
-                            size_t size,
-                            size_t* length);
+                     Buffer& digest) const override;
 
   bool GetSignatureDigestAlgorithm(std::string* algorithm) const override;
 

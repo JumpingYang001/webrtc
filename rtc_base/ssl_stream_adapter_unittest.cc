@@ -10,16 +10,15 @@
 
 #include "rtc_base/ssl_stream_adapter.h"
 
-#include "rtc_base/ssl_certificate.h"
-
 #ifdef OPENSSL_IS_BORINGSSL
 #include <openssl/digest.h>
 #else
-#include <openssl/evp.h>
+#include <openssl/evp.h>  // IWYU pragma: keep
 #endif
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -46,6 +45,7 @@
 #include "rtc_base/fake_clock.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/message_digest.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/stream.h"
 #include "rtc_base/third_party/sigslot/sigslot.h"
@@ -517,11 +517,8 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
   }
 
   void SetPeerIdentitiesByDigest(bool correct, bool expect_success) {
-    rtc::Buffer server_digest(0, EVP_MAX_MD_SIZE);
-    size_t server_digest_len;
-    rtc::Buffer client_digest(0, EVP_MAX_MD_SIZE);
-    size_t client_digest_len;
-    bool rv;
+    webrtc::Buffer server_digest(0, EVP_MAX_MD_SIZE);
+    webrtc::Buffer client_digest(0, EVP_MAX_MD_SIZE);
     webrtc::SSLPeerCertificateDigestError err;
     webrtc::SSLPeerCertificateDigestError expected_err =
         expect_success
@@ -532,16 +529,10 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
     RTC_DCHECK(server_identity());
     RTC_DCHECK(client_identity());
 
-    rv = server_identity()->certificate().ComputeDigest(
-        digest_algorithm_, server_digest.data(), digest_length_,
-        &server_digest_len);
-    ASSERT_TRUE(rv);
-    server_digest.SetSize(server_digest_len);
-    rv = client_identity()->certificate().ComputeDigest(
-        digest_algorithm_, client_digest.data(), digest_length_,
-        &client_digest_len);
-    ASSERT_TRUE(rv);
-    client_digest.SetSize(client_digest_len);
+    ASSERT_TRUE(server_identity()->certificate().ComputeDigest(
+        digest_algorithm_, server_digest));
+    ASSERT_TRUE(client_identity()->certificate().ComputeDigest(
+        digest_algorithm_, client_digest));
 
     if (!correct) {
       RTC_LOG(LS_INFO) << "Setting bogus digest for server cert";
@@ -696,25 +687,16 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
 
     // Collect both of the certificate digests; needs to be done before calling
     // SetPeerCertificateDigest as that may reset the identity.
-    rtc::Buffer server_digest(0, EVP_MAX_MD_SIZE);
-    size_t server_digest_len;
-    rtc::Buffer client_digest(0, EVP_MAX_MD_SIZE);
-    size_t client_digest_len;
-    bool rv;
+    webrtc::Buffer server_digest(0, EVP_MAX_MD_SIZE);
+    webrtc::Buffer client_digest(0, EVP_MAX_MD_SIZE);
 
     ASSERT_THAT(server_identity(), NotNull());
-    rv = server_identity()->certificate().ComputeDigest(
-        digest_algorithm_, server_digest.data(), digest_length_,
-        &server_digest_len);
-    ASSERT_TRUE(rv);
-    server_digest.SetSize(server_digest_len);
+    ASSERT_TRUE(server_identity()->certificate().ComputeDigest(
+        digest_algorithm_, server_digest));
 
     ASSERT_THAT(client_identity(), NotNull());
-    rv = client_identity()->certificate().ComputeDigest(
-        digest_algorithm_, client_digest.data(), digest_length_,
-        &client_digest_len);
-    ASSERT_TRUE(rv);
-    client_digest.SetSize(client_digest_len);
+    ASSERT_TRUE(client_identity()->certificate().ComputeDigest(
+        digest_algorithm_, client_digest));
 
     if (!valid_identity) {
       RTC_LOG(LS_INFO) << "Setting bogus digest for client/server certs";

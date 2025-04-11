@@ -10,21 +10,31 @@
 
 #include "rtc_base/ssl_identity.h"
 
-#include <openssl/evp.h>
+#ifdef OPENSSL_IS_BORINGSSL
+#include <openssl/digest.h>
+#else
+#include <openssl/evp.h>  // IWYU pragma: keep
+#endif
 #include <openssl/sha.h>
 #include <string.h>
 
+#include <array>
+#include <cstdint>
+#include <cstring>
+#include <ctime>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "absl/strings/str_replace.h"
 #include "absl/strings/string_view.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/crypto_random.h"
 #include "rtc_base/fake_ssl_identity.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/message_digest.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "test/gtest.h"
 
@@ -240,51 +250,41 @@ class SSLIdentityTest : public ::testing::Test {
     ASSERT_EQ(DIGEST_MD5, digest_algorithm);
   }
 
-  typedef unsigned char DigestType[MessageDigest::kMaxSize];
-
-  void TestDigestHelper(DigestType digest,
+  void TestDigestHelper(Buffer& digest,
                         const SSLIdentity* identity,
                         absl::string_view algorithm,
                         size_t expected_len) {
-    DigestType digest1;
-    size_t digest_len;
-    bool rv;
-
-    memset(digest, 0, expected_len);
-    rv = identity->certificate().ComputeDigest(algorithm, digest,
-                                               sizeof(DigestType), &digest_len);
-    EXPECT_TRUE(rv);
-    EXPECT_EQ(expected_len, digest_len);
+    digest.EnsureCapacity(expected_len);
+    digest.Clear();
+    EXPECT_TRUE(identity->certificate().ComputeDigest(algorithm, digest));
+    EXPECT_EQ(expected_len, digest.size());
 
     // Repeat digest computation for the identity as a sanity check.
-    memset(digest1, 0xff, expected_len);
-    rv = identity->certificate().ComputeDigest(algorithm, digest1,
-                                               sizeof(DigestType), &digest_len);
-    EXPECT_TRUE(rv);
-    EXPECT_EQ(expected_len, digest_len);
+    Buffer digest1(0, rtc::MessageDigest::kMaxSize);
+    std::memset(digest1.data(), 0xff, expected_len);
+    EXPECT_TRUE(identity->certificate().ComputeDigest(algorithm, digest1));
+    EXPECT_EQ(expected_len, digest1.size());
 
-    EXPECT_EQ(0, memcmp(digest, digest1, expected_len));
+    EXPECT_EQ(digest, digest1);
   }
 
   void TestDigestForGeneratedCert(absl::string_view algorithm,
                                   size_t expected_len) {
-    DigestType digest[4];
+    std::array<Buffer, 4> digests;
 
-    ASSERT_TRUE(expected_len <= sizeof(DigestType));
-
-    TestDigestHelper(digest[0], identity_rsa1_.get(), algorithm, expected_len);
-    TestDigestHelper(digest[1], identity_rsa2_.get(), algorithm, expected_len);
-    TestDigestHelper(digest[2], identity_ecdsa1_.get(), algorithm,
+    TestDigestHelper(digests[0], identity_rsa1_.get(), algorithm, expected_len);
+    TestDigestHelper(digests[1], identity_rsa2_.get(), algorithm, expected_len);
+    TestDigestHelper(digests[2], identity_ecdsa1_.get(), algorithm,
                      expected_len);
-    TestDigestHelper(digest[3], identity_ecdsa2_.get(), algorithm,
+    TestDigestHelper(digests[3], identity_ecdsa2_.get(), algorithm,
                      expected_len);
 
     // Sanity check that all four digests are unique.  This could theoretically
     // fail, since cryptographic hash collisions have a non-zero probability.
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
+    for (size_t i = 0; i < digests.size(); i++) {
+      for (size_t j = 0; j < digests.size(); j++) {
         if (i != j)
-          EXPECT_NE(0, memcmp(digest[i], digest[j], expected_len));
+          EXPECT_NE(digests[i], digests[j]);
       }
     }
   }
@@ -292,17 +292,13 @@ class SSLIdentityTest : public ::testing::Test {
   void TestDigestForFixedCert(absl::string_view algorithm,
                               size_t expected_len,
                               const unsigned char* expected_digest) {
-    bool rv;
-    DigestType digest;
-    size_t digest_len;
+    Buffer digest(0, rtc::MessageDigest::kMaxSize);
 
-    ASSERT_TRUE(expected_len <= sizeof(DigestType));
+    ASSERT_TRUE(expected_len <= digest.capacity());
 
-    rv = test_cert_->ComputeDigest(algorithm, digest, sizeof(digest),
-                                   &digest_len);
-    EXPECT_TRUE(rv);
-    EXPECT_EQ(expected_len, digest_len);
-    EXPECT_EQ(0, memcmp(digest, expected_digest, expected_len));
+    EXPECT_TRUE(test_cert_->ComputeDigest(algorithm, digest));
+    EXPECT_EQ(expected_len, digest.size());
+    EXPECT_EQ(0, memcmp(digest.data(), expected_digest, expected_len));
   }
 
   void TestCloningIdentity(const SSLIdentity& identity) {
@@ -459,6 +455,7 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsRSA) {
       SSLIdentity::CreateFromPEMStrings(kRSA_PRIVATE_KEY_PEM, kRSA_CERT_PEM));
   std::unique_ptr<SSLCertificateStats> stats =
       identity->certificate().GetStats();
+  ASSERT_TRUE(stats);
   EXPECT_EQ(stats->fingerprint, kRSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kRSA_FINGERPRINT_ALGORITHM);
   EXPECT_EQ(stats->base64_certificate, kRSA_BASE64_CERTIFICATE);
@@ -470,6 +467,7 @@ TEST_F(SSLIdentityTest, SSLCertificateGetStatsECDSA) {
       kECDSA_PRIVATE_KEY_PEM, kECDSA_CERT_PEM));
   std::unique_ptr<SSLCertificateStats> stats =
       identity->certificate().GetStats();
+  ASSERT_TRUE(stats);
   EXPECT_EQ(stats->fingerprint, kECDSA_FINGERPRINT);
   EXPECT_EQ(stats->fingerprint_algorithm, kECDSA_FINGERPRINT_ALGORITHM);
   EXPECT_EQ(stats->base64_certificate, kECDSA_BASE64_CERTIFICATE);

@@ -23,8 +23,8 @@ namespace webrtc {
 void FuzzOneInput(const uint8_t* data, size_t size) {
   std::string pem_certificate(reinterpret_cast<const char*>(data), size);
 
-  std::unique_ptr<rtc::SSLCertificate> cert =
-      rtc::SSLCertificate::FromPEMString(pem_certificate);
+  std::unique_ptr<SSLCertificate> cert =
+      SSLCertificate::FromPEMString(pem_certificate);
 
   if (cert == nullptr) {
     return;
@@ -38,12 +38,10 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   std::string algorithm;
   cert->GetSignatureDigestAlgorithm(&algorithm);
 
-  unsigned char digest[rtc::MessageDigest::kMaxSize];
-  size_t digest_len;
-  cert->ComputeDigest(algorithm, digest, rtc::MessageDigest::kMaxSize,
-                      &digest_len);
+  Buffer buffer(0, MessageDigest::kMaxSize);
+  cert->ComputeDigest(algorithm, buffer);
 
-  rtc::Buffer der_buffer;
+  Buffer der_buffer;
   cert->ToDER(&der_buffer);
 }
 

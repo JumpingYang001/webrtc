@@ -1143,16 +1143,13 @@ bool OpenSSLStreamAdapter::VerifyPeerCertificate() {
     return false;
   }
 
-  unsigned char digest[EVP_MAX_MD_SIZE];
-  size_t digest_length;
+  Buffer computed_digest(0, EVP_MAX_MD_SIZE);
   if (!peer_cert_chain_->Get(0).ComputeDigest(
-          peer_certificate_digest_algorithm_, digest, sizeof(digest),
-          &digest_length)) {
+          peer_certificate_digest_algorithm_, computed_digest)) {
     RTC_LOG(LS_WARNING) << "Failed to compute peer cert digest.";
     return false;
   }
 
-  Buffer computed_digest(digest, digest_length);
   if (computed_digest != peer_certificate_digest_value_) {
     RTC_LOG(LS_WARNING)
         << "Rejected peer certificate due to mismatched digest using "
