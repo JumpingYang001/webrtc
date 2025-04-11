@@ -202,7 +202,7 @@ HRESULT WgcCaptureSession::StartCapture(const DesktopCaptureOptions& options) {
   if (SUCCEEDED(session_->QueryInterface(
           ABI::Windows::Graphics::Capture::IID_IGraphicsCaptureSession3,
           &session3))) {
-    session3->put_IsBorderRequired(false);
+    session3->put_IsBorderRequired(options.wgc_require_border());
   }
 
   allow_zero_hertz_ = options.allow_wgc_zero_hertz();
