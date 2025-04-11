@@ -635,7 +635,6 @@ rtc_library("webrtc_vp8_temporal_layers") {
     "codecs/vp8/include/temporal_layers_checker.h",
     "codecs/vp8/screenshare_layers.cc",
     "codecs/vp8/screenshare_layers.h",
-    "codecs/vp8/temporal_layers.h",
     "codecs/vp8/temporal_layers_checker.cc",
   ]
 
