@@ -430,10 +430,7 @@ bool AudioReceiveStreamImpl::SetMinimumPlayoutDelay(int delay_ms) {
 }
 
 void AudioReceiveStreamImpl::DeliverRtcp(const uint8_t* packet, size_t length) {
-  // TODO(solenberg): Tests call this function on a network thread, libjingle
-  // calls on the worker thread. We should move towards always using a network
-  // thread. Then this check can be enabled.
-  // RTC_DCHECK(!thread_checker_.IsCurrent());
+  RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   channel_receive_->ReceivedRTCPPacket(packet, length);
 }
 
