@@ -610,18 +610,28 @@ void Connection::MaybeAddDtlsPiggybackingAttributes(StunMessage* msg) {
   const auto& [attr, ack] = dtls_stun_piggyback_callbacks_.send_data(
       static_cast<StunMessageType>(msg->type()));
 
-  size_t need_length = (attr ? attr->length() + kStunAttributeHeaderSize : 0) +
-                       (ack ? ack->length() + kStunAttributeHeaderSize : 0);
-  if (msg->length() + need_length > kMaxStunBindingLength) {
-    return;
-  }
-  if (attr) {
-    msg->AddAttribute(std::make_unique<StunByteStringAttribute>(
-        STUN_ATTR_META_DTLS_IN_STUN, *attr));
-  }
   if (ack) {
-    msg->AddAttribute(std::make_unique<StunByteStringAttribute>(
-        STUN_ATTR_META_DTLS_IN_STUN_ACK, *ack));
+    size_t msg_length = msg->length();
+    size_t need_length = ack->length() + kStunAttributeHeaderSize;
+    if (msg_length + need_length <= kMaxStunBindingLength) {
+      msg->AddAttribute(std::make_unique<StunByteStringAttribute>(
+          STUN_ATTR_META_DTLS_IN_STUN_ACK, *ack));
+    } else if (msg_length + kStunAttributeHeaderSize <= kMaxStunBindingLength) {
+      // Add en empty ACK.
+      std::string empty;
+      msg->AddAttribute(std::make_unique<StunByteStringAttribute>(
+          STUN_ATTR_META_DTLS_IN_STUN_ACK, empty));
+    } else {
+      return;
+    }
+  }
+
+  if (attr) {
+    size_t need_length = attr->length() + kStunAttributeHeaderSize;
+    if (msg->length() + need_length <= kMaxStunBindingLength) {
+      msg->AddAttribute(std::make_unique<StunByteStringAttribute>(
+          STUN_ATTR_META_DTLS_IN_STUN, *attr));
+    }
   }
 }
 

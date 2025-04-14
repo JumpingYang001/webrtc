@@ -12,6 +12,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
 
 #include "absl/strings/str_cat.h"
@@ -22,7 +23,6 @@
 #include "api/field_trials.h"
 #include "api/scoped_refptr.h"
 #include "api/test/create_network_emulation_manager.h"
-#include "api/test/network_emulation/network_emulation_interfaces.h"
 #include "api/test/network_emulation_manager.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/test/simulated_network.h"
@@ -468,6 +468,53 @@ TEST_P(DtlsIceIntegrationTest, TestWithPacketLoss) {
     return server_.dtls->IsDtlsPiggybackSupportedByPeer();
   }),
             client_.dtls_stun_piggyback && server_.dtls_stun_piggyback);
+}
+
+// Verify that DtlsStunPiggybacking works even if one (or several)
+// of the STUN_BINDING_REQUESTs are so full that dtls does not fit.
+TEST_P(DtlsIceIntegrationTest, AlmostFullSTUN_BINDING) {
+  Prepare();
+
+  std::string a_long_string(500, 'a');
+  client_.ice->GetDictionaryWriter()->get().SetByteString(77)->CopyBytes(
+      a_long_string);
+  server_.ice->GetDictionaryWriter()->get().SetByteString(78)->CopyBytes(
+      a_long_string);
+
+  client_.ice->MaybeStartGathering();
+  server_.ice->MaybeStartGathering();
+
+  // Note: this only reaches the pending piggybacking state.
+  EXPECT_THAT(
+      webrtc::WaitUntil(
+          [&] { return client_.dtls->writable() && server_.dtls->writable(); },
+          IsTrue(), wait_until_settings()),
+      webrtc::IsRtcOk());
+  EXPECT_EQ(client_.dtls->IsDtlsPiggybackSupportedByPeer(),
+            client_.dtls_stun_piggyback && server_.dtls_stun_piggyback);
+  EXPECT_EQ(server_.dtls->IsDtlsPiggybackSupportedByPeer(),
+            client_.dtls_stun_piggyback && server_.dtls_stun_piggyback);
+  EXPECT_EQ(client_.dtls->WasDtlsCompletedByPiggybacking(),
+            client_.dtls_stun_piggyback && server_.dtls_stun_piggyback);
+  EXPECT_EQ(server_.dtls->WasDtlsCompletedByPiggybacking(),
+            client_.dtls_stun_piggyback && server_.dtls_stun_piggyback);
+
+  if (!(client_.pqc || server_.pqc) && client_.dtls_stun_piggyback &&
+      server_.dtls_stun_piggyback) {
+    EXPECT_EQ(client_.dtls->GetStunDataCount(), 2);
+    EXPECT_EQ(server_.dtls->GetStunDataCount(), 1);
+  } else {
+    // TODO(webrtc:404763475)
+  }
+
+  if ((client_.pqc || server_.pqc) &&
+      !(client_.dtls_stun_piggyback && server_.dtls_stun_piggyback)) {
+    // TODO(webrtc:404763475) : The retransmissions is due to early
+    // client hello and the code only saves 1 packet.
+  } else {
+    EXPECT_EQ(client_.dtls->GetRetransmissionCount(), 0);
+    EXPECT_EQ(server_.dtls->GetRetransmissionCount(), 0);
+  }
 }
 
 // Test cases are parametrized by

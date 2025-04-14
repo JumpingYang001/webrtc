@@ -37,6 +37,7 @@
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "p2p/dtls/dtls_utils.h"
 #include "p2p/test/fake_ice_transport.h"
+#include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/copy_on_write_buffer.h"
@@ -639,6 +640,36 @@ enum HandshakeTestEvent {
   EV_SERVER_SEND_DROPPED = 7,
 };
 
+template <typename Sink>
+void AbslStringify(Sink& sink, HandshakeTestEvent event) {
+  switch (event) {
+    case EV_CLIENT_SEND:
+      sink.Append("C-SEND");
+      return;
+    case EV_SERVER_SEND:
+      sink.Append("S-SEND");
+      return;
+    case EV_CLIENT_RECV:
+      sink.Append("C-RECV");
+      return;
+    case EV_SERVER_RECV:
+      sink.Append("S-RECV");
+      return;
+    case EV_CLIENT_WRITABLE:
+      sink.Append("C-WRITABLE");
+      return;
+    case EV_SERVER_WRITABLE:
+      sink.Append("S-WRITABLE");
+      return;
+    case EV_CLIENT_SEND_DROPPED:
+      sink.Append("C-SEND-DROPPED");
+      return;
+    case EV_SERVER_SEND_DROPPED:
+      sink.Append("S-SEND-DROPPED");
+      return;
+  }
+}
+
 static const std::vector<HandshakeTestEvent> dtls_12_handshake_events{
     // Flight 1
     EV_CLIENT_SEND,
@@ -660,6 +691,25 @@ static const std::vector<HandshakeTestEvent> dtls_13_handshake_events{
     EV_CLIENT_SEND,
     EV_SERVER_RECV,
     EV_SERVER_SEND,
+    EV_CLIENT_RECV,
+
+    // Flight 2
+    EV_CLIENT_SEND,
+    EV_CLIENT_WRITABLE,
+    EV_SERVER_RECV,
+    EV_SERVER_SEND,
+    EV_SERVER_WRITABLE,
+};
+
+static const std::vector<HandshakeTestEvent> dtls_pqc_handshake_events{
+    // Flight 1
+    EV_CLIENT_SEND,
+    EV_CLIENT_SEND,
+    EV_SERVER_RECV,
+    EV_SERVER_RECV,
+    EV_SERVER_SEND,
+    EV_SERVER_SEND,
+    EV_CLIENT_RECV,
     EV_CLIENT_RECV,
 
     // Flight 2
@@ -848,7 +898,11 @@ class DtlsTransportInternalImplVersionTest
     }
   }
 
-  std::vector<HandshakeTestEvent> GetExpectedEvents(int dtls_version_bytes) {
+  std::vector<HandshakeTestEvent> GetExpectedEvents(int dtls_version_bytes,
+                                                    bool pqc = false) {
+    if (pqc) {
+      return dtls_pqc_handshake_events;
+    }
     for (const auto e : kEventsPerVersion) {
       if (e.version_bytes == dtls_version_bytes) {
         return e.events;
@@ -917,8 +971,16 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeFlights) {
        std::get<1>(GetParam()).dtls_in_stun)) {
     GTEST_SKIP() << "This test does not support dtls in stun";
   }
-  if (std::get<0>(GetParam()).GetFirstFlightPackets() > 1) {
-    GTEST_SKIP() << "This test does not support pqc";
+  if ((std::get<0>(GetParam()).GetFirstFlightPackets() > 1) !=
+      (std::get<1>(GetParam()).GetFirstFlightPackets() > 1)) {
+    GTEST_SKIP() << "This test does not support one sided pqc";
+  }
+  bool pqc = std::get<0>(GetParam()).GetFirstFlightPackets() > 1;
+
+  if (pqc && std::get<1>(GetParam()).dtls_in_stun) {
+    // TODO(jonaso,webrtc:367395350): Remove once we have more clever MTU
+    // handling.
+    GTEST_SKIP() << "This test does not support pqc with dtls-in-stun.";
   }
 
   Prepare();
@@ -926,7 +988,7 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeFlights) {
 
   RTC_LOG(LS_INFO) << "Verifying events with ssl version bytes= "
                    << dtls_version_bytes;
-  auto expect = GetExpectedEvents(dtls_version_bytes);
+  auto expect = GetExpectedEvents(dtls_version_bytes, pqc);
   EXPECT_EQ(events, expect);
 }
 
@@ -949,6 +1011,89 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseFirstClientPacket) {
   // If first packet is lost...it is simply retransmitted by client,
   // nothing else changes.
   expect.insert(expect.begin(), EV_CLIENT_SEND_DROPPED);
+
+  EXPECT_EQ(events, expect);
+}
+
+TEST_P(DtlsTransportInternalImplVersionTest,
+       PqcHandshakeLoseFirstClientPacket) {
+  MAYBE_SKIP_TEST(IsBoringSsl);
+  if (std::get<0>(GetParam()).dtls_in_stun ||
+      std::get<1>(GetParam()).dtls_in_stun) {
+    GTEST_SKIP() << "This test does not support dtls in stun";
+  }
+  if (std::get<0>(GetParam()).GetFirstFlightPackets() == 1 ||
+      std::get<1>(GetParam()).GetFirstFlightPackets() == 1) {
+    GTEST_SKIP() << "This test need not support pqc";
+  }
+
+  Prepare();
+  auto [dtls_version_bytes, events] = RunHandshake({/* packet_num= */ 0});
+
+  const std::vector<HandshakeTestEvent> expect = {
+      EV_CLIENT_SEND_DROPPED,  // p1
+      EV_CLIENT_SEND,          // p2
+      EV_SERVER_RECV,          // p2
+
+      EV_CLIENT_SEND,  // p1 (retransmit)
+      EV_CLIENT_SEND,  // p2 (retransmit)
+
+      EV_SERVER_RECV,  // p1
+      EV_SERVER_SEND, EV_SERVER_SEND,
+      EV_SERVER_RECV,  // p2 (retransmit)
+      EV_CLIENT_RECV, EV_CLIENT_RECV,
+
+      // Flight 2
+      EV_CLIENT_SEND, EV_CLIENT_WRITABLE,
+
+      EV_SERVER_SEND,  // unknown??
+
+      EV_SERVER_RECV, EV_SERVER_SEND, EV_SERVER_WRITABLE,
+
+      EV_CLIENT_RECV,  // unknown??
+  };
+
+  EXPECT_EQ(events, expect);
+}
+
+TEST_P(DtlsTransportInternalImplVersionTest,
+       PqcHandshakeLoseSecondClientPacket) {
+  MAYBE_SKIP_TEST(IsBoringSsl);
+  if (std::get<0>(GetParam()).dtls_in_stun ||
+      std::get<1>(GetParam()).dtls_in_stun) {
+    GTEST_SKIP() << "This test does not support dtls in stun";
+  }
+  if (std::get<0>(GetParam()).GetFirstFlightPackets() == 1 ||
+      std::get<1>(GetParam()).GetFirstFlightPackets() == 1) {
+    GTEST_SKIP() << "This test need not support pqc";
+  }
+
+  Prepare();
+  auto [dtls_version_bytes, events] = RunHandshake({/* packet_num= */ 1});
+
+  const std::vector<HandshakeTestEvent> expect = {
+      EV_CLIENT_SEND,          // p1
+      EV_CLIENT_SEND_DROPPED,  // p2
+      EV_SERVER_RECV,          // p1
+
+      EV_CLIENT_SEND,  // p1 (retransmit)
+      EV_CLIENT_SEND,  // p2 (retransmit)
+
+      EV_SERVER_RECV,  // p1
+      EV_SERVER_RECV,  // p2
+      EV_SERVER_SEND,
+      EV_SERVER_SEND,
+      EV_CLIENT_RECV,
+      EV_CLIENT_RECV,
+
+      // Flight 2
+      EV_CLIENT_SEND,
+      EV_CLIENT_WRITABLE,
+
+      EV_SERVER_RECV,
+      EV_SERVER_SEND,
+      EV_SERVER_WRITABLE,
+  };
 
   EXPECT_EQ(events, expect);
 }
