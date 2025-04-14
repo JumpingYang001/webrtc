@@ -441,7 +441,12 @@ TEST_P(DtlsIceIntegrationTest, ClientLateCertificate) {
   }
 }
 
-TEST_P(DtlsIceIntegrationTest, TestWithPacketLoss) {
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_TestWithPacketLoss TestWithPacketLoss
+#else
+#define MAYBE_TestWithPacketLoss DISABLED_TestWithPacketLoss
+#endif
+TEST_P(DtlsIceIntegrationTest, MAYBE_TestWithPacketLoss) {
   ConfigureEmulatedNetwork();
   Prepare();
 

@@ -965,7 +965,12 @@ TEST_P(DtlsTransportInternalImplVersionTest, CipherSuiteNegotiation) {
   ASSERT_TRUE(Connect());
 }
 
-TEST_P(DtlsTransportInternalImplVersionTest, HandshakeFlights) {
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_HandshakeFlights
+#else
+#define MAYBE_HandshakeFlights DISABLED_HandshakeFlights
+#endif
+TEST_P(DtlsTransportInternalImplVersionTest, MAYBE_HandshakeFlights) {
   if (std::get<0>(GetParam()).dtls_in_stun ||
       (std::get<0>(GetParam()).dtls_in_stun &&
        std::get<1>(GetParam()).dtls_in_stun)) {
@@ -992,8 +997,14 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeFlights) {
   EXPECT_EQ(events, expect);
 }
 
-TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseFirstClientPacket) {
-  MAYBE_SKIP_TEST(IsBoringSsl);
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_HandshakeLoseFirstClientPacket HandshakeLoseFirstClientPacket
+#else
+#define MAYBE_HandshakeLoseFirstClientPacket \
+  DISABLED_HandshakeLoseFirstClientPacket
+#endif
+TEST_P(DtlsTransportInternalImplVersionTest,
+       MAYBE_HandshakeLoseFirstClientPacket) {
   if (std::get<0>(GetParam()).dtls_in_stun ||
       (std::get<0>(GetParam()).dtls_in_stun &&
        std::get<1>(GetParam()).dtls_in_stun)) {
@@ -1015,9 +1026,15 @@ TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseFirstClientPacket) {
   EXPECT_EQ(events, expect);
 }
 
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_PqcHandshakeLoseFirstClientPacket \
+  PqcHandshakeLoseFirstClientPacket
+#else
+#define MAYBE_PqcHandshakeLoseFirstClientPacket \
+  DISABLED_PqcHandshakeLoseFirstClientPacket
+#endif
 TEST_P(DtlsTransportInternalImplVersionTest,
-       PqcHandshakeLoseFirstClientPacket) {
-  MAYBE_SKIP_TEST(IsBoringSsl);
+       MAYBE_PqcHandshakeLoseFirstClientPacket) {
   if (std::get<0>(GetParam()).dtls_in_stun ||
       std::get<1>(GetParam()).dtls_in_stun) {
     GTEST_SKIP() << "This test does not support dtls in stun";
@@ -1056,9 +1073,15 @@ TEST_P(DtlsTransportInternalImplVersionTest,
   EXPECT_EQ(events, expect);
 }
 
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_PqcHandshakeLoseSecondClientPacket \
+  PqcHandshakeLoseSecondClientPacket
+#else
+#define MAYBE_PqcHandshakeLoseSecondClientPacket \
+  DISABLED_PqcHandshakeLoseSecondClientPacket
+#endif
 TEST_P(DtlsTransportInternalImplVersionTest,
-       PqcHandshakeLoseSecondClientPacket) {
-  MAYBE_SKIP_TEST(IsBoringSsl);
+       MAYBE_PqcHandshakeLoseSecondClientPacket) {
   if (std::get<0>(GetParam()).dtls_in_stun ||
       std::get<1>(GetParam()).dtls_in_stun) {
     GTEST_SKIP() << "This test does not support dtls in stun";
@@ -1098,8 +1121,14 @@ TEST_P(DtlsTransportInternalImplVersionTest,
   EXPECT_EQ(events, expect);
 }
 
-TEST_P(DtlsTransportInternalImplVersionTest, HandshakeLoseSecondClientPacket) {
-  MAYBE_SKIP_TEST(IsBoringSsl);
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_HandshakeLoseSecondClientPacket HandshakeLoseSecondClientPacket
+#else
+#define MAYBE_HandshakeLoseSecondClientPacket \
+  DISABLED_HandshakeLoseSecondClientPacket
+#endif
+TEST_P(DtlsTransportInternalImplVersionTest,
+       MAYBE_HandshakeLoseSecondClientPacket) {
   if (std::get<0>(GetParam()).dtls_in_stun ||
       (std::get<0>(GetParam()).dtls_in_stun &&
        std::get<1>(GetParam()).dtls_in_stun)) {
@@ -1264,11 +1293,14 @@ TEST_F(DtlsTransportInternalImplTest, TestCertificatesAfterConnect) {
 // Each time a timeout occurs, the retransmission timer should be doubled up to
 // 60 seconds. The timer defaults to 1 second, but for WebRTC we should be
 // initializing it to 50ms.
-TEST_F(DtlsTransportInternalImplTest, TestRetransmissionSchedule) {
   // We can only change the retransmission schedule with a recently-added
   // BoringSSL API. Skip the test if not built with BoringSSL.
-  MAYBE_SKIP_TEST(IsBoringSsl);
-
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_TestRetransmissionSchedule TestRetransmissionSchedule
+#else
+#define MAYBE_TestRetransmissionSchedule DISABLED_TestRetransmissionSchedule
+#endif
+TEST_F(DtlsTransportInternalImplTest, MAYBE_TestRetransmissionSchedule) {
   PrepareDtls(KT_DEFAULT);
 
   // This test is written with assumption of 0 delay
@@ -1400,7 +1432,13 @@ class DtlsEventOrderingTest
       return client1_.dtls_transport()->dtls_state() == expected_final_state;
     }));
     EXPECT_TRUE(WaitUntil([&] {
-      return client2_.dtls_transport()->dtls_state() == expected_final_state;
+      return client2_.dtls_transport()->dtls_state() == expected_final_state ||
+             // Unlike BoringSSL, OpenSSL can not send a fatal alert to the peer
+             // so the peer will be stuck in kConnecting.
+             (!rtc::SSLStreamAdapter::IsBoringSsl() &&
+              expected_final_state == DtlsTransportState::kFailed &&
+              client2_.dtls_transport()->dtls_state() ==
+                  DtlsTransportState::kConnecting);
     }));
 
     // Transports should be writable iff there was a valid fingerprint.
@@ -1797,7 +1835,12 @@ INSTANTIATE_TEST_SUITE_P(DtlsInStunTest,
                          DtlsInStunTest,
                          testing::ValuesIn(Dtls13WithDtlsInStun()));
 
-TEST_P(DtlsInStunTest, OptimalDtls13Handshake) {
+#if defined(OPENSSL_IS_BORINGSSL)
+#define MAYBE_OptimalDtls13Handshake
+#else
+#define MAYBE_OptimalDtls13Handshake DISABLED_OptimalDtls13Handshake
+#endif
+TEST_P(DtlsInStunTest, MAYBE_OptimalDtls13Handshake) {
   RTC_LOG(LS_INFO) << "client1: " << std::get<0>(GetParam());
   RTC_LOG(LS_INFO) << "client2: " << std::get<1>(GetParam());
 
