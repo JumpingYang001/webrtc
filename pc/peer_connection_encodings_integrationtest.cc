@@ -3413,4 +3413,26 @@ TEST_F(PeerConnectionEncodingsFakeCodecsIntegrationTest,
               HasSubstr(recvonly_codec.parameters["profile-level-id"]));
 }
 
+// Regression test for https://issues.chromium.org/issues/399667359
+TEST_F(PeerConnectionEncodingsIntegrationTest,
+       SimulcastNotSupportedGetParametersDoesNotCrash) {
+  rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper = CreatePc();
+  rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper = CreatePc();
+  ExchangeIceCandidates(local_pc_wrapper, remote_pc_wrapper);
+
+  std::vector<cricket::SimulcastLayer> layers =
+      CreateLayers({"f", "q"}, /*active=*/true);
+  rtc::scoped_refptr<RtpTransceiverInterface> transceiver =
+      AddTransceiverWithSimulcastLayers(local_pc_wrapper, remote_pc_wrapper,
+                                        layers);
+  // Negotiate - receiver will reject simulcast, so the 2nd layer will be
+  // disabled
+  Negotiate(local_pc_wrapper, remote_pc_wrapper);
+  // Negotiate again without simulcast.
+  Negotiate(local_pc_wrapper, remote_pc_wrapper);
+
+  RtpParameters parameters = transceiver->sender()->GetParameters();
+  EXPECT_TRUE(transceiver->sender()->SetParameters(parameters).ok());
+}
+
 }  // namespace webrtc
