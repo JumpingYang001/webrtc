@@ -47,7 +47,7 @@ class ScreenDrawerLinux : public ScreenDrawer {
   // windows or shadow effect.
   void BringToFront();
 
-  rtc::scoped_refptr<SharedXDisplay> display_;
+  scoped_refptr<SharedXDisplay> display_;
   int screen_num_;
   DesktopRect rect_;
   Window window_;

@@ -18,7 +18,7 @@ namespace webrtc {
 
 // static
 std::unique_ptr<DesktopFrameIOSurface> DesktopFrameIOSurface::Wrap(
-    rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface, CGRect rect) {
+    webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface, CGRect rect) {
   if (!io_surface) {
     return nullptr;
   }
@@ -81,7 +81,7 @@ std::unique_ptr<DesktopFrameIOSurface> DesktopFrameIOSurface::Wrap(
 }
 
 DesktopFrameIOSurface::DesktopFrameIOSurface(
-    rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     uint8_t* data,
     int32_t width,
     int32_t height,

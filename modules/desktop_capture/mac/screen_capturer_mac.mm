@@ -269,8 +269,9 @@ void ScreenCapturerMac::CaptureFrame() {
 
   helper_.set_size_most_recent(new_frame->size());
 
-  new_frame->set_capture_time_ms((rtc::TimeNanos() - capture_start_time_nanos) /
-                                 webrtc::kNumNanosecsPerMillisec);
+  new_frame->set_capture_time_ms(
+      (webrtc::TimeNanos() - capture_start_time_nanos) /
+      webrtc::kNumNanosecsPerMillisec);
   callback_->OnCaptureResult(Result::SUCCESS, std::move(new_frame));
 }
 

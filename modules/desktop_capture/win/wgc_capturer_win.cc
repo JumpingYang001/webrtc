@@ -323,7 +323,7 @@ void WgcCapturerWin::CaptureFrame() {
     }
   }
 
-  int64_t capture_start_time_nanos = rtc::TimeNanos();
+  int64_t capture_start_time_nanos = webrtc::TimeNanos();
 
   WgcCaptureSession* capture_session = nullptr;
   std::map<SourceId, WgcCaptureSession>::iterator session_iter =
@@ -381,8 +381,8 @@ void WgcCapturerWin::CaptureFrame() {
     return;
   }
 
-  int capture_time_ms = (rtc::TimeNanos() - capture_start_time_nanos) /
-                        rtc::kNumNanosecsPerMillisec;
+  int capture_time_ms = (webrtc::TimeNanos() - capture_start_time_nanos) /
+                        webrtc::kNumNanosecsPerMillisec;
   RTC_HISTOGRAM_COUNTS_1000("WebRTC.DesktopCapture.Win.WgcCapturerFrameTime",
                             capture_time_ms);
   frame->set_capture_time_ms(capture_time_ms);

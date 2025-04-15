@@ -72,7 +72,7 @@ class MouseCursorMonitorMac : public MouseCursorMonitor {
 
   void CaptureImage(float scale);
 
-  rtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor_;
+  webrtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor_;
   CGWindowID window_id_;
   ScreenId screen_id_;
   Callback* callback_ = NULL;

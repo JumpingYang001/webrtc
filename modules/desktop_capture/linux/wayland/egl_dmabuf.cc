@@ -498,7 +498,7 @@ bool EglDmaBuf::GetClientExtensions(EGLDisplay dpy, EGLint name) {
   }
 
   std::vector<absl::string_view> client_extensions =
-      rtc::split(client_extensions_cstring, ' ');
+      webrtc::split(client_extensions_cstring, ' ');
   for (const auto& extension : client_extensions) {
     egl_.extensions.push_back(std::string(extension));
   }

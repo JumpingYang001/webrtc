@@ -47,10 +47,8 @@ class RTC_EXPORT DesktopCaptureOptions {
   DesktopCaptureOptions& operator=(DesktopCaptureOptions&& options);
 
 #if defined(WEBRTC_USE_X11)
-  const rtc::scoped_refptr<SharedXDisplay>& x_display() const {
-    return x_display_;
-  }
-  void set_x_display(rtc::scoped_refptr<SharedXDisplay> x_display) {
+  const scoped_refptr<SharedXDisplay>& x_display() const { return x_display_; }
+  void set_x_display(scoped_refptr<SharedXDisplay> x_display) {
     x_display_ = x_display;
   }
 #endif
@@ -59,14 +57,14 @@ class RTC_EXPORT DesktopCaptureOptions {
   // TODO(zijiehe): Remove both DesktopConfigurationMonitor and
   // FullScreenChromeWindowDetector out of DesktopCaptureOptions. It's not
   // reasonable for external consumers to set these two parameters.
-  const rtc::scoped_refptr<DesktopConfigurationMonitor>& configuration_monitor()
-      const {
+  const webrtc::scoped_refptr<DesktopConfigurationMonitor>&
+  configuration_monitor() const {
     return configuration_monitor_;
   }
   // If nullptr is set, ScreenCapturer won't work and WindowCapturer may return
   // inaccurate result from IsOccluded() function.
   void set_configuration_monitor(
-      rtc::scoped_refptr<DesktopConfigurationMonitor> m) {
+      webrtc::scoped_refptr<DesktopConfigurationMonitor> m) {
     configuration_monitor_ = m;
   }
 
@@ -81,12 +79,12 @@ class RTC_EXPORT DesktopCaptureOptions {
   void set_allow_sck_capturer(bool allow) { allow_sck_capturer_ = allow; }
 #endif
 
-  const rtc::scoped_refptr<FullScreenWindowDetector>&
-  full_screen_window_detector() const {
+  const scoped_refptr<FullScreenWindowDetector>& full_screen_window_detector()
+      const {
     return full_screen_window_detector_;
   }
   void set_full_screen_window_detector(
-      rtc::scoped_refptr<FullScreenWindowDetector> detector) {
+      scoped_refptr<FullScreenWindowDetector> detector) {
     full_screen_window_detector_ = detector;
   }
 
@@ -207,11 +205,12 @@ class RTC_EXPORT DesktopCaptureOptions {
   bool allow_pipewire() const { return allow_pipewire_; }
   void set_allow_pipewire(bool allow) { allow_pipewire_ = allow; }
 
-  const rtc::scoped_refptr<SharedScreenCastStream>& screencast_stream() const {
+  const webrtc::scoped_refptr<SharedScreenCastStream>& screencast_stream()
+      const {
     return screencast_stream_;
   }
   void set_screencast_stream(
-      rtc::scoped_refptr<SharedScreenCastStream> stream) {
+      webrtc::scoped_refptr<SharedScreenCastStream> stream) {
     screencast_stream_ = stream;
   }
 
@@ -231,21 +230,21 @@ class RTC_EXPORT DesktopCaptureOptions {
 
  private:
 #if defined(WEBRTC_USE_X11)
-  rtc::scoped_refptr<SharedXDisplay> x_display_;
+  scoped_refptr<SharedXDisplay> x_display_;
 #endif
 #if defined(WEBRTC_USE_PIPEWIRE)
   // An instance of shared PipeWire ScreenCast stream we share between
   // BaseCapturerPipeWire and MouseCursorMonitorPipeWire as cursor information
   // is sent together with screen content.
-  rtc::scoped_refptr<SharedScreenCastStream> screencast_stream_;
+  webrtc::scoped_refptr<SharedScreenCastStream> screencast_stream_;
 #endif
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS)
-  rtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor_;
+  webrtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor_;
   bool allow_iosurface_ = false;
   bool allow_sck_capturer_ = false;
 #endif
 
-  rtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector_;
+  scoped_refptr<FullScreenWindowDetector> full_screen_window_detector_;
 
 #if defined(WEBRTC_WIN)
   bool enumerate_current_process_windows_ = true;

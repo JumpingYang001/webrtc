@@ -21,7 +21,8 @@ namespace webrtc {
 std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateForDisplay(
     CGDirectDisplayID display_id) {
   // Create an image containing a snapshot of the display.
-  rtc::ScopedCFTypeRef<CGImageRef> cg_image(CGDisplayCreateImage(display_id));
+  webrtc::ScopedCFTypeRef<CGImageRef> cg_image(
+      CGDisplayCreateImage(display_id));
   if (!cg_image) {
     return nullptr;
   }
@@ -32,7 +33,7 @@ std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateForDisplay(
 // static
 std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateForWindow(
     CGWindowID window_id) {
-  rtc::ScopedCFTypeRef<CGImageRef> cg_image(
+  webrtc::ScopedCFTypeRef<CGImageRef> cg_image(
       CGWindowListCreateImage(CGRectNull,
                               kCGWindowListOptionIncludingWindow,
                               window_id,
@@ -46,7 +47,7 @@ std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateForWindow(
 
 // static
 std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateFromCGImage(
-    rtc::ScopedCFTypeRef<CGImageRef> cg_image) {
+    webrtc::ScopedCFTypeRef<CGImageRef> cg_image) {
   // Verify that the image has 32-bit depth.
   int bits_per_pixel = CGImageGetBitsPerPixel(cg_image.get());
   if (bits_per_pixel / 8 != DesktopFrame::kBytesPerPixel) {
@@ -62,7 +63,8 @@ std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateFromCGImage(
 
   // CGDataProviderCopyData returns a new data object containing a copy of the
   // provider’s data.
-  rtc::ScopedCFTypeRef<CFDataRef> cg_data(CGDataProviderCopyData(cg_provider));
+  webrtc::ScopedCFTypeRef<CFDataRef> cg_data(
+      CGDataProviderCopyData(cg_provider));
   RTC_DCHECK(cg_data);
 
   // CFDataGetBytePtr returns a read-only pointer to the bytes of a CFData
@@ -81,10 +83,10 @@ std::unique_ptr<DesktopFrameCGImage> DesktopFrameCGImage::CreateFromCGImage(
   if (cg_color_space) {
 #if !defined(MAC_OS_X_VERSION_10_13) || \
     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_13
-    rtc::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
+    webrtc::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
         CGColorSpaceCopyICCProfile(cg_color_space));
 #else
-    rtc::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
+    webrtc::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
         CGColorSpaceCopyICCData(cg_color_space));
 #endif
     if (cf_icc_profile) {
@@ -105,8 +107,8 @@ DesktopFrameCGImage::DesktopFrameCGImage(
     DesktopSize size,
     int stride,
     uint8_t* data,
-    rtc::ScopedCFTypeRef<CGImageRef> cg_image,
-    rtc::ScopedCFTypeRef<CFDataRef> cg_data)
+    webrtc::ScopedCFTypeRef<CGImageRef> cg_image,
+    webrtc::ScopedCFTypeRef<CFDataRef> cg_data)
     : DesktopFrame(size, stride, data, nullptr),
       cg_image_(cg_image),
       cg_data_(cg_data) {

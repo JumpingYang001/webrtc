@@ -27,7 +27,7 @@ class DesktopFrameIOSurface final : public DesktopFrame {
   // failed to lock. `rect` specifies the portion of the surface that the
   // DesktopFrame should be cropped to.
   static std::unique_ptr<DesktopFrameIOSurface> Wrap(
-      rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface, CGRect rect = {});
+      webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface, CGRect rect = {});
 
   ~DesktopFrameIOSurface() override;
 
@@ -40,13 +40,13 @@ class DesktopFrameIOSurface final : public DesktopFrame {
   // buffer.
   // `width` and `height` make up the dimensions of `io_surface` in pixels.
   // `stride` is the number of bytes of a single row of pixels in `data`.
-  DesktopFrameIOSurface(rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+  DesktopFrameIOSurface(webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface,
                         uint8_t* data,
                         int32_t width,
                         int32_t height,
                         int32_t stride);
 
-  const rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
+  const webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
 };
 
 }  // namespace webrtc

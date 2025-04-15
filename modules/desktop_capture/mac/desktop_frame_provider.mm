@@ -43,7 +43,7 @@ std::unique_ptr<DesktopFrame> DesktopFrameProvider::TakeLatestFrameForDisplay(
 
 void DesktopFrameProvider::InvalidateIOSurface(
     CGDirectDisplayID display_id,
-    rtc::ScopedCFTypeRef<IOSurfaceRef> io_surface) {
+    webrtc::ScopedCFTypeRef<IOSurfaceRef> io_surface) {
   RTC_DCHECK(thread_checker_.IsCurrent());
 
   if (!allow_iosurface_) {

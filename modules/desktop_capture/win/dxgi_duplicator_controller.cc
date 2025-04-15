@@ -67,12 +67,12 @@ std::string DxgiDuplicatorController::ResultName(
 }
 
 // static
-rtc::scoped_refptr<DxgiDuplicatorController>
+webrtc::scoped_refptr<DxgiDuplicatorController>
 DxgiDuplicatorController::Instance() {
   // The static instance won't be deleted to ensure it can be used by other
   // threads even during program exiting.
   static DxgiDuplicatorController* instance = new DxgiDuplicatorController();
-  return rtc::scoped_refptr<DxgiDuplicatorController>(instance);
+  return webrtc::scoped_refptr<DxgiDuplicatorController>(instance);
 }
 
 // static
@@ -504,7 +504,7 @@ bool DxgiDuplicatorController::EnsureFrameCaptured(Context* context,
     shared_frame = fallback_frame.get();
   }
 
-  const int64_t start_ms = rtc::TimeMillis();
+  const int64_t start_ms = webrtc::TimeMillis();
   while (GetNumFramesCaptured(monitor_id) < frames_to_skip) {
     if (monitor_id < 0) {
       if (!DoDuplicateAll(context, shared_frame)) {
@@ -521,7 +521,7 @@ bool DxgiDuplicatorController::EnsureFrameCaptured(Context* context,
       break;
     }
 
-    if (rtc::TimeMillis() - start_ms > timeout_ms) {
+    if (webrtc::TimeMillis() - start_ms > timeout_ms) {
       RTC_LOG(LS_ERROR) << "Failed to capture " << frames_to_skip
                         << " frames "
                            "within "

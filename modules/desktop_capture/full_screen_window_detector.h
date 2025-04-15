@@ -33,7 +33,7 @@ namespace webrtc {
 // FullScreenApplicationHandler.
 
 class FullScreenWindowDetector
-    : public rtc::RefCountedNonVirtual<FullScreenWindowDetector> {
+    : public RefCountedNonVirtual<FullScreenWindowDetector> {
  public:
   using ApplicationHandlerFactory =
       std::function<std::unique_ptr<FullScreenApplicationHandler>(
@@ -57,7 +57,7 @@ class FullScreenWindowDetector
       DesktopCapturer::SourceId original_source_id,
       FunctionView<bool(DesktopCapturer::SourceList*)> get_sources);
 
-  static rtc::scoped_refptr<FullScreenWindowDetector>
+  static scoped_refptr<FullScreenWindowDetector>
   CreateFullScreenWindowDetector();
 
  protected:

@@ -82,7 +82,7 @@ class RTC_EXPORT DxgiDuplicatorController {
   static std::string ResultName(Result result);
 
   // Returns the singleton instance of DxgiDuplicatorController.
-  static rtc::scoped_refptr<DxgiDuplicatorController> Instance();
+  static webrtc::scoped_refptr<DxgiDuplicatorController> Instance();
 
   // See ScreenCapturerWinDirectx::IsCurrentSessionSupported().
   static bool IsCurrentSessionSupported();

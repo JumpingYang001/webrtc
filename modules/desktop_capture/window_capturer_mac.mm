@@ -47,8 +47,9 @@ bool IsWindowValid(CGWindowID id) {
 class WindowCapturerMac : public DesktopCapturer {
  public:
   explicit WindowCapturerMac(
-      rtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector,
-      rtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor);
+      webrtc::scoped_refptr<FullScreenWindowDetector>
+          full_screen_window_detector,
+      webrtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor);
   ~WindowCapturerMac() override;
 
   WindowCapturerMac(const WindowCapturerMac&) = delete;
@@ -68,9 +69,10 @@ class WindowCapturerMac : public DesktopCapturer {
   // The window being captured.
   CGWindowID window_id_ = 0;
 
-  rtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector_;
+  webrtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector_;
 
-  const rtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor_;
+  const webrtc::scoped_refptr<DesktopConfigurationMonitor>
+      configuration_monitor_;
 
   WindowFinderMac window_finder_;
 
@@ -79,8 +81,8 @@ class WindowCapturerMac : public DesktopCapturer {
 };
 
 WindowCapturerMac::WindowCapturerMac(
-    rtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector,
-    rtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor)
+    webrtc::scoped_refptr<FullScreenWindowDetector> full_screen_window_detector,
+    webrtc::scoped_refptr<DesktopConfigurationMonitor> configuration_monitor)
     : full_screen_window_detector_(std::move(full_screen_window_detector)),
       configuration_monitor_(std::move(configuration_monitor)),
       window_finder_(configuration_monitor_) {}
