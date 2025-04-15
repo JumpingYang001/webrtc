@@ -140,9 +140,9 @@ std::unique_ptr<MockAudioEncoder> SetupAudioEncoderMock(
   return nullptr;
 }
 
-rtc::scoped_refptr<MockAudioEncoderFactory> SetupEncoderFactoryMock() {
-  rtc::scoped_refptr<MockAudioEncoderFactory> factory =
-      rtc::make_ref_counted<MockAudioEncoderFactory>();
+scoped_refptr<MockAudioEncoderFactory> SetupEncoderFactoryMock() {
+  scoped_refptr<MockAudioEncoderFactory> factory =
+      make_ref_counted<MockAudioEncoderFactory>();
   ON_CALL(*factory, GetSupportedEncoders)
       .WillByDefault(Return(std::vector<AudioCodecSpec>(
           std::begin(kCodecSpecs), std::end(kCodecSpecs))));
@@ -168,14 +168,14 @@ struct ConfigHelper {
         audio_processing_(
             use_null_audio_processing
                 ? nullptr
-                : rtc::make_ref_counted<NiceMock<MockAudioProcessing>>()),
+                : make_ref_counted<NiceMock<MockAudioProcessing>>()),
         audio_encoder_(nullptr) {
     using ::testing::Invoke;
 
     AudioState::Config config;
     config.audio_mixer = AudioMixerImpl::Create();
     config.audio_processing = audio_processing_;
-    config.audio_device_module = rtc::make_ref_counted<MockAudioDeviceModule>();
+    config.audio_device_module = make_ref_counted<MockAudioDeviceModule>();
     audio_state_ = AudioState::Create(config);
 
     SetupDefaultChannelSend(audio_bwe_enabled);
@@ -266,11 +266,10 @@ struct ConfigHelper {
   void SetupMockForCallEncoder() {
     // Let ModifyEncoder to invoke mock audio encoder.
     EXPECT_CALL(*channel_send_, CallEncoder(_))
-        .WillRepeatedly(
-            [this](rtc::FunctionView<void(AudioEncoder*)> modifier) {
-              if (this->audio_encoder_)
-                modifier(this->audio_encoder_.get());
-            });
+        .WillRepeatedly([this](FunctionView<void(AudioEncoder*)> modifier) {
+          if (this->audio_encoder_)
+            modifier(this->audio_encoder_.get());
+        });
   }
 
   void SetupMockForSendTelephoneEvent() {
@@ -331,10 +330,10 @@ struct ConfigHelper {
 
  private:
   RealTimeController time_controller_;
-  rtc::scoped_refptr<AudioState> audio_state_;
+  scoped_refptr<AudioState> audio_state_;
   AudioSendStream::Config stream_config_;
   ::testing::StrictMock<MockChannelSend>* channel_send_ = nullptr;
-  rtc::scoped_refptr<MockAudioProcessing> audio_processing_;
+  scoped_refptr<MockAudioProcessing> audio_processing_;
   AudioProcessingStats audio_processing_stats_;
   ::testing::StrictMock<MockNetworkLinkRtcpObserver> rtcp_observer_;
   ::testing::NiceMock<MockRtpTransportControllerSend> rtp_transport_;
@@ -916,8 +915,8 @@ TEST(AudioSendStreamTest, ReconfigureWithFrameEncryptor) {
     auto send_stream = helper.CreateAudioSendStream();
     auto new_config = helper.config();
 
-    rtc::scoped_refptr<FrameEncryptorInterface> mock_frame_encryptor_0(
-        rtc::make_ref_counted<MockFrameEncryptor>());
+    scoped_refptr<FrameEncryptorInterface> mock_frame_encryptor_0(
+        make_ref_counted<MockFrameEncryptor>());
     new_config.frame_encryptor = mock_frame_encryptor_0;
     EXPECT_CALL(*helper.channel_send(), SetFrameEncryptor(Ne(nullptr)))
         .Times(1);
@@ -929,8 +928,8 @@ TEST(AudioSendStreamTest, ReconfigureWithFrameEncryptor) {
 
     // Updating frame encryptor to a new object should force a call to the
     // proxy.
-    rtc::scoped_refptr<FrameEncryptorInterface> mock_frame_encryptor_1(
-        rtc::make_ref_counted<MockFrameEncryptor>());
+    scoped_refptr<FrameEncryptorInterface> mock_frame_encryptor_1(
+        make_ref_counted<MockFrameEncryptor>());
     new_config.frame_encryptor = mock_frame_encryptor_1;
     new_config.crypto_options.sframe.require_frame_encryption = true;
     EXPECT_CALL(*helper.channel_send(), SetFrameEncryptor(Ne(nullptr)))

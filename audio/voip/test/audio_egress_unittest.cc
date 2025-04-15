@@ -107,7 +107,7 @@ class AudioEgressTest : public ::testing::Test {
   NiceMock<MockTransport> transport_;
   SineWaveGenerator wave_generator_;
   std::unique_ptr<ModuleRtpRtcpImpl2> rtp_rtcp_;
-  rtc::scoped_refptr<AudioEncoderFactory> encoder_factory_;
+  scoped_refptr<AudioEncoderFactory> encoder_factory_;
   std::unique_ptr<AudioEgress> egress_;
 };
 
@@ -122,7 +122,7 @@ TEST_F(AudioEgressTest, ProcessAudioWithMute) {
   Event event;
   int rtp_count = 0;
   RtpPacketReceived rtp;
-  auto rtp_sent = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto rtp_sent = [&](ArrayView<const uint8_t> packet, Unused) {
     rtp.Parse(packet);
     if (++rtp_count == kExpected) {
       event.Set();
@@ -160,7 +160,7 @@ TEST_F(AudioEgressTest, ProcessAudioWithSineWave) {
   Event event;
   int rtp_count = 0;
   RtpPacketReceived rtp;
-  auto rtp_sent = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto rtp_sent = [&](ArrayView<const uint8_t> packet, Unused) {
     rtp.Parse(packet);
     if (++rtp_count == kExpected) {
       event.Set();
@@ -195,7 +195,7 @@ TEST_F(AudioEgressTest, SkipAudioEncodingAfterStopSend) {
   constexpr int kExpected = 10;
   Event event;
   int rtp_count = 0;
-  auto rtp_sent = [&](rtc::ArrayView<const uint8_t> /* packet */, Unused) {
+  auto rtp_sent = [&](ArrayView<const uint8_t> /* packet */, Unused) {
     if (++rtp_count == kExpected) {
       event.Set();
     }
@@ -269,7 +269,7 @@ TEST_F(AudioEgressTest, SendDTMF) {
   // It's possible that we may have actual audio RTP packets along with
   // DTMF packtets.  We are only interested in the exact number of DTMF
   // packets rtp stack is emitting.
-  auto rtp_sent = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto rtp_sent = [&](ArrayView<const uint8_t> packet, Unused) {
     RtpPacketReceived rtp;
     rtp.Parse(packet);
     if (is_dtmf(rtp) && ++dtmf_count == kExpected) {
@@ -296,7 +296,7 @@ TEST_F(AudioEgressTest, TestAudioInputLevelAndEnergyDuration) {
   constexpr int kExpected = 6;
   Event event;
   int rtp_count = 0;
-  auto rtp_sent = [&](rtc::ArrayView<const uint8_t> /* packet */, Unused) {
+  auto rtp_sent = [&](ArrayView<const uint8_t> /* packet */, Unused) {
     if (++rtp_count == kExpected) {
       event.Set();
     }

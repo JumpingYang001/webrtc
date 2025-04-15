@@ -101,7 +101,7 @@ namespace internal {
 AudioSendStream::AudioSendStream(
     const Environment& env,
     const webrtc::AudioSendStream::Config& config,
-    const rtc::scoped_refptr<webrtc::AudioState>& audio_state,
+    const scoped_refptr<webrtc::AudioState>& audio_state,
     RtpTransportControllerSendInterface* rtp_transport,
     BitrateAllocatorInterface* bitrate_allocator,
     RtcpRttStats* rtcp_rtt_stats,
@@ -126,7 +126,7 @@ AudioSendStream::AudioSendStream(
 AudioSendStream::AudioSendStream(
     const Environment& env,
     const webrtc::AudioSendStream::Config& config,
-    const rtc::scoped_refptr<webrtc::AudioState>& audio_state,
+    const scoped_refptr<webrtc::AudioState>& audio_state,
     RtpTransportControllerSendInterface* rtp_transport,
     BitrateAllocatorInterface* bitrate_allocator,
     const std::optional<RtpState>& suspended_rtp_state,
@@ -612,7 +612,7 @@ bool AudioSendStream::SetupSendCodec(const Config& new_config) {
     red_config.speech_encoder = std::move(encoder);
     encoder = std::make_unique<AudioEncoderCopyRed>(std::move(red_config),
                                                     env_.field_trials());
-    format.name = cricket::kRedCodecName;
+    format.name = kRedCodecName;
   }
 
   // Set currently known overhead (used in ANA, opus only).

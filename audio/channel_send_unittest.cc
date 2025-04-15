@@ -129,7 +129,7 @@ class ChannelSendTest : public ::testing::Test {
   CryptoOptions crypto_options_;
   RtpTransportControllerSend transport_controller_;
   std::unique_ptr<ChannelSendInterface> channel_;
-  rtc::scoped_refptr<AudioEncoderFactory> encoder_factory_;
+  scoped_refptr<AudioEncoderFactory> encoder_factory_;
 };
 
 TEST_F(ChannelSendTest, StopSendShouldResetEncoder) {
@@ -155,7 +155,7 @@ TEST_F(ChannelSendTest, IncreaseRtpTimestampByPauseDuration) {
   channel_->StartSend();
   uint32_t timestamp;
   int sent_packets = 0;
-  auto send_rtp = [&](rtc::ArrayView<const uint8_t> data,
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
                       const PacketOptions& /* options */) {
     ++sent_packets;
     RtpPacketReceived packet;
@@ -181,16 +181,16 @@ TEST_F(ChannelSendTest, IncreaseRtpTimestampByPauseDuration) {
 }
 
 TEST_F(ChannelSendTest, FrameTransformerGetsCorrectTimestamp) {
-  rtc::scoped_refptr<MockFrameTransformer> mock_frame_transformer =
-      rtc::make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
   channel_->SetEncoderToPacketizerFrameTransformer(mock_frame_transformer);
-  rtc::scoped_refptr<TransformedFrameCallback> callback;
+  scoped_refptr<TransformedFrameCallback> callback;
   EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback)
       .WillOnce(SaveArg<0>(&callback));
   EXPECT_CALL(*mock_frame_transformer, UnregisterTransformedFrameCallback);
 
   std::optional<uint32_t> sent_timestamp;
-  auto send_rtp = [&](rtc::ArrayView<const uint8_t> data,
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
                       const PacketOptions& /* options */) {
     RtpPacketReceived packet;
     packet.Parse(data);
@@ -230,16 +230,16 @@ TEST_F(ChannelSendTest, AudioLevelsAttachedToCorrectTransformedFrame) {
   RtpPacketReceived::ExtensionManager extension_manager;
   extension_manager.RegisterByType(1, kRtpExtensionAudioLevel);
 
-  rtc::scoped_refptr<MockFrameTransformer> mock_frame_transformer =
-      rtc::make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
   channel_->SetEncoderToPacketizerFrameTransformer(mock_frame_transformer);
-  rtc::scoped_refptr<TransformedFrameCallback> callback;
+  scoped_refptr<TransformedFrameCallback> callback;
   EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback)
       .WillOnce(SaveArg<0>(&callback));
   EXPECT_CALL(*mock_frame_transformer, UnregisterTransformedFrameCallback);
 
   std::vector<uint8_t> sent_audio_levels;
-  auto send_rtp = [&](rtc::ArrayView<const uint8_t> data,
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
                       const PacketOptions& /* options */) {
     RtpPacketReceived packet(&extension_manager);
     packet.Parse(data);
@@ -294,16 +294,16 @@ TEST_F(ChannelSendTest, AudioLevelsAttachedToInsertedTransformedFrame) {
   RtpPacketReceived::ExtensionManager extension_manager;
   extension_manager.RegisterByType(1, kRtpExtensionAudioLevel);
 
-  rtc::scoped_refptr<MockFrameTransformer> mock_frame_transformer =
-      rtc::make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
   channel_->SetEncoderToPacketizerFrameTransformer(mock_frame_transformer);
-  rtc::scoped_refptr<TransformedFrameCallback> callback;
+  scoped_refptr<TransformedFrameCallback> callback;
   EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback)
       .WillOnce(SaveArg<0>(&callback));
   EXPECT_CALL(*mock_frame_transformer, UnregisterTransformedFrameCallback);
 
   std::optional<uint8_t> sent_audio_level;
-  auto send_rtp = [&](rtc::ArrayView<const uint8_t> data,
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
                       const PacketOptions& /* options */) {
     RtpPacketReceived packet(&extension_manager);
     packet.Parse(data);
@@ -323,7 +323,7 @@ TEST_F(ChannelSendTest, AudioLevelsAttachedToInsertedTransformedFrame) {
   ON_CALL(*mock_frame, AudioLevel()).WillByDefault(Return(audio_level));
   uint8_t payload[10];
   ON_CALL(*mock_frame, GetData())
-      .WillByDefault(Return(rtc::ArrayView<uint8_t>(&payload[0], 10)));
+      .WillByDefault(Return(ArrayView<uint8_t>(&payload[0], 10)));
   EXPECT_THAT(WaitUntil([&] { return callback; }, IsTrue()), IsRtcOk());
   callback->OnTransformedFrame(std::move(mock_frame));
 

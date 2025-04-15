@@ -129,7 +129,7 @@ class ChannelReceiveTest : public Test {
   }
 
   void HandleGeneratedRtcp(ChannelReceiveInterface& /* channel */,
-                           rtc::ArrayView<const uint8_t> packet) {
+                           ArrayView<const uint8_t> packet) {
     if (packet[1] == rtcp::ReceiverReport::kPacketType) {
       // Ignore RR, it requires no response
     } else {
@@ -156,8 +156,8 @@ class ChannelReceiveTest : public Test {
 
  protected:
   GlobalSimulatedTimeController time_controller_;
-  rtc::scoped_refptr<test::MockAudioDeviceModule> audio_device_module_;
-  rtc::scoped_refptr<AudioDecoderFactory> audio_decoder_factory_;
+  scoped_refptr<test::MockAudioDeviceModule> audio_device_module_;
+  scoped_refptr<AudioDecoderFactory> audio_decoder_factory_;
   MockTransport transport_;
 };
 
@@ -171,7 +171,7 @@ TEST_F(ChannelReceiveTest, ReceiveReportGeneratedOnTime) {
 
   bool receiver_report_sent = false;
   EXPECT_CALL(transport_, SendRtcp)
-      .WillRepeatedly([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillRepeatedly([&](ArrayView<const uint8_t> packet) {
         if (packet.size() >= 2 &&
             packet[1] == rtcp::ReceiverReport::kPacketType) {
           receiver_report_sent = true;
@@ -189,7 +189,7 @@ TEST_F(ChannelReceiveTest, CaptureStartTimeBecomesValid) {
   auto channel = CreateTestChannelReceive();
 
   EXPECT_CALL(transport_, SendRtcp)
-      .WillRepeatedly([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillRepeatedly([&](ArrayView<const uint8_t> packet) {
         HandleGeneratedRtcp(*channel, packet);
         return true;
       });
@@ -228,8 +228,8 @@ TEST_F(ChannelReceiveTest, CaptureStartTimeBecomesValid) {
 TEST_F(ChannelReceiveTest, SettingFrameTransformer) {
   auto channel = CreateTestChannelReceive();
 
-  rtc::scoped_refptr<MockFrameTransformer> mock_frame_transformer =
-      rtc::make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
 
   EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback);
   channel->SetDepacketizerToDecoderFrameTransformer(mock_frame_transformer);
@@ -247,8 +247,8 @@ TEST_F(ChannelReceiveTest, SettingFrameTransformer) {
 TEST_F(ChannelReceiveTest, SettingFrameTransformerMultipleTimes) {
   auto channel = CreateTestChannelReceive();
 
-  rtc::scoped_refptr<MockFrameTransformer> mock_frame_transformer =
-      rtc::make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
 
   EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback);
   channel->SetDepacketizerToDecoderFrameTransformer(mock_frame_transformer);

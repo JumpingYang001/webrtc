@@ -118,7 +118,7 @@ int32_t AudioEgress::SendData(AudioFrameType frame_type,
                               size_t payload_size) {
   RTC_DCHECK_RUN_ON(&encoder_queue_checker_);
 
-  rtc::ArrayView<const uint8_t> payload(payload_data, payload_size);
+  ArrayView<const uint8_t> payload(payload_data, payload_size);
 
   // Currently we don't get a capture time from downstream modules (ADM,
   // AudioTransportImpl).

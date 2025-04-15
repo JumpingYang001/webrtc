@@ -56,13 +56,13 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
       PacketRouter* packet_router,
       NetEqFactory* neteq_factory,
       const webrtc::AudioReceiveStreamInterface::Config& config,
-      const rtc::scoped_refptr<webrtc::AudioState>& audio_state);
+      const scoped_refptr<webrtc::AudioState>& audio_state);
   // For unit tests, which need to supply a mock channel receive.
   AudioReceiveStreamImpl(
       const Environment& env,
       PacketRouter* packet_router,
       const webrtc::AudioReceiveStreamInterface::Config& config,
-      const rtc::scoped_refptr<webrtc::AudioState>& audio_state,
+      const scoped_refptr<webrtc::AudioState>& audio_state,
       std::unique_ptr<voe::ChannelReceiveInterface> channel_receive);
 
   AudioReceiveStreamImpl() = delete;
@@ -90,14 +90,14 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   void Stop() override;
   bool IsRunning() const override;
   void SetDepacketizerToDecoderFrameTransformer(
-      rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer)
+      scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer)
       override;
   void SetDecoderMap(std::map<int, SdpAudioFormat> decoder_map) override;
   void SetNackHistory(int history_ms) override;
   void SetRtcpMode(RtcpMode mode) override;
   void SetNonSenderRttMeasurement(bool enabled) override;
-  void SetFrameDecryptor(rtc::scoped_refptr<webrtc::FrameDecryptorInterface>
-                             frame_decryptor) override;
+  void SetFrameDecryptor(
+      scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) override;
 
   webrtc::AudioReceiveStreamInterface::Stats GetStats(
       bool get_and_clear_legacy_stats) const override;
@@ -159,7 +159,7 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   RTC_NO_UNIQUE_ADDRESS SequenceChecker packet_sequence_checker_{
       SequenceChecker::kDetached};
   webrtc::AudioReceiveStreamInterface::Config config_;
-  rtc::scoped_refptr<webrtc::AudioState> audio_state_;
+  scoped_refptr<webrtc::AudioState> audio_state_;
   const std::unique_ptr<voe::ChannelReceiveInterface> channel_receive_;
 
   bool playing_ RTC_GUARDED_BY(worker_thread_checker_) = false;

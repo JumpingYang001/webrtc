@@ -101,8 +101,8 @@ class AudioIngressTest : public ::testing::Test {
   NiceMock<MockTransport> transport_;
   std::unique_ptr<ReceiveStatistics> receive_statistics_;
   std::unique_ptr<ModuleRtpRtcpImpl2> rtp_rtcp_;
-  rtc::scoped_refptr<AudioEncoderFactory> encoder_factory_;
-  rtc::scoped_refptr<AudioDecoderFactory> decoder_factory_;
+  scoped_refptr<AudioEncoderFactory> encoder_factory_;
+  scoped_refptr<AudioDecoderFactory> decoder_factory_;
   std::unique_ptr<AudioIngress> ingress_;
   std::unique_ptr<AudioEgress> egress_;
 };
@@ -115,7 +115,7 @@ TEST_F(AudioIngressTest, PlayingAfterStartAndStop) {
 
 TEST_F(AudioIngressTest, GetAudioFrameAfterRtpReceived) {
   Event event;
-  auto handle_rtp = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto handle_rtp = [&](ArrayView<const uint8_t> packet, Unused) {
     ingress_->ReceivedRTPPacket(packet);
     event.Set();
     return true;
@@ -145,7 +145,7 @@ TEST_F(AudioIngressTest, TestSpeechOutputLevelAndEnergyDuration) {
   constexpr int kNumRtp = 6;
   int rtp_count = 0;
   Event event;
-  auto handle_rtp = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto handle_rtp = [&](ArrayView<const uint8_t> packet, Unused) {
     ingress_->ReceivedRTPPacket(packet);
     if (++rtp_count == kNumRtp) {
       event.Set();
@@ -176,7 +176,7 @@ TEST_F(AudioIngressTest, TestSpeechOutputLevelAndEnergyDuration) {
 
 TEST_F(AudioIngressTest, PreferredSampleRate) {
   Event event;
-  auto handle_rtp = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto handle_rtp = [&](ArrayView<const uint8_t> packet, Unused) {
     ingress_->ReceivedRTPPacket(packet);
     event.Set();
     return true;
@@ -205,7 +205,7 @@ TEST_F(AudioIngressTest, GetMutedAudioFrameAfterRtpReceivedAndStopPlay) {
   constexpr int kNumRtp = 6;
   int rtp_count = 0;
   Event event;
-  auto handle_rtp = [&](rtc::ArrayView<const uint8_t> packet, Unused) {
+  auto handle_rtp = [&](ArrayView<const uint8_t> packet, Unused) {
     ingress_->ReceivedRTPPacket(packet);
     if (++rtp_count == kNumRtp) {
       event.Set();
