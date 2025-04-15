@@ -114,7 +114,7 @@ PacingController::PacingController(Clock* clock,
 PacingController::~PacingController() = default;
 
 void PacingController::CreateProbeClusters(
-    rtc::ArrayView<const ProbeClusterConfig> probe_cluster_configs) {
+    ArrayView<const ProbeClusterConfig> probe_cluster_configs) {
   for (const ProbeClusterConfig probe_cluster_config : probe_cluster_configs) {
     prober_.CreateProbeCluster(probe_cluster_config);
   }

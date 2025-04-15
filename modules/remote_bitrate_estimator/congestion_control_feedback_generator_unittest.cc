@@ -39,12 +39,11 @@ using ::testing::MockFunction;
 using ::testing::SizeIs;
 using ::testing::WithoutArgs;
 
-RtpPacketReceived CreatePacket(
-    Timestamp arrival_time,
-    bool marker,
-    uint32_t ssrc = 1234,
-    uint16_t seq = 1,
-    rtc::EcnMarking /* ecn */ = rtc::EcnMarking::kNotEct) {
+RtpPacketReceived CreatePacket(Timestamp arrival_time,
+                               bool marker,
+                               uint32_t ssrc = 1234,
+                               uint16_t seq = 1,
+                               EcnMarking /* ecn */ = EcnMarking::kNotEct) {
   RtpPacketReceived packet;
   packet.SetSsrc(ssrc);
   packet.SetSequenceNumber(seq);
@@ -252,7 +251,7 @@ TEST(CongestionControlFeedbackGeneratorTest,
                     rtcp_packets[0].get());
 
             ASSERT_THAT(rtcp->packets(), SizeIs(14));
-            rtc::Buffer buffer = rtcp->Build();
+            Buffer buffer = rtcp->Build();
             CongestionControlFeedback parsed_fb;
             rtcp::CommonHeader header;
             EXPECT_TRUE(header.Parse(buffer.data(), buffer.size()));
@@ -289,11 +288,11 @@ TEST(CongestionControlFeedbackGeneratorTest,
   TimeDelta time_to_next_process = generator.Process(clock.CurrentTime());
   RtpPacketReceived packet_1 =
       CreatePacket(clock.CurrentTime(), /*marker=*/false, /* ssrc=*/1,
-                   /* seq=*/2, rtc::EcnMarking::kEct1);
+                   /* seq=*/2, EcnMarking::kEct1);
   generator.OnReceivedPacket(packet_1);
   RtpPacketReceived packet_2 = packet_1;
   packet_2.set_arrival_time(clock.CurrentTime() + kSmallTimeInterval);
-  packet_2.set_ecn(rtc::EcnMarking::kCe);
+  packet_2.set_ecn(EcnMarking::kCe);
   time_to_next_process -= kSmallTimeInterval;
   clock.AdvanceTime(kSmallTimeInterval);
   generator.OnReceivedPacket(packet_2);
@@ -307,7 +306,7 @@ TEST(CongestionControlFeedbackGeneratorTest,
                     rtcp_packets[0].get());
             Timestamp feedback_send_time = clock.CurrentTime();
             ASSERT_THAT(rtcp->packets(), SizeIs(1));
-            EXPECT_EQ(rtcp->packets()[0].ecn, rtc::EcnMarking::kCe);
+            EXPECT_EQ(rtcp->packets()[0].ecn, EcnMarking::kCe);
             EXPECT_EQ(rtcp->packets()[0].arrival_time_offset,
                       feedback_send_time - packet_1.arrival_time());
           });

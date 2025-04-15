@@ -291,7 +291,7 @@ std::vector<std::unique_ptr<RtpPacketToSend>> PacketRouter::GeneratePadding(
 
 void PacketRouter::OnAbortedRetransmissions(
     uint32_t ssrc,
-    rtc::ArrayView<const uint16_t> sequence_numbers) {
+    ArrayView<const uint16_t> sequence_numbers) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   auto it = send_modules_map_.find(ssrc);
   if (it != send_modules_map_.end()) {

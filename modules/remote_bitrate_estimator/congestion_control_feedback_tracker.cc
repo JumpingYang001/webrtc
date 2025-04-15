@@ -84,7 +84,7 @@ void CongestionControlFeedbackTracker::AddPacketsToFeedback(
     RTC_DCHECK(packet_it != packets_.end());
     RTC_DCHECK_EQ(ssrc, packet_it->ssrc);
 
-    rtc::EcnMarking ecn = rtc::EcnMarking::kNotEct;
+    EcnMarking ecn = EcnMarking::kNotEct;
     TimeDelta arrival_time_offset = TimeDelta::MinusInfinity();
 
     if (sequence_number == packet_it->unwrapped_sequence_number) {
@@ -99,8 +99,8 @@ void CongestionControlFeedbackTracker::AddPacketsToFeedback(
         // the copies of the duplicated packet are ECN-CE marked, then an ECN-CE
         // mark MUST be reported for that packet; otherwise, the ECN mark of the
         // first copy to arrive is reported.
-        if (packet_it->ecn == rtc::EcnMarking::kCe) {
-          ecn = rtc::EcnMarking::kCe;
+        if (packet_it->ecn == EcnMarking::kCe) {
+          ecn = EcnMarking::kCe;
         }
         RTC_LOG(LS_WARNING) << "Received duplicate packet ssrc:" << ssrc
                             << " seq:" << static_cast<uint16_t>(sequence_number)
