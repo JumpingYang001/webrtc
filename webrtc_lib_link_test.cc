@@ -56,9 +56,9 @@ void CreateSomeMediaDeps(PeerConnectionFactoryDependencies& media_deps) {
 webrtc::PeerConnectionFactoryDependencies CreateSomePcfDeps() {
   webrtc::PeerConnectionFactoryDependencies pcf_deps;
   pcf_deps.task_queue_factory = CreateDefaultTaskQueueFactory();
-  pcf_deps.signaling_thread = rtc::Thread::Current();
-  pcf_deps.network_thread = rtc::Thread::Current();
-  pcf_deps.worker_thread = rtc::Thread::Current();
+  pcf_deps.signaling_thread = webrtc::Thread::Current();
+  pcf_deps.network_thread = webrtc::Thread::Current();
+  pcf_deps.worker_thread = webrtc::Thread::Current();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
   CreateSomeMediaDeps(pcf_deps);
   EnableMedia(pcf_deps);
@@ -86,8 +86,9 @@ void TestCase2RegularFactory() {
   CreateSomeMediaDeps(media_deps);
 
   auto peer_connection_factory = webrtc::CreatePeerConnectionFactory(
-      rtc::Thread::Current(), rtc::Thread::Current(), rtc::Thread::Current(),
-      std::move(media_deps.adm), std::move(media_deps.audio_encoder_factory),
+      webrtc::Thread::Current(), webrtc::Thread::Current(),
+      webrtc::Thread::Current(), std::move(media_deps.adm),
+      std::move(media_deps.audio_encoder_factory),
       std::move(media_deps.audio_decoder_factory),
       std::move(media_deps.video_encoder_factory),
       std::move(media_deps.video_decoder_factory), nullptr, nullptr);
