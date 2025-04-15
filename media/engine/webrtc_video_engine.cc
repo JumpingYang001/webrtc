@@ -753,7 +753,7 @@ std::string CodecSettingsVectorToString(
 }
 
 void ExtractCodecInformation(
-    rtc::ArrayView<const VideoCodecSettings> recv_codecs,
+    ArrayView<const VideoCodecSettings> recv_codecs,
     std::map<int, int>& rtx_associated_payload_types,
     std::set<int>& raw_payload_types,
     std::vector<VideoReceiveStreamInterface::Decoder>& decoders) {
@@ -999,8 +999,8 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::ConfigureVideoEncoderSettings(
     vp8_settings.automaticResizeOn = automatic_resize;
     // VP8 denoising is enabled by default.
     vp8_settings.denoisingOn = codec_default_denoising ? true : denoising;
-    return rtc::make_ref_counted<
-        VideoEncoderConfig::Vp8EncoderSpecificSettings>(vp8_settings);
+    return make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+        vp8_settings);
   }
   if (absl::EqualsIgnoreCase(codec.name, kVp9CodecName)) {
     VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
@@ -1048,16 +1048,16 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::ConfigureVideoEncoderSettings(
       vp9_settings.flexibleMode = vp9_settings.numberOfSpatialLayers > 1;
       vp9_settings.interLayerPred = InterLayerPredMode::kOn;
     }
-    return rtc::make_ref_counted<
-        VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
+    return make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+        vp9_settings);
   }
   if (absl::EqualsIgnoreCase(codec.name, kAv1CodecName)) {
     VideoCodecAV1 av1_settings = {.automatic_resize_on = automatic_resize};
     if (NumSpatialLayersFromEncoding(rtp_parameters_, /*idx=*/0) > 1) {
       av1_settings.automatic_resize_on = false;
     }
-    return rtc::make_ref_counted<
-        VideoEncoderConfig::Av1EncoderSpecificSettings>(av1_settings);
+    return make_ref_counted<VideoEncoderConfig::Av1EncoderSpecificSettings>(
+        av1_settings);
   }
   return nullptr;
 }
@@ -1565,7 +1565,7 @@ bool WebRtcVideoSendChannel::AddSendStream(const StreamParams& sp) {
 
   VideoSendStream::Config config(transport());
 
-  for (const cricket::RidDescription& rid : sp.rids()) {
+  for (const RidDescription& rid : sp.rids()) {
     config.rtp.rids.push_back(rid.rid);
   }
 
@@ -1706,7 +1706,7 @@ void WebRtcVideoSendChannel::FillSendCodecStats(
       send_codec()->codec.id, send_codec()->codec.ToCodecParameters()));
 }
 
-void WebRtcVideoSendChannel::OnPacketSent(const rtc::SentPacket& sent_packet) {
+void WebRtcVideoSendChannel::OnPacketSent(const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(&network_thread_checker_);
   // TODO(tommi): We shouldn't need to go through call_ to deliver this
   // notification. We should already have direct access to

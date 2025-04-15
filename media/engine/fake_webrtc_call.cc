@@ -279,7 +279,7 @@ void FakeVideoSendStream::OnFrame(const VideoFrame& frame) {
               encoder_config_);
     } else {
       VideoEncoder::EncoderInfo encoder_info;
-      auto factory = rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+      auto factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
 
       video_streams_ = factory->CreateEncoderStreams(
           env_.field_trials(), frame.width(), frame.height(), encoder_config_);
@@ -316,7 +316,7 @@ void FakeVideoSendStream::ReconfigureVideoEncoder(
         env_.field_trials(), width, height, config);
   } else {
     VideoEncoder::EncoderInfo encoder_info;
-    auto factory = rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+    auto factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
 
     video_streams_ = factory->CreateEncoderStreams(env_.field_trials(), width,
                                                    height, config);
@@ -766,7 +766,7 @@ void FakeCall::OnUpdateSyncGroup(AudioReceiveStreamInterface& stream,
   fake_stream.SetSyncGroup(sync_group);
 }
 
-void FakeCall::OnSentPacket(const rtc::SentPacket& sent_packet) {
+void FakeCall::OnSentPacket(const SentPacketInfo& sent_packet) {
   last_sent_packet_ = sent_packet;
   if (sent_packet.packet_id >= 0) {
     last_sent_nonnegative_packet_id_ = sent_packet.packet_id;

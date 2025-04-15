@@ -88,7 +88,7 @@ std::vector<RtpExtension> GetDefaultEnabledRtpHeaderExtensions(
 }
 
 RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
-                                    rtc::ArrayView<Codec> send_codecs,
+                                    ArrayView<Codec> send_codecs,
                                     std::optional<Codec> send_codec) {
   using webrtc::RTCErrorType;
 
@@ -161,7 +161,7 @@ RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
 }
 
 RTCError CheckRtpParametersValues(const RtpParameters& rtp_parameters,
-                                  rtc::ArrayView<Codec> send_codecs,
+                                  ArrayView<Codec> send_codecs,
                                   std::optional<Codec> send_codec,
                                   const FieldTrialsView& field_trials) {
   using webrtc::RTCErrorType;
@@ -249,7 +249,7 @@ RTCError CheckRtpParametersInvalidModificationAndValues(
 RTCError CheckRtpParametersInvalidModificationAndValues(
     const RtpParameters& old_rtp_parameters,
     const RtpParameters& rtp_parameters,
-    rtc::ArrayView<Codec> send_codecs,
+    ArrayView<Codec> send_codecs,
     std::optional<Codec> send_codec,
     const FieldTrialsView& field_trials) {
   using webrtc::RTCErrorType;

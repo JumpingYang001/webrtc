@@ -25,8 +25,8 @@ namespace webrtc {
 // Verify that extension IDs are within 1-byte extension range and are not
 // overlapping, and that they form a legal change from previously registerd
 // extensions (if any).
-bool ValidateRtpExtensions(rtc::ArrayView<const RtpExtension> extennsions,
-                           rtc::ArrayView<const RtpExtension> old_extensions);
+bool ValidateRtpExtensions(ArrayView<const RtpExtension> extennsions,
+                           ArrayView<const RtpExtension> old_extensions);
 
 // Discard any extensions not validated by the 'supported' predicate. Duplicate
 // extensions are removed if 'filter_redundant_extensions' is set, and also any

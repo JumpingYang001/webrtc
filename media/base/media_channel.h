@@ -91,7 +91,7 @@ static std::string ToStringIfSet(const char* key, const std::optional<T>& val) {
 
 template <class T>
 static std::string VectorToString(const std::vector<T>& vals) {
-  rtc::StringBuilder ost;
+  StringBuilder ost;
   ost << "[";
   for (size_t i = 0; i < vals.size(); ++i) {
     if (i > 0) {
@@ -125,7 +125,7 @@ struct VideoOptions {
   bool operator!=(const VideoOptions& o) const { return !(*this == o); }
 
   std::string ToString() const {
-    rtc::StringBuilder ost;
+    StringBuilder ost;
     ost << "VideoOptions {";
     ost << ToStringIfSet("noise reduction", video_noise_reduction);
     ost << ToStringIfSet("screencast min bitrate kbps",
@@ -164,10 +164,10 @@ struct VideoOptions {
 class MediaChannelNetworkInterface {
  public:
   enum SocketType { ST_RTP, ST_RTCP };
-  virtual bool SendPacket(rtc::CopyOnWriteBuffer* packet,
-                          const rtc::PacketOptions& options) = 0;
-  virtual bool SendRtcp(rtc::CopyOnWriteBuffer* packet,
-                        const rtc::PacketOptions& options) = 0;
+  virtual bool SendPacket(CopyOnWriteBuffer* packet,
+                          const AsyncSocketPacketOptions& options) = 0;
+  virtual bool SendRtcp(CopyOnWriteBuffer* packet,
+                        const AsyncSocketPacketOptions& options) = 0;
   virtual int SetOption(SocketType type,
                         webrtc::Socket::Option opt,
                         int option) = 0;
@@ -196,7 +196,7 @@ class MediaSendChannelInterface {
   virtual bool RemoveSendStream(uint32_t ssrc) = 0;
   // Called on the network thread after a transport has finished sending a
   // packet.
-  virtual void OnPacketSent(const rtc::SentPacket& sent_packet) = 0;
+  virtual void OnPacketSent(const SentPacketInfo& sent_packet) = 0;
   // Called when the socket's ability to send has changed.
   virtual void OnReadyToSend(bool ready) = 0;
   // Called when the network route used for sending packets changed.
@@ -222,7 +222,7 @@ class MediaSendChannelInterface {
   // to.
   virtual void SetFrameEncryptor(
       uint32_t ssrc,
-      rtc::scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor) = 0;
+      scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor) = 0;
 
   virtual webrtc::RTCError SetRtpSendParameters(
       uint32_t ssrc,
@@ -231,8 +231,7 @@ class MediaSendChannelInterface {
 
   virtual void SetEncoderToPacketizerFrameTransformer(
       uint32_t ssrc,
-      rtc::scoped_refptr<webrtc::FrameTransformerInterface>
-          frame_transformer) = 0;
+      scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer) = 0;
 
   // note: The encoder_selector object must remain valid for the lifetime of the
   // MediaChannel, unless replaced.
@@ -296,12 +295,11 @@ class MediaReceiveChannelInterface {
   // attached to.
   virtual void SetFrameDecryptor(
       uint32_t ssrc,
-      rtc::scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) = 0;
+      scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) = 0;
 
   virtual void SetDepacketizerToDecoderFrameTransformer(
       uint32_t ssrc,
-      rtc::scoped_refptr<webrtc::FrameTransformerInterface>
-          frame_transformer) = 0;
+      scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer) = 0;
 
   // Set base minimum delay of the receive stream with specified ssrc.
   // Base minimum delay sets lower bound on minimum delay value which
@@ -838,7 +836,7 @@ struct MediaChannelParameters {
   } rtcp;
 
   std::string ToString() const {
-    rtc::StringBuilder ost;
+    StringBuilder ost;
     ost << "{";
     const char* separator = "";
     for (const auto& entry : ToStringMap()) {

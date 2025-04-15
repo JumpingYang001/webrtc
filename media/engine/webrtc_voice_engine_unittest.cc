@@ -214,12 +214,12 @@ std::vector<webrtc::Codec> ReceiveCodecsWithId(
 TEST(WebRtcVoiceEngineTestStubLibrary, StartupShutdown) {
   Environment env = CreateEnvironment();
   for (bool use_null_apm : {false, true}) {
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateStrict();
     AdmSetupExpectations(adm.get());
-    rtc::scoped_refptr<StrictMock<webrtc::test::MockAudioProcessing>> apm =
+    webrtc::scoped_refptr<StrictMock<webrtc::test::MockAudioProcessing>> apm =
         use_null_apm ? nullptr
-                     : rtc::make_ref_counted<
+                     : webrtc::make_ref_counted<
                            StrictMock<webrtc::test::MockAudioProcessing>>();
 
     webrtc::AudioProcessing::Config apm_config;
@@ -256,7 +256,7 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
         adm_(webrtc::test::MockAudioDeviceModule::CreateStrict()),
         apm_(use_null_apm_
                  ? nullptr
-                 : rtc::make_ref_counted<
+                 : webrtc::make_ref_counted<
                        StrictMock<webrtc::test::MockAudioProcessing>>()),
         call_(env_) {
     // AudioDeviceModule.
@@ -915,8 +915,8 @@ class WebRtcVoiceEngineTestFake : public ::testing::TestWithParam<bool> {
   const bool use_null_apm_;
   webrtc::test::ScopedKeyValueConfig field_trials_;
   const Environment env_;
-  rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm_;
-  rtc::scoped_refptr<StrictMock<webrtc::test::MockAudioProcessing>> apm_;
+  webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm_;
+  webrtc::scoped_refptr<StrictMock<webrtc::test::MockAudioProcessing>> apm_;
   webrtc::FakeCall call_;
   FakeAudioSource fake_source_;
   std::unique_ptr<webrtc::WebRtcVoiceEngine> engine_;
@@ -3403,7 +3403,7 @@ TEST_P(WebRtcVoiceEngineTestFake, TestSetDscpOptions) {
                                        webrtc::AudioCodecPairId::Create());
   channel->SetInterface(&network_interface);
   // Default value when DSCP is disabled should be DSCP_DEFAULT.
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface.dscp());
+  EXPECT_EQ(webrtc::DSCP_DEFAULT, network_interface.dscp());
   channel->SetInterface(nullptr);
 
   config.enable_dscp = true;
@@ -3411,7 +3411,7 @@ TEST_P(WebRtcVoiceEngineTestFake, TestSetDscpOptions) {
                                        webrtc::CryptoOptions(),
                                        webrtc::AudioCodecPairId::Create());
   channel->SetInterface(&network_interface);
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface.dscp());
+  EXPECT_EQ(webrtc::DSCP_DEFAULT, network_interface.dscp());
 
   // Create a send stream to configure
   EXPECT_TRUE(
@@ -3422,15 +3422,15 @@ TEST_P(WebRtcVoiceEngineTestFake, TestSetDscpOptions) {
   // Various priorities map to various dscp values.
   parameters.encodings[0].network_priority = webrtc::Priority::kHigh;
   ASSERT_TRUE(channel->SetRtpSendParameters(kSsrcZ, parameters, nullptr).ok());
-  EXPECT_EQ(rtc::DSCP_EF, network_interface.dscp());
+  EXPECT_EQ(webrtc::DSCP_EF, network_interface.dscp());
   parameters.encodings[0].network_priority = webrtc::Priority::kVeryLow;
   ASSERT_TRUE(channel->SetRtpSendParameters(kSsrcZ, parameters, nullptr).ok());
-  EXPECT_EQ(rtc::DSCP_CS1, network_interface.dscp());
+  EXPECT_EQ(webrtc::DSCP_CS1, network_interface.dscp());
 
   // Packets should also self-identify their dscp in PacketOptions.
   const uint8_t kData[10] = {0};
   EXPECT_TRUE(SendImplFromPointer(channel.get())->transport()->SendRtcp(kData));
-  EXPECT_EQ(rtc::DSCP_CS1, network_interface.options().dscp);
+  EXPECT_EQ(webrtc::DSCP_CS1, network_interface.options().dscp);
   channel->SetInterface(nullptr);
 
   // Verify that setting the option to false resets the
@@ -3441,7 +3441,7 @@ TEST_P(WebRtcVoiceEngineTestFake, TestSetDscpOptions) {
                                        webrtc::AudioCodecPairId::Create());
   channel->SetInterface(&network_interface);
   // Default value when DSCP is disabled should be DSCP_DEFAULT.
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface.dscp());
+  EXPECT_EQ(webrtc::DSCP_DEFAULT, network_interface.dscp());
 
   channel->SetInterface(nullptr);
 }
@@ -3635,12 +3635,12 @@ TEST_P(WebRtcVoiceEngineTestFake, ConfiguresAudioReceiveStreamRtpExtensions) {
 TEST_P(WebRtcVoiceEngineTestFake, DeliverAudioPacket_Call) {
   // Test that packets are forwarded to the Call when configured accordingly.
   const uint32_t kAudioSsrc = 1;
-  rtc::CopyOnWriteBuffer kPcmuPacket(kPcmuFrame, sizeof(kPcmuFrame));
+  webrtc::CopyOnWriteBuffer kPcmuPacket(kPcmuFrame, sizeof(kPcmuFrame));
   static const unsigned char kRtcp[] = {
       0x80, 0xc9, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
       0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  rtc::CopyOnWriteBuffer kRtcpPacket(kRtcp, sizeof(kRtcp));
+  webrtc::CopyOnWriteBuffer kRtcpPacket(kRtcp, sizeof(kRtcp));
 
   EXPECT_TRUE(SetupSendStream());
   webrtc::VoiceMediaReceiveChannelInterface* media_channel = ReceiveImpl();
@@ -3828,7 +3828,7 @@ TEST(WebRtcVoiceEngineTest, StartupShutdown) {
     // If the VoiceEngine wants to gather available codecs early, that's fine
     // but we never want it to create a decoder at this stage.
     Environment env = CreateEnvironment();
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
     scoped_refptr<AudioProcessing> apm =
         use_null_apm ? nullptr : BuiltinAudioProcessingBuilder().Build(env);
@@ -3857,7 +3857,7 @@ TEST(WebRtcVoiceEngineTest, StartupShutdownWithExternalADM) {
   webrtc::AutoThread main_thread;
   for (bool use_null_apm : {false, true}) {
     Environment env = CreateEnvironment();
-    auto adm = rtc::make_ref_counted<
+    auto adm = webrtc::make_ref_counted<
         ::testing::NiceMock<webrtc::test::MockAudioDeviceModule>>();
     {
       scoped_refptr<AudioProcessing> apm =
@@ -3892,7 +3892,7 @@ TEST(WebRtcVoiceEngineTest, HasCorrectPayloadTypeMapping) {
   for (bool use_null_apm : {false, true}) {
     // TODO(ossu): Why are the payload types of codecs with non-static payload
     // type assignments checked here? It shouldn't really matter.
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
     scoped_refptr<AudioProcessing> apm =
         use_null_apm ? nullptr : BuiltinAudioProcessingBuilder().Build(env);
@@ -3940,7 +3940,7 @@ TEST(WebRtcVoiceEngineTest, Has32Channels) {
   webrtc::AutoThread main_thread;
   for (bool use_null_apm : {false, true}) {
     Environment env = CreateEnvironment();
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
     scoped_refptr<AudioProcessing> apm =
         use_null_apm ? nullptr : BuiltinAudioProcessingBuilder().Build(env);
@@ -3980,7 +3980,7 @@ TEST(WebRtcVoiceEngineTest, SetRecvCodecs) {
     // what we sent in - though it's probably reasonable to expect so, if
     // SetReceiverParameters returns true.
     // I think it will become clear once audio decoder injection is completed.
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
     scoped_refptr<AudioProcessing> apm =
         use_null_apm ? nullptr : BuiltinAudioProcessingBuilder().Build(env);
@@ -4004,7 +4004,7 @@ TEST(WebRtcVoiceEngineTest, SetRecvCodecs) {
 TEST(WebRtcVoiceEngineTest, SetRtpSendParametersMaxBitrate) {
   webrtc::AutoThread main_thread;
   Environment env = CreateEnvironment();
-  rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+  webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
       webrtc::test::MockAudioDeviceModule::CreateNice();
   FakeAudioSource source;
   webrtc::WebRtcVoiceEngine engine(&env.task_queue_factory(), adm.get(),
@@ -4067,13 +4067,15 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecs) {
     specs.push_back(
         webrtc::AudioCodecSpec{{"codec4", 8000, 2}, {8000, 1, 64000}});
 
-    rtc::scoped_refptr<webrtc::MockAudioEncoderFactory> unused_encoder_factory =
-        webrtc::MockAudioEncoderFactory::CreateUnusedFactory();
-    rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> mock_decoder_factory =
-        rtc::make_ref_counted<webrtc::MockAudioDecoderFactory>();
+    webrtc::scoped_refptr<webrtc::MockAudioEncoderFactory>
+        unused_encoder_factory =
+            webrtc::MockAudioEncoderFactory::CreateUnusedFactory();
+    webrtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
+        mock_decoder_factory =
+            webrtc::make_ref_counted<webrtc::MockAudioDecoderFactory>();
     EXPECT_CALL(*mock_decoder_factory.get(), GetSupportedDecoders())
         .WillOnce(Return(specs));
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
 
     scoped_refptr<AudioProcessing> apm =
@@ -4154,13 +4156,15 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecsWithLatePtAssignment) {
     specs.push_back(
         webrtc::AudioCodecSpec{{"codec4", 8000, 2}, {8000, 1, 64000}});
 
-    rtc::scoped_refptr<webrtc::MockAudioEncoderFactory> unused_encoder_factory =
-        webrtc::MockAudioEncoderFactory::CreateUnusedFactory();
-    rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> mock_decoder_factory =
-        rtc::make_ref_counted<webrtc::MockAudioDecoderFactory>();
+    webrtc::scoped_refptr<webrtc::MockAudioEncoderFactory>
+        unused_encoder_factory =
+            webrtc::MockAudioEncoderFactory::CreateUnusedFactory();
+    webrtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
+        mock_decoder_factory =
+            webrtc::make_ref_counted<webrtc::MockAudioDecoderFactory>();
     EXPECT_CALL(*mock_decoder_factory.get(), GetSupportedDecoders())
         .WillOnce(Return(specs));
-    rtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
+    webrtc::scoped_refptr<webrtc::test::MockAudioDeviceModule> adm =
         webrtc::test::MockAudioDeviceModule::CreateNice();
 
     scoped_refptr<AudioProcessing> apm =

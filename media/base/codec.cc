@@ -264,7 +264,7 @@ bool Codec::ValidateCodecFormat() const {
 std::string Codec::ToString() const {
   char buf[256];
 
-  rtc::SimpleStringBuilder sb(buf);
+  SimpleStringBuilder sb(buf);
   switch (type) {
     case Type::kAudio: {
       sb << "AudioCodec[" << id << ":" << name << ":" << clockrate << ":"

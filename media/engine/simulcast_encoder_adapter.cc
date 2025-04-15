@@ -129,7 +129,7 @@ bool StreamQualityCompare(const SimulcastStream& a, const SimulcastStream& b) {
 }
 
 void GetLowestAndHighestQualityStreamIndixes(
-    rtc::ArrayView<const SimulcastStream> streams,
+    ArrayView<const SimulcastStream> streams,
     int* lowest_quality_stream_idx,
     int* highest_quality_stream_idx) {
   const auto lowest_highest_quality_streams =
@@ -334,8 +334,8 @@ int SimulcastEncoderAdapter::InitEncode(
   int highest_quality_stream_idx = 0;
   if (!is_legacy_singlecast) {
     GetLowestAndHighestQualityStreamIndixes(
-        rtc::ArrayView<SimulcastStream>(codec_.simulcastStream,
-                                        total_streams_count_),
+        ArrayView<SimulcastStream>(codec_.simulcastStream,
+                                   total_streams_count_),
         &lowest_quality_stream_idx, &highest_quality_stream_idx);
   }
 
@@ -502,7 +502,7 @@ int SimulcastEncoderAdapter::Encode(
   }
 
   // Temporary thay may hold the result of texture to i420 buffer conversion.
-  rtc::scoped_refptr<VideoFrameBuffer> src_buffer;
+  scoped_refptr<VideoFrameBuffer> src_buffer;
   int src_width = input_image.width();
   int src_height = input_image.height();
 
@@ -576,7 +576,7 @@ int SimulcastEncoderAdapter::Encode(
       if (src_buffer == nullptr) {
         src_buffer = input_image.video_frame_buffer();
       }
-      rtc::scoped_refptr<VideoFrameBuffer> dst_buffer =
+      scoped_refptr<VideoFrameBuffer> dst_buffer =
           src_buffer->Scale(layer.width(), layer.height());
       if (!dst_buffer) {
         RTC_LOG(LS_ERROR) << "Failed to scale video frame";

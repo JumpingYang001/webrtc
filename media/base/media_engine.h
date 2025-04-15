@@ -43,13 +43,13 @@ class Call;
 // Checks that the scalability_mode value of each encoding is supported by at
 // least one video codec of the list. If the list is empty, no check is done.
 RTCError CheckScalabilityModeValues(const RtpParameters& new_parameters,
-                                    rtc::ArrayView<Codec> send_codecs,
+                                    ArrayView<Codec> send_codecs,
                                     std::optional<Codec> send_codec);
 
 // Checks the parameters have valid and supported values, and checks parameters
 // with CheckScalabilityModeValues().
 RTCError CheckRtpParametersValues(const RtpParameters& new_parameters,
-                                  rtc::ArrayView<Codec> send_codecs,
+                                  ArrayView<Codec> send_codecs,
                                   std::optional<Codec> send_codec,
                                   const FieldTrialsView& field_trials);
 
@@ -58,7 +58,7 @@ RTCError CheckRtpParametersValues(const RtpParameters& new_parameters,
 RTCError CheckRtpParametersInvalidModificationAndValues(
     const RtpParameters& old_parameters,
     const RtpParameters& new_parameters,
-    rtc::ArrayView<Codec> send_codecs,
+    ArrayView<Codec> send_codecs,
     std::optional<Codec> send_codec,
     const FieldTrialsView& field_trials);
 
@@ -114,10 +114,10 @@ class VoiceEngineInterface : public RtpHeaderExtensionQueryInterface {
   // reassigned.
   // This function is being moved to CodecVendor
   // TODO: https://issues.webrtc.org/360058654 - remove when all users updated.
-  [[deprecated]] inline const std::vector<cricket::Codec>& send_codecs() const {
+  [[deprecated]] inline const std::vector<Codec>& send_codecs() const {
     return LegacySendCodecs();
   }
-  [[deprecated]] inline const std::vector<cricket::Codec>& recv_codecs() const {
+  [[deprecated]] inline const std::vector<Codec>& recv_codecs() const {
     return LegacyRecvCodecs();
   }
   virtual const std::vector<Codec>& LegacySendCodecs() const = 0;
@@ -164,23 +164,21 @@ class VideoEngineInterface : public RtpHeaderExtensionQueryInterface {
   // reassigned.
   // This functionality is being moved to the CodecVendor class.
   // TODO: https://issues.webrtc.org/360058654 - deprecate and remove.
-  [[deprecated]] inline std::vector<cricket::Codec> send_codecs() const {
+  [[deprecated]] inline std::vector<Codec> send_codecs() const {
     return LegacySendCodecs();
   }
-  [[deprecated]] inline std::vector<cricket::Codec> recv_codecs() const {
+  [[deprecated]] inline std::vector<Codec> recv_codecs() const {
     return LegacyRecvCodecs();
   }
   virtual std::vector<Codec> LegacySendCodecs() const = 0;
   virtual std::vector<Codec> LegacyRecvCodecs() const = 0;
   // As above, but if include_rtx is false, don't include RTX codecs.
-  [[deprecated]] inline std::vector<cricket::Codec> send_codecs(
-      bool include_rtx) const {
+  [[deprecated]] inline std::vector<Codec> send_codecs(bool include_rtx) const {
     return LegacySendCodecs(include_rtx);
   }
   virtual std::vector<Codec> LegacySendCodecs(bool include_rtx) const = 0;
   virtual std::vector<Codec> LegacyRecvCodecs(bool include_rtx) const = 0;
-  [[deprecated]] inline std::vector<cricket::Codec> recv_codecs(
-      bool include_rtx) const {
+  [[deprecated]] inline std::vector<Codec> recv_codecs(bool include_rtx) const {
     return LegacyRecvCodecs(include_rtx);
   }
 };

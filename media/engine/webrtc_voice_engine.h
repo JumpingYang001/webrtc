@@ -247,7 +247,7 @@ class WebRtcVoiceSendChannel final : public MediaChannelUtil,
   bool CanInsertDtmf() override;
   bool InsertDtmf(uint32_t ssrc, int event, int duration) override;
 
-  void OnPacketSent(const rtc::SentPacket& sent_packet) override;
+  void OnPacketSent(const SentPacketInfo& sent_packet) override;
   void OnNetworkRouteChanged(absl::string_view transport_name,
                              const NetworkRoute& network_route) override;
   void OnReadyToSend(bool ready) override;

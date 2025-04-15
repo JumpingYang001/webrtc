@@ -67,7 +67,7 @@ TEST(VideoBroadcasterTest, OnFrame) {
   static int kWidth = 100;
   static int kHeight = 50;
 
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
       webrtc::I420Buffer::Create(kWidth, kHeight));
   // Initialize, to avoid warnings on use of initialized values.
   webrtc::I420Buffer::SetBlack(buffer.get());
@@ -221,7 +221,7 @@ TEST(VideoBroadcasterTest, SinkWantsBlackFrames) {
   wants2.black_frames = false;
   broadcaster.AddOrUpdateSink(&sink2, wants2);
 
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
       webrtc::I420Buffer::Create(100, 200));
   // Makes it not all black.
   buffer->InitializeData();

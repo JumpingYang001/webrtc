@@ -537,7 +537,7 @@ void WebRtcVoiceEngine::Init() {
     config.audio_device_module = adm_;
     if (audio_frame_processor_) {
       config.async_audio_processing_factory =
-          rtc::make_ref_counted<AsyncAudioProcessing::Factory>(
+          make_ref_counted<AsyncAudioProcessing::Factory>(
               std::move(audio_frame_processor_), *task_queue_factory_);
     }
     audio_state_ = AudioState::Create(config);
@@ -1700,7 +1700,7 @@ bool WebRtcVoiceSendChannel::InsertDtmf(uint32_t ssrc,
                                         event, duration);
 }
 
-void WebRtcVoiceSendChannel::OnPacketSent(const rtc::SentPacket& sent_packet) {
+void WebRtcVoiceSendChannel::OnPacketSent(const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(&network_thread_checker_);
   // TODO(tommi): We shouldn't need to go through call_ to deliver this
   // notification. We should already have direct access to

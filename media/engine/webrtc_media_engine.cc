@@ -32,7 +32,7 @@ namespace {
 // Remove mutually exclusive extensions with lower priority.
 void DiscardRedundantExtensions(
     std::vector<RtpExtension>* extensions,
-    rtc::ArrayView<const char* const> extensions_decreasing_prio) {
+    ArrayView<const char* const> extensions_decreasing_prio) {
   RTC_DCHECK(extensions);
   bool found = false;
   for (const char* uri : extensions_decreasing_prio) {
@@ -49,8 +49,8 @@ void DiscardRedundantExtensions(
 }
 }  // namespace
 
-bool ValidateRtpExtensions(rtc::ArrayView<const RtpExtension> extensions,
-                           rtc::ArrayView<const RtpExtension> old_extensions) {
+bool ValidateRtpExtensions(ArrayView<const RtpExtension> extensions,
+                           ArrayView<const RtpExtension> old_extensions) {
   bool id_used[1 + RtpExtension::kMaxId] = {false};
   for (const auto& extension : extensions) {
     if (extension.id < RtpExtension::kMinId ||

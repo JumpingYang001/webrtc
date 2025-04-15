@@ -204,7 +204,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
   void FillBitrateInfo(BandwidthEstimationInfo* bwe_info) override;
   bool GetStats(VideoMediaSendInfo* info) override;
 
-  void OnPacketSent(const rtc::SentPacket& sent_packet) override;
+  void OnPacketSent(const SentPacketInfo& sent_packet) override;
   void OnReadyToSend(bool ready) override;
   void OnNetworkRouteChanged(absl::string_view transport_name,
                              const NetworkRoute& network_route) override;
@@ -312,7 +312,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
   // `decoders` based on codec settings provided by `recv_codecs`.
   // `recv_codecs` must be non-empty and all other parameters must be empty.
   static void ExtractCodecInformation(
-      rtc::ArrayView<const VideoCodecSettings> recv_codecs,
+      ArrayView<const VideoCodecSettings> recv_codecs,
       std::map<int, int>& rtx_associated_payload_types,
       std::set<int>& raw_payload_types,
       std::vector<VideoReceiveStreamInterface::Decoder>& decoders);
@@ -865,7 +865,7 @@ class WebRtcVideoReceiveChannel : public MediaChannelUtil,
 };
 
 // Keeping the old name "WebRtcVideoChannel" around because some external
-// customers are using cricket::WebRtcVideoChannel::AdaptReason
+// customers are using webrtc::WebRtcVideoChannel::AdaptReason
 // TODO(bugs.webrtc.org/15216): Move this enum to an interface class and
 // delete this workaround.
 class WebRtcVideoChannel : public WebRtcVideoSendChannel {

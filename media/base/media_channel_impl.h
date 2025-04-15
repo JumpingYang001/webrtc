@@ -48,9 +48,11 @@ class MediaChannelUtil {
 
   // Base methods to send packet using MediaChannelNetworkInterface.
   // These methods are used by some tests only.
-  bool SendPacket(CopyOnWriteBuffer* packet, const rtc::PacketOptions& options);
+  bool SendPacket(CopyOnWriteBuffer* packet,
+                  const AsyncSocketPacketOptions& options);
 
-  bool SendRtcp(CopyOnWriteBuffer* packet, const rtc::PacketOptions& options);
+  bool SendRtcp(CopyOnWriteBuffer* packet,
+                const AsyncSocketPacketOptions& options);
 
   int SetOption(MediaChannelNetworkInterface::SocketType type,
                 Socket::Option opt,
@@ -87,9 +89,9 @@ class MediaChannelUtil {
     virtual ~TransportForMediaChannels();
 
     // Implementation of webrtc::Transport
-    bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+    bool SendRtp(ArrayView<const uint8_t> packet,
                  const PacketOptions& options) override;
-    bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
+    bool SendRtcp(ArrayView<const uint8_t> packet) override;
 
     // Not implementation of webrtc::Transport
     void SetInterface(MediaChannelNetworkInterface* iface);
@@ -100,7 +102,7 @@ class MediaChannelUtil {
 
     bool DoSendPacket(CopyOnWriteBuffer* packet,
                       bool rtcp,
-                      const rtc::PacketOptions& options);
+                      const AsyncSocketPacketOptions& options);
 
     bool HasNetworkInterface() const {
       RTC_DCHECK_RUN_ON(network_thread_);

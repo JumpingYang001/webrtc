@@ -744,7 +744,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, ReusesEncodersInOrder) {
               codec_.simulcastStream[2].minBitrate);
 
   // Input data.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1131,7 +1131,7 @@ class FakeNativeBufferI420 : public VideoFrameBuffer {
   int width() const override { return width_; }
   int height() const override { return height_; }
 
-  rtc::scoped_refptr<I420BufferInterface> ToI420() override {
+  scoped_refptr<I420BufferInterface> ToI420() override {
     if (allow_to_i420_) {
       return I420Buffer::Create(width_, height_);
     } else {
@@ -1162,9 +1162,9 @@ TEST_F(TestSimulcastEncoderAdapterFake,
   EXPECT_EQ(0, adapter_->InitEncode(&codec_, kSettings));
   EXPECT_TRUE(adapter_->GetEncoderInfo().supports_native_handle);
 
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(
-      rtc::make_ref_counted<FakeNativeBufferI420>(1280, 720,
-                                                  /*allow_to_i420=*/false));
+  scoped_refptr<VideoFrameBuffer> buffer(
+      make_ref_counted<FakeNativeBufferI420>(1280, 720,
+                                             /*allow_to_i420=*/false));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1199,9 +1199,9 @@ TEST_F(TestSimulcastEncoderAdapterFake, NativeHandleForwardingOnlyIfSupported) {
   EXPECT_EQ(0, adapter_->InitEncode(&codec_, kSettings));
   EXPECT_TRUE(adapter_->GetEncoderInfo().supports_native_handle);
 
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(
-      rtc::make_ref_counted<FakeNativeBufferI420>(1280, 720,
-                                                  /*allow_to_i420=*/true));
+  scoped_refptr<VideoFrameBuffer> buffer(
+      make_ref_counted<FakeNativeBufferI420>(1280, 720,
+                                             /*allow_to_i420=*/true));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1234,7 +1234,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, GeneratesKeyFramesOnRequestedLayers) {
   adapter_->RegisterEncodeCompleteCallback(this);
 
   // Input data.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
 
   // Encode with three streams.
   codec_.startBitrate = 3000;
@@ -1321,7 +1321,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, TestFailureReturnCodesFromEncodeCalls) {
       .WillOnce(Return(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE));
 
   // Send a fake frame and assert the return is software fallback.
-  rtc::scoped_refptr<I420Buffer> input_buffer =
+  scoped_refptr<I420Buffer> input_buffer =
       I420Buffer::Create(kDefaultWidth, kDefaultHeight);
   input_buffer->InitializeData();
   VideoFrame input_frame = VideoFrame::Builder()
@@ -1428,7 +1428,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, ActivatesCorrectStreamsInInitEncode) {
                         codec_.simulcastStream[1].minBitrate - 1;
 
   // Input data.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1466,7 +1466,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, TrustedRateControl) {
                         codec_.simulcastStream[1].minBitrate - 1;
 
   // Input data.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1773,7 +1773,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, SupportsSimulcast) {
   // Only one encoder should have been produced.
   ASSERT_EQ(1u, helper_->factory()->encoders().size());
 
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1824,7 +1824,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, SupportsFallback) {
   ASSERT_EQ(3u, fallback_encoders.size());
 
   // Create frame to test with.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1919,7 +1919,7 @@ TEST_F(TestSimulcastEncoderAdapterFake,
   ASSERT_EQ(3u, fallback_encoders.size());
 
   // Create frame to test with.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)
@@ -1970,7 +1970,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, SupportsHardwareSimulcast) {
   ASSERT_EQ(1u, fallback_encoders.size());
 
   // Create frame to test with.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
   VideoFrame input_frame = VideoFrame::Builder()
                                .set_video_frame_buffer(buffer)
                                .set_rtp_timestamp(100)

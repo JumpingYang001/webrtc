@@ -47,7 +47,7 @@ class FakeNetworkInterface : public MediaChannelNetworkInterface {
         conf_(false),
         sendbuf_size_(-1),
         recvbuf_size_(-1),
-        dscp_(rtc::DSCP_NO_CHANGE) {}
+        dscp_(DSCP_NO_CHANGE) {}
 
   void SetDestination(MediaReceiveChannelInterface* dest) { dest_ = dest; }
 
@@ -118,12 +118,12 @@ class FakeNetworkInterface : public MediaChannelNetworkInterface {
 
   int sendbuf_size() const { return sendbuf_size_; }
   int recvbuf_size() const { return recvbuf_size_; }
-  rtc::DiffServCodePoint dscp() const { return dscp_; }
-  rtc::PacketOptions options() const { return options_; }
+  DiffServCodePoint dscp() const { return dscp_; }
+  AsyncSocketPacketOptions options() const { return options_; }
 
  protected:
   virtual bool SendPacket(CopyOnWriteBuffer* packet,
-                          const rtc::PacketOptions& options)
+                          const AsyncSocketPacketOptions& options)
       RTC_LOCKS_EXCLUDED(mutex_) {
     if (!webrtc::IsRtpPacket(*packet)) {
       return false;
@@ -146,7 +146,7 @@ class FakeNetworkInterface : public MediaChannelNetworkInterface {
   }
 
   virtual bool SendRtcp(CopyOnWriteBuffer* packet,
-                        const rtc::PacketOptions& options)
+                        const AsyncSocketPacketOptions& options)
       RTC_LOCKS_EXCLUDED(mutex_) {
     MutexLock lock(&mutex_);
     rtcp_packets_.push_back(*packet);
@@ -165,7 +165,7 @@ class FakeNetworkInterface : public MediaChannelNetworkInterface {
     } else if (opt == Socket::OPT_RCVBUF) {
       recvbuf_size_ = option;
     } else if (opt == Socket::OPT_DSCP) {
-      dscp_ = static_cast<rtc::DiffServCodePoint>(option);
+      dscp_ = static_cast<DiffServCodePoint>(option);
     }
     return 0;
   }
@@ -225,9 +225,9 @@ class FakeNetworkInterface : public MediaChannelNetworkInterface {
   std::vector<CopyOnWriteBuffer> rtcp_packets_;
   int sendbuf_size_;
   int recvbuf_size_;
-  rtc::DiffServCodePoint dscp_;
+  DiffServCodePoint dscp_;
   // Options of the most recently sent packet.
-  rtc::PacketOptions options_;
+  AsyncSocketPacketOptions options_;
   ScopedTaskSafety safety_;
 };
 

@@ -26,8 +26,7 @@
 namespace webrtc {
 namespace {
 
-void AppendSsrcs(rtc::ArrayView<const uint32_t> ssrcs,
-                 SimpleStringBuilder* sb) {
+void AppendSsrcs(ArrayView<const uint32_t> ssrcs, SimpleStringBuilder* sb) {
   *sb << "ssrcs:[";
   const char* delimiter = "";
   for (uint32_t ssrc : ssrcs) {
@@ -37,7 +36,7 @@ void AppendSsrcs(rtc::ArrayView<const uint32_t> ssrcs,
   *sb << "]";
 }
 
-void AppendSsrcGroups(rtc::ArrayView<const SsrcGroup> ssrc_groups,
+void AppendSsrcGroups(ArrayView<const SsrcGroup> ssrc_groups,
                       SimpleStringBuilder* sb) {
   *sb << "ssrc_groups:";
   const char* delimiter = "";
@@ -47,7 +46,7 @@ void AppendSsrcGroups(rtc::ArrayView<const SsrcGroup> ssrc_groups,
   }
 }
 
-void AppendStreamIds(rtc::ArrayView<const std::string> stream_ids,
+void AppendStreamIds(ArrayView<const std::string> stream_ids,
                      SimpleStringBuilder* sb) {
   *sb << "stream_ids:";
   const char* delimiter = "";
@@ -57,11 +56,10 @@ void AppendStreamIds(rtc::ArrayView<const std::string> stream_ids,
   }
 }
 
-void AppendRids(rtc::ArrayView<const RidDescription> rids,
-                SimpleStringBuilder* sb) {
+void AppendRids(ArrayView<const RidDescription> rids, SimpleStringBuilder* sb) {
   *sb << "rids:[";
   const char* delimiter = "";
-  for (const cricket::RidDescription& rid : rids) {
+  for (const RidDescription& rid : rids) {
     *sb << delimiter << rid.rid;
     delimiter = ",";
   }

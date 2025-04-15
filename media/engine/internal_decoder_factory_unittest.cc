@@ -115,7 +115,7 @@ TEST(InternalDecoderFactoryTest, H265IsNotEnabled) {
 TEST(InternalDecoderFactoryTest, Av1) {
   InternalDecoderFactory factory;
   EXPECT_THAT(factory.GetSupportedFormats(),
-              Contains(Field(&SdpVideoFormat::name, cricket::kAv1CodecName)));
+              Contains(Field(&SdpVideoFormat::name, webrtc::kAv1CodecName)));
 }
 #endif
 

@@ -59,7 +59,7 @@ class DcSctpTransport : public SctpTransportInternal,
                   std::unique_ptr<dcsctp::DcSctpSocketFactory> socket_factory);
   ~DcSctpTransport() override;
 
-  // cricket::SctpTransportInternal
+  // webrtc::SctpTransportInternal
   void SetOnConnectedCallback(std::function<void()> callback) override;
   void SetDataChannelSink(DataChannelSink* sink) override;
   void SetDtlsTransport(DtlsTransportInternal* transport) override;
@@ -68,7 +68,7 @@ class DcSctpTransport : public SctpTransportInternal,
   bool ResetStream(int sid) override;
   RTCError SendData(int sid,
                     const SendDataParams& params,
-                    const rtc::CopyOnWriteBuffer& payload) override;
+                    const CopyOnWriteBuffer& payload) override;
   bool ReadyToSendData() override;
   int max_message_size() const override;
   std::optional<int> max_outbound_streams() const override;
@@ -81,7 +81,7 @@ class DcSctpTransport : public SctpTransportInternal,
  private:
   // dcsctp::DcSctpSocketCallbacks
   dcsctp::SendPacketStatus SendPacketWithStatus(
-      rtc::ArrayView<const uint8_t> data) override;
+      ArrayView<const uint8_t> data) override;
   std::unique_ptr<dcsctp::Timeout> CreateTimeout(
       TaskQueueBase::DelayPrecision precision) override;
   dcsctp::TimeMs TimeMillis() override;
@@ -94,20 +94,19 @@ class DcSctpTransport : public SctpTransportInternal,
   void OnConnected() override;
   void OnClosed() override;
   void OnConnectionRestarted() override;
-  void OnStreamsResetFailed(
-      rtc::ArrayView<const dcsctp::StreamID> outgoing_streams,
-      absl::string_view reason) override;
+  void OnStreamsResetFailed(ArrayView<const dcsctp::StreamID> outgoing_streams,
+                            absl::string_view reason) override;
   void OnStreamsResetPerformed(
-      rtc::ArrayView<const dcsctp::StreamID> outgoing_streams) override;
+      ArrayView<const dcsctp::StreamID> outgoing_streams) override;
   void OnIncomingStreamsReset(
-      rtc::ArrayView<const dcsctp::StreamID> incoming_streams) override;
+      ArrayView<const dcsctp::StreamID> incoming_streams) override;
 
   // Transport callbacks
   void ConnectTransportSignals();
   void DisconnectTransportSignals();
   void OnTransportWritableState(PacketTransportInternal* transport);
   void OnTransportReadPacket(PacketTransportInternal* transport,
-                             const rtc::ReceivedPacket& packet);
+                             const ReceivedIpPacket& packet);
   void OnDtlsTransportState(DtlsTransportInternal* transport,
                             webrtc::DtlsTransportState);
   void MaybeConnectSocket();
@@ -121,7 +120,7 @@ class DcSctpTransport : public SctpTransportInternal,
   dcsctp::TaskQueueTimeoutFactory task_queue_timeout_factory_;
   std::unique_ptr<dcsctp::DcSctpSocketInterface> socket_;
   std::string debug_name_ = "DcSctpTransport";
-  rtc::CopyOnWriteBuffer receive_buffer_;
+  CopyOnWriteBuffer receive_buffer_;
 
   // Used to keep track of the state of data channels.
   // Reset needs to happen both ways before signaling the transport

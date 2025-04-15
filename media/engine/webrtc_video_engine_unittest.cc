@@ -247,10 +247,9 @@ bool VerifyRtxReceiveAssociations(
   return true;
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> CreateBlackFrameBuffer(
-    int width,
-    int height) {
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+scoped_refptr<webrtc::VideoFrameBuffer> CreateBlackFrameBuffer(int width,
+                                                               int height) {
+  scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(width, height);
   webrtc::I420Buffer::SetBlack(buffer.get());
   return buffer;
@@ -294,12 +293,12 @@ class MockVideoSource
  public:
   MOCK_METHOD(void,
               AddOrUpdateSink,
-              (rtc::VideoSinkInterface<webrtc::VideoFrame> * sink,
+              (webrtc::VideoSinkInterface<webrtc::VideoFrame> * sink,
                const webrtc::VideoSinkWants& wants),
               (override));
   MOCK_METHOD(void,
               RemoveSink,
-              (rtc::VideoSinkInterface<webrtc::VideoFrame> * sink),
+              (webrtc::VideoSinkInterface<webrtc::VideoFrame> * sink),
               (override));
 };
 
@@ -307,13 +306,13 @@ class MockNetworkInterface : public MediaChannelNetworkInterface {
  public:
   MOCK_METHOD(bool,
               SendPacket,
-              (rtc::CopyOnWriteBuffer * packet,
-               const rtc::PacketOptions& options),
+              (webrtc::CopyOnWriteBuffer * packet,
+               const webrtc::AsyncSocketPacketOptions& options),
               (override));
   MOCK_METHOD(bool,
               SendRtcp,
-              (rtc::CopyOnWriteBuffer * packet,
-               const rtc::PacketOptions& options),
+              (webrtc::CopyOnWriteBuffer * packet,
+               const webrtc::AsyncSocketPacketOptions& options),
               (override));
   MOCK_METHOD(int,
               SetOption,
@@ -326,8 +325,7 @@ std::vector<webrtc::Resolution> GetStreamResolutions(
   std::vector<webrtc::Resolution> res;
   for (const auto& s : streams) {
     if (s.active) {
-      res.push_back(
-          {rtc::checked_cast<int>(s.width), rtc::checked_cast<int>(s.height)});
+      res.push_back({checked_cast<int>(s.width), checked_cast<int>(s.height)});
     }
   }
   return res;
@@ -3554,8 +3552,8 @@ TEST_F(WebRtcVideoChannelTest, ReconfiguresEncodersWhenNotSending) {
 
   // Frame entered, should be reconfigured to new dimensions.
   streams = stream->GetVideoStreams();
-  EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams[0].width);
-  EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].height);
+  EXPECT_EQ(checked_cast<size_t>(1280), streams[0].width);
+  EXPECT_EQ(checked_cast<size_t>(720), streams[0].height);
 
   EXPECT_TRUE(send_channel_->SetVideoSend(last_ssrc_, nullptr, nullptr));
 }
@@ -3588,8 +3586,8 @@ TEST_F(WebRtcVideoChannelTest, UsesCorrectSettingsForScreencast) {
   EXPECT_EQ(VideoEncoderConfig::ContentType::kRealtimeVideo,
             encoder_config.content_type);
   std::vector<VideoStream> streams = send_stream->GetVideoStreams();
-  EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams.front().width);
-  EXPECT_EQ(rtc::checked_cast<size_t>(720), streams.front().height);
+  EXPECT_EQ(checked_cast<size_t>(1280), streams.front().width);
+  EXPECT_EQ(checked_cast<size_t>(720), streams.front().height);
   EXPECT_EQ(0, encoder_config.min_transmit_bitrate_bps)
       << "Non-screenshare shouldn't use min-transmit bitrate.";
 
@@ -3613,8 +3611,8 @@ TEST_F(WebRtcVideoChannelTest, UsesCorrectSettingsForScreencast) {
             encoder_config.min_transmit_bitrate_bps);
 
   streams = send_stream->GetVideoStreams();
-  EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams.front().width);
-  EXPECT_EQ(rtc::checked_cast<size_t>(720), streams.front().height);
+  EXPECT_EQ(checked_cast<size_t>(1280), streams.front().width);
+  EXPECT_EQ(checked_cast<size_t>(720), streams.front().height);
   EXPECT_FALSE(streams[0].num_temporal_layers.has_value());
   EXPECT_TRUE(send_channel_->SetVideoSend(last_ssrc_, nullptr, nullptr));
 }
@@ -5761,7 +5759,7 @@ TEST_F(WebRtcVideoChannelTest, TestSetDscpOptions) {
 
   send_channel->SetInterface(network_interface.get());
   // Default value when DSCP is disabled should be DSCP_DEFAULT.
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface->dscp());
+  EXPECT_EQ(DSCP_DEFAULT, network_interface->dscp());
   send_channel->SetInterface(nullptr);
 
   // Default value when DSCP is enabled is also DSCP_DEFAULT, until it is set
@@ -5771,7 +5769,7 @@ TEST_F(WebRtcVideoChannelTest, TestSetDscpOptions) {
       call_.get(), config, VideoOptions(), CryptoOptions(),
       video_bitrate_allocator_factory_.get());
   send_channel->SetInterface(network_interface.get());
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface->dscp());
+  EXPECT_EQ(DSCP_DEFAULT, network_interface->dscp());
 
   // Create a send stream to configure
   EXPECT_TRUE(send_channel->AddSendStream(StreamParams::CreateLegacy(kSsrc)));
@@ -5782,16 +5780,16 @@ TEST_F(WebRtcVideoChannelTest, TestSetDscpOptions) {
   parameters.encodings[0].network_priority = Priority::kHigh;
   ASSERT_TRUE(
       send_channel->SetRtpSendParameters(kSsrc, parameters, nullptr).ok());
-  EXPECT_EQ(rtc::DSCP_AF41, network_interface->dscp());
+  EXPECT_EQ(DSCP_AF41, network_interface->dscp());
   parameters.encodings[0].network_priority = Priority::kVeryLow;
   ASSERT_TRUE(
       send_channel->SetRtpSendParameters(kSsrc, parameters, nullptr).ok());
-  EXPECT_EQ(rtc::DSCP_CS1, network_interface->dscp());
+  EXPECT_EQ(DSCP_CS1, network_interface->dscp());
 
   // Packets should also self-identify their dscp in PacketOptions.
   const uint8_t kData[10] = {0};
   EXPECT_TRUE(ChannelImplAsTransport(send_channel.get())->SendRtcp(kData));
-  EXPECT_EQ(rtc::DSCP_CS1, network_interface->options().dscp);
+  EXPECT_EQ(DSCP_CS1, network_interface->options().dscp);
   send_channel->SetInterface(nullptr);
 
   // Verify that setting the option to false resets the
@@ -5801,7 +5799,7 @@ TEST_F(WebRtcVideoChannelTest, TestSetDscpOptions) {
       call_.get(), config, VideoOptions(), CryptoOptions(),
       video_bitrate_allocator_factory_.get());
   send_channel->SetInterface(network_interface.get());
-  EXPECT_EQ(rtc::DSCP_DEFAULT, network_interface->dscp());
+  EXPECT_EQ(DSCP_DEFAULT, network_interface->dscp());
   send_channel->SetInterface(nullptr);
 }
 
@@ -6755,14 +6753,12 @@ TEST_F(WebRtcVideoChannelTest,
   EXPECT_TRUE(send_channel_->GetStats(&send_info));
   EXPECT_TRUE(receive_channel_->GetStats(&receive_info));
 
-  EXPECT_EQ(
-      stats.rtcp_packet_type_counts.fir_packets,
-      rtc::checked_cast<unsigned int>(receive_info.receivers[0].firs_sent));
+  EXPECT_EQ(stats.rtcp_packet_type_counts.fir_packets,
+            checked_cast<unsigned int>(receive_info.receivers[0].firs_sent));
   EXPECT_EQ(stats.rtcp_packet_type_counts.nack_packets,
             receive_info.receivers[0].nacks_sent);
-  EXPECT_EQ(
-      stats.rtcp_packet_type_counts.pli_packets,
-      rtc::checked_cast<unsigned int>(receive_info.receivers[0].plis_sent));
+  EXPECT_EQ(stats.rtcp_packet_type_counts.pli_packets,
+            checked_cast<unsigned int>(receive_info.receivers[0].plis_sent));
 }
 
 TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesDecodeStatsCorrectly) {
@@ -6825,12 +6821,12 @@ TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesDecodeStatsCorrectly) {
   EXPECT_EQ(stats.render_delay_ms, receive_info.receivers[0].render_delay_ms);
   EXPECT_EQ(stats.width, receive_info.receivers[0].frame_width);
   EXPECT_EQ(stats.height, receive_info.receivers[0].frame_height);
-  EXPECT_EQ(rtc::checked_cast<unsigned int>(stats.frame_counts.key_frames +
-                                            stats.frame_counts.delta_frames),
+  EXPECT_EQ(checked_cast<unsigned int>(stats.frame_counts.key_frames +
+                                       stats.frame_counts.delta_frames),
             receive_info.receivers[0].frames_received);
   EXPECT_EQ(stats.frames_rendered, receive_info.receivers[0].frames_rendered);
   EXPECT_EQ(stats.frames_decoded, receive_info.receivers[0].frames_decoded);
-  EXPECT_EQ(rtc::checked_cast<unsigned int>(stats.frame_counts.key_frames),
+  EXPECT_EQ(checked_cast<unsigned int>(stats.frame_counts.key_frames),
             receive_info.receivers[0].key_frames_decoded);
   EXPECT_EQ(stats.qp_sum, receive_info.receivers[0].qp_sum);
   EXPECT_EQ(stats.corruption_score_sum,
@@ -6886,12 +6882,12 @@ TEST_F(WebRtcVideoChannelTest, GetStatsTranslatesReceivePacketStatsCorrectly) {
   EXPECT_TRUE(send_channel_->GetStats(&send_info));
   EXPECT_TRUE(receive_channel_->GetStats(&receive_info));
 
-  EXPECT_EQ(stats.rtp_stats.packet_counter.payload_bytes,
-            rtc::checked_cast<size_t>(
-                receive_info.receivers[0].payload_bytes_received));
-  EXPECT_EQ(stats.rtp_stats.packet_counter.packets,
-            rtc::checked_cast<unsigned int>(
-                receive_info.receivers[0].packets_received));
+  EXPECT_EQ(
+      stats.rtp_stats.packet_counter.payload_bytes,
+      checked_cast<size_t>(receive_info.receivers[0].payload_bytes_received));
+  EXPECT_EQ(
+      stats.rtp_stats.packet_counter.packets,
+      checked_cast<unsigned int>(receive_info.receivers[0].packets_received));
   EXPECT_EQ(stats.rtp_stats.packets_lost,
             receive_info.receivers[0].packets_lost);
 }
@@ -9207,7 +9203,7 @@ TEST_F(WebRtcVideoChannelTest,
       field_trials_, "WebRTC-MixedCodecSimulcast/Enabled/");
   AddSendStream();
 
-  cricket::VideoSenderParameters parameters;
+  webrtc::VideoSenderParameters parameters;
   webrtc::Codec vp8 = GetEngineCodec("VP8");
   parameters.codecs.push_back(vp8);
 
@@ -9215,10 +9211,10 @@ TEST_F(WebRtcVideoChannelTest,
   EXPECT_TRUE(send_channel_->SetSenderParameters(parameters));
 
   // It sets 2 sizes of config ssrc.
-  cricket::StreamParams sp = CreateSimStreamParams("cname", {123, 456});
-  std::vector<cricket::RidDescription> rid_descriptions2;
-  rid_descriptions2.emplace_back("f", cricket::RidDirection::kSend);
-  rid_descriptions2.emplace_back("h", cricket::RidDirection::kSend);
+  webrtc::StreamParams sp = CreateSimStreamParams("cname", {123, 456});
+  std::vector<webrtc::RidDescription> rid_descriptions2;
+  rid_descriptions2.emplace_back("f", webrtc::RidDirection::kSend);
+  rid_descriptions2.emplace_back("h", webrtc::RidDirection::kSend);
   sp.set_rids(rid_descriptions2);
 
   // `WebRtcVideoSendStream::SetCodec` test for different sizes
@@ -9820,16 +9816,15 @@ class WebRtcVideoChannelSimulcastTest : public ::testing::Test {
     if (num_configured_streams > 1 || conference_mode) {
       const VideoEncoderConfig& encoder_config = stream->GetEncoderConfig();
       VideoEncoder::EncoderInfo encoder_info;
-      auto factory = rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+      auto factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
       expected_streams = factory->CreateEncoderStreams(
           field_trials_, capture_width, capture_height, encoder_config);
       if (screenshare && conference_mode) {
         for (const webrtc::VideoStream& expected_stream : expected_streams) {
           // Never scale screen content.
-          EXPECT_EQ(expected_stream.width,
-                    rtc::checked_cast<size_t>(capture_width));
+          EXPECT_EQ(expected_stream.width, checked_cast<size_t>(capture_width));
           EXPECT_EQ(expected_stream.height,
-                    rtc::checked_cast<size_t>(capture_height));
+                    checked_cast<size_t>(capture_height));
         }
       }
     } else {
@@ -10065,8 +10060,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecast) {
 
     auto streams = stream->GetVideoStreams();
     ASSERT_EQ(streams.size(), 1u);
-    EXPECT_EQ(rtc::checked_cast<size_t>(640), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(360), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(640), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(360), streams[0].height);
   }
 
   {  // TEST scale_resolution_down_to == frame size
@@ -10079,8 +10074,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecast) {
     frame_forwarder.IncomingCapturedFrame(frame_source.GetFrame());
     auto streams = stream->GetVideoStreams();
     ASSERT_EQ(streams.size(), 1u);
-    EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(1280), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(720), streams[0].height);
   }
 
   {  // TEST scale_resolution_down_to > frame size
@@ -10093,8 +10088,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecast) {
     frame_forwarder.IncomingCapturedFrame(frame_source.GetFrame());
     auto streams = stream->GetVideoStreams();
     ASSERT_EQ(streams.size(), 1u);
-    EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(1280), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(720), streams[0].height);
   }
 
   EXPECT_TRUE(send_channel_->SetVideoSend(last_ssrc_, nullptr, nullptr));
@@ -10124,8 +10119,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecastScaling) {
     ASSERT_EQ(streams.size(), 1u);
     // The scaling factor is 720/1280 because of orientation,
     // scaling the height (720) by this value gets you 405p.
-    EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(405), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(720), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(405), streams[0].height);
   }
 
   {
@@ -10140,8 +10135,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecastScaling) {
     auto streams = stream->GetVideoStreams();
     ASSERT_EQ(streams.size(), 1u);
     // No downscale needed to fit 1280x1280.
-    EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(1280), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(720), streams[0].height);
   }
 
   {
@@ -10155,8 +10150,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecastScaling) {
     ASSERT_EQ(streams.size(), 1u);
     // The scaling factor is 650/1280 because of orientation,
     // scaling the height (720) by this value gets you 365.625 which is rounded.
-    EXPECT_EQ(rtc::checked_cast<size_t>(650), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(366), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(650), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(366), streams[0].height);
   }
 
   {
@@ -10169,8 +10164,8 @@ TEST_F(WebRtcVideoChannelTest, ScaleResolutionDownToSinglecastScaling) {
     auto streams = stream->GetVideoStreams();
     ASSERT_EQ(streams.size(), 1u);
     // We don't upscale.
-    EXPECT_EQ(rtc::checked_cast<size_t>(1280), streams[0].width);
-    EXPECT_EQ(rtc::checked_cast<size_t>(720), streams[0].height);
+    EXPECT_EQ(checked_cast<size_t>(1280), streams[0].width);
+    EXPECT_EQ(checked_cast<size_t>(720), streams[0].height);
   }
 
   EXPECT_TRUE(send_channel_->SetVideoSend(last_ssrc_, nullptr, nullptr));

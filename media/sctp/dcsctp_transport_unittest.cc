@@ -57,7 +57,7 @@ class MockDataChannelSink : public DataChannelSink {
   // DataChannelSink
   MOCK_METHOD(void,
               OnDataReceived,
-              (int, DataMessageType, const rtc::CopyOnWriteBuffer&));
+              (int, DataMessageType, const webrtc::CopyOnWriteBuffer&));
   MOCK_METHOD(void, OnChannelClosing, (int));
   MOCK_METHOD(void, OnChannelClosed, (int));
   MOCK_METHOD(void, OnReadyToSend, ());
@@ -245,7 +245,7 @@ TEST(DcSctpTransportTest, DiscardMessageClosedChannel) {
                                  .max_message_size = 256 * 1024});
 
   SendDataParams params;
-  rtc::CopyOnWriteBuffer payload;
+  CopyOnWriteBuffer payload;
   EXPECT_EQ(peer_a.sctp_transport_->SendData(1, params, payload).type(),
             RTCErrorType::INVALID_STATE);
 }
@@ -263,7 +263,7 @@ TEST(DcSctpTransportTest, DiscardMessageClosingChannel) {
   peer_a.sctp_transport_->ResetStream(1);
 
   SendDataParams params;
-  rtc::CopyOnWriteBuffer payload;
+  CopyOnWriteBuffer payload;
   EXPECT_EQ(peer_a.sctp_transport_->SendData(1, params, payload).type(),
             RTCErrorType::INVALID_STATE);
 }
@@ -282,7 +282,7 @@ TEST(DcSctpTransportTest, SendDataOpenChannel) {
                                  .max_message_size = 256 * 1024});
 
   SendDataParams params;
-  rtc::CopyOnWriteBuffer payload;
+  CopyOnWriteBuffer payload;
   EXPECT_TRUE(peer_a.sctp_transport_->SendData(1, params, payload).ok());
 }
 

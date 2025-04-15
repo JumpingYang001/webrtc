@@ -98,8 +98,8 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
 
   bool SendRtcp(const void* data, size_t len) {
     CopyOnWriteBuffer packet(reinterpret_cast<const uint8_t*>(data), len,
-                             cricket::kMaxRtpPacketLen);
-    return Base::SendRtcp(&packet, rtc::PacketOptions());
+                             kMaxRtpPacketLen);
+    return Base::SendRtcp(&packet, AsyncSocketPacketOptions());
   }
 
   bool CheckRtp(const void* data, size_t len) {
@@ -162,14 +162,14 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
     return RtpParameters();
   }
 
-  const std::vector<cricket::StreamParams>& recv_streams() const {
+  const std::vector<webrtc::StreamParams>& recv_streams() const {
     return receive_streams_;
   }
   bool HasRecvStream(uint32_t ssrc) const {
     return GetStreamBySsrc(receive_streams_, ssrc) != nullptr;
   }
 
-  const cricket::RtcpParameters& recv_rtcp_parameters() {
+  const MediaChannelParameters::RtcpParameters& recv_rtcp_parameters() {
     return recv_rtcp_parameters_;
   }
 
@@ -208,7 +208,8 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
     recv_extensions_ = extensions;
     return true;
   }
-  void set_recv_rtcp_parameters(const cricket::RtcpParameters& params) {
+  void set_recv_rtcp_parameters(
+      const MediaChannelParameters::RtcpParameters& params) {
     recv_rtcp_parameters_ = params;
   }
   void OnPacketReceived(const RtpPacketReceived& packet) override {
@@ -223,7 +224,7 @@ class RtpReceiveChannelHelper : public Base, public MediaChannelUtil {
   std::list<std::string> rtp_packets_;
   std::list<std::string> rtcp_packets_;
   std::vector<StreamParams> receive_streams_;
-  cricket::RtcpParameters recv_rtcp_parameters_;
+  MediaChannelParameters::RtcpParameters recv_rtcp_parameters_;
   std::map<uint32_t, RtpParameters> rtp_receive_parameters_;
   bool fail_set_recv_codecs_;
   std::string rtcp_cname_;
@@ -255,18 +256,18 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
 
   bool SendPacket(const void* data,
                   size_t len,
-                  const rtc::PacketOptions& options) {
+                  const AsyncSocketPacketOptions& options) {
     if (!sending_) {
       return false;
     }
     CopyOnWriteBuffer packet(reinterpret_cast<const uint8_t*>(data), len,
-                             cricket::kMaxRtpPacketLen);
+                             kMaxRtpPacketLen);
     return MediaChannelUtil::SendPacket(&packet, options);
   }
   bool SendRtcp(const void* data, size_t len) {
     CopyOnWriteBuffer packet(reinterpret_cast<const uint8_t*>(data), len,
-                             cricket::kMaxRtpPacketLen);
-    return MediaChannelUtil::SendRtcp(&packet, rtc::PacketOptions());
+                             kMaxRtpPacketLen);
+    return MediaChannelUtil::SendRtcp(&packet, AsyncSocketPacketOptions());
   }
 
   bool CheckRtp(const void* data, size_t len) {
@@ -365,7 +366,7 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
     }
     return ret;
   }
-  const std::vector<cricket::StreamParams>& send_streams() const {
+  const std::vector<webrtc::StreamParams>& send_streams() const {
     return send_streams_;
   }
   bool HasSendStream(uint32_t ssrc) const {
@@ -379,7 +380,7 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
     return send_streams_[0].first_ssrc();
   }
 
-  const cricket::RtcpParameters& send_rtcp_parameters() {
+  const MediaChannelParameters::RtcpParameters& send_rtcp_parameters() {
     return send_rtcp_parameters_;
   }
 
@@ -437,10 +438,11 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
     send_extensions_ = extensions;
     return true;
   }
-  void set_send_rtcp_parameters(const cricket::RtcpParameters& params) {
+  void set_send_rtcp_parameters(
+      const MediaChannelParameters::RtcpParameters& params) {
     send_rtcp_parameters_ = params;
   }
-  void OnPacketSent(const rtc::SentPacket& /* sent_packet */) override {}
+  void OnPacketSent(const SentPacketInfo& /* sent_packet */) override {}
   void OnReadyToSend(bool ready) override { ready_to_send_ = ready; }
   void OnNetworkRouteChanged(absl::string_view /* transport_name */,
                              const NetworkRoute& network_route) override {
@@ -459,7 +461,7 @@ class RtpSendChannelHelper : public Base, public MediaChannelUtil {
   std::list<std::string> rtp_packets_;
   std::list<std::string> rtcp_packets_;
   std::vector<StreamParams> send_streams_;
-  cricket::RtcpParameters send_rtcp_parameters_;
+  MediaChannelParameters::RtcpParameters send_rtcp_parameters_;
   std::set<uint32_t> muted_streams_;
   std::map<uint32_t, RtpParameters> rtp_send_parameters_;
   bool fail_set_send_codecs_;
