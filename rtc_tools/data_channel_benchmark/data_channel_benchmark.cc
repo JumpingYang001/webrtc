@@ -78,7 +78,7 @@ struct SetupMessage {
 
   static SetupMessage FromString(absl::string_view sv) {
     SetupMessage result;
-    auto parameters = rtc::split(sv, ',');
+    auto parameters = webrtc::split(sv, ',');
     std::from_chars(parameters[0].data(),
                     parameters[0].data() + parameters[0].size(),
                     result.packet_size, 10);
@@ -143,7 +143,7 @@ class DataChannelServerObserverImpl : public webrtc::DataChannelObserver {
     RTC_CHECK(remaining_data_) << "Error: no data to send";
     std::string data(std::min(setup_.packet_size, remaining_data_), '0');
     webrtc::DataBuffer* data_buffer =
-        new webrtc::DataBuffer(rtc::CopyOnWriteBuffer(data), true);
+        new webrtc::DataBuffer(webrtc::CopyOnWriteBuffer(data), true);
     total_queued_up_ = data_buffer->size();
     dc_->SendAsync(*data_buffer,
                    [this, data_buffer = data_buffer](webrtc::RTCError err) {
@@ -252,8 +252,9 @@ int RunServer() {
         signaling_thread.get());
 
     auto grpc_server = webrtc::GrpcSignalingServerInterface::Create(
-        [factory = rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>(
-             factory),
+        [factory =
+             webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>(
+                 factory),
          signaling_thread =
              signaling_thread.get()](webrtc::SignalingInterface* signaling) {
           webrtc::PeerConnectionClient client(factory.get(), signaling);
@@ -328,10 +329,10 @@ int RunClient() {
     std::unique_ptr<DataChannelClientObserverImpl> observer;
 
     // Set up the callback to receive the data channel from the sender.
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel;
+    webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel;
     webrtc::Event got_data_channel;
     client.SetOnDataChannel(
-        [&](rtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
+        [&](webrtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
           data_channel = std::move(channel);
           // DataChannel needs an observer to drain the read queue.
           observer = std::make_unique<DataChannelClientObserverImpl>(
@@ -382,11 +383,11 @@ int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);
 
   // Make sure that higher severity number means more logs by reversing the
-  // rtc::LoggingSeverity values.
+  // webrtc::LoggingSeverity values.
   auto logging_severity =
-      std::max(0, rtc::LS_NONE - absl::GetFlag(FLAGS_verbose));
-  rtc::LogMessage::LogToDebug(
-      static_cast<rtc::LoggingSeverity>(logging_severity));
+      std::max(0, webrtc::LS_NONE - absl::GetFlag(FLAGS_verbose));
+  webrtc::LogMessage::LogToDebug(
+      static_cast<webrtc::LoggingSeverity>(logging_severity));
 
   bool is_server = absl::GetFlag(FLAGS_server);
   std::string field_trials = absl::GetFlag(FLAGS_force_fieldtrials);

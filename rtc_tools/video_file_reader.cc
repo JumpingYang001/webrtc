@@ -50,12 +50,12 @@ class VideoFile : public Video {
   int width() const override { return width_; }
   int height() const override { return height_; }
 
-  rtc::scoped_refptr<I420BufferInterface> GetFrame(
+  scoped_refptr<I420BufferInterface> GetFrame(
       size_t frame_index) const override {
     RTC_CHECK_LT(frame_index, frame_positions_.size());
 
     fsetpos(file_, &frame_positions_[frame_index]);
-    rtc::scoped_refptr<I420Buffer> buffer = I420Buffer::Create(width_, height_);
+    scoped_refptr<I420Buffer> buffer = I420Buffer::Create(width_, height_);
 
     if (!ReadBytes(buffer->MutableDataY(), width_ * height_, file_) ||
         !ReadBytes(buffer->MutableDataU(),
@@ -78,8 +78,7 @@ class VideoFile : public Video {
 
 }  // namespace
 
-Video::Iterator::Iterator(const rtc::scoped_refptr<const Video>& video,
-                          size_t index)
+Video::Iterator::Iterator(const scoped_refptr<const Video>& video, size_t index)
     : video_(video), index_(index) {}
 
 Video::Iterator::Iterator(const Video::Iterator& other) = default;
@@ -88,7 +87,7 @@ Video::Iterator& Video::Iterator::operator=(Video::Iterator&&) = default;
 Video::Iterator& Video::Iterator::operator=(const Video::Iterator&) = default;
 Video::Iterator::~Iterator() = default;
 
-rtc::scoped_refptr<I420BufferInterface> Video::Iterator::operator*() const {
+scoped_refptr<I420BufferInterface> Video::Iterator::operator*() const {
   return video_->GetFrame(index_);
 }
 bool Video::Iterator::operator==(const Video::Iterator& other) const {
@@ -110,14 +109,14 @@ Video::Iterator& Video::Iterator::operator++() {
 }
 
 Video::Iterator Video::begin() const {
-  return Iterator(rtc::scoped_refptr<const Video>(this), 0);
+  return Iterator(scoped_refptr<const Video>(this), 0);
 }
 
 Video::Iterator Video::end() const {
-  return Iterator(rtc::scoped_refptr<const Video>(this), number_of_frames());
+  return Iterator(scoped_refptr<const Video>(this), number_of_frames());
 }
 
-rtc::scoped_refptr<Video> OpenY4mFile(const std::string& file_name) {
+scoped_refptr<Video> OpenY4mFile(const std::string& file_name) {
   FILE* file = fopen(file_name.c_str(), "rb");
   if (file == nullptr) {
     RTC_LOG(LS_ERROR) << "Could not open input file for reading: " << file_name;
@@ -224,13 +223,12 @@ rtc::scoped_refptr<Video> OpenY4mFile(const std::string& file_name) {
   }
   RTC_LOG(LS_INFO) << "Video has " << frame_positions.size() << " frames";
 
-  return rtc::make_ref_counted<VideoFile>(*width, *height, frame_positions,
-                                          file);
+  return make_ref_counted<VideoFile>(*width, *height, frame_positions, file);
 }
 
-rtc::scoped_refptr<Video> OpenYuvFile(const std::string& file_name,
-                                      int width,
-                                      int height) {
+scoped_refptr<Video> OpenYuvFile(const std::string& file_name,
+                                 int width,
+                                 int height) {
   FILE* file = fopen(file_name.c_str(), "rb");
   if (file == nullptr) {
     RTC_LOG(LS_ERROR) << "Could not open input file for reading: " << file_name;
@@ -266,12 +264,12 @@ rtc::scoped_refptr<Video> OpenYuvFile(const std::string& file_name,
   }
   RTC_LOG(LS_INFO) << "Video has " << frame_positions.size() << " frames";
 
-  return rtc::make_ref_counted<VideoFile>(width, height, frame_positions, file);
+  return make_ref_counted<VideoFile>(width, height, frame_positions, file);
 }
 
-rtc::scoped_refptr<Video> OpenYuvOrY4mFile(const std::string& file_name,
-                                           int width,
-                                           int height) {
+scoped_refptr<Video> OpenYuvOrY4mFile(const std::string& file_name,
+                                      int width,
+                                      int height) {
   if (absl::EndsWith(file_name, ".yuv"))
     return OpenYuvFile(file_name, width, height);
   if (absl::EndsWith(file_name, ".y4m"))

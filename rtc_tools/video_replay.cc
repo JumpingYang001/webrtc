@@ -389,7 +389,7 @@ std::unique_ptr<StreamState> ConfigureFromFlags(
   // them from deallocating.
   std::stringstream window_title;
   window_title << "Playback Video (" << rtp_dump_path << ")";
-  std::unique_ptr<rtc::VideoSinkInterface<VideoFrame>> playback_video;
+  std::unique_ptr<VideoSinkInterface<VideoFrame>> playback_video;
   if (absl::GetFlag(FLAGS_disable_preview)) {
     playback_video = std::make_unique<NullRenderer>();
   } else {
@@ -613,7 +613,7 @@ class RtpReplayer final {
       if (!rtp_reader_->NextPacket(&packet)) {
         break;
       }
-      rtc::CopyOnWriteBuffer packet_buffer(
+      CopyOnWriteBuffer packet_buffer(
           packet.original_length > 0 ? packet.original_length : packet.length);
       memcpy(packet_buffer.MutableData(), packet.data, packet.length);
       if (packet.length < packet.original_length) {

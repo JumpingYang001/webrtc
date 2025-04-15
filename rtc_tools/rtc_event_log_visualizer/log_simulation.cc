@@ -108,7 +108,7 @@ void LogBasedNetworkControllerSimulation::OnPacketSent(
     transport_feedback_.AddPacket(send_packet, probe_info, packet.overhead,
                                   packet.log_packet_time);
   }
-  rtc::SentPacket sent_packet;
+  SentPacketInfo sent_packet;
   sent_packet.send_time_ms = packet.log_packet_time.ms();
   sent_packet.info.included_in_allocation = true;
   sent_packet.info.packet_size_bytes = packet.size + packet.overhead;

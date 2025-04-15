@@ -56,7 +56,7 @@ TestController::TestController(int min_port,
             SocketAddress(GetAnyIP(AF_INET), 0), min_port, max_port));
     RTC_CHECK(udp_socket_ != nullptr);
     udp_socket_->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnReadPacket(socket, packet);
         });
   });
@@ -98,7 +98,7 @@ void TestController::SendData(const NetworkTesterPacket& packet,
   if (data_size && *data_size > packet_size)
     packet_size = *data_size;
   udp_socket_->SendTo((const void*)send_data_.data(), packet_size,
-                      remote_address_, rtc::PacketOptions());
+                      remote_address_, AsyncSocketPacketOptions());
 }
 
 void TestController::OnTestDone() {
@@ -117,7 +117,7 @@ bool TestController::IsTestDone() {
 }
 
 void TestController::OnReadPacket(AsyncPacketSocket* socket,
-                                  const rtc::ReceivedPacket& received_packet) {
+                                  const ReceivedIpPacket& received_packet) {
   RTC_DCHECK_RUN_ON(packet_sender_thread_.get());
   RTC_LOG(LS_VERBOSE) << "OnReadPacket";
   size_t packet_size = received_packet.payload()[0];

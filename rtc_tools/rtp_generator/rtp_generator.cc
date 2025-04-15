@@ -209,12 +209,12 @@ RtpGenerator::RtpGenerator(const RtpGeneratorOptions& options)
     if (video_config.rtp.payload_name == kVp8CodecName) {
       VideoCodecVP8 settings = VideoEncoder::GetDefaultVp8Settings();
       encoder_config.encoder_specific_settings =
-          rtc::make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+          make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
               settings);
     } else if (video_config.rtp.payload_name == kVp9CodecName) {
       VideoCodecVP9 settings = VideoEncoder::GetDefaultVp9Settings();
       encoder_config.encoder_specific_settings =
-          rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+          make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
               settings);
     } else if (video_config.rtp.payload_name == kH264CodecName) {
       encoder_config.encoder_specific_settings = nullptr;
@@ -280,14 +280,14 @@ void RtpGenerator::GenerateRtpDump(const std::string& rtp_dump_path) {
                                    webrtc::kNetworkDown);
 }
 
-bool RtpGenerator::SendRtp(rtc::ArrayView<const uint8_t> packet,
+bool RtpGenerator::SendRtp(ArrayView<const uint8_t> packet,
                            const webrtc::PacketOptions& options) {
   test::RtpPacket rtp_packet = DataToRtpPacket(packet.data(), packet.size());
   rtp_dump_writer_->WritePacket(&rtp_packet);
   return true;
 }
 
-bool RtpGenerator::SendRtcp(rtc::ArrayView<const uint8_t> packet) {
+bool RtpGenerator::SendRtcp(ArrayView<const uint8_t> packet) {
   test::RtpPacket rtcp_packet = DataToRtpPacket(packet.data(), packet.size());
   rtp_dump_writer_->WritePacket(&rtcp_packet);
   return true;

@@ -27,9 +27,9 @@ TEST(NetworkTesterTest, ServerClient) {
   // running the test in parallel in stress runs. Skipping all reserved ports.
   const int MIN_PORT = 49152;
   const int MAX_PORT = 65535;
-  int port = webrtc::Random(rtc::TimeMicros()).Rand(MIN_PORT, MAX_PORT);
+  int port = webrtc::Random(webrtc::TimeMicros()).Rand(MIN_PORT, MAX_PORT);
 
-  rtc::AutoThread main_thread;
+  webrtc::AutoThread main_thread;
 
   TestController client(
       0, 0, webrtc::test::ResourcePath("network_tester/client_config", "dat"),

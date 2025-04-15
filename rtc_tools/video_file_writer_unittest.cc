@@ -92,8 +92,8 @@ class VideoFileWriterTest : public ::testing::Test {
   const int width = 6;
   const int height = 4;
   const int fps = 60;
-  rtc::scoped_refptr<webrtc::test::Video> video_;
-  rtc::scoped_refptr<webrtc::test::Video> written_video_;
+  scoped_refptr<webrtc::test::Video> video_;
+  scoped_refptr<webrtc::test::Video> written_video_;
   // Each video object must be backed by file!
   std::string video_filename_;
   std::string written_video_filename_;
@@ -124,7 +124,7 @@ TEST_F(VideoFileWriterTest, TestParsingNumberOfFramesYuv) {
 TEST_F(VideoFileWriterTest, TestPixelContentY4m) {
   WriteVideoY4m();
   int cnt = 0;
-  for (const rtc::scoped_refptr<I420BufferInterface> frame : *written_video_) {
+  for (const scoped_refptr<I420BufferInterface> frame : *written_video_) {
     for (int i = 0; i < width * height; ++i, ++cnt)
       EXPECT_EQ(cnt, frame->DataY()[i]);
     for (int i = 0; i < width / 2 * height / 2; ++i, ++cnt)
@@ -137,7 +137,7 @@ TEST_F(VideoFileWriterTest, TestPixelContentY4m) {
 TEST_F(VideoFileWriterTest, TestPixelContentYuv) {
   WriteVideoYuv();
   int cnt = 0;
-  for (const rtc::scoped_refptr<I420BufferInterface> frame : *written_video_) {
+  for (const scoped_refptr<I420BufferInterface> frame : *written_video_) {
     for (int i = 0; i < width * height; ++i, ++cnt)
       EXPECT_EQ(cnt, frame->DataY()[i]);
     for (int i = 0; i < width / 2 * height / 2; ++i, ++cnt)

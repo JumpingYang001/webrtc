@@ -1853,7 +1853,7 @@ void EventLogAnalyzer::CreateSendSideBweSimulationGraph(Plot* plot) const {
             0u,  // Per packet overhead bytes.,
             Timestamp::Micros(rtp_packet.rtp.log_time_us()));
       }
-      rtc::SentPacket sent_packet;
+      SentPacketInfo sent_packet;
       sent_packet.send_time_ms = rtp_packet.rtp.log_time_ms();
       sent_packet.info.included_in_allocation = true;
       sent_packet.info.packet_size_bytes = rtp_packet.rtp.total_length;

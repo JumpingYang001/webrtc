@@ -96,7 +96,7 @@ void analyze_rtc_event_log(const char* log_contents,
   webrtc::analytics::ChartCollection proto_charts;
   collection.ExportProtobuf(&proto_charts);
   std::string serialized_charts = proto_charts.SerializeAsString();
-  if (rtc::checked_cast<uint32_t>(serialized_charts.size()) > *output_size) {
+  if (webrtc::checked_cast<uint32_t>(serialized_charts.size()) > *output_size) {
     std::cerr << "Serialized charts larger than available output buffer: "
               << serialized_charts.size() << " vs " << *output_size
               << std::endl;
@@ -105,5 +105,5 @@ void analyze_rtc_event_log(const char* log_contents,
   }
 
   memcpy(output, serialized_charts.data(), serialized_charts.size());
-  *output_size = rtc::checked_cast<uint32_t>(serialized_charts.size());
+  *output_size = webrtc::checked_cast<uint32_t>(serialized_charts.size());
 }

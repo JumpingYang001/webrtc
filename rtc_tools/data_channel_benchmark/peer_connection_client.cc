@@ -50,10 +50,10 @@ class SetLocalDescriptionObserverAdapter
     : public webrtc::SetLocalDescriptionObserverInterface {
  public:
   using Callback = std::function<void(webrtc::RTCError)>;
-  static rtc::scoped_refptr<SetLocalDescriptionObserverAdapter> Create(
+  static webrtc::scoped_refptr<SetLocalDescriptionObserverAdapter> Create(
       Callback callback) {
-    return rtc::scoped_refptr<SetLocalDescriptionObserverAdapter>(
-        new rtc::RefCountedObject<SetLocalDescriptionObserverAdapter>(
+    return webrtc::scoped_refptr<SetLocalDescriptionObserverAdapter>(
+        new webrtc::RefCountedObject<SetLocalDescriptionObserverAdapter>(
             std::move(callback)));
   }
 
@@ -73,10 +73,10 @@ class SetRemoteDescriptionObserverAdapter
     : public webrtc::SetRemoteDescriptionObserverInterface {
  public:
   using Callback = std::function<void(webrtc::RTCError)>;
-  static rtc::scoped_refptr<SetRemoteDescriptionObserverAdapter> Create(
+  static webrtc::scoped_refptr<SetRemoteDescriptionObserverAdapter> Create(
       Callback callback) {
-    return rtc::scoped_refptr<SetRemoteDescriptionObserverAdapter>(
-        new rtc::RefCountedObject<SetRemoteDescriptionObserverAdapter>(
+    return webrtc::scoped_refptr<SetRemoteDescriptionObserverAdapter>(
+        new webrtc::RefCountedObject<SetRemoteDescriptionObserverAdapter>(
             std::move(callback)));
   }
 
@@ -98,11 +98,11 @@ class CreateSessionDescriptionObserverAdapter
   using Success = std::function<void(webrtc::SessionDescriptionInterface*)>;
   using Failure = std::function<void(webrtc::RTCError)>;
 
-  static rtc::scoped_refptr<CreateSessionDescriptionObserverAdapter> Create(
+  static webrtc::scoped_refptr<CreateSessionDescriptionObserverAdapter> Create(
       Success success,
       Failure failure) {
-    return rtc::scoped_refptr<CreateSessionDescriptionObserverAdapter>(
-        new rtc::RefCountedObject<CreateSessionDescriptionObserverAdapter>(
+    return webrtc::scoped_refptr<CreateSessionDescriptionObserverAdapter>(
+        new webrtc::RefCountedObject<CreateSessionDescriptionObserverAdapter>(
             std::move(success), std::move(failure)));
   }
 
@@ -146,7 +146,7 @@ PeerConnectionClient::~PeerConnectionClient() {
   Disconnect();
 }
 
-rtc::scoped_refptr<PeerConnectionFactoryInterface>
+scoped_refptr<PeerConnectionFactoryInterface>
 PeerConnectionClient::CreateDefaultFactory(Thread* signaling_thread) {
   auto factory = webrtc::CreatePeerConnectionFactory(
       /*network_thread=*/nullptr, /*worker_thread=*/nullptr,
@@ -258,7 +258,7 @@ void PeerConnectionClient::OnIceCandidate(
 }
 
 void PeerConnectionClient::OnDataChannel(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
+    scoped_refptr<webrtc::DataChannelInterface> channel) {
   RTC_LOG(LS_INFO) << __FUNCTION__ << " remote datachannel created";
   if (on_data_channel_callback_)
     on_data_channel_callback_(channel);
@@ -266,7 +266,7 @@ void PeerConnectionClient::OnDataChannel(
 }
 
 void PeerConnectionClient::SetOnDataChannel(
-    std::function<void(rtc::scoped_refptr<webrtc::DataChannelInterface>)>
+    std::function<void(webrtc::scoped_refptr<webrtc::DataChannelInterface>)>
         callback) {
   on_data_channel_callback_ = callback;
 }

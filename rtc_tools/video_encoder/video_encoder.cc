@@ -559,12 +559,12 @@ int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
 
   if (absl::GetFlag(FLAGS_verbose)) {
-    rtc::LogMessage::LogToDebug(rtc::LS_VERBOSE);
+    webrtc::LogMessage::LogToDebug(webrtc::LS_VERBOSE);
   } else {
-    rtc::LogMessage::LogToDebug(rtc::LS_INFO);
+    webrtc::LogMessage::LogToDebug(webrtc::LS_INFO);
   }
 
-  rtc::LogMessage::SetLogToStderr(true);
+  webrtc::LogMessage::SetLogToStderr(true);
 
   const bool list_formats = absl::GetFlag(FLAGS_list_formats);
   const bool validate_psnr = absl::GetFlag(FLAGS_validate_psnr);

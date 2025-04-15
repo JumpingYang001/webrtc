@@ -23,7 +23,7 @@ namespace webrtc {
 namespace test {
 namespace {
 
-void WriteVideoToFile(const rtc::scoped_refptr<Video>& video,
+void WriteVideoToFile(const scoped_refptr<Video>& video,
                       const std::string& file_name,
                       int fps,
                       bool isY4m) {
@@ -43,7 +43,7 @@ void WriteVideoToFile(const rtc::scoped_refptr<Video>& video,
       std::string frame = "FRAME\n";
       fwrite(frame.c_str(), 1, 6, output_file);
     }
-    rtc::scoped_refptr<I420BufferInterface> buffer = video->GetFrame(i);
+    scoped_refptr<I420BufferInterface> buffer = video->GetFrame(i);
     RTC_CHECK(buffer) << "Frame: " << i
                       << "\nWhile trying to create: " << file_name;
     const uint8_t* data_y = buffer->DataY();
@@ -70,20 +70,20 @@ void WriteVideoToFile(const rtc::scoped_refptr<Video>& video,
 
 }  // Anonymous namespace
 
-void WriteVideoToFile(const rtc::scoped_refptr<Video>& video,
+void WriteVideoToFile(const scoped_refptr<Video>& video,
                       const std::string& file_name,
                       int fps) {
   WriteVideoToFile(video, file_name, fps,
                    /*isY4m=*/absl::EndsWith(file_name, ".y4m"));
 }
 
-void WriteY4mVideoToFile(const rtc::scoped_refptr<Video>& video,
+void WriteY4mVideoToFile(const scoped_refptr<Video>& video,
                          const std::string& file_name,
                          int fps) {
   WriteVideoToFile(video, file_name, fps, /*isY4m=*/true);
 }
 
-void WriteYuvVideoToFile(const rtc::scoped_refptr<Video>& video,
+void WriteYuvVideoToFile(const scoped_refptr<Video>& video,
                          const std::string& file_name,
                          int fps) {
   WriteVideoToFile(video, file_name, fps, /*isY4m=*/false);

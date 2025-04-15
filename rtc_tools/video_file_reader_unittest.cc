@@ -49,7 +49,7 @@ class Y4mFileReaderTest : public ::testing::Test {
     ASSERT_TRUE(video);
   }
 
-  rtc::scoped_refptr<webrtc::test::Video> video;
+  scoped_refptr<webrtc::test::Video> video;
 };
 
 TEST_F(Y4mFileReaderTest, TestParsingFileHeader) {
@@ -63,7 +63,7 @@ TEST_F(Y4mFileReaderTest, TestParsingNumberOfFrames) {
 
 TEST_F(Y4mFileReaderTest, TestPixelContent) {
   int cnt = 0;
-  for (const rtc::scoped_refptr<I420BufferInterface> frame : *video) {
+  for (const scoped_refptr<I420BufferInterface> frame : *video) {
     for (int i = 0; i < 6 * 4; ++i, ++cnt)
       EXPECT_EQ(cnt, frame->DataY()[i]);
     for (int i = 0; i < 3 * 2; ++i, ++cnt)
@@ -99,7 +99,7 @@ class YuvFileReaderTest : public ::testing::Test {
     ASSERT_TRUE(video);
   }
 
-  rtc::scoped_refptr<webrtc::test::Video> video;
+  scoped_refptr<webrtc::test::Video> video;
 };
 
 TEST_F(YuvFileReaderTest, TestParsingFileHeader) {
@@ -113,7 +113,7 @@ TEST_F(YuvFileReaderTest, TestParsingNumberOfFrames) {
 
 TEST_F(YuvFileReaderTest, TestPixelContent) {
   int cnt = 0;
-  for (const rtc::scoped_refptr<I420BufferInterface> frame : *video) {
+  for (const scoped_refptr<I420BufferInterface> frame : *video) {
     for (int i = 0; i < 6 * 4; ++i, ++cnt)
       EXPECT_EQ(cnt, frame->DataY()[i]);
     for (int i = 0; i < 3 * 2; ++i, ++cnt)

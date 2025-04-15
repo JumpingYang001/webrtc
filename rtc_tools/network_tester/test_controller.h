@@ -65,9 +65,9 @@ class TestController {
 
  private:
   void OnReadPacket(AsyncPacketSocket* socket,
-                    const rtc::ReceivedPacket& received_packet);
+                    const ReceivedIpPacket& received_packet);
   RTC_NO_UNIQUE_ADDRESS SequenceChecker test_controller_thread_checker_;
-  std::unique_ptr<rtc::SocketServer> socket_server_;
+  std::unique_ptr<SocketServer> socket_server_;
   std::unique_ptr<Thread> packet_sender_thread_;
   BasicPacketSocketFactory socket_factory_
       RTC_GUARDED_BY(packet_sender_thread_);
@@ -83,7 +83,7 @@ class TestController {
   SocketAddress remote_address_;
   std::unique_ptr<PacketSender> packet_sender_
       RTC_GUARDED_BY(packet_sender_thread_);
-  rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety_flag_;
+  scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety_flag_;
 };
 
 }  // namespace webrtc
