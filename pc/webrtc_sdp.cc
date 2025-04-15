@@ -68,8 +68,8 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/strings/string_builder.h"
 
-using cricket::Candidate;
 using ::webrtc::AudioContentDescription;
+using webrtc::Candidate;
 using ::webrtc::Candidates;
 using ::webrtc::ContentInfo;
 using ::webrtc::ICE_CANDIDATE_COMPONENT_RTCP;
@@ -203,9 +203,10 @@ static const char kCandidatePrflx[] = "prflx";
 static const char kCandidateRelay[] = "relay";
 static const char kTcpCandidateType[] = "tcptype";
 
-// rtc::StringBuilder doesn't have a << overload for chars, while rtc::split and
-// rtc::tokenize_first both take a char delimiter. To handle both cases these
-// constants come in pairs of a chars and length-one strings.
+// webrtc::StringBuilder doesn't have a << overload for chars, while
+// webrtc::split and webrtc::tokenize_first both take a char delimiter. To
+// handle both cases these constants come in pairs of a chars and length-one
+// strings.
 static const char kSdpDelimiterEqual[] = "=";
 static const char kSdpDelimiterEqualChar = '=';
 static const char kSdpDelimiterSpace[] = " ";
@@ -653,7 +654,7 @@ static bool GetValueFromString(absl::string_view line,
                                absl::string_view s,
                                T* t,
                                SdpParseError* error) {
-  if (!rtc::FromString(s, t)) {
+  if (!FromString(s, t)) {
     StringBuilder description;
     description << "Invalid value: " << s << ".";
     return ParseFailed(line, description.Release(), error);
@@ -873,7 +874,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
   // BUNDLE Groups
   std::vector<const ContentGroup*> groups =
       desc->GetGroupsByName(GROUP_TYPE_BUNDLE);
-  for (const cricket::ContentGroup* group : groups) {
+  for (const ContentGroup* group : groups) {
     std::string group_line = kAttrGroup;
     RTC_DCHECK(group != NULL);
     for (const std::string& content_name : group->content_names()) {
@@ -890,7 +891,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
   }
 
   // MediaStream semantics.
-  // TODO(bugs.webrtc.org/10421): Change to & cricket::kMsidSignalingSemantic
+  // TODO(bugs.webrtc.org/10421): Change to & webrtc::kMsidSignalingSemantic
   // when we think it's safe to do so, so that we gradually fade out this old
   // line that was removed from the specification.
   if (desc->msid_signaling() != kMsidSignalingNotUsed) {
@@ -920,7 +921,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
   // TODO(deadbeef): It's weird that we need to iterate TransportInfos for
   // this, when it's a session-level attribute. It really should be moved to a
   // session-level structure like SessionDescription.
-  for (const cricket::TransportInfo& transport : desc->transport_infos()) {
+  for (const TransportInfo& transport : desc->transport_infos()) {
     if (transport.description.ice_mode == ICEMODE_LITE) {
       InitAttrLine(kAttributeIceLite, &os);
       AddLine(os.str(), &message);
@@ -2629,9 +2630,8 @@ static std::unique_ptr<MediaContentDescription> ParseContentDescription(
 
 bool HasDuplicateMsidLines(SessionDescription* desc) {
   std::set<std::pair<std::string, std::string>> seen_msids;
-  for (const cricket::ContentInfo& content : desc->contents()) {
-    for (const cricket::StreamParams& stream :
-         content.media_description()->streams()) {
+  for (const ContentInfo& content : desc->contents()) {
+    for (const StreamParams& stream : content.media_description()->streams()) {
       auto msid = std::pair(stream.first_stream_id(), stream.id);
       if (seen_msids.find(msid) != seen_msids.end()) {
         return true;

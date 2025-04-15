@@ -74,8 +74,8 @@ class RTCStatsTraversalTest : public ::testing::Test {
   }
 
  protected:
-  rtc::scoped_refptr<RTCStatsReport> initial_report_;
-  rtc::scoped_refptr<RTCStatsReport> result_;
+  scoped_refptr<RTCStatsReport> initial_report_;
+  scoped_refptr<RTCStatsReport> result_;
   // Raw pointers to stats owned by the reports.
   RTCTransportStats* transport_;
   RTCIceCandidatePairStats* candidate_pair_;

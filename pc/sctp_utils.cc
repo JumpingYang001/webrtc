@@ -47,7 +47,7 @@ enum DataChannelPriority {
   DCO_PRIORITY_HIGH = 1024,
 };
 
-bool IsOpenMessage(const rtc::CopyOnWriteBuffer& payload) {
+bool IsOpenMessage(const CopyOnWriteBuffer& payload) {
   // Format defined at
   // https://www.rfc-editor.org/rfc/rfc8832#section-5.1
   if (payload.size() < 1) {
@@ -59,7 +59,7 @@ bool IsOpenMessage(const rtc::CopyOnWriteBuffer& payload) {
   return message_type == DATA_CHANNEL_OPEN_MESSAGE_TYPE;
 }
 
-bool ParseDataChannelOpenMessage(const rtc::CopyOnWriteBuffer& payload,
+bool ParseDataChannelOpenMessage(const CopyOnWriteBuffer& payload,
                                  std::string* label,
                                  DataChannelInit* config) {
   // Format defined at
@@ -138,7 +138,7 @@ bool ParseDataChannelOpenMessage(const rtc::CopyOnWriteBuffer& payload,
   return true;
 }
 
-bool ParseDataChannelOpenAckMessage(const rtc::CopyOnWriteBuffer& payload) {
+bool ParseDataChannelOpenAckMessage(const CopyOnWriteBuffer& payload) {
   if (payload.size() < 1) {
     RTC_LOG(LS_WARNING) << "Could not read OPEN_ACK message type.";
     return false;
@@ -155,7 +155,7 @@ bool ParseDataChannelOpenAckMessage(const rtc::CopyOnWriteBuffer& payload) {
 
 bool WriteDataChannelOpenMessage(const std::string& label,
                                  const DataChannelInit& config,
-                                 rtc::CopyOnWriteBuffer* payload) {
+                                 CopyOnWriteBuffer* payload) {
   return WriteDataChannelOpenMessage(label, config.protocol, config.priority,
                                      config.ordered, config.maxRetransmits,
                                      config.maxRetransmitTime, payload);
@@ -167,7 +167,7 @@ bool WriteDataChannelOpenMessage(const std::string& label,
                                  bool ordered,
                                  std::optional<int> max_retransmits,
                                  std::optional<int> max_retransmit_time,
-                                 rtc::CopyOnWriteBuffer* payload) {
+                                 CopyOnWriteBuffer* payload) {
   // Format defined at
   // http://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-09#section-5.1
   uint8_t channel_type = 0;
@@ -211,7 +211,7 @@ bool WriteDataChannelOpenMessage(const std::string& label,
   return true;
 }
 
-void WriteDataChannelOpenAckMessage(rtc::CopyOnWriteBuffer* payload) {
+void WriteDataChannelOpenAckMessage(CopyOnWriteBuffer* payload) {
   uint8_t data = DATA_CHANNEL_OPEN_ACK_MESSAGE_TYPE;
   payload->SetData(&data, sizeof(data));
 }

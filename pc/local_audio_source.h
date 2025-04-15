@@ -24,7 +24,7 @@ namespace webrtc {
 class LocalAudioSource : public Notifier<AudioSourceInterface> {
  public:
   // Creates an instance of LocalAudioSource.
-  static rtc::scoped_refptr<LocalAudioSource> Create(
+  static scoped_refptr<LocalAudioSource> Create(
       const AudioOptions* audio_options);
 
   SourceState state() const override { return kLive; }

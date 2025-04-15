@@ -45,8 +45,8 @@ const V* FindAddressOrNull(const std::map<K, V>& map, const K& key) {
 }
 
 void GetAudioAndVideoTrackBySsrc(
-    rtc::ArrayView<rtc::scoped_refptr<RtpSenderInternal>> rtp_senders,
-    rtc::ArrayView<rtc::scoped_refptr<RtpReceiverInternal>> rtp_receivers,
+    ArrayView<scoped_refptr<RtpSenderInternal>> rtp_senders,
+    ArrayView<scoped_refptr<RtpReceiverInternal>> rtp_receivers,
     std::map<uint32_t, AudioTrackInterface*>* local_audio_track_by_ssrc,
     std::map<uint32_t, VideoTrackInterface*>* local_video_track_by_ssrc,
     std::map<uint32_t, AudioTrackInterface*>* remote_audio_track_by_ssrc,
@@ -116,8 +116,8 @@ TrackMediaInfoMap::TrackMediaInfoMap() = default;
 void TrackMediaInfoMap::Initialize(
     std::optional<VoiceMediaInfo> voice_media_info,
     std::optional<VideoMediaInfo> video_media_info,
-    rtc::ArrayView<rtc::scoped_refptr<RtpSenderInternal>> rtp_senders,
-    rtc::ArrayView<rtc::scoped_refptr<RtpReceiverInternal>> rtp_receivers) {
+    ArrayView<scoped_refptr<RtpSenderInternal>> rtp_senders,
+    ArrayView<scoped_refptr<RtpReceiverInternal>> rtp_receivers) {
   Thread::ScopedDisallowBlockingCalls no_blocking_calls;
   RTC_DCHECK(!is_initialized_);
   is_initialized_ = true;
@@ -245,25 +245,25 @@ const VideoReceiverInfo* TrackMediaInfoMap::GetVideoReceiverInfoBySsrc(
   return FindValueOrNull(video_info_by_receiver_ssrc_, ssrc);
 }
 
-rtc::scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
+scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
     const VoiceSenderInfo& voice_sender_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(audio_track_by_sender_info_, &voice_sender_info);
 }
 
-rtc::scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
+scoped_refptr<AudioTrackInterface> TrackMediaInfoMap::GetAudioTrack(
     const VoiceReceiverInfo& voice_receiver_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(audio_track_by_receiver_info_, &voice_receiver_info);
 }
 
-rtc::scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
+scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
     const VideoSenderInfo& video_sender_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_track_by_sender_info_, &video_sender_info);
 }
 
-rtc::scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
+scoped_refptr<VideoTrackInterface> TrackMediaInfoMap::GetVideoTrack(
     const VideoReceiverInfo& video_receiver_info) const {
   RTC_DCHECK(is_initialized_);
   return FindValueOrNull(video_track_by_receiver_info_, &video_receiver_info);

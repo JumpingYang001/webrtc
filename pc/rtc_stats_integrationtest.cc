@@ -60,10 +60,10 @@ class RTCStatsIntegrationTest : public ::testing::Test {
     RTC_CHECK(network_thread_->Start());
     RTC_CHECK(worker_thread_->Start());
 
-    caller_ = rtc::make_ref_counted<PeerConnectionTestWrapper>(
+    caller_ = make_ref_counted<PeerConnectionTestWrapper>(
         "caller", &virtual_socket_server_, network_thread_.get(),
         worker_thread_.get());
-    callee_ = rtc::make_ref_counted<PeerConnectionTestWrapper>(
+    callee_ = make_ref_counted<PeerConnectionTestWrapper>(
         "callee", &virtual_socket_server_, network_thread_.get(),
         worker_thread_.get());
   }
@@ -96,35 +96,34 @@ class RTCStatsIntegrationTest : public ::testing::Test {
     callee_->WaitForCallEstablished();
   }
 
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCaller() {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCaller() {
     return GetStats(caller_->pc());
   }
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCaller(
-      rtc::scoped_refptr<RtpSenderInterface> selector) {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCaller(
+      scoped_refptr<RtpSenderInterface> selector) {
     return GetStats(caller_->pc(), selector);
   }
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCaller(
-      rtc::scoped_refptr<RtpReceiverInterface> selector) {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCaller(
+      scoped_refptr<RtpReceiverInterface> selector) {
     return GetStats(caller_->pc(), selector);
   }
 
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCallee() {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCallee() {
     return GetStats(callee_->pc());
   }
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCallee(
-      rtc::scoped_refptr<RtpSenderInterface> selector) {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCallee(
+      scoped_refptr<RtpSenderInterface> selector) {
     return GetStats(callee_->pc(), selector);
   }
-  rtc::scoped_refptr<const RTCStatsReport> GetStatsFromCallee(
-      rtc::scoped_refptr<RtpReceiverInterface> selector) {
+  scoped_refptr<const RTCStatsReport> GetStatsFromCallee(
+      scoped_refptr<RtpReceiverInterface> selector) {
     return GetStats(callee_->pc(), selector);
   }
 
  protected:
-  static rtc::scoped_refptr<const RTCStatsReport> GetStats(
+  static scoped_refptr<const RTCStatsReport> GetStats(
       PeerConnectionInterface* pc) {
-    rtc::scoped_refptr<RTCStatsObtainer> stats_obtainer =
-        RTCStatsObtainer::Create();
+    scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
     pc->GetStats(stats_obtainer.get());
     EXPECT_THAT(
         WaitUntil([&] { return stats_obtainer->report() != nullptr; },
@@ -135,11 +134,10 @@ class RTCStatsIntegrationTest : public ::testing::Test {
   }
 
   template <typename T>
-  static rtc::scoped_refptr<const RTCStatsReport> GetStats(
+  static scoped_refptr<const RTCStatsReport> GetStats(
       PeerConnectionInterface* pc,
-      rtc::scoped_refptr<T> selector) {
-    rtc::scoped_refptr<RTCStatsObtainer> stats_obtainer =
-        RTCStatsObtainer::Create();
+      scoped_refptr<T> selector) {
+    scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
     pc->GetStats(selector, stats_obtainer);
     EXPECT_THAT(
         WaitUntil([&] { return stats_obtainer->report() != nullptr; },
@@ -154,8 +152,8 @@ class RTCStatsIntegrationTest : public ::testing::Test {
   VirtualSocketServer virtual_socket_server_;
   std::unique_ptr<Thread> network_thread_;
   std::unique_ptr<Thread> worker_thread_;
-  rtc::scoped_refptr<PeerConnectionTestWrapper> caller_;
-  rtc::scoped_refptr<PeerConnectionTestWrapper> callee_;
+  scoped_refptr<PeerConnectionTestWrapper> caller_;
+  scoped_refptr<PeerConnectionTestWrapper> callee_;
 };
 
 class RTCStatsVerifier {
@@ -286,7 +284,7 @@ class RTCStatsVerifier {
     MarkAttributeTested(field, valid_reference);
   }
 
-  rtc::scoped_refptr<const RTCStatsReport> report_;
+  scoped_refptr<const RTCStatsReport> report_;
   const RTCStats* stats_;
   std::set<const char*> untested_attribute_names_;
   bool all_tests_successful_;
@@ -1014,21 +1012,21 @@ class RTCStatsReportVerifier {
   }
 
  private:
-  rtc::scoped_refptr<const RTCStatsReport> report_;
+  scoped_refptr<const RTCStatsReport> report_;
 };
 
 #ifdef WEBRTC_HAVE_SCTP
 TEST_F(RTCStatsIntegrationTest, GetStatsFromCaller) {
   StartCall();
 
-  rtc::scoped_refptr<const RTCStatsReport> report = GetStatsFromCaller();
+  scoped_refptr<const RTCStatsReport> report = GetStatsFromCaller();
   RTCStatsReportVerifier(report.get()).VerifyReport({});
 }
 
 TEST_F(RTCStatsIntegrationTest, GetStatsFromCallee) {
   StartCall();
 
-  rtc::scoped_refptr<const RTCStatsReport> report;
+  scoped_refptr<const RTCStatsReport> report;
   // Wait for round trip time measurements to be defined.
   constexpr int kMaxWaitMs = 10000;
   auto GetStatsReportAndReturnTrueIfRttIsDefined = [&report, this] {
@@ -1053,7 +1051,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsFromCallee) {
 TEST_F(RTCStatsIntegrationTest, GetStatsWithSenderSelector) {
   StartCall();
   ASSERT_FALSE(caller_->pc()->GetSenders().empty());
-  rtc::scoped_refptr<const RTCStatsReport> report =
+  scoped_refptr<const RTCStatsReport> report =
       GetStatsFromCaller(caller_->pc()->GetSenders()[0]);
   std::vector<const char*> allowed_missing_stats = {
       // TODO(hbos): Include RTC[Audio/Video]ReceiverStats when implemented.
@@ -1071,7 +1069,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsWithReceiverSelector) {
   StartCall();
 
   ASSERT_FALSE(caller_->pc()->GetReceivers().empty());
-  rtc::scoped_refptr<const RTCStatsReport> report =
+  scoped_refptr<const RTCStatsReport> report =
       GetStatsFromCaller(caller_->pc()->GetReceivers()[0]);
   std::vector<const char*> allowed_missing_stats = {
       // TODO(hbos): Include RTC[Audio/Video]SenderStats when implemented.
@@ -1091,7 +1089,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsWithInvalidSenderSelector) {
   ASSERT_FALSE(callee_->pc()->GetSenders().empty());
   // The selector is invalid for the caller because it belongs to the callee.
   auto invalid_selector = callee_->pc()->GetSenders()[0];
-  rtc::scoped_refptr<const RTCStatsReport> report =
+  scoped_refptr<const RTCStatsReport> report =
       GetStatsFromCaller(invalid_selector);
   EXPECT_FALSE(report->size());
 }
@@ -1102,7 +1100,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsWithInvalidReceiverSelector) {
   ASSERT_FALSE(callee_->pc()->GetReceivers().empty());
   // The selector is invalid for the caller because it belongs to the callee.
   auto invalid_selector = callee_->pc()->GetReceivers()[0];
-  rtc::scoped_refptr<const RTCStatsReport> report =
+  scoped_refptr<const RTCStatsReport> report =
       GetStatsFromCaller(invalid_selector);
   EXPECT_FALSE(report->size());
 }
@@ -1114,8 +1112,7 @@ TEST_F(RTCStatsIntegrationTest,
        DISABLED_GetStatsWhileDestroyingPeerConnection) {
   StartCall();
 
-  rtc::scoped_refptr<RTCStatsObtainer> stats_obtainer =
-      RTCStatsObtainer::Create();
+  scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
   caller_->pc()->GetStats(stats_obtainer.get());
   // This will destroy the peer connection.
   caller_ = nullptr;
@@ -1127,8 +1124,7 @@ TEST_F(RTCStatsIntegrationTest,
 TEST_F(RTCStatsIntegrationTest, GetsStatsWhileClosingPeerConnection) {
   StartCall();
 
-  rtc::scoped_refptr<RTCStatsObtainer> stats_obtainer =
-      RTCStatsObtainer::Create();
+  scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
   caller_->pc()->GetStats(stats_obtainer.get());
   caller_->pc()->Close();
 
@@ -1145,7 +1141,7 @@ TEST_F(RTCStatsIntegrationTest, GetsStatsWhileClosingPeerConnection) {
 TEST_F(RTCStatsIntegrationTest, GetStatsReferencedIds) {
   StartCall();
 
-  rtc::scoped_refptr<const RTCStatsReport> report = GetStatsFromCallee();
+  scoped_refptr<const RTCStatsReport> report = GetStatsFromCallee();
   for (const RTCStats& stats : *report) {
     // Find all references by looking at all string attributes with the "Id" or
     // "Ids" suffix.
@@ -1180,7 +1176,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsReferencedIds) {
 TEST_F(RTCStatsIntegrationTest, GetStatsContainsNoDuplicateAttributes) {
   StartCall();
 
-  rtc::scoped_refptr<const RTCStatsReport> report = GetStatsFromCallee();
+  scoped_refptr<const RTCStatsReport> report = GetStatsFromCallee();
   for (const RTCStats& stats : *report) {
     std::set<std::string> attribute_names;
     for (const auto& attribute : stats.Attributes()) {

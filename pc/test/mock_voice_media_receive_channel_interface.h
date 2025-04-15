@@ -33,7 +33,7 @@
 namespace webrtc {
 
 class MockVoiceMediaReceiveChannelInterface
-    : public cricket::VoiceMediaReceiveChannelInterface {
+    : public VoiceMediaReceiveChannelInterface {
  public:
   MockVoiceMediaReceiveChannelInterface() {
     ON_CALL(*this, AsVoiceReceiveChannel).WillByDefault(testing::Return(this));
@@ -42,7 +42,7 @@ class MockVoiceMediaReceiveChannelInterface
   // VoiceMediaReceiveChannelInterface
   MOCK_METHOD(bool,
               SetReceiverParameters,
-              (const cricket::AudioReceiverParameters& params),
+              (const webrtc::AudioReceiverParameters& params),
               (override));
   MOCK_METHOD(RtpParameters,
               GetRtpReceiverParameters,
@@ -72,7 +72,7 @@ class MockVoiceMediaReceiveChannelInterface
               (override));
   MOCK_METHOD(bool,
               GetStats,
-              (cricket::VoiceMediaReceiveInfo * stats, bool reset_legacy),
+              (webrtc::VoiceMediaReceiveInfo * stats, bool reset_legacy),
               (override));
   MOCK_METHOD(::webrtc::RtcpMode, RtcpMode, (), (const, override));
   MOCK_METHOD(void, SetRtcpMode, (::webrtc::RtcpMode mode), (override));
@@ -80,24 +80,24 @@ class MockVoiceMediaReceiveChannelInterface
   MOCK_METHOD(void, SetReceiveNonSenderRttEnabled, (bool enabled), (override));
 
   // MediaReceiveChannelInterface
-  MOCK_METHOD(cricket::VideoMediaReceiveChannelInterface*,
+  MOCK_METHOD(VideoMediaReceiveChannelInterface*,
               AsVideoReceiveChannel,
               (),
               (override));
-  MOCK_METHOD(cricket::VoiceMediaReceiveChannelInterface*,
+  MOCK_METHOD(VoiceMediaReceiveChannelInterface*,
               AsVoiceReceiveChannel,
               (),
               (override));
   MOCK_METHOD(MediaType, media_type, (), (const, override));
   MOCK_METHOD(bool,
               AddRecvStream,
-              (const cricket::StreamParams& sp),
+              (const webrtc::StreamParams& sp),
               (override));
   MOCK_METHOD(bool, RemoveRecvStream, (uint32_t ssrc), (override));
   MOCK_METHOD(void, ResetUnsignaledRecvStream, (), (override));
   MOCK_METHOD(void,
               SetInterface,
-              (cricket::MediaChannelNetworkInterface * iface),
+              (webrtc::MediaChannelNetworkInterface * iface),
               (override));
   MOCK_METHOD(void,
               OnPacketReceived,

@@ -51,13 +51,13 @@ class StreamId {
 };
 
 // Read the message type and return true if it's an OPEN message.
-bool IsOpenMessage(const rtc::CopyOnWriteBuffer& payload);
+bool IsOpenMessage(const CopyOnWriteBuffer& payload);
 
-bool ParseDataChannelOpenMessage(const rtc::CopyOnWriteBuffer& payload,
+bool ParseDataChannelOpenMessage(const CopyOnWriteBuffer& payload,
                                  std::string* label,
                                  DataChannelInit* config);
 
-bool ParseDataChannelOpenAckMessage(const rtc::CopyOnWriteBuffer& payload);
+bool ParseDataChannelOpenAckMessage(const CopyOnWriteBuffer& payload);
 
 bool WriteDataChannelOpenMessage(const std::string& label,
                                  const std::string& protocol,
@@ -65,11 +65,11 @@ bool WriteDataChannelOpenMessage(const std::string& label,
                                  bool ordered,
                                  std::optional<int> max_retransmits,
                                  std::optional<int> max_retransmit_time,
-                                 rtc::CopyOnWriteBuffer* payload);
+                                 CopyOnWriteBuffer* payload);
 bool WriteDataChannelOpenMessage(const std::string& label,
                                  const DataChannelInit& config,
-                                 rtc::CopyOnWriteBuffer* payload);
-void WriteDataChannelOpenAckMessage(rtc::CopyOnWriteBuffer* payload);
+                                 CopyOnWriteBuffer* payload);
+void WriteDataChannelOpenAckMessage(CopyOnWriteBuffer* payload);
 
 }  // namespace webrtc
 

@@ -165,15 +165,14 @@ TEST(RtpParametersConversionTest, ToRtpCapabilities) {
   EXPECT_EQ(3, capabilities.header_extensions[1].preferred_id);
   EXPECT_EQ(0u, capabilities.fec.size());
 
-  capabilities = ToRtpCapabilities({vp8, red, red2, ulpfec, rtx},
-                                   cricket::RtpHeaderExtensions());
+  capabilities =
+      ToRtpCapabilities({vp8, red, red2, ulpfec, rtx}, RtpHeaderExtensions());
   EXPECT_EQ(4u, capabilities.codecs.size());
   EXPECT_THAT(
       capabilities.fec,
       UnorderedElementsAre(FecMechanism::RED, FecMechanism::RED_AND_ULPFEC));
 
-  capabilities =
-      ToRtpCapabilities({vp8, red, flexfec}, cricket::RtpHeaderExtensions());
+  capabilities = ToRtpCapabilities({vp8, red, flexfec}, RtpHeaderExtensions());
   EXPECT_EQ(3u, capabilities.codecs.size());
   EXPECT_THAT(capabilities.fec,
               UnorderedElementsAre(FecMechanism::RED, FecMechanism::FLEXFEC));

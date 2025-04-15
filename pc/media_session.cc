@@ -54,10 +54,10 @@
 
 namespace {
 
-using rtc::UniqueRandomIdGenerator;
 using webrtc::RTCError;
 using webrtc::RTCErrorType;
 using webrtc::RtpTransceiverDirection;
+using webrtc::UniqueRandomIdGenerator;
 
 webrtc::RtpExtension RtpExtensionFromCapability(
     const webrtc::RtpHeaderExtensionCapability& capability) {
@@ -66,9 +66,9 @@ webrtc::RtpExtension RtpExtensionFromCapability(
                               capability.preferred_encrypt);
 }
 
-cricket::RtpHeaderExtensions RtpHeaderExtensionsFromCapabilities(
+webrtc::RtpHeaderExtensions RtpHeaderExtensionsFromCapabilities(
     const std::vector<webrtc::RtpHeaderExtensionCapability>& capabilities) {
-  cricket::RtpHeaderExtensions exts;
+  webrtc::RtpHeaderExtensions exts;
   for (const auto& capability : capabilities) {
     exts.push_back(RtpExtensionFromCapability(capability));
   }
@@ -89,17 +89,17 @@ UnstoppedRtpHeaderExtensionCapabilities(
 }
 
 bool IsCapabilityPresent(const webrtc::RtpHeaderExtensionCapability& capability,
-                         const cricket::RtpHeaderExtensions& extensions) {
+                         const webrtc::RtpHeaderExtensions& extensions) {
   return std::find_if(extensions.begin(), extensions.end(),
                       [&capability](const webrtc::RtpExtension& extension) {
                         return capability.uri == extension.uri;
                       }) != extensions.end();
 }
 
-cricket::RtpHeaderExtensions UnstoppedOrPresentRtpHeaderExtensions(
+webrtc::RtpHeaderExtensions UnstoppedOrPresentRtpHeaderExtensions(
     const std::vector<webrtc::RtpHeaderExtensionCapability>& capabilities,
-    const cricket::RtpHeaderExtensions& all_encountered_extensions) {
-  cricket::RtpHeaderExtensions extensions;
+    const webrtc::RtpHeaderExtensions& all_encountered_extensions) {
+  webrtc::RtpHeaderExtensions extensions;
   for (const auto& capability : capabilities) {
     if (capability.direction != RtpTransceiverDirection::kStopped ||
         IsCapabilityPresent(capability, all_encountered_extensions)) {
@@ -151,12 +151,11 @@ bool IsMediaContentOfType(const ContentInfo* content,
 }
 
 // Finds all StreamParams of all media types and attach them to stream_params.
-cricket::StreamParamsVec GetCurrentStreamParams(
+StreamParamsVec GetCurrentStreamParams(
     const std::vector<const ContentInfo*>& active_local_contents) {
-  cricket::StreamParamsVec stream_params;
-  for (const cricket::ContentInfo* content : active_local_contents) {
-    for (const cricket::StreamParams& params :
-         content->media_description()->streams()) {
+  StreamParamsVec stream_params;
+  for (const ContentInfo* content : active_local_contents) {
+    for (const StreamParams& params : content->media_description()->streams()) {
       stream_params.push_back(params);
     }
   }
@@ -198,14 +197,12 @@ StreamParams CreateStreamParamsForNewSenderWithSsrcs(
 
 bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
                              const SimulcastLayerList& simulcast_layers) {
-  return absl::c_all_of(simulcast_layers.GetAllLayers(),
-                        [&rids](const cricket::SimulcastLayer& layer) {
-                          return absl::c_any_of(
-                              rids,
-                              [&layer](const cricket::RidDescription& rid) {
-                                return rid.rid == layer.rid;
-                              });
-                        });
+  return absl::c_all_of(
+      simulcast_layers.GetAllLayers(), [&rids](const SimulcastLayer& layer) {
+        return absl::c_any_of(rids, [&layer](const RidDescription& rid) {
+          return rid.rid == layer.rid;
+        });
+      });
 }
 
 StreamParams CreateStreamParamsForNewSenderWithRids(
@@ -266,7 +263,7 @@ void AddSimulcastToMediaDescription(
 bool AddStreamParams(const std::vector<SenderOptions>& sender_options,
                      const std::string& rtcp_cname,
                      UniqueRandomIdGenerator* ssrc_generator,
-                     cricket::StreamParamsVec* current_streams,
+                     StreamParamsVec* current_streams,
                      MediaContentDescription* content_description,
                      const FieldTrialsView& field_trials) {
   // SCTP streams are not negotiated using SDP/ContentDescriptions.
@@ -280,7 +277,7 @@ bool AddStreamParams(const std::vector<SenderOptions>& sender_options,
   const bool include_flexfec_stream =
       ContainsFlexfecCodec(content_description->codecs());
 
-  for (const cricket::SenderOptions& sender : sender_options) {
+  for (const SenderOptions& sender : sender_options) {
     StreamParams* param = GetStreamByIds(*current_streams, sender.track_id);
     if (!param) {
       // This is a new sender.
@@ -337,7 +334,7 @@ bool UpdateTransportInfoForBundle(const ContentGroup& bundle_group,
       selected_transport_info->description.ice_pwd;
   ConnectionRole selected_connection_role =
       selected_transport_info->description.connection_role;
-  for (cricket::TransportInfo& transport_info : sdesc->transport_infos()) {
+  for (TransportInfo& transport_info : sdesc->transport_infos()) {
     if (bundle_group.HasContentName(transport_info.content_name) &&
         transport_info.content_name != selected_content_name) {
       transport_info.description.ice_ufrag = selected_ufrag;
@@ -374,16 +371,16 @@ std::vector<const ContentInfo*> GetActiveContents(
 RTCError CreateContentOffer(
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
-    const cricket::RtpHeaderExtensions& rtp_extensions,
+    const RtpHeaderExtensions& rtp_extensions,
     UniqueRandomIdGenerator* ssrc_generator,
-    cricket::StreamParamsVec* current_streams,
+    StreamParamsVec* current_streams,
     MediaContentDescription* offer) {
   offer->set_rtcp_mux(session_options.rtcp_mux_enabled);
   offer->set_rtcp_reduced_size(true);
 
   // Build the vector of header extensions with directions for this
   // media_description's options.
-  cricket::RtpHeaderExtensions extensions;
+  RtpHeaderExtensions extensions;
   for (const auto& extension_with_id : rtp_extensions) {
     for (const auto& extension : media_description_options.header_extensions) {
       if (extension_with_id.uri == extension.uri &&
@@ -408,9 +405,9 @@ RTCError CreateMediaContentOffer(
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
     const std::vector<Codec>& codecs,
-    const cricket::RtpHeaderExtensions& rtp_extensions,
+    const RtpHeaderExtensions& rtp_extensions,
     UniqueRandomIdGenerator* ssrc_generator,
-    cricket::StreamParamsVec* current_streams,
+    StreamParamsVec* current_streams,
     MediaContentDescription* offer,
     const FieldTrialsView& field_trials) {
   offer->AddCodecs(codecs);
@@ -433,10 +430,10 @@ RTCError CreateMediaContentOffer(
 // for that extension. `offered_extensions` is for either audio or video while
 // `all_encountered_extensions` is used for both audio and video. There could be
 // overlap between audio extensions and video extensions.
-void MergeRtpHdrExts(const cricket::RtpHeaderExtensions& reference_extensions,
+void MergeRtpHdrExts(const RtpHeaderExtensions& reference_extensions,
                      bool enable_encrypted_rtp_header_extensions,
-                     cricket::RtpHeaderExtensions* offered_extensions,
-                     cricket::RtpHeaderExtensions* all_encountered_extensions,
+                     RtpHeaderExtensions* offered_extensions,
+                     RtpHeaderExtensions* all_encountered_extensions,
                      UsedRtpHeaderExtensionIds* used_ids) {
   for (auto reference_extension : reference_extensions) {
     if (!RtpExtension::FindHeaderExtensionByUriAndEncryption(
@@ -489,11 +486,10 @@ const RtpExtension* FindHeaderExtensionByUriDiscardUnsupported(
   return RtpExtension::FindHeaderExtensionByUri(extensions, uri, filter);
 }
 
-void NegotiateRtpHeaderExtensions(
-    const cricket::RtpHeaderExtensions& local_extensions,
-    const cricket::RtpHeaderExtensions& offered_extensions,
-    RtpExtension::Filter filter,
-    cricket::RtpHeaderExtensions* negotiated_extensions) {
+void NegotiateRtpHeaderExtensions(const RtpHeaderExtensions& local_extensions,
+                                  const RtpHeaderExtensions& offered_extensions,
+                                  RtpExtension::Filter filter,
+                                  RtpHeaderExtensions* negotiated_extensions) {
   bool frame_descriptor_in_local = false;
   bool dependency_descriptor_in_local = false;
   bool abs_capture_time_in_local = false;
@@ -547,7 +543,7 @@ bool SetCodecsInAnswer(const MediaContentDescription* offer,
                        const MediaDescriptionOptions& media_description_options,
                        const MediaSessionOptions& session_options,
                        UniqueRandomIdGenerator* ssrc_generator,
-                       cricket::StreamParamsVec* current_streams,
+                       StreamParamsVec* current_streams,
                        MediaContentDescription* answer,
                        const FieldTrialsView& field_trials) {
   RTC_DCHECK(offer->type() == webrtc::MediaType::AUDIO ||
@@ -573,10 +569,10 @@ bool CreateMediaContentAnswer(
     const MediaContentDescription* offer,
     const MediaDescriptionOptions& media_description_options,
     const MediaSessionOptions& session_options,
-    const cricket::RtpHeaderExtensions& local_rtp_extensions,
+    const RtpHeaderExtensions& local_rtp_extensions,
     UniqueRandomIdGenerator* ssrc_generator,
     bool enable_encrypted_rtp_header_extensions,
-    cricket::StreamParamsVec* current_streams,
+    StreamParamsVec* current_streams,
     bool bundle_enabled,
     MediaContentDescription* answer) {
   answer->set_extmap_allow_mixed_enum(offer->extmap_allow_mixed_enum());
@@ -586,7 +582,7 @@ bool CreateMediaContentAnswer(
           : RtpExtension::Filter::kDiscardEncryptedExtension;
 
   // Filter local extensions by capabilities and direction.
-  cricket::RtpHeaderExtensions local_rtp_extensions_to_reply_with;
+  RtpHeaderExtensions local_rtp_extensions_to_reply_with;
   for (const auto& extension_with_id : local_rtp_extensions) {
     for (const auto& extension : media_description_options.header_extensions) {
       if (extension_with_id.uri == extension.uri &&
@@ -601,7 +597,7 @@ bool CreateMediaContentAnswer(
       }
     }
   }
-  cricket::RtpHeaderExtensions negotiated_rtp_extensions;
+  RtpHeaderExtensions negotiated_rtp_extensions;
   NegotiateRtpHeaderExtensions(local_rtp_extensions_to_reply_with,
                                offer->rtp_header_extensions(),
                                extensions_filter, &negotiated_rtp_extensions);
@@ -689,9 +685,9 @@ MediaSessionDescriptionFactory::MediaSessionDescriptionFactory(
   RTC_CHECK(codec_lookup_helper_);
 }
 
-cricket::RtpHeaderExtensions
+RtpHeaderExtensions
 MediaSessionDescriptionFactory::filtered_rtp_header_extensions(
-    cricket::RtpHeaderExtensions extensions) const {
+    RtpHeaderExtensions extensions) const {
   if (!is_unified_plan_) {
     // Remove extensions only supported with unified-plan.
     extensions.erase(
@@ -725,7 +721,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
         GetActiveContents(*current_description, session_options);
   }
 
-  cricket::StreamParamsVec current_streams =
+  StreamParamsVec current_streams =
       GetCurrentStreamParams(current_active_contents);
 
   AudioVideoRtpHeaderExtensions extensions_with_ids =
@@ -738,7 +734,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
   // Iterate through the media description options, matching with existing media
   // descriptions in `current_description`.
   size_t msection_index = 0;
-  for (const cricket::MediaDescriptionOptions& media_description_options :
+  for (const MediaDescriptionOptions& media_description_options :
        session_options.media_description_options) {
     const ContentInfo* current_content = nullptr;
     if (current_description &&
@@ -782,7 +778,7 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
   // parameters that need to be tweaked for BUNDLE.
   if (session_options.bundle_enabled) {
     ContentGroup offer_bundle(GROUP_TYPE_BUNDLE);
-    for (const cricket::ContentInfo& content : offer->contents()) {
+    for (const ContentInfo& content : offer->contents()) {
       if (content.rejected) {
         continue;
       }
@@ -845,7 +841,7 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
         GetActiveContents(*current_description, session_options);
   }
 
-  cricket::StreamParamsVec current_streams =
+  StreamParamsVec current_streams =
       GetCurrentStreamParams(current_active_contents);
 
   // Decide what congestion control feedback format we're using.
@@ -887,7 +883,7 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
   // Iterate through the media description options, matching with existing
   // media descriptions in `current_description`.
   size_t msection_index = 0;
-  for (const cricket::MediaDescriptionOptions& media_description_options :
+  for (const MediaDescriptionOptions& media_description_options :
        session_options.media_description_options) {
     const ContentInfo* offer_content = &offer->contents()[msection_index];
     // Media types and MIDs must match between the remote offer and the
@@ -921,9 +917,8 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
         }
       }
     }
-    cricket::RtpHeaderExtensions header_extensions =
-        RtpHeaderExtensionsFromCapabilities(
-            UnstoppedRtpHeaderExtensionCapabilities(header_extensions_in));
+    RtpHeaderExtensions header_extensions = RtpHeaderExtensionsFromCapabilities(
+        UnstoppedRtpHeaderExtensionCapabilities(header_extensions_in));
     RTCError error;
     switch (media_description_options.type) {
       case webrtc::MediaType::AUDIO:
@@ -973,7 +968,7 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
   //   with semantics that are understood MUST return an answer that
   //   contains an "a=group" line with the same semantics.
   if (!offer_bundles.empty()) {
-    for (const cricket::ContentGroup& answer_bundle : answer_bundles) {
+    for (const ContentGroup& answer_bundle : answer_bundles) {
       answer->AddGroup(answer_bundle);
 
       if (answer_bundle.FirstContentName()) {
@@ -1049,14 +1044,14 @@ MediaSessionDescriptionFactory::GetOfferedRtpHeaderExtensionsWithIds(
       extmap_allow_mixed ? UsedRtpHeaderExtensionIds::IdDomain::kTwoByteAllowed
                          : UsedRtpHeaderExtensionIds::IdDomain::kOneByteOnly);
 
-  cricket::RtpHeaderExtensions all_encountered_extensions;
+  RtpHeaderExtensions all_encountered_extensions;
 
   AudioVideoRtpHeaderExtensions offered_extensions;
   // First - get all extensions from the current description if the media type
   // is used.
   // Add them to `used_ids` so the local ids are not reused if a new media
   // type is added.
-  for (const cricket::ContentInfo* content : current_active_contents) {
+  for (const ContentInfo* content : current_active_contents) {
     if (IsMediaContentOfType(content, webrtc::MediaType::AUDIO)) {
       MergeRtpHdrExts(content->media_description()->rtp_header_extensions(),
                       enable_encrypted_rtp_header_extensions_,
@@ -1074,7 +1069,7 @@ MediaSessionDescriptionFactory::GetOfferedRtpHeaderExtensionsWithIds(
   // are not in the current description.
 
   for (const auto& entry : media_description_options) {
-    cricket::RtpHeaderExtensions filtered_extensions =
+    RtpHeaderExtensions filtered_extensions =
         filtered_rtp_header_extensions(UnstoppedOrPresentRtpHeaderExtensions(
             entry.header_extensions, all_encountered_extensions));
     if (entry.type == webrtc::MediaType::AUDIO)
@@ -1155,8 +1150,8 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
     const MediaSessionOptions& session_options,
     const ContentInfo* current_content,
     const SessionDescription* current_description,
-    const cricket::RtpHeaderExtensions& header_extensions,
-    cricket::StreamParamsVec* current_streams,
+    const RtpHeaderExtensions& header_extensions,
+    StreamParamsVec* current_streams,
     SessionDescription* session_description,
     IceCredentialsIterator* ice_credentials) const {
   RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
@@ -1212,7 +1207,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForOffer(
     const MediaSessionOptions& session_options,
     const ContentInfo* current_content,
     const SessionDescription* current_description,
-    cricket::StreamParamsVec* current_streams,
+    StreamParamsVec* current_streams,
     SessionDescription* desc,
     IceCredentialsIterator* ice_credentials) const {
   auto data = std::make_unique<SctpDataContentDescription>();
@@ -1229,10 +1224,9 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForOffer(
   data->set_use_sctpmap(session_options.use_obsolete_sctp_sdp);
   data->set_max_message_size(webrtc::kSctpSendBufferSize);
 
-  auto error =
-      CreateContentOffer(media_description_options, session_options,
-                         cricket::RtpHeaderExtensions(), ssrc_generator(),
-                         current_streams, data.get());
+  auto error = CreateContentOffer(media_description_options, session_options,
+                                  RtpHeaderExtensions(), ssrc_generator(),
+                                  current_streams, data.get());
   if (!error.ok()) {
     return error;
   }
@@ -1287,8 +1281,8 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
     const ContentInfo* current_content,
     const SessionDescription* current_description,
     const TransportInfo* bundle_transport,
-    const cricket::RtpHeaderExtensions& header_extensions,
-    cricket::StreamParamsVec* current_streams,
+    const RtpHeaderExtensions& header_extensions,
+    StreamParamsVec* current_streams,
     SessionDescription* answer,
     IceCredentialsIterator* ice_credentials) const {
   RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
@@ -1405,7 +1399,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
     const ContentInfo* current_content,
     const SessionDescription* current_description,
     const TransportInfo* bundle_transport,
-    cricket::StreamParamsVec* current_streams,
+    StreamParamsVec* current_streams,
     SessionDescription* answer,
     IceCredentialsIterator* ice_credentials) const {
   std::unique_ptr<TransportDescription> data_transport = CreateTransportAnswer(
@@ -1443,7 +1437,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
     }
     if (!CreateMediaContentAnswer(
             offer_data_description, media_description_options, session_options,
-            cricket::RtpHeaderExtensions(), ssrc_generator(),
+            RtpHeaderExtensions(), ssrc_generator(),
             enable_encrypted_rtp_header_extensions_, current_streams,
             bundle_enabled, data_answer.get())) {
       LOG_AND_RETURN_ERROR(RTCErrorType::INTERNAL_ERROR,
@@ -1536,9 +1530,9 @@ bool IsUnsupportedContent(const ContentInfo* content) {
   return IsMediaContentOfType(content, webrtc::MediaType::UNSUPPORTED);
 }
 
-const ContentInfo* GetFirstMediaContent(const cricket::ContentInfos& contents,
+const ContentInfo* GetFirstMediaContent(const ContentInfos& contents,
                                         webrtc::MediaType media_type) {
-  for (const cricket::ContentInfo& content : contents) {
+  for (const ContentInfo& content : contents) {
     if (IsMediaContentOfType(&content, media_type)) {
       return &content;
     }
@@ -1546,15 +1540,15 @@ const ContentInfo* GetFirstMediaContent(const cricket::ContentInfos& contents,
   return nullptr;
 }
 
-const ContentInfo* GetFirstAudioContent(const cricket::ContentInfos& contents) {
+const ContentInfo* GetFirstAudioContent(const ContentInfos& contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::AUDIO);
 }
 
-const ContentInfo* GetFirstVideoContent(const cricket::ContentInfos& contents) {
+const ContentInfo* GetFirstVideoContent(const ContentInfos& contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::VIDEO);
 }
 
-const ContentInfo* GetFirstDataContent(const cricket::ContentInfos& contents) {
+const ContentInfo* GetFirstDataContent(const ContentInfos& contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::DATA);
 }
 
@@ -1608,9 +1602,9 @@ const SctpDataContentDescription* GetFirstSctpDataContentDescription(
 // Non-const versions of the above functions.
 //
 
-ContentInfo* GetFirstMediaContent(cricket::ContentInfos* contents,
+ContentInfo* GetFirstMediaContent(ContentInfos* contents,
                                   webrtc::MediaType media_type) {
-  for (cricket::ContentInfo& content : *contents) {
+  for (ContentInfo& content : *contents) {
     if (IsMediaContentOfType(&content, media_type)) {
       return &content;
     }
@@ -1618,15 +1612,15 @@ ContentInfo* GetFirstMediaContent(cricket::ContentInfos* contents,
   return nullptr;
 }
 
-ContentInfo* GetFirstAudioContent(cricket::ContentInfos* contents) {
+ContentInfo* GetFirstAudioContent(ContentInfos* contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::AUDIO);
 }
 
-ContentInfo* GetFirstVideoContent(cricket::ContentInfos* contents) {
+ContentInfo* GetFirstVideoContent(ContentInfos* contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::VIDEO);
 }
 
-ContentInfo* GetFirstDataContent(cricket::ContentInfos* contents) {
+ContentInfo* GetFirstDataContent(ContentInfos* contents) {
   return GetFirstMediaContent(contents, webrtc::MediaType::DATA);
 }
 

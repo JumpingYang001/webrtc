@@ -154,10 +154,10 @@ class MediaContentDescription {
   // provide the ClearRtpHeaderExtensions method to allow "no support" to be
   // clearly indicated (i.e. when derived from other information).
   bool rtp_header_extensions_set() const { return rtp_header_extensions_set_; }
-  const cricket::StreamParamsVec& streams() const { return send_streams_; }
+  const StreamParamsVec& streams() const { return send_streams_; }
   // TODO(pthatcher): Remove this by giving mediamessage.cc access
   // to MediaContentDescription
-  cricket::StreamParamsVec& mutable_streams() { return send_streams_; }
+  StreamParamsVec& mutable_streams() { return send_streams_; }
   void AddStream(const StreamParams& stream) {
     send_streams_.push_back(stream);
   }
@@ -270,7 +270,7 @@ class MediaContentDescription {
 
   std::vector<RtpExtension> rtp_header_extensions_;
   bool rtp_header_extensions_set_ = false;
-  cricket::StreamParamsVec send_streams_;
+  StreamParamsVec send_streams_;
   bool conference_mode_ = false;
   RtpTransceiverDirection direction_ = RtpTransceiverDirection::kSendRecv;
   SocketAddress connection_address_;
@@ -530,10 +530,8 @@ class SessionDescription {
   bool RemoveContentByName(const std::string& name);
 
   // Transport accessors.
-  const cricket::TransportInfos& transport_infos() const {
-    return transport_infos_;
-  }
-  cricket::TransportInfos& transport_infos() { return transport_infos_; }
+  const TransportInfos& transport_infos() const { return transport_infos_; }
+  TransportInfos& transport_infos() { return transport_infos_; }
   const TransportInfo* GetTransportInfoByName(const std::string& name) const;
   TransportInfo* GetTransportInfoByName(const std::string& name);
   const TransportDescription* GetTransportDescriptionByName(
@@ -543,7 +541,7 @@ class SessionDescription {
   }
 
   // Transport mutators.
-  void set_transport_infos(const cricket::TransportInfos& transport_infos) {
+  void set_transport_infos(const TransportInfos& transport_infos) {
     transport_infos_ = transport_infos;
   }
   // Adds a TransportInfo to this description.
@@ -592,7 +590,7 @@ class SessionDescription {
   SessionDescription(const SessionDescription&);
 
   ContentInfos contents_;
-  cricket::TransportInfos transport_infos_;
+  TransportInfos transport_infos_;
   ContentGroups content_groups_;
   int msid_signaling_ = kMsidSignalingMediaSection | kMsidSignalingSemantic;
   bool extmap_allow_mixed_ = true;

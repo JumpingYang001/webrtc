@@ -45,9 +45,7 @@ class FakeInterface : public RefCountInterface {
 // Implementation of the test interface.
 class Fake : public FakeInterface {
  public:
-  static rtc::scoped_refptr<Fake> Create() {
-    return rtc::make_ref_counted<Fake>();
-  }
+  static scoped_refptr<Fake> Create() { return make_ref_counted<Fake>(); }
   // Used to verify destructor is called on the correct thread.
   MOCK_METHOD(void, Destroy, ());
 
@@ -106,8 +104,8 @@ class SignalingProxyTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<Thread> signaling_thread_;
-  rtc::scoped_refptr<FakeInterface> fake_signaling_proxy_;
-  rtc::scoped_refptr<Fake> fake_;
+  scoped_refptr<FakeInterface> fake_signaling_proxy_;
+  scoped_refptr<Fake> fake_;
 };
 
 TEST_F(SignalingProxyTest, SignalingThreadDestructor) {
@@ -196,8 +194,8 @@ class ProxyTest : public ::testing::Test {
  protected:
   std::unique_ptr<Thread> signaling_thread_;
   std::unique_ptr<Thread> worker_thread_;
-  rtc::scoped_refptr<FakeInterface> fake_proxy_;
-  rtc::scoped_refptr<Fake> fake_;
+  scoped_refptr<FakeInterface> fake_proxy_;
+  scoped_refptr<Fake> fake_;
 };
 
 TEST_F(ProxyTest, WorkerThreadDestructor) {

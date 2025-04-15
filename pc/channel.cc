@@ -55,7 +55,7 @@
 namespace webrtc {
 namespace {
 
-using ::rtc::UniqueRandomIdGenerator;
+using ::webrtc::UniqueRandomIdGenerator;
 
 // Finds a stream based on target's Primary SSRC or RIDs.
 // This struct is used in BaseChannel::UpdateLocalStreams_w.
@@ -183,14 +183,14 @@ bool BaseChannel::ConnectToRtpTransport_n() {
   rtp_transport_->SubscribeReadyToSend(
       this, [this](bool ready) { OnTransportReadyToSend(ready); });
   rtp_transport_->SubscribeNetworkRouteChanged(
-      this, [this](std::optional<rtc::NetworkRoute> route) {
+      this, [this](std::optional<NetworkRoute> route) {
         OnNetworkRouteChanged(route);
       });
   rtp_transport_->SubscribeWritableState(
       this, [this](bool state) { OnWritableState(state); });
   rtp_transport_->SubscribeSentPacket(
       this,
-      [this](const rtc::SentPacket& packet) { SignalSentPacket_n(packet); });
+      [this](const SentPacketInfo& packet) { SignalSentPacket_n(packet); });
   return true;
 }
 
@@ -309,12 +309,12 @@ bool BaseChannel::IsReadyToSendMedia_w() const {
 }
 
 bool BaseChannel::SendPacket(CopyOnWriteBuffer* packet,
-                             const rtc::PacketOptions& options) {
+                             const AsyncSocketPacketOptions& options) {
   return SendPacket(false, packet, options);
 }
 
 bool BaseChannel::SendRtcp(CopyOnWriteBuffer* packet,
-                           const rtc::PacketOptions& options) {
+                           const AsyncSocketPacketOptions& options) {
   return SendPacket(true, packet, options);
 }
 
@@ -391,7 +391,7 @@ void BaseChannel::OnTransportReadyToSend(bool ready) {
 
 bool BaseChannel::SendPacket(bool rtcp,
                              CopyOnWriteBuffer* packet,
-                             const rtc::PacketOptions& options) {
+                             const AsyncSocketPacketOptions& options) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK(network_initialized());
   TRACE_EVENT0("webrtc", "BaseChannel::SendPacket");
@@ -436,10 +436,8 @@ bool BaseChannel::SendPacket(bool rtcp,
     on_first_packet_sent_ = nullptr;
   }
 
-  return rtcp ? rtp_transport_->SendRtcpPacket(packet, options,
-                                               cricket::PF_SRTP_BYPASS)
-              : rtp_transport_->SendRtpPacket(packet, options,
-                                              cricket::PF_SRTP_BYPASS);
+  return rtcp ? rtp_transport_->SendRtcpPacket(packet, options, PF_SRTP_BYPASS)
+              : rtp_transport_->SendRtpPacket(packet, options, PF_SRTP_BYPASS);
 }
 
 void BaseChannel::OnRtpPacket(const RtpPacketReceived& parsed_packet) {
@@ -655,7 +653,7 @@ bool BaseChannel::UpdateLocalStreams_w(const std::vector<StreamParams>& streams,
 
   // Check for streams that have been removed.
   bool ret = true;
-  for (const cricket::StreamParams& old_stream : local_streams_) {
+  for (const StreamParams& old_stream : local_streams_) {
     if (!old_stream.has_ssrcs() ||
         GetStream(streams, StreamFinder(&old_stream))) {
       continue;
@@ -670,7 +668,7 @@ bool BaseChannel::UpdateLocalStreams_w(const std::vector<StreamParams>& streams,
   }
   // Check for new streams.
   std::vector<StreamParams> all_streams;
-  for (const cricket::StreamParams& stream : streams) {
+  for (const StreamParams& stream : streams) {
     StreamParams* existing = GetStream(local_streams_, StreamFinder(&stream));
     if (existing) {
       // Parameters cannot change for an existing stream.
@@ -736,7 +734,7 @@ bool BaseChannel::UpdateRemoteStreams_w(const MediaContentDescription* content,
   const bool old_has_unsignaled_ssrcs = HasStreamWithNoSsrcs(remote_streams_);
 
   // Check for streams that have been removed.
-  for (const cricket::StreamParams& old_stream : remote_streams_) {
+  for (const StreamParams& old_stream : remote_streams_) {
     // If we no longer have an unsignaled stream, we would like to remove
     // the unsignaled stream params that are cached.
     if (!old_stream.has_ssrcs() && !new_has_unsignaled_ssrcs) {
@@ -760,7 +758,7 @@ bool BaseChannel::UpdateRemoteStreams_w(const MediaContentDescription* content,
 
   // Check for new streams.
   flat_set<uint32_t> ssrcs;
-  for (const cricket::StreamParams& new_stream : streams) {
+  for (const StreamParams& new_stream : streams) {
     // We allow a StreamParams with an empty list of SSRCs, in which case the
     // MediaChannel will cache the parameters and use them for any unsignaled
     // stream received later.
@@ -836,7 +834,7 @@ bool BaseChannel::ClearHandledPayloadTypes() {
   return !was_empty;
 }
 
-void BaseChannel::SignalSentPacket_n(const rtc::SentPacket& sent_packet) {
+void BaseChannel::SignalSentPacket_n(const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK(network_initialized());
   media_send_channel()->OnPacketSent(sent_packet);

@@ -104,8 +104,8 @@ class PeerConnectionWrapperForRampUpTest : public PeerConnectionWrapper {
   using PeerConnectionWrapper::PeerConnectionWrapper;
 
   PeerConnectionWrapperForRampUpTest(
-      rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory,
-      rtc::scoped_refptr<PeerConnectionInterface> pc,
+      scoped_refptr<PeerConnectionFactoryInterface> pc_factory,
+      scoped_refptr<PeerConnectionInterface> pc,
       std::unique_ptr<MockPeerConnectionObserver> observer)
       : PeerConnectionWrapper::PeerConnectionWrapper(pc_factory,
                                                      pc,
@@ -121,27 +121,26 @@ class PeerConnectionWrapperForRampUpTest : public PeerConnectionWrapper {
     return success;
   }
 
-  rtc::scoped_refptr<VideoTrackInterface> CreateLocalVideoTrack(
+  scoped_refptr<VideoTrackInterface> CreateLocalVideoTrack(
       FrameGeneratorCapturerVideoTrackSource::Config config,
       Clock* clock) {
     video_track_sources_.emplace_back(
-        rtc::make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(
+        make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(
             config, clock, /*is_screencast=*/false));
     video_track_sources_.back()->Start();
-    return rtc::scoped_refptr<VideoTrackInterface>(
-        pc_factory()->CreateVideoTrack(video_track_sources_.back(),
-                                       CreateRandomUuid()));
+    return scoped_refptr<VideoTrackInterface>(pc_factory()->CreateVideoTrack(
+        video_track_sources_.back(), CreateRandomUuid()));
   }
 
-  rtc::scoped_refptr<AudioTrackInterface> CreateLocalAudioTrack(
+  scoped_refptr<AudioTrackInterface> CreateLocalAudioTrack(
       const AudioOptions options) {
-    rtc::scoped_refptr<AudioSourceInterface> source =
+    scoped_refptr<AudioSourceInterface> source =
         pc_factory()->CreateAudioSource(options);
     return pc_factory()->CreateAudioTrack(CreateRandomUuid(), source.get());
   }
 
  private:
-  std::vector<rtc::scoped_refptr<FrameGeneratorCapturerVideoTrackSource>>
+  std::vector<scoped_refptr<FrameGeneratorCapturerVideoTrackSource>>
       video_track_sources_;
 };
 

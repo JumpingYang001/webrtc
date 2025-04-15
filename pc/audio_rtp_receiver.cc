@@ -53,12 +53,12 @@ AudioRtpReceiver::AudioRtpReceiver(
 AudioRtpReceiver::AudioRtpReceiver(
     Thread* worker_thread,
     const std::string& receiver_id,
-    const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams,
+    const std::vector<scoped_refptr<MediaStreamInterface>>& streams,
     bool is_unified_plan,
     VoiceMediaReceiveChannelInterface* voice_channel /*= nullptr*/)
     : worker_thread_(worker_thread),
       id_(receiver_id),
-      source_(rtc::make_ref_counted<RemoteAudioSource>(
+      source_(make_ref_counted<RemoteAudioSource>(
           worker_thread,
           is_unified_plan
               ? RemoteAudioSource::OnAudioChannelGoneAction::kSurvive
@@ -128,8 +128,7 @@ void AudioRtpReceiver::OnSetVolume(double volume) {
   });
 }
 
-rtc::scoped_refptr<DtlsTransportInterface> AudioRtpReceiver::dtls_transport()
-    const {
+scoped_refptr<DtlsTransportInterface> AudioRtpReceiver::dtls_transport() const {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   return dtls_transport_;
 }
@@ -142,8 +141,8 @@ std::vector<std::string> AudioRtpReceiver::stream_ids() const {
   return stream_ids;
 }
 
-std::vector<rtc::scoped_refptr<MediaStreamInterface>>
-AudioRtpReceiver::streams() const {
+std::vector<scoped_refptr<MediaStreamInterface>> AudioRtpReceiver::streams()
+    const {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   return streams_;
 }
@@ -159,7 +158,7 @@ RtpParameters AudioRtpReceiver::GetParameters() const {
 }
 
 void AudioRtpReceiver::SetFrameDecryptor(
-    rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   frame_decryptor_ = std::move(frame_decryptor);
   // Special Case: Set the frame decryptor to any value on any existing channel.
@@ -168,8 +167,8 @@ void AudioRtpReceiver::SetFrameDecryptor(
   }
 }
 
-rtc::scoped_refptr<FrameDecryptorInterface>
-AudioRtpReceiver::GetFrameDecryptor() const {
+scoped_refptr<FrameDecryptorInterface> AudioRtpReceiver::GetFrameDecryptor()
+    const {
   RTC_DCHECK_RUN_ON(worker_thread_);
   return frame_decryptor_;
 }
@@ -244,13 +243,13 @@ void AudioRtpReceiver::set_stream_ids(std::vector<std::string> stream_ids) {
 }
 
 void AudioRtpReceiver::set_transport(
-    rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) {
+    scoped_refptr<DtlsTransportInterface> dtls_transport) {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   dtls_transport_ = std::move(dtls_transport);
 }
 
 void AudioRtpReceiver::SetStreams(
-    const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams) {
+    const std::vector<scoped_refptr<MediaStreamInterface>>& streams) {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   // Remove remote track from any streams that are going away.
   for (const auto& existing_stream : streams_) {
@@ -293,7 +292,7 @@ std::vector<RtpSource> AudioRtpReceiver::GetSources() const {
 }
 
 void AudioRtpReceiver::SetFrameTransformer(
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   if (media_channel_) {
     media_channel_->SetDepacketizerToDecoderFrameTransformer(

@@ -71,8 +71,7 @@ class DtlsTransportTest : public ::testing::Test {
       cricket_transport->SetRemoteSSLCertificate(certificate);
     }
     cricket_transport->SetSslCipherSuite(kNonsenseCipherSuite);
-    transport_ =
-        rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
+    transport_ = make_ref_counted<DtlsTransport>(std::move(cricket_transport));
   }
 
   void CompleteDtlsHandshake() {
@@ -89,7 +88,7 @@ class DtlsTransportTest : public ::testing::Test {
   }
 
   AutoThread main_thread_;
-  rtc::scoped_refptr<DtlsTransport> transport_;
+  scoped_refptr<DtlsTransport> transport_;
   TestDtlsTransportObserver observer_;
 };
 
@@ -97,7 +96,7 @@ TEST_F(DtlsTransportTest, CreateClearDelete) {
   auto cricket_transport =
       std::make_unique<FakeDtlsTransport>("audio", ICE_CANDIDATE_COMPONENT_RTP);
   auto webrtc_transport =
-      rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
+      make_ref_counted<DtlsTransport>(std::move(cricket_transport));
   ASSERT_TRUE(webrtc_transport->internal());
   ASSERT_EQ(DtlsTransportState::kNew, webrtc_transport->Information().state());
   webrtc_transport->Clear();

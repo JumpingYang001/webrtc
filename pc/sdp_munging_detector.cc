@@ -31,8 +31,8 @@ namespace webrtc {
 namespace {
 
 SdpMungingType DetermineTransportModification(
-    const cricket::TransportInfos& last_created_transport_infos,
-    const cricket::TransportInfos& transport_infos_to_set) {
+    const TransportInfos& last_created_transport_infos,
+    const TransportInfos& transport_infos_to_set) {
   if (last_created_transport_infos.size() != transport_infos_to_set.size()) {
     RTC_LOG(LS_WARNING) << "SDP munging: Number of transport-infos does not "
                            "match last created description.";
@@ -288,13 +288,13 @@ SdpMungingType DetermineVideoSdpMungingType(
     bool created_sim =
         absl::c_find_if(
             last_created_media_description->streams()[0].ssrc_groups,
-            [](const cricket::SsrcGroup group) {
+            [](const SsrcGroup group) {
               return group.semantics == kSimSsrcGroupSemantics;
             }) !=
         last_created_media_description->streams()[0].ssrc_groups.end();
     bool set_sim =
         absl::c_find_if(media_description_to_set->streams()[0].ssrc_groups,
-                        [](const cricket::SsrcGroup group) {
+                        [](const SsrcGroup group) {
                           return group.semantics == kSimSsrcGroupSemantics;
                         }) !=
         media_description_to_set->streams()[0].ssrc_groups.end();

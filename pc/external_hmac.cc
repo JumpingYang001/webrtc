@@ -93,7 +93,8 @@ srtp_err_status_t external_hmac_alloc(srtp_auth_t** a,
 }
 
 srtp_err_status_t external_hmac_dealloc(srtp_auth_t* a) {
-  rtc::ExplicitZeroMemory(a, sizeof(ExternalHmacContext) + sizeof(srtp_auth_t));
+  webrtc::ExplicitZeroMemory(a,
+                             sizeof(ExternalHmacContext) + sizeof(srtp_auth_t));
 
   // Free memory
   delete[] a;

@@ -103,9 +103,9 @@
 #include "rtc_base/weak_ptr.h"
 #include "system_wrappers/include/metrics.h"
 
-using cricket::MediaContentDescription;
 using ::webrtc::ContentInfo;
 using ::webrtc::ContentInfos;
+using webrtc::MediaContentDescription;
 using ::webrtc::MediaProtocolType;
 using ::webrtc::RidDescription;
 using ::webrtc::RidDirection;
@@ -164,7 +164,7 @@ std::map<std::string, const ContentGroup*> GetBundleGroupsByMid(
   std::vector<const ContentGroup*> bundle_groups =
       desc->GetGroupsByName(GROUP_TYPE_BUNDLE);
   std::map<std::string, const ContentGroup*> bundle_groups_by_mid;
-  for (const cricket::ContentGroup* bundle_group : bundle_groups) {
+  for (const ContentGroup* bundle_group : bundle_groups) {
     for (const std::string& content_name : bundle_group->content_names()) {
       bundle_groups_by_mid[content_name] = bundle_group;
     }
@@ -217,7 +217,7 @@ std::string GetSetDescriptionErrorMessage(ContentSource source,
   return oss.Release();
 }
 
-std::string GetStreamIdsString(rtc::ArrayView<const std::string> stream_ids) {
+std::string GetStreamIdsString(ArrayView<const std::string> stream_ids) {
   std::string output = "streams=[";
   const char* separator = "";
   for (const auto& stream_id : stream_ids) {
@@ -320,7 +320,7 @@ RTCError VerifyCrypto(
     const SessionDescription* desc,
     bool dtls_enabled,
     const std::map<std::string, const ContentGroup*>& bundle_groups_by_mid) {
-  for (const cricket::ContentInfo& content_info : desc->contents()) {
+  for (const ContentInfo& content_info : desc->contents()) {
     if (content_info.rejected) {
       continue;
     }
@@ -361,7 +361,7 @@ RTCError VerifyCrypto(
 bool VerifyIceUfragPwdPresent(
     const SessionDescription* desc,
     const std::map<std::string, const ContentGroup*>& bundle_groups_by_mid) {
-  for (const cricket::ContentInfo& content_info : desc->contents()) {
+  for (const ContentInfo& content_info : desc->contents()) {
     if (content_info.rejected) {
       continue;
     }
@@ -395,7 +395,7 @@ bool VerifyIceUfragPwdPresent(
 
 RTCError ValidateMids(const SessionDescription& description) {
   std::set<std::string> mids;
-  for (const cricket::ContentInfo& content : description.contents()) {
+  for (const ContentInfo& content : description.contents()) {
     if (content.mid().empty()) {
       LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,
                            "A media section is missing a MID attribute.");
@@ -440,7 +440,7 @@ RTCError ValidateBundledPayloadTypes(const SessionDescription& description) {
   // that can affect the codec configuration and packetization.
   std::vector<const ContentGroup*> bundle_groups =
       description.GetGroupsByName(GROUP_TYPE_BUNDLE);
-  for (const cricket::ContentGroup* bundle_group : bundle_groups) {
+  for (const ContentGroup* bundle_group : bundle_groups) {
     std::map<int, RtpCodecParameters> payload_to_codec_parameters;
     for (const std::string& content_name : bundle_group->content_names()) {
       const ContentInfo* content_description =
@@ -498,7 +498,7 @@ RTCError ValidateBundledRtpHeaderExtensions(
   // extension across all the bundled media descriptions.
   std::vector<const ContentGroup*> bundle_groups =
       description.GetGroupsByName(GROUP_TYPE_BUNDLE);
-  for (const cricket::ContentGroup* bundle_group : bundle_groups) {
+  for (const ContentGroup* bundle_group : bundle_groups) {
     std::map<int, RtpExtension> id_to_extension;
     for (const std::string& content_name : bundle_group->content_names()) {
       const ContentInfo* content_description =
@@ -558,7 +558,7 @@ RTCError ValidateSsrcGroups(const SessionDescription& description) {
       continue;
     }
     for (const StreamParams& stream : content.media_description()->streams()) {
-      for (const cricket::SsrcGroup& group : stream.ssrc_groups) {
+      for (const SsrcGroup& group : stream.ssrc_groups) {
         // Validate the number of SSRCs for standard SSRC group semantics such
         // as FID and FEC-FR and the non-standard SIM group.
         if ((group.semantics == kFidSsrcGroupSemantics &&
@@ -656,7 +656,7 @@ std::vector<RtpEncodingParameters> GetSendEncodingsFromRemoteDescription(
 
 RTCError UpdateSimulcastLayerStatusInSender(
     const std::vector<SimulcastLayer>& layers,
-    rtc::scoped_refptr<RtpSenderInternal> sender) {
+    scoped_refptr<RtpSenderInternal> sender) {
   RTC_DCHECK(sender);
   RtpParameters parameters = sender->GetParametersInternalWithAllLayers();
   std::vector<std::string> disabled_layers;
@@ -700,8 +700,7 @@ bool SimulcastIsRejected(const ContentInfo* local_content,
   return simulcast_offered && (!simulcast_answered || !rids_supported);
 }
 
-RTCError DisableSimulcastInSender(
-    rtc::scoped_refptr<RtpSenderInternal> sender) {
+RTCError DisableSimulcastInSender(scoped_refptr<RtpSenderInternal> sender) {
   RTC_DCHECK(sender);
   RtpParameters parameters = sender->GetParametersInternalWithAllLayers();
   if (parameters.encodings.size() <= 1) {
@@ -738,8 +737,8 @@ absl::string_view GetDefaultMidForPlanB(webrtc::MediaType media_type) {
 
 // Add options to |[audio/video]_media_description_options| from `senders`.
 void AddPlanBRtpSenderOptions(
-    const std::vector<rtc::scoped_refptr<
-        RtpSenderProxyWithInternal<RtpSenderInternal>>>& senders,
+    const std::vector<
+        scoped_refptr<RtpSenderProxyWithInternal<RtpSenderInternal>>>& senders,
     MediaDescriptionOptions* audio_media_description_options,
     MediaDescriptionOptions* video_media_description_options,
     int num_sim_layers) {
@@ -878,7 +877,7 @@ bool CanAddLocalMediaStream(StreamCollectionInterface* current_streams,
   return true;
 }
 
-rtc::scoped_refptr<DtlsTransport> LookupDtlsTransportByMid(
+scoped_refptr<DtlsTransport> LookupDtlsTransportByMid(
     Thread* network_thread,
     JsepTransportController* controller,
     const std::string& mid) {
@@ -942,7 +941,7 @@ class SdpOfferAnswerHandler::RemoteDescriptionOperation {
   RemoteDescriptionOperation(
       SdpOfferAnswerHandler* handler,
       std::unique_ptr<SessionDescriptionInterface> desc,
-      rtc::scoped_refptr<SetRemoteDescriptionObserverInterface> observer,
+      scoped_refptr<SetRemoteDescriptionObserverInterface> observer,
       std::function<void()> operations_chain_callback)
       : handler_(handler),
         desc_(std::move(desc)),
@@ -1168,7 +1167,7 @@ class SdpOfferAnswerHandler::RemoteDescriptionOperation {
   // is taking place since methods that depend on `old_remote_description()`
   // for updating the state, need it.
   std::unique_ptr<SessionDescriptionInterface> replaced_remote_description_;
-  rtc::scoped_refptr<SetRemoteDescriptionObserverInterface> observer_;
+  scoped_refptr<SetRemoteDescriptionObserverInterface> observer_;
   std::function<void()> operations_chain_callback_;
   RTCError error_ = RTCError::OK();
   std::map<std::string, const ContentGroup*> bundle_groups_by_mid_;
@@ -1183,7 +1182,7 @@ class SdpOfferAnswerHandler::ImplicitCreateSessionDescriptionObserver
  public:
   ImplicitCreateSessionDescriptionObserver(
       WeakPtr<SdpOfferAnswerHandler> sdp_handler,
-      rtc::scoped_refptr<SetLocalDescriptionObserverInterface>
+      scoped_refptr<SetLocalDescriptionObserverInterface>
           set_local_description_observer)
       : sdp_handler_(std::move(sdp_handler)),
         set_local_description_observer_(
@@ -1229,7 +1228,7 @@ class SdpOfferAnswerHandler::ImplicitCreateSessionDescriptionObserver
  private:
   bool was_called_ = false;
   WeakPtr<SdpOfferAnswerHandler> sdp_handler_;
-  rtc::scoped_refptr<SetLocalDescriptionObserverInterface>
+  scoped_refptr<SetLocalDescriptionObserverInterface>
       set_local_description_observer_;
   std::function<void()> operation_complete_callback_;
 };
@@ -1241,7 +1240,7 @@ class CreateSessionDescriptionObserverOperationWrapper
     : public CreateSessionDescriptionObserver {
  public:
   CreateSessionDescriptionObserverOperationWrapper(
-      rtc::scoped_refptr<CreateSessionDescriptionObserver> observer,
+      scoped_refptr<CreateSessionDescriptionObserver> observer,
       std::function<void()> operation_complete_callback)
       : observer_(std::move(observer)),
         operation_complete_callback_(std::move(operation_complete_callback)) {
@@ -1277,7 +1276,7 @@ class CreateSessionDescriptionObserverOperationWrapper
 #if RTC_DCHECK_IS_ON
   bool was_called_ = false;
 #endif  // RTC_DCHECK_IS_ON
-  rtc::scoped_refptr<CreateSessionDescriptionObserver> observer_;
+  scoped_refptr<CreateSessionDescriptionObserver> observer_;
   std::function<void()> operation_complete_callback_;
 };
 
@@ -1288,7 +1287,7 @@ class CreateDescriptionObserverWrapperWithCreationCallback
  public:
   CreateDescriptionObserverWrapperWithCreationCallback(
       std::function<void(const SessionDescriptionInterface* desc)> callback,
-      rtc::scoped_refptr<CreateSessionDescriptionObserver> observer)
+      scoped_refptr<CreateSessionDescriptionObserver> observer)
       : callback_(callback), observer_(observer) {
     RTC_DCHECK(observer_);
   }
@@ -1303,7 +1302,7 @@ class CreateDescriptionObserverWrapperWithCreationCallback
 
  private:
   std::function<void(const SessionDescriptionInterface* desc)> callback_;
-  rtc::scoped_refptr<CreateSessionDescriptionObserver> observer_;
+  scoped_refptr<CreateSessionDescriptionObserver> observer_;
 };
 
 // Wrapper for SetSessionDescriptionObserver that invokes the success or failure
@@ -1320,7 +1319,7 @@ class SdpOfferAnswerHandler::SetSessionDescriptionObserverAdapter
  public:
   SetSessionDescriptionObserverAdapter(
       WeakPtr<SdpOfferAnswerHandler> handler,
-      rtc::scoped_refptr<SetSessionDescriptionObserver> inner_observer)
+      scoped_refptr<SetSessionDescriptionObserver> inner_observer)
       : handler_(std::move(handler)),
         inner_observer_(std::move(inner_observer)) {}
 
@@ -1347,7 +1346,7 @@ class SdpOfferAnswerHandler::SetSessionDescriptionObserverAdapter
   }
 
   WeakPtr<SdpOfferAnswerHandler> handler_;
-  rtc::scoped_refptr<SetSessionDescriptionObserver> inner_observer_;
+  scoped_refptr<SetSessionDescriptionObserver> inner_observer_;
 };
 
 class SdpOfferAnswerHandler::LocalIceCredentialsToReplace {
@@ -1458,7 +1457,7 @@ void SdpOfferAnswerHandler::Initialize(
       configuration.audio_jitter_buffer_min_delay_ms;
 
   // Obtain a certificate from RTCConfiguration if any were provided (optional).
-  rtc::scoped_refptr<RTCCertificate> certificate;
+  scoped_refptr<RTCCertificate> certificate;
   if (!configuration.certificates.empty()) {
     // TODO(hbos,torbjorng): Decide on certificate-selection strategy instead of
     // just picking the first one. The decision should be made based on the DTLS
@@ -1470,7 +1469,7 @@ void SdpOfferAnswerHandler::Initialize(
       std::make_unique<WebRtcSessionDescriptionFactory>(
           context, this, pc_->session_id(), pc_->dtls_enabled(),
           std::move(cert_generator), std::move(certificate),
-          [this](const rtc::scoped_refptr<rtc::RTCCertificate>& certificate) {
+          [this](const scoped_refptr<RTCCertificate>& certificate) {
             RTC_DCHECK_RUN_ON(signaling_thread());
             transport_controller_s()->SetLocalCertificate(certificate);
           },
@@ -1583,7 +1582,7 @@ void SdpOfferAnswerHandler::CreateOffer(
   operations_chain_->ChainOperation(
       [this_weak_ptr = weak_ptr_factory_.GetWeakPtr(),
        observer_refptr =
-           rtc::scoped_refptr<CreateSessionDescriptionObserver>(observer),
+           scoped_refptr<CreateSessionDescriptionObserver>(observer),
        options](std::function<void()> operations_chain_callback) {
         // Abort early if `this_weak_ptr` is no longer valid.
         if (!this_weak_ptr) {
@@ -1594,9 +1593,10 @@ void SdpOfferAnswerHandler::CreateOffer(
           return;
         }
         // The operation completes asynchronously when the wrapper is invoked.
-        auto observer_wrapper = rtc::make_ref_counted<
-            CreateSessionDescriptionObserverOperationWrapper>(
-            std::move(observer_refptr), std::move(operations_chain_callback));
+        auto observer_wrapper =
+            make_ref_counted<CreateSessionDescriptionObserverOperationWrapper>(
+                std::move(observer_refptr),
+                std::move(operations_chain_callback));
         this_weak_ptr->DoCreateOffer(options, observer_wrapper);
       });
 }
@@ -1610,8 +1610,7 @@ void SdpOfferAnswerHandler::SetLocalDescription(
   // lambda will execute immediately.
   operations_chain_->ChainOperation(
       [this_weak_ptr = weak_ptr_factory_.GetWeakPtr(),
-       observer_refptr =
-           rtc::scoped_refptr<SetSessionDescriptionObserver>(observer),
+       observer_refptr = scoped_refptr<SetSessionDescriptionObserver>(observer),
        desc = std::unique_ptr<SessionDescriptionInterface>(desc_ptr)](
           std::function<void()> operations_chain_callback) mutable {
         // Abort early if `this_weak_ptr` is no longer valid.
@@ -1626,7 +1625,7 @@ void SdpOfferAnswerHandler::SetLocalDescription(
         // `observer_refptr` is invoked in a posted message.
         this_weak_ptr->DoSetLocalDescription(
             std::move(desc),
-            rtc::make_ref_counted<SetSessionDescriptionObserverAdapter>(
+            make_ref_counted<SetSessionDescriptionObserverAdapter>(
                 this_weak_ptr, observer_refptr));
         // For backwards-compatability reasons, we declare the operation as
         // completed here (rather than in a post), so that the operation chain
@@ -1639,7 +1638,7 @@ void SdpOfferAnswerHandler::SetLocalDescription(
 
 void SdpOfferAnswerHandler::SetLocalDescription(
     std::unique_ptr<SessionDescriptionInterface> desc,
-    rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
+    scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   // Chain this operation. If asynchronous operations are pending on the chain,
   // this operation will be queued to be invoked, otherwise the contents of the
@@ -1667,19 +1666,18 @@ void SdpOfferAnswerHandler::SetLocalDescription(
 void SdpOfferAnswerHandler::SetLocalDescription(
     SetSessionDescriptionObserver* observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  SetLocalDescription(
-      rtc::make_ref_counted<SetSessionDescriptionObserverAdapter>(
-          weak_ptr_factory_.GetWeakPtr(),
-          rtc::scoped_refptr<SetSessionDescriptionObserver>(observer)));
+  SetLocalDescription(make_ref_counted<SetSessionDescriptionObserverAdapter>(
+      weak_ptr_factory_.GetWeakPtr(),
+      scoped_refptr<SetSessionDescriptionObserver>(observer)));
 }
 
 void SdpOfferAnswerHandler::SetLocalDescription(
-    rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
+    scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   // The `create_sdp_observer` handles performing DoSetLocalDescription() with
   // the resulting description as well as completing the operation.
   auto create_sdp_observer =
-      rtc::make_ref_counted<ImplicitCreateSessionDescriptionObserver>(
+      make_ref_counted<ImplicitCreateSessionDescriptionObserver>(
           weak_ptr_factory_.GetWeakPtr(), observer);
   // Chain this operation. If asynchronous operations are pending on the chain,
   // this operation will be queued to be invoked, otherwise the contents of the
@@ -1792,8 +1790,8 @@ RTCError SdpOfferAnswerHandler::ApplyLocalDescription(
       return error;
     }
     if (ConfiguredForMedia()) {
-      std::vector<rtc::scoped_refptr<RtpTransceiverInterface>> remove_list;
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>> removed_streams;
+      std::vector<scoped_refptr<RtpTransceiverInterface>> remove_list;
+      std::vector<scoped_refptr<MediaStreamInterface>> removed_streams;
       for (const auto& transceiver_ext : transceivers()->List()) {
         auto transceiver = transceiver_ext->internal();
         if (transceiver->stopped()) {
@@ -1992,8 +1990,7 @@ void SdpOfferAnswerHandler::SetRemoteDescription(
   // lambda will execute immediately.
   operations_chain_->ChainOperation(
       [this_weak_ptr = weak_ptr_factory_.GetWeakPtr(),
-       observer_refptr =
-           rtc::scoped_refptr<SetSessionDescriptionObserver>(observer),
+       observer_refptr = scoped_refptr<SetSessionDescriptionObserver>(observer),
        desc = std::unique_ptr<SessionDescriptionInterface>(desc_ptr)](
           std::function<void()> operations_chain_callback) mutable {
         // Abort early if `this_weak_ptr` is no longer valid.
@@ -2009,7 +2006,7 @@ void SdpOfferAnswerHandler::SetRemoteDescription(
         this_weak_ptr->DoSetRemoteDescription(
             std::make_unique<RemoteDescriptionOperation>(
                 this_weak_ptr.get(), std::move(desc),
-                rtc::make_ref_counted<SetSessionDescriptionObserverAdapter>(
+                make_ref_counted<SetSessionDescriptionObserverAdapter>(
                     this_weak_ptr, observer_refptr),
                 std::move(operations_chain_callback)));
       });
@@ -2017,7 +2014,7 @@ void SdpOfferAnswerHandler::SetRemoteDescription(
 
 void SdpOfferAnswerHandler::SetRemoteDescription(
     std::unique_ptr<SessionDescriptionInterface> desc,
-    rtc::scoped_refptr<SetRemoteDescriptionObserverInterface> observer) {
+    scoped_refptr<SetRemoteDescriptionObserverInterface> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   // Chain this operation. If asynchronous operations are pending on the chain,
   // this operation will be queued to be invoked, otherwise the contents of the
@@ -2102,7 +2099,7 @@ void SdpOfferAnswerHandler::ApplyRemoteDescription(
     return;
 
   if (operation->old_remote_description()) {
-    for (const cricket::ContentInfo& content :
+    for (const ContentInfo& content :
          operation->old_remote_description()->description()->contents()) {
       // Check if this new SessionDescription contains new ICE ufrag and
       // password that indicates the remote peer requests an ICE restart.
@@ -2188,11 +2185,11 @@ void SdpOfferAnswerHandler::ApplyRemoteDescriptionUpdateTransceiverState(
   if (!ConfiguredForMedia()) {
     return;
   }
-  std::vector<rtc::scoped_refptr<RtpTransceiverInterface>>
+  std::vector<scoped_refptr<RtpTransceiverInterface>>
       now_receiving_transceivers;
-  std::vector<rtc::scoped_refptr<RtpTransceiverInterface>> remove_list;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> added_streams;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> removed_streams;
+  std::vector<scoped_refptr<RtpTransceiverInterface>> remove_list;
+  std::vector<scoped_refptr<MediaStreamInterface>> added_streams;
+  std::vector<scoped_refptr<MediaStreamInterface>> removed_streams;
   for (const auto& transceiver_ext : transceivers()->List()) {
     const auto transceiver = transceiver_ext->internal();
     const ContentInfo* content =
@@ -2319,7 +2316,7 @@ void SdpOfferAnswerHandler::PlanBUpdateSendersAndReceivers(
 
   // We wait to signal new streams until we finish processing the description,
   // since only at that point will new streams have all their tracks.
-  rtc::scoped_refptr<StreamCollection> new_streams(StreamCollection::Create());
+  scoped_refptr<StreamCollection> new_streams(StreamCollection::Create());
 
   // TODO(steveanton): When removing RTP senders/receivers in response to a
   // rejected media section, there is some cleanup logic that expects the
@@ -2364,7 +2361,7 @@ void SdpOfferAnswerHandler::PlanBUpdateSendersAndReceivers(
   for (size_t i = 0; i < new_streams->count(); ++i) {
     MediaStreamInterface* new_stream = new_streams->at(i);
     pc_->legacy_stats()->AddStream(new_stream);
-    observer->OnAddStream(rtc::scoped_refptr<MediaStreamInterface>(new_stream));
+    observer->OnAddStream(scoped_refptr<MediaStreamInterface>(new_stream));
   }
 
   UpdateEndedRemoteMediaStreams();
@@ -2399,7 +2396,7 @@ void SdpOfferAnswerHandler::ReportInitialSdpMunging(bool had_local_description,
 
 void SdpOfferAnswerHandler::DoSetLocalDescription(
     std::unique_ptr<SessionDescriptionInterface> desc,
-    rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
+    scoped_refptr<SetLocalDescriptionObserverInterface> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   TRACE_EVENT0("webrtc", "SdpOfferAnswerHandler::DoSetLocalDescription");
 
@@ -2534,7 +2531,7 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
 
 void SdpOfferAnswerHandler::DoCreateOffer(
     const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-    rtc::scoped_refptr<CreateSessionDescriptionObserver> observer) {
+    scoped_refptr<CreateSessionDescriptionObserver> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   TRACE_EVENT0("webrtc", "SdpOfferAnswerHandler::DoCreateOffer");
 
@@ -2585,17 +2582,17 @@ void SdpOfferAnswerHandler::DoCreateOffer(
 
   MediaSessionOptions session_options;
   GetOptionsForOffer(options, &session_options);
-  auto observer_wrapper = rtc::make_ref_counted<
-      CreateDescriptionObserverWrapperWithCreationCallback>(
-      [this](const SessionDescriptionInterface* desc) {
-        RTC_DCHECK_RUN_ON(signaling_thread());
-        if (desc) {
-          last_created_offer_ = desc->Clone();
-        } else {
-          last_created_offer_.reset(nullptr);
-        }
-      },
-      std::move(observer));
+  auto observer_wrapper =
+      make_ref_counted<CreateDescriptionObserverWrapperWithCreationCallback>(
+          [this](const SessionDescriptionInterface* desc) {
+            RTC_DCHECK_RUN_ON(signaling_thread());
+            if (desc) {
+              last_created_offer_ = desc->Clone();
+            } else {
+              last_created_offer_.reset(nullptr);
+            }
+          },
+          std::move(observer));
   webrtc_session_desc_factory_->CreateOffer(observer_wrapper.get(), options,
                                             session_options);
 }
@@ -2611,7 +2608,7 @@ void SdpOfferAnswerHandler::CreateAnswer(
   operations_chain_->ChainOperation(
       [this_weak_ptr = weak_ptr_factory_.GetWeakPtr(),
        observer_refptr =
-           rtc::scoped_refptr<CreateSessionDescriptionObserver>(observer),
+           scoped_refptr<CreateSessionDescriptionObserver>(observer),
        options](std::function<void()> operations_chain_callback) {
         // Abort early if `this_weak_ptr` is no longer valid.
         if (!this_weak_ptr) {
@@ -2622,16 +2619,17 @@ void SdpOfferAnswerHandler::CreateAnswer(
           return;
         }
         // The operation completes asynchronously when the wrapper is invoked.
-        auto observer_wrapper = rtc::make_ref_counted<
-            CreateSessionDescriptionObserverOperationWrapper>(
-            std::move(observer_refptr), std::move(operations_chain_callback));
+        auto observer_wrapper =
+            make_ref_counted<CreateSessionDescriptionObserverOperationWrapper>(
+                std::move(observer_refptr),
+                std::move(operations_chain_callback));
         this_weak_ptr->DoCreateAnswer(options, observer_wrapper);
       });
 }
 
 void SdpOfferAnswerHandler::DoCreateAnswer(
     const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-    rtc::scoped_refptr<CreateSessionDescriptionObserver> observer) {
+    scoped_refptr<CreateSessionDescriptionObserver> observer) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   TRACE_EVENT0("webrtc", "SdpOfferAnswerHandler::DoCreateAnswer");
   if (!observer) {
@@ -2682,17 +2680,17 @@ void SdpOfferAnswerHandler::DoCreateAnswer(
 
   MediaSessionOptions session_options;
   GetOptionsForAnswer(options, &session_options);
-  auto observer_wrapper = rtc::make_ref_counted<
-      CreateDescriptionObserverWrapperWithCreationCallback>(
-      [this](const SessionDescriptionInterface* desc) {
-        RTC_DCHECK_RUN_ON(signaling_thread());
-        if (desc) {
-          last_created_answer_ = desc->Clone();
-        } else {
-          last_created_answer_.reset(nullptr);
-        }
-      },
-      std::move(observer));
+  auto observer_wrapper =
+      make_ref_counted<CreateDescriptionObserverWrapperWithCreationCallback>(
+          [this](const SessionDescriptionInterface* desc) {
+            RTC_DCHECK_RUN_ON(signaling_thread());
+            if (desc) {
+              last_created_answer_ = desc->Clone();
+            } else {
+              last_created_answer_.reset(nullptr);
+            }
+          },
+          std::move(observer));
   webrtc_session_desc_factory_->CreateAnswer(observer_wrapper.get(),
                                              session_options);
 }
@@ -2752,14 +2750,14 @@ void SdpOfferAnswerHandler::SetRemoteDescriptionPostProcess(bool was_answer) {
 }
 
 void SdpOfferAnswerHandler::SetAssociatedRemoteStreams(
-    rtc::scoped_refptr<RtpReceiverInternal> receiver,
+    scoped_refptr<RtpReceiverInternal> receiver,
     const std::vector<std::string>& stream_ids,
-    std::vector<rtc::scoped_refptr<MediaStreamInterface>>* added_streams,
-    std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams) {
+    std::vector<scoped_refptr<MediaStreamInterface>>* added_streams,
+    std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> media_streams;
+  std::vector<scoped_refptr<MediaStreamInterface>> media_streams;
   for (const std::string& stream_id : stream_ids) {
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         remote_streams_->find(stream_id));
     if (!stream) {
       stream = MediaStreamProxy::Create(Thread::Current(),
@@ -2780,7 +2778,7 @@ void SdpOfferAnswerHandler::SetAssociatedRemoteStreams(
     }
     media_streams.push_back(missing_msid_default_stream_);
   }
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> previous_streams =
+  std::vector<scoped_refptr<MediaStreamInterface>> previous_streams =
       receiver->streams();
   // SetStreams() will add/remove the receiver's track to/from the streams.
   // This differs from the spec - the spec uses an "addList" and "removeList"
@@ -3094,7 +3092,7 @@ bool SdpOfferAnswerHandler::ShouldFireNegotiationNeededEvent(
   return true;
 }
 
-rtc::scoped_refptr<StreamCollectionInterface>
+scoped_refptr<StreamCollectionInterface>
 SdpOfferAnswerHandler::local_streams() {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_CHECK(!IsUnifiedPlan()) << "local_streams is not available with Unified "
@@ -3103,7 +3101,7 @@ SdpOfferAnswerHandler::local_streams() {
   return local_streams_;
 }
 
-rtc::scoped_refptr<StreamCollectionInterface>
+scoped_refptr<StreamCollectionInterface>
 SdpOfferAnswerHandler::remote_streams() {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_CHECK(!IsUnifiedPlan()) << "remote_streams is not available with Unified "
@@ -3123,8 +3121,7 @@ bool SdpOfferAnswerHandler::AddStream(MediaStreamInterface* local_stream) {
     return false;
   }
 
-  local_streams_->AddStream(
-      rtc::scoped_refptr<MediaStreamInterface>(local_stream));
+  local_streams_->AddStream(scoped_refptr<MediaStreamInterface>(local_stream));
   auto observer = std::make_unique<MediaStreamObserver>(
       local_stream,
       [this](AudioTrackInterface* audio_track,
@@ -3239,11 +3236,11 @@ RTCError SdpOfferAnswerHandler::Rollback(SdpType desc_type) {
   }
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(IsUnifiedPlan());
-  std::vector<rtc::scoped_refptr<RtpTransceiverInterface>>
+  std::vector<scoped_refptr<RtpTransceiverInterface>>
       now_receiving_transceivers;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> all_added_streams;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> all_removed_streams;
-  std::vector<rtc::scoped_refptr<RtpReceiverInterface>> removed_receivers;
+  std::vector<scoped_refptr<MediaStreamInterface>> all_added_streams;
+  std::vector<scoped_refptr<MediaStreamInterface>> all_removed_streams;
+  std::vector<scoped_refptr<RtpReceiverInterface>> removed_receivers;
 
   for (auto&& transceivers_stable_state_pair : transceivers()->StableStates()) {
     auto transceiver = transceivers_stable_state_pair.first;
@@ -3268,8 +3265,8 @@ RTCError SdpOfferAnswerHandler::Rollback(SdpType desc_type) {
     }
 
     if (stable_state.remote_stream_ids()) {
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>> added_streams;
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>> removed_streams;
+      std::vector<scoped_refptr<MediaStreamInterface>> added_streams;
+      std::vector<scoped_refptr<MediaStreamInterface>> removed_streams;
       SetAssociatedRemoteStreams(transceiver->internal()->receiver_internal(),
                                  stable_state.remote_stream_ids().value(),
                                  &added_streams, &removed_streams);
@@ -3943,7 +3940,7 @@ RTCError SdpOfferAnswerHandler::UpdateTransceiversAndDataChannels(
   return RTCError::OK();
 }
 
-RTCErrorOr<rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+RTCErrorOr<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
 SdpOfferAnswerHandler::AssociateTransceiver(
     ContentSource source,
     SdpType type,
@@ -4079,8 +4076,7 @@ SdpOfferAnswerHandler::AssociateTransceiver(
 }
 
 RTCError SdpOfferAnswerHandler::UpdateTransceiverChannel(
-    rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
-        transceiver,
+    scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>> transceiver,
     const ContentInfo& content,
     const ContentGroup* bundle_group) {
   TRACE_EVENT0("webrtc", "SdpOfferAnswerHandler::UpdateTransceiverChannel");
@@ -4157,11 +4153,11 @@ void SdpOfferAnswerHandler::FillInMissingRemoteMids(
     SessionDescription* new_remote_description) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(new_remote_description);
-  const cricket::ContentInfos no_infos;
-  const cricket::ContentInfos& local_contents =
+  const ContentInfos no_infos;
+  const ContentInfos& local_contents =
       (local_description() ? local_description()->description()->contents()
                            : no_infos);
-  const cricket::ContentInfos& remote_contents =
+  const ContentInfos& remote_contents =
       (remote_description() ? remote_description()->description()->contents()
                             : no_infos);
   for (size_t i = 0; i < new_remote_description->contents().size(); ++i) {
@@ -4196,7 +4192,7 @@ void SdpOfferAnswerHandler::FillInMissingRemoteMids(
   }
 }
 
-rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
 SdpOfferAnswerHandler::FindAvailableTransceiverToReceive(
     webrtc::MediaType media_type) const {
   RTC_DCHECK_RUN_ON(signaling_thread());
@@ -4746,11 +4742,10 @@ void SdpOfferAnswerHandler::AddUpToOneReceivingTransceiverOfType(
   }
 }
 
-std::vector<rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+std::vector<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
 SdpOfferAnswerHandler::GetReceivingTransceiversOfType(
     webrtc::MediaType media_type) {
-  std::vector<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+  std::vector<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
       receiving_transceivers;
   for (const auto& transceiver : transceivers()->List()) {
     if (!transceiver->stopped() && transceiver->media_type() == media_type &&
@@ -4762,14 +4757,13 @@ SdpOfferAnswerHandler::GetReceivingTransceiversOfType(
 }
 
 void SdpOfferAnswerHandler::ProcessRemovalOfRemoteTrack(
-    rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
-        transceiver,
-    std::vector<rtc::scoped_refptr<RtpTransceiverInterface>>* remove_list,
-    std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams) {
+    scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>> transceiver,
+    std::vector<scoped_refptr<RtpTransceiverInterface>>* remove_list,
+    std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams) {
   RTC_DCHECK(transceiver->mid());
   RTC_LOG(LS_INFO) << "Processing the removal of a track for MID="
                    << *transceiver->mid();
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> previous_streams =
+  std::vector<scoped_refptr<MediaStreamInterface>> previous_streams =
       transceiver->internal()->receiver_internal()->streams();
   // This will remove the remote track from the streams.
   transceiver->internal()->receiver_internal()->set_stream_ids({});
@@ -4778,8 +4772,8 @@ void SdpOfferAnswerHandler::ProcessRemovalOfRemoteTrack(
 }
 
 void SdpOfferAnswerHandler::RemoveRemoteStreamsIfEmpty(
-    const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& remote_streams,
-    std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams) {
+    const std::vector<scoped_refptr<MediaStreamInterface>>& remote_streams,
+    std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   // TODO(https://crbug.com/webrtc/9480): When we use stream IDs instead of
   // streams, see if the stream was removed by checking if this was the last
@@ -4825,7 +4819,7 @@ void SdpOfferAnswerHandler::UpdateLocalSenders(
   }
 
   // Find new and active senders.
-  for (const cricket::StreamParams& params : streams) {
+  for (const StreamParams& params : streams) {
     // The sync_label is the MediaStream label and the `stream.id` is the
     // sender id.
     const std::string& stream_id = params.first_stream_id();
@@ -4841,7 +4835,7 @@ void SdpOfferAnswerHandler::UpdateLocalSenders(
 }
 
 void SdpOfferAnswerHandler::UpdateRemoteSendersList(
-    const cricket::StreamParamsVec& streams,
+    const StreamParamsVec& streams,
     bool default_sender_needed,
     webrtc::MediaType media_type,
     StreamCollection* new_streams) {
@@ -4879,7 +4873,7 @@ void SdpOfferAnswerHandler::UpdateRemoteSendersList(
   }
 
   // Find new and active senders.
-  for (const cricket::StreamParams& params : streams) {
+  for (const StreamParams& params : streams) {
     if (!params.has_ssrcs()) {
       // The remote endpoint has streams, but didn't signal ssrcs. For an active
       // sender, this means it is coming from a Unified Plan endpoint,so we just
@@ -4899,7 +4893,7 @@ void SdpOfferAnswerHandler::UpdateRemoteSendersList(
     const std::string& sender_id = params.id;
     uint32_t ssrc = params.first_ssrc();
 
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         remote_streams_->find(stream_id));
     if (!stream) {
       // This is a new MediaStream. Create a new remote MediaStream.
@@ -4920,7 +4914,7 @@ void SdpOfferAnswerHandler::UpdateRemoteSendersList(
 
   // Add default sender if necessary.
   if (default_sender_needed) {
-    rtc::scoped_refptr<MediaStreamInterface> default_stream(
+    scoped_refptr<MediaStreamInterface> default_stream(
         remote_streams_->find(kDefaultStreamId));
     if (!default_stream) {
       // Create the new default MediaStream.
@@ -5168,12 +5162,11 @@ void SdpOfferAnswerHandler::RemoveUnusedChannels(
 
 void SdpOfferAnswerHandler::UpdateEndedRemoteMediaStreams() {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams_to_remove;
+  std::vector<scoped_refptr<MediaStreamInterface>> streams_to_remove;
   for (size_t i = 0; i < remote_streams_->count(); ++i) {
     MediaStreamInterface* stream = remote_streams_->at(i);
     if (stream->GetAudioTracks().empty() && stream->GetVideoTracks().empty()) {
-      streams_to_remove.push_back(
-          rtc::scoped_refptr<MediaStreamInterface>(stream));
+      streams_to_remove.push_back(scoped_refptr<MediaStreamInterface>(stream));
     }
   }
 
@@ -5273,8 +5266,8 @@ RTCErrorOr<const ContentInfo*> SdpOfferAnswerHandler::FindContentInfo(
     const IceCandidateInterface* candidate) {
   if (!candidate->sdp_mid().empty()) {
     auto& contents = description->description()->contents();
-    auto it = absl::c_find_if(
-        contents, [candidate](const cricket::ContentInfo& content_info) {
+    auto it =
+        absl::c_find_if(contents, [candidate](const ContentInfo& content_info) {
           return content_info.mid() == candidate->sdp_mid();
         });
     if (it == contents.end()) {
@@ -5388,8 +5381,7 @@ void SdpOfferAnswerHandler::GenerateMediaDescriptionOptions(
     std::optional<size_t>* data_index,
     MediaSessionOptions* session_options) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  for (const cricket::ContentInfo& content :
-       session_desc->description()->contents()) {
+  for (const ContentInfo& content : session_desc->description()->contents()) {
     if (IsAudioContent(&content)) {
       // If we already have an audio m= section, reject this extra one.
       if (*audio_index) {

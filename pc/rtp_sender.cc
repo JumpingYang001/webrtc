@@ -184,7 +184,7 @@ RtpSenderBase::RtpSenderBase(const Environment& env,
 }
 
 void RtpSenderBase::SetFrameEncryptor(
-    rtc::scoped_refptr<FrameEncryptorInterface> frame_encryptor) {
+    scoped_refptr<FrameEncryptorInterface> frame_encryptor) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   frame_encryptor_ = std::move(frame_encryptor);
   // Special Case: Set the frame encryptor to any value on any existing channel.
@@ -482,7 +482,7 @@ bool RtpSenderBase::SetTrack(MediaStreamTrackInterface* track) {
   // Attach to new track.
   bool prev_can_send_track = can_send_track();
   // Keep a reference to the old track to keep it alive until we call SetSend.
-  rtc::scoped_refptr<MediaStreamTrackInterface> old_track = track_;
+  scoped_refptr<MediaStreamTrackInterface> old_track = track_;
   track_ = track;
   if (track_) {
     track_->RegisterObserver(this);
@@ -629,7 +629,7 @@ RTCError RtpSenderBase::DisableEncodingLayers(
 }
 
 void RtpSenderBase::SetFrameTransformer(
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   frame_transformer_ = std::move(frame_transformer);
   if (media_channel_ && ssrc_ && !stopped_) {
@@ -671,14 +671,14 @@ void LocalAudioSinkAdapter::SetSink(AudioSource::Sink* sink) {
   sink_ = sink;
 }
 
-rtc::scoped_refptr<AudioRtpSender> AudioRtpSender::Create(
+scoped_refptr<AudioRtpSender> AudioRtpSender::Create(
     const webrtc::Environment& env,
     Thread* worker_thread,
     const std::string& id,
     LegacyStatsCollectorInterface* stats,
     SetStreamsObserver* set_streams_observer) {
-  return rtc::make_ref_counted<AudioRtpSender>(env, worker_thread, id, stats,
-                                               set_streams_observer);
+  return make_ref_counted<AudioRtpSender>(env, worker_thread, id, stats,
+                                          set_streams_observer);
 }
 
 AudioRtpSender::AudioRtpSender(const webrtc::Environment& env,
@@ -765,7 +765,7 @@ void AudioRtpSender::RemoveTrackFromStats() {
   }
 }
 
-rtc::scoped_refptr<DtmfSenderInterface> AudioRtpSender::GetDtmfSender() const {
+scoped_refptr<DtmfSenderInterface> AudioRtpSender::GetDtmfSender() const {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   return dtmf_sender_proxy_;
 }
@@ -826,13 +826,13 @@ void AudioRtpSender::ClearSend() {
   }
 }
 
-rtc::scoped_refptr<VideoRtpSender> VideoRtpSender::Create(
+scoped_refptr<VideoRtpSender> VideoRtpSender::Create(
     const Environment& env,
     Thread* worker_thread,
     const std::string& id,
     SetStreamsObserver* set_streams_observer) {
-  return rtc::make_ref_counted<VideoRtpSender>(env, worker_thread, id,
-                                               set_streams_observer);
+  return make_ref_counted<VideoRtpSender>(env, worker_thread, id,
+                                          set_streams_observer);
 }
 
 VideoRtpSender::VideoRtpSender(const Environment& env,
@@ -864,7 +864,7 @@ void VideoRtpSender::AttachTrack() {
   cached_track_content_hint_ = video_track()->content_hint();
 }
 
-rtc::scoped_refptr<DtmfSenderInterface> VideoRtpSender::GetDtmfSender() const {
+scoped_refptr<DtmfSenderInterface> VideoRtpSender::GetDtmfSender() const {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   RTC_DLOG(LS_ERROR) << "Tried to get DTMF sender from video sender.";
   return nullptr;

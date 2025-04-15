@@ -165,7 +165,7 @@ std::tuple<bool, absl::string_view, int> ParseHostnameAndPortFromString(
 // by parsing `url` and using the username/password in `server`.
 RTCError ParseIceServerUrl(const PeerConnectionInterface::IceServer& server,
                            absl::string_view url,
-                           cricket::ServerAddresses* stun_servers,
+                           ServerAddresses* stun_servers,
                            std::vector<RelayServerConfig>* turn_servers) {
   // RFC 7064
   // stunURI       = scheme ":" host [ ":" port ]
@@ -323,7 +323,7 @@ RTCError ParseIceServerUrl(const PeerConnectionInterface::IceServer& server,
 
 RTCError ParseIceServersOrError(
     const PeerConnectionInterface::IceServers& servers,
-    cricket::ServerAddresses* stun_servers,
+    ServerAddresses* stun_servers,
     std::vector<RelayServerConfig>* turn_servers) {
   for (const PeerConnectionInterface::IceServer& server : servers) {
     if (!server.urls.empty()) {
@@ -356,7 +356,7 @@ RTCError ParseIceServersOrError(
 
 RTCError ParseAndValidateIceServersFromConfiguration(
     const PeerConnectionInterface::RTCConfiguration& configuration,
-    cricket::ServerAddresses& stun_servers,
+    ServerAddresses& stun_servers,
     std::vector<RelayServerConfig>& turn_servers) {
   RTC_DCHECK(stun_servers.empty());
   RTC_DCHECK(turn_servers.empty());
@@ -376,7 +376,7 @@ RTCError ParseAndValidateIceServersFromConfiguration(
   }
 
   // Add the turn logging id to all turn servers
-  for (cricket::RelayServerConfig& turn_server : turn_servers) {
+  for (RelayServerConfig& turn_server : turn_servers) {
     turn_server.turn_logging_id = configuration.turn_logging_id;
   }
 

@@ -564,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(
       webrtc::MediaType media_type;
       SdpSemantics semantics;
       std::tie(media_type, semantics) = info.param;
-      return (rtc::StringBuilder("With")
+      return (StringBuilder("With")
               << (semantics == SdpSemantics::kPlanB_DEPRECATED ? "PlanB"
                                                                : "UnifiedPlan")
               << "And"

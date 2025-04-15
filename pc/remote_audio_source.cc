@@ -53,7 +53,7 @@ class RemoteAudioSource::AudioDataProxy : public AudioSinkInterface {
   }
 
  private:
-  const rtc::scoped_refptr<RemoteAudioSource> source_;
+  const scoped_refptr<RemoteAudioSource> source_;
 };
 
 RemoteAudioSource::RemoteAudioSource(
@@ -176,7 +176,7 @@ void RemoteAudioSource::OnAudioChannelGone() {
   // processed (because the task queue was destroyed shortly after this call),
   // but that is fine because the task queue destructor will take care of
   // destroying task which will release the reference on RemoteAudioSource.
-  rtc::scoped_refptr<RemoteAudioSource> thiz(this);
+  scoped_refptr<RemoteAudioSource> thiz(this);
   main_thread_->PostTask([thiz = std::move(thiz)] {
     thiz->sinks_.clear();
     thiz->SetState(MediaSourceInterface::kEnded);

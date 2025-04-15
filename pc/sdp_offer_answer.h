@@ -131,16 +131,16 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
 
   void SetLocalDescription(
       std::unique_ptr<SessionDescriptionInterface> desc,
-      rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer);
+      scoped_refptr<SetLocalDescriptionObserverInterface> observer);
   void SetLocalDescription(
-      rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer);
+      scoped_refptr<SetLocalDescriptionObserverInterface> observer);
   void SetLocalDescription(SetSessionDescriptionObserver* observer,
                            SessionDescriptionInterface* desc);
   void SetLocalDescription(SetSessionDescriptionObserver* observer);
 
   void SetRemoteDescription(
       std::unique_ptr<SessionDescriptionInterface> desc,
-      rtc::scoped_refptr<SetRemoteDescriptionObserverInterface> observer);
+      scoped_refptr<SetRemoteDescriptionObserverInterface> observer);
   void SetRemoteDescription(SetSessionDescriptionObserver* observer,
                             SessionDescriptionInterface* desc);
 
@@ -172,8 +172,8 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // Destroys all media BaseChannels.
   void DestroyMediaChannels();
 
-  rtc::scoped_refptr<StreamCollectionInterface> local_streams();
-  rtc::scoped_refptr<StreamCollectionInterface> remote_streams();
+  scoped_refptr<StreamCollectionInterface> local_streams();
+  scoped_refptr<StreamCollectionInterface> remote_streams();
 
   bool initial_offerer() {
     RTC_DCHECK_RUN_ON(signaling_thread());
@@ -268,13 +268,13 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // SetLocalDescription() and SetRemoteDescription() methods are invoked.
   void DoCreateOffer(
       const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-      rtc::scoped_refptr<CreateSessionDescriptionObserver> observer);
+      scoped_refptr<CreateSessionDescriptionObserver> observer);
   void DoCreateAnswer(
       const PeerConnectionInterface::RTCOfferAnswerOptions& options,
-      rtc::scoped_refptr<CreateSessionDescriptionObserver> observer);
+      scoped_refptr<CreateSessionDescriptionObserver> observer);
   void DoSetLocalDescription(
       std::unique_ptr<SessionDescriptionInterface> desc,
-      rtc::scoped_refptr<SetLocalDescriptionObserverInterface> observer);
+      scoped_refptr<SetLocalDescriptionObserverInterface> observer);
   void DoSetRemoteDescription(
       std::unique_ptr<RemoteDescriptionOperation> operation);
 
@@ -315,10 +315,10 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // Runs the algorithm **set the associated remote streams** specified in
   // https://w3c.github.io/webrtc-pc/#set-associated-remote-streams.
   void SetAssociatedRemoteStreams(
-      rtc::scoped_refptr<RtpReceiverInternal> receiver,
+      scoped_refptr<RtpReceiverInternal> receiver,
       const std::vector<std::string>& stream_ids,
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>>* added_streams,
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams);
+      std::vector<scoped_refptr<MediaStreamInterface>>* added_streams,
+      std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams);
 
   bool CheckIfNegotiationIsNeeded();
   void GenerateNegotiationNeededEvent();
@@ -339,8 +339,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
       const std::map<std::string, const ContentGroup*>& bundle_groups_by_mid);
 
   // Associate the given transceiver according to the JSEP rules.
-  RTCErrorOr<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+  RTCErrorOr<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
   AssociateTransceiver(ContentSource source,
                        SdpType type,
                        size_t mline_index,
@@ -360,7 +359,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // Either creates or destroys the transceiver's BaseChannel according to the
   // given media section.
   RTCError UpdateTransceiverChannel(
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+      scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
           transceiver,
       const ContentInfo& content,
       const ContentGroup* bundle_group) RTC_RUN_ON(signaling_thread());
@@ -386,7 +385,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
 
   // Returns an RtpTransceiver, if available, that can be used to receive the
   // given media type according to JSEP rules.
-  rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+  scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
   FindAvailableTransceiverToReceive(webrtc::MediaType media_type) const;
 
   // Returns a MediaSessionOptions struct with options decided by `options`,
@@ -432,8 +431,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
       webrtc::MediaType media_type) RTC_RUN_ON(signaling_thread());
   void AddUpToOneReceivingTransceiverOfType(webrtc::MediaType media_type);
 
-  std::vector<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+  std::vector<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
   GetReceivingTransceiversOfType(webrtc::MediaType media_type)
       RTC_RUN_ON(signaling_thread());
 
@@ -445,15 +443,14 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // `removed_streams` is the list of streams which no longer have a receiving
   //     track so should be removed.
   void ProcessRemovalOfRemoteTrack(
-      const rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+      const scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
           transceiver,
-      std::vector<rtc::scoped_refptr<RtpTransceiverInterface>>* remove_list,
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams);
+      std::vector<scoped_refptr<RtpTransceiverInterface>>* remove_list,
+      std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams);
 
   void RemoveRemoteStreamsIfEmpty(
-      const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&
-          remote_streams,
-      std::vector<rtc::scoped_refptr<MediaStreamInterface>>* removed_streams);
+      const std::vector<scoped_refptr<MediaStreamInterface>>& remote_streams,
+      std::vector<scoped_refptr<MediaStreamInterface>>* removed_streams);
 
   // Remove all local and remote senders of type `media_type`.
   // Called when a media type is rejected (m-line set to port 0).
@@ -616,10 +613,10 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   std::optional<bool> is_caller_ RTC_GUARDED_BY(signaling_thread());
 
   // Streams added via AddStream.
-  const rtc::scoped_refptr<StreamCollection> local_streams_
+  const scoped_refptr<StreamCollection> local_streams_
       RTC_GUARDED_BY(signaling_thread());
   // Streams created as a result of SetRemoteDescription.
-  const rtc::scoped_refptr<StreamCollection> remote_streams_
+  const scoped_refptr<StreamCollection> remote_streams_
       RTC_GUARDED_BY(signaling_thread());
 
   std::vector<std::unique_ptr<MediaStreamObserver>> stream_observers_
@@ -630,7 +627,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // SetRemoteDescription() is invoked while CreateOffer() is still pending, the
   // SRD operation will not start until CreateOffer() has completed. See
   // https://w3c.github.io/webrtc-pc/#dfn-operations-chain.
-  rtc::scoped_refptr<OperationsChain> operations_chain_
+  scoped_refptr<OperationsChain> operations_chain_
       RTC_GUARDED_BY(signaling_thread());
 
   // One PeerConnection has only one RTCP CNAME.
@@ -665,7 +662,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // line we create and use a stream with a random ID for our receivers. This is
   // to support legacy endpoints that do not support the a=msid attribute (as
   // opposed to streamless tracks with "a=msid:-").
-  rtc::scoped_refptr<MediaStreamInterface> missing_msid_default_stream_
+  scoped_refptr<MediaStreamInterface> missing_msid_default_stream_
       RTC_GUARDED_BY(signaling_thread());
 
   SessionError session_error_ RTC_GUARDED_BY(signaling_thread()) =

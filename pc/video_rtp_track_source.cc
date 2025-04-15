@@ -43,7 +43,7 @@ VideoSinkInterface<VideoFrame>* VideoRtpTrackSource::sink() {
 void VideoRtpTrackSource::BroadcastRecordableEncodedFrame(
     const RecordableEncodedFrame& frame) const {
   MutexLock lock(&mu_);
-  for (rtc::VideoSinkInterface<RecordableEncodedFrame>* sink : encoded_sinks_) {
+  for (VideoSinkInterface<RecordableEncodedFrame>* sink : encoded_sinks_) {
     sink->OnFrame(frame);
   }
 }

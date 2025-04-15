@@ -42,7 +42,7 @@ class PeerConnectionSVCIntegrationTest
       : PeerConnectionIntegrationBaseTest(SdpSemantics::kUnifiedPlan) {}
 
   RTCError SetCodecPreferences(
-      rtc::scoped_refptr<RtpTransceiverInterface> transceiver,
+      scoped_refptr<RtpTransceiverInterface> transceiver,
       absl::string_view codec_name) {
     RtpCapabilities capabilities =
         caller()->pc_factory()->GetRtpReceiverCapabilities(

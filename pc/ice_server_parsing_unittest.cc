@@ -69,7 +69,7 @@ class IceServerParsingTest : public ::testing::Test {
   }
 
  protected:
-  cricket::ServerAddresses stun_servers_;
+  ServerAddresses stun_servers_;
   std::vector<RelayServerConfig> turn_servers_;
 };
 
@@ -86,12 +86,12 @@ TEST_F(IceServerParsingTest, ParseStunPrefixes) {
   EXPECT_TRUE(ParseTurnUrl("turn:hostname"));
   EXPECT_EQ(0U, stun_servers_.size());
   EXPECT_EQ(1U, turn_servers_.size());
-  EXPECT_EQ(cricket::PROTO_UDP, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_UDP, turn_servers_[0].ports[0].proto);
 
   EXPECT_TRUE(ParseTurnUrl("turns:hostname"));
   EXPECT_EQ(0U, stun_servers_.size());
   EXPECT_EQ(1U, turn_servers_.size());
-  EXPECT_EQ(cricket::PROTO_TLS, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_TLS, turn_servers_[0].ports[0].proto);
   EXPECT_TRUE(turn_servers_[0].tls_cert_policy ==
               TlsCertPolicy::TLS_CERT_POLICY_SECURE);
 
@@ -102,7 +102,7 @@ TEST_F(IceServerParsingTest, ParseStunPrefixes) {
   EXPECT_EQ(1U, turn_servers_.size());
   EXPECT_TRUE(turn_servers_[0].tls_cert_policy ==
               TlsCertPolicy::TLS_CERT_POLICY_INSECURE_NO_CHECK);
-  EXPECT_EQ(cricket::PROTO_TLS, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_TLS, turn_servers_[0].ports[0].proto);
 
   // invalid prefixes
   EXPECT_FALSE(ParseUrl("stunn:hostname"));
@@ -116,13 +116,13 @@ TEST_F(IceServerParsingTest, VerifyDefaults) {
   EXPECT_TRUE(ParseTurnUrl("turns:hostname"));
   EXPECT_EQ(1U, turn_servers_.size());
   EXPECT_EQ(5349, turn_servers_[0].ports[0].address.port());
-  EXPECT_EQ(cricket::PROTO_TLS, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_TLS, turn_servers_[0].ports[0].proto);
 
   // TURN defaults
   EXPECT_TRUE(ParseTurnUrl("turn:hostname"));
   EXPECT_EQ(1U, turn_servers_.size());
   EXPECT_EQ(3478, turn_servers_[0].ports[0].address.port());
-  EXPECT_EQ(cricket::PROTO_UDP, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_UDP, turn_servers_[0].ports[0].proto);
 
   // STUN defaults
   EXPECT_TRUE(ParseUrl("stun:hostname"));
@@ -197,11 +197,11 @@ TEST_F(IceServerParsingTest, ParseHostnameAndPort) {
 TEST_F(IceServerParsingTest, ParseTransport) {
   EXPECT_TRUE(ParseTurnUrl("turn:hostname:1234?transport=tcp"));
   EXPECT_EQ(1U, turn_servers_.size());
-  EXPECT_EQ(cricket::PROTO_TCP, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_TCP, turn_servers_[0].ports[0].proto);
 
   EXPECT_TRUE(ParseTurnUrl("turn:hostname?transport=udp"));
   EXPECT_EQ(1U, turn_servers_.size());
-  EXPECT_EQ(cricket::PROTO_UDP, turn_servers_[0].ports[0].proto);
+  EXPECT_EQ(PROTO_UDP, turn_servers_[0].ports[0].proto);
 
   EXPECT_FALSE(ParseTurnUrl("turn:hostname?transport=invalid"));
   EXPECT_FALSE(ParseTurnUrl("turn:hostname?transport="));

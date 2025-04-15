@@ -40,13 +40,13 @@
 namespace webrtc {
 
 struct TrackWithPeriodicSource {
-  rtc::scoped_refptr<VideoTrackInterface> track;
-  rtc::scoped_refptr<FakePeriodicVideoTrackSource> periodic_track_source;
+  scoped_refptr<VideoTrackInterface> track;
+  scoped_refptr<FakePeriodicVideoTrackSource> periodic_track_source;
 };
 
 // Performs an O/A exchange and waits until the signaling state is stable again.
-void Negotiate(rtc::scoped_refptr<PeerConnectionTestWrapper> caller,
-               rtc::scoped_refptr<PeerConnectionTestWrapper> callee) {
+void Negotiate(scoped_refptr<PeerConnectionTestWrapper> caller,
+               scoped_refptr<PeerConnectionTestWrapper> callee) {
   // Wire up callbacks and listeners such that a full O/A is performed in
   // response to CreateOffer().
   PeerConnectionTestWrapper::Connect(caller.get(), callee.get());
@@ -55,12 +55,12 @@ void Negotiate(rtc::scoped_refptr<PeerConnectionTestWrapper> caller,
 }
 
 TrackWithPeriodicSource CreateTrackWithPeriodicSource(
-    rtc::scoped_refptr<PeerConnectionFactoryInterface> factory) {
+    scoped_refptr<PeerConnectionFactoryInterface> factory) {
   FakePeriodicVideoSource::Config periodic_track_source_config;
   periodic_track_source_config.frame_interval_ms = 100;
   periodic_track_source_config.timestamp_offset_ms = TimeMillis();
-  rtc::scoped_refptr<FakePeriodicVideoTrackSource> periodic_track_source =
-      rtc::make_ref_counted<FakePeriodicVideoTrackSource>(
+  scoped_refptr<FakePeriodicVideoTrackSource> periodic_track_source =
+      make_ref_counted<FakePeriodicVideoTrackSource>(
           periodic_track_source_config, /* remote */ false);
   TrackWithPeriodicSource track_with_source;
   track_with_source.track =
@@ -74,7 +74,7 @@ TrackWithPeriodicSource CreateTrackWithPeriodicSource(
 // have yet to reflect the overuse signal. Used together with EXPECT_TRUE_WAIT
 // to "spam overuse until a change is observed".
 VideoSinkWants TriggerOveruseAndGetSinkWants(
-    rtc::scoped_refptr<FakeResource> fake_resource,
+    scoped_refptr<FakeResource> fake_resource,
     const FakePeriodicVideoSource& source) {
   fake_resource->SetUsageState(ResourceUsageState::kOveruse);
   return source.wants();
@@ -90,10 +90,9 @@ class PeerConnectionAdaptationIntegrationTest : public ::testing::Test {
     RTC_CHECK(worker_thread_->Start());
   }
 
-  rtc::scoped_refptr<PeerConnectionTestWrapper> CreatePcWrapper(
-      const char* name) {
-    rtc::scoped_refptr<PeerConnectionTestWrapper> pc_wrapper =
-        rtc::make_ref_counted<PeerConnectionTestWrapper>(
+  scoped_refptr<PeerConnectionTestWrapper> CreatePcWrapper(const char* name) {
+    scoped_refptr<PeerConnectionTestWrapper> pc_wrapper =
+        make_ref_counted<PeerConnectionTestWrapper>(
             name, &virtual_socket_server_, network_thread_.get(),
             worker_thread_.get());
     PeerConnectionInterface::RTCConfiguration config;

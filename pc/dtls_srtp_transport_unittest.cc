@@ -83,7 +83,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     dtls_srtp_transport1_->SubscribeRtcpPacketReceived(
         &transport_observer1_,
-        [this](rtc::CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
+        [this](webrtc::CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
           transport_observer1_.OnRtcpPacketReceived(buffer, packet_time_ms);
         });
     dtls_srtp_transport1_->SubscribeReadyToSend(
@@ -92,7 +92,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     dtls_srtp_transport2_->SubscribeRtcpPacketReceived(
         &transport_observer2_,
-        [this](rtc::CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
+        [this](webrtc::CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
           transport_observer2_.OnRtcpPacketReceived(buffer, packet_time_ms);
         });
     dtls_srtp_transport2_->SubscribeReadyToSend(
@@ -126,24 +126,24 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     size_t rtp_len = sizeof(kPcmuFrame);
     size_t packet_size = rtp_len + kRtpAuthTagLen;
-    rtc::Buffer rtp_packet_buffer(packet_size);
+    webrtc::Buffer rtp_packet_buffer(packet_size);
     char* rtp_packet_data = rtp_packet_buffer.data<char>();
     memcpy(rtp_packet_data, kPcmuFrame, rtp_len);
     // In order to be able to run this test function multiple times we can not
     // use the same sequence number twice. Increase the sequence number by one.
     webrtc::SetBE16(reinterpret_cast<uint8_t*>(rtp_packet_data) + 2,
                     ++sequence_number_);
-    rtc::CopyOnWriteBuffer rtp_packet1to2(rtp_packet_data, rtp_len,
-                                          packet_size);
-    rtc::CopyOnWriteBuffer rtp_packet2to1(rtp_packet_data, rtp_len,
-                                          packet_size);
+    webrtc::CopyOnWriteBuffer rtp_packet1to2(rtp_packet_data, rtp_len,
+                                             packet_size);
+    webrtc::CopyOnWriteBuffer rtp_packet2to1(rtp_packet_data, rtp_len,
+                                             packet_size);
 
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
     // Send a packet from `srtp_transport1_` to `srtp_transport2_` and verify
     // that the packet can be successfully received and decrypted.
     int prev_received_packets = transport_observer2_.rtp_count();
     ASSERT_TRUE(dtls_srtp_transport1_->SendRtpPacket(&rtp_packet1to2, options,
-                                                     cricket::PF_SRTP_BYPASS));
+                                                     webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer2_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer2_.last_recv_rtp_packet().data(),
                         kPcmuFrame, rtp_len));
@@ -151,7 +151,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     prev_received_packets = transport_observer1_.rtp_count();
     ASSERT_TRUE(dtls_srtp_transport2_->SendRtpPacket(&rtp_packet2to1, options,
-                                                     cricket::PF_SRTP_BYPASS));
+                                                     webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer1_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer1_.last_recv_rtp_packet().data(),
                         kPcmuFrame, rtp_len));
@@ -161,19 +161,21 @@ class DtlsSrtpTransportTest : public ::testing::Test,
   void SendRecvRtcpPackets() {
     size_t rtcp_len = sizeof(kRtcpReport);
     size_t packet_size = rtcp_len + 4 + kRtpAuthTagLen;
-    rtc::Buffer rtcp_packet_buffer(packet_size);
+    webrtc::Buffer rtcp_packet_buffer(packet_size);
 
     // TODO(zhihuang): Remove the extra copy when the SendRtpPacket method
     // doesn't take the CopyOnWriteBuffer by pointer.
-    rtc::CopyOnWriteBuffer rtcp_packet1to2(kRtcpReport, rtcp_len, packet_size);
-    rtc::CopyOnWriteBuffer rtcp_packet2to1(kRtcpReport, rtcp_len, packet_size);
+    webrtc::CopyOnWriteBuffer rtcp_packet1to2(kRtcpReport, rtcp_len,
+                                              packet_size);
+    webrtc::CopyOnWriteBuffer rtcp_packet2to1(kRtcpReport, rtcp_len,
+                                              packet_size);
 
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
     // Send a packet from `srtp_transport1_` to `srtp_transport2_` and verify
     // that the packet can be successfully received and decrypted.
     int prev_received_packets = transport_observer2_.rtcp_count();
     ASSERT_TRUE(dtls_srtp_transport1_->SendRtcpPacket(&rtcp_packet1to2, options,
-                                                      cricket::PF_SRTP_BYPASS));
+                                                      webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer2_.last_recv_rtcp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer2_.last_recv_rtcp_packet().data(),
                         kRtcpReport, rtcp_len));
@@ -182,7 +184,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
     // Do the same thing in the opposite direction;
     prev_received_packets = transport_observer1_.rtcp_count();
     ASSERT_TRUE(dtls_srtp_transport2_->SendRtcpPacket(&rtcp_packet2to1, options,
-                                                      cricket::PF_SRTP_BYPASS));
+                                                      webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer1_.last_recv_rtcp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer1_.last_recv_rtcp_packet().data(),
                         kRtcpReport, rtcp_len));
@@ -198,26 +200,26 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     size_t rtp_len = sizeof(kPcmuFrameWithExtensions);
     size_t packet_size = rtp_len + kRtpAuthTagLen;
-    rtc::Buffer rtp_packet_buffer(packet_size);
+    webrtc::Buffer rtp_packet_buffer(packet_size);
     char* rtp_packet_data = rtp_packet_buffer.data<char>();
     memcpy(rtp_packet_data, kPcmuFrameWithExtensions, rtp_len);
     // In order to be able to run this test function multiple times we can not
     // use the same sequence number twice. Increase the sequence number by one.
     webrtc::SetBE16(reinterpret_cast<uint8_t*>(rtp_packet_data) + 2,
                     ++sequence_number_);
-    rtc::CopyOnWriteBuffer rtp_packet1to2(rtp_packet_data, rtp_len,
-                                          packet_size);
-    rtc::CopyOnWriteBuffer rtp_packet2to1(rtp_packet_data, rtp_len,
-                                          packet_size);
+    webrtc::CopyOnWriteBuffer rtp_packet1to2(rtp_packet_data, rtp_len,
+                                             packet_size);
+    webrtc::CopyOnWriteBuffer rtp_packet2to1(rtp_packet_data, rtp_len,
+                                             packet_size);
 
     char original_rtp_data[sizeof(kPcmuFrameWithExtensions)];
     memcpy(original_rtp_data, rtp_packet_data, rtp_len);
 
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
     // Send a packet from `srtp_transport1_` to `srtp_transport2_` and verify
     // that the packet can be successfully received and decrypted.
     ASSERT_TRUE(dtls_srtp_transport1_->SendRtpPacket(&rtp_packet1to2, options,
-                                                     cricket::PF_SRTP_BYPASS));
+                                                     webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer2_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer2_.last_recv_rtp_packet().data(),
                         original_rtp_data, rtp_len));
@@ -237,7 +239,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
 
     // Do the same thing in the opposite direction.
     ASSERT_TRUE(dtls_srtp_transport2_->SendRtpPacket(&rtp_packet2to1, options,
-                                                     cricket::PF_SRTP_BYPASS));
+                                                     webrtc::PF_SRTP_BYPASS));
     ASSERT_TRUE(transport_observer1_.last_recv_rtp_packet().data());
     EXPECT_EQ(0, memcmp(transport_observer1_.last_recv_rtp_packet().data(),
                         original_rtp_data, rtp_len));
@@ -560,11 +562,12 @@ TEST_F(DtlsSrtpTransportTest, ActivelyResetSrtpParams) {
   // Sending some RTCP packets.
   size_t rtcp_len = sizeof(kRtcpReport);
   size_t packet_size = rtcp_len + 4 + kRtpAuthTagLen;
-  rtc::Buffer rtcp_packet_buffer(packet_size);
-  rtc::CopyOnWriteBuffer rtcp_packet(kRtcpReport, rtcp_len, packet_size);
+  webrtc::Buffer rtcp_packet_buffer(packet_size);
+  webrtc::CopyOnWriteBuffer rtcp_packet(kRtcpReport, rtcp_len, packet_size);
   int prev_received_packets = transport_observer2_.rtcp_count();
   ASSERT_TRUE(dtls_srtp_transport1_->SendRtcpPacket(
-      &rtcp_packet, rtc::PacketOptions(), cricket::PF_SRTP_BYPASS));
+      &rtcp_packet, webrtc::AsyncSocketPacketOptions(),
+      webrtc::PF_SRTP_BYPASS));
   // The RTCP packet is not exepected to be received because the SRTP parameters
   // are only reset on one side and the SRTCP index is out of sync.
   EXPECT_EQ(prev_received_packets, transport_observer2_.rtcp_count());

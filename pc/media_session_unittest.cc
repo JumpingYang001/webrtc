@@ -66,7 +66,6 @@
 namespace webrtc {
 namespace {
 
-using ::rtc::UniqueRandomIdGenerator;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Contains;
@@ -82,6 +81,7 @@ using ::testing::SizeIs;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::Values;
 using ::testing::ValuesIn;
+using ::webrtc::UniqueRandomIdGenerator;
 using ::webrtc::test::ScopedKeyValueConfig;
 
 using Candidates = std::vector<Candidate>;
@@ -189,8 +189,8 @@ const Codec kVideoCodecsH265Level52[] = {
 const Codec kVideoCodecsH265Level6[] = {
     CreateVideoCodec(96, kH265MainProfileLevel6Sdp)};
 // Match two codec lists for content, but ignore the ID.
-bool CodecListsMatch(rtc::ArrayView<const Codec> list1,
-                     rtc::ArrayView<const Codec> list2) {
+bool CodecListsMatch(ArrayView<const Codec> list1,
+                     ArrayView<const Codec> list2) {
   if (list1.size() != list2.size()) {
     return false;
   }
@@ -428,19 +428,17 @@ std::vector<std::string> GetCodecNames(const std::vector<Codec>& codecs) {
 std::vector<MediaDescriptionOptions>::iterator FindFirstMediaDescriptionByMid(
     const std::string& mid,
     MediaSessionOptions* opts) {
-  return absl::c_find_if(opts->media_description_options,
-                         [&mid](const cricket::MediaDescriptionOptions& t) {
-                           return t.mid == mid;
-                         });
+  return absl::c_find_if(
+      opts->media_description_options,
+      [&mid](const MediaDescriptionOptions& t) { return t.mid == mid; });
 }
 
 std::vector<MediaDescriptionOptions>::const_iterator
 FindFirstMediaDescriptionByMid(const std::string& mid,
                                const MediaSessionOptions& opts) {
-  return absl::c_find_if(opts.media_description_options,
-                         [&mid](const cricket::MediaDescriptionOptions& t) {
-                           return t.mid == mid;
-                         });
+  return absl::c_find_if(
+      opts.media_description_options,
+      [&mid](const MediaDescriptionOptions& t) { return t.mid == mid; });
 }
 
 // Add a media section to the `session_options`.
@@ -507,11 +505,10 @@ void DetachSenderFromMediaSection(const std::string& mid,
                                   MediaSessionOptions* session_options) {
   std::vector<SenderOptions>& sender_options_list =
       FindFirstMediaDescriptionByMid(mid, session_options)->sender_options;
-  auto sender_it =
-      absl::c_find_if(sender_options_list,
-                      [track_id](const cricket::SenderOptions& sender_options) {
-                        return sender_options.track_id == track_id;
-                      });
+  auto sender_it = absl::c_find_if(
+      sender_options_list, [track_id](const SenderOptions& sender_options) {
+        return sender_options.track_id == track_id;
+      });
   RTC_DCHECK(sender_it != sender_options_list.end());
   sender_options_list.erase(sender_it);
 }
@@ -554,7 +551,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
 
   // Create a video StreamParamsVec object with:
   // - one video stream with 3 simulcast streams and FEC,
-  cricket::StreamParamsVec CreateComplexVideoStreamParamsVec() {
+  StreamParamsVec CreateComplexVideoStreamParamsVec() {
     SsrcGroup sim_group("SIM", MAKE_VECTOR(kSimSsrc));
     SsrcGroup fec_group1("FEC", MAKE_VECTOR(kFec1Ssrc));
     SsrcGroup fec_group2("FEC", MAKE_VECTOR(kFec2Ssrc));
@@ -573,7 +570,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
     simulcast_params.cname = "Video_SIM_FEC";
     simulcast_params.set_stream_ids({kMediaStream1});
 
-    cricket::StreamParamsVec video_streams;
+    StreamParamsVec video_streams;
     video_streams.push_back(simulcast_params);
 
     return video_streams;
@@ -724,9 +721,9 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
   }
 
   void TestTransportSequenceNumberNegotiation(
-      const cricket::RtpHeaderExtensions& local,
-      const cricket::RtpHeaderExtensions& offered,
-      const cricket::RtpHeaderExtensions& expectedAnswer) {
+      const RtpHeaderExtensions& local,
+      const RtpHeaderExtensions& offered,
+      const RtpHeaderExtensions& expectedAnswer) {
     MediaSessionOptions opts;
     AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
     SetAudioVideoRtpHeaderExtensions(offered, offered, &opts);
@@ -748,8 +745,7 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
   }
 
   std::vector<RtpHeaderExtensionCapability>
-  HeaderExtensionCapabilitiesFromRtpExtensions(
-      cricket::RtpHeaderExtensions extensions) {
+  HeaderExtensionCapabilitiesFromRtpExtensions(RtpHeaderExtensions extensions) {
     std::vector<RtpHeaderExtensionCapability> capabilities;
     for (const auto& extension : extensions) {
       RtpHeaderExtensionCapability capability(
@@ -760,8 +756,8 @@ class MediaSessionDescriptionFactoryTest : public testing::Test {
     return capabilities;
   }
 
-  void SetAudioVideoRtpHeaderExtensions(cricket::RtpHeaderExtensions audio_exts,
-                                        cricket::RtpHeaderExtensions video_exts,
+  void SetAudioVideoRtpHeaderExtensions(RtpHeaderExtensions audio_exts,
+                                        RtpHeaderExtensions video_exts,
                                         MediaSessionOptions* opts) {
     std::vector<RtpHeaderExtensionCapability> audio_caps =
         HeaderExtensionCapabilitiesFromRtpExtensions(audio_exts);
@@ -1931,9 +1927,9 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   MediaSessionOptions opts;
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
-  const cricket::RtpHeaderExtensions offered_extensions = {
+  const RtpHeaderExtensions offered_extensions = {
       RtpExtension(RtpExtension::kAbsoluteCaptureTimeUri, 7)};
-  const cricket::RtpHeaderExtensions local_extensions = {
+  const RtpHeaderExtensions local_extensions = {
       RtpExtension(RtpExtension::kTransportSequenceNumberUri, 5)};
   SetAudioVideoRtpHeaderExtensions(offered_extensions, offered_extensions,
                                    &opts);
@@ -1955,9 +1951,9 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   MediaSessionOptions opts;
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
-  const cricket::RtpHeaderExtensions offered_extensions = {
+  const RtpHeaderExtensions offered_extensions = {
       RtpExtension(RtpExtension::kAbsoluteCaptureTimeUri, 7)};
-  const cricket::RtpHeaderExtensions local_extensions = {
+  const RtpHeaderExtensions local_extensions = {
       RtpExtension(RtpExtension::kAbsoluteCaptureTimeUri, 5)};
   SetAudioVideoRtpHeaderExtensions(offered_extensions, offered_extensions,
                                    &opts);
@@ -1979,9 +1975,9 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   MediaSessionOptions opts;
   AddAudioVideoSections(RtpTransceiverDirection::kRecvOnly, &opts);
 
-  const cricket::RtpHeaderExtensions offered_extensions = {
+  const RtpHeaderExtensions offered_extensions = {
       RtpExtension(RtpExtension::kTransportSequenceNumberUri, 7)};
-  const cricket::RtpHeaderExtensions local_extensions = {
+  const RtpHeaderExtensions local_extensions = {
       RtpExtension(RtpExtension::kAbsoluteCaptureTimeUri, 5)};
   SetAudioVideoRtpHeaderExtensions(offered_extensions, offered_extensions,
                                    &opts);
@@ -2687,7 +2683,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoOffer) {
       codec_lookup_helper_1_.CodecVendor("")->audio_sendrecv_codecs().codecs(),
       acd->codecs());
 
-  const cricket::StreamParamsVec& audio_streams = acd->streams();
+  const StreamParamsVec& audio_streams = acd->streams();
   ASSERT_EQ(2U, audio_streams.size());
   EXPECT_EQ(audio_streams[0].cname, audio_streams[1].cname);
   EXPECT_EQ(kAudioTrack1, audio_streams[0].id);
@@ -2706,7 +2702,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoOffer) {
       codec_lookup_helper_1_.CodecVendor("")->video_sendrecv_codecs().codecs(),
       vcd->codecs());
 
-  const cricket::StreamParamsVec& video_streams = vcd->streams();
+  const StreamParamsVec& video_streams = vcd->streams();
   ASSERT_EQ(1U, video_streams.size());
   EXPECT_EQ(video_streams[0].cname, audio_streams[0].cname);
   EXPECT_EQ(kVideoTrack1, video_streams[0].id);
@@ -2739,8 +2735,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoOffer) {
   EXPECT_EQ(vcd->type(), updated_vcd->type());
   EXPECT_EQ(vcd->codecs(), updated_vcd->codecs());
 
-  const cricket::StreamParamsVec& updated_audio_streams =
-      updated_acd->streams();
+  const StreamParamsVec& updated_audio_streams = updated_acd->streams();
   ASSERT_EQ(2U, updated_audio_streams.size());
   EXPECT_EQ(audio_streams[0], updated_audio_streams[0]);
   EXPECT_EQ(kAudioTrack3, updated_audio_streams[1].id);  // New audio track.
@@ -2748,8 +2743,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoOffer) {
   EXPECT_NE(0U, updated_audio_streams[1].ssrcs[0]);
   EXPECT_EQ(updated_audio_streams[0].cname, updated_audio_streams[1].cname);
 
-  const cricket::StreamParamsVec& updated_video_streams =
-      updated_vcd->streams();
+  const StreamParamsVec& updated_video_streams = updated_vcd->streams();
   ASSERT_EQ(2U, updated_video_streams.size());
   EXPECT_EQ(video_streams[0], updated_video_streams[0]);
   EXPECT_EQ(kVideoTrack2, updated_video_streams[1].id);
@@ -2778,7 +2772,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateSimulcastVideoOffer) {
   ASSERT_TRUE(vc);
   const MediaContentDescription* vcd = vc->media_description();
 
-  const cricket::StreamParamsVec& video_streams = vcd->streams();
+  const StreamParamsVec& video_streams = vcd->streams();
   ASSERT_EQ(1U, video_streams.size());
   EXPECT_EQ(kVideoTrack1, video_streams[0].id);
   const SsrcGroup* sim_ssrc_group =
@@ -2803,7 +2797,7 @@ void CheckSimulcastInSessionDescription(
   ASSERT_NE(content, nullptr);
   const MediaContentDescription* cd = content->media_description();
   ASSERT_NE(cd, nullptr);
-  const cricket::StreamParamsVec& streams = cd->streams();
+  const StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
   const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
@@ -2863,7 +2857,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestOfferWithRidsNoSimulcast) {
   ASSERT_NE(content, nullptr);
   const MediaContentDescription* cd = content->media_description();
   ASSERT_NE(cd, nullptr);
-  const cricket::StreamParamsVec& streams = cd->streams();
+  const StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
   const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
@@ -2940,7 +2934,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestAnswerWithRidsNoSimulcast) {
   ASSERT_NE(content, nullptr);
   const MediaContentDescription* cd = content->media_description();
   ASSERT_NE(cd, nullptr);
-  const cricket::StreamParamsVec& streams = cd->streams();
+  const StreamParamsVec& streams = cd->streams();
   ASSERT_THAT(streams, SizeIs(1));
   const StreamParams& stream = streams[0];
   ASSERT_THAT(stream.ssrcs, IsEmpty());
@@ -2996,7 +2990,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoAnswer) {
   EXPECT_EQ(webrtc::MediaType::AUDIO, acd->type());
   EXPECT_THAT(acd->codecs(), ElementsAreArray(kAudioCodecsAnswer));
 
-  const cricket::StreamParamsVec& audio_streams = acd->streams();
+  const StreamParamsVec& audio_streams = acd->streams();
   ASSERT_EQ(2U, audio_streams.size());
   EXPECT_TRUE(audio_streams[0].cname == audio_streams[1].cname);
   EXPECT_EQ(kAudioTrack1, audio_streams[0].id);
@@ -3013,7 +3007,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoAnswer) {
   EXPECT_EQ(webrtc::MediaType::VIDEO, vcd->type());
   EXPECT_THAT(vcd->codecs(), ElementsAreArray(kVideoCodecsAnswer));
 
-  const cricket::StreamParamsVec& video_streams = vcd->streams();
+  const StreamParamsVec& video_streams = vcd->streams();
   ASSERT_EQ(1U, video_streams.size());
   EXPECT_EQ(video_streams[0].cname, audio_streams[0].cname);
   EXPECT_EQ(kVideoTrack1, video_streams[0].id);
@@ -3044,13 +3038,11 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateMultiStreamVideoAnswer) {
   EXPECT_EQ(vcd->type(), updated_vcd->type());
   EXPECT_EQ(vcd->codecs(), updated_vcd->codecs());
 
-  const cricket::StreamParamsVec& updated_audio_streams =
-      updated_acd->streams();
+  const StreamParamsVec& updated_audio_streams = updated_acd->streams();
   ASSERT_EQ(1U, updated_audio_streams.size());
   EXPECT_TRUE(audio_streams[0] == updated_audio_streams[0]);
 
-  const cricket::StreamParamsVec& updated_video_streams =
-      updated_vcd->streams();
+  const StreamParamsVec& updated_video_streams = updated_vcd->streams();
   ASSERT_EQ(2U, updated_video_streams.size());
   EXPECT_EQ(video_streams[0], updated_video_streams[0]);
   EXPECT_EQ(kVideoTrack2, updated_video_streams[1].id);
@@ -3636,7 +3628,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateMultipleRtxSsrcs) {
   MediaContentDescription* media_desc =
       offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
-  const cricket::StreamParamsVec& streams = media_desc->streams();
+  const StreamParamsVec& streams = media_desc->streams();
   // Single stream.
   ASSERT_EQ(1u, streams.size());
   // Stream should have 6 ssrcs: 3 for video, 3 for RTX.
@@ -3681,7 +3673,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, GenerateFlexfecSsrc) {
   MediaContentDescription* media_desc =
       offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
-  const cricket::StreamParamsVec& streams = media_desc->streams();
+  const StreamParamsVec& streams = media_desc->streams();
   // Single stream.
   ASSERT_EQ(1u, streams.size());
   // Stream should have 2 ssrcs: 1 for video, 1 for FlexFEC.
@@ -3725,7 +3717,7 @@ TEST_F(MediaSessionDescriptionFactoryTest, SimSsrcsGenerateNoFlexfecSsrcs) {
   MediaContentDescription* media_desc =
       offer->GetContentDescriptionByName(CN_VIDEO);
   ASSERT_TRUE(media_desc);
-  const cricket::StreamParamsVec& streams = media_desc->streams();
+  const StreamParamsVec& streams = media_desc->streams();
   // Single stream.
   ASSERT_EQ(1u, streams.size());
   // Stream should have 3 ssrcs: 3 for video, 0 for FlexFEC.

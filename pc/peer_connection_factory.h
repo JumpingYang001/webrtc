@@ -54,12 +54,12 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
   //
   // The Dependencies structure allows simple management of all new
   // dependencies being added to the PeerConnectionFactory.
-  static rtc::scoped_refptr<PeerConnectionFactory> Create(
+  static scoped_refptr<PeerConnectionFactory> Create(
       PeerConnectionFactoryDependencies dependencies);
 
   void SetOptions(const Options& options) override;
 
-  RTCErrorOr<rtc::scoped_refptr<PeerConnectionInterface>>
+  RTCErrorOr<scoped_refptr<PeerConnectionInterface>>
   CreatePeerConnectionOrError(
       const PeerConnectionInterface::RTCConfiguration& configuration,
       PeerConnectionDependencies dependencies) override;
@@ -70,17 +70,17 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
   RtpCapabilities GetRtpReceiverCapabilities(
       webrtc::MediaType kind) const override;
 
-  rtc::scoped_refptr<MediaStreamInterface> CreateLocalMediaStream(
+  scoped_refptr<MediaStreamInterface> CreateLocalMediaStream(
       const std::string& stream_id) override;
 
-  rtc::scoped_refptr<AudioSourceInterface> CreateAudioSource(
+  scoped_refptr<AudioSourceInterface> CreateAudioSource(
       const AudioOptions& options) override;
 
-  rtc::scoped_refptr<VideoTrackInterface> CreateVideoTrack(
-      rtc::scoped_refptr<VideoTrackSourceInterface> video_source,
+  scoped_refptr<VideoTrackInterface> CreateVideoTrack(
+      scoped_refptr<VideoTrackSourceInterface> video_source,
       absl::string_view id) override;
 
-  rtc::scoped_refptr<AudioTrackInterface> CreateAudioTrack(
+  scoped_refptr<AudioTrackInterface> CreateAudioTrack(
       const std::string& id,
       AudioSourceInterface* audio_source) override;
 
@@ -113,7 +113,7 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
 
  protected:
   // Constructor used by the static Create() method. Modifies the dependencies.
-  PeerConnectionFactory(rtc::scoped_refptr<ConnectionContext> context,
+  PeerConnectionFactory(scoped_refptr<ConnectionContext> context,
                         PeerConnectionFactoryDependencies* dependencies);
 
   // Constructor for use in testing. Ignores the possibility of initialization
@@ -134,7 +134,7 @@ class PeerConnectionFactory : public PeerConnectionFactoryInterface {
       std::unique_ptr<NetworkControllerFactoryInterface>
           network_controller_factory);
 
-  rtc::scoped_refptr<ConnectionContext> context_;
+  scoped_refptr<ConnectionContext> context_;
   PeerConnectionFactoryInterface::Options options_
       RTC_GUARDED_BY(signaling_thread());
   CodecVendor codec_vendor_;

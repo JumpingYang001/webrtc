@@ -67,7 +67,7 @@ using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
 
-using cricket::MediaContentDescription;
+using webrtc::MediaContentDescription;
 using ::webrtc::RidDescription;
 using ::webrtc::SimulcastDescription;
 using ::webrtc::SimulcastLayer;
@@ -98,7 +98,7 @@ class PeerConnectionSimulcastTests : public ::testing::Test {
             nullptr,
             nullptr)) {}
 
-  rtc::scoped_refptr<PeerConnectionInterface> CreatePeerConnection(
+  scoped_refptr<PeerConnectionInterface> CreatePeerConnection(
       MockPeerConnectionObserver* observer) {
     PeerConnectionInterface::RTCConfiguration config;
     config.sdp_semantics = SdpSemantics::kUnifiedPlan;
@@ -135,7 +135,7 @@ class PeerConnectionSimulcastTests : public ::testing::Test {
     EXPECT_TRUE(local->SetRemoteDescription(std::move(answer), &err)) << err;
   }
 
-  rtc::scoped_refptr<RtpTransceiverInterface> AddTransceiver(
+  scoped_refptr<RtpTransceiverInterface> AddTransceiver(
       PeerConnectionWrapper* pc,
       const std::vector<SimulcastLayer>& layers,
       webrtc::MediaType media_type = webrtc::MediaType::VIDEO) {
@@ -155,7 +155,7 @@ class PeerConnectionSimulcastTests : public ::testing::Test {
   }
 
   void ValidateTransceiverParameters(
-      rtc::scoped_refptr<RtpTransceiverInterface> transceiver,
+      scoped_refptr<RtpTransceiverInterface> transceiver,
       const std::vector<SimulcastLayer>& layers) {
     auto parameters = transceiver->sender()->GetParameters();
     std::vector<SimulcastLayer> result_layers;
@@ -167,7 +167,7 @@ class PeerConnectionSimulcastTests : public ::testing::Test {
   }
 
  private:
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
 };
 
 // Validates that RIDs are supported arguments when adding a transceiver.
@@ -496,7 +496,7 @@ TEST_F(PeerConnectionSimulcastTests, NegotiationDoesNotHaveRidExtensionFails) {
   for (const SimulcastLayer& layer : layers) {
     receive_layers.AddLayer(layer);
   }
-  cricket::RtpHeaderExtensions extensions;
+  RtpHeaderExtensions extensions;
   for (auto extension : mcd_answer->rtp_header_extensions()) {
     if (extension.uri != RtpExtension::kRidUri) {
       extensions.push_back(extension);

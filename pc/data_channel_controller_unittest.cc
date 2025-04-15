@@ -64,7 +64,7 @@ class MockDataChannelTransport : public DataChannelTransportInterface {
               SendData,
               (int channel_id,
                const SendDataParams& params,
-               const rtc::CopyOnWriteBuffer& buffer),
+               const webrtc::CopyOnWriteBuffer& buffer),
               (override));
   MOCK_METHOD(RTCError, CloseChannel, (int channel_id), (override));
   MOCK_METHOD(void, SetDataSink, (DataChannelSink * sink), (override));
@@ -118,7 +118,7 @@ class DataChannelControllerTest : public ::testing::Test {
   DataChannelControllerTest()
       : network_thread_(std::make_unique<NullSocketServer>()) {
     network_thread_.Start();
-    pc_ = rtc::make_ref_counted<NiceMock<MockPeerConnectionInternal>>();
+    pc_ = make_ref_counted<NiceMock<MockPeerConnectionInternal>>();
     ON_CALL(*pc_, signaling_thread).WillByDefault(Return(Thread::Current()));
     ON_CALL(*pc_, network_thread).WillByDefault(Return(&network_thread_));
   }
@@ -131,7 +131,7 @@ class DataChannelControllerTest : public ::testing::Test {
   ScopedBaseFakeClock clock_;
   test::RunLoop run_loop_;
   Thread network_thread_;
-  rtc::scoped_refptr<NiceMock<MockPeerConnectionInternal>> pc_;
+  scoped_refptr<NiceMock<MockPeerConnectionInternal>> pc_;
 };
 
 TEST_F(DataChannelControllerTest, CreateAndDestroy) {

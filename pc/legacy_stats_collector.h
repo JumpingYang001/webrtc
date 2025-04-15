@@ -136,7 +136,7 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
     SessionStats& operator=(SessionStats&&) = default;
     SessionStats& operator=(SessionStats&) = delete;
 
-    cricket::CandidateStatsList candidate_stats;
+    CandidateStatsList candidate_stats;
     std::vector<TransportStats> transport_stats;
     std::map<std::string, std::string> transport_names_by_mid;
   };
@@ -188,7 +188,7 @@ class LegacyStatsCollector : public LegacyStatsCollectorInterface {
   void UpdateTrackReports();
 
   SessionStats ExtractSessionInfo_n(
-      const std::vector<rtc::scoped_refptr<
+      const std::vector<scoped_refptr<
           RtpTransceiverProxyWithInternal<RtpTransceiver>>>& transceivers,
       std::optional<std::string> sctp_transport_name,
       std::optional<std::string> sctp_mid);

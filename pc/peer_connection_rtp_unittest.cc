@@ -138,7 +138,7 @@ class PeerConnectionRtpBaseTest : public ::testing::Test {
 
  protected:
   const SdpSemantics sdp_semantics_;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
 
  private:
   // Private so that tests don't accidentally bypass the SdpSemantics
@@ -291,7 +291,7 @@ TEST_P(PeerConnectionRtpTest, RemoveTrackWithSharedStreamFiresOnRemoveTrack) {
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
   ASSERT_EQ(callee->observer()->add_track_events_.size(), 2u);
   EXPECT_EQ(
-      std::vector<rtc::scoped_refptr<RtpReceiverInterface>>{
+      std::vector<scoped_refptr<RtpReceiverInterface>>{
           callee->observer()->add_track_events_[0].receiver},
       callee->observer()->remove_track_events_);
   ASSERT_EQ(1u, callee->observer()->remote_streams()->count());
@@ -360,9 +360,9 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, AddTransceiverCallsOnTrack) {
             callee->pc()->GetTransceivers()[0]->mid());
   EXPECT_EQ(video_transceiver->mid(),
             callee->pc()->GetTransceivers()[1]->mid());
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> audio_streams =
+  std::vector<scoped_refptr<MediaStreamInterface>> audio_streams =
       callee->pc()->GetTransceivers()[0]->receiver()->streams();
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> video_streams =
+  std::vector<scoped_refptr<MediaStreamInterface>> video_streams =
       callee->pc()->GetTransceivers()[1]->receiver()->streams();
   ASSERT_EQ(0u, audio_streams.size());
   ASSERT_EQ(2u, video_streams.size());
@@ -747,11 +747,11 @@ TEST_F(PeerConnectionRtpTestPlanB,
   // when the first callback is invoked.
   callee->pc()->SetRemoteDescription(
       std::move(srd1_sdp),
-      rtc::make_ref_counted<OnSuccessObserver<decltype(srd1_callback)>>(
+      make_ref_counted<OnSuccessObserver<decltype(srd1_callback)>>(
           srd1_callback));
   callee->pc()->SetRemoteDescription(
       std::move(srd2_sdp),
-      rtc::make_ref_counted<OnSuccessObserver<decltype(srd2_callback)>>(
+      make_ref_counted<OnSuccessObserver<decltype(srd2_callback)>>(
           srd2_callback));
   EXPECT_THAT(
       WaitUntil([&] { return srd1_callback_called; }, ::testing::IsTrue()),
@@ -933,8 +933,8 @@ TEST_P(PeerConnectionRtpTest,
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  rtc::scoped_refptr<MockSetSessionDescriptionObserver> observer =
-      rtc::make_ref_counted<MockSetSessionDescriptionObserver>();
+  scoped_refptr<MockSetSessionDescriptionObserver> observer =
+      make_ref_counted<MockSetSessionDescriptionObserver>();
 
   auto offer = caller->CreateOfferAndSetAsLocal();
   callee->pc()->SetRemoteDescription(observer.get(), offer.release());
@@ -1013,16 +1013,13 @@ TEST_F(PeerConnectionRtpTestUnifiedPlan, AddTransceiverShowsInLists) {
   auto caller = CreatePeerConnection();
 
   auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  EXPECT_EQ(std::vector<scoped_refptr<RtpTransceiverInterface>>{transceiver},
+            caller->pc()->GetTransceivers());
   EXPECT_EQ(
-      std::vector<rtc::scoped_refptr<RtpTransceiverInterface>>{transceiver},
-      caller->pc()->GetTransceivers());
-  EXPECT_EQ(
-      std::vector<rtc::scoped_refptr<RtpSenderInterface>>{
-          transceiver->sender()},
+      std::vector<scoped_refptr<RtpSenderInterface>>{transceiver->sender()},
       caller->pc()->GetSenders());
   EXPECT_EQ(
-      std::vector<rtc::scoped_refptr<RtpReceiverInterface>>{
-          transceiver->receiver()},
+      std::vector<scoped_refptr<RtpReceiverInterface>>{transceiver->receiver()},
       caller->pc()->GetReceivers());
 }
 

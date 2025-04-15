@@ -37,9 +37,9 @@ class VideoTrack : public MediaStreamTrack<VideoTrackInterface>,
                    public VideoSourceBaseGuarded,
                    public ObserverInterface {
  public:
-  static rtc::scoped_refptr<VideoTrack> Create(
+  static scoped_refptr<VideoTrack> Create(
       absl::string_view label,
-      rtc::scoped_refptr<VideoTrackSourceInterface> source,
+      scoped_refptr<VideoTrackSourceInterface> source,
       Thread* worker_thread);
 
   void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
@@ -61,7 +61,7 @@ class VideoTrack : public MediaStreamTrack<VideoTrackInterface>,
  protected:
   VideoTrack(
       absl::string_view id,
-      rtc::scoped_refptr<
+      scoped_refptr<
           VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>> source,
       Thread* worker_thread);
   ~VideoTrack();
@@ -72,7 +72,7 @@ class VideoTrack : public MediaStreamTrack<VideoTrackInterface>,
 
   RTC_NO_UNIQUE_ADDRESS SequenceChecker signaling_thread_;
   Thread* const worker_thread_;
-  const rtc::scoped_refptr<
+  const scoped_refptr<
       VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>>
       video_source_;
   ContentHint content_hint_ RTC_GUARDED_BY(&signaling_thread_);

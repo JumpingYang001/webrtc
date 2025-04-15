@@ -153,7 +153,7 @@ class SdpOfferAnswerTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<Thread> signaling_thread_;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
 
  private:
   AutoThread main_thread_;
@@ -2105,9 +2105,9 @@ TEST_F(SdpOfferAnswerMungingTest, H264SpsPpsIdrInKeyFrame) {
   ASSERT_TRUE(media_description);
   std::vector<Codec> codecs = media_description->codecs();
   for (auto& codec : codecs) {
-    if (codec.name == cricket::kH264CodecName) {
-      codec.SetParam(cricket::kH264FmtpSpsPpsIdrInKeyframe,
-                     cricket::kParamValueTrue);
+    if (codec.name == webrtc::kH264CodecName) {
+      codec.SetParam(webrtc::kH264FmtpSpsPpsIdrInKeyframe,
+                     webrtc::kParamValueTrue);
     }
   }
   media_description->set_codecs(codecs);

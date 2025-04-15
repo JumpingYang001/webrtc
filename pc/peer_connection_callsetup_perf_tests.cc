@@ -58,10 +58,10 @@ class PeerConnectionDataChannelOpenTest
     : public ::testing::TestWithParam<
           std::tuple</*field_trials=*/std::string,
                      /*signal_candidates_from_client=*/bool,
-                     /*dtls_role=*/cricket::ConnectionRole>> {
+                     /*dtls_role=*/ConnectionRole>> {
  public:
   PeerConnectionDataChannelOpenTest()
-      : background_thread_(std::make_unique<rtc::Thread>(&vss_)) {
+      : background_thread_(std::make_unique<Thread>(&vss_)) {
     RTC_CHECK(background_thread_->Start());
     // Delay is set to 50ms so we get a 100ms RTT.
     vss_.set_delay_mean(/*delay_ms=*/50);
@@ -79,30 +79,28 @@ class PeerConnectionDataChannelOpenTest
   }
 
   void SignalIceCandidates(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> from_pc_wrapper,
-      rtc::scoped_refptr<PeerConnectionTestWrapper> to_pc_wrapper) {
+      scoped_refptr<PeerConnectionTestWrapper> from_pc_wrapper,
+      scoped_refptr<PeerConnectionTestWrapper> to_pc_wrapper) {
     from_pc_wrapper->SignalOnIceCandidateReady.connect(
         to_pc_wrapper.get(), &PeerConnectionTestWrapper::AddIceCandidate);
   }
 
-  void Negotiate(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper,
-      rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper,
-      cricket::ConnectionRole remote_role) {
+  void Negotiate(scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper,
+                 scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper,
+                 ConnectionRole remote_role) {
     std::unique_ptr<SessionDescriptionInterface> offer =
         CreateOffer(local_pc_wrapper);
-    rtc::scoped_refptr<MockSetSessionDescriptionObserver> p1 =
+    scoped_refptr<MockSetSessionDescriptionObserver> p1 =
         SetLocalDescription(local_pc_wrapper, offer.get());
     std::unique_ptr<SessionDescriptionInterface> modified_offer =
         offer->Clone();
     // Modify offer role to get desired remote role.
-    if (remote_role == cricket::CONNECTIONROLE_PASSIVE) {
+    if (remote_role == CONNECTIONROLE_PASSIVE) {
       auto& transport_infos = modified_offer->description()->transport_infos();
       ASSERT_TRUE(!transport_infos.empty());
-      transport_infos[0].description.connection_role =
-          cricket::CONNECTIONROLE_ACTIVE;
+      transport_infos[0].description.connection_role = CONNECTIONROLE_ACTIVE;
     }
-    rtc::scoped_refptr<MockSetSessionDescriptionObserver> p2 =
+    scoped_refptr<MockSetSessionDescriptionObserver> p2 =
         SetRemoteDescription(remote_pc_wrapper, modified_offer.get());
     EXPECT_TRUE(Await({p1, p2}));
     std::unique_ptr<SessionDescriptionInterface> answer =
@@ -112,8 +110,7 @@ class PeerConnectionDataChannelOpenTest
     EXPECT_TRUE(Await({p1, p2}));
   }
 
-  bool WaitForDataChannelOpen(
-      rtc::scoped_refptr<webrtc::DataChannelInterface> dc) {
+  bool WaitForDataChannelOpen(scoped_refptr<webrtc::DataChannelInterface> dc) {
     return WaitUntil(
                [&] {
                  return dc->state() == DataChannelInterface::DataState::kOpen;
@@ -124,9 +121,8 @@ class PeerConnectionDataChannelOpenTest
 
  protected:
   std::unique_ptr<SessionDescriptionInterface> CreateOffer(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> pc_wrapper) {
-    auto observer =
-        rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+      scoped_refptr<PeerConnectionTestWrapper> pc_wrapper) {
+    auto observer = make_ref_counted<MockCreateSessionDescriptionObserver>();
     pc_wrapper->pc()->CreateOffer(observer.get(), {});
     EXPECT_THAT(WaitUntil([&] { return observer->called(); }, IsTrue()),
                 IsRtcOk());
@@ -134,28 +130,27 @@ class PeerConnectionDataChannelOpenTest
   }
 
   std::unique_ptr<SessionDescriptionInterface> CreateAnswer(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> pc_wrapper) {
-    auto observer =
-        rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+      scoped_refptr<PeerConnectionTestWrapper> pc_wrapper) {
+    auto observer = make_ref_counted<MockCreateSessionDescriptionObserver>();
     pc_wrapper->pc()->CreateAnswer(observer.get(), {});
     EXPECT_THAT(WaitUntil([&] { return observer->called(); }, IsTrue()),
                 IsRtcOk());
     return observer->MoveDescription();
   }
 
-  rtc::scoped_refptr<MockSetSessionDescriptionObserver> SetLocalDescription(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> pc_wrapper,
+  scoped_refptr<MockSetSessionDescriptionObserver> SetLocalDescription(
+      scoped_refptr<PeerConnectionTestWrapper> pc_wrapper,
       SessionDescriptionInterface* sdp) {
-    auto observer = rtc::make_ref_counted<MockSetSessionDescriptionObserver>();
+    auto observer = make_ref_counted<MockSetSessionDescriptionObserver>();
     pc_wrapper->pc()->SetLocalDescription(
         observer.get(), CloneSessionDescription(sdp).release());
     return observer;
   }
 
-  rtc::scoped_refptr<MockSetSessionDescriptionObserver> SetRemoteDescription(
-      rtc::scoped_refptr<PeerConnectionTestWrapper> pc_wrapper,
+  scoped_refptr<MockSetSessionDescriptionObserver> SetRemoteDescription(
+      scoped_refptr<PeerConnectionTestWrapper> pc_wrapper,
       SessionDescriptionInterface* sdp) {
-    auto observer = rtc::make_ref_counted<MockSetSessionDescriptionObserver>();
+    auto observer = make_ref_counted<MockSetSessionDescriptionObserver>();
     pc_wrapper->pc()->SetRemoteDescription(
         observer.get(), CloneSessionDescription(sdp).release());
     return observer;
@@ -165,8 +160,8 @@ class PeerConnectionDataChannelOpenTest
   // the offer it is important to SetLocalDescription() and
   // SetRemoteDescription() are kicked off without awaiting in-between. This
   // helper is used to await multiple observers.
-  bool Await(std::vector<rtc::scoped_refptr<MockSetSessionDescriptionObserver>>
-                 observers) {
+  bool Await(
+      std::vector<scoped_refptr<MockSetSessionDescriptionObserver>> observers) {
     for (auto& observer : observers) {
       auto result = WaitUntil([&] { return observer->called(); }, IsTrue());
 
@@ -177,20 +172,20 @@ class PeerConnectionDataChannelOpenTest
     return true;
   }
 
-  rtc::VirtualSocketServer vss_;
-  std::unique_ptr<rtc::Thread> background_thread_;
+  VirtualSocketServer vss_;
+  std::unique_ptr<Thread> background_thread_;
 };
 
 TEST_P(PeerConnectionDataChannelOpenTest, OpenAtCaller) {
   std::string trials = std::get<0>(GetParam());
   bool skip_candidates_from_caller = std::get<1>(GetParam());
-  cricket::ConnectionRole role = std::get<2>(GetParam());
+  ConnectionRole role = std::get<2>(GetParam());
   std::string role_string;
-  ASSERT_TRUE(cricket::ConnectionRoleToString(role, &role_string));
+  ASSERT_TRUE(ConnectionRoleToString(role, &role_string));
 
-  rtc::scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper =
+  scoped_refptr<PeerConnectionTestWrapper> local_pc_wrapper =
       CreatePc(FieldTrials::CreateNoGlobal(trials));
-  rtc::scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper =
+  scoped_refptr<PeerConnectionTestWrapper> remote_pc_wrapper =
       CreatePc(FieldTrials::CreateNoGlobal(trials));
 
   if (!skip_candidates_from_caller) {
@@ -200,12 +195,12 @@ TEST_P(PeerConnectionDataChannelOpenTest, OpenAtCaller) {
 
   auto dc = local_pc_wrapper->CreateDataChannel("test", {});
   Negotiate(local_pc_wrapper, remote_pc_wrapper, role);
-  uint64_t start_time = rtc::TimeNanos();
+  uint64_t start_time = TimeNanos();
   EXPECT_TRUE(WaitForDataChannelOpen(dc));
-  uint64_t open_time = rtc::TimeNanos();
+  uint64_t open_time = TimeNanos();
   uint64_t setup_time = open_time - start_time;
 
-  double setup_time_millis = setup_time / rtc::kNumNanosecsPerMillisec;
+  double setup_time_millis = setup_time / kNumNanosecsPerMillisec;
   std::string test_description =
       "emulate_server=" + absl::StrCat(skip_candidates_from_caller) +
       "/dtls_role=" + role_string + "/trials=" + trials;
@@ -236,10 +231,10 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             // Default, other side will send
             // the DTLS handshake.
-            cricket::CONNECTIONROLE_ACTIVE,
+            CONNECTIONROLE_ACTIVE,
             // Local side will send the DTLS
             // handshake.
-            cricket::CONNECTIONROLE_PASSIVE)));
+            CONNECTIONROLE_PASSIVE)));
 
 #endif  // WEBRTC_HAVE_SCTP
 

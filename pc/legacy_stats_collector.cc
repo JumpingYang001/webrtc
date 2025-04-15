@@ -907,7 +907,7 @@ LegacyStatsCollector::ExtractSessionAndDataInfo() {
 }
 
 LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
-    const std::vector<rtc::scoped_refptr<
+    const std::vector<scoped_refptr<
         RtpTransceiverProxyWithInternal<RtpTransceiver>>>& transceivers,
     std::optional<std::string> sctp_transport_name,
     std::optional<std::string> sctp_mid) {
@@ -946,7 +946,7 @@ LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
     // same local and remote certificates.
     //
     StatsReport::Id local_cert_report_id, remote_cert_report_id;
-    rtc::scoped_refptr<RTCCertificate> certificate;
+    scoped_refptr<RTCCertificate> certificate;
     if (pc_->GetLocalCertificate(transport.name, &certificate)) {
       transport.local_cert_stats =
           certificate->GetSSLCertificateChain().GetStats();
@@ -973,7 +973,7 @@ void LegacyStatsCollector::ExtractSessionInfo_s(SessionStats& session_stats) {
   report->AddBoolean(StatsReport::kStatsValueNameInitiator,
                      pc_->initial_offerer());
 
-  for (const cricket::CandidateStats& stats : session_stats.candidate_stats) {
+  for (const CandidateStats& stats : session_stats.candidate_stats) {
     AddCandidateReport(stats, true);
   }
 
@@ -1029,13 +1029,13 @@ void LegacyStatsCollector::ExtractSessionInfo_s(SessionStats& session_stats) {
       // AddConnectionInfoReport below, and they may report candidates that are
       // not paired. Also, the candidate report generated in
       // AddConnectionInfoReport do not report port stats like StunStats.
-      for (const cricket::CandidateStats& stats :
+      for (const CandidateStats& stats :
            channel_iter.ice_transport_stats.candidate_stats_list) {
         AddCandidateReport(stats, true);
       }
 
       int connection_id = 0;
-      for (const cricket::ConnectionInfo& info :
+      for (const ConnectionInfo& info :
            channel_iter.ice_transport_stats.connection_infos) {
         StatsReport* connection_report = AddConnectionInfoReport(
             transport.name, channel_iter.component, connection_id++,
@@ -1296,7 +1296,7 @@ void LegacyStatsCollector::ExtractSenderInfo() {
     if (!sender->ssrc()) {
       continue;
     }
-    const rtc::scoped_refptr<MediaStreamTrackInterface> track(sender->track());
+    const scoped_refptr<MediaStreamTrackInterface> track(sender->track());
     if (!track || track->kind() != MediaStreamTrackInterface::kVideoKind) {
       continue;
     }

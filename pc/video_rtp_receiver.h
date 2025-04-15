@@ -54,20 +54,19 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   VideoRtpReceiver(
       Thread* worker_thread,
       const std::string& receiver_id,
-      const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams);
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams);
 
   virtual ~VideoRtpReceiver();
 
-  rtc::scoped_refptr<VideoTrackInterface> video_track() const { return track_; }
+  scoped_refptr<VideoTrackInterface> video_track() const { return track_; }
 
   // RtpReceiverInterface implementation
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
+  scoped_refptr<MediaStreamTrackInterface> track() const override {
     return track_;
   }
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
+  scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
   std::vector<std::string> stream_ids() const override;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams()
-      const override;
+  std::vector<scoped_refptr<MediaStreamInterface>> streams() const override;
   webrtc::MediaType media_type() const override {
     return webrtc::MediaType::VIDEO;
   }
@@ -77,13 +76,12 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   RtpParameters GetParameters() const override;
 
   void SetFrameDecryptor(
-      rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
+      scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
 
-  rtc::scoped_refptr<FrameDecryptorInterface> GetFrameDecryptor()
-      const override;
+  scoped_refptr<FrameDecryptorInterface> GetFrameDecryptor() const override;
 
   void SetFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) override;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) override;
 
   // RtpReceiverInternal implementation.
   void Stop() override;
@@ -93,9 +91,9 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   void NotifyFirstPacketReceived() override;
   void set_stream_ids(std::vector<std::string> stream_ids) override;
   void set_transport(
-      rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) override;
-  void SetStreams(const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&
-                      streams) override;
+      scoped_refptr<DtlsTransportInterface> dtls_transport) override;
+  void SetStreams(
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams) override;
 
   void SetObserver(RtpReceiverObserverInterface* observer) override;
 
@@ -152,20 +150,20 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   std::optional<uint32_t> signaled_ssrc_ RTC_GUARDED_BY(worker_thread_);
   // `source_` is held here to be able to change the state of the source when
   // the VideoRtpReceiver is stopped.
-  const rtc::scoped_refptr<VideoRtpTrackSource> source_;
-  const rtc::scoped_refptr<VideoTrackProxyWithInternal<VideoTrack>> track_;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams_
+  const scoped_refptr<VideoRtpTrackSource> source_;
+  const scoped_refptr<VideoTrackProxyWithInternal<VideoTrack>> track_;
+  std::vector<scoped_refptr<MediaStreamInterface>> streams_
       RTC_GUARDED_BY(&signaling_thread_checker_);
   RtpReceiverObserverInterface* observer_
       RTC_GUARDED_BY(&signaling_thread_checker_) = nullptr;
   bool received_first_packet_ RTC_GUARDED_BY(&signaling_thread_checker_) =
       false;
   const int attachment_id_;
-  rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor_
+  scoped_refptr<FrameDecryptorInterface> frame_decryptor_
       RTC_GUARDED_BY(worker_thread_);
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport_
+  scoped_refptr<DtlsTransportInterface> dtls_transport_
       RTC_GUARDED_BY(&signaling_thread_checker_);
-  rtc::scoped_refptr<FrameTransformerInterface> frame_transformer_
+  scoped_refptr<FrameTransformerInterface> frame_transformer_
       RTC_GUARDED_BY(worker_thread_);
   // Stores the minimum jitter buffer delay. Handles caching cases
   // if `SetJitterBufferMinimumDelay` is called before start.

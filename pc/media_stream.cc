@@ -33,29 +33,29 @@ static typename V::iterator FindTrack(V* vector, const std::string& track_id) {
   return it;
 }
 
-rtc::scoped_refptr<MediaStream> MediaStream::Create(const std::string& id) {
-  return rtc::make_ref_counted<MediaStream>(id);
+scoped_refptr<MediaStream> MediaStream::Create(const std::string& id) {
+  return make_ref_counted<MediaStream>(id);
 }
 
 MediaStream::MediaStream(const std::string& id) : id_(id) {}
 
-bool MediaStream::AddTrack(rtc::scoped_refptr<AudioTrackInterface> track) {
+bool MediaStream::AddTrack(scoped_refptr<AudioTrackInterface> track) {
   return AddTrack<AudioTrackVector, AudioTrackInterface>(&audio_tracks_, track);
 }
 
-bool MediaStream::AddTrack(rtc::scoped_refptr<VideoTrackInterface> track) {
+bool MediaStream::AddTrack(scoped_refptr<VideoTrackInterface> track) {
   return AddTrack<VideoTrackVector, VideoTrackInterface>(&video_tracks_, track);
 }
 
-bool MediaStream::RemoveTrack(rtc::scoped_refptr<AudioTrackInterface> track) {
+bool MediaStream::RemoveTrack(scoped_refptr<AudioTrackInterface> track) {
   return RemoveTrack<AudioTrackVector>(&audio_tracks_, track);
 }
 
-bool MediaStream::RemoveTrack(rtc::scoped_refptr<VideoTrackInterface> track) {
+bool MediaStream::RemoveTrack(scoped_refptr<VideoTrackInterface> track) {
   return RemoveTrack<VideoTrackVector>(&video_tracks_, track);
 }
 
-rtc::scoped_refptr<AudioTrackInterface> MediaStream::FindAudioTrack(
+scoped_refptr<AudioTrackInterface> MediaStream::FindAudioTrack(
     const std::string& track_id) {
   AudioTrackVector::iterator it = FindTrack(&audio_tracks_, track_id);
   if (it == audio_tracks_.end())
@@ -63,7 +63,7 @@ rtc::scoped_refptr<AudioTrackInterface> MediaStream::FindAudioTrack(
   return *it;
 }
 
-rtc::scoped_refptr<VideoTrackInterface> MediaStream::FindVideoTrack(
+scoped_refptr<VideoTrackInterface> MediaStream::FindVideoTrack(
     const std::string& track_id) {
   VideoTrackVector::iterator it = FindTrack(&video_tracks_, track_id);
   if (it == video_tracks_.end())
@@ -72,8 +72,7 @@ rtc::scoped_refptr<VideoTrackInterface> MediaStream::FindVideoTrack(
 }
 
 template <typename TrackVector, typename Track>
-bool MediaStream::AddTrack(TrackVector* tracks,
-                           rtc::scoped_refptr<Track> track) {
+bool MediaStream::AddTrack(TrackVector* tracks, scoped_refptr<Track> track) {
   typename TrackVector::iterator it = FindTrack(tracks, track->id());
   if (it != tracks->end())
     return false;
@@ -83,9 +82,8 @@ bool MediaStream::AddTrack(TrackVector* tracks,
 }
 
 template <typename TrackVector>
-bool MediaStream::RemoveTrack(
-    TrackVector* tracks,
-    rtc::scoped_refptr<MediaStreamTrackInterface> track) {
+bool MediaStream::RemoveTrack(TrackVector* tracks,
+                              scoped_refptr<MediaStreamTrackInterface> track) {
   RTC_DCHECK(tracks != NULL);
   if (!track)
     return false;

@@ -34,7 +34,7 @@
 namespace webrtc {
 
 SctpTransport::SctpTransport(std::unique_ptr<SctpTransportInternal> internal,
-                             rtc::scoped_refptr<DtlsTransport> dtls_transport)
+                             scoped_refptr<DtlsTransport> dtls_transport)
     : owner_thread_(Thread::Current()),
       info_(SctpTransportState::kConnecting,
             dtls_transport,
@@ -46,8 +46,7 @@ SctpTransport::SctpTransport(std::unique_ptr<SctpTransportInternal> internal,
   RTC_DCHECK(dtls_transport_.get());
 
   dtls_transport_->internal()->SubscribeDtlsTransportState(
-      [this](cricket::DtlsTransportInternal* transport,
-             DtlsTransportState state) {
+      [this](DtlsTransportInternal* transport, DtlsTransportState state) {
         OnDtlsStateChange(transport, state);
       });
 
@@ -95,7 +94,7 @@ RTCError SctpTransport::OpenChannel(int channel_id, PriorityValue priority) {
 
 RTCError SctpTransport::SendData(int channel_id,
                                  const SendDataParams& params,
-                                 const rtc::CopyOnWriteBuffer& buffer) {
+                                 const CopyOnWriteBuffer& buffer) {
   RTC_DCHECK_RUN_ON(owner_thread_);
   return internal_sctp_transport_->SendData(channel_id, params, buffer);
 }
@@ -136,8 +135,7 @@ void SctpTransport::SetBufferedAmountLowThreshold(int channel_id,
   internal_sctp_transport_->SetBufferedAmountLowThreshold(channel_id, bytes);
 }
 
-rtc::scoped_refptr<DtlsTransportInterface> SctpTransport::dtls_transport()
-    const {
+scoped_refptr<DtlsTransportInterface> SctpTransport::dtls_transport() const {
   RTC_DCHECK_RUN_ON(owner_thread_);
   return dtls_transport_;
 }

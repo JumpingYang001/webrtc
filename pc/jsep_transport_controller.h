@@ -96,7 +96,7 @@ class JsepTransportController : public PayloadTypeSuggester,
     virtual bool OnTransportChanged(
         const std::string& mid,
         RtpTransportInternal* rtp_transport,
-        rtc::scoped_refptr<DtlsTransport> dtls_transport,
+        scoped_refptr<DtlsTransport> dtls_transport,
         DataChannelTransportInterface* data_channel_transport) = 0;
   };
 
@@ -121,7 +121,7 @@ class JsepTransportController : public PayloadTypeSuggester,
     Observer* transport_observer = nullptr;
     // Must be provided and valid for the lifetime of the
     // JsepTransportController instance.
-    absl::AnyInvocable<void(const rtc::CopyOnWriteBuffer& packet,
+    absl::AnyInvocable<void(const webrtc::CopyOnWriteBuffer& packet,
                             int64_t packet_time_us) const>
         rtcp_handler;
     absl::AnyInvocable<void(const RtpPacketReceived& parsed_packet) const>
@@ -182,10 +182,8 @@ class JsepTransportController : public PayloadTypeSuggester,
   const DtlsTransportInternal* GetRtcpDtlsTransport(
       const std::string& mid) const;
   // Gets the externally sharable version of the DtlsTransport.
-  rtc::scoped_refptr<DtlsTransport> LookupDtlsTransportByMid(
-      const std::string& mid);
-  rtc::scoped_refptr<SctpTransport> GetSctpTransport(
-      const std::string& mid) const;
+  scoped_refptr<DtlsTransport> LookupDtlsTransportByMid(const std::string& mid);
+  scoped_refptr<SctpTransport> GetSctpTransport(const std::string& mid) const;
 
   DataChannelTransportInterface* GetDataChannelTransport(
       const std::string& mid) const;
@@ -217,9 +215,8 @@ class JsepTransportController : public PayloadTypeSuggester,
    *********************/
   // Specifies the identity to use in this session.
   // Can only be called once.
-  bool SetLocalCertificate(
-      const rtc::scoped_refptr<RTCCertificate>& certificate);
-  rtc::scoped_refptr<RTCCertificate> GetLocalCertificate(
+  bool SetLocalCertificate(const scoped_refptr<RTCCertificate>& certificate);
+  scoped_refptr<RTCCertificate> GetLocalCertificate(
       const std::string& mid) const;
   // Caller owns returned certificate chain. This method mainly exists for
   // stats reporting.
@@ -249,14 +246,14 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   RTCError RollbackTransports();
 
-  // F: void(const std::string&, const std::vector<cricket::Candidate>&)
+  // F: void(const std::string&, const std::vector<webrtc::Candidate>&)
   template <typename F>
   void SubscribeIceCandidateGathered(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
     signal_ice_candidates_gathered_.AddReceiver(std::forward<F>(callback));
   }
 
-  // F: void(cricket::IceConnectionState)
+  // F: void(webrtc::IceConnectionState)
   template <typename F>
   void SubscribeIceConnectionState(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
@@ -278,28 +275,28 @@ class JsepTransportController : public PayloadTypeSuggester,
         std::forward<F>(callback));
   }
 
-  // F: void(cricket::IceGatheringState)
+  // F: void(webrtc::IceGatheringState)
   template <typename F>
   void SubscribeIceGatheringState(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
     signal_ice_gathering_state_.AddReceiver(std::forward<F>(callback));
   }
 
-  // F: void(const cricket::IceCandidateErrorEvent&)
+  // F: void(const webrtc::IceCandidateErrorEvent&)
   template <typename F>
   void SubscribeIceCandidateError(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
     signal_ice_candidate_error_.AddReceiver(std::forward<F>(callback));
   }
 
-  // F: void(const std::vector<cricket::Candidate>&)
+  // F: void(const std::vector<webrtc::Candidate>&)
   template <typename F>
   void SubscribeIceCandidatesRemoved(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
     signal_ice_candidates_removed_.AddReceiver(std::forward<F>(callback));
   }
 
-  // F: void(const cricket::CandidatePairChangeEvent&)
+  // F: void(const webrtc::CandidatePairChangeEvent&)
   template <typename F>
   void SubscribeIceCandidatePairChanged(F&& callback) {
     RTC_DCHECK_RUN_ON(network_thread_);
@@ -313,7 +310,7 @@ class JsepTransportController : public PayloadTypeSuggester,
   // Else if all completed => completed,
   // Else if all connected => connected,
   // Else => connecting
-  CallbackList<cricket::IceConnectionState> signal_ice_connection_state_
+  CallbackList<IceConnectionState> signal_ice_connection_state_
       RTC_GUARDED_BY(network_thread_);
 
   CallbackList<PeerConnectionInterface::PeerConnectionState>
@@ -420,7 +417,7 @@ class JsepTransportController : public PayloadTypeSuggester,
   std::unique_ptr<DtlsTransportInternal> CreateDtlsTransport(
       const ContentInfo& content_info,
       IceTransportInternal* ice);
-  rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+  scoped_refptr<IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       bool rtcp);
 
@@ -460,7 +457,7 @@ class JsepTransportController : public PayloadTypeSuggester,
                                    const IceCandidateErrorEvent& event)
       RTC_RUN_ON(network_thread_);
   void OnTransportCandidatesRemoved_n(IceTransportInternal* transport,
-                                      const cricket::Candidates& candidates)
+                                      const Candidates& candidates)
       RTC_RUN_ON(network_thread_);
   void OnTransportRoleConflict_n(IceTransportInternal* transport)
       RTC_RUN_ON(network_thread_);
@@ -470,8 +467,7 @@ class JsepTransportController : public PayloadTypeSuggester,
       RTC_RUN_ON(network_thread_);
   void UpdateAggregateStates_n() RTC_RUN_ON(network_thread_);
 
-  void OnRtcpPacketReceived_n(rtc::CopyOnWriteBuffer* packet,
-                              int64_t packet_time_us)
+  void OnRtcpPacketReceived_n(CopyOnWriteBuffer* packet, int64_t packet_time_us)
       RTC_RUN_ON(network_thread_);
   void OnUnDemuxableRtpPacketReceived_n(const RtpPacketReceived& packet)
       RTC_RUN_ON(network_thread_);
@@ -489,8 +485,7 @@ class JsepTransportController : public PayloadTypeSuggester,
   // Aggregate states for Transports.
   // standardized_ice_connection_state_ is intended to replace
   // ice_connection_state, see bugs.webrtc.org/9308
-  cricket::IceConnectionState ice_connection_state_ =
-      cricket::kIceConnectionConnecting;
+  IceConnectionState ice_connection_state_ = kIceConnectionConnecting;
   PeerConnectionInterface::IceConnectionState
       standardized_ice_connection_state_ =
           PeerConnectionInterface::kIceConnectionNew;
@@ -505,7 +500,7 @@ class JsepTransportController : public PayloadTypeSuggester,
 
   IceConfig ice_config_;
   IceRole ice_role_ = ICEROLE_CONTROLLING;
-  rtc::scoped_refptr<RTCCertificate> certificate_;
+  scoped_refptr<RTCCertificate> certificate_;
 
   BundleManager bundles_;
   // Reference to the SdpOfferAnswerHandler's payload type picker.

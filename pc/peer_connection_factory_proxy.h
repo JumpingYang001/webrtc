@@ -32,7 +32,7 @@ namespace webrtc {
 BEGIN_PROXY_MAP(PeerConnectionFactory)
 PROXY_PRIMARY_THREAD_DESTRUCTOR()
 PROXY_METHOD1(void, SetOptions, const Options&)
-PROXY_METHOD2(RTCErrorOr<rtc::scoped_refptr<PeerConnectionInterface>>,
+PROXY_METHOD2(RTCErrorOr<webrtc::scoped_refptr<PeerConnectionInterface>>,
               CreatePeerConnectionOrError,
               const PeerConnectionInterface::RTCConfiguration&,
               PeerConnectionDependencies)
@@ -40,17 +40,17 @@ PROXY_CONSTMETHOD1(RtpCapabilities, GetRtpSenderCapabilities, webrtc::MediaType)
 PROXY_CONSTMETHOD1(RtpCapabilities,
                    GetRtpReceiverCapabilities,
                    webrtc::MediaType)
-PROXY_METHOD1(rtc::scoped_refptr<MediaStreamInterface>,
+PROXY_METHOD1(scoped_refptr<MediaStreamInterface>,
               CreateLocalMediaStream,
               const std::string&)
-PROXY_METHOD1(rtc::scoped_refptr<AudioSourceInterface>,
+PROXY_METHOD1(scoped_refptr<AudioSourceInterface>,
               CreateAudioSource,
               const AudioOptions&)
-PROXY_METHOD2(rtc::scoped_refptr<VideoTrackInterface>,
+PROXY_METHOD2(scoped_refptr<VideoTrackInterface>,
               CreateVideoTrack,
-              rtc::scoped_refptr<VideoTrackSourceInterface>,
+              scoped_refptr<VideoTrackSourceInterface>,
               absl::string_view)
-PROXY_METHOD2(rtc::scoped_refptr<AudioTrackInterface>,
+PROXY_METHOD2(scoped_refptr<AudioTrackInterface>,
               CreateAudioTrack,
               const std::string&,
               AudioSourceInterface*)

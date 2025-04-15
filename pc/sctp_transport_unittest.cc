@@ -57,7 +57,7 @@ class FakeCricketSctpTransport : public SctpTransportInternal {
   bool ResetStream(int sid) override { return true; }
   RTCError SendData(int sid,
                     const SendDataParams& params,
-                    const rtc::CopyOnWriteBuffer& payload) override {
+                    const CopyOnWriteBuffer& payload) override {
     return RTCError::OK();
   }
   bool ReadyToSendData() override { return true; }
@@ -127,11 +127,11 @@ class SctpTransportTest : public ::testing::Test {
         std::make_unique<FakeDtlsTransport>("audio",
                                             ICE_CANDIDATE_COMPONENT_RTP);
     dtls_transport_ =
-        rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
+        make_ref_counted<DtlsTransport>(std::move(cricket_transport));
 
     auto cricket_sctp_transport =
         absl::WrapUnique(new FakeCricketSctpTransport());
-    transport_ = rtc::make_ref_counted<SctpTransport>(
+    transport_ = make_ref_counted<SctpTransport>(
         std::move(cricket_sctp_transport), dtls_transport_);
   }
 
@@ -148,8 +148,8 @@ class SctpTransportTest : public ::testing::Test {
   }
 
   AutoThread main_thread_;
-  rtc::scoped_refptr<SctpTransport> transport_;
-  rtc::scoped_refptr<DtlsTransport> dtls_transport_;
+  scoped_refptr<SctpTransport> transport_;
+  scoped_refptr<DtlsTransport> dtls_transport_;
   TestSctpTransportObserver observer_;
 };
 
@@ -157,14 +157,13 @@ TEST(SctpTransportSimpleTest, CreateClearDelete) {
   AutoThread main_thread;
   std::unique_ptr<DtlsTransportInternal> cricket_transport =
       std::make_unique<FakeDtlsTransport>("audio", ICE_CANDIDATE_COMPONENT_RTP);
-  rtc::scoped_refptr<DtlsTransport> dtls_transport =
-      rtc::make_ref_counted<DtlsTransport>(std::move(cricket_transport));
+  scoped_refptr<DtlsTransport> dtls_transport =
+      make_ref_counted<DtlsTransport>(std::move(cricket_transport));
 
   std::unique_ptr<SctpTransportInternal> fake_cricket_sctp_transport =
       absl::WrapUnique(new FakeCricketSctpTransport());
-  rtc::scoped_refptr<SctpTransport> sctp_transport =
-      rtc::make_ref_counted<SctpTransport>(
-          std::move(fake_cricket_sctp_transport), dtls_transport);
+  scoped_refptr<SctpTransport> sctp_transport = make_ref_counted<SctpTransport>(
+      std::move(fake_cricket_sctp_transport), dtls_transport);
   ASSERT_TRUE(sctp_transport->internal());
   ASSERT_EQ(SctpTransportState::kConnecting,
             sctp_transport->Information().state());

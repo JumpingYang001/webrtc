@@ -220,9 +220,9 @@ class BaseChannel : public ChannelInterface,
 
   // NetworkInterface implementation, called by MediaEngine
   bool SendPacket(CopyOnWriteBuffer* packet,
-                  const rtc::PacketOptions& options) override;
+                  const AsyncSocketPacketOptions& options) override;
   bool SendRtcp(CopyOnWriteBuffer* packet,
-                const rtc::PacketOptions& options) override;
+                const AsyncSocketPacketOptions& options) override;
 
   // From RtpTransportInternal
   void OnWritableState(bool writable);
@@ -231,7 +231,7 @@ class BaseChannel : public ChannelInterface,
 
   bool SendPacket(bool rtcp,
                   CopyOnWriteBuffer* packet,
-                  const rtc::PacketOptions& options);
+                  const AsyncSocketPacketOptions& options);
 
   void EnableMedia_w() RTC_RUN_ON(worker_thread());
   void DisableMedia_w() RTC_RUN_ON(worker_thread());
@@ -308,7 +308,7 @@ class BaseChannel : public ChannelInterface,
  private:
   bool ConnectToRtpTransport_n() RTC_RUN_ON(network_thread());
   void DisconnectFromRtpTransport_n() RTC_RUN_ON(network_thread());
-  void SignalSentPacket_n(const rtc::SentPacket& sent_packet);
+  void SignalSentPacket_n(const SentPacketInfo& sent_packet);
 
   TaskQueueBase* const worker_thread_;
   Thread* const network_thread_;

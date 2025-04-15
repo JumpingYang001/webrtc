@@ -21,13 +21,13 @@ using webrtc::LocalAudioSource;
 TEST(LocalAudioSourceTest, InitWithAudioOptions) {
   webrtc::AudioOptions audio_options;
   audio_options.highpass_filter = true;
-  rtc::scoped_refptr<LocalAudioSource> source =
+  webrtc::scoped_refptr<LocalAudioSource> source =
       LocalAudioSource::Create(&audio_options);
   EXPECT_EQ(true, source->options().highpass_filter);
 }
 
 TEST(LocalAudioSourceTest, InitWithNoOptions) {
-  rtc::scoped_refptr<LocalAudioSource> source =
+  webrtc::scoped_refptr<LocalAudioSource> source =
       LocalAudioSource::Create(nullptr);
   EXPECT_EQ(std::nullopt, source->options().highpass_filter);
 }

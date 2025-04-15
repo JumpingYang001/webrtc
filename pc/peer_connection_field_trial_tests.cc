@@ -93,7 +93,7 @@ class PeerConnectionFieldTrialTest : public ::testing::Test {
   Clock* const clock_;
   std::unique_ptr<SocketServer> socket_server_;
   AutoSocketServerThread main_thread_;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_ = nullptr;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_ = nullptr;
   PeerConnectionInterface::RTCConfiguration config_;
 };
 
@@ -113,7 +113,7 @@ TEST_F(PeerConnectionFieldTrialTest, EnableDependencyDescriptorAdvertised) {
   const MediaContentDescription* media_description1 =
       contents1[0].media_description();
   EXPECT_EQ(webrtc::MediaType::VIDEO, media_description1->type());
-  const cricket::RtpHeaderExtensions& rtp_header_extensions1 =
+  const RtpHeaderExtensions& rtp_header_extensions1 =
       media_description1->rtp_header_extensions();
 
   bool found =
@@ -141,13 +141,13 @@ TEST_F(PeerConnectionFieldTrialTest, MAYBE_InjectDependencyDescriptor) {
   caller->AddTransceiver(webrtc::MediaType::VIDEO);
 
   auto offer = caller->CreateOffer();
-  cricket::ContentInfos& contents1 = offer->description()->contents();
+  ContentInfos& contents1 = offer->description()->contents();
   ASSERT_EQ(1u, contents1.size());
 
   MediaContentDescription* media_description1 =
       contents1[0].media_description();
   EXPECT_EQ(webrtc::MediaType::VIDEO, media_description1->type());
-  cricket::RtpHeaderExtensions rtp_header_extensions1 =
+  RtpHeaderExtensions rtp_header_extensions1 =
       media_description1->rtp_header_extensions();
 
   bool found1 =
@@ -185,13 +185,13 @@ TEST_F(PeerConnectionFieldTrialTest, MAYBE_InjectDependencyDescriptor) {
   ASSERT_TRUE(callee->SetRemoteDescription(std::move(offer)));
   auto answer = callee->CreateAnswer();
 
-  cricket::ContentInfos& contents2 = answer->description()->contents();
+  ContentInfos& contents2 = answer->description()->contents();
   ASSERT_EQ(1u, contents2.size());
 
   MediaContentDescription* media_description2 =
       contents2[0].media_description();
   EXPECT_EQ(webrtc::MediaType::VIDEO, media_description2->type());
-  cricket::RtpHeaderExtensions rtp_header_extensions2 =
+  RtpHeaderExtensions rtp_header_extensions2 =
       media_description2->rtp_header_extensions();
 
   bool found2 =

@@ -22,14 +22,14 @@
 namespace webrtc {
 
 // static
-rtc::scoped_refptr<AudioTrack> AudioTrack::Create(
+scoped_refptr<AudioTrack> AudioTrack::Create(
     absl::string_view id,
-    const rtc::scoped_refptr<AudioSourceInterface>& source) {
-  return rtc::make_ref_counted<AudioTrack>(id, source);
+    const scoped_refptr<AudioSourceInterface>& source) {
+  return make_ref_counted<AudioTrack>(id, source);
 }
 
 AudioTrack::AudioTrack(absl::string_view label,
-                       const rtc::scoped_refptr<AudioSourceInterface>& source)
+                       const scoped_refptr<AudioSourceInterface>& source)
     : MediaStreamTrack<AudioTrackInterface>(label), audio_source_(source) {
   if (audio_source_) {
     audio_source_->RegisterObserver(this);

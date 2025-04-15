@@ -55,10 +55,10 @@ class FakeDataChannelController
     return weak_factory_.GetWeakPtr();
   }
 
-  rtc::scoped_refptr<webrtc::SctpDataChannel> CreateDataChannel(
+  webrtc::scoped_refptr<webrtc::SctpDataChannel> CreateDataChannel(
       absl::string_view label,
       webrtc::InternalDataChannelInit init) {
-    rtc::scoped_refptr<webrtc::SctpDataChannel> channel =
+    webrtc::scoped_refptr<webrtc::SctpDataChannel> channel =
         network_thread_->BlockingCall([&]() {
           RTC_DCHECK_RUN_ON(network_thread_);
           webrtc::WeakPtr<FakeDataChannelController> my_weak_ptr = weak_ptr();
@@ -67,7 +67,7 @@ class FakeDataChannelController
           // thread.
           RTC_CHECK(my_weak_ptr);
 
-          rtc::scoped_refptr<webrtc::SctpDataChannel> channel =
+          webrtc::scoped_refptr<webrtc::SctpDataChannel> channel =
               webrtc::SctpDataChannel::Create(
                   std::move(my_weak_ptr), std::string(label),
                   transport_available_, init, signaling_thread_,
@@ -91,7 +91,7 @@ class FakeDataChannelController
 
   webrtc::RTCError SendData(webrtc::StreamId sid,
                             const webrtc::SendDataParams& params,
-                            const rtc::CopyOnWriteBuffer& payload) override {
+                            const webrtc::CopyOnWriteBuffer& payload) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     RTC_CHECK(ready_to_send_);
     RTC_CHECK(transport_available_);

@@ -55,8 +55,8 @@ bool SdpContentsAll(SdpContentPredicate pred, const SessionDescription* desc) {
 
 bool SdpContentsNone(SdpContentPredicate pred, const SessionDescription* desc) {
   return SdpContentsAll(
-      [pred](const cricket::ContentInfo* content_info,
-             const cricket::TransportInfo* transport_info) {
+      [pred](const ContentInfo* content_info,
+             const TransportInfo* transport_info) {
         return !pred(content_info, transport_info);
       },
       desc);

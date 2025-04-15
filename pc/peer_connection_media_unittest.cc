@@ -77,7 +77,7 @@ using ::testing::NotNull;
 using ::testing::Values;
 
 RtpTransceiver* RtpTransceiverInternal(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   auto transceiver_with_internal = static_cast<
       RefCountedObject<RtpTransceiverProxyWithInternal<RtpTransceiver>>*>(
       transceiver.get());
@@ -87,34 +87,34 @@ RtpTransceiver* RtpTransceiverInternal(
 }
 
 MediaSendChannelInterface* SendChannelInternal(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   auto transceiver_internal = RtpTransceiverInternal(transceiver);
   return transceiver_internal->channel()->media_send_channel();
 }
 
 MediaReceiveChannelInterface* ReceiveChannelInternal(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   auto transceiver_internal = RtpTransceiverInternal(transceiver);
   return transceiver_internal->channel()->media_receive_channel();
 }
 
 FakeVideoMediaSendChannel* VideoMediaSendChannel(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   return static_cast<FakeVideoMediaSendChannel*>(
       SendChannelInternal(transceiver));
 }
 FakeVideoMediaReceiveChannel* VideoMediaReceiveChannel(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   return static_cast<FakeVideoMediaReceiveChannel*>(
       ReceiveChannelInternal(transceiver));
 }
 FakeVoiceMediaSendChannel* VoiceMediaSendChannel(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   return static_cast<FakeVoiceMediaSendChannel*>(
       SendChannelInternal(transceiver));
 }
 FakeVoiceMediaReceiveChannel* VoiceMediaReceiveChannel(
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   return static_cast<FakeVoiceMediaReceiveChannel*>(
       ReceiveChannelInternal(transceiver));
 }

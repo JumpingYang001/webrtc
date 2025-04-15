@@ -34,16 +34,16 @@ namespace webrtc {
 class MockRtpReceiverInternal : public RtpReceiverInternal {
  public:
   // RtpReceiverInterface methods.
-  MOCK_METHOD(rtc::scoped_refptr<MediaStreamTrackInterface>,
+  MOCK_METHOD(scoped_refptr<MediaStreamTrackInterface>,
               track,
               (),
               (const, override));
-  MOCK_METHOD(rtc::scoped_refptr<DtlsTransportInterface>,
+  MOCK_METHOD(scoped_refptr<DtlsTransportInterface>,
               dtls_transport,
               (),
               (const, override));
   MOCK_METHOD(std::vector<std::string>, stream_ids, (), (const, override));
-  MOCK_METHOD(std::vector<rtc::scoped_refptr<MediaStreamInterface>>,
+  MOCK_METHOD(std::vector<scoped_refptr<MediaStreamInterface>>,
               streams,
               (),
               (const, override));
@@ -58,9 +58,9 @@ class MockRtpReceiverInternal : public RtpReceiverInternal {
   MOCK_METHOD(std::vector<RtpSource>, GetSources, (), (const, override));
   MOCK_METHOD(void,
               SetFrameDecryptor,
-              (rtc::scoped_refptr<FrameDecryptorInterface>),
+              (webrtc::scoped_refptr<FrameDecryptorInterface>),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<FrameDecryptorInterface>,
+  MOCK_METHOD(scoped_refptr<FrameDecryptorInterface>,
               GetFrameDecryptor,
               (),
               (const, override));
@@ -78,11 +78,11 @@ class MockRtpReceiverInternal : public RtpReceiverInternal {
   MOCK_METHOD(void, set_stream_ids, (std::vector<std::string>), (override));
   MOCK_METHOD(void,
               set_transport,
-              (rtc::scoped_refptr<DtlsTransportInterface>),
+              (webrtc::scoped_refptr<DtlsTransportInterface>),
               (override));
   MOCK_METHOD(void,
               SetStreams,
-              (const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&),
+              (const std::vector<webrtc::scoped_refptr<MediaStreamInterface>>&),
               (override));
   MOCK_METHOD(int, AttachmentId, (), (const, override));
 };

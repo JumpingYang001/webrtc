@@ -105,7 +105,7 @@ class FakeAdmTest : public ::testing::Test, public webrtc::AudioTransport {
     return pull_iterations_;
   }
 
-  rtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
+  webrtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
 
  private:
   bool RecordedDataReceived() const { return rec_buffer_bytes_ != 0; }

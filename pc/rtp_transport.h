@@ -71,18 +71,18 @@ class RtpTransport : public RtpTransportInternal {
 
   bool IsWritable(bool rtcp) const override;
 
-  bool SendRtpPacket(rtc::CopyOnWriteBuffer* packet,
-                     const rtc::PacketOptions& options,
+  bool SendRtpPacket(CopyOnWriteBuffer* packet,
+                     const AsyncSocketPacketOptions& options,
                      int flags) override;
 
-  bool SendRtcpPacket(rtc::CopyOnWriteBuffer* packet,
-                      const rtc::PacketOptions& options,
+  bool SendRtcpPacket(CopyOnWriteBuffer* packet,
+                      const AsyncSocketPacketOptions& options,
                       int flags) override;
 
   bool IsSrtpActive() const override { return false; }
 
   void UpdateRtpHeaderExtensionMap(
-      const cricket::RtpHeaderExtensions& header_extensions) override;
+      const RtpHeaderExtensions& header_extensions) override;
 
   bool RegisterRtpDemuxerSink(const RtpDemuxerCriteria& criteria,
                               RtpPacketSinkInterface* sink) override;
@@ -91,29 +91,29 @@ class RtpTransport : public RtpTransportInternal {
 
  protected:
   // These methods will be used in the subclasses.
-  void DemuxPacket(rtc::CopyOnWriteBuffer packet,
+  void DemuxPacket(CopyOnWriteBuffer packet,
                    Timestamp arrival_time,
-                   rtc::EcnMarking ecn);
+                   EcnMarking ecn);
 
   bool SendPacket(bool rtcp,
-                  rtc::CopyOnWriteBuffer* packet,
-                  const rtc::PacketOptions& options,
+                  CopyOnWriteBuffer* packet,
+                  const AsyncSocketPacketOptions& options,
                   int flags);
   flat_set<uint32_t> GetSsrcsForSink(RtpPacketSinkInterface* sink);
 
   // Overridden by SrtpTransport.
   virtual void OnNetworkRouteChanged(std::optional<NetworkRoute> network_route);
-  virtual void OnRtpPacketReceived(const rtc::ReceivedPacket& packet);
-  virtual void OnRtcpPacketReceived(const rtc::ReceivedPacket& packet);
+  virtual void OnRtpPacketReceived(const ReceivedIpPacket& packet);
+  virtual void OnRtcpPacketReceived(const ReceivedIpPacket& packet);
   // Overridden by SrtpTransport and DtlsSrtpTransport.
   virtual void OnWritableState(PacketTransportInternal* packet_transport);
 
  private:
   void OnReadyToSend(PacketTransportInternal* transport);
   void OnSentPacket(PacketTransportInternal* packet_transport,
-                    const rtc::SentPacket& sent_packet);
+                    const SentPacketInfo& sent_packet);
   void OnReadPacket(PacketTransportInternal* transport,
-                    const rtc::ReceivedPacket& received_packet);
+                    const ReceivedIpPacket& received_packet);
 
   // Updates "ready to send" for an individual channel and fires
   // SignalReadyToSend.

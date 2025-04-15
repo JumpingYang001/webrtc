@@ -31,9 +31,9 @@ for details.
 The cipher suite ordering allows a non-WebRTC peer to prefer GCM cipher suites,
 however they are not selected as default by two instances of the WebRTC library.
 
-## cricket::SrtpSession
+## webrtc::SrtpSession
 
-The [`cricket::SrtpSession`][3] is providing encryption and decryption of SRTP
+The [`webrtc::SrtpSession`][3] is providing encryption and decryption of SRTP
 packets using [`libsrtp`](https://github.com/cisco/libsrtp). Keys will be
 provided by `SrtpTransport` or `DtlsSrtpTransport` in the [`SetSend`][4] and
 [`SetRecv`][5] methods.

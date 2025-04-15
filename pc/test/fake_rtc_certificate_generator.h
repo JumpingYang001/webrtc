@@ -164,7 +164,7 @@ class FakeRTCCertificateGenerator
         });
   }
 
-  static rtc::scoped_refptr<webrtc::RTCCertificate> GenerateCertificate() {
+  static webrtc::scoped_refptr<webrtc::RTCCertificate> GenerateCertificate() {
     switch (webrtc::KT_DEFAULT) {
       case webrtc::KT_RSA:
         return webrtc::RTCCertificate::FromPEM(kRsaPems[0]);
@@ -212,7 +212,7 @@ class FakeRTCCertificateGenerator
       ++generated_failures_;
       std::move(callback)(nullptr);
     } else {
-      rtc::scoped_refptr<webrtc::RTCCertificate> certificate =
+      webrtc::scoped_refptr<webrtc::RTCCertificate> certificate =
           webrtc::RTCCertificate::FromPEM(get_pem(key_type));
       RTC_DCHECK(certificate);
       ++generated_certificates_;

@@ -43,7 +43,7 @@ std::vector<SimulcastLayer> CreateLayers(const std::vector<std::string>& rids,
 RtpTransceiverInit CreateTransceiverInit(
     const std::vector<SimulcastLayer>& layers) {
   RtpTransceiverInit init;
-  for (const cricket::SimulcastLayer& layer : layers) {
+  for (const SimulcastLayer& layer : layers) {
     RtpEncodingParameters encoding;
     encoding.rid = layer.rid;
     encoding.active = !layer.is_paused;

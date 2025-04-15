@@ -30,19 +30,19 @@
 
 namespace webrtc {
 
-// This implementation wraps a cricket::SctpTransport, and takes
+// This implementation wraps a webrtc::SctpTransport, and takes
 // ownership of it.
 // This object must be constructed and updated on the networking thread,
-// the same thread as the one the cricket::SctpTransportInternal object
+// the same thread as the one the webrtc::SctpTransportInternal object
 // lives on.
 class SctpTransport : public SctpTransportInterface,
                       public DataChannelTransportInterface {
  public:
   SctpTransport(std::unique_ptr<SctpTransportInternal> internal,
-                rtc::scoped_refptr<DtlsTransport> dtls_transport);
+                scoped_refptr<DtlsTransport> dtls_transport);
 
   // SctpTransportInterface
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
+  scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
   SctpTransportInformation Information() const override;
   void RegisterObserver(SctpTransportObserverInterface* observer) override;
   void UnregisterObserver() override;
@@ -51,7 +51,7 @@ class SctpTransport : public SctpTransportInterface,
   RTCError OpenChannel(int channel_id, PriorityValue priority) override;
   RTCError SendData(int channel_id,
                     const SendDataParams& params,
-                    const rtc::CopyOnWriteBuffer& buffer) override;
+                    const CopyOnWriteBuffer& buffer) override;
   RTCError CloseChannel(int channel_id) override;
   void SetDataSink(DataChannelSink* sink) override;
   bool IsReadyToSend() const override;
@@ -61,7 +61,7 @@ class SctpTransport : public SctpTransportInterface,
 
   // Internal functions
   void Clear();
-  // Initialize the cricket::SctpTransport. This can be called from
+  // Initialize the webrtc::SctpTransport. This can be called from
   // the signaling thread.
   void Start(const SctpOptions& options);
 
@@ -98,8 +98,7 @@ class SctpTransport : public SctpTransportInterface,
       RTC_GUARDED_BY(owner_thread_);
   SctpTransportObserverInterface* observer_ RTC_GUARDED_BY(owner_thread_) =
       nullptr;
-  rtc::scoped_refptr<DtlsTransport> dtls_transport_
-      RTC_GUARDED_BY(owner_thread_);
+  scoped_refptr<DtlsTransport> dtls_transport_ RTC_GUARDED_BY(owner_thread_);
 };
 
 }  // namespace webrtc

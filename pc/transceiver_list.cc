@@ -61,7 +61,7 @@ std::vector<RtpTransceiver*> TransceiverList::ListInternal() const {
 }
 
 RtpTransceiverProxyRefPtr TransceiverList::FindBySender(
-    rtc::scoped_refptr<RtpSenderInterface> sender) const {
+    scoped_refptr<RtpSenderInterface> sender) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   for (auto transceiver : transceivers_) {
     if (transceiver->sender() == sender) {

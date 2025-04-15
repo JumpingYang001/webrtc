@@ -175,9 +175,8 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
         CreateModularPeerConnectionFactory(std::move(pcf_deps));
 
     RTCConfiguration modified_config = config;
-    modified_config.set_port_allocator_flags(
-        cricket::PORTALLOCATOR_DISABLE_TCP |
-        cricket::PORTALLOCATOR_DISABLE_RELAY);
+    modified_config.set_port_allocator_flags(PORTALLOCATOR_DISABLE_TCP |
+                                             PORTALLOCATOR_DISABLE_RELAY);
     modified_config.sdp_semantics = sdp_semantics_;
     auto observer = std::make_unique<MockPeerConnectionObserver>();
     PeerConnectionDependencies pc_dependencies(observer.get());
@@ -826,7 +825,7 @@ TEST_P(PeerConnectionIceTest,
 
   // Chain an operation that will block AddIceCandidate() from executing.
   auto answer_observer =
-      rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+      make_ref_counted<MockCreateSessionDescriptionObserver>();
   callee->pc()->CreateAnswer(answer_observer.get(), RTCOfferAnswerOptions());
 
   auto jsep_candidate =
@@ -880,7 +879,7 @@ TEST_P(PeerConnectionIceTest,
 
   // Chain an operation that will block AddIceCandidate() from executing.
   auto answer_observer =
-      rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+      make_ref_counted<MockCreateSessionDescriptionObserver>();
   callee->pc()->CreateAnswer(answer_observer.get(), RTCOfferAnswerOptions());
 
   auto jsep_candidate =
@@ -1482,8 +1481,8 @@ class PeerConnectionIceConfigTest : public ::testing::Test {
 
   std::unique_ptr<SocketServer> socket_server_;
   AutoSocketServerThread main_thread_;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_ = nullptr;
-  rtc::scoped_refptr<PeerConnectionInterface> pc_ = nullptr;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_ = nullptr;
+  scoped_refptr<PeerConnectionInterface> pc_ = nullptr;
   FakePortAllocator* port_allocator_ = nullptr;
 
   MockPeerConnectionObserver observer_;

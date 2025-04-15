@@ -60,7 +60,7 @@
 
 namespace webrtc {
 
-using cricket::MediaContentDescription;
+using webrtc::MediaContentDescription;
 using RTCConfiguration = PeerConnectionInterface::RTCConfiguration;
 using ::testing::Combine;
 using ::testing::ElementsAre;
@@ -98,7 +98,7 @@ class PeerConnectionJsepTest : public ::testing::Test {
   }
 
   WrapperPtr CreatePeerConnection(const RTCConfiguration& config) {
-    rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory =
+    scoped_refptr<PeerConnectionFactoryInterface> pc_factory =
         CreateModularPeerConnectionFactory(
             CreatePeerConnectionFactoryDependencies());
     auto observer = std::make_unique<MockPeerConnectionObserver>();

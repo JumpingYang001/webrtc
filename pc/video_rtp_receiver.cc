@@ -51,10 +51,10 @@ VideoRtpReceiver::VideoRtpReceiver(Thread* worker_thread,
 VideoRtpReceiver::VideoRtpReceiver(
     Thread* worker_thread,
     const std::string& receiver_id,
-    const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams)
+    const std::vector<scoped_refptr<MediaStreamInterface>>& streams)
     : worker_thread_(worker_thread),
       id_(receiver_id),
-      source_(rtc::make_ref_counted<VideoRtpTrackSource>(&source_callback_)),
+      source_(make_ref_counted<VideoRtpTrackSource>(&source_callback_)),
       track_(VideoTrackProxyWithInternal<VideoTrack>::Create(
           Thread::Current(),
           worker_thread,
@@ -78,14 +78,13 @@ std::vector<std::string> VideoRtpReceiver::stream_ids() const {
   return stream_ids;
 }
 
-rtc::scoped_refptr<DtlsTransportInterface> VideoRtpReceiver::dtls_transport()
-    const {
+scoped_refptr<DtlsTransportInterface> VideoRtpReceiver::dtls_transport() const {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   return dtls_transport_;
 }
 
-std::vector<rtc::scoped_refptr<MediaStreamInterface>>
-VideoRtpReceiver::streams() const {
+std::vector<scoped_refptr<MediaStreamInterface>> VideoRtpReceiver::streams()
+    const {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   return streams_;
 }
@@ -101,7 +100,7 @@ RtpParameters VideoRtpReceiver::GetParameters() const {
 }
 
 void VideoRtpReceiver::SetFrameDecryptor(
-    rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   frame_decryptor_ = std::move(frame_decryptor);
   // Special Case: Set the frame decryptor to any value on any existing channel.
@@ -110,14 +109,14 @@ void VideoRtpReceiver::SetFrameDecryptor(
   }
 }
 
-rtc::scoped_refptr<FrameDecryptorInterface>
-VideoRtpReceiver::GetFrameDecryptor() const {
+scoped_refptr<FrameDecryptorInterface> VideoRtpReceiver::GetFrameDecryptor()
+    const {
   RTC_DCHECK_RUN_ON(worker_thread_);
   return frame_decryptor_;
 }
 
 void VideoRtpReceiver::SetFrameTransformer(
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   frame_transformer_ = std::move(frame_transformer);
   if (media_channel_) {
@@ -219,13 +218,13 @@ void VideoRtpReceiver::set_stream_ids(std::vector<std::string> stream_ids) {
 }
 
 void VideoRtpReceiver::set_transport(
-    rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) {
+    scoped_refptr<DtlsTransportInterface> dtls_transport) {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   dtls_transport_ = std::move(dtls_transport);
 }
 
 void VideoRtpReceiver::SetStreams(
-    const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams) {
+    const std::vector<scoped_refptr<MediaStreamInterface>>& streams) {
   RTC_DCHECK_RUN_ON(&signaling_thread_checker_);
   // Remove remote track from any streams that are going away.
   for (const auto& existing_stream : streams_) {

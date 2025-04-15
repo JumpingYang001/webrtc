@@ -19,9 +19,9 @@ using webrtc::MediaSourceInterface;
 
 namespace webrtc {
 
-rtc::scoped_refptr<LocalAudioSource> LocalAudioSource::Create(
+scoped_refptr<LocalAudioSource> LocalAudioSource::Create(
     const AudioOptions* audio_options) {
-  auto source = rtc::make_ref_counted<LocalAudioSource>();
+  auto source = make_ref_counted<LocalAudioSource>();
   source->Initialize(audio_options);
   return source;
 }

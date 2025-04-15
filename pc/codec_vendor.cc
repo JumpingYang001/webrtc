@@ -287,7 +287,7 @@ void MergeCodecs(const CodecList& reference_codecs,
         continue;
       }
 
-      rtx_codec.params[cricket::kCodecParamAssociatedPayloadType] =
+      rtx_codec.params[kCodecParamAssociatedPayloadType] =
           absl::StrCat(matching_codec->id);
       used_pltypes->FindAndSetIdUsed(&rtx_codec);
       offered_codecs.push_back(rtx_codec);
@@ -307,7 +307,7 @@ void MergeCodecs(const CodecList& reference_codecs,
           continue;
         }
 
-        red_codec.params[cricket::kCodecParamNotInNameValueFormat] =
+        red_codec.params[kCodecParamNotInNameValueFormat] =
             absl::StrCat(matching_codec->id) + "/" +
             absl::StrCat(matching_codec->id);
       }

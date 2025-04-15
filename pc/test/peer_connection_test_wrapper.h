@@ -57,24 +57,24 @@ class PeerConnectionTestWrapper
 
   bool CreatePc(
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
-      rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory,
-      rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
       std::unique_ptr<webrtc::FieldTrialsView> field_trials = nullptr);
   bool CreatePc(
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
-      rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory,
-      rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
       std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
       std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
       std::unique_ptr<webrtc::FieldTrialsView> field_trials = nullptr);
 
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory()
+  webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory()
       const {
     return peer_connection_factory_;
   }
   webrtc::PeerConnectionInterface* pc() { return peer_connection_.get(); }
 
-  rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
+  webrtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
       const std::string& label,
       const webrtc::DataChannelInit& init);
 
@@ -88,11 +88,11 @@ class PeerConnectionTestWrapper
   void OnSignalingChange(
       webrtc::PeerConnectionInterface::SignalingState new_state) override;
   void OnAddTrack(
-      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
-      const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>&
+      webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+      const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>>&
           streams) override;
-  void OnDataChannel(
-      rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) override;
+  void OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface>
+                         data_channel) override;
   void OnRenegotiationNeeded() override {}
   void OnIceConnectionChange(
       webrtc::PeerConnectionInterface::IceConnectionState new_state) override {}
@@ -127,7 +127,7 @@ class PeerConnectionTestWrapper
   sigslot::signal1<const std::string&> SignalOnSdpReady;
   sigslot::signal1<webrtc::DataChannelInterface*> SignalOnDataChannel;
 
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> GetUserMedia(
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> GetUserMedia(
       bool audio,
       const webrtc::AudioOptions& audio_options,
       bool video,
@@ -148,14 +148,14 @@ class PeerConnectionTestWrapper
   webrtc::Thread* const network_thread_;
   webrtc::Thread* const worker_thread_;
   webrtc::SequenceChecker pc_thread_checker_;
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+  webrtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
+  webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
-  rtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
+  webrtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
   std::unique_ptr<webrtc::FakeVideoTrackRenderer> renderer_;
   int num_get_user_media_calls_ = 0;
   bool pending_negotiation_;
-  std::vector<rtc::scoped_refptr<webrtc::FakePeriodicVideoTrackSource>>
+  std::vector<webrtc::scoped_refptr<webrtc::FakePeriodicVideoTrackSource>>
       fake_video_sources_;
 };
 

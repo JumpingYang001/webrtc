@@ -54,10 +54,10 @@ void AddIdIfDefined(const std::optional<std::string>& id,
 
 }  // namespace
 
-rtc::scoped_refptr<RTCStatsReport> TakeReferencedStats(
-    rtc::scoped_refptr<RTCStatsReport> report,
+scoped_refptr<RTCStatsReport> TakeReferencedStats(
+    scoped_refptr<RTCStatsReport> report,
     const std::vector<std::string>& ids) {
-  rtc::scoped_refptr<RTCStatsReport> result =
+  scoped_refptr<RTCStatsReport> result =
       RTCStatsReport::Create(report->timestamp());
   for (const auto& id : ids) {
     TraverseAndTakeVisitedStats(report.get(), result.get(), id);

@@ -45,19 +45,19 @@ class SrtpSession {
   // Configures the session for sending data using the specified
   // crypto suite and key. Receiving must be done by a separate session.
   bool SetSend(int crypto_suite,
-               const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+               const ZeroOnFreeBuffer<uint8_t>& key,
                const std::vector<int>& extension_ids);
   bool UpdateSend(int crypto_suite,
-                  const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                  const ZeroOnFreeBuffer<uint8_t>& key,
                   const std::vector<int>& extension_ids);
 
   // Configures the session for receiving data using the specified
   // crypto suite and key. Sending must be done by a separate session.
   bool SetReceive(int crypto_suite,
-                  const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                  const ZeroOnFreeBuffer<uint8_t>& key,
                   const std::vector<int>& extension_ids);
   bool UpdateReceive(int crypto_suite,
-                     const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                     const ZeroOnFreeBuffer<uint8_t>& key,
                      const std::vector<int>& extension_ids);
 
   // Encrypts/signs an individual RTP/RTCP packet, in-place.
@@ -120,15 +120,15 @@ class SrtpSession {
  private:
   bool DoSetKey(int type,
                 int crypto_suite,
-                const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                const ZeroOnFreeBuffer<uint8_t>& key,
                 const std::vector<int>& extension_ids);
   bool SetKey(int type,
               int crypto_suite,
-              const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+              const ZeroOnFreeBuffer<uint8_t>& key,
               const std::vector<int>& extension_ids);
   bool UpdateKey(int type,
                  int crypto_suite,
-                 const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                 const ZeroOnFreeBuffer<uint8_t>& key,
                  const std::vector<int>& extension_ids);
   // Returns send stream current packet index from srtp db.
   bool GetSendStreamPacketIndex(CopyOnWriteBuffer& buffer, int64_t* index);

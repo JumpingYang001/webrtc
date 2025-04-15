@@ -39,12 +39,12 @@ class MockRtpSenderInternal : public RtpSenderInternal {
  public:
   // RtpSenderInterface methods.
   MOCK_METHOD(bool, SetTrack, (MediaStreamTrackInterface*), (override));
-  MOCK_METHOD(rtc::scoped_refptr<MediaStreamTrackInterface>,
+  MOCK_METHOD(scoped_refptr<MediaStreamTrackInterface>,
               track,
               (),
               (const, override));
   MOCK_METHOD(uint32_t, ssrc, (), (const, override));
-  MOCK_METHOD(rtc::scoped_refptr<DtlsTransportInterface>,
+  MOCK_METHOD(scoped_refptr<DtlsTransportInterface>,
               dtls_transport,
               (),
               (const, override));
@@ -57,7 +57,7 @@ class MockRtpSenderInternal : public RtpSenderInternal {
               (const, override));
   MOCK_METHOD(void,
               set_transport,
-              (rtc::scoped_refptr<DtlsTransportInterface>),
+              (webrtc::scoped_refptr<DtlsTransportInterface>),
               (override));
   MOCK_METHOD(RtpParameters, GetParameters, (), (const, override));
   MOCK_METHOD(RtpParameters, GetParametersInternal, (), (const, override));
@@ -84,21 +84,21 @@ class MockRtpSenderInternal : public RtpSenderInternal {
               (override));
   MOCK_METHOD(void, SetSendCodecs, (std::vector<Codec>), (override));
   MOCK_METHOD(std::vector<Codec>, GetSendCodecs, (), (const, override));
-  MOCK_METHOD(rtc::scoped_refptr<DtmfSenderInterface>,
+  MOCK_METHOD(scoped_refptr<DtmfSenderInterface>,
               GetDtmfSender,
               (),
               (const, override));
   MOCK_METHOD(void,
               SetFrameEncryptor,
-              (rtc::scoped_refptr<FrameEncryptorInterface>),
+              (webrtc::scoped_refptr<FrameEncryptorInterface>),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<FrameEncryptorInterface>,
+  MOCK_METHOD(scoped_refptr<FrameEncryptorInterface>,
               GetFrameEncryptor,
               (),
               (const, override));
   MOCK_METHOD(void,
               SetFrameTransformer,
-              (rtc::scoped_refptr<FrameTransformerInterface>),
+              (webrtc::scoped_refptr<FrameTransformerInterface>),
               (override));
   MOCK_METHOD(void,
               SetEncoderSelector,

@@ -46,7 +46,7 @@ void BundleManager::Update(const SessionDescription* description,
     // groups.
     bundle_groups_changed = true;
     bundle_groups_.clear();
-    for (const cricket::ContentGroup* new_bundle_group :
+    for (const ContentGroup* new_bundle_group :
          description->GetGroupsByName(GROUP_TYPE_BUNDLE)) {
       bundle_groups_.push_back(
           std::make_unique<ContentGroup>(*new_bundle_group));
@@ -60,7 +60,7 @@ void BundleManager::Update(const SessionDescription* description,
     // Thus any m= sections added to a BUNDLE group in this offer can
     // preemptively start using the bundled transport, as there is no possible
     // non-bundled fallback.
-    for (const cricket::ContentGroup* new_bundle_group :
+    for (const ContentGroup* new_bundle_group :
          description->GetGroupsByName(GROUP_TYPE_BUNDLE)) {
       // Attempt to find a matching existing group.
       for (const std::string& mid : new_bundle_group->content_names()) {
@@ -106,11 +106,11 @@ void BundleManager::DeleteMid(const ContentGroup* bundle_group,
   // Remove the rejected content from the `bundle_group`.
   // The const pointer arg is used to identify the group, we verify
   // it before we use it to make a modification.
-  auto bundle_group_it = std::find_if(
-      bundle_groups_.begin(), bundle_groups_.end(),
-      [bundle_group](std::unique_ptr<cricket::ContentGroup>& group) {
-        return bundle_group == group.get();
-      });
+  auto bundle_group_it =
+      std::find_if(bundle_groups_.begin(), bundle_groups_.end(),
+                   [bundle_group](std::unique_ptr<ContentGroup>& group) {
+                     return bundle_group == group.get();
+                   });
   RTC_DCHECK(bundle_group_it != bundle_groups_.end());
   (*bundle_group_it)->RemoveContentName(mid);
   established_bundle_groups_by_mid_.erase(
@@ -121,11 +121,11 @@ void BundleManager::DeleteGroup(const ContentGroup* bundle_group) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   RTC_DLOG(LS_VERBOSE) << "Deleting bundle group " << bundle_group->ToString();
 
-  auto bundle_group_it = std::find_if(
-      bundle_groups_.begin(), bundle_groups_.end(),
-      [bundle_group](std::unique_ptr<cricket::ContentGroup>& group) {
-        return bundle_group == group.get();
-      });
+  auto bundle_group_it =
+      std::find_if(bundle_groups_.begin(), bundle_groups_.end(),
+                   [bundle_group](std::unique_ptr<ContentGroup>& group) {
+                     return bundle_group == group.get();
+                   });
   RTC_DCHECK(bundle_group_it != bundle_groups_.end());
   auto mid_list = (*bundle_group_it)->content_names();
   for (const auto& content_name : mid_list) {

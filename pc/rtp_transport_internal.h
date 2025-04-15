@@ -66,7 +66,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   // BaseChannel through the RtpDemuxer callback.
   void SubscribeRtcpPacketReceived(
       const void* tag,
-      absl::AnyInvocable<void(rtc::CopyOnWriteBuffer*, int64_t)> callback) {
+      absl::AnyInvocable<void(webrtc::CopyOnWriteBuffer*, int64_t)> callback) {
     callback_list_rtcp_packet_received_.AddReceiver(tag, std::move(callback));
   }
   // There doesn't seem to be a need to unsubscribe from this signal.
@@ -100,7 +100,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   }
   void SubscribeSentPacket(
       const void* tag,
-      absl::AnyInvocable<void(const rtc::SentPacket&)> callback) {
+      absl::AnyInvocable<void(const webrtc::SentPacketInfo&)> callback) {
     callback_list_sent_packet_.AddReceiver(tag, std::move(callback));
   }
   void UnsubscribeSentPacket(const void* tag) {
@@ -111,12 +111,12 @@ class RtpTransportInternal : public sigslot::has_slots<> {
 
   // TODO(zhihuang): Pass the `packet` by copy so that the original data
   // wouldn't be modified.
-  virtual bool SendRtpPacket(rtc::CopyOnWriteBuffer* packet,
-                             const rtc::PacketOptions& options,
+  virtual bool SendRtpPacket(CopyOnWriteBuffer* packet,
+                             const AsyncSocketPacketOptions& options,
                              int flags) = 0;
 
-  virtual bool SendRtcpPacket(rtc::CopyOnWriteBuffer* packet,
-                              const rtc::PacketOptions& options,
+  virtual bool SendRtcpPacket(CopyOnWriteBuffer* packet,
+                              const AsyncSocketPacketOptions& options,
                               int flags) = 0;
 
   // This method updates the RTP header extension map so that the RTP transport
@@ -130,7 +130,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   //   UpdateRecvEncryptedHeaderExtensionIds,
   //   CacheRtpAbsSendTimeHeaderExtension,
   virtual void UpdateRtpHeaderExtensionMap(
-      const cricket::RtpHeaderExtensions& header_extensions) = 0;
+      const RtpHeaderExtensions& header_extensions) = 0;
 
   virtual bool IsSrtpActive() const = 0;
 
@@ -141,7 +141,7 @@ class RtpTransportInternal : public sigslot::has_slots<> {
 
  protected:
   void SendReadyToSend(bool arg) { callback_list_ready_to_send_.Send(arg); }
-  void SendRtcpPacketReceived(rtc::CopyOnWriteBuffer* buffer,
+  void SendRtcpPacketReceived(CopyOnWriteBuffer* buffer,
                               int64_t packet_time_us) {
     callback_list_rtcp_packet_received_.Send(buffer, packet_time_us);
   }
@@ -154,21 +154,20 @@ class RtpTransportInternal : public sigslot::has_slots<> {
   void SendWritableState(bool state) {
     callback_list_writable_state_.Send(state);
   }
-  void SendSentPacket(const rtc::SentPacket& packet) {
+  void SendSentPacket(const SentPacketInfo& packet) {
     callback_list_sent_packet_.Send(packet);
   }
 
  private:
   CallbackList<bool> callback_list_ready_to_send_;
-  CallbackList<rtc::CopyOnWriteBuffer*, int64_t>
-      callback_list_rtcp_packet_received_;
+  CallbackList<CopyOnWriteBuffer*, int64_t> callback_list_rtcp_packet_received_;
   absl::AnyInvocable<void(RtpPacketReceived&)>
       callback_undemuxable_rtp_packet_received_ =
           [](RtpPacketReceived& packet) {};
   CallbackList<std::optional<NetworkRoute>>
       callback_list_network_route_changed_;
   CallbackList<bool> callback_list_writable_state_;
-  CallbackList<const rtc::SentPacket&> callback_list_sent_packet_;
+  CallbackList<const SentPacketInfo&> callback_list_sent_packet_;
 };
 
 }  // namespace webrtc

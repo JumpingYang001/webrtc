@@ -57,7 +57,7 @@ Thread* MaybeWrapThread(Thread* signaling_thread, bool& wraps_current_thread) {
   }
   auto this_thread = Thread::Current();
   if (!this_thread) {
-    // If this thread isn't already wrapped by an rtc::Thread, create a
+    // If this thread isn't already wrapped by an webrtc::Thread, create a
     // wrapper and own it in this class.
     this_thread = ThreadManager::Instance()->WrapCurrentThread();
     wraps_current_thread = true;
@@ -81,10 +81,10 @@ std::unique_ptr<SctpTransportFactoryInterface> MaybeCreateSctpFactory(
 }  // namespace
 
 // Static
-rtc::scoped_refptr<ConnectionContext> ConnectionContext::Create(
+scoped_refptr<ConnectionContext> ConnectionContext::Create(
     const Environment& env,
     PeerConnectionFactoryDependencies* dependencies) {
-  return rtc::scoped_refptr<ConnectionContext>(
+  return scoped_refptr<ConnectionContext>(
       new ConnectionContext(env, dependencies));
 }
 
@@ -150,8 +150,8 @@ ConnectionContext::ConnectionContext(
       // TODO(bugs.webrtc.org/13145): This case should be deleted. Either
       // require that a PacketSocketFactory and NetworkManager always are
       // injected (with no need to construct these default objects), or require
-      // that if a network_thread is injected, an approprite rtc::SocketServer
-      // should be injected too.
+      // that if a network_thread is injected, an approprite
+      // webrtc::SocketServer should be injected too.
       socket_factory = network_thread()->socketserver();
     }
   }

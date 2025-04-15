@@ -38,7 +38,7 @@
 namespace webrtc {
 namespace {
 
-using cricket::FakeMediaEngine;
+using webrtc::FakeMediaEngine;
 
 using testing::Contains;
 using testing::Eq;

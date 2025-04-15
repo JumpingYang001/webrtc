@@ -230,9 +230,8 @@ class PeerConnectionBundleBaseTest : public ::testing::Test {
 
     auto observer = std::make_unique<MockPeerConnectionObserver>();
     RTCConfiguration modified_config = config;
-    modified_config.set_port_allocator_flags(
-        cricket::PORTALLOCATOR_DISABLE_TCP |
-        cricket::PORTALLOCATOR_DISABLE_RELAY);
+    modified_config.set_port_allocator_flags(PORTALLOCATOR_DISABLE_TCP |
+                                             PORTALLOCATOR_DISABLE_RELAY);
     modified_config.sdp_semantics = sdp_semantics_;
     auto result = pc_factory->CreatePeerConnectionOrError(
         modified_config, PeerConnectionDependencies(observer.get()));
@@ -830,17 +829,17 @@ TEST_P(PeerConnectionBundleTest, RemovingContentAndRejectBundleGroup) {
 
   // Removing the second MID from the BUNDLE group.
   auto* old_bundle_group =
-      offer->description()->GetGroupByName(cricket::GROUP_TYPE_BUNDLE);
+      offer->description()->GetGroupByName(webrtc::GROUP_TYPE_BUNDLE);
   std::string first_mid = old_bundle_group->content_names()[0];
   std::string third_mid = old_bundle_group->content_names()[2];
-  cricket::ContentGroup new_bundle_group(cricket::GROUP_TYPE_BUNDLE);
+  webrtc::ContentGroup new_bundle_group(webrtc::GROUP_TYPE_BUNDLE);
   new_bundle_group.AddContentName(first_mid);
   new_bundle_group.AddContentName(third_mid);
 
   // Reject the entire new bundle group.
   re_offer->description()->contents()[0].rejected = true;
   re_offer->description()->contents()[2].rejected = true;
-  re_offer->description()->RemoveGroupByName(cricket::GROUP_TYPE_BUNDLE);
+  re_offer->description()->RemoveGroupByName(webrtc::GROUP_TYPE_BUNDLE);
   re_offer->description()->AddGroup(new_bundle_group);
 
   EXPECT_TRUE(caller->SetLocalDescription(std::move(re_offer)));

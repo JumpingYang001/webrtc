@@ -25,8 +25,8 @@ static const char kStreamId1[] = "local_stream_1";
 static const char kVideoTrackId[] = "dummy_video_cam_1";
 static const char kAudioTrackId[] = "dummy_microphone_1";
 
-using rtc::scoped_refptr;
 using ::testing::Exactly;
+using webrtc::scoped_refptr;
 
 namespace webrtc {
 
@@ -136,8 +136,8 @@ TEST_F(MediaStreamTest, RemoveTrack) {
   EXPECT_EQ(0u, stream_->GetVideoTracks().size());
   EXPECT_EQ(0u, stream_->GetVideoTracks().size());
 
-  EXPECT_FALSE(stream_->RemoveTrack(rtc::scoped_refptr<AudioTrackInterface>()));
-  EXPECT_FALSE(stream_->RemoveTrack(rtc::scoped_refptr<VideoTrackInterface>()));
+  EXPECT_FALSE(stream_->RemoveTrack(scoped_refptr<AudioTrackInterface>()));
+  EXPECT_FALSE(stream_->RemoveTrack(scoped_refptr<VideoTrackInterface>()));
 }
 
 TEST_F(MediaStreamTest, ChangeVideoTrack) {

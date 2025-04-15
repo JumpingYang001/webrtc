@@ -67,10 +67,10 @@
 
 namespace {
 
-using ::cricket::DtlsTransportInternal;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::webrtc::DtlsTransportInternal;
 using ::webrtc::FakeVoiceMediaReceiveChannel;
 using ::webrtc::FakeVoiceMediaSendChannel;
 using ::webrtc::RidDescription;
@@ -145,8 +145,8 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   };
 
   ChannelTest(bool verify_playout,
-              rtc::ArrayView<const uint8_t> rtp_data,
-              rtc::ArrayView<const uint8_t> rtcp_data,
+              webrtc::ArrayView<const uint8_t> rtp_data,
+              webrtc::ArrayView<const uint8_t> rtcp_data,
               NetworkIsWorker network_is_worker)
       : verify_playout_(verify_playout),
         rtp_packet_(rtp_data.data(), rtp_data.size()),
@@ -469,27 +469,28 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
     return result;
   }
 
-  void SendRtp(typename T::MediaSendChannel* media_channel, rtc::Buffer data) {
+  void SendRtp(typename T::MediaSendChannel* media_channel,
+               webrtc::Buffer data) {
     network_thread_->PostTask(webrtc::SafeTask(
         network_thread_safety_, [media_channel, data = std::move(data)]() {
           media_channel->SendPacket(data.data(), data.size(),
-                                    rtc::PacketOptions());
+                                    webrtc::AsyncSocketPacketOptions());
         }));
   }
 
   void SendRtp1() {
-    SendRtp1(rtc::Buffer(rtp_packet_.data(), rtp_packet_.size()));
+    SendRtp1(webrtc::Buffer(rtp_packet_.data(), rtp_packet_.size()));
   }
 
-  void SendRtp1(rtc::Buffer data) {
+  void SendRtp1(webrtc::Buffer data) {
     SendRtp(media_send_channel1_impl(), std::move(data));
   }
 
   void SendRtp2() {
-    SendRtp2(rtc::Buffer(rtp_packet_.data(), rtp_packet_.size()));
+    SendRtp2(webrtc::Buffer(rtp_packet_.data(), rtp_packet_.size()));
   }
 
-  void SendRtp2(rtc::Buffer data) {
+  void SendRtp2(webrtc::Buffer data) {
     SendRtp(media_send_channel2_impl(), std::move(data));
   }
 
@@ -511,15 +512,17 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   }
   // Methods to check custom data.
   bool CheckCustomRtp1(uint32_t ssrc, int sequence_number, int pl_type = -1) {
-    rtc::Buffer data = CreateRtpData(ssrc, sequence_number, pl_type);
+    webrtc::Buffer data = CreateRtpData(ssrc, sequence_number, pl_type);
     return media_receive_channel1_impl()->CheckRtp(data.data(), data.size());
   }
   bool CheckCustomRtp2(uint32_t ssrc, int sequence_number, int pl_type = -1) {
-    rtc::Buffer data = CreateRtpData(ssrc, sequence_number, pl_type);
+    webrtc::Buffer data = CreateRtpData(ssrc, sequence_number, pl_type);
     return media_receive_channel2_impl()->CheckRtp(data.data(), data.size());
   }
-  rtc::Buffer CreateRtpData(uint32_t ssrc, int sequence_number, int pl_type) {
-    rtc::Buffer data(rtp_packet_.data(), rtp_packet_.size());
+  webrtc::Buffer CreateRtpData(uint32_t ssrc,
+                               int sequence_number,
+                               int pl_type) {
+    webrtc::Buffer data(rtp_packet_.data(), rtp_packet_.size());
     // Set SSRC in the rtp packet copy.
     webrtc::SetBE32(data.data() + 8, ssrc);
     webrtc::SetBE16(data.data() + 2, sequence_number);
@@ -1488,7 +1491,9 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   }
 
  protected:
-  void WaitForThreads() { WaitForThreads(rtc::ArrayView<rtc::Thread*>()); }
+  void WaitForThreads() {
+    WaitForThreads(webrtc::ArrayView<webrtc::Thread*>());
+  }
   static void ProcessThreadQueue(webrtc::Thread* thread) {
     RTC_DCHECK(thread->IsCurrent());
     while (!thread->empty()) {
@@ -1498,9 +1503,9 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   static void FlushCurrentThread() {
     webrtc::Thread::Current()->ProcessMessages(0);
   }
-  void WaitForThreads(rtc::ArrayView<rtc::Thread*> threads) {
+  void WaitForThreads(webrtc::ArrayView<webrtc::Thread*> threads) {
     // `threads` and current thread post packets to network thread.
-    for (rtc::Thread* thread : threads) {
+    for (webrtc::Thread* thread : threads) {
       SendTask(thread, [thread] { ProcessThreadQueue(thread); });
     }
     ProcessThreadQueue(webrtc::Thread::Current());
@@ -1562,7 +1567,7 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   // TODO(pbos): Remove playout from all media channels and let renderers mute
   // themselves.
   const bool verify_playout_;
-  rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> network_thread_safety_ =
+  webrtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> network_thread_safety_ =
       webrtc::PendingTaskSafetyFlag::CreateDetached();
   std::unique_ptr<webrtc::Thread> network_thread_keeper_;
   webrtc::Thread* network_thread_;
@@ -1585,8 +1590,8 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
   typename T::Content remote_media_content1_;
   typename T::Content remote_media_content2_;
   // The RTP and RTCP packets to send in the tests.
-  rtc::Buffer rtp_packet_;
-  rtc::Buffer rtcp_packet_;
+  webrtc::Buffer rtp_packet_;
+  webrtc::Buffer rtcp_packet_;
   webrtc::CandidatePairInterface* last_selected_candidate_pair_;
   webrtc::UniqueRandomIdGenerator ssrc_generator_;
   webrtc::test::ScopedKeyValueConfig field_trials_;

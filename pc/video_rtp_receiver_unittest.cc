@@ -79,7 +79,7 @@ class VideoRtpReceiverTest : public testing::Test {
   VideoRtpReceiverTest()
       : worker_thread_(Thread::Create()),
         channel_(VideoOptions()),
-        receiver_(rtc::make_ref_counted<VideoRtpReceiver>(
+        receiver_(make_ref_counted<VideoRtpReceiver>(
             worker_thread_.get(),
             std::string("receiver"),
             std::vector<std::string>({"stream"}))) {
@@ -107,7 +107,7 @@ class VideoRtpReceiverTest : public testing::Test {
   AutoThread main_thread_;
   std::unique_ptr<Thread> worker_thread_;
   NiceMock<MockVideoMediaReceiveChannel> channel_;
-  rtc::scoped_refptr<VideoRtpReceiver> receiver_;
+  scoped_refptr<VideoRtpReceiver> receiver_;
 };
 
 TEST_F(VideoRtpReceiverTest, SupportsEncodedOutput) {

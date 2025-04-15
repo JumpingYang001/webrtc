@@ -57,8 +57,8 @@ class MediaSessionDescriptionFactory {
                                  const TransportDescriptionFactory* factory,
                                  CodecLookupHelper* codec_lookup_helper);
 
-  cricket::RtpHeaderExtensions filtered_rtp_header_extensions(
-      cricket::RtpHeaderExtensions extensions) const;
+  RtpHeaderExtensions filtered_rtp_header_extensions(
+      RtpHeaderExtensions extensions) const;
 
   void set_enable_encrypted_rtp_header_extensions(bool enable) {
     enable_encrypted_rtp_header_extensions_ = enable;
@@ -78,8 +78,8 @@ class MediaSessionDescriptionFactory {
 
  private:
   struct AudioVideoRtpHeaderExtensions {
-    cricket::RtpHeaderExtensions audio;
-    cricket::RtpHeaderExtensions video;
+    RtpHeaderExtensions audio;
+    RtpHeaderExtensions video;
   };
 
   AudioVideoRtpHeaderExtensions GetOfferedRtpHeaderExtensionsWithIds(
@@ -111,8 +111,8 @@ class MediaSessionDescriptionFactory {
       const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       const SessionDescription* current_description,
-      const cricket::RtpHeaderExtensions& header_extensions,
-      cricket::StreamParamsVec* current_streams,
+      const RtpHeaderExtensions& header_extensions,
+      StreamParamsVec* current_streams,
       SessionDescription* desc,
       IceCredentialsIterator* ice_credentials) const;
 
@@ -121,7 +121,7 @@ class MediaSessionDescriptionFactory {
       const MediaSessionOptions& session_options,
       const ContentInfo* current_content,
       const SessionDescription* current_description,
-      cricket::StreamParamsVec* current_streams,
+      StreamParamsVec* current_streams,
       SessionDescription* desc,
       IceCredentialsIterator* ice_credentials) const;
 
@@ -141,8 +141,8 @@ class MediaSessionDescriptionFactory {
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       const TransportInfo* bundle_transport,
-      const cricket::RtpHeaderExtensions& header_extensions,
-      cricket::StreamParamsVec* current_streams,
+      const RtpHeaderExtensions& header_extensions,
+      StreamParamsVec* current_streams,
       SessionDescription* answer,
       IceCredentialsIterator* ice_credentials) const;
 
@@ -154,7 +154,7 @@ class MediaSessionDescriptionFactory {
       const ContentInfo* current_content,
       const SessionDescription* current_description,
       const TransportInfo* bundle_transport,
-      cricket::StreamParamsVec* current_streams,
+      StreamParamsVec* current_streams,
       SessionDescription* answer,
       IceCredentialsIterator* ice_credentials) const;
 
@@ -188,11 +188,11 @@ bool IsAudioContent(const ContentInfo* content);
 bool IsVideoContent(const ContentInfo* content);
 bool IsDataContent(const ContentInfo* content);
 bool IsUnsupportedContent(const ContentInfo* content);
-const ContentInfo* GetFirstMediaContent(const cricket::ContentInfos& contents,
+const ContentInfo* GetFirstMediaContent(const ContentInfos& contents,
                                         webrtc::MediaType media_type);
-const ContentInfo* GetFirstAudioContent(const cricket::ContentInfos& contents);
-const ContentInfo* GetFirstVideoContent(const cricket::ContentInfos& contents);
-const ContentInfo* GetFirstDataContent(const cricket::ContentInfos& contents);
+const ContentInfo* GetFirstAudioContent(const ContentInfos& contents);
+const ContentInfo* GetFirstVideoContent(const ContentInfos& contents);
+const ContentInfo* GetFirstDataContent(const ContentInfos& contents);
 const ContentInfo* GetFirstMediaContent(const SessionDescription* sdesc,
                                         webrtc::MediaType media_type);
 const ContentInfo* GetFirstAudioContent(const SessionDescription* sdesc);
@@ -206,11 +206,11 @@ const SctpDataContentDescription* GetFirstSctpDataContentDescription(
     const SessionDescription* sdesc);
 // Non-const versions of the above functions.
 // Useful when modifying an existing description.
-ContentInfo* GetFirstMediaContent(cricket::ContentInfos* contents,
+ContentInfo* GetFirstMediaContent(ContentInfos* contents,
                                   webrtc::MediaType media_type);
-ContentInfo* GetFirstAudioContent(cricket::ContentInfos* contents);
-ContentInfo* GetFirstVideoContent(cricket::ContentInfos* contents);
-ContentInfo* GetFirstDataContent(cricket::ContentInfos* contents);
+ContentInfo* GetFirstAudioContent(ContentInfos* contents);
+ContentInfo* GetFirstVideoContent(ContentInfos* contents);
+ContentInfo* GetFirstDataContent(ContentInfos* contents);
 ContentInfo* GetFirstMediaContent(SessionDescription* sdesc,
                                   webrtc::MediaType media_type);
 ContentInfo* GetFirstAudioContent(SessionDescription* sdesc);

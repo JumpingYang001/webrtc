@@ -31,7 +31,7 @@ class TransportObserver : public RtpPacketSinkInterface {
 
   explicit TransportObserver(RtpTransportInternal* rtp_transport) {
     rtp_transport->SubscribeRtcpPacketReceived(
-        this, [this](rtc::CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
+        this, [this](CopyOnWriteBuffer* buffer, int64_t packet_time_ms) {
           OnRtcpPacketReceived(buffer, packet_time_ms);
         });
     rtp_transport->SubscribeReadyToSend(
@@ -39,7 +39,7 @@ class TransportObserver : public RtpPacketSinkInterface {
     rtp_transport->SetUnDemuxableRtpPacketReceivedHandler(
         [this](RtpPacketReceived& packet) { OnUndemuxableRtpPacket(packet); });
     rtp_transport->SubscribeSentPacket(this,
-                                       [this](const rtc::SentPacket& packet) {
+                                       [this](const SentPacketInfo& packet) {
                                          sent_packet_count_++;
                                          if (action_on_sent_packet_) {
                                            action_on_sent_packet_();
@@ -57,8 +57,7 @@ class TransportObserver : public RtpPacketSinkInterface {
     un_demuxable_rtp_count_++;
   }
 
-  void OnRtcpPacketReceived(rtc::CopyOnWriteBuffer* packet,
-                            int64_t packet_time_us) {
+  void OnRtcpPacketReceived(CopyOnWriteBuffer* packet, int64_t packet_time_us) {
     rtcp_count_++;
     last_recv_rtcp_packet_ = *packet;
   }
@@ -72,9 +71,7 @@ class TransportObserver : public RtpPacketSinkInterface {
     return last_recv_rtp_packet_;
   }
 
-  rtc::CopyOnWriteBuffer last_recv_rtcp_packet() {
-    return last_recv_rtcp_packet_;
-  }
+  CopyOnWriteBuffer last_recv_rtcp_packet() { return last_recv_rtcp_packet_; }
 
   void OnReadyToSend(bool ready) {
     if (action_on_ready_to_send_) {
@@ -103,7 +100,7 @@ class TransportObserver : public RtpPacketSinkInterface {
   int sent_packet_count_ = 0;
   int ready_to_send_signal_count_ = 0;
   RtpPacketReceived last_recv_rtp_packet_;
-  rtc::CopyOnWriteBuffer last_recv_rtcp_packet_;
+  CopyOnWriteBuffer last_recv_rtcp_packet_;
   absl::AnyInvocable<void(bool)> action_on_ready_to_send_;
   absl::AnyInvocable<void()> action_on_sent_packet_;
 };

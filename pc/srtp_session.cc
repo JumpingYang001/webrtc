@@ -174,25 +174,25 @@ SrtpSession::~SrtpSession() {
 }
 
 bool SrtpSession::SetSend(int crypto_suite,
-                          const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                          const ZeroOnFreeBuffer<uint8_t>& key,
                           const std::vector<int>& extension_ids) {
   return SetKey(ssrc_any_outbound, crypto_suite, key, extension_ids);
 }
 
 bool SrtpSession::UpdateSend(int crypto_suite,
-                             const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                             const ZeroOnFreeBuffer<uint8_t>& key,
                              const std::vector<int>& extension_ids) {
   return UpdateKey(ssrc_any_outbound, crypto_suite, key, extension_ids);
 }
 
 bool SrtpSession::SetReceive(int crypto_suite,
-                             const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                             const ZeroOnFreeBuffer<uint8_t>& key,
                              const std::vector<int>& extension_ids) {
   return SetKey(ssrc_any_inbound, crypto_suite, key, extension_ids);
 }
 
 bool SrtpSession::UpdateReceive(int crypto_suite,
-                                const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                                const ZeroOnFreeBuffer<uint8_t>& key,
                                 const std::vector<int>& extension_ids) {
   return UpdateKey(ssrc_any_inbound, crypto_suite, key, extension_ids);
 }
@@ -257,7 +257,7 @@ bool SrtpSession::ProtectRtp(void* p, int in_len, int max_len, int* out_len) {
   *out_len = in_len;
   int err = srtp_protect(session_, p, out_len);
   int seq_num = webrtc::ParseRtpSequenceNumber(
-      rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(p), in_len));
+      MakeArrayView(reinterpret_cast<const uint8_t*>(p), in_len));
   if (err != srtp_err_status_ok) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTP packet, seqnum=" << seq_num
                         << ", err=" << err
@@ -525,7 +525,7 @@ bool SrtpSession::GetSendStreamPacketIndex(CopyOnWriteBuffer& buffer,
 
 bool SrtpSession::DoSetKey(int type,
                            int crypto_suite,
-                           const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                           const ZeroOnFreeBuffer<uint8_t>& key,
                            const std::vector<int>& extension_ids) {
   RTC_DCHECK(thread_checker_.IsCurrent());
 
@@ -594,7 +594,7 @@ bool SrtpSession::DoSetKey(int type,
 
 bool SrtpSession::SetKey(int type,
                          int crypto_suite,
-                         const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                         const ZeroOnFreeBuffer<uint8_t>& key,
                          const std::vector<int>& extension_ids) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (session_) {
@@ -617,7 +617,7 @@ bool SrtpSession::SetKey(int type,
 
 bool SrtpSession::UpdateKey(int type,
                             int crypto_suite,
-                            const rtc::ZeroOnFreeBuffer<uint8_t>& key,
+                            const ZeroOnFreeBuffer<uint8_t>& key,
                             const std::vector<int>& extension_ids) {
   RTC_DCHECK(thread_checker_.IsCurrent());
   if (!session_) {

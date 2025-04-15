@@ -156,7 +156,7 @@ class PeerConnectionCryptoBaseTest : public ::testing::Test {
 
   std::unique_ptr<VirtualSocketServer> vss_;
   AutoSocketServerThread main_;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
   const SdpSemantics sdp_semantics_;
 };
 
@@ -167,10 +167,10 @@ SdpContentPredicate HaveDtlsFingerprint() {
 }
 
 SdpContentPredicate HaveProtocol(const std::string& protocol) {
-  return [protocol](const cricket::ContentInfo* content,
-                    const cricket::TransportInfo* transport) {
-    return content->media_description()->protocol() == protocol;
-  };
+  return
+      [protocol](const ContentInfo* content, const TransportInfo* transport) {
+        return content->media_description()->protocol() == protocol;
+      };
 }
 
 class PeerConnectionCryptoTest
@@ -385,11 +385,10 @@ TEST_P(PeerConnectionCryptoDtlsCertGenTest, TestCertificateGeneration) {
     ASSERT_EQ(fake_certificate_generator->generated_certificates(), 0);
     fake_certificate_generator->set_should_wait(false);
   }
-  std::vector<rtc::scoped_refptr<MockCreateSessionDescriptionObserver>>
-      observers;
+  std::vector<scoped_refptr<MockCreateSessionDescriptionObserver>> observers;
   for (size_t i = 0; i < concurrent_calls_; i++) {
-    rtc::scoped_refptr<MockCreateSessionDescriptionObserver> observer =
-        rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+    scoped_refptr<MockCreateSessionDescriptionObserver> observer =
+        make_ref_counted<MockCreateSessionDescriptionObserver>();
     observers.push_back(observer);
     if (sdp_type_ == SdpType::kOffer) {
       pc->pc()->CreateOffer(observer.get(),

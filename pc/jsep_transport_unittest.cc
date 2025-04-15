@@ -96,7 +96,7 @@ scoped_refptr<IceTransportInterface> CreateIceTransport(
     return nullptr;
   }
 
-  return rtc::make_ref_counted<FakeIceTransportWrapper>(std::move(internal));
+  return make_ref_counted<FakeIceTransportWrapper>(std::move(internal));
 }
 
 class JsepTransport2Test : public ::testing::Test, public sigslot::has_slots<> {
@@ -1050,13 +1050,13 @@ class JsepTransport2HeaderExtensionTest
         static_cast<FakeDtlsTransport*>(jsep_transport2_->rtp_dtls_transport());
 
     fake_dtls1->fake_ice_transport()->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnReadPacket1(transport, packet);
         });
     fake_dtls2->fake_ice_transport()->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnReadPacket2(transport, packet);
         });
 
@@ -1069,7 +1069,7 @@ class JsepTransport2HeaderExtensionTest
   }
 
   void OnReadPacket1(PacketTransportInternal* transport,
-                     const rtc::ReceivedPacket& packet) {
+                     const ReceivedIpPacket& packet) {
     RTC_LOG(LS_INFO) << "JsepTransport 1 Received a packet.";
     CompareHeaderExtensions(
         reinterpret_cast<const char*>(kPcmuFrameWithExtensions),
@@ -1080,7 +1080,7 @@ class JsepTransport2HeaderExtensionTest
   }
 
   void OnReadPacket2(PacketTransportInternal* transport,
-                     const rtc::ReceivedPacket& packet) {
+                     const ReceivedIpPacket& packet) {
     RTC_LOG(LS_INFO) << "JsepTransport 2 Received a packet.";
     CompareHeaderExtensions(
         reinterpret_cast<const char*>(kPcmuFrameWithExtensions),
@@ -1127,7 +1127,7 @@ class JsepTransport2HeaderExtensionTest
     CopyOnWriteBuffer rtp_packet(rtp_packet_data, rtp_len, packet_size);
 
     int packet_count_before = received_packet_count_;
-    rtc::PacketOptions options;
+    AsyncSocketPacketOptions options;
     // Send a packet and verify that the packet can be successfully received and
     // decrypted.
     ASSERT_TRUE(sender_transport->rtp_transport()->SendRtpPacket(

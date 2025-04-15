@@ -59,7 +59,7 @@ class AudioRtpReceiver : public ObserverInterface,
   AudioRtpReceiver(
       Thread* worker_thread,
       const std::string& receiver_id,
-      const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams,
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams,
       bool is_unified_plan,
       VoiceMediaReceiveChannelInterface* media_channel = nullptr);
   virtual ~AudioRtpReceiver();
@@ -70,16 +70,15 @@ class AudioRtpReceiver : public ObserverInterface,
   // AudioSourceInterface::AudioObserver implementation
   void OnSetVolume(double volume) override;
 
-  rtc::scoped_refptr<AudioTrackInterface> audio_track() const { return track_; }
+  scoped_refptr<AudioTrackInterface> audio_track() const { return track_; }
 
   // RtpReceiverInterface implementation
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
+  scoped_refptr<MediaStreamTrackInterface> track() const override {
     return track_;
   }
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
+  scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
   std::vector<std::string> stream_ids() const override;
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams()
-      const override;
+  std::vector<scoped_refptr<MediaStreamInterface>> streams() const override;
 
   webrtc::MediaType media_type() const override {
     return webrtc::MediaType::AUDIO;
@@ -90,10 +89,9 @@ class AudioRtpReceiver : public ObserverInterface,
   RtpParameters GetParameters() const override;
 
   void SetFrameDecryptor(
-      rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
+      scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
 
-  rtc::scoped_refptr<FrameDecryptorInterface> GetFrameDecryptor()
-      const override;
+  scoped_refptr<FrameDecryptorInterface> GetFrameDecryptor() const override;
 
   // RtpReceiverInternal implementation.
   void Stop() override;
@@ -103,9 +101,9 @@ class AudioRtpReceiver : public ObserverInterface,
   void NotifyFirstPacketReceived() override;
   void set_stream_ids(std::vector<std::string> stream_ids) override;
   void set_transport(
-      rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) override;
-  void SetStreams(const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&
-                      streams) override;
+      scoped_refptr<DtlsTransportInterface> dtls_transport) override;
+  void SetStreams(
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams) override;
   void SetObserver(RtpReceiverObserverInterface* observer) override;
 
   void SetJitterBufferMinimumDelay(
@@ -116,7 +114,7 @@ class AudioRtpReceiver : public ObserverInterface,
   std::vector<RtpSource> GetSources() const override;
   int AttachmentId() const override { return attachment_id_; }
   void SetFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) override;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) override;
 
  private:
   void RestartMediaChannel(std::optional<uint32_t> ssrc)
@@ -131,12 +129,12 @@ class AudioRtpReceiver : public ObserverInterface,
   RTC_NO_UNIQUE_ADDRESS SequenceChecker signaling_thread_checker_;
   Thread* const worker_thread_;
   const std::string id_;
-  const rtc::scoped_refptr<RemoteAudioSource> source_;
-  const rtc::scoped_refptr<AudioTrackProxyWithInternal<AudioTrack>> track_;
+  const scoped_refptr<RemoteAudioSource> source_;
+  const scoped_refptr<AudioTrackProxyWithInternal<AudioTrack>> track_;
   VoiceMediaReceiveChannelInterface* media_channel_
       RTC_GUARDED_BY(worker_thread_) = nullptr;
   std::optional<uint32_t> signaled_ssrc_ RTC_GUARDED_BY(worker_thread_);
-  std::vector<rtc::scoped_refptr<MediaStreamInterface>> streams_
+  std::vector<scoped_refptr<MediaStreamInterface>> streams_
       RTC_GUARDED_BY(&signaling_thread_checker_);
   bool cached_track_enabled_ RTC_GUARDED_BY(&signaling_thread_checker_);
   double cached_volume_ RTC_GUARDED_BY(worker_thread_) = 1.0;
@@ -145,16 +143,16 @@ class AudioRtpReceiver : public ObserverInterface,
   bool received_first_packet_ RTC_GUARDED_BY(&signaling_thread_checker_) =
       false;
   const int attachment_id_;
-  rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor_
+  scoped_refptr<FrameDecryptorInterface> frame_decryptor_
       RTC_GUARDED_BY(worker_thread_);
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport_
+  scoped_refptr<DtlsTransportInterface> dtls_transport_
       RTC_GUARDED_BY(&signaling_thread_checker_);
   // Stores and updates the playout delay. Handles caching cases if
   // `SetJitterBufferMinimumDelay` is called before start.
   JitterBufferDelay delay_ RTC_GUARDED_BY(worker_thread_);
-  rtc::scoped_refptr<FrameTransformerInterface> frame_transformer_
+  scoped_refptr<FrameTransformerInterface> frame_transformer_
       RTC_GUARDED_BY(worker_thread_);
-  const rtc::scoped_refptr<PendingTaskSafetyFlag> worker_thread_safety_;
+  const scoped_refptr<PendingTaskSafetyFlag> worker_thread_safety_;
 };
 
 }  // namespace webrtc

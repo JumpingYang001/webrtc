@@ -64,13 +64,12 @@ bool GetDtmfCode(char tone, int* code) {
   return true;
 }
 
-rtc::scoped_refptr<DtmfSender> DtmfSender::Create(
-    TaskQueueBase* signaling_thread,
-    DtmfProviderInterface* provider) {
+scoped_refptr<DtmfSender> DtmfSender::Create(TaskQueueBase* signaling_thread,
+                                             DtmfProviderInterface* provider) {
   if (!signaling_thread) {
     return nullptr;
   }
-  return rtc::make_ref_counted<DtmfSender>(signaling_thread, provider);
+  return make_ref_counted<DtmfSender>(signaling_thread, provider);
 }
 
 DtmfSender::DtmfSender(TaskQueueBase* signaling_thread,

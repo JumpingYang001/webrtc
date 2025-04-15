@@ -72,12 +72,12 @@ class FakePeriodicVideoSource final : public VideoSourceInterface<VideoFrame> {
     return wants_;
   }
 
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override {
+  void RemoveSink(VideoSinkInterface<VideoFrame>* sink) override {
     RTC_DCHECK(thread_checker_.IsCurrent());
     broadcaster_.RemoveSink(sink);
   }
 
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
+  void AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
                        const VideoSinkWants& wants) override {
     RTC_DCHECK(thread_checker_.IsCurrent());
     {
@@ -96,8 +96,8 @@ class FakePeriodicVideoSource final : public VideoSourceInterface<VideoFrame> {
  private:
   SequenceChecker thread_checker_{SequenceChecker::kDetached};
 
-  rtc::VideoBroadcaster broadcaster_;
-  cricket::FakeFrameSource frame_source_;
+  VideoBroadcaster broadcaster_;
+  FakeFrameSource frame_source_;
   mutable Mutex mutex_;
   VideoSinkWants wants_ RTC_GUARDED_BY(&mutex_);
 

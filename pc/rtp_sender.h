@@ -68,7 +68,7 @@ class RtpSenderInternal : public RtpSenderInterface {
   virtual void set_init_send_encodings(
       const std::vector<RtpEncodingParameters>& init_send_encodings) = 0;
   virtual void set_transport(
-      rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) = 0;
+      scoped_refptr<DtlsTransportInterface> dtls_transport) = 0;
 
   virtual void Stop() = 0;
 
@@ -125,7 +125,7 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
   void SetMediaChannel(MediaSendChannelInterface* media_channel) override;
 
   bool SetTrack(MediaStreamTrackInterface* track) override;
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
+  scoped_refptr<MediaStreamTrackInterface> track() const override {
     // This method is currently called from the worker thread by
     // RTCStatsCollector::PrepareTransceiverStatsInfosAndCallStats_s_w_n.
     // RTC_DCHECK_RUN_ON(signaling_thread_);
@@ -182,19 +182,18 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
   }
 
   void set_transport(
-      rtc::scoped_refptr<DtlsTransportInterface> dtls_transport) override {
+      scoped_refptr<DtlsTransportInterface> dtls_transport) override {
     dtls_transport_ = dtls_transport;
   }
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport() const override {
+  scoped_refptr<DtlsTransportInterface> dtls_transport() const override {
     RTC_DCHECK_RUN_ON(signaling_thread_);
     return dtls_transport_;
   }
 
   void SetFrameEncryptor(
-      rtc::scoped_refptr<FrameEncryptorInterface> frame_encryptor) override;
+      scoped_refptr<FrameEncryptorInterface> frame_encryptor) override;
 
-  rtc::scoped_refptr<FrameEncryptorInterface> GetFrameEncryptor()
-      const override {
+  scoped_refptr<FrameEncryptorInterface> GetFrameEncryptor() const override {
     return frame_encryptor_;
   }
 
@@ -210,7 +209,7 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
   RTCError DisableEncodingLayers(const std::vector<std::string>& rid) override;
 
   void SetFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) override;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) override;
 
   void SetEncoderSelector(
       std::unique_ptr<VideoEncoderFactory::EncoderSelectorInterface>
@@ -276,10 +275,10 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
   // remove since the upstream code may already be performing several operations
   // on the worker thread.
   MediaSendChannelInterface* media_channel_ = nullptr;
-  rtc::scoped_refptr<MediaStreamTrackInterface> track_;
+  scoped_refptr<MediaStreamTrackInterface> track_;
 
-  rtc::scoped_refptr<DtlsTransportInterface> dtls_transport_;
-  rtc::scoped_refptr<FrameEncryptorInterface> frame_encryptor_;
+  scoped_refptr<DtlsTransportInterface> dtls_transport_;
+  scoped_refptr<FrameEncryptorInterface> frame_encryptor_;
   // `last_transaction_id_` is used to verify that `SetParameters` is receiving
   // the parameters object that was last returned from `GetParameters`.
   // As such, it is used for internal verification and is not observable by the
@@ -292,7 +291,7 @@ class RtpSenderBase : public RtpSenderInternal, public ObserverInterface {
   RtpSenderObserverInterface* observer_ = nullptr;
   bool sent_first_packet_ = false;
 
-  rtc::scoped_refptr<FrameTransformerInterface> frame_transformer_;
+  scoped_refptr<FrameTransformerInterface> frame_transformer_;
   std::unique_ptr<VideoEncoderFactory::EncoderSelectorInterface>
       encoder_selector_;
 
@@ -330,7 +329,7 @@ class LocalAudioSinkAdapter : public AudioTrackSinkInterface,
   // AudioSinkInterface implementation.
   int NumPreferredChannels() const override { return num_preferred_channels_; }
 
-  // cricket::AudioSource implementation.
+  // webrtc::AudioSource implementation.
   void SetSink(AudioSource::Sink* sink) override;
 
   AudioSource::Sink* sink_;
@@ -348,7 +347,7 @@ class AudioRtpSender : public DtmfProviderInterface, public RtpSenderBase {
   // If `set_streams_observer` is not null, it is invoked when SetStreams()
   // is called. `set_streams_observer` is not owned by this object. If not
   // null, it must be valid at least until this sender becomes stopped.
-  static rtc::scoped_refptr<AudioRtpSender> Create(
+  static scoped_refptr<AudioRtpSender> Create(
       const Environment& env,
       Thread* worker_thread,
       const std::string& id,
@@ -370,7 +369,7 @@ class AudioRtpSender : public DtmfProviderInterface, public RtpSenderBase {
     return MediaStreamTrackInterface::kAudioKind;
   }
 
-  rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
+  scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
   RTCError GenerateKeyFrame(const std::vector<std::string>& rids) override;
 
  protected:
@@ -393,18 +392,18 @@ class AudioRtpSender : public DtmfProviderInterface, public RtpSenderBase {
   VoiceMediaSendChannelInterface* voice_media_channel() {
     return media_channel_->AsVoiceSendChannel();
   }
-  rtc::scoped_refptr<AudioTrackInterface> audio_track() const {
-    return rtc::scoped_refptr<AudioTrackInterface>(
+  scoped_refptr<AudioTrackInterface> audio_track() const {
+    return scoped_refptr<AudioTrackInterface>(
         static_cast<AudioTrackInterface*>(track_.get()));
   }
 
   LegacyStatsCollectorInterface* legacy_stats_ = nullptr;
-  rtc::scoped_refptr<DtmfSender> dtmf_sender_;
-  rtc::scoped_refptr<DtmfSenderInterface> dtmf_sender_proxy_;
+  scoped_refptr<DtmfSender> dtmf_sender_;
+  scoped_refptr<DtmfSenderInterface> dtmf_sender_proxy_;
   bool cached_track_enabled_ = false;
 
   // Used to pass the data callback from the `track_` to the other end of
-  // cricket::AudioSource.
+  // webrtc::AudioSource.
   std::unique_ptr<LocalAudioSinkAdapter> sink_adapter_;
 };
 
@@ -415,7 +414,7 @@ class VideoRtpSender : public RtpSenderBase {
   // If `set_streams_observer` is not null, it is invoked when SetStreams()
   // is called. `set_streams_observer` is not owned by this object. If not
   // null, it must be valid at least until this sender becomes stopped.
-  static rtc::scoped_refptr<VideoRtpSender> Create(
+  static scoped_refptr<VideoRtpSender> Create(
       const Environment& env,
       Thread* worker_thread,
       const std::string& id,
@@ -432,7 +431,7 @@ class VideoRtpSender : public RtpSenderBase {
     return MediaStreamTrackInterface::kVideoKind;
   }
 
-  rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
+  scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
   RTCError GenerateKeyFrame(const std::vector<std::string>& rids) override;
 
  protected:
@@ -451,8 +450,8 @@ class VideoRtpSender : public RtpSenderBase {
   VideoMediaSendChannelInterface* video_media_channel() {
     return media_channel_->AsVideoSendChannel();
   }
-  rtc::scoped_refptr<VideoTrackInterface> video_track() const {
-    return rtc::scoped_refptr<VideoTrackInterface>(
+  scoped_refptr<VideoTrackInterface> video_track() const {
+    return scoped_refptr<VideoTrackInterface>(
         static_cast<VideoTrackInterface*>(track_.get()));
   }
 

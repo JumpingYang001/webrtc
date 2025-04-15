@@ -37,9 +37,9 @@ class MockSink : public VideoSinkInterface<RecordableEncodedFrame> {
   MOCK_METHOD(void, OnFrame, (const RecordableEncodedFrame&), (override));
 };
 
-rtc::scoped_refptr<VideoRtpTrackSource> MakeSource(
+scoped_refptr<VideoRtpTrackSource> MakeSource(
     VideoRtpTrackSource::Callback* callback) {
-  return rtc::make_ref_counted<VideoRtpTrackSource>(callback);
+  return make_ref_counted<VideoRtpTrackSource>(callback);
 }
 
 TEST(VideoRtpTrackSourceTest, CreatesWithRemoteAtttributeSet) {
@@ -113,7 +113,7 @@ TEST(VideoRtpTrackSourceTest, NoCallbacksAfterClearedCallback) {
 
 class TestFrame : public RecordableEncodedFrame {
  public:
-  rtc::scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
+  scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
       const override {
     return nullptr;
   }

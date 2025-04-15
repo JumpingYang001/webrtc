@@ -25,14 +25,12 @@ namespace {
 // note: function duplicated in media_session.cc
 bool ValidateSimulcastLayers(const std::vector<RidDescription>& rids,
                              const SimulcastLayerList& simulcast_layers) {
-  return absl::c_all_of(simulcast_layers.GetAllLayers(),
-                        [&rids](const cricket::SimulcastLayer& layer) {
-                          return absl::c_any_of(
-                              rids,
-                              [&layer](const cricket::RidDescription& rid) {
-                                return rid.rid == layer.rid;
-                              });
-                        });
+  return absl::c_all_of(
+      simulcast_layers.GetAllLayers(), [&rids](const SimulcastLayer& layer) {
+        return absl::c_any_of(rids, [&layer](const RidDescription& rid) {
+          return rid.rid == layer.rid;
+        });
+      });
 }
 
 }  // namespace

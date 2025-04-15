@@ -27,7 +27,7 @@ using webrtc::StreamId;
 
 class SctpUtilsTest : public ::testing::Test {
  public:
-  void VerifyOpenMessageFormat(const rtc::CopyOnWriteBuffer& packet,
+  void VerifyOpenMessageFormat(const webrtc::CopyOnWriteBuffer& packet,
                                const std::string& label,
                                const webrtc::DataChannelInit& config) {
     uint8_t message_type;
@@ -89,7 +89,7 @@ TEST_F(SctpUtilsTest, WriteParseOpenMessageWithOrderedReliable) {
   std::string label = "abc";
   config.protocol = "y";
 
-  rtc::CopyOnWriteBuffer packet;
+  webrtc::CopyOnWriteBuffer packet;
   ASSERT_TRUE(webrtc::WriteDataChannelOpenMessage(label, config, &packet));
 
   VerifyOpenMessageFormat(packet, label, config);
@@ -113,7 +113,7 @@ TEST_F(SctpUtilsTest, WriteParseOpenMessageWithMaxRetransmitTime) {
   config.maxRetransmitTime = 10;
   config.protocol = "y";
 
-  rtc::CopyOnWriteBuffer packet;
+  webrtc::CopyOnWriteBuffer packet;
   ASSERT_TRUE(webrtc::WriteDataChannelOpenMessage(label, config, &packet));
 
   VerifyOpenMessageFormat(packet, label, config);
@@ -136,7 +136,7 @@ TEST_F(SctpUtilsTest, WriteParseOpenMessageWithMaxRetransmits) {
   config.maxRetransmits = 10;
   config.protocol = "y";
 
-  rtc::CopyOnWriteBuffer packet;
+  webrtc::CopyOnWriteBuffer packet;
   ASSERT_TRUE(webrtc::WriteDataChannelOpenMessage(label, config, &packet));
 
   VerifyOpenMessageFormat(packet, label, config);
@@ -159,7 +159,7 @@ TEST_F(SctpUtilsTest, WriteParseOpenMessageWithPriority) {
   config.protocol = "y";
   config.priority = webrtc::PriorityValue(webrtc::Priority::kVeryLow);
 
-  rtc::CopyOnWriteBuffer packet;
+  webrtc::CopyOnWriteBuffer packet;
   ASSERT_TRUE(webrtc::WriteDataChannelOpenMessage(label, config, &packet));
 
   VerifyOpenMessageFormat(packet, label, config);
@@ -175,7 +175,7 @@ TEST_F(SctpUtilsTest, WriteParseOpenMessageWithPriority) {
 }
 
 TEST_F(SctpUtilsTest, WriteParseAckMessage) {
-  rtc::CopyOnWriteBuffer packet;
+  webrtc::CopyOnWriteBuffer packet;
   webrtc::WriteDataChannelOpenAckMessage(&packet);
 
   uint8_t message_type;
@@ -187,19 +187,19 @@ TEST_F(SctpUtilsTest, WriteParseAckMessage) {
 }
 
 TEST_F(SctpUtilsTest, TestIsOpenMessage) {
-  rtc::CopyOnWriteBuffer open(1);
+  webrtc::CopyOnWriteBuffer open(1);
   open.MutableData()[0] = 0x03;
   EXPECT_TRUE(webrtc::IsOpenMessage(open));
 
-  rtc::CopyOnWriteBuffer openAck(1);
+  webrtc::CopyOnWriteBuffer openAck(1);
   openAck.MutableData()[0] = 0x02;
   EXPECT_FALSE(webrtc::IsOpenMessage(openAck));
 
-  rtc::CopyOnWriteBuffer invalid(1);
+  webrtc::CopyOnWriteBuffer invalid(1);
   invalid.MutableData()[0] = 0x01;
   EXPECT_FALSE(webrtc::IsOpenMessage(invalid));
 
-  rtc::CopyOnWriteBuffer empty;
+  webrtc::CopyOnWriteBuffer empty;
   EXPECT_FALSE(webrtc::IsOpenMessage(empty));
 }
 

@@ -62,12 +62,10 @@
 namespace webrtc {
 
 // Fake VoiceMediaChannel where the result of GetStats can be configured.
-class FakeVoiceMediaSendChannelForStats
-    : public cricket::FakeVoiceMediaSendChannel {
+class FakeVoiceMediaSendChannelForStats : public FakeVoiceMediaSendChannel {
  public:
   explicit FakeVoiceMediaSendChannelForStats(TaskQueueBase* network_thread)
-      : cricket::FakeVoiceMediaSendChannel(cricket::AudioOptions(),
-                                           network_thread) {}
+      : FakeVoiceMediaSendChannel(AudioOptions(), network_thread) {}
 
   void SetStats(const VoiceMediaInfo& voice_info) {
     send_stats_ = VoiceMediaSendInfo();
@@ -89,11 +87,10 @@ class FakeVoiceMediaSendChannelForStats
 };
 
 class FakeVoiceMediaReceiveChannelForStats
-    : public cricket::FakeVoiceMediaReceiveChannel {
+    : public FakeVoiceMediaReceiveChannel {
  public:
   explicit FakeVoiceMediaReceiveChannelForStats(TaskQueueBase* network_thread)
-      : cricket::FakeVoiceMediaReceiveChannel(cricket::AudioOptions(),
-                                              network_thread) {}
+      : FakeVoiceMediaReceiveChannel(AudioOptions(), network_thread) {}
 
   void SetStats(const VoiceMediaInfo& voice_info) {
     receive_stats_ = VoiceMediaReceiveInfo();
@@ -117,11 +114,10 @@ class FakeVoiceMediaReceiveChannelForStats
 };
 
 // Fake VideoMediaChannel where the result of GetStats can be configured.
-class FakeVideoMediaSendChannelForStats
-    : public cricket::FakeVideoMediaSendChannel {
+class FakeVideoMediaSendChannelForStats : public FakeVideoMediaSendChannel {
  public:
   explicit FakeVideoMediaSendChannelForStats(TaskQueueBase* network_thread)
-      : cricket::FakeVideoMediaSendChannel(VideoOptions(), network_thread) {}
+      : FakeVideoMediaSendChannel(VideoOptions(), network_thread) {}
 
   void SetStats(const VideoMediaInfo& video_info) {
     send_stats_ = VideoMediaSendInfo();
@@ -144,10 +140,10 @@ class FakeVideoMediaSendChannelForStats
 };
 
 class FakeVideoMediaReceiveChannelForStats
-    : public cricket::FakeVideoMediaReceiveChannel {
+    : public FakeVideoMediaReceiveChannel {
  public:
   explicit FakeVideoMediaReceiveChannelForStats(TaskQueueBase* network_thread)
-      : cricket::FakeVideoMediaReceiveChannel(VideoOptions(), network_thread) {}
+      : FakeVideoMediaReceiveChannel(VideoOptions(), network_thread) {}
 
   void SetStats(const VideoMediaInfo& video_info) {
     receive_stats_ = VideoMediaReceiveInfo();
@@ -171,7 +167,7 @@ class FakeVideoMediaReceiveChannelForStats
 constexpr bool kDefaultRtcpMuxRequired = true;
 constexpr bool kDefaultSrtpRequired = true;
 
-class VoiceChannelForTesting : public cricket::VoiceChannel {
+class VoiceChannelForTesting : public VoiceChannel {
  public:
   VoiceChannelForTesting(
       Thread* worker_thread,
@@ -182,7 +178,7 @@ class VoiceChannelForTesting : public cricket::VoiceChannel {
       const std::string& content_name,
       bool srtp_required,
       CryptoOptions crypto_options,
-      rtc::UniqueRandomIdGenerator* ssrc_generator,
+      UniqueRandomIdGenerator* ssrc_generator,
       std::string transport_name)
       : VoiceChannel(worker_thread,
                      network_thread,
@@ -203,7 +199,7 @@ class VoiceChannelForTesting : public cricket::VoiceChannel {
   const std::string test_transport_name_;
 };
 
-class VideoChannelForTesting : public cricket::VideoChannel {
+class VideoChannelForTesting : public VideoChannel {
  public:
   VideoChannelForTesting(
       Thread* worker_thread,
@@ -214,7 +210,7 @@ class VideoChannelForTesting : public cricket::VideoChannel {
       const std::string& content_name,
       bool srtp_required,
       CryptoOptions crypto_options,
-      rtc::UniqueRandomIdGenerator* ssrc_generator,
+      UniqueRandomIdGenerator* ssrc_generator,
       std::string transport_name)
       : VideoChannel(worker_thread,
                      network_thread,
@@ -271,16 +267,16 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return dependencies;
   }
 
-  rtc::scoped_refptr<StreamCollection> mutable_local_streams() {
+  scoped_refptr<StreamCollection> mutable_local_streams() {
     return local_streams_;
   }
 
-  rtc::scoped_refptr<StreamCollection> mutable_remote_streams() {
+  scoped_refptr<StreamCollection> mutable_remote_streams() {
     return remote_streams_;
   }
 
-  rtc::scoped_refptr<RtpSenderInterface> AddSender(
-      rtc::scoped_refptr<RtpSenderInternal> sender) {
+  scoped_refptr<RtpSenderInterface> AddSender(
+      scoped_refptr<RtpSenderInternal> sender) {
     // TODO(steveanton): Switch tests to use RtpTransceivers directly.
     auto sender_proxy = RtpSenderProxyWithInternal<RtpSenderInternal>::Create(
         signaling_thread_, sender);
@@ -290,14 +286,14 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return sender_proxy;
   }
 
-  void RemoveSender(rtc::scoped_refptr<RtpSenderInterface> sender) {
+  void RemoveSender(scoped_refptr<RtpSenderInterface> sender) {
     GetOrCreateFirstTransceiverOfType(sender->media_type())
         ->internal()
         ->RemoveSender(sender.get());
   }
 
-  rtc::scoped_refptr<RtpReceiverInterface> AddReceiver(
-      rtc::scoped_refptr<RtpReceiverInternal> receiver) {
+  scoped_refptr<RtpReceiverInterface> AddReceiver(
+      scoped_refptr<RtpReceiverInternal> receiver) {
     // TODO(steveanton): Switch tests to use RtpTransceivers directly.
     auto receiver_proxy =
         RtpReceiverProxyWithInternal<RtpReceiverInternal>::Create(
@@ -308,7 +304,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return receiver_proxy;
   }
 
-  void RemoveReceiver(rtc::scoped_refptr<RtpReceiverInterface> receiver) {
+  void RemoveReceiver(scoped_refptr<RtpReceiverInterface> receiver) {
     GetOrCreateFirstTransceiverOfType(receiver->media_type())
         ->internal()
         ->RemoveReceiver(receiver.get());
@@ -390,7 +386,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
         Thread::Current(), Thread::Current()));
   }
 
-  void AddSctpDataChannel(rtc::scoped_refptr<SctpDataChannel> data_channel) {
+  void AddSctpDataChannel(scoped_refptr<SctpDataChannel> data_channel) {
     sctp_data_channels_.push_back(data_channel);
   }
 
@@ -417,7 +413,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
   }
 
   void SetLocalCertificate(const std::string& transport_name,
-                           rtc::scoped_refptr<RTCCertificate> certificate) {
+                           scoped_refptr<RTCCertificate> certificate) {
     local_certificates_by_transport_[transport_name] = certificate;
   }
 
@@ -428,17 +424,16 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   // PeerConnectionInterface overrides.
 
-  rtc::scoped_refptr<StreamCollectionInterface> local_streams() override {
+  scoped_refptr<StreamCollectionInterface> local_streams() override {
     return local_streams_;
   }
 
-  rtc::scoped_refptr<StreamCollectionInterface> remote_streams() override {
+  scoped_refptr<StreamCollectionInterface> remote_streams() override {
     return remote_streams_;
   }
 
-  std::vector<rtc::scoped_refptr<RtpSenderInterface>> GetSenders()
-      const override {
-    std::vector<rtc::scoped_refptr<RtpSenderInterface>> senders;
+  std::vector<scoped_refptr<RtpSenderInterface>> GetSenders() const override {
+    std::vector<scoped_refptr<RtpSenderInterface>> senders;
     for (auto transceiver : transceivers_) {
       for (auto sender : transceiver->internal()->senders()) {
         senders.push_back(sender);
@@ -447,9 +442,9 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return senders;
   }
 
-  std::vector<rtc::scoped_refptr<RtpReceiverInterface>> GetReceivers()
+  std::vector<scoped_refptr<RtpReceiverInterface>> GetReceivers()
       const override {
-    std::vector<rtc::scoped_refptr<RtpReceiverInterface>> receivers;
+    std::vector<scoped_refptr<RtpReceiverInterface>> receivers;
     for (auto transceiver : transceivers_) {
       for (auto receiver : transceiver->internal()->receivers()) {
         receivers.push_back(receiver);
@@ -466,8 +461,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   Thread* signaling_thread() const override { return signaling_thread_; }
 
-  std::vector<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+  std::vector<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
   GetTransceiversInternal() const override {
     return transceivers_;
   }
@@ -480,9 +474,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return stats;
   }
 
-  cricket::CandidateStatsList GetPooledCandidateStats() const override {
-    return {};
-  }
+  CandidateStatsList GetPooledCandidateStats() const override { return {}; }
 
   std::map<std::string, TransportStats> GetTransportStatsByNames(
       const std::set<std::string>& transport_names) override {
@@ -503,7 +495,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   bool GetLocalCertificate(
       const std::string& transport_name,
-      rtc::scoped_refptr<RTCCertificate>* certificate) override {
+      scoped_refptr<RTCCertificate>* certificate) override {
     auto it = local_certificates_by_transport_.find(transport_name);
     if (it != local_certificates_by_transport_.end()) {
       *certificate = it->second;
@@ -540,7 +532,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return transport_stats;
   }
 
-  rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+  scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
   GetOrCreateFirstTransceiverOfType(webrtc::MediaType media_type) {
     for (auto transceiver : transceivers_) {
       if (transceiver->internal()->media_type() == media_type) {
@@ -550,12 +542,12 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
     return CreateTransceiverOfType(media_type);
   }
 
-  rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
+  scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>
   CreateTransceiverOfType(webrtc::MediaType media_type) {
     auto transceiver = RtpTransceiverProxyWithInternal<RtpTransceiver>::Create(
         signaling_thread_,
-        rtc::make_ref_counted<RtpTransceiver>(media_type, context_.get(),
-                                              &codec_lookup_helper_));
+        make_ref_counted<RtpTransceiver>(media_type, context_.get(),
+                                         &codec_lookup_helper_));
     transceivers_.push_back(transceiver);
     return transceiver;
   }
@@ -565,18 +557,17 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
   Thread* const signaling_thread_;
 
   PeerConnectionFactoryDependencies dependencies_;
-  rtc::scoped_refptr<ConnectionContext> context_;
+  scoped_refptr<ConnectionContext> context_;
 
-  rtc::scoped_refptr<StreamCollection> local_streams_;
-  rtc::scoped_refptr<StreamCollection> remote_streams_;
+  scoped_refptr<StreamCollection> local_streams_;
+  scoped_refptr<StreamCollection> remote_streams_;
 
-  std::vector<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+  std::vector<scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
       transceivers_;
 
   FakeDataChannelController data_channel_controller_;
 
-  std::vector<rtc::scoped_refptr<SctpDataChannel>> sctp_data_channels_;
+  std::vector<scoped_refptr<SctpDataChannel>> sctp_data_channels_;
 
   std::map<std::string, TransportStats> transport_stats_by_name_;
 
@@ -584,7 +575,7 @@ class FakePeerConnectionForStats : public FakePeerConnectionBase {
 
   std::optional<AudioDeviceModule::Stats> audio_device_stats_;
 
-  std::map<std::string, rtc::scoped_refptr<RTCCertificate>>
+  std::map<std::string, scoped_refptr<RTCCertificate>>
       local_certificates_by_transport_;
   std::map<std::string, std::unique_ptr<SSLCertChain>>
       remote_cert_chains_by_transport_;

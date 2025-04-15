@@ -456,8 +456,7 @@ bool GetFirstSsrc(const ContentInfo* content_info, int* ssrc) {
 // behavior.
 std::vector<std::string> GetUfrags(const SessionDescriptionInterface* desc) {
   std::vector<std::string> ufrags;
-  for (const cricket::TransportInfo& info :
-       desc->description()->transport_infos()) {
+  for (const TransportInfo& info : desc->description()->transport_infos()) {
     ufrags.push_back(info.description.ice_ufrag);
   }
   return ufrags;
@@ -479,7 +478,7 @@ void SetSsrcToZero(std::string* sdp) {
 bool ContainsTrack(const std::vector<StreamParams>& streams,
                    const std::string& stream_id,
                    const std::string& track_id) {
-  for (const cricket::StreamParams& params : streams) {
+  for (const StreamParams& params : streams) {
     if (params.first_stream_id() == stream_id && params.id == track_id) {
       return true;
     }
@@ -489,7 +488,7 @@ bool ContainsTrack(const std::vector<StreamParams>& streams,
 
 // Check if `senders` contains the specified sender, by id.
 bool ContainsSender(
-    const std::vector<rtc::scoped_refptr<RtpSenderInterface>>& senders,
+    const std::vector<scoped_refptr<RtpSenderInterface>>& senders,
     const std::string& id) {
   for (const auto& sender : senders) {
     if (sender->id() == id) {
@@ -501,7 +500,7 @@ bool ContainsSender(
 
 // Check if `senders` contains the specified sender, by id and stream id.
 bool ContainsSender(
-    const std::vector<rtc::scoped_refptr<RtpSenderInterface>>& senders,
+    const std::vector<scoped_refptr<RtpSenderInterface>>& senders,
     const std::string& id,
     const std::string& stream_id) {
   for (const auto& sender : senders) {
@@ -516,24 +515,22 @@ bool ContainsSender(
 // CreateStreamCollection(1) creates a collection that
 // correspond to kSdpStringWithStream1.
 // CreateStreamCollection(2) correspond to kSdpStringWithStream1And2.
-rtc::scoped_refptr<StreamCollection> CreateStreamCollection(
-    int number_of_streams,
-    int tracks_per_stream) {
-  rtc::scoped_refptr<StreamCollection> local_collection(
-      StreamCollection::Create());
+scoped_refptr<StreamCollection> CreateStreamCollection(int number_of_streams,
+                                                       int tracks_per_stream) {
+  scoped_refptr<StreamCollection> local_collection(StreamCollection::Create());
 
   for (int i = 0; i < number_of_streams; ++i) {
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         MediaStream::Create(kStreams[i]));
 
     for (int j = 0; j < tracks_per_stream; ++j) {
       // Add a local audio track.
-      rtc::scoped_refptr<AudioTrackInterface> audio_track(
+      scoped_refptr<AudioTrackInterface> audio_track(
           AudioTrack::Create(kAudioTracks[i * tracks_per_stream + j], nullptr));
       stream->AddTrack(audio_track);
 
       // Add a local video track.
-      rtc::scoped_refptr<VideoTrackInterface> video_track(VideoTrack::Create(
+      scoped_refptr<VideoTrackInterface> video_track(VideoTrack::Create(
           kVideoTracks[i * tracks_per_stream + j],
           FakeVideoTrackSource::Create(), Thread::Current()));
       stream->AddTrack(video_track);
@@ -609,7 +606,7 @@ class MockTrackObserver : public ObserverInterface {
 // exercised by these unittest.
 class PeerConnectionFactoryForTest : public PeerConnectionFactory {
  public:
-  static rtc::scoped_refptr<PeerConnectionFactoryForTest>
+  static scoped_refptr<PeerConnectionFactoryForTest>
   CreatePeerConnectionFactoryForTest() {
     PeerConnectionFactoryDependencies dependencies;
     dependencies.worker_thread = Thread::Current();
@@ -623,14 +620,14 @@ class PeerConnectionFactoryForTest : public PeerConnectionFactory {
     EnableMediaWithDefaults(dependencies);
     dependencies.event_log_factory = std::make_unique<RtcEventLogFactory>();
 
-    return rtc::make_ref_counted<PeerConnectionFactoryForTest>(
+    return make_ref_counted<PeerConnectionFactoryForTest>(
         std::move(dependencies));
   }
 
   using PeerConnectionFactory::PeerConnectionFactory;
 
  private:
-  rtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
+  scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
 };
 
 // TODO(steveanton): Convert to use the new PeerConnectionWrapper.
@@ -651,7 +648,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     fake_audio_capture_module_ = FakeAudioCaptureModule::Create();
     pc_factory_ = CreatePeerConnectionFactory(
         Thread::Current(), Thread::Current(), Thread::Current(),
-        rtc::scoped_refptr<AudioDeviceModule>(fake_audio_capture_module_),
+        scoped_refptr<AudioDeviceModule>(fake_audio_capture_module_),
         CreateBuiltinAudioEncoderFactory(), CreateBuiltinAudioDecoderFactory(),
         std::make_unique<VideoEncoderFactoryTemplate<
             LibvpxVp8EncoderTemplateAdapter, LibvpxVp9EncoderTemplateAdapter,
@@ -787,7 +784,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     observer_.SetPeerConnectionInterface(nullptr);
   }
 
-  rtc::scoped_refptr<VideoTrackInterface> CreateVideoTrack(
+  scoped_refptr<VideoTrackInterface> CreateVideoTrack(
       const std::string& label) {
     return pc_factory_->CreateVideoTrack(FakeVideoTrackSource::Create(), label);
   }
@@ -800,13 +797,13 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   }
 
   void AddVideoStream(const std::string& label) {
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         pc_factory_->CreateLocalMediaStream(label));
     stream->AddTrack(CreateVideoTrack(label + "v0"));
     ASSERT_TRUE(pc_->AddStream(stream.get()));
   }
 
-  rtc::scoped_refptr<AudioTrackInterface> CreateAudioTrack(
+  scoped_refptr<AudioTrackInterface> CreateAudioTrack(
       const std::string& label) {
     return pc_factory_->CreateAudioTrack(label, nullptr);
   }
@@ -819,7 +816,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   }
 
   void AddAudioStream(const std::string& label) {
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         pc_factory_->CreateLocalMediaStream(label));
     stream->AddTrack(CreateAudioTrack(label + "a0"));
     ASSERT_TRUE(pc_->AddStream(stream.get()));
@@ -829,14 +826,14 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
                            const std::string& audio_track_label,
                            const std::string& video_track_label) {
     // Create a local stream.
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         pc_factory_->CreateLocalMediaStream(stream_id));
     stream->AddTrack(CreateAudioTrack(audio_track_label));
     stream->AddTrack(CreateVideoTrack(video_track_label));
     ASSERT_TRUE(pc_->AddStream(stream.get()));
   }
 
-  rtc::scoped_refptr<RtpReceiverInterface> GetFirstReceiverOfType(
+  scoped_refptr<RtpReceiverInterface> GetFirstReceiverOfType(
       webrtc::MediaType media_type) {
     for (auto receiver : pc_->GetReceivers()) {
       if (receiver->media_type() == media_type) {
@@ -849,8 +846,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   bool DoCreateOfferAnswer(std::unique_ptr<SessionDescriptionInterface>* desc,
                            const RTCOfferAnswerOptions* options,
                            bool offer) {
-    auto observer =
-        rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+    auto observer = make_ref_counted<MockCreateSessionDescriptionObserver>();
     if (offer) {
       pc_->CreateOffer(observer.get(),
                        options ? *options : RTCOfferAnswerOptions());
@@ -879,7 +875,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   bool DoSetSessionDescription(
       std::unique_ptr<SessionDescriptionInterface> desc,
       bool local) {
-    auto observer = rtc::make_ref_counted<MockSetSessionDescriptionObserver>();
+    auto observer = make_ref_counted<MockSetSessionDescriptionObserver>();
     if (local) {
       pc_->SetLocalDescription(observer.get(), desc.release());
     } else {
@@ -908,7 +904,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   // It does not verify the values in the StatReports since a RTCP packet might
   // be required.
   bool DoGetStats(MediaStreamTrackInterface* track) {
-    auto observer = rtc::make_ref_counted<MockStatsObserver>();
+    auto observer = make_ref_counted<MockStatsObserver>();
     if (!pc_->GetStats(observer.get(), track,
                        PeerConnectionInterface::kStatsOutputLevelStandard))
       return false;
@@ -921,7 +917,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
 
   // Call the standards-compliant GetStats function.
   bool DoGetRTCStats() {
-    auto callback = rtc::make_ref_counted<MockRTCStatsCollectorCallback>();
+    auto callback = make_ref_counted<MockRTCStatsCollectorCallback>();
     pc_->GetStats(callback.get());
     EXPECT_THAT(
         WaitUntil([&] { return callback->called(); }, ::testing::IsTrue(),
@@ -1103,7 +1099,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
 
     std::string mediastream_id = kStreams[0];
 
-    rtc::scoped_refptr<MediaStreamInterface> stream(
+    scoped_refptr<MediaStreamInterface> stream(
         MediaStream::Create(mediastream_id));
     reference_collection_->AddStream(stream);
 
@@ -1133,14 +1129,14 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
 
   void AddAudioTrack(const std::string& track_id,
                      MediaStreamInterface* stream) {
-    rtc::scoped_refptr<AudioTrackInterface> audio_track(
+    scoped_refptr<AudioTrackInterface> audio_track(
         AudioTrack::Create(track_id, nullptr));
     ASSERT_TRUE(stream->AddTrack(audio_track));
   }
 
   void AddVideoTrack(const std::string& track_id,
                      MediaStreamInterface* stream) {
-    rtc::scoped_refptr<VideoTrackInterface> video_track(VideoTrack::Create(
+    scoped_refptr<VideoTrackInterface> video_track(VideoTrack::Create(
         track_id, FakeVideoTrackSource::Create(), Thread::Current()));
     ASSERT_TRUE(stream->AddTrack(video_track));
   }
@@ -1186,8 +1182,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   std::unique_ptr<SessionDescriptionInterface> CreateOfferWithOptions(
       const RTCOfferAnswerOptions& offer_answer_options) {
     RTC_DCHECK(pc_);
-    auto observer =
-        rtc::make_ref_counted<MockCreateSessionDescriptionObserver>();
+    auto observer = make_ref_counted<MockCreateSessionDescriptionObserver>();
     pc_->CreateOffer(observer.get(), offer_answer_options);
     EXPECT_THAT(
         WaitUntil([&] { return observer->called(); }, ::testing::IsTrue(),
@@ -1254,13 +1249,13 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
 
   std::unique_ptr<VirtualSocketServer> vss_;
   AutoSocketServerThread main_;
-  rtc::scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
+  scoped_refptr<FakeAudioCaptureModule> fake_audio_capture_module_;
   FakePortAllocator* port_allocator_ = nullptr;
   FakeRTCCertificateGenerator* fake_certificate_generator_ = nullptr;
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
-  rtc::scoped_refptr<PeerConnectionInterface> pc_;
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;
+  scoped_refptr<PeerConnectionInterface> pc_;
   MockPeerConnectionObserver observer_;
-  rtc::scoped_refptr<StreamCollection> reference_collection_;
+  scoped_refptr<StreamCollection> reference_collection_;
   const SdpSemantics sdp_semantics_;
 };
 
@@ -1372,7 +1367,7 @@ TEST_P(PeerConnectionInterfaceTest,
   config.prune_turn_ports = true;
 
   // Create the PC factory and PC with the above config.
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> pc_factory(
+  scoped_refptr<PeerConnectionFactoryInterface> pc_factory(
       CreatePeerConnectionFactory(
           Thread::Current(), Thread::Current(), Thread::Current(),
           fake_audio_capture_module_, CreateBuiltinAudioEncoderFactory(),
@@ -1449,11 +1444,10 @@ TEST_F(PeerConnectionInterfaceTestPlanB, AddStreams) {
   ASSERT_EQ(2u, pc_->local_streams()->count());
 
   // Test we can add multiple local streams to one peerconnection.
-  rtc::scoped_refptr<MediaStreamInterface> stream(
+  scoped_refptr<MediaStreamInterface> stream(
       pc_factory_->CreateLocalMediaStream(kStreamId3));
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
-      pc_factory_->CreateAudioTrack(
-          kStreamId3, static_cast<AudioSourceInterface*>(nullptr)));
+  scoped_refptr<AudioTrackInterface> audio_track(pc_factory_->CreateAudioTrack(
+      kStreamId3, static_cast<AudioSourceInterface*>(nullptr)));
   stream->AddTrack(audio_track);
   EXPECT_TRUE(pc_->AddStream(stream.get()));
   EXPECT_EQ(3u, pc_->local_streams()->count());
@@ -1518,9 +1512,9 @@ TEST_F(PeerConnectionInterfaceTestPlanB, RemoveStream) {
 // in peerconnection_jsep_unittests.cc
 TEST_F(PeerConnectionInterfaceTestPlanB, AddTrackRemoveTrack) {
   CreatePeerConnectionWithoutDtls();
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   auto audio_sender = pc_->AddTrack(audio_track, {kStreamId1}).MoveValue();
   auto video_sender = pc_->AddTrack(video_track, {kStreamId1}).MoveValue();
@@ -1573,9 +1567,9 @@ TEST_F(PeerConnectionInterfaceTestPlanB, AddTrackRemoveTrack) {
 // Test for AddTrack with init_send_encoding.
 TEST_F(PeerConnectionInterfaceTestPlanB, AddTrackWithSendEncodings) {
   CreatePeerConnectionWithoutDtls();
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   RtpEncodingParameters audio_encodings;
   audio_encodings.active = false;
@@ -1623,9 +1617,9 @@ TEST_F(PeerConnectionInterfaceTestPlanB, AddTrackWithSendEncodings) {
 // expecting a random stream ID to be generated.
 TEST_P(PeerConnectionInterfaceTest, AddTrackWithoutStream) {
   CreatePeerConnectionWithoutDtls();
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   auto audio_sender =
       pc_->AddTrack(audio_track, std::vector<std::string>()).MoveValue();
@@ -1651,9 +1645,9 @@ TEST_P(PeerConnectionInterfaceTest, AddTrackWithoutStream) {
 // the PeerConnection to a peer.
 TEST_P(PeerConnectionInterfaceTest, AddTrackBeforeConnecting) {
   CreatePeerConnection();
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   auto audio_sender = pc_->AddTrack(audio_track, std::vector<std::string>());
   auto video_sender = pc_->AddTrack(video_track, std::vector<std::string>());
@@ -1662,9 +1656,9 @@ TEST_P(PeerConnectionInterfaceTest, AddTrackBeforeConnecting) {
 
 TEST_P(PeerConnectionInterfaceTest, AttachmentIdIsSetOnAddTrack) {
   CreatePeerConnection();
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   auto audio_sender = pc_->AddTrack(audio_track, std::vector<std::string>());
   ASSERT_TRUE(audio_sender.ok());
@@ -1848,7 +1842,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB, AddTrackAfterAddStream) {
   MediaStreamInterface* stream = pc_->local_streams()->at(0);
 
   // Add video track to the audio-only stream.
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_label"));
   stream->AddTrack(video_track);
 
@@ -1903,7 +1897,7 @@ TEST_P(PeerConnectionInterfaceTest, GetStatsForSpecificTrack) {
   InitiateCall();
   ASSERT_LT(0u, pc_->GetSenders().size());
   ASSERT_LT(0u, pc_->GetReceivers().size());
-  rtc::scoped_refptr<MediaStreamTrackInterface> remote_audio =
+  scoped_refptr<MediaStreamTrackInterface> remote_audio =
       pc_->GetReceivers()[0]->track();
   EXPECT_TRUE(DoGetStats(remote_audio.get()));
 
@@ -1929,7 +1923,7 @@ TEST_P(PeerConnectionInterfaceTest, GetStatsForVideoTrack) {
 // Test that we don't get statistics for an invalid track.
 TEST_P(PeerConnectionInterfaceTest, GetStatsForInvalidTrack) {
   InitiateCall();
-  rtc::scoped_refptr<AudioTrackInterface> unknown_audio_track(
+  scoped_refptr<AudioTrackInterface> unknown_audio_track(
       pc_factory_->CreateAudioTrack("unknown track", nullptr));
   EXPECT_FALSE(DoGetStats(unknown_audio_track.get()));
 }
@@ -2477,8 +2471,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB, CloseAndTestMethods) {
   CreateAnswerAsLocalDescription();
 
   ASSERT_EQ(1u, pc_->local_streams()->count());
-  rtc::scoped_refptr<MediaStreamInterface> local_stream(
-      pc_->local_streams()->at(0));
+  scoped_refptr<MediaStreamInterface> local_stream(pc_->local_streams()->at(0));
 
   pc_->Close();
 
@@ -2526,7 +2519,7 @@ TEST_P(PeerConnectionInterfaceTest, UpdateRemoteStreams) {
   CreatePeerConnection(config);
   CreateAndSetRemoteOffer(GetSdpStringWithStream1());
 
-  rtc::scoped_refptr<StreamCollection> reference(CreateStreamCollection(1, 1));
+  scoped_refptr<StreamCollection> reference(CreateStreamCollection(1, 1));
   EXPECT_TRUE(
       CompareStreamCollections(observer_.remote_streams(), reference.get()));
   MediaStreamInterface* remote_stream = observer_.remote_streams()->at(0);
@@ -2536,7 +2529,7 @@ TEST_P(PeerConnectionInterfaceTest, UpdateRemoteStreams) {
   // MediaStream.
   CreateAndSetRemoteOffer(GetSdpStringWithStream1And2());
 
-  rtc::scoped_refptr<StreamCollection> reference2(CreateStreamCollection(2, 1));
+  scoped_refptr<StreamCollection> reference2(CreateStreamCollection(2, 1));
   EXPECT_TRUE(
       CompareStreamCollections(observer_.remote_streams(), reference2.get()));
 }
@@ -2561,10 +2554,10 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   EXPECT_TRUE(DoSetRemoteDescription(std::move(desc_ms1_two_tracks)));
   EXPECT_TRUE(CompareStreamCollections(observer_.remote_streams(),
                                        reference_collection_.get()));
-  rtc::scoped_refptr<AudioTrackInterface> audio_track2 =
+  scoped_refptr<AudioTrackInterface> audio_track2 =
       observer_.remote_streams()->at(0)->GetAudioTracks()[1];
   EXPECT_EQ(MediaStreamTrackInterface::kLive, audio_track2->state());
-  rtc::scoped_refptr<VideoTrackInterface> video_track2 =
+  scoped_refptr<VideoTrackInterface> video_track2 =
       observer_.remote_streams()->at(0)->GetVideoTracks()[1];
   EXPECT_EQ(MediaStreamTrackInterface::kLive, video_track2->state());
 
@@ -2603,10 +2596,10 @@ TEST_P(PeerConnectionInterfaceTest, RejectMediaContent) {
   auto video_receiver = GetFirstReceiverOfType(webrtc::MediaType::VIDEO);
   ASSERT_TRUE(video_receiver);
 
-  rtc::scoped_refptr<MediaStreamTrackInterface> remote_audio =
+  scoped_refptr<MediaStreamTrackInterface> remote_audio =
       audio_receiver->track();
   EXPECT_EQ(MediaStreamTrackInterface::kLive, remote_audio->state());
-  rtc::scoped_refptr<MediaStreamTrackInterface> remote_video =
+  scoped_refptr<MediaStreamTrackInterface> remote_video =
       video_receiver->track();
   EXPECT_EQ(MediaStreamTrackInterface::kLive, remote_video->state());
 
@@ -2797,7 +2790,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB, VerifyDefaultStreamIsNotRecreated) {
   RTCConfiguration config;
   CreatePeerConnection(config);
   CreateAndSetRemoteOffer(GetSdpStringWithStream1());
-  rtc::scoped_refptr<StreamCollection> reference(CreateStreamCollection(1, 1));
+  scoped_refptr<StreamCollection> reference(CreateStreamCollection(1, 1));
   EXPECT_TRUE(
       CompareStreamCollections(observer_.remote_streams(), reference.get()));
 
@@ -2872,7 +2865,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB, LocalDescriptionChanged) {
   CreatePeerConnection(config);
 
   // Create an offer with 1 stream with 2 tracks of each type.
-  rtc::scoped_refptr<StreamCollection> stream_collection =
+  scoped_refptr<StreamCollection> stream_collection =
       CreateStreamCollection(1, 2);
   pc_->AddStream(stream_collection->at(0));
   std::unique_ptr<SessionDescriptionInterface> offer;
@@ -2909,7 +2902,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   RTCConfiguration config;
   CreatePeerConnection(config);
 
-  rtc::scoped_refptr<StreamCollection> stream_collection =
+  scoped_refptr<StreamCollection> stream_collection =
       CreateStreamCollection(1, 2);
   // Add a stream to create the offer, but remove it afterwards.
   pc_->AddStream(stream_collection->at(0));
@@ -2988,7 +2981,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   RTCConfiguration config;
   CreatePeerConnection(config);
 
-  rtc::scoped_refptr<StreamCollection> stream_collection =
+  scoped_refptr<StreamCollection> stream_collection =
       CreateStreamCollection(2, 1);
   pc_->AddStream(stream_collection->at(0));
   std::unique_ptr<SessionDescriptionInterface> offer;
@@ -3001,7 +2994,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   EXPECT_TRUE(ContainsSender(senders, kVideoTracks[0], kStreams[0]));
 
   // Add a new MediaStream but with the same tracks as in the first stream.
-  rtc::scoped_refptr<MediaStreamInterface> stream_1(
+  scoped_refptr<MediaStreamInterface> stream_1(
       MediaStream::Create(kStreams[1]));
   stream_1->AddTrack(stream_collection->at(0)->GetVideoTracks()[0]);
   stream_1->AddTrack(stream_collection->at(0)->GetAudioTracks()[0]);
@@ -3616,12 +3609,12 @@ TEST_P(PeerConnectionInterfaceTest, CreateOfferWithRtpMux) {
 TEST_F(PeerConnectionInterfaceTestPlanB,
        MediaStreamAddTrackRemoveTrackRenegotiate) {
   CreatePeerConnectionWithoutDtls();
-  rtc::scoped_refptr<MediaStreamInterface> stream(
+  scoped_refptr<MediaStreamInterface> stream(
       pc_factory_->CreateLocalMediaStream(kStreamId1));
   pc_->AddStream(stream.get());
-  rtc::scoped_refptr<AudioTrackInterface> audio_track(
+  scoped_refptr<AudioTrackInterface> audio_track(
       CreateAudioTrack("audio_track"));
-  rtc::scoped_refptr<VideoTrackInterface> video_track(
+  scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   stream->AddTrack(audio_track);
   EXPECT_THAT(WaitUntil([&] { return observer_.renegotiation_needed_; },
@@ -3706,11 +3699,11 @@ TEST_P(PeerConnectionInterfaceTest,
   CreatePeerConnection();
   AddVideoTrack("video_label");
 
-  std::vector<rtc::scoped_refptr<RtpSenderInterface>> rtp_senders =
+  std::vector<scoped_refptr<RtpSenderInterface>> rtp_senders =
       pc_->GetSenders();
   ASSERT_EQ(rtp_senders.size(), 1u);
   ASSERT_EQ(rtp_senders[0]->media_type(), webrtc::MediaType::VIDEO);
-  rtc::scoped_refptr<RtpSenderInterface> video_rtp_sender = rtp_senders[0];
+  scoped_refptr<RtpSenderInterface> video_rtp_sender = rtp_senders[0];
   RtpParameters parameters = video_rtp_sender->GetParameters();
   ASSERT_NE(parameters.degradation_preference,
             DegradationPreference::MAINTAIN_RESOLUTION);
@@ -3746,7 +3739,7 @@ class PeerConnectionMediaConfigTest : public ::testing::Test {
     return result.value()->GetConfiguration().media_config;
   }
 
-  rtc::scoped_refptr<PeerConnectionFactoryForTest> pcf_;
+  scoped_refptr<PeerConnectionFactoryForTest> pcf_;
   MockPeerConnectionObserver observer_;
 };
 

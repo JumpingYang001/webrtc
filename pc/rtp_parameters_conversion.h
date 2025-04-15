@@ -23,7 +23,7 @@
 namespace webrtc {
 
 //*****************************************************************************
-// Functions for converting from old cricket:: structures to new webrtc::
+// Functions for converting from old webrtc:: structures to new webrtc::
 // structures. These are permissive with regards to
 // input validation; it's assumed that any necessary validation already
 // occurred.
@@ -41,7 +41,7 @@ RtpCodecCapability ToRtpCodecCapability(const Codec& cricket_codec);
 
 RtpCapabilities ToRtpCapabilities(
     const std::vector<Codec>& cricket_codecs,
-    const cricket::RtpHeaderExtensions& cricket_extensions);
+    const RtpHeaderExtensions& cricket_extensions);
 
 }  // namespace webrtc
 

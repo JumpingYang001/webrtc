@@ -120,7 +120,7 @@ class SctpDataChannelTest : public ::testing::Test {
   // in the SctpDataChannel code is (still) tied to the signaling thread, but
   // the `AddSctpDataStream` operation is a bridge to the transport and needs
   // to run on the network thread.
-  void SetChannelSid(const rtc::scoped_refptr<SctpDataChannel>& channel,
+  void SetChannelSid(const scoped_refptr<SctpDataChannel>& channel,
                      StreamId sid) {
     network_thread_.BlockingCall([&]() {
       channel->SetSctpSid_n(sid);
@@ -150,12 +150,12 @@ class SctpDataChannelTest : public ::testing::Test {
   test::RunLoop run_loop_;
   Thread network_thread_;
   InternalDataChannelInit init_;
-  rtc::scoped_refptr<PendingTaskSafetyFlag> signaling_safety_ =
+  scoped_refptr<PendingTaskSafetyFlag> signaling_safety_ =
       PendingTaskSafetyFlag::Create();
   std::unique_ptr<FakeDataChannelController> controller_;
   std::unique_ptr<FakeDataChannelObserver> observer_;
-  rtc::scoped_refptr<SctpDataChannel> inner_channel_;
-  rtc::scoped_refptr<DataChannelInterface> channel_;
+  scoped_refptr<SctpDataChannel> inner_channel_;
+  scoped_refptr<DataChannelInterface> channel_;
 };
 
 TEST_F(SctpDataChannelTest, VerifyConfigurationGetters) {
@@ -187,7 +187,7 @@ TEST_F(SctpDataChannelTest, VerifyConfigurationGetters) {
 // Verifies that the data channel is connected to the transport after creation.
 TEST_F(SctpDataChannelTest, ConnectedToTransportOnCreated) {
   controller_->set_transport_available(true);
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", init_);
   EXPECT_TRUE(controller_->IsConnected(dc.get()));
 
@@ -257,7 +257,7 @@ TEST_F(SctpDataChannelTest, SendUnorderedAfterReceivesOpenAck) {
   InternalDataChannelInit init;
   init.id = 1;
   init.ordered = false;
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", init);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -271,7 +271,7 @@ TEST_F(SctpDataChannelTest, SendUnorderedAfterReceivesOpenAck) {
   EXPECT_TRUE(controller_->last_send_data_params().ordered);
 
   // Emulates receiving an OPEN_ACK message.
-  rtc::CopyOnWriteBuffer payload;
+  CopyOnWriteBuffer payload;
   WriteDataChannelOpenAckMessage(&payload);
   network_thread_.BlockingCall(
       [&] { dc->OnDataReceived(DataMessageType::kControl, payload); });
@@ -288,7 +288,7 @@ TEST_F(SctpDataChannelTest, DeprecatedSendUnorderedAfterReceivesOpenAck) {
   InternalDataChannelInit init;
   init.id = 1;
   init.ordered = false;
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", init);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -302,7 +302,7 @@ TEST_F(SctpDataChannelTest, DeprecatedSendUnorderedAfterReceivesOpenAck) {
   EXPECT_TRUE(controller_->last_send_data_params().ordered);
 
   // Emulates receiving an OPEN_ACK message.
-  rtc::CopyOnWriteBuffer payload;
+  CopyOnWriteBuffer payload;
   WriteDataChannelOpenAckMessage(&payload);
   network_thread_.BlockingCall(
       [&] { dc->OnDataReceived(DataMessageType::kControl, payload); });
@@ -319,7 +319,7 @@ TEST_F(SctpDataChannelTest, SendUnorderedAfterReceiveData) {
   InternalDataChannelInit init;
   init.id = 1;
   init.ordered = false;
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", init);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -344,7 +344,7 @@ TEST_F(SctpDataChannelTest, DeprecatedSendUnorderedAfterReceiveData) {
   InternalDataChannelInit init;
   init.id = 1;
   init.ordered = false;
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", init);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -405,7 +405,7 @@ TEST_F(SctpDataChannelTest, NoMsgSentIfNegotiatedAndNotFromOpenMsg) {
   config.open_handshake_role = InternalDataChannelInit::kNone;
 
   SetChannelReady();
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", config);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -472,7 +472,7 @@ TEST_F(SctpDataChannelTest, OpenAckSentIfCreatedFromOpenMessage) {
   config.open_handshake_role = InternalDataChannelInit::kAcker;
 
   SetChannelReady();
-  rtc::scoped_refptr<SctpDataChannel> dc =
+  scoped_refptr<SctpDataChannel> dc =
       controller_->CreateDataChannel("test1", config);
   auto proxy = SctpDataChannel::CreateProxy(dc, signaling_safety_);
 
@@ -528,7 +528,7 @@ TEST_F(SctpDataChannelTest, DeprecatedClosedOnTransportError) {
 // Tests that the DataChannel is closed if the received buffer is full.
 TEST_F(SctpDataChannelTest, ClosedWhenReceivedBufferFull) {
   SetChannelReady();
-  rtc::CopyOnWriteBuffer buffer(1024);
+  CopyOnWriteBuffer buffer(1024);
   memset(buffer.MutableData(), 0, buffer.size());
 
   network_thread_.BlockingCall([&] {
@@ -587,7 +587,7 @@ TEST_F(SctpDataChannelTest, TransportDestroyedWhileDataBuffered) {
   AddObserver();
   SetChannelReady();
 
-  rtc::CopyOnWriteBuffer buffer(100 * 1024);
+  CopyOnWriteBuffer buffer(100 * 1024);
   memset(buffer.MutableData(), 0, buffer.size());
   DataBuffer packet(buffer, true);
 
@@ -642,10 +642,10 @@ class SctpSidAllocatorTest : public ::testing::Test {
 // Verifies that an even SCTP id is allocated for SSL_CLIENT and an odd id for
 // SSL_SERVER.
 TEST_F(SctpSidAllocatorTest, SctpIdAllocationBasedOnRole) {
-  EXPECT_EQ(allocator_.AllocateSid(rtc::SSL_SERVER), StreamId(1));
-  EXPECT_EQ(allocator_.AllocateSid(rtc::SSL_CLIENT), StreamId(0));
-  EXPECT_EQ(allocator_.AllocateSid(rtc::SSL_SERVER), StreamId(3));
-  EXPECT_EQ(allocator_.AllocateSid(rtc::SSL_CLIENT), StreamId(2));
+  EXPECT_EQ(allocator_.AllocateSid(SSL_SERVER), StreamId(1));
+  EXPECT_EQ(allocator_.AllocateSid(SSL_CLIENT), StreamId(0));
+  EXPECT_EQ(allocator_.AllocateSid(SSL_SERVER), StreamId(3));
+  EXPECT_EQ(allocator_.AllocateSid(SSL_CLIENT), StreamId(2));
 }
 
 // Verifies that SCTP ids of existing DataChannels are not reused.
@@ -653,13 +653,13 @@ TEST_F(SctpSidAllocatorTest, SctpIdAllocationNoReuse) {
   StreamId old_id(1);
   EXPECT_TRUE(allocator_.ReserveSid(old_id));
 
-  std::optional<StreamId> new_id = allocator_.AllocateSid(rtc::SSL_SERVER);
+  std::optional<StreamId> new_id = allocator_.AllocateSid(SSL_SERVER);
   EXPECT_TRUE(new_id.has_value());
   EXPECT_NE(old_id, new_id);
 
   old_id = StreamId(0);
   EXPECT_TRUE(allocator_.ReserveSid(old_id));
-  new_id = allocator_.AllocateSid(rtc::SSL_CLIENT);
+  new_id = allocator_.AllocateSid(SSL_CLIENT);
   EXPECT_TRUE(new_id.has_value());
   EXPECT_NE(old_id, new_id);
 }
@@ -671,34 +671,33 @@ TEST_F(SctpSidAllocatorTest, SctpIdReusedForRemovedDataChannel) {
   EXPECT_TRUE(allocator_.ReserveSid(odd_id));
   EXPECT_TRUE(allocator_.ReserveSid(even_id));
 
-  std::optional<StreamId> allocated_id =
-      allocator_.AllocateSid(rtc::SSL_SERVER);
+  std::optional<StreamId> allocated_id = allocator_.AllocateSid(SSL_SERVER);
   EXPECT_EQ(odd_id.stream_id_int() + 2, allocated_id->stream_id_int());
 
-  allocated_id = allocator_.AllocateSid(rtc::SSL_CLIENT);
+  allocated_id = allocator_.AllocateSid(SSL_CLIENT);
   EXPECT_EQ(even_id.stream_id_int() + 2, allocated_id->stream_id_int());
 
-  allocated_id = allocator_.AllocateSid(rtc::SSL_SERVER);
+  allocated_id = allocator_.AllocateSid(SSL_SERVER);
   EXPECT_EQ(odd_id.stream_id_int() + 4, allocated_id->stream_id_int());
 
-  allocated_id = allocator_.AllocateSid(rtc::SSL_CLIENT);
+  allocated_id = allocator_.AllocateSid(SSL_CLIENT);
   EXPECT_EQ(even_id.stream_id_int() + 4, allocated_id->stream_id_int());
 
   allocator_.ReleaseSid(odd_id);
   allocator_.ReleaseSid(even_id);
 
   // Verifies that removed ids are reused.
-  allocated_id = allocator_.AllocateSid(rtc::SSL_SERVER);
+  allocated_id = allocator_.AllocateSid(SSL_SERVER);
   EXPECT_EQ(odd_id, allocated_id);
 
-  allocated_id = allocator_.AllocateSid(rtc::SSL_CLIENT);
+  allocated_id = allocator_.AllocateSid(SSL_CLIENT);
   EXPECT_EQ(even_id, allocated_id);
 
   // Verifies that used higher ids are not reused.
-  allocated_id = allocator_.AllocateSid(rtc::SSL_SERVER);
+  allocated_id = allocator_.AllocateSid(SSL_SERVER);
   EXPECT_EQ(odd_id.stream_id_int() + 6, allocated_id->stream_id_int());
 
-  allocated_id = allocator_.AllocateSid(rtc::SSL_CLIENT);
+  allocated_id = allocator_.AllocateSid(SSL_CLIENT);
   EXPECT_EQ(even_id.stream_id_int() + 6, allocated_id->stream_id_int());
 }
 
@@ -737,7 +736,7 @@ class NoImplObserver : public DataChannelObserver {
 }  // namespace
 
 TEST(DataChannelInterfaceTest, Coverage) {
-  auto channel = rtc::make_ref_counted<NoImplDataChannel>();
+  auto channel = make_ref_counted<NoImplDataChannel>();
   EXPECT_FALSE(channel->ordered());
   EXPECT_FALSE(channel->maxRetransmitsOpt());
   EXPECT_FALSE(channel->maxPacketLifeTime());
@@ -753,12 +752,12 @@ TEST(DataChannelInterfaceTest, Coverage) {
 #if RTC_DCHECK_IS_ON && GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)
 
 TEST(DataChannelInterfaceDeathTest, SendDefaultImplDchecks) {
-  auto channel = rtc::make_ref_counted<NoImplDataChannel>();
+  auto channel = webrtc::make_ref_counted<NoImplDataChannel>();
   RTC_EXPECT_DEATH(channel->Send(DataBuffer("Foo")), "Check failed: false");
 }
 
 TEST(DataChannelInterfaceDeathTest, SendAsyncDefaultImplDchecks) {
-  auto channel = rtc::make_ref_counted<NoImplDataChannel>();
+  auto channel = webrtc::make_ref_counted<NoImplDataChannel>();
   RTC_EXPECT_DEATH(channel->SendAsync(DataBuffer("Foo"), nullptr),
                    "Check failed: false");
 }

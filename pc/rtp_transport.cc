@@ -78,8 +78,8 @@ void RtpTransport::SetRtpPacketTransport(
     new_packet_transport->SignalReadyToSend.connect(
         this, &RtpTransport::OnReadyToSend);
     new_packet_transport->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnReadPacket(transport, packet);
         });
     new_packet_transport->SignalNetworkRouteChanged.connect(
@@ -115,8 +115,8 @@ void RtpTransport::SetRtcpPacketTransport(
     new_packet_transport->SignalReadyToSend.connect(
         this, &RtpTransport::OnReadyToSend);
     new_packet_transport->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnReadPacket(transport, packet);
         });
     new_packet_transport->SignalNetworkRouteChanged.connect(
@@ -142,21 +142,21 @@ bool RtpTransport::IsWritable(bool rtcp) const {
   return transport && transport->writable();
 }
 
-bool RtpTransport::SendRtpPacket(rtc::CopyOnWriteBuffer* packet,
-                                 const rtc::PacketOptions& options,
+bool RtpTransport::SendRtpPacket(CopyOnWriteBuffer* packet,
+                                 const AsyncSocketPacketOptions& options,
                                  int flags) {
   return SendPacket(false, packet, options, flags);
 }
 
-bool RtpTransport::SendRtcpPacket(rtc::CopyOnWriteBuffer* packet,
-                                  const rtc::PacketOptions& options,
+bool RtpTransport::SendRtcpPacket(CopyOnWriteBuffer* packet,
+                                  const AsyncSocketPacketOptions& options,
                                   int flags) {
   return SendPacket(true, packet, options, flags);
 }
 
 bool RtpTransport::SendPacket(bool rtcp,
-                              rtc::CopyOnWriteBuffer* packet,
-                              const rtc::PacketOptions& options,
+                              CopyOnWriteBuffer* packet,
+                              const AsyncSocketPacketOptions& options,
                               int flags) {
   PacketTransportInternal* transport = rtcp && !rtcp_mux_enabled_
                                            ? rtcp_packet_transport_
@@ -178,7 +178,7 @@ bool RtpTransport::SendPacket(bool rtcp,
 }
 
 void RtpTransport::UpdateRtpHeaderExtensionMap(
-    const cricket::RtpHeaderExtensions& header_extensions) {
+    const RtpHeaderExtensions& header_extensions) {
   header_extension_map_ = RtpHeaderExtensionMap(header_extensions);
 }
 
@@ -204,9 +204,9 @@ flat_set<uint32_t> RtpTransport::GetSsrcsForSink(RtpPacketSinkInterface* sink) {
   return rtp_demuxer_.GetSsrcsForSink(sink);
 }
 
-void RtpTransport::DemuxPacket(rtc::CopyOnWriteBuffer packet,
+void RtpTransport::DemuxPacket(CopyOnWriteBuffer packet,
                                webrtc::Timestamp arrival_time,
-                               rtc::EcnMarking ecn) {
+                               EcnMarking ecn) {
   RtpPacketReceived parsed_packet(&header_extension_map_);
   parsed_packet.set_arrival_time(arrival_time);
   parsed_packet.set_ecn(ecn);
@@ -247,7 +247,7 @@ void RtpTransport::OnWritableState(PacketTransportInternal* packet_transport) {
 }
 
 void RtpTransport::OnSentPacket(PacketTransportInternal* packet_transport,
-                                const rtc::SentPacket& sent_packet) {
+                                const SentPacketInfo& sent_packet) {
   RTC_DCHECK(packet_transport == rtp_packet_transport_ ||
              packet_transport == rtcp_packet_transport_);
   if (processing_sent_packet_) {
@@ -261,8 +261,8 @@ void RtpTransport::OnSentPacket(PacketTransportInternal* packet_transport,
 }
 
 void RtpTransport::OnRtpPacketReceived(
-    const rtc::ReceivedPacket& received_packet) {
-  rtc::CopyOnWriteBuffer payload(received_packet.payload());
+    const ReceivedIpPacket& received_packet) {
+  CopyOnWriteBuffer payload(received_packet.payload());
   DemuxPacket(
       payload,
       received_packet.arrival_time().value_or(Timestamp::MinusInfinity()),
@@ -270,8 +270,8 @@ void RtpTransport::OnRtpPacketReceived(
 }
 
 void RtpTransport::OnRtcpPacketReceived(
-    const rtc::ReceivedPacket& received_packet) {
-  rtc::CopyOnWriteBuffer payload(received_packet.payload());
+    const ReceivedIpPacket& received_packet) {
+  CopyOnWriteBuffer payload(received_packet.payload());
   // TODO(bugs.webrtc.org/15368): Propagate timestamp and maybe received packet
   // further.
   SendRtcpPacketReceived(&payload, received_packet.arrival_time()
@@ -280,7 +280,7 @@ void RtpTransport::OnRtcpPacketReceived(
 }
 
 void RtpTransport::OnReadPacket(PacketTransportInternal* transport,
-                                const rtc::ReceivedPacket& received_packet) {
+                                const ReceivedIpPacket& received_packet) {
   TRACE_EVENT0("webrtc", "RtpTransport::OnReadPacket");
 
   // When using RTCP multiplexing we might get RTCP packets on the RTP

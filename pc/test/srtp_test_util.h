@@ -19,9 +19,9 @@
 
 namespace webrtc {
 
-static const rtc::ZeroOnFreeBuffer<uint8_t> kTestKey1{
+static const ZeroOnFreeBuffer<uint8_t> kTestKey1{
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234", 30};
-static const rtc::ZeroOnFreeBuffer<uint8_t> kTestKey2{
+static const ZeroOnFreeBuffer<uint8_t> kTestKey2{
     "4321ZYXWVUTSRQPONMLKJIHGFEDCBA", 30};
 
 static int rtp_auth_tag_len(int crypto_suite) {

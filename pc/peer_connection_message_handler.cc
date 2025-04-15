@@ -28,8 +28,8 @@ namespace webrtc {
 namespace {
 
 template <typename T>
-rtc::scoped_refptr<T> WrapScoped(T* ptr) {
-  return rtc::scoped_refptr<T>(ptr);
+scoped_refptr<T> WrapScoped(T* ptr) {
+  return scoped_refptr<T>(ptr);
 }
 
 }  // namespace

@@ -20,12 +20,12 @@ TEST(RtcpMuxFilterTest, IsActiveSender) {
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // After sent offer, demux should not be active.
-  filter.SetOffer(true, cricket::CS_LOCAL);
+  filter.SetOffer(true, webrtc::CS_LOCAL);
   EXPECT_FALSE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // Remote accepted, filter is now active.
-  filter.SetAnswer(true, cricket::CS_REMOTE);
+  filter.SetAnswer(true, webrtc::CS_REMOTE);
   EXPECT_TRUE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_TRUE(filter.IsFullyActive());
@@ -34,21 +34,21 @@ TEST(RtcpMuxFilterTest, IsActiveSender) {
 // Test that we can receive provisional answer and final answer.
 TEST(RtcpMuxFilterTest, ReceivePrAnswer) {
   webrtc::RtcpMuxFilter filter;
-  filter.SetOffer(true, cricket::CS_LOCAL);
+  filter.SetOffer(true, webrtc::CS_LOCAL);
   // Received provisional answer with mux enabled.
-  EXPECT_TRUE(filter.SetProvisionalAnswer(true, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter.SetProvisionalAnswer(true, webrtc::CS_REMOTE));
   // We are now provisionally active since both sender and receiver support mux.
   EXPECT_TRUE(filter.IsActive());
   EXPECT_TRUE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // Received provisional answer with mux disabled.
-  EXPECT_TRUE(filter.SetProvisionalAnswer(false, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter.SetProvisionalAnswer(false, webrtc::CS_REMOTE));
   // We are now inactive since the receiver doesn't support mux.
   EXPECT_FALSE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // Received final answer with mux enabled.
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_TRUE(filter.IsFullyActive());
@@ -61,12 +61,12 @@ TEST(RtcpMuxFilterTest, IsActiveReceiver) {
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // After received offer, demux should not be active
-  filter.SetOffer(true, cricket::CS_REMOTE);
+  filter.SetOffer(true, webrtc::CS_REMOTE);
   EXPECT_FALSE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // We accept, filter is now active
-  filter.SetAnswer(true, cricket::CS_LOCAL);
+  filter.SetAnswer(true, webrtc::CS_LOCAL);
   EXPECT_TRUE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_TRUE(filter.IsFullyActive());
@@ -75,19 +75,19 @@ TEST(RtcpMuxFilterTest, IsActiveReceiver) {
 // Test that we can send provisional answer and final answer.
 TEST(RtcpMuxFilterTest, SendPrAnswer) {
   webrtc::RtcpMuxFilter filter;
-  filter.SetOffer(true, cricket::CS_REMOTE);
+  filter.SetOffer(true, webrtc::CS_REMOTE);
   // Send provisional answer with mux enabled.
-  EXPECT_TRUE(filter.SetProvisionalAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetProvisionalAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
   EXPECT_TRUE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // Received provisional answer with mux disabled.
-  EXPECT_TRUE(filter.SetProvisionalAnswer(false, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetProvisionalAnswer(false, webrtc::CS_LOCAL));
   EXPECT_FALSE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_FALSE(filter.IsFullyActive());
   // Send final answer with mux enabled.
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
   EXPECT_FALSE(filter.IsProvisionallyActive());
   EXPECT_TRUE(filter.IsFullyActive());
@@ -99,16 +99,16 @@ TEST(RtcpMuxFilterTest, SendPrAnswer) {
 TEST(RtcpMuxFilterTest, EnableFilterDuringUpdate) {
   webrtc::RtcpMuxFilter filter;
   EXPECT_FALSE(filter.IsActive());
-  EXPECT_TRUE(filter.SetOffer(false, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(false, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(false, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(false, webrtc::CS_LOCAL));
   EXPECT_FALSE(filter.IsActive());
 
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_FALSE(filter.SetOffer(false, cricket::CS_REMOTE));
-  EXPECT_FALSE(filter.SetAnswer(false, cricket::CS_LOCAL));
+  EXPECT_FALSE(filter.SetOffer(false, webrtc::CS_REMOTE));
+  EXPECT_FALSE(filter.SetAnswer(false, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 }
 
@@ -116,15 +116,15 @@ TEST(RtcpMuxFilterTest, EnableFilterDuringUpdate) {
 TEST(RtcpMuxFilterTest, SetOfferTwice) {
   webrtc::RtcpMuxFilter filter;
 
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 
   webrtc::RtcpMuxFilter filter2;
-  EXPECT_TRUE(filter2.SetOffer(false, cricket::CS_LOCAL));
-  EXPECT_TRUE(filter2.SetOffer(false, cricket::CS_LOCAL));
-  EXPECT_TRUE(filter2.SetAnswer(false, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter2.SetOffer(false, webrtc::CS_LOCAL));
+  EXPECT_TRUE(filter2.SetOffer(false, webrtc::CS_LOCAL));
+  EXPECT_TRUE(filter2.SetAnswer(false, webrtc::CS_REMOTE));
   EXPECT_FALSE(filter2.IsActive());
 }
 
@@ -132,12 +132,12 @@ TEST(RtcpMuxFilterTest, SetOfferTwice) {
 TEST(RtcpMuxFilterTest, EnableFilterTwiceDuringUpdate) {
   webrtc::RtcpMuxFilter filter;
 
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 }
 
@@ -145,12 +145,12 @@ TEST(RtcpMuxFilterTest, EnableFilterTwiceDuringUpdate) {
 TEST(RtcpMuxFilterTest, KeepFilterDisabledDuringUpdate) {
   webrtc::RtcpMuxFilter filter;
 
-  EXPECT_TRUE(filter.SetOffer(false, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(false, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(false, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(false, webrtc::CS_LOCAL));
   EXPECT_FALSE(filter.IsActive());
 
-  EXPECT_TRUE(filter.SetOffer(false, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.SetAnswer(false, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(false, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.SetAnswer(false, webrtc::CS_LOCAL));
   EXPECT_FALSE(filter.IsActive());
 }
 
@@ -161,33 +161,33 @@ TEST(RtcpMuxFilterTest, SetActiveCantDeactivate) {
   filter.SetActive();
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_FALSE(filter.SetOffer(false, cricket::CS_LOCAL));
+  EXPECT_FALSE(filter.SetOffer(false, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_LOCAL));
-  EXPECT_TRUE(filter.IsActive());
-
-  EXPECT_FALSE(filter.SetProvisionalAnswer(false, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetProvisionalAnswer(true, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_FALSE(filter.SetAnswer(false, cricket::CS_REMOTE));
+  EXPECT_FALSE(filter.SetProvisionalAnswer(false, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.IsActive());
-
-  EXPECT_FALSE(filter.SetOffer(false, cricket::CS_REMOTE));
-  EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetOffer(true, cricket::CS_REMOTE));
+  EXPECT_TRUE(filter.SetProvisionalAnswer(true, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_FALSE(filter.SetProvisionalAnswer(false, cricket::CS_LOCAL));
+  EXPECT_FALSE(filter.SetAnswer(false, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetProvisionalAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
 
-  EXPECT_FALSE(filter.SetAnswer(false, cricket::CS_LOCAL));
+  EXPECT_FALSE(filter.SetOffer(false, webrtc::CS_REMOTE));
   EXPECT_TRUE(filter.IsActive());
-  EXPECT_TRUE(filter.SetAnswer(true, cricket::CS_LOCAL));
+  EXPECT_TRUE(filter.SetOffer(true, webrtc::CS_REMOTE));
+  EXPECT_TRUE(filter.IsActive());
+
+  EXPECT_FALSE(filter.SetProvisionalAnswer(false, webrtc::CS_LOCAL));
+  EXPECT_TRUE(filter.IsActive());
+  EXPECT_TRUE(filter.SetProvisionalAnswer(true, webrtc::CS_LOCAL));
+  EXPECT_TRUE(filter.IsActive());
+
+  EXPECT_FALSE(filter.SetAnswer(false, webrtc::CS_LOCAL));
+  EXPECT_TRUE(filter.IsActive());
+  EXPECT_TRUE(filter.SetAnswer(true, webrtc::CS_LOCAL));
   EXPECT_TRUE(filter.IsActive());
 }

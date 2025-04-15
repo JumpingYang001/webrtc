@@ -119,11 +119,11 @@ class PeerConnectionSdpMethods {
 
   // Internal implementation for AddTransceiver family of methods. If
   // `fire_callback` is set, fires OnRenegotiationNeeded callback if successful.
-  virtual RTCErrorOr<rtc::scoped_refptr<RtpTransceiverInterface>>
-  AddTransceiver(webrtc::MediaType media_type,
-                 rtc::scoped_refptr<MediaStreamTrackInterface> track,
-                 const RtpTransceiverInit& init,
-                 bool fire_callback = true) = 0;
+  virtual RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> AddTransceiver(
+      webrtc::MediaType media_type,
+      scoped_refptr<MediaStreamTrackInterface> track,
+      const RtpTransceiverInit& init,
+      bool fire_callback = true) = 0;
   // Asynchronously calls SctpTransport::Start() on the network thread for
   // `sctp_mid()` if set. Called as part of setting the local description.
   virtual RTCError StartSctpTransport(const SctpOptions& options) = 0;
@@ -172,7 +172,7 @@ class PeerConnectionInternal : public PeerConnectionInterface,
   virtual bool initial_offerer() const = 0;
 
   virtual std::vector<
-      rtc::scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
+      scoped_refptr<RtpTransceiverProxyWithInternal<RtpTransceiver>>>
   GetTransceiversInternal() const = 0;
 
   // Call on the network thread to fetch stats for all the data channels.
@@ -183,7 +183,7 @@ class PeerConnectionInternal : public PeerConnectionInterface,
 
   virtual std::optional<std::string> sctp_transport_name() const = 0;
 
-  virtual cricket::CandidateStatsList GetPooledCandidateStats() const = 0;
+  virtual CandidateStatsList GetPooledCandidateStats() const = 0;
 
   // Returns a map from transport name to transport stats for all given
   // transport names.
@@ -197,7 +197,7 @@ class PeerConnectionInternal : public PeerConnectionInterface,
 
   virtual bool GetLocalCertificate(
       const std::string& transport_name,
-      rtc::scoped_refptr<RTCCertificate>* certificate) = 0;
+      scoped_refptr<RTCCertificate>* certificate) = 0;
   virtual std::unique_ptr<SSLCertChain> GetRemoteSSLCertChain(
       const std::string& transport_name) = 0;
 

@@ -89,7 +89,7 @@ class FakeDtmfProvider : public DtmfProviderInterface {
 
   bool InsertDtmf(int code, int duration) override {
     int gap = 0;
-    // TODO(ronghuawu): Make the timer (basically the rtc::TimeNanos)
+    // TODO(ronghuawu): Make the timer (basically the webrtc::TimeNanos)
     // mockable and use a fake timer in the unit tests.
     if (last_insert_dtmf_call_ > 0) {
       gap = static_cast<int>(webrtc::TimeMillis() - last_insert_dtmf_call_);
@@ -217,7 +217,7 @@ class DtmfSenderTest : public ::testing::Test {
   webrtc::AutoThread main_thread_;
   std::unique_ptr<FakeDtmfObserver> observer_;
   std::unique_ptr<FakeDtmfProvider> provider_;
-  rtc::scoped_refptr<DtmfSender> dtmf_;
+  webrtc::scoped_refptr<DtmfSender> dtmf_;
   webrtc::ScopedFakeClock fake_clock_;
 };
 

@@ -52,8 +52,8 @@ class WebRtcSessionDescriptionFactory {
       const std::string& session_id,
       bool dtls_enabled,
       std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator,
-      rtc::scoped_refptr<RTCCertificate> certificate,
-      std::function<void(const rtc::scoped_refptr<webrtc::RTCCertificate>&)>
+      scoped_refptr<RTCCertificate> certificate,
+      std::function<void(const webrtc::scoped_refptr<webrtc::RTCCertificate>&)>
           on_certificate_ready,
       CodecLookupHelper* codec_lookup_helper,
       const FieldTrialsView& field_trials);
@@ -112,7 +112,7 @@ class WebRtcSessionDescriptionFactory {
         : type(type), observer(observer), options(options) {}
 
     Type type;
-    rtc::scoped_refptr<CreateSessionDescriptionObserver> observer;
+    scoped_refptr<CreateSessionDescriptionObserver> observer;
     MediaSessionOptions options;
   };
 
@@ -131,7 +131,7 @@ class WebRtcSessionDescriptionFactory {
   void Post(absl::AnyInvocable<void() &&> callback);
 
   void OnCertificateRequestFailed();
-  void SetCertificate(rtc::scoped_refptr<RTCCertificate> certificate);
+  void SetCertificate(scoped_refptr<RTCCertificate> certificate);
 
   std::queue<CreateSessionDescriptionRequest>
       create_session_description_requests_;
@@ -145,7 +145,7 @@ class WebRtcSessionDescriptionFactory {
   CertificateRequestState certificate_request_state_;
   std::queue<absl::AnyInvocable<void() &&>> callbacks_;
 
-  std::function<void(const rtc::scoped_refptr<webrtc::RTCCertificate>&)>
+  std::function<void(const webrtc::scoped_refptr<webrtc::RTCCertificate>&)>
       on_certificate_ready_;
 
   WeakPtrFactory<WebRtcSessionDescriptionFactory> weak_factory_{this};

@@ -69,7 +69,7 @@
 #include "test/scoped_key_value_config.h"
 #include "test/wait_until.h"
 
-using cricket::Candidate;
+using webrtc::Candidate;
 using ::webrtc::Candidates;
 using ::webrtc::FakeDtlsTransport;
 
@@ -93,11 +93,11 @@ namespace webrtc {
 class FakeIceTransportFactory : public IceTransportFactory {
  public:
   ~FakeIceTransportFactory() override = default;
-  rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+  scoped_refptr<IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       int component,
       IceTransportInit init) override {
-    return rtc::make_ref_counted<FakeIceTransportWrapper>(
+    return make_ref_counted<FakeIceTransportWrapper>(
         std::make_unique<FakeIceTransport>(transport_name, component));
   }
 };
@@ -128,13 +128,13 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                                      Thread* network_thread = Thread::Current(),
                                      PortAllocator* port_allocator = nullptr) {
     config.transport_observer = this;
-    config.rtcp_handler = [](const rtc::CopyOnWriteBuffer& packet,
+    config.rtcp_handler = [](const CopyOnWriteBuffer& packet,
                              int64_t packet_time_us) {
       RTC_DCHECK_NOTREACHED();
     };
     config.ice_transport_factory = fake_ice_transport_factory_.get();
     config.dtls_transport_factory = fake_dtls_transport_factory_.get();
-    config.on_dtls_handshake_error_ = [](rtc::SSLHandshakeError s) {};
+    config.on_dtls_handshake_error_ = [](SSLHandshakeError s) {};
     transport_controller_ = std::make_unique<JsepTransportController>(
         env_, network_thread, port_allocator,
         nullptr /* async_resolver_factory */, payload_type_picker_,
@@ -144,7 +144,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
 
   void ConnectTransportControllerSignals() {
     transport_controller_->SubscribeIceConnectionState(
-        [this](cricket::IceConnectionState s) {
+        [this](IceConnectionState s) {
           JsepTransportControllerTest::OnConnectionState(s);
         });
     transport_controller_->SubscribeConnectionState(
@@ -156,12 +156,12 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
           JsepTransportControllerTest::OnStandardizedIceConnectionState(s);
         });
     transport_controller_->SubscribeIceGatheringState(
-        [this](cricket::IceGatheringState s) {
+        [this](IceGatheringState s) {
           JsepTransportControllerTest::OnGatheringState(s);
         });
     transport_controller_->SubscribeIceCandidateGathered(
         [this](const std::string& transport,
-               const std::vector<cricket::Candidate>& candidates) {
+               const std::vector<Candidate>& candidates) {
           JsepTransportControllerTest::OnCandidatesGathered(transport,
                                                             candidates);
         });
@@ -207,7 +207,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                        const std::string& pwd,
                        IceMode ice_mode,
                        ConnectionRole conn_role,
-                       rtc::scoped_refptr<RTCCertificate> cert) {
+                       scoped_refptr<RTCCertificate> cert) {
     std::unique_ptr<AudioContentDescription> audio(
         new AudioContentDescription());
     // Set RTCP-mux to be true because the default policy is "mux required".
@@ -223,7 +223,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                        const std::string& pwd,
                        IceMode ice_mode,
                        ConnectionRole conn_role,
-                       rtc::scoped_refptr<RTCCertificate> cert) {
+                       scoped_refptr<RTCCertificate> cert) {
     std::unique_ptr<VideoContentDescription> video(
         new VideoContentDescription());
     // Set RTCP-mux to be true because the default policy is "mux required".
@@ -240,7 +240,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                       const std::string& pwd,
                       IceMode ice_mode,
                       ConnectionRole conn_role,
-                      rtc::scoped_refptr<RTCCertificate> cert) {
+                      scoped_refptr<RTCCertificate> cert) {
     RTC_CHECK(protocol_type == MediaProtocolType::kSctp);
     std::unique_ptr<SctpDataContentDescription> data(
         new SctpDataContentDescription());
@@ -256,7 +256,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
                         const std::string& pwd,
                         IceMode ice_mode,
                         ConnectionRole conn_role,
-                        rtc::scoped_refptr<RTCCertificate> cert) {
+                        scoped_refptr<RTCCertificate> cert) {
     std::unique_ptr<SSLFingerprint> fingerprint;
     if (cert) {
       fingerprint = SSLFingerprint::CreateFromCertificate(*cert);
@@ -324,7 +324,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
   }
 
  protected:
-  void OnConnectionState(cricket::IceConnectionState state) {
+  void OnConnectionState(IceConnectionState state) {
     ice_signaled_on_thread_ = Thread::Current();
     connection_state_ = state;
     ++connection_state_signal_count_;
@@ -364,7 +364,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
   bool OnTransportChanged(
       const std::string& mid,
       RtpTransportInternal* rtp_transport,
-      rtc::scoped_refptr<DtlsTransport> dtls_transport,
+      scoped_refptr<DtlsTransport> dtls_transport,
       DataChannelTransportInterface* data_channel_transport) override {
     changed_rtp_transport_by_mid_[mid] = rtp_transport;
     if (dtls_transport) {
@@ -379,8 +379,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
   Environment env_;
   AutoThread main_thread_;
   // Information received from signals from transport controller.
-  cricket::IceConnectionState connection_state_ =
-      cricket::kIceConnectionConnecting;
+  IceConnectionState connection_state_ = kIceConnectionConnecting;
   PeerConnectionInterface::IceConnectionState ice_connection_state_ =
       PeerConnectionInterface::kIceConnectionNew;
   PeerConnectionInterface::PeerConnectionState combined_connection_state_ =
@@ -595,9 +594,9 @@ TEST_F(JsepTransportControllerTest, AddRemoveRemoteCandidates) {
 TEST_F(JsepTransportControllerTest, SetAndGetLocalCertificate) {
   CreateJsepTransportController(JsepTransportController::Config());
 
-  rtc::scoped_refptr<RTCCertificate> certificate1 =
+  scoped_refptr<RTCCertificate> certificate1 =
       RTCCertificate::Create(SSLIdentity::Create("session1", KT_DEFAULT));
-  rtc::scoped_refptr<RTCCertificate> returned_certificate;
+  scoped_refptr<RTCCertificate> returned_certificate;
 
   auto description = std::make_unique<SessionDescription>();
   AddAudioSection(description.get(), kAudioMid1, kIceUfrag1, kIcePwd1,
@@ -619,7 +618,7 @@ TEST_F(JsepTransportControllerTest, SetAndGetLocalCertificate) {
   EXPECT_EQ(nullptr, transport_controller_->GetLocalCertificate(kVideoMid1));
 
   // Shouldn't be able to change the identity once set.
-  rtc::scoped_refptr<RTCCertificate> certificate2 =
+  scoped_refptr<RTCCertificate> certificate2 =
       RTCCertificate::Create(SSLIdentity::Create("session2", KT_DEFAULT));
   EXPECT_FALSE(transport_controller_->SetLocalCertificate(certificate2));
 }
@@ -710,7 +709,7 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateFailed) {
   fake_ice->SetConnectionCount(1);
   // The connection stats will be failed if there is no active connection.
   fake_ice->SetConnectionCount(0);
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionFailed; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -755,7 +754,7 @@ TEST_F(JsepTransportControllerTest,
   fake_video_dtls->fake_ice_transport()->SetConnectionCount(0);
   fake_video_dtls->fake_ice_transport()->SetCandidatesGatheringComplete();
 
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionFailed; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -776,11 +775,11 @@ TEST_F(JsepTransportControllerTest,
 
   fake_audio_dtls->SetDtlsState(DtlsTransportState::kConnected);
   fake_video_dtls->SetDtlsState(DtlsTransportState::kConnected);
-  // Set the connection count to be 2 and the cricket::FakeIceTransport will set
+  // Set the connection count to be 2 and the webrtc::FakeIceTransport will set
   // the transport state to be STATE_CONNECTING.
   fake_video_dtls->fake_ice_transport()->SetConnectionCount(2);
   fake_video_dtls->SetWritable(true);
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionConnected; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionConnected; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -821,7 +820,7 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
   // We should only get a signal when all are connected.
   fake_audio_dtls->fake_ice_transport()->SetTransportState(
       IceTransportState::kCompleted,
-      cricket::IceTransportState::STATE_COMPLETED);
+      IceTransportStateInternal::STATE_COMPLETED);
   fake_audio_dtls->SetWritable(true);
   fake_audio_dtls->fake_ice_transport()->SetCandidatesGatheringComplete();
 
@@ -842,10 +841,10 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
   EXPECT_EQ(1, combined_connection_state_signal_count_);
 
   fake_video_dtls->fake_ice_transport()->SetTransportState(
-      IceTransportState::kFailed, cricket::IceTransportState::STATE_FAILED);
+      IceTransportState::kFailed, IceTransportStateInternal::STATE_FAILED);
   fake_video_dtls->fake_ice_transport()->SetCandidatesGatheringComplete();
 
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionFailed; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -866,13 +865,13 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
 
   fake_audio_dtls->SetDtlsState(DtlsTransportState::kConnected);
   fake_video_dtls->SetDtlsState(DtlsTransportState::kConnected);
-  // Set the connection count to be 1 and the cricket::FakeIceTransport will set
+  // Set the connection count to be 1 and the webrtc::FakeIceTransport will set
   // the transport state to be STATE_COMPLETED.
   fake_video_dtls->fake_ice_transport()->SetTransportState(
       IceTransportState::kCompleted,
-      cricket::IceTransportState::STATE_COMPLETED);
+      IceTransportStateInternal::STATE_COMPLETED);
   fake_video_dtls->SetWritable(true);
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionCompleted; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -997,7 +996,7 @@ TEST_F(JsepTransportControllerTest,
   fake_video_dtls = static_cast<FakeDtlsTransport*>(
       transport_controller_->GetDtlsTransport(kVideoMid1));
   EXPECT_EQ(fake_audio_dtls, fake_video_dtls);
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionCompleted; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
@@ -1036,7 +1035,7 @@ TEST_F(JsepTransportControllerTest,
   fake_audio_dtls->fake_ice_transport()->MaybeStartGathering();
   fake_audio_dtls->fake_ice_transport()->SetTransportState(
       IceTransportState::kChecking,
-      cricket::IceTransportState::STATE_CONNECTING);
+      IceTransportStateInternal::STATE_CONNECTING);
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionChecking; },
                 ::testing::Eq(ice_connection_state_),
@@ -1139,7 +1138,7 @@ TEST_F(JsepTransportControllerTest, IceSignalingOccursOnNetworkThread) {
   CreateLocalDescriptionAndCompleteConnectionOnNetworkThread();
 
   // connecting --> connected --> completed
-  EXPECT_THAT(WaitUntil([&] { return cricket::kIceConnectionCompleted; },
+  EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
                         {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
               IsRtcOk());

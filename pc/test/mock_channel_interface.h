@@ -29,7 +29,7 @@ namespace webrtc {
 // Mock class for BaseChannel.
 // Use this class in unit tests to avoid dependency on a specific
 // implementation of BaseChannel.
-class MockChannelInterface : public cricket::ChannelInterface {
+class MockChannelInterface : public ChannelInterface {
  public:
   MOCK_METHOD(MediaType, media_type, (), (const, override));
   MOCK_METHOD(VideoChannel*, AsVideoChannel, (), (override));
@@ -75,11 +75,11 @@ class MockChannelInterface : public cricket::ChannelInterface {
               (const webrtc::MediaContentDescription*, SdpType, std::string&),
               (override));
   MOCK_METHOD(bool, SetPayloadTypeDemuxingEnabled, (bool), (override));
-  MOCK_METHOD(const std::vector<cricket::StreamParams>&,
+  MOCK_METHOD(const std::vector<StreamParams>&,
               local_streams,
               (),
               (const, override));
-  MOCK_METHOD(const std::vector<cricket::StreamParams>&,
+  MOCK_METHOD(const std::vector<StreamParams>&,
               remote_streams,
               (),
               (const, override));

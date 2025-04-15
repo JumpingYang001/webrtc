@@ -22,7 +22,7 @@
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/copy_on_write_buffer.h"
-#include "rtc_base/ssl_stream_adapter.h"  // For rtc::SRTP_*
+#include "rtc_base/ssl_stream_adapter.h"  // For webrtc::SRTP_*
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -112,12 +112,12 @@ TEST_F(SrtpSessionTest, TestBadSetup) {
 TEST_F(SrtpSessionTest, TestKeysTooShort) {
   EXPECT_FALSE(
       s1_.SetSend(webrtc::kSrtpAes128CmSha1_80,
-                  rtc::ZeroOnFreeBuffer<uint8_t>(webrtc::kTestKey1.data(), 1),
+                  ZeroOnFreeBuffer<uint8_t>(webrtc::kTestKey1.data(), 1),
                   kEncryptedHeaderExtensionIds));
-  EXPECT_FALSE(s2_.SetReceive(
-      webrtc::kSrtpAes128CmSha1_80,
-      rtc::ZeroOnFreeBuffer<uint8_t>(webrtc::kTestKey1.data(), 1),
-      kEncryptedHeaderExtensionIds));
+  EXPECT_FALSE(
+      s2_.SetReceive(webrtc::kSrtpAes128CmSha1_80,
+                     ZeroOnFreeBuffer<uint8_t>(webrtc::kTestKey1.data(), 1),
+                     kEncryptedHeaderExtensionIds));
 }
 
 // Test that we can encrypt and decrypt RTP/RTCP using AES_CM_128_HMAC_SHA1_80.

@@ -64,8 +64,8 @@ class DtlsSrtpTransport : public SrtpTransport {
   void SetupRtcpDtlsSrtp();
   bool ExtractParams(DtlsTransportInternal* dtls_transport,
                      int* selected_crypto_suite,
-                     rtc::ZeroOnFreeBuffer<uint8_t>* send_key,
-                     rtc::ZeroOnFreeBuffer<uint8_t>* recv_key);
+                     ZeroOnFreeBuffer<uint8_t>* send_key,
+                     ZeroOnFreeBuffer<uint8_t>* recv_key);
   void SetDtlsTransport(DtlsTransportInternal* new_dtls_transport,
                         DtlsTransportInternal** old_dtls_transport);
   void SetRtpDtlsTransport(DtlsTransportInternal* rtp_dtls_transport);

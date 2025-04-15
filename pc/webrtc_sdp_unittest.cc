@@ -56,11 +56,11 @@
 #endif
 #include "pc/webrtc_sdp.h"
 
-using cricket::Candidate;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Property;
 using ::webrtc::AudioContentDescription;
+using webrtc::Candidate;
 using ::webrtc::ContentGroup;
 using ::webrtc::ContentInfo;
 using ::webrtc::ICE_CANDIDATE_COMPONENT_RTCP;
@@ -1452,8 +1452,8 @@ class WebRtcSdpTest : public ::testing::Test {
     }
 
     // group
-    const cricket::ContentGroups groups1 = desc1.groups();
-    const cricket::ContentGroups groups2 = desc2.groups();
+    const webrtc::ContentGroups groups1 = desc1.groups();
+    const webrtc::ContentGroups groups2 = desc2.groups();
     EXPECT_EQ(groups1.size(), groups1.size());
     if (groups1.size() != groups2.size()) {
       ADD_FAILURE();
@@ -1463,23 +1463,23 @@ class WebRtcSdpTest : public ::testing::Test {
       const webrtc::ContentGroup group1 = groups1.at(i);
       const webrtc::ContentGroup group2 = groups2.at(i);
       EXPECT_EQ(group1.semantics(), group2.semantics());
-      const cricket::ContentNames names1 = group1.content_names();
-      const cricket::ContentNames names2 = group2.content_names();
+      const webrtc::ContentNames names1 = group1.content_names();
+      const webrtc::ContentNames names2 = group2.content_names();
       EXPECT_EQ(names1.size(), names2.size());
       if (names1.size() != names2.size()) {
         ADD_FAILURE();
         return;
       }
-      cricket::ContentNames::const_iterator iter1 = names1.begin();
-      cricket::ContentNames::const_iterator iter2 = names2.begin();
+      webrtc::ContentNames::const_iterator iter1 = names1.begin();
+      webrtc::ContentNames::const_iterator iter2 = names2.begin();
       while (iter1 != names1.end()) {
         EXPECT_EQ(*iter1++, *iter2++);
       }
     }
 
     // transport info
-    const cricket::TransportInfos transports1 = desc1.transport_infos();
-    const cricket::TransportInfos transports2 = desc2.transport_infos();
+    const webrtc::TransportInfos transports1 = desc1.transport_infos();
+    const webrtc::TransportInfos transports2 = desc2.transport_infos();
     EXPECT_EQ(transports1.size(), transports2.size());
     if (transports1.size() != transports2.size()) {
       ADD_FAILURE();
@@ -1620,8 +1620,7 @@ class WebRtcSdpTest : public ::testing::Test {
   // Removes everything in StreamParams from the session description that is
   // used for a=ssrc lines.
   void RemoveSsrcSignalingFromStreamParams() {
-    for (cricket::ContentInfo& content_info :
-         jdesc_.description()->contents()) {
+    for (webrtc::ContentInfo& content_info : jdesc_.description()->contents()) {
       // With Unified Plan there should be one StreamParams per m= section.
       StreamParams& stream =
           content_info.media_description()->mutable_streams()[0];
@@ -2659,7 +2658,7 @@ TEST_F(WebRtcSdpTest, DeserializeCandidate) {
 
   sdp = kSdpTcpActiveCandidate;
   EXPECT_TRUE(SdpDeserializeCandidate(sdp, &jcandidate));
-  // Make a cricket::Candidate equivalent to kSdpTcpCandidate string.
+  // Make a webrtc::Candidate equivalent to kSdpTcpCandidate string.
   Candidate candidate(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "tcp",
                       webrtc::SocketAddress("192.168.1.5", 9),
                       kCandidatePriority, "", "", IceCandidateType::kHost,
@@ -4472,7 +4471,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeSimulcastAttribute) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4493,7 +4492,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeSimulcastAttributeRemovesUnknownRids) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4531,7 +4530,7 @@ TEST_F(WebRtcSdpTest,
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4557,7 +4556,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeIgnoresEmptyRidLines) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4583,7 +4582,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeIgnoresMalformedRidLines) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4606,7 +4605,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeIgnoresInvalidPayloadTypesInRid) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4637,7 +4636,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeIgnoresDuplicateRidLines) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());
@@ -4660,7 +4659,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeRidSendDirection) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_FALSE(media->HasSimulcast());
@@ -4674,7 +4673,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeRidRecvDirection) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_FALSE(media->HasSimulcast());
@@ -4692,7 +4691,7 @@ TEST_F(WebRtcSdpTest, TestDeserializeIgnoresWrongRidDirectionLines) {
   JsepSessionDescription output(kDummyType);
   SdpParseError error;
   EXPECT_TRUE(webrtc::SdpDeserialize(sdp, &output, &error));
-  const cricket::ContentInfos& contents = output.description()->contents();
+  const webrtc::ContentInfos& contents = output.description()->contents();
   const webrtc::MediaContentDescription* media =
       contents.back().media_description();
   EXPECT_TRUE(media->HasSimulcast());

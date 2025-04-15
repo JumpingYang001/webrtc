@@ -22,33 +22,32 @@ namespace webrtc {
 
 class RTCStatsObtainer : public RTCStatsCollectorCallback {
  public:
-  static rtc::scoped_refptr<RTCStatsObtainer> Create(
-      rtc::scoped_refptr<const RTCStatsReport>* report_ptr = nullptr) {
-    return rtc::make_ref_counted<RTCStatsObtainer>(report_ptr);
+  static scoped_refptr<RTCStatsObtainer> Create(
+      scoped_refptr<const RTCStatsReport>* report_ptr = nullptr) {
+    return make_ref_counted<RTCStatsObtainer>(report_ptr);
   }
 
   void OnStatsDelivered(
-      const rtc::scoped_refptr<const RTCStatsReport>& report) override {
+      const scoped_refptr<const RTCStatsReport>& report) override {
     EXPECT_TRUE(thread_checker_.IsCurrent());
     report_ = report;
     if (report_ptr_)
       *report_ptr_ = report_;
   }
 
-  rtc::scoped_refptr<const RTCStatsReport> report() const {
+  scoped_refptr<const RTCStatsReport> report() const {
     EXPECT_TRUE(thread_checker_.IsCurrent());
     return report_;
   }
 
  protected:
-  explicit RTCStatsObtainer(
-      rtc::scoped_refptr<const RTCStatsReport>* report_ptr)
+  explicit RTCStatsObtainer(scoped_refptr<const RTCStatsReport>* report_ptr)
       : report_ptr_(report_ptr) {}
 
  private:
   SequenceChecker thread_checker_;
-  rtc::scoped_refptr<const RTCStatsReport> report_;
-  rtc::scoped_refptr<const RTCStatsReport>* report_ptr_;
+  scoped_refptr<const RTCStatsReport> report_;
+  scoped_refptr<const RTCStatsReport>* report_ptr_;
 };
 
 }  // namespace webrtc

@@ -31,8 +31,8 @@ namespace webrtc {
 
 VideoTrack::VideoTrack(
     absl::string_view label,
-    rtc::scoped_refptr<
-        VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>> source,
+    scoped_refptr<VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>>
+        source,
     Thread* worker_thread)
     : MediaStreamTrack<VideoTrackInterface>(label),
       worker_thread_(worker_thread),
@@ -57,7 +57,7 @@ std::string VideoTrack::kind() const {
 
 // AddOrUpdateSink and RemoveSink should be called on the worker
 // thread.
-void VideoTrack::AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
+void VideoTrack::AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
                                  const VideoSinkWants& wants) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   VideoSourceBaseGuarded::AddOrUpdateSink(sink, wants);
@@ -66,7 +66,7 @@ void VideoTrack::AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
   video_source_->internal()->AddOrUpdateSink(sink, modified_wants);
 }
 
-void VideoTrack::RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) {
+void VideoTrack::RemoveSink(VideoSinkInterface<VideoFrame>* sink) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   VideoSourceBaseGuarded::RemoveSink(sink);
   video_source_->internal()->RemoveSink(sink);
@@ -138,17 +138,16 @@ void VideoTrack::OnChanged() {
   set_state(state == MediaSourceInterface::kEnded ? kEnded : kLive);
 }
 
-rtc::scoped_refptr<VideoTrack> VideoTrack::Create(
+scoped_refptr<VideoTrack> VideoTrack::Create(
     absl::string_view id,
-    rtc::scoped_refptr<VideoTrackSourceInterface> source,
+    scoped_refptr<VideoTrackSourceInterface> source,
     Thread* worker_thread) {
-  rtc::scoped_refptr<
-      VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>>
+  scoped_refptr<VideoTrackSourceProxyWithInternal<VideoTrackSourceInterface>>
       source_proxy = VideoTrackSourceProxy::Create(
           Thread::Current(), worker_thread, std::move(source));
 
-  return rtc::make_ref_counted<VideoTrack>(id, std::move(source_proxy),
-                                           worker_thread);
+  return make_ref_counted<VideoTrack>(id, std::move(source_proxy),
+                                      worker_thread);
 }
 
 }  // namespace webrtc

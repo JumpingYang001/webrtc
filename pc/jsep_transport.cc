@@ -110,16 +110,16 @@ JsepTransport::JsepTransport(
       unencrypted_rtp_transport_(std::move(unencrypted_rtp_transport)),
       sdes_transport_(std::move(sdes_transport)),
       dtls_srtp_transport_(std::move(dtls_srtp_transport)),
-      rtp_dtls_transport_(rtp_dtls_transport
-                              ? rtc::make_ref_counted<DtlsTransport>(
-                                    std::move(rtp_dtls_transport))
-                              : nullptr),
-      rtcp_dtls_transport_(rtcp_dtls_transport
-                               ? rtc::make_ref_counted<DtlsTransport>(
-                                     std::move(rtcp_dtls_transport))
-                               : nullptr),
+      rtp_dtls_transport_(
+          rtp_dtls_transport
+              ? make_ref_counted<DtlsTransport>(std::move(rtp_dtls_transport))
+              : nullptr),
+      rtcp_dtls_transport_(
+          rtcp_dtls_transport
+              ? make_ref_counted<DtlsTransport>(std::move(rtcp_dtls_transport))
+              : nullptr),
       sctp_transport_(sctp_transport
-                          ? rtc::make_ref_counted<::webrtc::SctpTransport>(
+                          ? make_ref_counted<::webrtc::SctpTransport>(
                                 std::move(sctp_transport),
                                 rtp_dtls_transport_)
                           : nullptr),
@@ -300,7 +300,7 @@ RTCError JsepTransport::AddRemoteCandidates(const Candidates& candidates) {
                         "not set.");
   }
 
-  for (const cricket::Candidate& candidate : candidates) {
+  for (const Candidate& candidate : candidates) {
     auto transport = candidate.component() == ICE_CANDIDATE_COMPONENT_RTP
                          ? rtp_dtls_transport_
                          : rtcp_dtls_transport_;
@@ -523,7 +523,7 @@ RTCError JsepTransport::NegotiateAndSetDtlsParameters(
   } else {
     // We are not doing DTLS
     remote_fingerprint =
-        std::make_unique<SSLFingerprint>("", rtc::ArrayView<const uint8_t>());
+        std::make_unique<SSLFingerprint>("", ArrayView<const uint8_t>());
   }
   // Now that we have negotiated everything, push it downward.
   // Note that we cache the result so that if we have race conditions

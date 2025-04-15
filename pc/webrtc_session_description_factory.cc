@@ -45,8 +45,8 @@
 #include "rtc_base/ssl_stream_adapter.h"
 #include "rtc_base/unique_id_generator.h"
 
-using rtc::UniqueRandomIdGenerator;
 using ::webrtc::MediaSessionOptions;
+using webrtc::UniqueRandomIdGenerator;
 
 namespace webrtc {
 namespace {
@@ -61,7 +61,7 @@ static const uint64_t kInitSessionVersion = 2;
 static bool ValidMediaSessionOptions(
     const MediaSessionOptions& session_options) {
   std::vector<SenderOptions> sorted_senders;
-  for (const cricket::MediaDescriptionOptions& media_description_options :
+  for (const MediaDescriptionOptions& media_description_options :
        session_options.media_description_options) {
     sorted_senders.insert(sorted_senders.end(),
                           media_description_options.sender_options.begin(),
@@ -87,8 +87,7 @@ void WebRtcSessionDescriptionFactory::CopyCandidatesFromSessionDescription(
   if (!source_desc) {
     return;
   }
-  const cricket::ContentInfos& contents =
-      source_desc->description()->contents();
+  const ContentInfos& contents = source_desc->description()->contents();
   const ContentInfo* cinfo =
       source_desc->description()->GetContentByName(content_name);
   if (!cinfo) {
@@ -116,8 +115,8 @@ WebRtcSessionDescriptionFactory::WebRtcSessionDescriptionFactory(
     const std::string& session_id,
     bool dtls_enabled,
     std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator,
-    rtc::scoped_refptr<RTCCertificate> certificate,
-    std::function<void(const rtc::scoped_refptr<webrtc::RTCCertificate>&)>
+    scoped_refptr<RTCCertificate> certificate,
+    std::function<void(const webrtc::scoped_refptr<webrtc::RTCCertificate>&)>
         on_certificate_ready,
     CodecLookupHelper* codec_lookup_helper,
     const FieldTrialsView& field_trials)
@@ -159,7 +158,7 @@ WebRtcSessionDescriptionFactory::WebRtcSessionDescriptionFactory(
   certificate_request_state_ = CERTIFICATE_WAITING;
 
   auto callback = [weak_ptr = weak_factory_.GetWeakPtr()](
-                      rtc::scoped_refptr<rtc::RTCCertificate> certificate) {
+                      scoped_refptr<RTCCertificate> certificate) {
     if (!weak_ptr) {
       return;
     }
@@ -274,7 +273,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateOffer(
   if (sdp_info_->local_description()) {
     // If the needs-ice-restart flag is set as described by JSEP, we should
     // generate an offer with a new ufrag/password to trigger an ICE restart.
-    for (cricket::MediaDescriptionOptions& options :
+    for (MediaDescriptionOptions& options :
          request.options.media_description_options) {
       if (sdp_info_->NeedsIceRestart(options.mid)) {
         options.transport_options.ice_restart = true;
@@ -307,7 +306,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateOffer(
       SdpType::kOffer, std::move(desc), session_id_,
       absl::StrCat(session_version_++));
   if (sdp_info_->local_description()) {
-    for (const cricket::MediaDescriptionOptions& options :
+    for (const MediaDescriptionOptions& options :
          request.options.media_description_options) {
       if (!options.transport_options.ice_restart) {
         CopyCandidatesFromSessionDescription(sdp_info_->local_description(),
@@ -322,7 +321,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateOffer(
 void WebRtcSessionDescriptionFactory::InternalCreateAnswer(
     CreateSessionDescriptionRequest request) {
   if (sdp_info_->remote_description()) {
-    for (cricket::MediaDescriptionOptions& options :
+    for (MediaDescriptionOptions& options :
          request.options.media_description_options) {
       // According to http://tools.ietf.org/html/rfc5245#section-9.2.1.1
       // an answer should also contain new ICE ufrag and password if an offer
@@ -331,11 +330,10 @@ void WebRtcSessionDescriptionFactory::InternalCreateAnswer(
           sdp_info_->IceRestartPending(options.mid);
       // We should pass the current DTLS role to the transport description
       // factory, if there is already an existing ongoing session.
-      std::optional<rtc::SSLRole> dtls_role =
-          sdp_info_->GetDtlsRole(options.mid);
+      std::optional<SSLRole> dtls_role = sdp_info_->GetDtlsRole(options.mid);
       if (dtls_role) {
         options.transport_options.prefer_passive_role =
-            (rtc::SSL_SERVER == *dtls_role);
+            (SSL_SERVER == *dtls_role);
       }
     }
   }
@@ -369,7 +367,7 @@ void WebRtcSessionDescriptionFactory::InternalCreateAnswer(
   if (sdp_info_->local_description()) {
     // Include all local ICE candidates in the SessionDescription unless
     // the remote peer has requested an ICE restart.
-    for (const cricket::MediaDescriptionOptions& options :
+    for (const MediaDescriptionOptions& options :
          request.options.media_description_options) {
       if (!options.transport_options.ice_restart) {
         CopyCandidatesFromSessionDescription(sdp_info_->local_description(),
@@ -401,8 +399,7 @@ void WebRtcSessionDescriptionFactory::FailPendingRequests(
 void WebRtcSessionDescriptionFactory::PostCreateSessionDescriptionFailed(
     CreateSessionDescriptionObserver* observer,
     RTCError error) {
-  Post([observer =
-            rtc::scoped_refptr<CreateSessionDescriptionObserver>(observer),
+  Post([observer = scoped_refptr<CreateSessionDescriptionObserver>(observer),
         error]() mutable { observer->OnFailure(error); });
   RTC_LOG(LS_ERROR) << "CreateSessionDescription failed: " << error.message();
 }
@@ -410,8 +407,7 @@ void WebRtcSessionDescriptionFactory::PostCreateSessionDescriptionFailed(
 void WebRtcSessionDescriptionFactory::PostCreateSessionDescriptionSucceeded(
     CreateSessionDescriptionObserver* observer,
     std::unique_ptr<SessionDescriptionInterface> description) {
-  Post([observer =
-            rtc::scoped_refptr<CreateSessionDescriptionObserver>(observer),
+  Post([observer = scoped_refptr<CreateSessionDescriptionObserver>(observer),
         description = std::move(description)]() mutable {
     observer->OnSuccess(description.release());
   });
@@ -443,7 +439,7 @@ void WebRtcSessionDescriptionFactory::OnCertificateRequestFailed() {
 }
 
 void WebRtcSessionDescriptionFactory::SetCertificate(
-    rtc::scoped_refptr<RTCCertificate> certificate) {
+    scoped_refptr<RTCCertificate> certificate) {
   RTC_DCHECK(certificate);
   RTC_LOG(LS_VERBOSE) << "Setting new certificate.";
 

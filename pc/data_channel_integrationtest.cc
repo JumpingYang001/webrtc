@@ -134,7 +134,7 @@ void MakeOfferHaveActiveDtlsRole(
     std::unique_ptr<SessionDescriptionInterface>& desc) {
   auto& transport_infos = desc->description()->transport_infos();
   for (auto& transport_info : transport_infos) {
-    transport_info.description.connection_role = cricket::CONNECTIONROLE_ACTIVE;
+    transport_info.description.connection_role = CONNECTIONROLE_ACTIVE;
   }
 }
 
@@ -142,8 +142,7 @@ void MakeOfferHavePassiveDtlsRole(
     std::unique_ptr<SessionDescriptionInterface>& desc) {
   auto& transport_infos = desc->description()->transport_infos();
   for (auto& transport_info : transport_infos) {
-    transport_info.description.connection_role =
-        cricket::CONNECTIONROLE_PASSIVE;
+    transport_info.description.connection_role = CONNECTIONROLE_PASSIVE;
   }
 }
 
@@ -434,7 +433,7 @@ TEST_P(DataChannelIntegrationTest,
   EXPECT_FALSE(caller()->data_observer()->messages().back().binary);
 
   // Sending empty binary data
-  rtc::CopyOnWriteBuffer empty_buffer;
+  CopyOnWriteBuffer empty_buffer;
   caller()->data_channel()->Send(DataBuffer(empty_buffer, true));
   EXPECT_THAT(
       WaitUntil(
@@ -1513,10 +1512,9 @@ class DataChannelIntegrationTestUnifiedPlanFieldTrials
       bool addTurn) {
     RTCConfiguration config;
     if (addTurn) {
-      static const rtc::SocketAddress turn_server_1_internal_address{
-          "192.0.2.1", 3478};
-      static const rtc::SocketAddress turn_server_1_external_address{
-          "192.0.3.1", 0};
+      static const SocketAddress turn_server_1_internal_address{"192.0.2.1",
+                                                                3478};
+      static const SocketAddress turn_server_1_external_address{"192.0.3.1", 0};
       TestTurnServer* turn_server_1 = CreateTurnServer(
           turn_server_1_internal_address, turn_server_1_external_address);
 

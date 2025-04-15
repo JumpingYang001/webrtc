@@ -42,7 +42,7 @@ class ConnectionContext final : public RefCountedNonVirtual<ConnectionContext> {
   // Creates a ConnectionContext. May return null if initialization fails.
   // The Dependencies class allows simple management of all new dependencies
   // being added to the ConnectionContext.
-  static rtc::scoped_refptr<ConnectionContext> Create(
+  static scoped_refptr<ConnectionContext> Create(
       const Environment& env,
       PeerConnectionFactoryDependencies* dependencies);
 
