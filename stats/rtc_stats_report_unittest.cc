@@ -71,7 +71,7 @@ WEBRTC_RTCSTATS_IMPL(RTCTestStats3,
                      AttributeInit("string", &string))
 
 TEST(RTCStatsReport, AddAndGetStats) {
-  rtc::scoped_refptr<RTCStatsReport> report =
+  scoped_refptr<RTCStatsReport> report =
       RTCStatsReport::Create(Timestamp::Micros(1337));
   EXPECT_EQ(report->timestamp().us_or(-1), 1337u);
   EXPECT_EQ(report->size(), static_cast<size_t>(0));
@@ -112,7 +112,7 @@ TEST(RTCStatsReport, AddAndGetStats) {
 }
 
 TEST(RTCStatsReport, StatsOrder) {
-  rtc::scoped_refptr<RTCStatsReport> report =
+  scoped_refptr<RTCStatsReport> report =
       RTCStatsReport::Create(Timestamp::Micros(1337));
   EXPECT_EQ(report->timestamp().us(), 1337u);
   EXPECT_EQ(report->timestamp().us_or(-1), 1337u);
@@ -139,7 +139,7 @@ TEST(RTCStatsReport, StatsOrder) {
 }
 
 TEST(RTCStatsReport, Take) {
-  rtc::scoped_refptr<RTCStatsReport> report =
+  scoped_refptr<RTCStatsReport> report =
       RTCStatsReport::Create(Timestamp::Zero());
   report->AddStats(
       std::unique_ptr<RTCStats>(new RTCTestStats1("A", Timestamp::Micros(1))));
@@ -155,7 +155,7 @@ TEST(RTCStatsReport, Take) {
 }
 
 TEST(RTCStatsReport, TakeMembersFrom) {
-  rtc::scoped_refptr<RTCStatsReport> a =
+  scoped_refptr<RTCStatsReport> a =
       RTCStatsReport::Create(Timestamp::Micros(1337));
   EXPECT_EQ(a->timestamp().us_or(-1), 1337u);
   a->AddStats(
@@ -164,7 +164,7 @@ TEST(RTCStatsReport, TakeMembersFrom) {
       std::unique_ptr<RTCStats>(new RTCTestStats1("C", Timestamp::Micros(2))));
   a->AddStats(
       std::unique_ptr<RTCStats>(new RTCTestStats1("E", Timestamp::Micros(4))));
-  rtc::scoped_refptr<RTCStatsReport> b =
+  scoped_refptr<RTCStatsReport> b =
       RTCStatsReport::Create(Timestamp::Micros(1338));
   EXPECT_EQ(b->timestamp().us_or(-1), 1338u);
   b->AddStats(
