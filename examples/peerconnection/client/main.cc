@@ -104,9 +104,9 @@ int PASCAL wWinMain(HINSTANCE instance,
     return -1;
   }
 
-  rtc::InitializeSSL();
+  webrtc::InitializeSSL();
   PeerConnectionClient client;
-  auto conductor = rtc::make_ref_counted<Conductor>(&client, &wnd);
+  auto conductor = webrtc::make_ref_counted<Conductor>(&client, &wnd);
 
   // Main loop.
   MSG msg;
@@ -128,6 +128,6 @@ int PASCAL wWinMain(HINSTANCE instance,
     }
   }
 
-  rtc::CleanupSSL();
+  webrtc::CleanupSSL();
   return 0;
 }

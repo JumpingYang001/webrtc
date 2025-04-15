@@ -588,7 +588,7 @@ MainWnd::VideoRenderer::VideoRenderer(
   bmi_.bmiHeader.biHeight = -height;
   bmi_.bmiHeader.biSizeImage =
       width * height * (bmi_.bmiHeader.biBitCount >> 3);
-  rendered_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
+  rendered_track_->AddOrUpdateSink(this, webrtc::VideoSinkWants());
 }
 
 MainWnd::VideoRenderer::~VideoRenderer() {
@@ -614,7 +614,7 @@ void MainWnd::VideoRenderer::OnFrame(const webrtc::VideoFrame& video_frame) {
   {
     AutoLock<VideoRenderer> lock(this);
 
-    rtc::scoped_refptr<webrtc::I420BufferInterface> buffer(
+    webrtc::scoped_refptr<webrtc::I420BufferInterface> buffer(
         video_frame.video_frame_buffer()->ToI420());
     if (video_frame.rotation() != webrtc::kVideoRotation_0) {
       buffer = webrtc::I420Buffer::Rotate(*buffer, video_frame.rotation());

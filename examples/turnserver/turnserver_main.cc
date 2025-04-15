@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
   server.set_realm(argv[3]);
   server.set_software(kSoftware);
   server.set_auth_hook(&auth);
-  server.AddInternalSocket(int_socket, cricket::PROTO_UDP);
+  server.AddInternalSocket(int_socket, webrtc::PROTO_UDP);
   server.SetExternalSocketFactory(
       new webrtc::BasicPacketSocketFactory(&socket_server),
       webrtc::SocketAddress(ext_addr, 0));

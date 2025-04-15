@@ -24,13 +24,15 @@
 #include "system_wrappers/include/field_trial.h"
 #include "test/field_trial.h"
 
-class CustomSocketServer : public rtc::PhysicalSocketServer {
+class CustomSocketServer : public webrtc::PhysicalSocketServer {
  public:
   explicit CustomSocketServer(GtkMainWnd* wnd)
       : wnd_(wnd), conductor_(NULL), client_(NULL) {}
   virtual ~CustomSocketServer() {}
 
-  void SetMessageQueue(rtc::Thread* queue) override { message_queue_ = queue; }
+  void SetMessageQueue(webrtc::Thread* queue) override {
+    message_queue_ = queue;
+  }
 
   void set_client(PeerConnectionClient* client) { client_ = client; }
   void set_conductor(Conductor* conductor) { conductor_ = conductor; }
@@ -50,12 +52,12 @@ class CustomSocketServer : public rtc::PhysicalSocketServer {
         client_ != NULL && !client_->is_connected()) {
       message_queue_->Quit();
     }
-    return rtc::PhysicalSocketServer::Wait(webrtc::TimeDelta::Zero(),
-                                           process_io);
+    return webrtc::PhysicalSocketServer::Wait(webrtc::TimeDelta::Zero(),
+                                              process_io);
   }
 
  protected:
-  rtc::Thread* message_queue_;
+  webrtc::Thread* message_queue_;
   GtkMainWnd* wnd_;
   Conductor* conductor_;
   PeerConnectionClient* client_;
@@ -96,12 +98,12 @@ int main(int argc, char* argv[]) {
   wnd.Create();
 
   CustomSocketServer socket_server(&wnd);
-  rtc::AutoSocketServerThread thread(&socket_server);
+  webrtc::AutoSocketServerThread thread(&socket_server);
 
-  rtc::InitializeSSL();
+  webrtc::InitializeSSL();
   // Must be constructed after we set the socketserver.
   PeerConnectionClient client;
-  auto conductor = rtc::make_ref_counted<Conductor>(&client, &wnd);
+  auto conductor = webrtc::make_ref_counted<Conductor>(&client, &wnd);
   socket_server.set_client(&client);
   socket_server.set_conductor(conductor.get());
 
@@ -116,6 +118,6 @@ int main(int argc, char* argv[]) {
     gtk_main_iteration();
   }
   */
-  rtc::CleanupSSL();
+  webrtc::CleanupSSL();
   return 0;
 }

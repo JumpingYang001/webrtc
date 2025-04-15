@@ -461,7 +461,7 @@ GtkMainWnd::VideoRenderer::VideoRenderer(
       height_(0),
       main_wnd_(main_wnd),
       rendered_track_(track_to_render) {
-  rendered_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
+  rendered_track_->AddOrUpdateSink(this, webrtc::VideoSinkWants());
 }
 
 GtkMainWnd::VideoRenderer::~VideoRenderer() {
@@ -485,7 +485,7 @@ void GtkMainWnd::VideoRenderer::SetSize(int width, int height) {
 void GtkMainWnd::VideoRenderer::OnFrame(const webrtc::VideoFrame& video_frame) {
   gdk_threads_enter();
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> buffer(
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> buffer(
       video_frame.video_frame_buffer()->ToI420());
   if (video_frame.rotation() != webrtc::kVideoRotation_0) {
     buffer = webrtc::I420Buffer::Rotate(*buffer, video_frame.rotation());

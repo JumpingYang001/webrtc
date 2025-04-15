@@ -38,13 +38,13 @@ namespace {
 class CreateOfferObserver : public webrtc::CreateSessionDescriptionObserver {
  public:
   explicit CreateOfferObserver(
-      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc);
+      webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc);
 
   void OnSuccess(webrtc::SessionDescriptionInterface* desc) override;
   void OnFailure(webrtc::RTCError error) override;
 
  private:
-  const rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc_;
+  const webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc_;
 };
 
 class SetRemoteSessionDescriptionObserver
@@ -105,15 +105,15 @@ void ObjCCallClient::Hangup() {
 }
 
 void ObjCCallClient::CreatePeerConnectionFactory() {
-  network_thread_ = rtc::Thread::CreateWithSocketServer();
+  network_thread_ = webrtc::Thread::CreateWithSocketServer();
   network_thread_->SetName("network_thread", nullptr);
   RTC_CHECK(network_thread_->Start()) << "Failed to start thread";
 
-  worker_thread_ = rtc::Thread::Create();
+  worker_thread_ = webrtc::Thread::Create();
   worker_thread_->SetName("worker_thread", nullptr);
   RTC_CHECK(worker_thread_->Start()) << "Failed to start thread";
 
-  signaling_thread_ = rtc::Thread::Create();
+  signaling_thread_ = webrtc::Thread::Create();
   signaling_thread_->SetName("signaling_thread", nullptr);
   RTC_CHECK(signaling_thread_->Start()) << "Failed to start thread";
 
@@ -152,19 +152,19 @@ void ObjCCallClient::CreatePeerConnection() {
             .MoveValue();
   RTC_LOG(LS_INFO) << "PeerConnection created: " << pc_.get();
 
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> local_video_track =
+  webrtc::scoped_refptr<webrtc::VideoTrackInterface> local_video_track =
       pcf_->CreateVideoTrack(video_source_, "video");
   pc_->AddTransceiver(local_video_track);
   RTC_LOG(LS_INFO) << "Local video sink set up: " << local_video_track.get();
 
-  for (const rtc::scoped_refptr<webrtc::RtpTransceiverInterface>& tranceiver :
-       pc_->GetTransceivers()) {
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
+  for (const webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>&
+           tranceiver : pc_->GetTransceivers()) {
+    webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track =
         tranceiver->receiver()->track();
     if (track &&
         track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind) {
       static_cast<webrtc::VideoTrackInterface*>(track.get())
-          ->AddOrUpdateSink(remote_sink_.get(), rtc::VideoSinkWants());
+          ->AddOrUpdateSink(remote_sink_.get(), webrtc::VideoSinkWants());
       RTC_LOG(LS_INFO) << "Remote video sink set up: " << track.get();
       break;
     }
@@ -173,7 +173,7 @@ void ObjCCallClient::CreatePeerConnection() {
 
 void ObjCCallClient::Connect() {
   webrtc::MutexLock lock(&pc_mutex_);
-  pc_->CreateOffer(rtc::make_ref_counted<CreateOfferObserver>(pc_).get(),
+  pc_->CreateOffer(webrtc::make_ref_counted<CreateOfferObserver>(pc_).get(),
                    webrtc::PeerConnectionInterface::RTCOfferAnswerOptions());
 }
 
@@ -186,7 +186,7 @@ void ObjCCallClient::PCObserver::OnSignalingChange(
 }
 
 void ObjCCallClient::PCObserver::OnDataChannel(
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
+    webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) {
   RTC_LOG(LS_INFO) << "OnDataChannel";
 }
 
@@ -213,7 +213,7 @@ void ObjCCallClient::PCObserver::OnIceCandidate(
 }
 
 CreateOfferObserver::CreateOfferObserver(
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc)
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc)
     : pc_(pc) {}
 
 void CreateOfferObserver::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
@@ -224,14 +224,14 @@ void CreateOfferObserver::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   // Ownership of desc was transferred to us, now we transfer it forward.
   pc_->SetLocalDescription(
       absl::WrapUnique(desc),
-      rtc::make_ref_counted<SetLocalSessionDescriptionObserver>());
+      webrtc::make_ref_counted<SetLocalSessionDescriptionObserver>());
 
   // Generate a fake answer.
   std::unique_ptr<webrtc::SessionDescriptionInterface> answer(
       webrtc::CreateSessionDescription(webrtc::SdpType::kAnswer, sdp));
   pc_->SetRemoteDescription(
       std::move(answer),
-      rtc::make_ref_counted<SetRemoteSessionDescriptionObserver>());
+      webrtc::make_ref_counted<SetRemoteSessionDescriptionObserver>());
 }
 
 void CreateOfferObserver::OnFailure(webrtc::RTCError error) {
