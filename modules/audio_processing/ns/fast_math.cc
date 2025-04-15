@@ -57,7 +57,7 @@ float LogApproximation(float x) {
   return FastLog2f(x) * kLogOf2;
 }
 
-void LogApproximation(rtc::ArrayView<const float> x, rtc::ArrayView<float> y) {
+void LogApproximation(ArrayView<const float> x, ArrayView<float> y) {
   for (size_t k = 0; k < x.size(); ++k) {
     y[k] = LogApproximation(x[k]);
   }
@@ -68,14 +68,13 @@ float ExpApproximation(float x) {
   return PowApproximation(10.f, x * kLog10Ofe);
 }
 
-void ExpApproximation(rtc::ArrayView<const float> x, rtc::ArrayView<float> y) {
+void ExpApproximation(ArrayView<const float> x, ArrayView<float> y) {
   for (size_t k = 0; k < x.size(); ++k) {
     y[k] = ExpApproximation(x[k]);
   }
 }
 
-void ExpApproximationSignFlip(rtc::ArrayView<const float> x,
-                              rtc::ArrayView<float> y) {
+void ExpApproximationSignFlip(ArrayView<const float> x, ArrayView<float> y) {
   for (size_t k = 0; k < x.size(); ++k) {
     y[k] = ExpApproximation(-x[k]);
   }

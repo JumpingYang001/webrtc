@@ -25,7 +25,7 @@
 
 namespace {
 
-float Power(rtc::ArrayView<const float> input) {
+float Power(webrtc::ArrayView<const float> input) {
   if (input.empty()) {
     return 0.f;
   }
@@ -58,7 +58,7 @@ ResidualEchoDetector::ResidualEchoDetector()
 ResidualEchoDetector::~ResidualEchoDetector() = default;
 
 void ResidualEchoDetector::AnalyzeRenderAudio(
-    rtc::ArrayView<const float> render_audio) {
+    ArrayView<const float> render_audio) {
   // Dump debug data assuming 48 kHz sample rate (if this assumption is not
   // valid the dumped audio will need to be converted offline accordingly).
   data_dumper_->DumpWav("ed_render", render_audio.size(), render_audio.data(),
@@ -79,7 +79,7 @@ void ResidualEchoDetector::AnalyzeRenderAudio(
 }
 
 void ResidualEchoDetector::AnalyzeCaptureAudio(
-    rtc::ArrayView<const float> capture_audio) {
+    ArrayView<const float> capture_audio) {
   // Dump debug data assuming 48 kHz sample rate (if this assumption is not
   // valid the dumped audio will need to be converted offline accordingly).
   data_dumper_->DumpWav("ed_capture", capture_audio.size(),

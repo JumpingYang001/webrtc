@@ -58,7 +58,7 @@ std::vector<Turn> LoadTiming(absl::string_view timing_filepath) {
 }
 
 void SaveTiming(absl::string_view timing_filepath,
-                rtc::ArrayView<const Turn> timing) {
+                ArrayView<const Turn> timing) {
   std::ofstream outfile(std::string{timing_filepath});
   RTC_CHECK(outfile.is_open());
   for (const Turn& turn : timing) {

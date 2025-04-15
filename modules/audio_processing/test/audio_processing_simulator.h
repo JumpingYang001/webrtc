@@ -41,8 +41,7 @@ static const int kChunksPerSecond = 1000 / AudioProcessing::kChunkSizeMs;
 struct Int16Frame {
   void SetFormat(int sample_rate_hz, int num_channels) {
     sample_rate_hz_ = sample_rate_hz;
-    samples_per_channel_ =
-        rtc::CheckedDivExact(sample_rate_hz, kChunksPerSecond);
+    samples_per_channel_ = CheckedDivExact(sample_rate_hz, kChunksPerSecond);
     num_channels_ = num_channels;
     config = StreamConfig(sample_rate_hz, num_channels);
     data.resize(num_channels * samples_per_channel_);
@@ -210,7 +209,7 @@ class AudioProcessingSimulator {
                                     int capture_frames_since_init) const;
 
   const SimulationSettings settings_;
-  rtc::scoped_refptr<AudioProcessing> ap_;
+  scoped_refptr<AudioProcessing> ap_;
 
   std::unique_ptr<ChannelBuffer<float>> in_buf_;
   std::unique_ptr<ChannelBuffer<float>> out_buf_;

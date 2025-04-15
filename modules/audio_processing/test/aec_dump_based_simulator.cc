@@ -255,7 +255,7 @@ void AecDumpBasedSimulator::Process() {
     artificial_nearend_buffer_reader_.reset(
         new ChannelBufferWavReader(std::move(artificial_nearend_file)));
     artificial_nearend_buf_.reset(new ChannelBuffer<float>(
-        rtc::CheckedDivExact(sample_rate_hz, kChunksPerSecond), 1));
+        CheckedDivExact(sample_rate_hz, kChunksPerSecond), 1));
   }
 
   const bool use_dump_file = !settings_.aec_dump_input_string.has_value();

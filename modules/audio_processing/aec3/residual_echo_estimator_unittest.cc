@@ -100,7 +100,7 @@ class ResidualEchoEstimatorTest {
                         S2_linear_, Y2_, dominant_nearend, R2_, R2_unbounded_);
   }
 
-  rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> R2() const {
+  ArrayView<const std::array<float, kFftLengthBy2Plus1>> R2() const {
     return R2_;
   }
 

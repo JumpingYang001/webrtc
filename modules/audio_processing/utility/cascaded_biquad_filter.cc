@@ -71,8 +71,8 @@ CascadedBiQuadFilter::CascadedBiQuadFilter(
 
 CascadedBiQuadFilter::~CascadedBiQuadFilter() = default;
 
-void CascadedBiQuadFilter::Process(rtc::ArrayView<const float> x,
-                                   rtc::ArrayView<float> y) {
+void CascadedBiQuadFilter::Process(ArrayView<const float> x,
+                                   ArrayView<float> y) {
   if (biquads_.size() > 0) {
     ApplyBiQuad(x, y, &biquads_[0]);
     for (size_t k = 1; k < biquads_.size(); ++k) {
@@ -83,7 +83,7 @@ void CascadedBiQuadFilter::Process(rtc::ArrayView<const float> x,
   }
 }
 
-void CascadedBiQuadFilter::Process(rtc::ArrayView<float> y) {
+void CascadedBiQuadFilter::Process(ArrayView<float> y) {
   for (auto& biquad : biquads_) {
     ApplyBiQuad(y, y, &biquad);
   }
@@ -95,8 +95,8 @@ void CascadedBiQuadFilter::Reset() {
   }
 }
 
-void CascadedBiQuadFilter::ApplyBiQuad(rtc::ArrayView<const float> x,
-                                       rtc::ArrayView<float> y,
+void CascadedBiQuadFilter::ApplyBiQuad(ArrayView<const float> x,
+                                       ArrayView<float> y,
                                        CascadedBiQuadFilter::BiQuad* biquad) {
   RTC_DCHECK_EQ(x.size(), y.size());
   const float c_a_0 = biquad->coefficients.a[0];

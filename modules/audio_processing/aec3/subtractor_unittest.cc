@@ -112,7 +112,7 @@ std::vector<float> RunSubtractorTest(
     } else {
       for (size_t capture_ch = 0; capture_ch < num_capture_channels;
            ++capture_ch) {
-        rtc::ArrayView<float> y_view = y.View(/*band=*/0, capture_ch);
+        ArrayView<float> y_view = y.View(/*band=*/0, capture_ch);
         for (size_t render_ch = 0; render_ch < num_render_channels;
              ++render_ch) {
           std::array<float, kBlockSize> y_channel;

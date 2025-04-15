@@ -34,7 +34,7 @@ float RunEstimator(FunctionView<float()> sample_generator,
                    NoiseLevelEstimator& estimator,
                    int sample_rate_hz) {
   const int samples_per_channel =
-      rtc::CheckedDivExact(sample_rate_hz, kFramesPerSecond);
+      CheckedDivExact(sample_rate_hz, kFramesPerSecond);
   VectorFloatFrame signal(1, samples_per_channel, 0.0f);
   for (int i = 0; i < kNumIterations; ++i) {
     DeinterleavedView<float> frame_view = signal.view();

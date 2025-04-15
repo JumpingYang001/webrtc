@@ -33,7 +33,7 @@ bool UseCoarseFilterResetHangover(const FieldTrialsView& field_trials) {
 
 void PredictionError(const Aec3Fft& fft,
                      const FftData& S,
-                     rtc::ArrayView<const float> y,
+                     ArrayView<const float> y,
                      std::array<float, kBlockSize>* e,
                      std::array<float, kBlockSize>* s) {
   std::array<float, kFftLength> tmp;
@@ -49,10 +49,10 @@ void PredictionError(const Aec3Fft& fft,
   }
 }
 
-void ScaleFilterOutput(rtc::ArrayView<const float> y,
+void ScaleFilterOutput(ArrayView<const float> y,
                        float factor,
-                       rtc::ArrayView<float> e,
-                       rtc::ArrayView<float> s) {
+                       ArrayView<float> e,
+                       ArrayView<float> s) {
   RTC_DCHECK_EQ(y.size(), e.size());
   RTC_DCHECK_EQ(y.size(), s.size());
   for (size_t k = 0; k < y.size(); ++k) {
@@ -182,7 +182,7 @@ void Subtractor::Process(const RenderBuffer& render_buffer,
                          const Block& capture,
                          const RenderSignalAnalyzer& render_signal_analyzer,
                          const AecState& aec_state,
-                         rtc::ArrayView<SubtractorOutput> outputs) {
+                         ArrayView<SubtractorOutput> outputs) {
   RTC_DCHECK_EQ(num_capture_channels_, capture.NumChannels());
 
   // Compute the render powers.
@@ -208,7 +208,7 @@ void Subtractor::Process(const RenderBuffer& render_buffer,
   // Process all capture channels
   for (size_t ch = 0; ch < num_capture_channels_; ++ch) {
     SubtractorOutput& output = outputs[ch];
-    rtc::ArrayView<const float> y = capture.View(/*band=*/0, ch);
+    ArrayView<const float> y = capture.View(/*band=*/0, ch);
     FftData& E_refined = output.E_refined;
     FftData E_coarse;
     std::array<float, kBlockSize>& e_refined = output.e_refined;
@@ -316,7 +316,7 @@ void Subtractor::Process(const RenderBuffer& render_buffer,
     }
 
     std::for_each(e_refined.begin(), e_refined.end(),
-                  [](float& a) { a = rtc::SafeClamp(a, -32768.f, 32767.f); });
+                  [](float& a) { a = SafeClamp(a, -32768.f, 32767.f); });
 
     if (ch == 0) {
       data_dumper_->DumpWav("aec3_refined_filters_output", kBlockSize,

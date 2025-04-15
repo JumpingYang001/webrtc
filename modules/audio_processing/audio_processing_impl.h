@@ -67,7 +67,7 @@ class AudioProcessingImpl : public AudioProcessing {
                       std::unique_ptr<CustomProcessing> capture_post_processor,
                       std::unique_ptr<CustomProcessing> render_pre_processor,
                       std::unique_ptr<EchoControlFactory> echo_control_factory,
-                      rtc::scoped_refptr<EchoDetector> echo_detector,
+                      scoped_refptr<EchoDetector> echo_detector,
                       std::unique_ptr<CustomAudioAnalyzer> capture_analyzer);
   ~AudioProcessingImpl() override;
   int Initialize() override;
@@ -98,7 +98,7 @@ class AudioProcessingImpl : public AudioProcessing {
                     const StreamConfig& output_config,
                     float* const* dest) override;
   bool GetLinearAecOutput(
-      rtc::ArrayView<std::array<float, 160>> linear_output) const override;
+      ArrayView<std::array<float, 160>> linear_output) const override;
   void set_output_will_be_muted(bool muted) override;
   void HandleCaptureOutputUsedSetting(bool capture_output_used)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_capture_);
@@ -366,14 +366,14 @@ class AudioProcessingImpl : public AudioProcessing {
   struct Submodules {
     Submodules(std::unique_ptr<CustomProcessing> capture_post_processor,
                std::unique_ptr<CustomProcessing> render_pre_processor,
-               rtc::scoped_refptr<EchoDetector> echo_detector,
+               scoped_refptr<EchoDetector> echo_detector,
                std::unique_ptr<CustomAudioAnalyzer> capture_analyzer)
         : echo_detector(std::move(echo_detector)),
           capture_post_processor(std::move(capture_post_processor)),
           render_pre_processor(std::move(render_pre_processor)),
           capture_analyzer(std::move(capture_analyzer)) {}
     // Accessed internally from capture or during initialization.
-    const rtc::scoped_refptr<EchoDetector> echo_detector;
+    const scoped_refptr<EchoDetector> echo_detector;
     const std::unique_ptr<CustomProcessing> capture_post_processor;
     const std::unique_ptr<CustomProcessing> render_pre_processor;
     const std::unique_ptr<CustomAudioAnalyzer> capture_analyzer;

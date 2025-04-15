@@ -227,8 +227,8 @@ struct TestConfig {
         auto available_rates =
             (test_config.aec_type ==
                      AecType::BasicWebRtcAecSettingsWithAecMobile
-                 ? rtc::ArrayView<const int>(sample_rates, 2)
-                 : rtc::ArrayView<const int>(sample_rates));
+                 ? ArrayView<const int>(sample_rates, 2)
+                 : ArrayView<const int>(sample_rates));
 
         for (auto rate : available_rates) {
           test_config.initial_sample_rate_hz = rate;
@@ -428,7 +428,7 @@ class AudioProcessingImplLockTest
   mutable RandomGenerator rand_gen_;
 
   const TestConfig test_config_;
-  rtc::scoped_refptr<AudioProcessing> apm_;
+  scoped_refptr<AudioProcessing> apm_;
   FrameCounters frame_counters_;
   RenderProcessor render_thread_state_;
   CaptureProcessor capture_thread_state_;
@@ -462,7 +462,7 @@ void PopulateAudioFrame(float** frame,
 void PopulateAudioFrame(float amplitude,
                         size_t num_channels,
                         size_t samples_per_channel,
-                        rtc::ArrayView<int16_t> frame,
+                        ArrayView<int16_t> frame,
                         RandomGenerator* rand_gen) {
   ASSERT_GT(amplitude, 0);
   ASSERT_LE(amplitude, 32767);

@@ -72,14 +72,14 @@ void HighPassFilter::Process(AudioBuffer* audio, bool use_split_band_data) {
   RTC_DCHECK_EQ(filters_.size(), audio->num_channels());
   if (use_split_band_data) {
     for (size_t k = 0; k < audio->num_channels(); ++k) {
-      rtc::ArrayView<float> channel_data = rtc::ArrayView<float>(
+      ArrayView<float> channel_data = ArrayView<float>(
           audio->split_bands(k)[0], audio->num_frames_per_band());
       filters_[k]->Process(channel_data);
     }
   } else {
     for (size_t k = 0; k < audio->num_channels(); ++k) {
-      rtc::ArrayView<float> channel_data =
-          rtc::ArrayView<float>(&audio->channels()[k][0], audio->num_frames());
+      ArrayView<float> channel_data =
+          ArrayView<float>(&audio->channels()[k][0], audio->num_frames());
       filters_[k]->Process(channel_data);
     }
   }

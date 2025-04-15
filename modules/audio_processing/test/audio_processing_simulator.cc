@@ -291,24 +291,24 @@ void AudioProcessingSimulator::SetupBuffersConfigsOutputs(
     int reverse_output_num_channels) {
   in_config_ = StreamConfig(input_sample_rate_hz, input_num_channels);
   in_buf_.reset(new ChannelBuffer<float>(
-      rtc::CheckedDivExact(input_sample_rate_hz, kChunksPerSecond),
+      CheckedDivExact(input_sample_rate_hz, kChunksPerSecond),
       input_num_channels));
 
   reverse_in_config_ =
       StreamConfig(reverse_input_sample_rate_hz, reverse_input_num_channels);
   reverse_in_buf_.reset(new ChannelBuffer<float>(
-      rtc::CheckedDivExact(reverse_input_sample_rate_hz, kChunksPerSecond),
+      CheckedDivExact(reverse_input_sample_rate_hz, kChunksPerSecond),
       reverse_input_num_channels));
 
   out_config_ = StreamConfig(output_sample_rate_hz, output_num_channels);
   out_buf_.reset(new ChannelBuffer<float>(
-      rtc::CheckedDivExact(output_sample_rate_hz, kChunksPerSecond),
+      CheckedDivExact(output_sample_rate_hz, kChunksPerSecond),
       output_num_channels));
 
   reverse_out_config_ =
       StreamConfig(reverse_output_sample_rate_hz, reverse_output_num_channels);
   reverse_out_buf_.reset(new ChannelBuffer<float>(
-      rtc::CheckedDivExact(reverse_output_sample_rate_hz, kChunksPerSecond),
+      CheckedDivExact(reverse_output_sample_rate_hz, kChunksPerSecond),
       reverse_output_num_channels));
 
   fwd_frame_.SetFormat(input_sample_rate_hz, input_num_channels);
@@ -316,7 +316,7 @@ void AudioProcessingSimulator::SetupBuffersConfigsOutputs(
                        reverse_input_num_channels);
 
   if (settings_.use_verbose_logging) {
-    rtc::LogMessage::LogToDebug(rtc::LS_VERBOSE);
+    LogMessage::LogToDebug(LS_VERBOSE);
 
     std::cout << "Sample rates:" << std::endl;
     std::cout << " Forward input: " << input_sample_rate_hz << std::endl;

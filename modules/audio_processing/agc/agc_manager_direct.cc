@@ -188,7 +188,7 @@ void MonoAgc::Initialize() {
   is_first_frame_ = true;
 }
 
-void MonoAgc::Process(rtc::ArrayView<const int16_t> audio,
+void MonoAgc::Process(ArrayView<const int16_t> audio,
                       std::optional<int> rms_error_override) {
   new_compression_to_set_ = std::nullopt;
 

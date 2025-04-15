@@ -69,8 +69,7 @@ Decimator::Decimator(size_t down_sampling_factor)
              down_sampling_factor_ == 8);
 }
 
-void Decimator::Decimate(rtc::ArrayView<const float> in,
-                         rtc::ArrayView<float> out) {
+void Decimator::Decimate(ArrayView<const float> in, ArrayView<float> out) {
   RTC_DCHECK_EQ(kBlockSize, in.size());
   RTC_DCHECK_EQ(kBlockSize / down_sampling_factor_, out.size());
   std::array<float, kBlockSize> x;

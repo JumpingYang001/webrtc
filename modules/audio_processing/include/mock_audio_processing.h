@@ -84,11 +84,11 @@ class MockEchoDetector : public EchoDetector {
               (override));
   MOCK_METHOD(void,
               AnalyzeRenderAudio,
-              (rtc::ArrayView<const float> render_audio),
+              (webrtc::ArrayView<const float> render_audio),
               (override));
   MOCK_METHOD(void,
               AnalyzeCaptureAudio,
-              (rtc::ArrayView<const float> capture_audio),
+              (webrtc::ArrayView<const float> capture_audio),
               (override));
   MOCK_METHOD(Metrics, GetMetrics, (), (const, override));
 };
@@ -148,7 +148,7 @@ class MockAudioProcessing : public AudioProcessing {
               (override));
   MOCK_METHOD(bool,
               GetLinearAecOutput,
-              ((rtc::ArrayView<std::array<float, 160>> linear_output)),
+              ((webrtc::ArrayView<std::array<float, 160>> linear_output)),
               (const, override));
   MOCK_METHOD(int, set_stream_delay_ms, (int delay), (override));
   MOCK_METHOD(int, stream_delay_ms, (), (const, override));

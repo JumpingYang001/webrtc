@@ -75,9 +75,9 @@ void SubbandErleEstimator::Reset() {
 }
 
 void SubbandErleEstimator::Update(
-    rtc::ArrayView<const float, kFftLengthBy2Plus1> X2,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2,
+    ArrayView<const float, kFftLengthBy2Plus1> X2,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2,
     const std::vector<bool>& converged_filters) {
   UpdateAccumulatedSpectra(X2, Y2, E2, converged_filters);
   UpdateBands(converged_filters);
@@ -213,9 +213,9 @@ void SubbandErleEstimator::ResetAccumulatedSpectra() {
 }
 
 void SubbandErleEstimator::UpdateAccumulatedSpectra(
-    rtc::ArrayView<const float, kFftLengthBy2Plus1> X2,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2,
+    ArrayView<const float, kFftLengthBy2Plus1> X2,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2,
     const std::vector<bool>& converged_filters) {
   auto& st = accum_spectra_;
   RTC_DCHECK_EQ(st.E2.size(), E2.size());

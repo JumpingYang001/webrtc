@@ -109,9 +109,7 @@ std::string ProduceDebugText(int sample_rate_hz) {
   return ss.Release();
 }
 
-void FillSampleVector(int call_counter,
-                      int delay,
-                      rtc::ArrayView<float> samples) {
+void FillSampleVector(int call_counter, int delay, ArrayView<float> samples) {
   for (size_t i = 0; i < samples.size(); ++i) {
     samples[i] = (call_counter - delay) * 10000.0f + i;
   }

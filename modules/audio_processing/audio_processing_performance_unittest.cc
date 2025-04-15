@@ -514,7 +514,7 @@ class CallSimulator : public ::testing::TestWithParam<SimulationConfig> {
   // Thread related variables.
   Random rand_gen_;
 
-  rtc::scoped_refptr<AudioProcessing> apm_;
+  scoped_refptr<AudioProcessing> apm_;
   const SimulationConfig simulation_config_;
   FrameCounters frame_counters_;
   LockedFlag capture_call_checker_;

@@ -59,18 +59,17 @@ void ProduceDecimatedSinusoidalOutputPower(int sample_rate_hz,
   for (size_t k = 0; k < kNumBlocks; ++k) {
     std::vector<float> sub_block(sub_block_size);
     decimator.Decimate(
-        rtc::ArrayView<const float>(&input[k * kBlockSize], kBlockSize),
-        sub_block);
+        ArrayView<const float>(&input[k * kBlockSize], kBlockSize), sub_block);
 
     std::copy(sub_block.begin(), sub_block.end(),
               output.begin() + k * sub_block_size);
   }
 
   ASSERT_GT(kNumBlocks, kNumStartupBlocks);
-  rtc::ArrayView<const float> input_to_evaluate(
+  ArrayView<const float> input_to_evaluate(
       &input[kNumStartupBlocks * kBlockSize],
       (kNumBlocks - kNumStartupBlocks) * kBlockSize);
-  rtc::ArrayView<const float> output_to_evaluate(
+  ArrayView<const float> output_to_evaluate(
       &output[kNumStartupBlocks * sub_block_size],
       (kNumBlocks - kNumStartupBlocks) * sub_block_size);
   *input_power =

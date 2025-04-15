@@ -54,7 +54,7 @@ class Subtractor {
                const Block& capture,
                const RenderSignalAnalyzer& render_signal_analyzer,
                const AecState& aec_state,
-               rtc::ArrayView<SubtractorOutput> outputs);
+               ArrayView<SubtractorOutput> outputs);
 
   void HandleEchoPathChange(const EchoPathVariability& echo_path_variability);
 
@@ -77,7 +77,7 @@ class Subtractor {
   void DumpFilters() {
     data_dumper_->DumpRaw(
         "aec3_subtractor_h_refined",
-        rtc::ArrayView<const float>(
+        ArrayView<const float>(
             refined_impulse_responses_[0].data(),
             GetTimeDomainLength(
                 refined_filters_[0]->max_filter_size_partitions())));
@@ -85,7 +85,7 @@ class Subtractor {
       RTC_DCHECK_GT(coarse_impulse_responses_.size(), 0);
       data_dumper_->DumpRaw(
           "aec3_subtractor_h_coarse",
-          rtc::ArrayView<const float>(
+          ArrayView<const float>(
               coarse_impulse_responses_[0].data(),
               GetTimeDomainLength(
                   coarse_filter_[0]->max_filter_size_partitions())));

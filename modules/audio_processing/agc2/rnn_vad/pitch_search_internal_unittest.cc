@@ -90,8 +90,8 @@ TEST(RnnVadTest, ComputePitchPeriod48kHzBitExactness) {
 
   PitchTestData test_data;
   std::vector<float> y_energy(kRefineNumLags24kHz);
-  rtc::ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
-                                                           kRefineNumLags24kHz);
+  ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
+                                                      kRefineNumLags24kHz);
   ComputeSlidingFrameSquareEnergies24kHz(test_data.PitchBuffer24kHzView(),
                                          y_energy_view, cpu_features);
   // TODO(bugs.webrtc.org/8948): Add when the issue is fixed.
@@ -124,8 +124,8 @@ TEST_P(PitchCandidatesParametrization,
 
   PitchTestData test_data;
   std::vector<float> y_energy(kRefineNumLags24kHz);
-  rtc::ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
-                                                           kRefineNumLags24kHz);
+  ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
+                                                      kRefineNumLags24kHz);
   ComputeSlidingFrameSquareEnergies24kHz(test_data.PitchBuffer24kHzView(),
                                          y_energy_view, params.cpu_features);
   EXPECT_EQ(
@@ -171,8 +171,8 @@ TEST_P(ExtendedPitchPeriodSearchParametrizaion,
 
   PitchTestData test_data;
   std::vector<float> y_energy(kRefineNumLags24kHz);
-  rtc::ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
-                                                           kRefineNumLags24kHz);
+  ArrayView<float, kRefineNumLags24kHz> y_energy_view(y_energy.data(),
+                                                      kRefineNumLags24kHz);
   ComputeSlidingFrameSquareEnergies24kHz(test_data.PitchBuffer24kHzView(),
                                          y_energy_view, params.cpu_features);
   // TODO(bugs.webrtc.org/8948): Add when the issue is fixed.

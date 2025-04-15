@@ -49,7 +49,7 @@ float RunAgc2WithConstantInput(GainController2& agc2,
                                int sample_rate_hz,
                                int num_channels = 1,
                                int applied_initial_volume = 0) {
-  const int num_samples = rtc::CheckedDivExact(sample_rate_hz, 100);
+  const int num_samples = CheckedDivExact(sample_rate_hz, 100);
   AudioBuffer ab(sample_rate_hz, num_channels, sample_rate_hz, num_channels,
                  sample_rate_hz, num_channels);
 

@@ -35,7 +35,7 @@ constexpr float kAttackFirstSubframeInterpolationPower = 8.0f;
 
 void InterpolateFirstSubframe(float last_factor,
                               float current_factor,
-                              rtc::ArrayView<float> subframe) {
+                              ArrayView<float> subframe) {
   const int n = dchecked_cast<int>(subframe.size());
   constexpr float p = kAttackFirstSubframeInterpolationPower;
   for (int i = 0; i < n; ++i) {
@@ -48,7 +48,7 @@ void ComputePerSampleSubframeFactors(
     const std::array<float, kSubFramesInFrame + 1>& scaling_factors,
     MonoView<float> per_sample_scaling_factors) {
   const size_t num_subframes = scaling_factors.size() - 1;
-  const int subframe_size = rtc::CheckedDivExact(
+  const int subframe_size = CheckedDivExact(
       SamplesPerChannel(per_sample_scaling_factors), num_subframes);
 
   // Handle first sub-frame differently in case of attack.

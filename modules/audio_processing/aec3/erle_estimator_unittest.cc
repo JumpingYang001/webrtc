@@ -29,7 +29,7 @@ constexpr float kTrueErleOnsets = 1.0f;
 constexpr float kEchoPathGain = 3.f;
 
 void VerifyErleBands(
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle,
     float reference_lf,
     float reference_hf) {
   for (size_t ch = 0; ch < erle.size(); ++ch) {
@@ -42,18 +42,17 @@ void VerifyErleBands(
   }
 }
 
-void VerifyErle(
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle,
-    float erle_time_domain,
-    float reference_lf,
-    float reference_hf) {
+void VerifyErle(ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle,
+                float erle_time_domain,
+                float reference_lf,
+                float reference_hf) {
   VerifyErleBands(erle, reference_lf, reference_hf);
   EXPECT_NEAR(kTrueErle, erle_time_domain, 0.5);
 }
 
 void VerifyErleGreaterOrEqual(
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle1,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle2) {
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle1,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> erle2) {
   for (size_t ch = 0; ch < erle1.size(); ++ch) {
     for (size_t i = 0; i < kFftLengthBy2Plus1; ++i) {
       EXPECT_GE(erle1[ch][i], erle2[ch][i]);
@@ -82,8 +81,8 @@ void FormFarendTimeFrame(Block* x) {
 void FormFarendFrame(const RenderBuffer& render_buffer,
                      float erle,
                      std::array<float, kFftLengthBy2Plus1>* X2,
-                     rtc::ArrayView<std::array<float, kFftLengthBy2Plus1>> E2,
-                     rtc::ArrayView<std::array<float, kFftLengthBy2Plus1>> Y2) {
+                     ArrayView<std::array<float, kFftLengthBy2Plus1>> E2,
+                     ArrayView<std::array<float, kFftLengthBy2Plus1>> Y2) {
   const auto& spectrum_buffer = render_buffer.GetSpectrumBuffer();
   const int num_render_channels = spectrum_buffer.buffer[0].size();
   const int num_capture_channels = Y2.size();
@@ -104,11 +103,10 @@ void FormFarendFrame(const RenderBuffer& render_buffer,
   }
 }
 
-void FormNearendFrame(
-    Block* x,
-    std::array<float, kFftLengthBy2Plus1>* X2,
-    rtc::ArrayView<std::array<float, kFftLengthBy2Plus1>> E2,
-    rtc::ArrayView<std::array<float, kFftLengthBy2Plus1>> Y2) {
+void FormNearendFrame(Block* x,
+                      std::array<float, kFftLengthBy2Plus1>* X2,
+                      ArrayView<std::array<float, kFftLengthBy2Plus1>> E2,
+                      ArrayView<std::array<float, kFftLengthBy2Plus1>> Y2) {
   for (int band = 0; band < x->NumBands(); ++band) {
     for (int ch = 0; ch < x->NumChannels(); ++ch) {
       std::fill(x->begin(band, ch), x->end(band, ch), 0.f);
@@ -122,10 +120,9 @@ void FormNearendFrame(
   }
 }
 
-void GetFilterFreq(
-    size_t delay_headroom_samples,
-    rtc::ArrayView<std::vector<std::array<float, kFftLengthBy2Plus1>>>
-        filter_frequency_response) {
+void GetFilterFreq(size_t delay_headroom_samples,
+                   ArrayView<std::vector<std::array<float, kFftLengthBy2Plus1>>>
+                       filter_frequency_response) {
   const size_t delay_headroom_blocks = delay_headroom_samples / kBlockSize;
   for (size_t ch = 0; ch < filter_frequency_response[0].size(); ++ch) {
     for (auto& block_freq_resp : filter_frequency_response) {

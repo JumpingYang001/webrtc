@@ -26,13 +26,12 @@ namespace webrtc {
 namespace rnn_vad {
 namespace {
 
-void TestGatedRecurrentLayer(
-    GatedRecurrentLayer& gru,
-    rtc::ArrayView<const float> input_sequence,
-    rtc::ArrayView<const float> expected_output_sequence) {
-  const int input_sequence_length = rtc::CheckedDivExact(
+void TestGatedRecurrentLayer(GatedRecurrentLayer& gru,
+                             ArrayView<const float> input_sequence,
+                             ArrayView<const float> expected_output_sequence) {
+  const int input_sequence_length = CheckedDivExact(
       dchecked_cast<int>(input_sequence.size()), gru.input_size());
-  const int output_sequence_length = rtc::CheckedDivExact(
+  const int output_sequence_length = CheckedDivExact(
       dchecked_cast<int>(expected_output_sequence.size()), gru.size());
   ASSERT_EQ(input_sequence_length, output_sequence_length)
       << "The test data length is invalid.";
@@ -135,7 +134,7 @@ TEST_P(RnnGruParametrization, DISABLED_BenchmarkGatedRecurrentLayer) {
                           /*cpu_features=*/GetParam(),
                           /*layer_name=*/"GRU");
 
-  rtc::ArrayView<const float> input_sequence(gru_input_sequence);
+  ArrayView<const float> input_sequence(gru_input_sequence);
   ASSERT_EQ(input_sequence.size() % kInputLayerOutputSize,
             static_cast<size_t>(0));
   const int input_sequence_length =

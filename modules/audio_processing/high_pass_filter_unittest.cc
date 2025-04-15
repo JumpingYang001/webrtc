@@ -121,7 +121,7 @@ void RunBitexactnessTest(int num_channels,
 
 // Method for forming a vector out of an array.
 // TODO(peah): Remove once braced initialization is allowed.
-std::vector<float> CreateVector(const rtc::ArrayView<const float>& array_view) {
+std::vector<float> CreateVector(const ArrayView<const float>& array_view) {
   std::vector<float> v;
   for (auto value : array_view) {
     v.push_back(value);
@@ -224,10 +224,9 @@ TEST(HighPassFilterAccuracyTest, MonoInitial) {
                               0.976229f, 0.702288f,  -0.457669f, 0.757161f};
 
   for (bool use_audio_buffer_interface : {true, false}) {
-    RunBitexactnessTest(
-        1, use_audio_buffer_interface,
-        CreateVector(rtc::ArrayView<const float>(kReferenceInput)),
-        CreateVector(rtc::ArrayView<const float>(kReference)));
+    RunBitexactnessTest(1, use_audio_buffer_interface,
+                        CreateVector(ArrayView<const float>(kReferenceInput)),
+                        CreateVector(ArrayView<const float>(kReference)));
   }
 }
 
@@ -319,10 +318,9 @@ TEST(HighPassFilterAccuracyTest, MonoConverged) {
                               -0.535279f, 0.385823f,  -0.116531f, -0.265494f};
 
   for (bool use_audio_buffer_interface : {true, false}) {
-    RunBitexactnessTest(
-        1, use_audio_buffer_interface,
-        CreateVector(rtc::ArrayView<const float>(kReferenceInput)),
-        CreateVector(rtc::ArrayView<const float>(kReference)));
+    RunBitexactnessTest(1, use_audio_buffer_interface,
+                        CreateVector(ArrayView<const float>(kReferenceInput)),
+                        CreateVector(ArrayView<const float>(kReference)));
   }
 }
 

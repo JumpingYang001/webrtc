@@ -219,11 +219,11 @@ class EchoCanceller3 : public EchoControl {
   std::unique_ptr<Block> linear_output_block_
       RTC_GUARDED_BY(capture_race_checker_);
   Block capture_block_ RTC_GUARDED_BY(capture_race_checker_);
-  std::vector<std::vector<rtc::ArrayView<float>>> render_sub_frame_view_
+  std::vector<std::vector<ArrayView<float>>> render_sub_frame_view_
       RTC_GUARDED_BY(capture_race_checker_);
-  std::vector<std::vector<rtc::ArrayView<float>>> linear_output_sub_frame_view_
+  std::vector<std::vector<ArrayView<float>>> linear_output_sub_frame_view_
       RTC_GUARDED_BY(capture_race_checker_);
-  std::vector<std::vector<rtc::ArrayView<float>>> capture_sub_frame_view_
+  std::vector<std::vector<ArrayView<float>>> capture_sub_frame_view_
       RTC_GUARDED_BY(capture_race_checker_);
   std::unique_ptr<BlockDelayBuffer> block_delay_buffer_
       RTC_GUARDED_BY(capture_race_checker_);

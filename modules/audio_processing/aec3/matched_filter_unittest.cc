@@ -305,8 +305,8 @@ TEST_P(MatchedFilterTest, LagEstimation) {
 
         render_delay_buffer->PrepareCaptureProcessing();
         std::array<float, kBlockSize> downsampled_capture_data;
-        rtc::ArrayView<float> downsampled_capture(
-            downsampled_capture_data.data(), sub_block_size);
+        ArrayView<float> downsampled_capture(downsampled_capture_data.data(),
+                                             sub_block_size);
         capture_decimator.Decimate(capture[0], downsampled_capture);
         filter.Update(render_delay_buffer->GetDownsampledRenderBuffer(),
                       downsampled_capture, /*use_slow_smoothing=*/false);
@@ -380,8 +380,8 @@ TEST_P(MatchedFilterTest, PreEchoEstimation) {
       }
       render_delay_buffer->PrepareCaptureProcessing();
       std::array<float, kBlockSize> downsampled_capture_data;
-      rtc::ArrayView<float> downsampled_capture(downsampled_capture_data.data(),
-                                                sub_block_size);
+      ArrayView<float> downsampled_capture(downsampled_capture_data.data(),
+                                           sub_block_size);
       capture_decimator.Decimate(capture[0], downsampled_capture);
       filter.Update(render_delay_buffer->GetDownsampledRenderBuffer(),
                     downsampled_capture, /*use_slow_smoothing=*/false);
@@ -421,7 +421,7 @@ TEST_P(MatchedFilterTest, LagNotReliableForUncorrelatedRenderAndCapture) {
 
     Block render(kNumBands, kNumChannels);
     std::array<float, kBlockSize> capture_data;
-    rtc::ArrayView<float> capture(capture_data.data(), sub_block_size);
+    ArrayView<float> capture(capture_data.data(), sub_block_size);
     std::fill(capture.begin(), capture.end(), 0.f);
     ApmDataDumper data_dumper(0);
     std::unique_ptr<RenderDelayBuffer> render_delay_buffer(
@@ -486,8 +486,8 @@ TEST_P(MatchedFilterTest, LagNotUpdatedForLowLevelRender) {
       }
       std::copy(render.begin(0, 0), render.end(0, 0), capture[0].begin());
       std::array<float, kBlockSize> downsampled_capture_data;
-      rtc::ArrayView<float> downsampled_capture(downsampled_capture_data.data(),
-                                                sub_block_size);
+      ArrayView<float> downsampled_capture(downsampled_capture_data.data(),
+                                           sub_block_size);
       capture_decimator.Decimate(capture[0], downsampled_capture);
       filter.Update(render_delay_buffer->GetDownsampledRenderBuffer(),
                     downsampled_capture, false);

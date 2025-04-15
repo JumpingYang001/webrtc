@@ -108,7 +108,7 @@ EchoControlMobileImpl::EchoControlMobileImpl()
 EchoControlMobileImpl::~EchoControlMobileImpl() {}
 
 void EchoControlMobileImpl::ProcessRenderAudio(
-    rtc::ArrayView<const int16_t> packed_render_audio) {
+    ArrayView<const int16_t> packed_render_audio) {
   RTC_DCHECK(stream_properties_);
 
   size_t buffer_index = 0;

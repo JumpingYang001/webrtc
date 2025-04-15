@@ -48,7 +48,7 @@ void ComputeAvgRenderReverb(
     int delay_blocks,
     float reverb_decay,
     ReverbModel* reverb_model,
-    rtc::ArrayView<float, kFftLengthBy2Plus1> reverb_power_spectrum) {
+    ArrayView<float, kFftLengthBy2Plus1> reverb_power_spectrum) {
   RTC_DCHECK(reverb_model);
   const size_t num_render_channels = spectrum_buffer.buffer[0].size();
   int idx_at_delay =
@@ -56,13 +56,13 @@ void ComputeAvgRenderReverb(
   int idx_past = spectrum_buffer.IncIndex(idx_at_delay);
 
   std::array<float, kFftLengthBy2Plus1> X2_data;
-  rtc::ArrayView<const float> X2;
+  ArrayView<const float> X2;
   if (num_render_channels > 1) {
     auto average_channels =
         [](size_t num_render_channels,
-           rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>>
+           ArrayView<const std::array<float, kFftLengthBy2Plus1>>
                spectrum_band_0,
-           rtc::ArrayView<float, kFftLengthBy2Plus1> render_power) {
+           ArrayView<float, kFftLengthBy2Plus1> render_power) {
           std::fill(render_power.begin(), render_power.end(), 0.f);
           for (size_t ch = 0; ch < num_render_channels; ++ch) {
             for (size_t k = 0; k < kFftLengthBy2Plus1; ++k) {
@@ -90,7 +90,7 @@ void ComputeAvgRenderReverb(
     X2 = spectrum_buffer.buffer[idx_at_delay][/*channel=*/0];
   }
 
-  rtc::ArrayView<const float, kFftLengthBy2Plus1> reverb_power =
+  ArrayView<const float, kFftLengthBy2Plus1> reverb_power =
       reverb_model->reverb();
   for (size_t k = 0; k < X2.size(); ++k) {
     reverb_power_spectrum[k] = X2[k] + reverb_power[k];
@@ -101,8 +101,7 @@ void ComputeAvgRenderReverb(
 
 std::atomic<int> AecState::instance_count_(0);
 
-void AecState::GetResidualEchoScaling(
-    rtc::ArrayView<float> residual_scaling) const {
+void AecState::GetResidualEchoScaling(ArrayView<float> residual_scaling) const {
   bool filter_has_had_time_to_converge;
   if (config_.filter.conservative_initial_phase) {
     filter_has_had_time_to_converge =
@@ -179,13 +178,13 @@ void AecState::HandleEchoPathChange(
 
 void AecState::Update(
     const std::optional<DelayEstimate>& external_delay,
-    rtc::ArrayView<const std::vector<std::array<float, kFftLengthBy2Plus1>>>
+    ArrayView<const std::vector<std::array<float, kFftLengthBy2Plus1>>>
         adaptive_filter_frequency_responses,
-    rtc::ArrayView<const std::vector<float>> adaptive_filter_impulse_responses,
+    ArrayView<const std::vector<float>> adaptive_filter_impulse_responses,
     const RenderBuffer& render_buffer,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2_refined,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
-    rtc::ArrayView<const SubtractorOutput> subtractor_output) {
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> E2_refined,
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> Y2,
+    ArrayView<const SubtractorOutput> subtractor_output) {
   RTC_DCHECK_EQ(num_capture_channels_, Y2.size());
   RTC_DCHECK_EQ(num_capture_channels_, subtractor_output.size());
   RTC_DCHECK_EQ(num_capture_channels_,
@@ -366,7 +365,7 @@ AecState::FilterDelay::FilterDelay(const EchoCanceller3Config& config,
       min_filter_delay_(delay_headroom_blocks_) {}
 
 void AecState::FilterDelay::Update(
-    rtc::ArrayView<const int> analyzer_filter_delay_estimates_blocks,
+    ArrayView<const int> analyzer_filter_delay_estimates_blocks,
     const std::optional<DelayEstimate>& external_delay,
     size_t blocks_with_proper_filter_adaptation) {
   // Update the delay based on the external delay.
@@ -456,7 +455,7 @@ void AecState::SaturationDetector::Update(
     const Block& x,
     bool saturated_capture,
     bool usable_linear_estimate,
-    rtc::ArrayView<const SubtractorOutput> subtractor_output,
+    ArrayView<const SubtractorOutput> subtractor_output,
     float echo_path_gain) {
   saturated_echo_ = false;
   if (!saturated_capture) {
@@ -474,7 +473,7 @@ void AecState::SaturationDetector::Update(
   } else {
     float max_sample = 0.f;
     for (int ch = 0; ch < x.NumChannels(); ++ch) {
-      rtc::ArrayView<const float, kBlockSize> x_ch = x.View(/*band=*/0, ch);
+      ArrayView<const float, kBlockSize> x_ch = x.View(/*band=*/0, ch);
       for (float sample : x_ch) {
         max_sample = std::max(max_sample, fabsf(sample));
       }

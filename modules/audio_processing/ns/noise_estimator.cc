@@ -64,7 +64,7 @@ void NoiseEstimator::PrepareAnalysis() {
 
 void NoiseEstimator::PreUpdate(
     int32_t num_analyzed_frames,
-    rtc::ArrayView<const float, kFftSizeBy2Plus1> signal_spectrum,
+    ArrayView<const float, kFftSizeBy2Plus1> signal_spectrum,
     float signal_spectral_sum) {
   quantile_noise_estimator_.Estimate(signal_spectrum, noise_spectrum_);
 
@@ -153,8 +153,8 @@ void NoiseEstimator::PreUpdate(
 }
 
 void NoiseEstimator::PostUpdate(
-    rtc::ArrayView<const float> speech_probability,
-    rtc::ArrayView<const float, kFftSizeBy2Plus1> signal_spectrum) {
+    ArrayView<const float> speech_probability,
+    ArrayView<const float, kFftSizeBy2Plus1> signal_spectrum) {
   // Time-avg parameter for noise_spectrum update.
   constexpr float kNoiseUpdate = 0.9f;
 

@@ -64,7 +64,7 @@ void UpdateSaturationProtectorState(float peak_dbfs,
   // Get the max peak over `kPeakEnveloperSuperFrameLengthMs` ms.
   state.max_peaks_dbfs = std::max(state.max_peaks_dbfs, peak_dbfs);
   state.time_since_push_ms += kFrameDurationMs;
-  if (rtc::SafeGt(state.time_since_push_ms, kPeakEnveloperSuperFrameLengthMs)) {
+  if (SafeGt(state.time_since_push_ms, kPeakEnveloperSuperFrameLengthMs)) {
     // Push `max_peaks_dbfs` back into the ring buffer.
     state.peak_delay_buffer.PushBack(state.max_peaks_dbfs);
     // Reset.

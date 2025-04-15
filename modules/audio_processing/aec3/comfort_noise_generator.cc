@@ -122,10 +122,9 @@ ComfortNoiseGenerator::~ComfortNoiseGenerator() = default;
 
 void ComfortNoiseGenerator::Compute(
     bool saturated_capture,
-    rtc::ArrayView<const std::array<float, kFftLengthBy2Plus1>>
-        capture_spectrum,
-    rtc::ArrayView<FftData> lower_band_noise,
-    rtc::ArrayView<FftData> upper_band_noise) {
+    ArrayView<const std::array<float, kFftLengthBy2Plus1>> capture_spectrum,
+    ArrayView<FftData> lower_band_noise,
+    ArrayView<FftData> upper_band_noise) {
   const auto& Y2 = capture_spectrum;
 
   if (!saturated_capture) {

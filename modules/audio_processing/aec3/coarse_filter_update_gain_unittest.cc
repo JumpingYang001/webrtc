@@ -226,7 +226,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(1, 2, 4),
     [](const ::testing::TestParamInfo<
         CoarseFilterUpdateGainOneTwoFourRenderChannels::ParamType>& info) {
-      return (rtc::StringBuilder() << "Render" << info.param).str();
+      return (StringBuilder() << "Render" << info.param).str();
     });
 
 // Verifies that the magnitude of the gain on average decreases for a

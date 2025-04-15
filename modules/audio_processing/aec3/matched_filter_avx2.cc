@@ -32,17 +32,16 @@ inline __m128 hsum_ab(__m256 a, __m256 b) {
   return s;
 }
 
-void MatchedFilterCore_AccumulatedError_AVX2(
-    size_t x_start_index,
-    float x2_sum_threshold,
-    float smoothing,
-    rtc::ArrayView<const float> x,
-    rtc::ArrayView<const float> y,
-    rtc::ArrayView<float> h,
-    bool* filters_updated,
-    float* error_sum,
-    rtc::ArrayView<float> accumulated_error,
-    rtc::ArrayView<float> scratch_memory) {
+void MatchedFilterCore_AccumulatedError_AVX2(size_t x_start_index,
+                                             float x2_sum_threshold,
+                                             float smoothing,
+                                             ArrayView<const float> x,
+                                             ArrayView<const float> y,
+                                             ArrayView<float> h,
+                                             bool* filters_updated,
+                                             float* error_sum,
+                                             ArrayView<float> accumulated_error,
+                                             ArrayView<float> scratch_memory) {
   const int h_size = static_cast<int>(h.size());
   const int x_size = static_cast<int>(x.size());
   RTC_DCHECK_EQ(0, h_size % 16);
@@ -143,14 +142,14 @@ void MatchedFilterCore_AccumulatedError_AVX2(
 void MatchedFilterCore_AVX2(size_t x_start_index,
                             float x2_sum_threshold,
                             float smoothing,
-                            rtc::ArrayView<const float> x,
-                            rtc::ArrayView<const float> y,
-                            rtc::ArrayView<float> h,
+                            ArrayView<const float> x,
+                            ArrayView<const float> y,
+                            ArrayView<float> h,
                             bool* filters_updated,
                             float* error_sum,
                             bool compute_accumulated_error,
-                            rtc::ArrayView<float> accumulated_error,
-                            rtc::ArrayView<float> scratch_memory) {
+                            ArrayView<float> accumulated_error,
+                            ArrayView<float> scratch_memory) {
   if (compute_accumulated_error) {
     return MatchedFilterCore_AccumulatedError_AVX2(
         x_start_index, x2_sum_threshold, smoothing, x, y, h, filters_updated,
