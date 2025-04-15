@@ -40,7 +40,7 @@ namespace dcsctp {
 constexpr int SupportedExtensionsParameter::kType;
 
 std::optional<SupportedExtensionsParameter> SupportedExtensionsParameter::Parse(
-    rtc::ArrayView<const uint8_t> data) {
+    webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;

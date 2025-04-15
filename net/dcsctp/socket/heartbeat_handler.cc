@@ -66,7 +66,7 @@ class HeartbeatInfo {
   }
 
   static std::optional<HeartbeatInfo> Deserialize(
-      rtc::ArrayView<const uint8_t> data) {
+      webrtc::ArrayView<const uint8_t> data) {
     if (data.size() != kBufferSize) {
       RTC_LOG(LS_WARNING) << "Invalid heartbeat info: " << data.size()
                           << " bytes";

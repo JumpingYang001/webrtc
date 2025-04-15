@@ -18,13 +18,13 @@ namespace dcsctp {
 
 void TextPcapPacketObserver::OnSentPacket(
     dcsctp::TimeMs now,
-    rtc::ArrayView<const uint8_t> payload) {
+    webrtc::ArrayView<const uint8_t> payload) {
   PrintPacket("O ", name_, now, payload);
 }
 
 void TextPcapPacketObserver::OnReceivedPacket(
     dcsctp::TimeMs now,
-    rtc::ArrayView<const uint8_t> payload) {
+    webrtc::ArrayView<const uint8_t> payload) {
   PrintPacket("I ", name_, now, payload);
 }
 
@@ -32,7 +32,7 @@ void TextPcapPacketObserver::PrintPacket(
     absl::string_view prefix,
     absl::string_view socket_name,
     dcsctp::TimeMs now,
-    rtc::ArrayView<const uint8_t> payload) {
+    webrtc::ArrayView<const uint8_t> payload) {
   webrtc::StringBuilder s;
   s << "\n" << prefix;
   int64_t remaining = *now % (24 * 60 * 60 * 1000);

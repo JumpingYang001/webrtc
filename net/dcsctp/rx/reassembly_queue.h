@@ -90,16 +90,17 @@ class ReassemblyQueue {
   // partial reliability.
   void HandleForwardTsn(
       TSN new_cumulative_tsn,
-      rtc::ArrayView<const AnyForwardTsnChunk::SkippedStream> skipped_streams);
+      webrtc::ArrayView<const AnyForwardTsnChunk::SkippedStream>
+          skipped_streams);
 
   // Resets the provided streams and leaves deferred reset processing, if
   // enabled.
   void ResetStreamsAndLeaveDeferredReset(
-      rtc::ArrayView<const StreamID> stream_ids);
+      webrtc::ArrayView<const StreamID> stream_ids);
 
   // Enters deferred reset processing.
   void EnterDeferredReset(TSN sender_last_assigned_tsn,
-                          rtc::ArrayView<const StreamID> streams);
+                          webrtc::ArrayView<const StreamID> streams);
 
   // The number of payload bytes that have been queued. Note that the actual
   // memory usage is higher due to additional overhead of tracking received
@@ -138,7 +139,7 @@ class ReassemblyQueue {
   };
 
   bool IsConsistent() const;
-  void AddReassembledMessage(rtc::ArrayView<const UnwrappedTSN> tsns,
+  void AddReassembledMessage(webrtc::ArrayView<const UnwrappedTSN> tsns,
                              DcSctpMessage message);
 
   const absl::string_view log_prefix_;

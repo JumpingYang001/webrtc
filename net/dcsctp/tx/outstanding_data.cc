@@ -131,7 +131,7 @@ void OutstandingData::AckChunk(AckInfo& ack_info,
 
 OutstandingData::AckInfo OutstandingData::HandleSack(
     UnwrappedTSN cumulative_tsn_ack,
-    rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+    webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
     bool is_in_fast_recovery) {
   OutstandingData::AckInfo ack_info(cumulative_tsn_ack);
   // Erase all items up to cumulative_tsn_ack.
@@ -192,7 +192,7 @@ void OutstandingData::RemoveAcked(UnwrappedTSN cumulative_tsn_ack,
 
 void OutstandingData::AckGapBlocks(
     UnwrappedTSN cumulative_tsn_ack,
-    rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+    webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
     AckInfo& ack_info) {
   // Mark all non-gaps as ACKED (but they can't be removed) as (from RFC)
   // "SCTP considers the information carried in the Gap Ack Blocks in the
@@ -213,7 +213,7 @@ void OutstandingData::AckGapBlocks(
 
 void OutstandingData::NackBetweenAckBlocks(
     UnwrappedTSN cumulative_tsn_ack,
-    rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+    webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
     bool is_in_fast_recovery,
     OutstandingData::AckInfo& ack_info) {
   // Mark everything between the blocks as NACKED/TO_BE_RETRANSMITTED.

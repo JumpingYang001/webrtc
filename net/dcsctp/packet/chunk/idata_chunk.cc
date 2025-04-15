@@ -46,7 +46,7 @@ namespace dcsctp {
 constexpr int IDataChunk::kType;
 
 std::optional<IDataChunk> IDataChunk::Parse(
-    rtc::ArrayView<const uint8_t> data) {
+    webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;

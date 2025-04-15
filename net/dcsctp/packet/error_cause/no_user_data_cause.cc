@@ -35,7 +35,7 @@ namespace dcsctp {
 constexpr int NoUserDataCause::kType;
 
 std::optional<NoUserDataCause> NoUserDataCause::Parse(
-    rtc::ArrayView<const uint8_t> data) {
+    webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;

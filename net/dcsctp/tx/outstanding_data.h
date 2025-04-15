@@ -87,7 +87,7 @@ class OutstandingData {
 
   AckInfo HandleSack(
       UnwrappedTSN cumulative_tsn_ack,
-      rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+      webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
       bool is_in_fast_recovery);
 
   // Returns as many of the chunks that are eligible for fast retransmissions
@@ -308,9 +308,10 @@ class OutstandingData {
 
   // Will mark the chunks covered by the `gap_ack_blocks` from an incoming SACK
   // as "acked" and update `ack_info` by adding new TSNs to `added_tsns`.
-  void AckGapBlocks(UnwrappedTSN cumulative_tsn_ack,
-                    rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
-                    AckInfo& ack_info);
+  void AckGapBlocks(
+      UnwrappedTSN cumulative_tsn_ack,
+      webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+      AckInfo& ack_info);
 
   // Mark chunks reported as "missing", as "nacked" or "to be retransmitted"
   // depending how many times this has happened. Only packets up until
@@ -318,7 +319,7 @@ class OutstandingData {
   // nacked/retransmitted. The method will set `ack_info.has_packet_loss`.
   void NackBetweenAckBlocks(
       UnwrappedTSN cumulative_tsn_ack,
-      rtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
+      webrtc::ArrayView<const SackChunk::GapAckBlock> gap_ack_blocks,
       bool is_in_fast_recovery,
       OutstandingData::AckInfo& ack_info);
 

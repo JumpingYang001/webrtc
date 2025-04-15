@@ -49,7 +49,7 @@ namespace dcsctp {
 constexpr int OutgoingSSNResetRequestParameter::kType;
 
 std::optional<OutgoingSSNResetRequestParameter>
-OutgoingSSNResetRequestParameter::Parse(rtc::ArrayView<const uint8_t> data) {
+OutgoingSSNResetRequestParameter::Parse(webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;

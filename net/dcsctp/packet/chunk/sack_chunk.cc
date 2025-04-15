@@ -58,7 +58,8 @@ namespace dcsctp {
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 constexpr int SackChunk::kType;
 
-std::optional<SackChunk> SackChunk::Parse(rtc::ArrayView<const uint8_t> data) {
+std::optional<SackChunk> SackChunk::Parse(
+    webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;

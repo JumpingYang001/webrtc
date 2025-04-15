@@ -167,9 +167,9 @@ std::optional<SendQueue::DataToSend> RRSendQueue::OutgoingStream::Produce(
     }
 
     // Grab the next `max_size` fragment from this message and calculate flags.
-    rtc::ArrayView<const uint8_t> chunk_payload =
+    webrtc::ArrayView<const uint8_t> chunk_payload =
         item.message.payload().subview(item.remaining_offset, max_size);
-    rtc::ArrayView<const uint8_t> message_payload = message.payload();
+    webrtc::ArrayView<const uint8_t> message_payload = message.payload();
     Data::IsBeginning is_beginning(chunk_payload.data() ==
                                    message_payload.data());
     Data::IsEnd is_end((chunk_payload.data() + chunk_payload.size()) ==

@@ -168,7 +168,7 @@ TieTag MakeTieTag(DcSctpSocketCallbacks& cb) {
 }
 
 SctpImplementation DeterminePeerImplementation(
-    rtc::ArrayView<const uint8_t> cookie) {
+    webrtc::ArrayView<const uint8_t> cookie) {
   if (cookie.size() > 8) {
     absl::string_view magic(reinterpret_cast<const char*>(cookie.data()), 8);
     if (magic == "dcSCTP00") {
@@ -491,7 +491,7 @@ SendStatus DcSctpSocket::Send(DcSctpMessage message,
 }
 
 std::vector<SendStatus> DcSctpSocket::SendMany(
-    rtc::ArrayView<DcSctpMessage> messages,
+    webrtc::ArrayView<DcSctpMessage> messages,
     const SendOptions& send_options) {
   CallbackDeferrer::ScopedDeferrer deferrer(callbacks_);
   Timestamp now = callbacks_.Now();
@@ -557,7 +557,7 @@ SendStatus DcSctpSocket::InternalSend(const DcSctpMessage& message,
 }
 
 ResetStreamsStatus DcSctpSocket::ResetStreams(
-    rtc::ArrayView<const StreamID> outgoing_streams) {
+    webrtc::ArrayView<const StreamID> outgoing_streams) {
   CallbackDeferrer::ScopedDeferrer deferrer(callbacks_);
 
   if (tcb_ == nullptr) {
@@ -779,7 +779,7 @@ void DcSctpSocket::HandleTimeout(TimeoutID timeout_id) {
   RTC_DCHECK(IsConsistent());
 }
 
-void DcSctpSocket::ReceivePacket(rtc::ArrayView<const uint8_t> data) {
+void DcSctpSocket::ReceivePacket(webrtc::ArrayView<const uint8_t> data) {
   CallbackDeferrer::ScopedDeferrer deferrer(callbacks_);
 
   ++metrics_.rx_packets_count;
@@ -829,7 +829,8 @@ void DcSctpSocket::ReceivePacket(rtc::ArrayView<const uint8_t> data) {
   RTC_DCHECK(IsConsistent());
 }
 
-void DcSctpSocket::DebugPrintOutgoing(rtc::ArrayView<const uint8_t> payload) {
+void DcSctpSocket::DebugPrintOutgoing(
+    webrtc::ArrayView<const uint8_t> payload) {
   auto packet = SctpPacket::Parse(payload, options_);
   RTC_DCHECK(packet.has_value());
 
@@ -1008,7 +1009,7 @@ TimeDelta DcSctpSocket::OnShutdownTimerExpiry() {
   return tcb_->current_rto();
 }
 
-void DcSctpSocket::OnSentPacket(rtc::ArrayView<const uint8_t> packet,
+void DcSctpSocket::OnSentPacket(webrtc::ArrayView<const uint8_t> packet,
                                 SendPacketStatus status) {
   // The packet observer is invoked even if the packet was failed to be sent, to
   // indicate an attempt was made.

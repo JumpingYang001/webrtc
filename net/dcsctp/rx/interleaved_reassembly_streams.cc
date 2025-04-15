@@ -222,7 +222,8 @@ int InterleavedReassemblyStreams::Add(UnwrappedTSN tsn, Data data) {
 
 size_t InterleavedReassemblyStreams::HandleForwardTsn(
     UnwrappedTSN /* new_cumulative_ack_tsn */,
-    rtc::ArrayView<const AnyForwardTsnChunk::SkippedStream> skipped_streams) {
+    webrtc::ArrayView<const AnyForwardTsnChunk::SkippedStream>
+        skipped_streams) {
   size_t removed_bytes = 0;
   for (const auto& skipped : skipped_streams) {
     removed_bytes +=
@@ -233,7 +234,7 @@ size_t InterleavedReassemblyStreams::HandleForwardTsn(
 }
 
 void InterleavedReassemblyStreams::ResetStreams(
-    rtc::ArrayView<const StreamID> stream_ids) {
+    webrtc::ArrayView<const StreamID> stream_ids) {
   if (stream_ids.empty()) {
     for (auto& entry : streams_) {
       entry.second.Reset();

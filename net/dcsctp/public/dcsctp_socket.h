@@ -287,14 +287,14 @@ class DcSctpSocketCallbacks {
   //
   // Note that it's NOT ALLOWED to call into this library from within this
   // callback.
-  virtual void SendPacket(rtc::ArrayView<const uint8_t> /* data */) {}
+  virtual void SendPacket(webrtc::ArrayView<const uint8_t> /* data */) {}
 
   // Called when the library wants the packet serialized as `data` to be sent.
   //
   // Note that it's NOT ALLOWED to call into this library from within this
   // callback.
   virtual SendPacketStatus SendPacketWithStatus(
-      rtc::ArrayView<const uint8_t> data) {
+      webrtc::ArrayView<const uint8_t> data) {
     SendPacket(data);
     return SendPacketStatus::kSuccess;
   }
@@ -403,21 +403,21 @@ class DcSctpSocketCallbacks {
   //
   // It is allowed to call into this library from within this callback.
   virtual void OnStreamsResetFailed(
-      rtc::ArrayView<const StreamID> outgoing_streams,
+      webrtc::ArrayView<const StreamID> outgoing_streams,
       absl::string_view reason) = 0;
 
   // Indicates that a stream reset request has been performed.
   //
   // It is allowed to call into this library from within this callback.
   virtual void OnStreamsResetPerformed(
-      rtc::ArrayView<const StreamID> outgoing_streams) = 0;
+      webrtc::ArrayView<const StreamID> outgoing_streams) = 0;
 
   // When a peer has reset some of its outgoing streams, this will be called. An
   // empty list indicates that all streams have been reset.
   //
   // It is allowed to call into this library from within this callback.
   virtual void OnIncomingStreamsReset(
-      rtc::ArrayView<const StreamID> incoming_streams) = 0;
+      webrtc::ArrayView<const StreamID> incoming_streams) = 0;
 
   // Will be called when the amount of data buffered to be sent falls to or
   // below the threshold set when calling `SetBufferedAmountLowThreshold`.
@@ -523,7 +523,7 @@ class DcSctpSocketInterface {
   virtual ~DcSctpSocketInterface() = default;
 
   // To be called when an incoming SCTP packet is to be processed.
-  virtual void ReceivePacket(rtc::ArrayView<const uint8_t> data) = 0;
+  virtual void ReceivePacket(webrtc::ArrayView<const uint8_t> data) = 0;
 
   // To be called when a timeout has expired. The `timeout_id` is provided
   // when the timeout was initiated.
@@ -585,7 +585,7 @@ class DcSctpSocketInterface {
   // This has identical semantics to Send, except that it may coalesce many
   // messages into a single SCTP packet if they would fit.
   virtual std::vector<SendStatus> SendMany(
-      rtc::ArrayView<DcSctpMessage> messages,
+      webrtc::ArrayView<DcSctpMessage> messages,
       const SendOptions& send_options) = 0;
 
   // Resetting streams is an asynchronous operation and the results will
@@ -604,7 +604,7 @@ class DcSctpSocketInterface {
   // supports stream resetting. Calling this method on e.g. a closed association
   // or streams that don't support resetting will not perform any operation.
   virtual ResetStreamsStatus ResetStreams(
-      rtc::ArrayView<const StreamID> outgoing_streams) = 0;
+      webrtc::ArrayView<const StreamID> outgoing_streams) = 0;
 
   // Returns the number of bytes of data currently queued to be sent on a given
   // stream.

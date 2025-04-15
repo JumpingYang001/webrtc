@@ -340,7 +340,7 @@ ReConfigChunk StreamResetHandler::MakeReconfigChunk() {
 }
 
 void StreamResetHandler::ResetStreams(
-    rtc::ArrayView<const StreamID> outgoing_streams) {
+    webrtc::ArrayView<const StreamID> outgoing_streams) {
   for (StreamID stream_id : outgoing_streams) {
     retransmission_queue_->PrepareResetStream(stream_id);
   }

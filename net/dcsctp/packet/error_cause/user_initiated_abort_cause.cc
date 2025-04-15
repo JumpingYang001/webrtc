@@ -37,7 +37,7 @@ namespace dcsctp {
 constexpr int UserInitiatedAbortCause::kType;
 
 std::optional<UserInitiatedAbortCause> UserInitiatedAbortCause::Parse(
-    rtc::ArrayView<const uint8_t> data) {
+    webrtc::ArrayView<const uint8_t> data) {
   std::optional<BoundedByteReader<kHeaderSize>> reader = ParseTLV(data);
   if (!reader.has_value()) {
     return std::nullopt;
@@ -53,7 +53,7 @@ std::optional<UserInitiatedAbortCause> UserInitiatedAbortCause::Parse(
 void UserInitiatedAbortCause::SerializeTo(std::vector<uint8_t>& out) const {
   BoundedByteWriter<kHeaderSize> writer =
       AllocateTLV(out, upper_layer_abort_reason_.size());
-  writer.CopyToVariableData(rtc::MakeArrayView(
+  writer.CopyToVariableData(webrtc::MakeArrayView(
       reinterpret_cast<const uint8_t*>(upper_layer_abort_reason_.data()),
       upper_layer_abort_reason_.size()));
 }

@@ -56,7 +56,7 @@ class FuzzerTimeout : public Timeout {
 class FuzzerCallbacks : public DcSctpSocketCallbacks {
  public:
   static constexpr int kRandomValue = 42;
-  void SendPacket(rtc::ArrayView<const uint8_t> data) override {
+  void SendPacket(webrtc::ArrayView<const uint8_t> data) override {
     sent_packets_.emplace_back(std::vector<uint8_t>(data.begin(), data.end()));
   }
   std::unique_ptr<Timeout> CreateTimeout(
@@ -77,12 +77,12 @@ class FuzzerCallbacks : public DcSctpSocketCallbacks {
   void OnClosed() override {}
   void OnConnectionRestarted() override {}
   void OnStreamsResetFailed(
-      rtc::ArrayView<const StreamID> /* outgoing_streams */,
+      webrtc::ArrayView<const StreamID> /* outgoing_streams */,
       absl::string_view /* reason */) override {}
   void OnStreamsResetPerformed(
-      rtc::ArrayView<const StreamID> outgoing_streams) override {}
+      webrtc::ArrayView<const StreamID> outgoing_streams) override {}
   void OnIncomingStreamsReset(
-      rtc::ArrayView<const StreamID> incoming_streams) override {}
+      webrtc::ArrayView<const StreamID> incoming_streams) override {}
 
   std::vector<uint8_t> ConsumeSentPacket() {
     if (sent_packets_.empty()) {
@@ -115,7 +115,7 @@ class FuzzerCallbacks : public DcSctpSocketCallbacks {
 // API methods.
 void FuzzSocket(DcSctpSocketInterface& socket,
                 FuzzerCallbacks& cb,
-                rtc::ArrayView<const uint8_t> data);
+                webrtc::ArrayView<const uint8_t> data);
 
 }  // namespace dcsctp_fuzzers
 }  // namespace dcsctp
