@@ -83,7 +83,7 @@ int32_t Channel::SendData(AudioFrameType frameType,
   }
 
   status = _neteq->InsertPacket(
-      rtp_header, rtc::ArrayView<const uint8_t>(_payloadData, payloadDataSize),
+      rtp_header, ArrayView<const uint8_t>(_payloadData, payloadDataSize),
       /*receive_time=*/Timestamp::MinusInfinity());
 
   return status;

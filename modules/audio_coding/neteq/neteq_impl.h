@@ -132,7 +132,7 @@ class NetEqImpl : public webrtc::NetEq {
   NetEqImpl& operator=(const NetEqImpl&) = delete;
 
   int InsertPacket(const RTPHeader& rtp_header,
-                   rtc::ArrayView<const uint8_t> payload) override {
+                   ArrayView<const uint8_t> payload) override {
     return InsertPacket(
         rtp_header, payload,
         RtpPacketInfo(rtp_header, /*receive_time=*/Timestamp::MinusInfinity()));
@@ -140,7 +140,7 @@ class NetEqImpl : public webrtc::NetEq {
 
   // Inserts a new packet into NetEq. Returns 0 on success, -1 on failure.
   int InsertPacket(const RTPHeader& rtp_header,
-                   rtc::ArrayView<const uint8_t> payload,
+                   ArrayView<const uint8_t> payload,
                    const RtpPacketInfo& packet_info) override;
 
   void InsertEmptyPacket(const RTPHeader& rtp_header) override;
@@ -217,7 +217,7 @@ class NetEqImpl : public webrtc::NetEq {
   // above. Returns 0 on success, otherwise an error code.
   // TODO(hlundin): Merge this with InsertPacket above?
   int InsertPacketInternal(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload,
+                           ArrayView<const uint8_t> payload,
                            const RtpPacketInfo& packet_info)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
@@ -408,7 +408,7 @@ class NetEqImpl : public webrtc::NetEq {
       RTC_GUARDED_BY(mutex_);
   std::vector<RtpPacketInfo> last_decoded_packet_infos_ RTC_GUARDED_BY(mutex_);
   bool no_time_stretching_ RTC_GUARDED_BY(mutex_);  // Only used for test.
-  rtc::BufferT<int16_t> concealment_audio_ RTC_GUARDED_BY(mutex_);
+  BufferT<int16_t> concealment_audio_ RTC_GUARDED_BY(mutex_);
 };
 
 }  // namespace webrtc

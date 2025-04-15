@@ -334,10 +334,10 @@ class NetEqBgnTest : public NetEqDecodingTest {
           WebRtcPcm16b_Encode(block.data(), block.size(), payload);
       ASSERT_EQ(enc_len_bytes, expected_samples_per_channel * 2);
 
-      ASSERT_EQ(0, neteq_->InsertPacket(
-                       rtp_info,
-                       rtc::ArrayView<const uint8_t>(payload, enc_len_bytes),
-                       clock_.CurrentTime()));
+      ASSERT_EQ(0,
+                neteq_->InsertPacket(
+                    rtp_info, ArrayView<const uint8_t>(payload, enc_len_bytes),
+                    clock_.CurrentTime()));
       output.Reset();
       ASSERT_EQ(0, neteq_->GetAudio(&output, &muted));
       ASSERT_EQ(1u, output.num_channels_);
@@ -458,10 +458,9 @@ TEST_F(NetEqDecodingTest, DiscardDuplicateCng) {
   size_t payload_len;
   PopulateCng(seq_no, timestamp, &rtp_info, payload, &payload_len);
   // This is the first time this CNG packet is inserted.
-  ASSERT_EQ(0,
-            neteq_->InsertPacket(
-                rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
-                clock_.CurrentTime()));
+  ASSERT_EQ(0, neteq_->InsertPacket(
+                   rtp_info, ArrayView<const uint8_t>(payload, payload_len),
+                   clock_.CurrentTime()));
 
   // Pull audio once and make sure CNG is played.
   ASSERT_EQ(0, neteq_->GetAudio(&out_frame_, &muted));
@@ -474,10 +473,9 @@ TEST_F(NetEqDecodingTest, DiscardDuplicateCng) {
 
   // Insert the same CNG packet again. Note that at this point it is old, since
   // we have already decoded the first copy of it.
-  ASSERT_EQ(0,
-            neteq_->InsertPacket(
-                rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
-                clock_.CurrentTime()));
+  ASSERT_EQ(0, neteq_->InsertPacket(
+                   rtp_info, ArrayView<const uint8_t>(payload, payload_len),
+                   clock_.CurrentTime()));
 
   // Pull audio until we have played `kCngPeriodMs` of CNG. Start at 10 ms since
   // we have already pulled out CNG once.
@@ -528,9 +526,9 @@ TEST_F(NetEqDecodingTest, CngFirst) {
 
   PopulateCng(seq_no, timestamp, &rtp_info, payload, &payload_len);
   ASSERT_EQ(NetEq::kOK,
-            neteq_->InsertPacket(
-                rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
-                clock_.CurrentTime()));
+            neteq_->InsertPacket(rtp_info,
+                                 ArrayView<const uint8_t>(payload, payload_len),
+                                 clock_.CurrentTime()));
   ++seq_no;
   timestamp += kCngPeriodSamples;
 
@@ -582,7 +580,7 @@ class NetEqDecodingTestWithMutedState : public NetEqDecodingTest {
     PopulateCng(0, rtp_timestamp, &rtp_info, payload, &payload_len);
     EXPECT_EQ(NetEq::kOK,
               neteq_->InsertPacket(
-                  rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
+                  rtp_info, ArrayView<const uint8_t>(payload, payload_len),
                   clock_.CurrentTime()));
   }
 

@@ -63,9 +63,9 @@ class CoreAudioUtilityWinTest : public ::testing::Test {
     EXPECT_TRUE(com_init_.Succeeded());
 
     // Configure logging.
-    rtc::LogMessage::LogToDebug(rtc::LS_INFO);
-    rtc::LogMessage::LogTimestamps();
-    rtc::LogMessage::LogThreads();
+    webrtc::LogMessage::LogToDebug(webrtc::LS_INFO);
+    webrtc::LogMessage::LogTimestamps();
+    webrtc::LogMessage::LogThreads();
   }
 
   virtual ~CoreAudioUtilityWinTest() {}

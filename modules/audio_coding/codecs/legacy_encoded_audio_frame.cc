@@ -19,7 +19,7 @@
 namespace webrtc {
 
 LegacyEncodedAudioFrame::LegacyEncodedAudioFrame(AudioDecoder* decoder,
-                                                 rtc::Buffer&& payload)
+                                                 Buffer&& payload)
     : decoder_(decoder), payload_(std::move(payload)) {}
 
 LegacyEncodedAudioFrame::~LegacyEncodedAudioFrame() = default;
@@ -30,7 +30,7 @@ size_t LegacyEncodedAudioFrame::Duration() const {
 }
 
 std::optional<AudioDecoder::EncodedAudioFrame::DecodeResult>
-LegacyEncodedAudioFrame::Decode(rtc::ArrayView<int16_t> decoded) const {
+LegacyEncodedAudioFrame::Decode(ArrayView<int16_t> decoded) const {
   AudioDecoder::SpeechType speech_type = AudioDecoder::kSpeech;
   const int ret = decoder_->Decode(
       payload_.data(), payload_.size(), decoder_->SampleRateHz(),
@@ -44,7 +44,7 @@ LegacyEncodedAudioFrame::Decode(rtc::ArrayView<int16_t> decoded) const {
 
 std::vector<AudioDecoder::ParseResult> LegacyEncodedAudioFrame::SplitBySamples(
     AudioDecoder* decoder,
-    rtc::Buffer&& payload,
+    Buffer&& payload,
     uint32_t timestamp,
     size_t bytes_per_ms,
     uint32_t timestamps_per_ms) {
@@ -75,7 +75,7 @@ std::vector<AudioDecoder::ParseResult> LegacyEncodedAudioFrame::SplitBySamples(
         timestamp_offset += timestamps_per_chunk) {
       split_size_bytes =
           std::min(split_size_bytes, payload.size() - byte_offset);
-      rtc::Buffer new_payload(payload.data() + byte_offset, split_size_bytes);
+      Buffer new_payload(payload.data() + byte_offset, split_size_bytes);
       std::unique_ptr<LegacyEncodedAudioFrame> frame(
           new LegacyEncodedAudioFrame(decoder, std::move(new_payload)));
       results.emplace_back(timestamp + timestamp_offset, 0, std::move(frame));

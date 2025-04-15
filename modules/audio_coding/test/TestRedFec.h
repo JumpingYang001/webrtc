@@ -43,8 +43,8 @@ class TestRedFec final {
 
   test::ScopedKeyValueConfig field_trials_;
   const Environment env_;
-  const rtc::scoped_refptr<AudioEncoderFactory> encoder_factory_;
-  const rtc::scoped_refptr<AudioDecoderFactory> decoder_factory_;
+  const scoped_refptr<AudioEncoderFactory> encoder_factory_;
+  const scoped_refptr<AudioDecoderFactory> decoder_factory_;
   std::unique_ptr<AudioCodingModule> _acmA;
   std::unique_ptr<NetEq> _neteq;
   acm2::ResamplerHelper _resampler_helper;

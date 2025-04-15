@@ -65,7 +65,7 @@ std::unique_ptr<Packet> RtpFileSource::NextPacket() {
       continue;
     }
     auto packet = std::make_unique<Packet>(
-        rtc::CopyOnWriteBuffer(temp_packet.data, temp_packet.length),
+        CopyOnWriteBuffer(temp_packet.data, temp_packet.length),
         temp_packet.original_length, temp_packet.time_ms,
         &rtp_header_extension_map_);
     if (!packet->valid_header()) {

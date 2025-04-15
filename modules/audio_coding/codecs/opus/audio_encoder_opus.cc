@@ -73,11 +73,11 @@ constexpr float kMaxPacketLossFraction = 0.2f;
 int CalculateDefaultBitrate(int max_playback_rate, size_t num_channels) {
   const int bitrate = [&] {
     if (max_playback_rate <= 8000) {
-      return kOpusBitrateNbBps * rtc::dchecked_cast<int>(num_channels);
+      return kOpusBitrateNbBps * dchecked_cast<int>(num_channels);
     } else if (max_playback_rate <= 16000) {
-      return kOpusBitrateWbBps * rtc::dchecked_cast<int>(num_channels);
+      return kOpusBitrateWbBps * dchecked_cast<int>(num_channels);
     } else {
-      return kOpusBitrateFbBps * rtc::dchecked_cast<int>(num_channels);
+      return kOpusBitrateFbBps * dchecked_cast<int>(num_channels);
     }
   }();
   RTC_DCHECK_GE(bitrate, AudioEncoderOpusConfig::kMinBitrateBps);
@@ -580,8 +580,8 @@ void AudioEncoderOpusImpl::SetReceiverFrameLengthRange(
 
 AudioEncoder::EncodedInfo AudioEncoderOpusImpl::EncodeImpl(
     uint32_t rtp_timestamp,
-    rtc::ArrayView<const int16_t> audio,
-    rtc::Buffer* encoded) {
+    ArrayView<const int16_t> audio,
+    Buffer* encoded) {
   MaybeUpdateUplinkBandwidth();
 
   if (input_buffer_.empty())
@@ -597,12 +597,12 @@ AudioEncoder::EncodedInfo AudioEncoderOpusImpl::EncodeImpl(
 
   const size_t max_encoded_bytes = SufficientOutputBufferSize();
   EncodedInfo info;
-  info.encoded_bytes = encoded->AppendData(
-      max_encoded_bytes, [&](rtc::ArrayView<uint8_t> encoded) {
+  info.encoded_bytes =
+      encoded->AppendData(max_encoded_bytes, [&](ArrayView<uint8_t> encoded) {
         int status = WebRtcOpus_Encode(
             inst_, &input_buffer_[0],
-            rtc::CheckedDivExact(input_buffer_.size(), config_.num_channels),
-            rtc::saturated_cast<int16_t>(max_encoded_bytes), encoded.data());
+            CheckedDivExact(input_buffer_.size(), config_.num_channels),
+            saturated_cast<int16_t>(max_encoded_bytes), encoded.data());
 
         RTC_CHECK_GE(status, 0);  // Fails only if fed invalid data.
 
@@ -631,12 +631,11 @@ AudioEncoder::EncodedInfo AudioEncoderOpusImpl::EncodeImpl(
 }
 
 size_t AudioEncoderOpusImpl::Num10msFramesPerPacket() const {
-  return static_cast<size_t>(rtc::CheckedDivExact(config_.frame_size_ms, 10));
+  return static_cast<size_t>(CheckedDivExact(config_.frame_size_ms, 10));
 }
 
 size_t AudioEncoderOpusImpl::SamplesPer10msFrame() const {
-  return rtc::CheckedDivExact(config_.sample_rate_hz, 100) *
-         config_.num_channels;
+  return CheckedDivExact(config_.sample_rate_hz, 100) * config_.num_channels;
 }
 
 size_t AudioEncoderOpusImpl::SufficientOutputBufferSize() const {

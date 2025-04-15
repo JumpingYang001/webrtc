@@ -50,7 +50,7 @@ class NetEqOpusQualityTest : public NetEqQualityTest {
   void TearDown() override;
   int EncodeBlock(int16_t* in_data,
                   size_t block_size_samples,
-                  rtc::Buffer* payload,
+                  Buffer* payload,
                   size_t max_bytes) override;
 
  private:
@@ -144,14 +144,14 @@ void NetEqOpusQualityTest::TearDown() {
 
 int NetEqOpusQualityTest::EncodeBlock(int16_t* in_data,
                                       size_t block_size_samples,
-                                      rtc::Buffer* payload,
+                                      Buffer* payload,
                                       size_t max_bytes) {
   EXPECT_EQ(block_size_samples, sub_block_size_samples_ * sub_packets_);
   int16_t* pointer = in_data;
   int value;
   opus_repacketizer_init(repacketizer_);
   for (int idx = 0; idx < sub_packets_; idx++) {
-    payload->AppendData(max_bytes, [&](rtc::ArrayView<uint8_t> payload) {
+    payload->AppendData(max_bytes, [&](ArrayView<uint8_t> payload) {
       value = WebRtcOpus_Encode(opus_encoder_, pointer, sub_block_size_samples_,
                                 max_bytes, payload.data());
 

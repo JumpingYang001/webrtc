@@ -31,12 +31,12 @@ class Packet {
   // that only contain the RTP headers, and no payload (a.k.a RTP dummy files or
   // RTP light). The `virtual_packet_length_bytes` tells what size the packet
   // had on wire, including the now discarded payload.
-  Packet(rtc::CopyOnWriteBuffer packet,
+  Packet(CopyOnWriteBuffer packet,
          size_t virtual_packet_length_bytes,
          double time_ms,
          const RtpHeaderExtensionMap* extension_map = nullptr);
 
-  Packet(rtc::CopyOnWriteBuffer packet,
+  Packet(CopyOnWriteBuffer packet,
          double time_ms,
          const RtpHeaderExtensionMap* extension_map = nullptr)
       : Packet(packet, packet.size(), time_ms, extension_map) {}
@@ -90,8 +90,8 @@ class Packet {
   void CopyToHeader(RTPHeader* destination) const;
 
   RTPHeader header_;
-  const rtc::CopyOnWriteBuffer packet_;
-  rtc::ArrayView<const uint8_t> rtp_payload_;  // Empty for dummy RTP packets.
+  const CopyOnWriteBuffer packet_;
+  ArrayView<const uint8_t> rtp_payload_;  // Empty for dummy RTP packets.
   // Virtual lengths are used when parsing RTP header files (dummy RTP files).
   const size_t virtual_packet_length_bytes_;
   size_t virtual_payload_length_bytes_ = 0;

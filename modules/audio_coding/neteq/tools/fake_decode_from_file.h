@@ -37,7 +37,7 @@ class FakeDecodeFromFile : public AudioDecoder {
 
   ~FakeDecodeFromFile() = default;
 
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+  std::vector<ParseResult> ParsePayload(Buffer&& payload,
                                         uint32_t timestamp) override;
 
   void Reset() override {}
@@ -63,7 +63,7 @@ class FakeDecodeFromFile : public AudioDecoder {
   static void PrepareEncoded(uint32_t timestamp,
                              size_t samples,
                              size_t original_payload_size_bytes,
-                             rtc::ArrayView<uint8_t> encoded);
+                             ArrayView<uint8_t> encoded);
 
  private:
   std::unique_ptr<InputAudioFile> input_;

@@ -118,7 +118,7 @@ bool BackgroundNoise::Update(const AudioMultiVector& sync_buffer) {
 }
 
 void BackgroundNoise::GenerateBackgroundNoise(
-    rtc::ArrayView<const int16_t> random_vector,
+    ArrayView<const int16_t> random_vector,
     size_t channel,
     int /* mute_slope */,
     bool /* too_many_expands */,
@@ -193,7 +193,7 @@ const int16_t* BackgroundNoise::FilterState(size_t channel) const {
 }
 
 void BackgroundNoise::SetFilterState(size_t channel,
-                                     rtc::ArrayView<const int16_t> input) {
+                                     ArrayView<const int16_t> input) {
   RTC_DCHECK_LT(channel, num_channels_);
   size_t length = std::min(input.size(), kMaxLpcOrder);
   memcpy(channel_parameters_[channel].filter_state, input.data(),

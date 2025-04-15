@@ -39,9 +39,7 @@ std::optional<std::vector<unsigned char>> GetFormatParameter(
 
 class OpusFrame : public AudioDecoder::EncodedAudioFrame {
  public:
-  OpusFrame(AudioDecoder* decoder,
-            rtc::Buffer&& payload,
-            bool is_primary_payload)
+  OpusFrame(AudioDecoder* decoder, Buffer&& payload, bool is_primary_payload)
       : decoder_(decoder),
         payload_(std::move(payload)),
         is_primary_payload_(is_primary_payload) {}
@@ -59,7 +57,7 @@ class OpusFrame : public AudioDecoder::EncodedAudioFrame {
   bool IsDtxPacket() const override { return payload_.size() <= 2; }
 
   std::optional<DecodeResult> Decode(
-      rtc::ArrayView<int16_t> decoded) const override {
+      ArrayView<int16_t> decoded) const override {
     AudioDecoder::SpeechType speech_type = AudioDecoder::kSpeech;
     int ret;
     if (is_primary_payload_) {
@@ -80,7 +78,7 @@ class OpusFrame : public AudioDecoder::EncodedAudioFrame {
 
  private:
   AudioDecoder* const decoder_;
-  const rtc::Buffer payload_;
+  const Buffer payload_;
   const bool is_primary_payload_;
 };
 

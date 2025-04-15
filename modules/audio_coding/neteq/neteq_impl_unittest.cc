@@ -305,7 +305,7 @@ TEST_F(NetEqImplTest, InsertPacket) {
   fake_packet.timestamp = kFirstTimestamp;
 
   const Environment env = CreateEnvironment();
-  auto mock_decoder_factory = rtc::make_ref_counted<MockAudioDecoderFactory>();
+  auto mock_decoder_factory = make_ref_counted<MockAudioDecoderFactory>();
   EXPECT_CALL(*mock_decoder_factory, Create)
       .WillOnce(WithArg<1>([&](const SdpAudioFormat& format) {
         EXPECT_EQ("pcmu", format.name);
@@ -511,7 +511,7 @@ TEST_F(NetEqImplTest, VerifyTimestampPropagation) {
   } decoder_;
 
   auto decoder_factory =
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&decoder_);
+      make_ref_counted<test::AudioDecoderProxyFactory>(&decoder_);
 
   UseNoMocks();
   CreateInstance(decoder_factory);
@@ -573,7 +573,7 @@ TEST_F(NetEqImplTest, ReorderedPacket) {
   MockAudioDecoder mock_decoder;
 
   CreateInstance(
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
+      make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
 
   const uint8_t kPayloadType = 17;  // Just an arbitrary number.
   const int kSampleRateHz = 8000;
@@ -1086,7 +1086,7 @@ TEST_F(NetEqImplTest, CodecInternalCng) {
   // Create a mock decoder object.
   MockAudioDecoder mock_decoder;
   CreateInstance(
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
+      make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
 
   const uint8_t kPayloadType = 17;  // Just an arbitrary number.
   const int kSampleRateKhz = 48;
@@ -1176,8 +1176,7 @@ TEST_F(NetEqImplTest, UnsupportedDecoder) {
   UseNoMocks();
   ::testing::NiceMock<MockAudioDecoder> decoder;
 
-  CreateInstance(
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&decoder));
+  CreateInstance(make_ref_counted<test::AudioDecoderProxyFactory>(&decoder));
   static const size_t kNetEqMaxFrameSize = 5760;  // 120 ms @ 48 kHz.
   static const size_t kChannels = 2;
 
@@ -1307,7 +1306,7 @@ TEST_F(NetEqImplTest, DecodedPayloadTooShort) {
   MockAudioDecoder mock_decoder;
 
   CreateInstance(
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
+      make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
 
   const uint8_t kPayloadType = 17;  // Just an arbitrary number.
   const int kSampleRateHz = 8000;
@@ -1366,7 +1365,7 @@ TEST_F(NetEqImplTest, DecodingError) {
   MockAudioDecoder mock_decoder;
 
   CreateInstance(
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
+      make_ref_counted<test::AudioDecoderProxyFactory>(&mock_decoder));
 
   const uint8_t kPayloadType = 17;  // Just an arbitrary number.
   const int kSampleRateHz = 8000;
@@ -1611,7 +1610,7 @@ TEST_F(NetEqImplTest, NoCrashWith1000Channels) {
   AudioDecoder* decoder = nullptr;
 
   const Environment env = CreateEnvironment();
-  auto mock_decoder_factory = rtc::make_ref_counted<MockAudioDecoderFactory>();
+  auto mock_decoder_factory = make_ref_counted<MockAudioDecoderFactory>();
   EXPECT_CALL(*mock_decoder_factory, Create)
       .WillOnce(WithArg<1>([&](const SdpAudioFormat& format) {
         EXPECT_EQ("pcmu", format.name);
@@ -1740,7 +1739,7 @@ class Decoder120ms : public AudioDecoder {
                      SpeechType* speech_type) override {
     EXPECT_EQ(sample_rate_hz_, sample_rate_hz);
     size_t decoded_len =
-        rtc::CheckedDivExact(sample_rate_hz, 1000) * 120 * Channels();
+        CheckedDivExact(sample_rate_hz, 1000) * 120 * Channels();
     for (size_t i = 0; i < decoded_len; ++i) {
       decoded[i] = next_value_++;
     }
@@ -1779,7 +1778,7 @@ class NetEqImplTest120ms : public NetEqImplTest {
   }
 
   uint32_t timestamp_diff_between_packets() const {
-    return rtc::CheckedDivExact(kSamplingFreq_, 1000u) * 120;
+    return CheckedDivExact(kSamplingFreq_, 1000u) * 120;
   }
 
   uint32_t first_timestamp() const { return 10u; }
@@ -1806,7 +1805,7 @@ class NetEqImplTest120ms : public NetEqImplTest {
 
   void Register120msCodec(AudioDecoder::SpeechType speech_type) {
     const uint32_t sampling_freq = kSamplingFreq_;
-    decoder_factory_ = rtc::make_ref_counted<test::FunctionAudioDecoderFactory>(
+    decoder_factory_ = make_ref_counted<test::FunctionAudioDecoderFactory>(
         [sampling_freq, speech_type]() {
           std::unique_ptr<AudioDecoder> decoder =
               std::make_unique<Decoder120ms>(sampling_freq, speech_type);
@@ -1815,7 +1814,7 @@ class NetEqImplTest120ms : public NetEqImplTest {
         });
   }
 
-  rtc::scoped_refptr<AudioDecoderFactory> decoder_factory_;
+  scoped_refptr<AudioDecoderFactory> decoder_factory_;
   AudioFrame output_;
   const uint32_t kPayloadType = 17;
   const uint32_t kSamplingFreq_ = 48000;

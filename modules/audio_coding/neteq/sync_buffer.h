@@ -44,7 +44,7 @@ class SyncBuffer : public AudioMultiVector {
   void PushBack(const AudioMultiVector& append_this) override;
 
   // Like PushBack, but reads the samples channel-interleaved from the input.
-  void PushBackInterleaved(const rtc::BufferT<int16_t>& append_this);
+  void PushBackInterleaved(const BufferT<int16_t>& append_this);
 
   // Adds `length` zeros to the beginning of each channel. Removes
   // the same number of samples from the end of the SyncBuffer, to

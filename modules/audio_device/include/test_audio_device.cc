@@ -85,7 +85,7 @@ class PulsedNoiseCapturerImpl final
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Capture(rtc::BufferT<int16_t>* buffer) override {
+  bool Capture(BufferT<int16_t>* buffer) override {
     fill_with_zero_ = !fill_with_zero_;
     int16_t max_amplitude;
     {
@@ -95,7 +95,7 @@ class PulsedNoiseCapturerImpl final
     buffer->SetData(
         TestAudioDeviceModule::SamplesPerFrame(sampling_frequency_in_hz_) *
             num_channels_,
-        [&](rtc::ArrayView<int16_t> data) {
+        [&](ArrayView<int16_t> data) {
           if (fill_with_zero_) {
             std::fill(data.begin(), data.end(), 0);
           } else {
@@ -137,11 +137,11 @@ class WavFileReader final : public TestAudioDeviceModule::Capturer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Capture(rtc::BufferT<int16_t>* buffer) override {
+  bool Capture(BufferT<int16_t>* buffer) override {
     buffer->SetData(
         TestAudioDeviceModule::SamplesPerFrame(sampling_frequency_in_hz_) *
             num_channels_,
-        [&](rtc::ArrayView<int16_t> data) {
+        [&](ArrayView<int16_t> data) {
           size_t read = wav_reader_->ReadSamples(data.size(), data.data());
           if (read < data.size() && repeat_) {
             do {
@@ -191,7 +191,7 @@ class WavFileWriter final : public TestAudioDeviceModule::Renderer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Render(rtc::ArrayView<const int16_t> data) override {
+  bool Render(ArrayView<const int16_t> data) override {
     wav_writer_->WriteSamples(data.data(), data.size());
     return true;
   }
@@ -228,7 +228,7 @@ class BoundedWavFileWriter : public TestAudioDeviceModule::Renderer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Render(rtc::ArrayView<const int16_t> data) override {
+  bool Render(ArrayView<const int16_t> data) override {
     const int16_t kAmplitudeThreshold = 5;
 
     const int16_t* begin = data.begin();
@@ -287,9 +287,7 @@ class DiscardRenderer final : public TestAudioDeviceModule::Renderer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Render(rtc::ArrayView<const int16_t> /* data */) override {
-    return true;
-  }
+  bool Render(ArrayView<const int16_t> /* data */) override { return true; }
 
  private:
   int sampling_frequency_in_hz_;
@@ -321,12 +319,12 @@ class RawFileReader final : public TestAudioDeviceModule::Capturer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Capture(rtc::BufferT<int16_t>* buffer) override {
+  bool Capture(BufferT<int16_t>* buffer) override {
     buffer->SetData(
         TestAudioDeviceModule::SamplesPerFrame(SamplingFrequency()) *
             NumChannels(),
-        [&](rtc::ArrayView<int16_t> data) {
-          rtc::ArrayView<int8_t> read_buffer_view = ReadBufferView();
+        [&](ArrayView<int16_t> data) {
+          ArrayView<int8_t> read_buffer_view = ReadBufferView();
           size_t size = data.size() * 2;
           size_t read = input_file_.Read(read_buffer_view.data(), size);
           if (read < size && repeat_) {
@@ -345,7 +343,7 @@ class RawFileReader final : public TestAudioDeviceModule::Capturer {
   }
 
  private:
-  rtc::ArrayView<int8_t> ReadBufferView() { return read_buffer_; }
+  ArrayView<int8_t> ReadBufferView() { return read_buffer_; }
 
   const std::string input_file_name_;
   const int sampling_frequency_in_hz_;
@@ -383,7 +381,7 @@ class RawFileWriter : public TestAudioDeviceModule::Renderer {
 
   int NumChannels() const override { return num_channels_; }
 
-  bool Render(rtc::ArrayView<const int16_t> data) override {
+  bool Render(ArrayView<const int16_t> data) override {
     const int16_t kAmplitudeThreshold = 5;
 
     const int16_t* begin = data.begin();
@@ -443,15 +441,15 @@ class RawFileWriter : public TestAudioDeviceModule::Renderer {
 }  // namespace
 
 size_t TestAudioDeviceModule::SamplesPerFrame(int sampling_frequency_in_hz) {
-  return rtc::CheckedDivExact(sampling_frequency_in_hz, kFramesPerSecond);
+  return CheckedDivExact(sampling_frequency_in_hz, kFramesPerSecond);
 }
 
-rtc::scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
+scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
     TaskQueueFactory* task_queue_factory,
     std::unique_ptr<TestAudioDeviceModule::Capturer> capturer,
     std::unique_ptr<TestAudioDeviceModule::Renderer> renderer,
     float speed) {
-  auto audio_device = rtc::make_ref_counted<TestAudioDeviceModuleImpl>(
+  auto audio_device = make_ref_counted<TestAudioDeviceModuleImpl>(
       task_queue_factory, std::move(capturer), std::move(renderer), speed);
 
   // Ensure that the current platform is supported.

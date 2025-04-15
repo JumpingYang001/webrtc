@@ -55,17 +55,17 @@ void CngTest::SetUp() {
 }
 
 void CngTest::TestCngEncode(int sample_rate_hz, int quality) {
-  const size_t num_samples_10ms = rtc::CheckedDivExact(sample_rate_hz, 100);
-  rtc::Buffer sid_data;
+  const size_t num_samples_10ms = CheckedDivExact(sample_rate_hz, 100);
+  Buffer sid_data;
 
   ComfortNoiseEncoder cng_encoder(sample_rate_hz, kSidNormalIntervalUpdate,
                                   quality);
-  EXPECT_EQ(0U, cng_encoder.Encode(rtc::ArrayView<const int16_t>(
-                                       speech_data_, num_samples_10ms),
-                                   kNoSid, &sid_data));
+  EXPECT_EQ(0U, cng_encoder.Encode(
+                    ArrayView<const int16_t>(speech_data_, num_samples_10ms),
+                    kNoSid, &sid_data));
   EXPECT_EQ(static_cast<size_t>(quality + 1),
             cng_encoder.Encode(
-                rtc::ArrayView<const int16_t>(speech_data_, num_samples_10ms),
+                ArrayView<const int16_t>(speech_data_, num_samples_10ms),
                 kForceSid, &sid_data));
 }
 
@@ -89,16 +89,15 @@ TEST_F(CngDeathTest, CngInitFail) {
 
 // Encode Cng with too long input vector.
 TEST_F(CngDeathTest, CngEncodeTooLong) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
 
   // Create encoder.
   ComfortNoiseEncoder cng_encoder(8000, kSidNormalIntervalUpdate,
                                   kCNGNumParamsNormal);
   // Run encoder with too much data.
-  EXPECT_DEATH(
-      cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 641),
-                         kNoSid, &sid_data),
-      "");
+  EXPECT_DEATH(cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 641),
+                                  kNoSid, &sid_data),
+               "");
 }
 #endif  // GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)
 
@@ -124,7 +123,7 @@ TEST_F(CngTest, CngEncode64000) {
 
 // Update SID parameters, for both 9 and 16 parameters.
 TEST_F(CngTest, CngUpdateSid) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
 
   // Create and initialize encoder and decoder.
   ComfortNoiseEncoder cng_encoder(16000, kSidNormalIntervalUpdate,
@@ -133,7 +132,7 @@ TEST_F(CngTest, CngUpdateSid) {
 
   // Run normal Encode and UpdateSid.
   EXPECT_EQ(kCNGNumParamsNormal + 1,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
+            cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
                                kForceSid, &sid_data));
   cng_decoder.UpdateSid(sid_data);
 
@@ -142,27 +141,26 @@ TEST_F(CngTest, CngUpdateSid) {
   cng_decoder.Reset();
 
   // Expect 0 because of unstable parameters after switching length.
-  EXPECT_EQ(0U,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
-                               kForceSid, &sid_data));
+  EXPECT_EQ(0U, cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
+                                   kForceSid, &sid_data));
   EXPECT_EQ(
       kCNGNumParamsHigh + 1,
-      cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_ + 160, 160),
+      cng_encoder.Encode(ArrayView<const int16_t>(speech_data_ + 160, 160),
                          kForceSid, &sid_data));
   cng_decoder.UpdateSid(
-      rtc::ArrayView<const uint8_t>(sid_data.data(), kCNGNumParamsNormal + 1));
+      ArrayView<const uint8_t>(sid_data.data(), kCNGNumParamsNormal + 1));
 }
 
 // Update SID parameters, with wrong parameters or without calling decode.
 TEST_F(CngTest, CngUpdateSidErroneous) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
 
   // Encode.
   ComfortNoiseEncoder cng_encoder(16000, kSidNormalIntervalUpdate,
                                   kCNGNumParamsNormal);
   ComfortNoiseDecoder cng_decoder;
   EXPECT_EQ(kCNGNumParamsNormal + 1,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
+            cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
                                kForceSid, &sid_data));
 
   // First run with valid parameters, then with too many CNG parameters.
@@ -180,7 +178,7 @@ TEST_F(CngTest, CngUpdateSidErroneous) {
 
 // Test to generate cng data, by forcing SID. Both normal and faulty condition.
 TEST_F(CngTest, CngGenerate) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
   int16_t out_data[640];
 
   // Create and initialize encoder and decoder.
@@ -190,23 +188,23 @@ TEST_F(CngTest, CngGenerate) {
 
   // Normal Encode.
   EXPECT_EQ(kCNGNumParamsNormal + 1,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
+            cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
                                kForceSid, &sid_data));
 
   // Normal UpdateSid.
   cng_decoder.UpdateSid(sid_data);
 
   // Two normal Generate, one with new_period.
-  EXPECT_TRUE(cng_decoder.Generate(rtc::ArrayView<int16_t>(out_data, 640), 1));
-  EXPECT_TRUE(cng_decoder.Generate(rtc::ArrayView<int16_t>(out_data, 640), 0));
+  EXPECT_TRUE(cng_decoder.Generate(ArrayView<int16_t>(out_data, 640), 1));
+  EXPECT_TRUE(cng_decoder.Generate(ArrayView<int16_t>(out_data, 640), 0));
 
   // Call Genereate with too much data.
-  EXPECT_FALSE(cng_decoder.Generate(rtc::ArrayView<int16_t>(out_data, 641), 0));
+  EXPECT_FALSE(cng_decoder.Generate(ArrayView<int16_t>(out_data, 641), 0));
 }
 
 // Test automatic SID.
 TEST_F(CngTest, CngAutoSid) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
 
   // Create and initialize encoder and decoder.
   ComfortNoiseEncoder cng_encoder(16000, kSidNormalIntervalUpdate,
@@ -215,20 +213,20 @@ TEST_F(CngTest, CngAutoSid) {
 
   // Normal Encode, 100 msec, where no SID data should be generated.
   for (int i = 0; i < 10; i++) {
-    EXPECT_EQ(
-        0U, cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
-                               kNoSid, &sid_data));
+    EXPECT_EQ(0U,
+              cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
+                                 kNoSid, &sid_data));
   }
 
   // We have reached 100 msec, and SID data should be generated.
   EXPECT_EQ(kCNGNumParamsNormal + 1,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
+            cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
                                kNoSid, &sid_data));
 }
 
 // Test automatic SID, with very short interval.
 TEST_F(CngTest, CngAutoSidShort) {
-  rtc::Buffer sid_data;
+  Buffer sid_data;
 
   // Create and initialize encoder and decoder.
   ComfortNoiseEncoder cng_encoder(16000, kSidShortIntervalUpdate,
@@ -236,16 +234,14 @@ TEST_F(CngTest, CngAutoSidShort) {
   ComfortNoiseDecoder cng_decoder;
 
   // First call will never generate SID, unless forced to.
-  EXPECT_EQ(0U,
-            cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
-                               kNoSid, &sid_data));
+  EXPECT_EQ(0U, cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
+                                   kNoSid, &sid_data));
 
   // Normal Encode, 100 msec, SID data should be generated all the time.
   for (int i = 0; i < 10; i++) {
-    EXPECT_EQ(
-        kCNGNumParamsNormal + 1,
-        cng_encoder.Encode(rtc::ArrayView<const int16_t>(speech_data_, 160),
-                           kNoSid, &sid_data));
+    EXPECT_EQ(kCNGNumParamsNormal + 1,
+              cng_encoder.Encode(ArrayView<const int16_t>(speech_data_, 160),
+                                 kNoSid, &sid_data));
   }
 }
 

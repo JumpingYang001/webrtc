@@ -59,7 +59,7 @@ class MockAudioDecoder final : public AudioDecoder {
     size_t Duration() const override { return kPacketDuration; }
 
     std::optional<DecodeResult> Decode(
-        rtc::ArrayView<int16_t> decoded) const override {
+        ArrayView<int16_t> decoded) const override {
       const size_t output_size =
           sizeof(int16_t) * kPacketDuration * num_channels_;
       if (decoded.size() >= output_size) {
@@ -77,7 +77,7 @@ class MockAudioDecoder final : public AudioDecoder {
     const size_t num_channels_;
   };
 
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& /* payload */,
+  std::vector<ParseResult> ParsePayload(Buffer&& /* payload */,
                                         uint32_t timestamp) override {
     std::vector<ParseResult> results;
     if (fec_enabled_) {
@@ -161,8 +161,7 @@ class NetEqNetworkStatsTest {
 
   NetEqNetworkStatsTest(const SdpAudioFormat& format, MockAudioDecoder* decoder)
       : decoder_(decoder),
-        decoder_factory_(
-            rtc::make_ref_counted<AudioDecoderProxyFactory>(decoder)),
+        decoder_factory_(make_ref_counted<AudioDecoderProxyFactory>(decoder)),
         samples_per_ms_(format.clockrate_hz / 1000),
         frame_size_samples_(kFrameSizeMs * samples_per_ms_),
         rtp_generator_(new RtpGenerator(samples_per_ms_)),
@@ -312,7 +311,7 @@ class NetEqNetworkStatsTest {
 
  private:
   MockAudioDecoder* decoder_;
-  rtc::scoped_refptr<AudioDecoderProxyFactory> decoder_factory_;
+  scoped_refptr<AudioDecoderProxyFactory> decoder_factory_;
   std::unique_ptr<NetEq> neteq_;
 
   const int samples_per_ms_;

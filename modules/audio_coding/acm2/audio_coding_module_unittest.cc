@@ -223,7 +223,7 @@ class AudioCodingModuleTestOldApi : public ::testing::Test {
     const uint8_t kPayload[kPayloadSizeBytes] = {0};
     ASSERT_EQ(0, neteq_->InsertPacket(
                      rtp_header_,
-                     rtc::ArrayView<const uint8_t>(kPayload, kPayloadSizeBytes),
+                     ArrayView<const uint8_t>(kPayload, kPayloadSizeBytes),
                      /*receive_time=*/Timestamp::MinusInfinity()));
     rtp_utility_->Forward(&rtp_header_);
   }
@@ -541,7 +541,7 @@ class AcmAbsoluteCaptureTimestamp : public ::testing::Test {
   static constexpr int kNumChannels = 2;
 
   void SetUp() {
-    rtc::scoped_refptr<AudioEncoderFactory> codec_factory =
+    scoped_refptr<AudioEncoderFactory> codec_factory =
         CreateBuiltinAudioEncoderFactory();
     acm_ = AudioCodingModule::Create();
     std::unique_ptr<AudioEncoder> encoder = codec_factory->Create(
@@ -699,7 +699,7 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
            absl::string_view payload_checksum_ref,
            int expected_packets,
            test::AcmReceiveTestOldApi::NumOutputChannels expected_channels,
-           rtc::scoped_refptr<AudioDecoderFactory> decoder_factory = nullptr) {
+           scoped_refptr<AudioDecoderFactory> decoder_factory = nullptr) {
     if (!decoder_factory) {
       decoder_factory = CreateBuiltinAudioDecoderFactory();
     }
@@ -730,7 +730,7 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
     ExpectChecksumEq(audio_checksum_ref, checksum_string);
 
     // Extract and verify the payload checksum.
-    rtc::Buffer checksum_result(payload_checksum_->Size());
+    Buffer checksum_result(payload_checksum_->Size());
     payload_checksum_->Finish(checksum_result.data(), checksum_result.size());
     checksum_string = hex_encode(checksum_result);
     ExpectChecksumEq(payload_checksum_ref, checksum_string);
@@ -1001,8 +1001,8 @@ TEST_F(AcmSenderBitExactnessNewApi, DISABLED_OpusManyChannels) {
   const auto opus_decoder =
       AudioDecoderMultiChannelOpus::MakeAudioDecoder(*decoder_config);
 
-  rtc::scoped_refptr<AudioDecoderFactory> decoder_factory =
-      rtc::make_ref_counted<test::AudioDecoderProxyFactory>(opus_decoder.get());
+  scoped_refptr<AudioDecoderFactory> decoder_factory =
+      make_ref_counted<test::AudioDecoderProxyFactory>(opus_decoder.get());
 
   // Set up an EXTERNAL DECODER to parse 4 channels.
   Run("audio checksum check downstream|8051617907766bec5f4e4a4f7c6d5291",
@@ -1270,9 +1270,10 @@ TEST_F(AcmSenderBitExactnessOldApi, External_Pcmu_20ms) {
   EXPECT_CALL(*mock_encoder, EncodeImpl(_, _, _))
       .Times(AtLeast(1))
       .WillRepeatedly(Invoke(
-          &encoder, static_cast<AudioEncoder::EncodedInfo (AudioEncoder::*)(
-                        uint32_t, rtc::ArrayView<const int16_t>, rtc::Buffer*)>(
-                        &AudioEncoderPcmU::Encode)));
+          &encoder,
+          static_cast<AudioEncoder::EncodedInfo (AudioEncoder::*)(
+              uint32_t, webrtc::ArrayView<const int16_t>, webrtc::Buffer*)>(
+              &AudioEncoderPcmU::Encode)));
   ASSERT_TRUE(SetUpSender(kTestFileMono32kHz, 32000));
   ASSERT_NO_FATAL_FAILURE(
       SetUpTestExternalEncoder(std::move(mock_encoder), config.payload_type));

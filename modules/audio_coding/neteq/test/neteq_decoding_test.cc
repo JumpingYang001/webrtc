@@ -106,7 +106,7 @@ void NetEqDecodingTest::Process() {
       if (packet_->header().payloadType != 104)
 #endif
         ASSERT_EQ(0, neteq_->InsertPacket(packet_->header(),
-                                          rtc::ArrayView<const uint8_t>(
+                                          ArrayView<const uint8_t>(
                                               packet_->payload(),
                                               packet_->payload_length_bytes()),
                                           clock_.CurrentTime()));
@@ -326,10 +326,9 @@ void NetEqDecodingTest::LongCngWithClockDrift(double drift_factor,
       size_t payload_len;
       RTPHeader rtp_info;
       PopulateCng(seq_no, timestamp, &rtp_info, payload, &payload_len);
-      ASSERT_EQ(
-          0, neteq_->InsertPacket(
-                 rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
-                 Timestamp::Millis(t_ms)));
+      ASSERT_EQ(0, neteq_->InsertPacket(
+                       rtp_info, ArrayView<const uint8_t>(payload, payload_len),
+                       Timestamp::Millis(t_ms)));
       ++seq_no;
       timestamp += kCngPeriodSamples;
       next_input_time_ms += static_cast<double>(kCngPeriodMs) * drift_factor;
@@ -370,10 +369,9 @@ void NetEqDecodingTest::LongCngWithClockDrift(double drift_factor,
       size_t payload_len;
       RTPHeader rtp_info;
       PopulateCng(seq_no, timestamp, &rtp_info, payload, &payload_len);
-      ASSERT_EQ(
-          0, neteq_->InsertPacket(
-                 rtp_info, rtc::ArrayView<const uint8_t>(payload, payload_len),
-                 Timestamp::Millis(t_ms)));
+      ASSERT_EQ(0, neteq_->InsertPacket(
+                       rtp_info, ArrayView<const uint8_t>(payload, payload_len),
+                       Timestamp::Millis(t_ms)));
       ++seq_no;
       timestamp += kCngPeriodSamples;
       next_input_time_ms += kCngPeriodMs * drift_factor;

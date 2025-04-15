@@ -173,7 +173,7 @@ NetEqQualityTest::NetEqQualityTest(
     int in_sampling_khz,
     int out_sampling_khz,
     const SdpAudioFormat& format,
-    const rtc::scoped_refptr<AudioDecoderFactory>& decoder_factory)
+    const scoped_refptr<AudioDecoderFactory>& decoder_factory)
     : audio_format_(format),
       channels_(absl::GetFlag(FLAGS_channels)),
       decoded_time_ms_(0),
@@ -417,7 +417,7 @@ int NetEqQualityTest::Transmit() {
     if (!PacketLost()) {
       int ret = neteq_->InsertPacket(
           rtp_header_,
-          rtc::ArrayView<const uint8_t>(payload_.data(), payload_size_bytes_),
+          ArrayView<const uint8_t>(payload_.data(), payload_size_bytes_),
           Timestamp::Millis(packet_input_time_ms));
       if (ret != NetEq::kOK)
         return -1;

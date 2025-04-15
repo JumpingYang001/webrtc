@@ -1019,13 +1019,14 @@ int32_t AudioDeviceLinuxALSA::StartRecording() {
     return -1;
   }
   // RECORDING
-  _ptrThreadRec = rtc::PlatformThread::SpawnJoinable(
+  _ptrThreadRec = webrtc::PlatformThread::SpawnJoinable(
       [this] {
         while (RecThreadProcess()) {
         }
       },
       "webrtc_audio_module_capture_thread",
-      rtc::ThreadAttributes().SetPriority(rtc::ThreadPriority::kRealtime));
+      webrtc::ThreadAttributes().SetPriority(
+          webrtc::ThreadPriority::kRealtime));
 
   errVal = LATE(snd_pcm_prepare)(_handleRecord);
   if (errVal < 0) {
@@ -1136,13 +1137,14 @@ int32_t AudioDeviceLinuxALSA::StartPlayout() {
   }
 
   // PLAYOUT
-  _ptrThreadPlay = rtc::PlatformThread::SpawnJoinable(
+  _ptrThreadPlay = webrtc::PlatformThread::SpawnJoinable(
       [this] {
         while (PlayThreadProcess()) {
         }
       },
       "webrtc_audio_module_play_thread",
-      rtc::ThreadAttributes().SetPriority(rtc::ThreadPriority::kRealtime));
+      webrtc::ThreadAttributes().SetPriority(
+          webrtc::ThreadPriority::kRealtime));
 
   int errVal = LATE(snd_pcm_prepare)(_handlePlayout);
   if (errVal < 0) {

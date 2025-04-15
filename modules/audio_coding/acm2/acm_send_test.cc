@@ -71,8 +71,8 @@ bool AcmSendTestOldApi::RegisterCodec(absl::string_view payload_name,
     }
     format.num_channels = 2;
   }
-  format.parameters["ptime"] = absl::StrCat(rtc::CheckedDivExact(
-      frame_size_samples, rtc::CheckedDivExact(clockrate_hz, 1000)));
+  format.parameters["ptime"] = absl::StrCat(
+      CheckedDivExact(frame_size_samples, CheckedDivExact(clockrate_hz, 1000)));
   auto factory = CreateBuiltinAudioEncoderFactory();
   acm_->SetEncoder(
       factory->Create(env_, format, {.payload_type = payload_type}));
@@ -138,8 +138,7 @@ int32_t AcmSendTestOldApi::SendData(
 
 std::unique_ptr<Packet> AcmSendTestOldApi::CreatePacket() {
   const size_t kRtpHeaderSize = 12;
-  rtc::CopyOnWriteBuffer packet_buffer(last_payload_vec_.size() +
-                                       kRtpHeaderSize);
+  CopyOnWriteBuffer packet_buffer(last_payload_vec_.size() + kRtpHeaderSize);
   uint8_t* packet_memory = packet_buffer.MutableData();
   // Populate the header bytes.
   packet_memory[0] = 0x80;

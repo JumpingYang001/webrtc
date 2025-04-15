@@ -142,7 +142,7 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   int UpdateUponReceivingCodec(int index);
 
   mutable Mutex acm_mutex_;
-  rtc::Buffer encode_buffer_ RTC_GUARDED_BY(acm_mutex_);
+  Buffer encode_buffer_ RTC_GUARDED_BY(acm_mutex_);
   uint32_t expected_codec_ts_ RTC_GUARDED_BY(acm_mutex_);
   uint32_t expected_in_ts_ RTC_GUARDED_BY(acm_mutex_);
   acm2::ACMResampler resampler_ RTC_GUARDED_BY(acm_mutex_);
@@ -230,7 +230,7 @@ int32_t AudioCodingModuleImpl::Encode(
       first_frame_
           ? input_data.input_timestamp
           : last_rtp_timestamp_ +
-                dchecked_cast<uint32_t>(rtc::CheckedDivExact(
+                dchecked_cast<uint32_t>(CheckedDivExact(
                     int64_t{input_data.input_timestamp - last_timestamp_} *
                         encoder_stack_->RtpTimestampRateHz(),
                     int64_t{encoder_stack_->SampleRateHz()}));
@@ -247,7 +247,7 @@ int32_t AudioCodingModuleImpl::Encode(
   encode_buffer_.Clear();
   encoded_info = encoder_stack_->Encode(
       rtp_timestamp,
-      rtc::ArrayView<const int16_t>(
+      ArrayView<const int16_t>(
           input_data.audio,
           input_data.audio_channel * input_data.length_per_channel),
       &encode_buffer_);
@@ -475,8 +475,8 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
     RTC_DCHECK_GE(audio.size(), preprocess_frame_.samples_per_channel_);
     RTC_DCHECK_GE(audio.size(), in_frame.samples_per_channel_);
     DownMixFrame(in_frame,
-                 rtc::ArrayView<int16_t>(
-                     dest_ptr_audio, preprocess_frame_.samples_per_channel_));
+                 ArrayView<int16_t>(dest_ptr_audio,
+                                    preprocess_frame_.samples_per_channel_));
     preprocess_frame_.num_channels_ = 1;
 
     // Set the input of the resampler to the down-mixed signal.

@@ -78,7 +78,7 @@ float EncodedPowerRatio(AudioEncoder* encoder,
   // Encode and decode.
   uint32_t rtp_timestamp = 0u;
   constexpr size_t kBufferSize = 500;
-  rtc::Buffer encoded(kBufferSize);
+  Buffer encoded(kBufferSize);
   std::vector<int16_t> decoded(kOutputBlockSizeSamples);
   std::vector<float> decoded_float(kOutputBlockSizeSamples);
   AudioDecoder::SpeechType speech_type = AudioDecoder::kSpeech;

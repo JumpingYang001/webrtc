@@ -63,8 +63,7 @@ class AudioEncoderCopyRedTest : public ::testing::Test {
     ASSERT_TRUE(red_.get() != NULL);
     encoded_.Clear();
     encoded_info_ = red_->Encode(
-        timestamp_,
-        rtc::ArrayView<const int16_t>(audio_, num_audio_samples_10ms),
+        timestamp_, ArrayView<const int16_t>(audio_, num_audio_samples_10ms),
         &encoded_);
     timestamp_ += checked_cast<uint32_t>(num_audio_samples_10ms);
   }
@@ -76,7 +75,7 @@ class AudioEncoderCopyRedTest : public ::testing::Test {
   int16_t audio_[kMaxNumSamples];
   const int sample_rate_hz_;
   size_t num_audio_samples_10ms;
-  rtc::Buffer encoded_;
+  Buffer encoded_;
   AudioEncoder::EncodedInfo encoded_info_;
   const int red_payload_type_;
 };

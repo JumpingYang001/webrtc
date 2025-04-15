@@ -72,7 +72,7 @@ void EncodeNetEqInput::CreatePacket() {
   RTC_DCHECK(!info.send_even_if_empty);
   int num_blocks = 0;
   while (packet_data_->payload.size() == 0 && !info.send_even_if_empty) {
-    const size_t num_samples = rtc::CheckedDivExact(
+    const size_t num_samples = CheckedDivExact(
         static_cast<int>(encoder_->SampleRateHz() * kOutputPeriodMs), 1000);
 
     info = encoder_->Encode(rtp_timestamp_, generator_->Generate(num_samples),

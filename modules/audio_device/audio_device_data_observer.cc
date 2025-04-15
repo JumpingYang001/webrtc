@@ -22,7 +22,7 @@ namespace {
 // callback and redirects the PCM data to AudioDeviceDataObserver callback.
 class ADMWrapper : public AudioDeviceModule, public AudioTransport {
  public:
-  ADMWrapper(rtc::scoped_refptr<AudioDeviceModule> impl,
+  ADMWrapper(scoped_refptr<AudioDeviceModule> impl,
              AudioDeviceDataObserver* legacy_observer,
              std::unique_ptr<AudioDeviceDataObserver> observer)
       : impl_(impl),
@@ -308,7 +308,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
 #endif  // WEBRTC_IOS
 
  protected:
-  rtc::scoped_refptr<AudioDeviceModule> impl_;
+  scoped_refptr<AudioDeviceModule> impl_;
   AudioDeviceDataObserver* legacy_observer_ = nullptr;
   std::unique_ptr<AudioDeviceDataObserver> observer_;
   AudioTransport* audio_transport_ = nullptr;
@@ -317,11 +317,11 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
 
 }  // namespace
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
-    rtc::scoped_refptr<AudioDeviceModule> impl,
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
+    scoped_refptr<AudioDeviceModule> impl,
     std::unique_ptr<AudioDeviceDataObserver> observer) {
-  auto audio_device = rtc::make_ref_counted<ADMWrapper>(impl, observer.get(),
-                                                        std::move(observer));
+  auto audio_device =
+      make_ref_counted<ADMWrapper>(impl, observer.get(), std::move(observer));
 
   if (!audio_device->IsValid()) {
     return nullptr;
@@ -330,11 +330,11 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
   return audio_device;
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
-    rtc::scoped_refptr<AudioDeviceModule> impl,
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
+    scoped_refptr<AudioDeviceModule> impl,
     AudioDeviceDataObserver* legacy_observer) {
   auto audio_device =
-      rtc::make_ref_counted<ADMWrapper>(impl, legacy_observer, nullptr);
+      make_ref_counted<ADMWrapper>(impl, legacy_observer, nullptr);
 
   if (!audio_device->IsValid()) {
     return nullptr;
@@ -343,11 +343,11 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
   return audio_device;
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
     AudioDeviceModule::AudioLayer audio_layer,
     TaskQueueFactory* task_queue_factory,
     std::unique_ptr<AudioDeviceDataObserver> observer) {
-  auto audio_device = rtc::make_ref_counted<ADMWrapper>(
+  auto audio_device = make_ref_counted<ADMWrapper>(
       audio_layer, task_queue_factory, observer.get(), std::move(observer));
 
   if (!audio_device->IsValid()) {
@@ -357,11 +357,11 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
   return audio_device;
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
     AudioDeviceModule::AudioLayer audio_layer,
     TaskQueueFactory* task_queue_factory,
     AudioDeviceDataObserver* legacy_observer) {
-  auto audio_device = rtc::make_ref_counted<ADMWrapper>(
+  auto audio_device = make_ref_counted<ADMWrapper>(
       audio_layer, task_queue_factory, legacy_observer, nullptr);
 
   if (!audio_device->IsValid()) {

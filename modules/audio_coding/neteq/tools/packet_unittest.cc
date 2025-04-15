@@ -42,7 +42,7 @@ void MakeRtpHeader(int payload_type,
 
 TEST(TestPacket, RegularPacket) {
   const size_t kPacketLengthBytes = 100;
-  rtc::CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
+  CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
   const uint8_t kPayloadType = 17;
   const uint16_t kSequenceNumber = 4711;
   const uint32_t kTimestamp = 47114711;
@@ -69,7 +69,7 @@ TEST(TestPacket, RegularPacket) {
 TEST(TestPacket, DummyPacket) {
   const size_t kPacketLengthBytes = kHeaderLengthBytes;  // Only RTP header.
   const size_t kVirtualPacketLengthBytes = 100;
-  rtc::CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
+  CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
   const uint8_t kPayloadType = 17;
   const uint16_t kSequenceNumber = 4711;
   const uint32_t kTimestamp = 47114711;
@@ -97,7 +97,7 @@ TEST(TestPacket, DummyPacket) {
 TEST(TestPacket, DummyPaddingPacket) {
   const size_t kPacketLengthBytes = kHeaderLengthBytes;  // Only RTP header.
   const size_t kVirtualPacketLengthBytes = 100;
-  rtc::CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
+  CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
   const uint8_t kPayloadType = 17;
   const uint16_t kSequenceNumber = 4711;
   const uint32_t kTimestamp = 47114711;
@@ -160,7 +160,7 @@ int MakeRedHeader(int payload_type,
 
 TEST(TestPacket, RED) {
   const size_t kPacketLengthBytes = 100;
-  rtc::CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
+  CopyOnWriteBuffer packet_memory(kPacketLengthBytes);
   const uint8_t kRedPayloadType = 17;
   const uint16_t kSequenceNumber = 4711;
   const uint32_t kTimestamp = 47114711;

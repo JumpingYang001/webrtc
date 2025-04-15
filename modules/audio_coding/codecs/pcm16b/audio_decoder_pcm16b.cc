@@ -53,9 +53,9 @@ int AudioDecoderPcm16B::DecodeInternal(const uint8_t* encoded,
 }
 
 std::vector<AudioDecoder::ParseResult> AudioDecoderPcm16B::ParsePayload(
-    rtc::Buffer&& payload,
+    Buffer&& payload,
     uint32_t timestamp) {
-  const int samples_per_ms = rtc::CheckedDivExact(sample_rate_hz_, 1000);
+  const int samples_per_ms = CheckedDivExact(sample_rate_hz_, 1000);
   return LegacyEncodedAudioFrame::SplitBySamples(
       this, std::move(payload), timestamp, samples_per_ms * 2 * num_channels_,
       samples_per_ms);

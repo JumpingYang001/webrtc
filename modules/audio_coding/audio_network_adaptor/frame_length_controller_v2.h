@@ -21,7 +21,7 @@ namespace webrtc {
 
 class FrameLengthControllerV2 final : public Controller {
  public:
-  FrameLengthControllerV2(rtc::ArrayView<const int> encoder_frame_lengths_ms,
+  FrameLengthControllerV2(ArrayView<const int> encoder_frame_lengths_ms,
                           int min_payload_bitrate_bps,
                           bool use_slow_adaptation);
 

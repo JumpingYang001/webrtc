@@ -25,7 +25,7 @@ int OverheadBps(int overhead_bytes_per_packet, int frame_length_ms) {
 }  // namespace
 
 FrameLengthControllerV2::FrameLengthControllerV2(
-    rtc::ArrayView<const int> encoder_frame_lengths_ms,
+    ArrayView<const int> encoder_frame_lengths_ms,
     int min_payload_bitrate_bps,
     bool use_slow_adaptation)
     : encoder_frame_lengths_ms_(encoder_frame_lengths_ms.begin(),

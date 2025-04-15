@@ -57,7 +57,7 @@ class AudioChecksum : public AudioSink {
 
  private:
   std::unique_ptr<MessageDigest> checksum_;
-  rtc::Buffer checksum_result_;
+  Buffer checksum_result_;
   bool finished_;
 };
 

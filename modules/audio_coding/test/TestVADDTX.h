@@ -85,8 +85,8 @@ class TestVadDtx {
            const int* expects);
 
   const Environment env_;
-  const rtc::scoped_refptr<AudioEncoderFactory> encoder_factory_;
-  const rtc::scoped_refptr<AudioDecoderFactory> decoder_factory_;
+  const scoped_refptr<AudioEncoderFactory> encoder_factory_;
+  const scoped_refptr<AudioDecoderFactory> decoder_factory_;
   std::unique_ptr<AudioCodingModule> acm_send_;
   std::unique_ptr<NetEq> neteq_;
   acm2::ResamplerHelper resampler_helper_;

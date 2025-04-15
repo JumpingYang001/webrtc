@@ -74,7 +74,7 @@ std::unique_ptr<AudioEncoderOpusStates> CreateCodec(
       };
 
   AudioEncoderOpusConfig config;
-  config.frame_size_ms = rtc::CheckedDivExact(kDefaultOpusPacSize, 48);
+  config.frame_size_ms = CheckedDivExact(kDefaultOpusPacSize, 48);
   config.sample_rate_hz = sample_rate_hz;
   config.num_channels = num_channels;
   config.bitrate_bps = kDefaultOpusRate;
@@ -123,8 +123,7 @@ std::unique_ptr<test::AudioLoop> Create10msAudioBlocks(
       test::ResourcePath("audio_coding/testfile32kHz", "pcm");
 
   std::unique_ptr<test::AudioLoop> speech_data(new test::AudioLoop());
-  int audio_samples_per_ms =
-      rtc::CheckedDivExact(encoder->SampleRateHz(), 1000);
+  int audio_samples_per_ms = CheckedDivExact(encoder->SampleRateHz(), 1000);
   if (!speech_data->Init(
           file_name,
           packet_size_ms * audio_samples_per_ms *
@@ -204,8 +203,8 @@ TEST_P(AudioEncoderOpusTest,
   const int kMaxBitrateBps = 510000;
   const int kOverheadBytesPerPacket = 64;
   states->encoder->OnReceivedOverhead(kOverheadBytesPerPacket);
-  const int kOverheadBps = 8 * kOverheadBytesPerPacket *
-                           rtc::CheckedDivExact(48000, kDefaultOpusPacSize);
+  const int kOverheadBps =
+      8 * kOverheadBytesPerPacket * CheckedDivExact(48000, kDefaultOpusPacSize);
   // Set a too low bitrate.
   states->encoder->OnReceivedUplinkBandwidth(kMinBitrateBps + kOverheadBps - 1,
                                              std::nullopt);
@@ -412,7 +411,7 @@ TEST(AudioEncoderOpusTest, ConfigComplexityAdaptation) {
 // Verifies that the bandwidth adaptation in the config works as intended.
 TEST_P(AudioEncoderOpusTest, ConfigBandwidthAdaptation) {
   AudioEncoderOpusConfig config;
-  const size_t opus_rate_khz = rtc::CheckedDivExact(sample_rate_hz_, 1000);
+  const size_t opus_rate_khz = CheckedDivExact(sample_rate_hz_, 1000);
   const std::vector<int16_t> silence(
       opus_rate_khz * config.frame_size_ms * config.num_channels, 0);
   constexpr size_t kMaxBytes = 1000;
@@ -435,7 +434,7 @@ TEST_P(AudioEncoderOpusTest, ConfigBandwidthAdaptation) {
   // It is necessary to encode here because Opus has some logic in the encoder
   // that goes from the user-set bandwidth to the used and returned one.
   WebRtcOpus_Encode(inst, silence.data(),
-                    rtc::CheckedDivExact(silence.size(), config.num_channels),
+                    CheckedDivExact(silence.size(), config.num_channels),
                     kMaxBytes, bitstream);
 
   // Bitrate not yet above maximum narrowband. Expect empty.
@@ -451,7 +450,7 @@ TEST_P(AudioEncoderOpusTest, ConfigBandwidthAdaptation) {
   // It is necessary to encode here because Opus has some logic in the encoder
   // that goes from the user-set bandwidth to the used and returned one.
   WebRtcOpus_Encode(inst, silence.data(),
-                    rtc::CheckedDivExact(silence.size(), config.num_channels),
+                    CheckedDivExact(silence.size(), config.num_channels),
                     kMaxBytes, bitstream);
 
   // Bitrate not yet below minimum wideband. Expect empty.
@@ -492,14 +491,14 @@ TEST_P(AudioEncoderOpusTest, UpdateUplinkBandwidthInAudioNetworkAdaptor) {
       "WebRTC-Audio-StableTargetAdaptation/Disabled/");
   auto states = CreateCodec(sample_rate_hz_, 2, &field_trials);
   states->encoder->EnableAudioNetworkAdaptor("", nullptr);
-  const size_t opus_rate_khz = rtc::CheckedDivExact(sample_rate_hz_, 1000);
+  const size_t opus_rate_khz = CheckedDivExact(sample_rate_hz_, 1000);
   const std::vector<int16_t> audio(opus_rate_khz * 10 * 2, 0);
-  rtc::Buffer encoded;
+  Buffer encoded;
   EXPECT_CALL(*states->mock_bitrate_smoother, GetAverage())
       .WillOnce(Return(50000));
   EXPECT_CALL(*states->mock_audio_network_adaptor, SetUplinkBandwidth(50000));
   states->encoder->Encode(
-      0, rtc::ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
+      0, ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
 
   // Repeat update uplink bandwidth tests.
   for (int i = 0; i < 5; i++) {
@@ -507,7 +506,7 @@ TEST_P(AudioEncoderOpusTest, UpdateUplinkBandwidthInAudioNetworkAdaptor) {
     states->fake_clock->AdvanceTime(TimeDelta::Millis(
         states->config.uplink_bandwidth_update_interval_ms - 1));
     states->encoder->Encode(
-        0, rtc::ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
+        0, ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
 
     // Update when it is time to update.
     EXPECT_CALL(*states->mock_bitrate_smoother, GetAverage())
@@ -515,7 +514,7 @@ TEST_P(AudioEncoderOpusTest, UpdateUplinkBandwidthInAudioNetworkAdaptor) {
     EXPECT_CALL(*states->mock_audio_network_adaptor, SetUplinkBandwidth(40000));
     states->fake_clock->AdvanceTime(TimeDelta::Millis(1));
     states->encoder->Encode(
-        0, rtc::ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
+        0, ArrayView<const int16_t>(audio.data(), audio.size()), &encoded);
   }
 }
 
@@ -525,7 +524,7 @@ TEST_P(AudioEncoderOpusTest, EncodeAtMinBitrate) {
   auto audio_frames =
       Create10msAudioBlocks(states->encoder, kNumPacketsToEncode * 20);
   ASSERT_TRUE(audio_frames) << "Create10msAudioBlocks failed";
-  rtc::Buffer encoded;
+  Buffer encoded;
   uint32_t rtp_timestamp = 12345;  // Just a number not important to this test.
 
   states->encoder->OnReceivedUplinkBandwidth(0, std::nullopt);
@@ -782,7 +781,7 @@ TEST_P(AudioEncoderOpusTest, OpusFlagDtxAsNonSpeech) {
 
   // Encode.
   AudioEncoder::EncodedInfo info;
-  rtc::Buffer encoded(500);
+  Buffer encoded(500);
   int nonspeech_frames = 0;
   int max_nonspeech_frames = 0;
   int dtx_frames = 0;

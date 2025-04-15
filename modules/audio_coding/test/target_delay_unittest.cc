@@ -87,10 +87,10 @@ class TargetDelayTest : public ::testing::Test {
   void Push() {
     rtp_header_.timestamp += kFrameSizeSamples;
     rtp_header_.sequenceNumber++;
-    ASSERT_EQ(0, neteq_->InsertPacket(rtp_header_,
-                                      rtc::ArrayView<const uint8_t>(
-                                          payload_, kFrameSizeSamples * 2),
-                                      Timestamp::MinusInfinity()));
+    ASSERT_EQ(0, neteq_->InsertPacket(
+                     rtp_header_,
+                     ArrayView<const uint8_t>(payload_, kFrameSizeSamples * 2),
+                     Timestamp::MinusInfinity()));
   }
 
   // Pull audio equivalent to the amount of audio in one RTP packet.

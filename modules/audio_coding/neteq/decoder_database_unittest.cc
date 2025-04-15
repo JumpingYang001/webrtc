@@ -65,7 +65,7 @@ TEST(DecoderDatabase, InsertAndRemoveAll) {
 }
 
 TEST(DecoderDatabase, GetDecoderInfo) {
-  auto factory = rtc::make_ref_counted<MockAudioDecoderFactory>();
+  auto factory = make_ref_counted<MockAudioDecoderFactory>();
   auto* decoder = new MockAudioDecoder;
   EXPECT_CALL(*factory, Create)
       .WillOnce(WithArg<1>([decoder](const SdpAudioFormat& format) {

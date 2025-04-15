@@ -28,7 +28,7 @@ class EncodeNetEqInput : public NetEqInput {
    public:
     virtual ~Generator() = default;
     // Returns the next num_samples values from the signal generator.
-    virtual rtc::ArrayView<const int16_t> Generate(size_t num_samples) = 0;
+    virtual ArrayView<const int16_t> Generate(size_t num_samples) = 0;
   };
 
   // The source will end after the given input duration.

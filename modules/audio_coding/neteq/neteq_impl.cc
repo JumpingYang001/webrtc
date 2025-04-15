@@ -182,7 +182,7 @@ NetEqImpl::NetEqImpl(const NetEq::Config& config,
 NetEqImpl::~NetEqImpl() = default;
 
 int NetEqImpl::InsertPacket(const RTPHeader& rtp_header,
-                            rtc::ArrayView<const uint8_t> payload,
+                            ArrayView<const uint8_t> payload,
                             const RtpPacketInfo& packet_info) {
   MsanCheckInitialized(payload);
   TRACE_EVENT0("webrtc", "NetEqImpl::InsertPacket");
@@ -310,7 +310,7 @@ int NetEqImpl::FilteredCurrentDelayMs() const {
   const int delay_samples =
       controller_->GetFilteredBufferLevel() + sync_buffer_->FutureLength();
   // The division below will truncate. The return value is in ms.
-  return delay_samples / rtc::CheckedDivExact(fs_hz_, 1000);
+  return delay_samples / CheckedDivExact(fs_hz_, 1000);
 }
 
 int NetEqImpl::NetworkStatistics(NetEqNetworkStatistics* stats) {
@@ -436,7 +436,7 @@ std::vector<uint16_t> NetEqImpl::GetNackList(int64_t round_trip_time_ms) const {
 int NetEqImpl::SyncBufferSizeMs() const {
   MutexLock lock(&mutex_);
   return dchecked_cast<int>(sync_buffer_->FutureLength() /
-                            rtc::CheckedDivExact(fs_hz_, 1000));
+                            CheckedDivExact(fs_hz_, 1000));
 }
 
 const SyncBuffer* NetEqImpl::sync_buffer_for_test() const {
@@ -452,7 +452,7 @@ NetEq::Operation NetEqImpl::last_operation_for_test() const {
 // Methods below this line are private.
 
 int NetEqImpl::InsertPacketInternal(const RTPHeader& rtp_header,
-                                    rtc::ArrayView<const uint8_t> payload,
+                                    ArrayView<const uint8_t> payload,
                                     const RtpPacketInfo& packet_info) {
   if (payload.empty()) {
     RTC_LOG_F(LS_ERROR) << "payload is empty";
@@ -1424,8 +1424,8 @@ int NetEqImpl::DecodeLoop(PacketList* packet_list,
                operation == Operation::kPreemptiveExpand);
 
     auto opt_result = packet_list->front().frame->Decode(
-        rtc::ArrayView<int16_t>(&decoded_buffer_[*decoded_length],
-                                decoded_buffer_length_ - *decoded_length));
+        ArrayView<int16_t>(&decoded_buffer_[*decoded_length],
+                           decoded_buffer_length_ - *decoded_length));
     if (packet_list->front().packet_info) {
       last_decoded_packet_infos_.push_back(*packet_list->front().packet_info);
     }

@@ -18,7 +18,7 @@
 namespace webrtc {
 namespace test {
 
-Packet::Packet(rtc::CopyOnWriteBuffer packet,
+Packet::Packet(CopyOnWriteBuffer packet,
                size_t virtual_packet_length_bytes,
                double time_ms,
                const RtpHeaderExtensionMap* extension_map)
@@ -98,7 +98,7 @@ bool Packet::ParseHeader(const RtpHeaderExtensionMap* extension_map) {
   size_t padding_size = 0;
   if (padding) {
     // Clear the padding bit to prevent failure when rtp payload is omited.
-    rtc::CopyOnWriteBuffer packet(packet_);
+    CopyOnWriteBuffer packet(packet_);
     packet.MutableData()[0] &= ~0b0010'0000;
     if (!rtp_packet.Parse(std::move(packet))) {
       return false;
@@ -114,8 +114,8 @@ bool Packet::ParseHeader(const RtpHeaderExtensionMap* extension_map) {
       return false;
     }
   }
-  rtp_payload_ = rtc::MakeArrayView(packet_.data() + rtp_packet.headers_size(),
-                                    rtp_packet.payload_size() - padding_size);
+  rtp_payload_ = MakeArrayView(packet_.data() + rtp_packet.headers_size(),
+                               rtp_packet.payload_size() - padding_size);
   rtp_packet.GetHeader(&header_);
 
   RTC_CHECK_GE(virtual_packet_length_bytes_, rtp_packet.size());

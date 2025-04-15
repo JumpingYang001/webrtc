@@ -43,7 +43,7 @@ class AudioLoop {
 
   // Returns a (pointer,size) pair for the next block of audio. The size is
   // equal to the `block_length_samples` Init() argument.
-  rtc::ArrayView<const int16_t> GetNextBlock();
+  ArrayView<const int16_t> GetNextBlock();
 
  private:
   size_t next_index_;

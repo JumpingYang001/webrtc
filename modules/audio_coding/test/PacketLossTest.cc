@@ -62,10 +62,10 @@ bool ReceiverWithPacketLoss::IncomingPacket() {
     }
 
     if (!PacketLost()) {
-      _neteq->InsertPacket(_rtpHeader,
-                           rtc::ArrayView<const uint8_t>(_incomingPayload,
-                                                         _realPayloadSizeBytes),
-                           Timestamp::Millis(_nextTime));
+      _neteq->InsertPacket(
+          _rtpHeader,
+          ArrayView<const uint8_t>(_incomingPayload, _realPayloadSizeBytes),
+          Timestamp::Millis(_nextTime));
     }
     packet_counter_++;
     _realPayloadSizeBytes = _rtpStream->Read(&_rtpHeader, _incomingPayload,

@@ -235,7 +235,7 @@ size_t PacketBuffer::GetSpanSamples(size_t last_decoded_length,
   }
 
   size_t span = buffer_.back().timestamp - buffer_.front().timestamp;
-  size_t waiting_time_samples = rtc::dchecked_cast<size_t>(
+  size_t waiting_time_samples = dchecked_cast<size_t>(
       buffer_.back().waiting_time->ElapsedMs() * (sample_rate / 1000));
   if (count_waiting_time) {
     span += waiting_time_samples;

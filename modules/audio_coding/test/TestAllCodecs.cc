@@ -87,7 +87,7 @@ int32_t TestPack::SendData(AudioFrameType frame_type,
   memcpy(payload_data_, payload_data, payload_size);
 
   status = neteq_->InsertPacket(
-      rtp_header, rtc::ArrayView<const uint8_t>(payload_data_, payload_size),
+      rtp_header, ArrayView<const uint8_t>(payload_data_, payload_size),
       /*receive_time=*/Timestamp::MinusInfinity());
 
   payload_size_ = payload_size;
@@ -307,8 +307,8 @@ void TestAllCodecs::RegisterSendCodec(char* codec_name,
 
   auto factory = CreateBuiltinAudioEncoderFactory();
   SdpAudioFormat format = {codec_name, clockrate_hz, num_channels};
-  format.parameters["ptime"] = absl::StrCat(rtc::CheckedDivExact(
-      packet_size, rtc::CheckedDivExact(sampling_freq_hz, 1000)));
+  format.parameters["ptime"] = absl::StrCat(
+      CheckedDivExact(packet_size, CheckedDivExact(sampling_freq_hz, 1000)));
   acm_a_->SetEncoder(factory->Create(env_, format, {.payload_type = 17}));
 }
 

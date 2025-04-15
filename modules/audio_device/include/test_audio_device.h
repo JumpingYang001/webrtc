@@ -49,7 +49,7 @@ class TestAudioDeviceModule {
     // Replaces the contents of `buffer` with 10ms of captured audio data
     // (see TestAudioDeviceModule::SamplesPerFrame). Returns true if the
     // capturer can keep producing data, or false when the capture finishes.
-    virtual bool Capture(rtc::BufferT<int16_t>* buffer) = 0;
+    virtual bool Capture(BufferT<int16_t>* buffer) = 0;
   };
 
   class Renderer {
@@ -62,7 +62,7 @@ class TestAudioDeviceModule {
     virtual int NumChannels() const = 0;
     // Renders the passed audio data and returns true if the renderer wants
     // to keep receiving data, or false otherwise.
-    virtual bool Render(rtc::ArrayView<const int16_t> data) = 0;
+    virtual bool Render(ArrayView<const int16_t> data) = 0;
   };
 
   // A fake capturer that generates pulses with random samples between
@@ -81,7 +81,7 @@ class TestAudioDeviceModule {
   // `renderer` is an object that receives audio data that would have been
   // played out. Can be nullptr if this device is never used for playing.
   // Use one of the Create... functions to get these instances.
-  static rtc::scoped_refptr<AudioDeviceModule> Create(
+  static scoped_refptr<AudioDeviceModule> Create(
       TaskQueueFactory* task_queue_factory,
       std::unique_ptr<Capturer> capturer,
       std::unique_ptr<Renderer> renderer,

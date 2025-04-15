@@ -67,8 +67,8 @@ int ComfortNoise::Generate(size_t requested_length, AudioMultiVector* output) {
   }
 
   std::unique_ptr<int16_t[]> temp(new int16_t[number_of_samples]);
-  if (!cng_decoder->Generate(
-          rtc::ArrayView<int16_t>(temp.get(), number_of_samples), new_period)) {
+  if (!cng_decoder->Generate(ArrayView<int16_t>(temp.get(), number_of_samples),
+                             new_period)) {
     // Error returned.
     output->Zeros(requested_length);
     RTC_LOG(LS_ERROR)

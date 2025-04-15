@@ -32,7 +32,7 @@ class NetEqInput {
     std::string ToString() const;
 
     RTPHeader header;
-    rtc::Buffer payload;
+    Buffer payload;
     int64_t time_ms;
   };
 

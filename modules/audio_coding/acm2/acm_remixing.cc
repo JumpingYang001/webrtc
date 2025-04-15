@@ -14,7 +14,7 @@
 
 namespace webrtc {
 
-void DownMixFrame(const AudioFrame& input, rtc::ArrayView<int16_t> output) {
+void DownMixFrame(const AudioFrame& input, ArrayView<int16_t> output) {
   RTC_DCHECK_EQ(input.num_channels_, 2);
   RTC_DCHECK_EQ(output.size(), input.samples_per_channel_);
 

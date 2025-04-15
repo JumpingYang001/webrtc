@@ -175,8 +175,8 @@ bool Receiver::IncomingPacket() {
 
     EXPECT_GE(
         0, _neteq->InsertPacket(_rtpHeader,
-                                rtc::ArrayView<const uint8_t>(
-                                    _incomingPayload, _realPayloadSizeBytes),
+                                ArrayView<const uint8_t>(_incomingPayload,
+                                                         _realPayloadSizeBytes),
                                 /*receive_time=*/Timestamp::Millis(_nextTime)));
     _realPayloadSizeBytes = _rtpStream->Read(&_rtpHeader, _incomingPayload,
                                              _payloadSizeBytes, &_nextTime);

@@ -43,15 +43,15 @@ class AudioEncoderG722Impl final : public AudioEncoder {
 
  protected:
   EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
-                         rtc::ArrayView<const int16_t> audio,
-                         rtc::Buffer* encoded) override;
+                         ArrayView<const int16_t> audio,
+                         Buffer* encoded) override;
 
  private:
   // The encoder state for one channel.
   struct EncoderState {
     G722EncInst* encoder;
     std::unique_ptr<int16_t[]> speech_buffer;  // Queued up for encoding.
-    rtc::Buffer encoded_buffer;                // Already encoded.
+    Buffer encoded_buffer;                     // Already encoded.
     EncoderState();
     ~EncoderState();
   };
@@ -64,7 +64,7 @@ class AudioEncoderG722Impl final : public AudioEncoder {
   size_t num_10ms_frames_buffered_;
   uint32_t first_timestamp_in_buffer_;
   const std::unique_ptr<EncoderState[]> encoders_;
-  rtc::Buffer interleave_buffer_;
+  Buffer interleave_buffer_;
 };
 
 }  // namespace webrtc

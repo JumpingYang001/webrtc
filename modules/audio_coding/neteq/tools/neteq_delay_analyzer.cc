@@ -144,9 +144,8 @@ void NetEqDelayAnalyzer::CreateGraphs(Delays* arrival_delay_ms,
   // This loop traverses data_ and populates rtp_timestamps_ms as well as
   // calculates the base offset.
   for (auto& d : data_) {
-    rtp_timestamps_ms.push_back(
-        static_cast<double>(unwrapper.Unwrap(d.first)) /
-        rtc::CheckedDivExact(last_sample_rate_hz_, 1000));
+    rtp_timestamps_ms.push_back(static_cast<double>(unwrapper.Unwrap(d.first)) /
+                                CheckedDivExact(last_sample_rate_hz_, 1000));
     offset =
         std::min(offset, d.second.arrival_time_ms - rtp_timestamps_ms.back());
   }

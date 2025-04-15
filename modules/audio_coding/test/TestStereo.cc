@@ -63,7 +63,7 @@ int32_t TestPackStereo::SendData(const AudioFrameType frame_type,
 
   if (lost_packet_ == false) {
     status = neteq_->InsertPacket(
-        rtp_header, rtc::ArrayView<const uint8_t>(payload_data, payload_size),
+        rtp_header, ArrayView<const uint8_t>(payload_data, payload_size),
         /*receive_time=*/Timestamp::MinusInfinity());
 
     if (frame_type != AudioFrameType::kAudioFrameCN) {
@@ -480,8 +480,8 @@ void TestStereo::RegisterSendCodec(char side,
   const int clockrate_hz = absl::EqualsIgnoreCase(codec_name, "g722")
                                ? sampling_freq_hz / 2
                                : sampling_freq_hz;
-  const std::string ptime = absl::StrCat(rtc::CheckedDivExact(
-      pack_size, rtc::CheckedDivExact(sampling_freq_hz, 1000)));
+  const std::string ptime = absl::StrCat(
+      CheckedDivExact(pack_size, CheckedDivExact(sampling_freq_hz, 1000)));
   CodecParameterMap params = {{"ptime", ptime}};
   RTC_CHECK(channels == 1 || channels == 2);
   if (absl::EqualsIgnoreCase(codec_name, "opus")) {

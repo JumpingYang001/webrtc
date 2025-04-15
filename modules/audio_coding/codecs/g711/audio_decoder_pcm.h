@@ -32,7 +32,7 @@ class AudioDecoderPcmU final : public AudioDecoder {
   AudioDecoderPcmU& operator=(const AudioDecoderPcmU&) = delete;
 
   void Reset() override;
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+  std::vector<ParseResult> ParsePayload(Buffer&& payload,
                                         uint32_t timestamp) override;
   int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
   int PacketDurationRedundant(const uint8_t* encoded,
@@ -61,7 +61,7 @@ class AudioDecoderPcmA final : public AudioDecoder {
   AudioDecoderPcmA& operator=(const AudioDecoderPcmA&) = delete;
 
   void Reset() override;
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+  std::vector<ParseResult> ParsePayload(Buffer&& payload,
                                         uint32_t timestamp) override;
   int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
   int PacketDurationRedundant(const uint8_t* encoded,

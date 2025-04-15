@@ -100,7 +100,7 @@ class AudioEncoderOpusImpl final : public AudioEncoder {
   ANAStats GetANAStats() const override;
   std::optional<std::pair<TimeDelta, TimeDelta> > GetFrameLengthRange()
       const override;
-  rtc::ArrayView<const int> supported_frame_lengths_ms() const {
+  ArrayView<const int> supported_frame_lengths_ms() const {
     return config_.supported_frame_lengths_ms;
   }
 
@@ -115,8 +115,8 @@ class AudioEncoderOpusImpl final : public AudioEncoder {
 
  protected:
   EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
-                         rtc::ArrayView<const int16_t> audio,
-                         rtc::Buffer* encoded) override;
+                         ArrayView<const int16_t> audio,
+                         Buffer* encoded) override;
 
  private:
   class PacketLossFractionSmoother;

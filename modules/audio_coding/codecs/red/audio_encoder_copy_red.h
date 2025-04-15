@@ -80,20 +80,19 @@ class AudioEncoderCopyRed final : public AudioEncoder {
   ANAStats GetANAStats() const override;
   std::optional<std::pair<TimeDelta, TimeDelta>> GetFrameLengthRange()
       const override;
-  rtc::ArrayView<std::unique_ptr<AudioEncoder>> ReclaimContainedEncoders()
-      override;
+  ArrayView<std::unique_ptr<AudioEncoder>> ReclaimContainedEncoders() override;
 
  protected:
   EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
-                         rtc::ArrayView<const int16_t> audio,
-                         rtc::Buffer* encoded) override;
+                         ArrayView<const int16_t> audio,
+                         Buffer* encoded) override;
 
  private:
   std::unique_ptr<AudioEncoder> speech_encoder_;
-  rtc::Buffer primary_encoded_;
+  Buffer primary_encoded_;
   size_t max_packet_length_;
   int red_payload_type_;
-  std::list<std::pair<EncodedInfo, rtc::Buffer>> redundant_encodings_;
+  std::list<std::pair<EncodedInfo, Buffer>> redundant_encodings_;
 };
 
 }  // namespace webrtc

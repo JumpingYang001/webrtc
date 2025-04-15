@@ -31,7 +31,7 @@ AcmReceiveTestOldApi::AcmReceiveTestOldApi(
     AudioSink* audio_sink,
     int output_freq_hz,
     NumOutputChannels exptected_output_channels,
-    rtc::scoped_refptr<AudioDecoderFactory> decoder_factory)
+    scoped_refptr<AudioDecoderFactory> decoder_factory)
     : clock_(0),
       neteq_(DefaultNetEqFactory().Create(CreateEnvironment(&clock_),
                                           NetEq::Config(),
@@ -113,8 +113,8 @@ void AcmReceiveTestOldApi::Run() {
 
     EXPECT_EQ(0, neteq_->InsertPacket(
                      packet->header(),
-                     rtc::ArrayView<const uint8_t>(
-                         packet->payload(), packet->payload_length_bytes()),
+                     ArrayView<const uint8_t>(packet->payload(),
+                                              packet->payload_length_bytes()),
                      clock_.CurrentTime()))
         << "Failure when inserting packet:" << std::endl
         << "  PT = " << static_cast<int>(packet->header().payloadType)

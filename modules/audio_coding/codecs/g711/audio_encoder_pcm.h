@@ -50,8 +50,8 @@ class AudioEncoderPcm : public AudioEncoder {
   AudioEncoderPcm(const Config& config, int sample_rate_hz);
 
   EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
-                         rtc::ArrayView<const int16_t> audio,
-                         rtc::Buffer* encoded) override;
+                         ArrayView<const int16_t> audio,
+                         Buffer* encoded) override;
 
   virtual size_t EncodeCall(const int16_t* audio,
                             size_t input_len,

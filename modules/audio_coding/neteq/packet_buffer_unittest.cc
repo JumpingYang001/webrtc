@@ -38,7 +38,7 @@ class MockEncodedAudioFrame : public webrtc::AudioDecoder::EncodedAudioFrame {
 
   MOCK_METHOD(std::optional<DecodeResult>,
               Decode,
-              (rtc::ArrayView<int16_t> decoded),
+              (webrtc::ArrayView<int16_t> decoded),
               (const, override));
 };
 

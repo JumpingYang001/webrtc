@@ -112,7 +112,7 @@ const std::vector<std::string> parse_input_files() {
 int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
 
-  rtc::scoped_refptr<webrtc::AudioMixerImpl> mixer(
+  webrtc::scoped_refptr<webrtc::AudioMixerImpl> mixer(
       webrtc::AudioMixerImpl::Create(
           std::unique_ptr<webrtc::OutputRateCalculator>(
               new webrtc::DefaultOutputRateCalculator()),

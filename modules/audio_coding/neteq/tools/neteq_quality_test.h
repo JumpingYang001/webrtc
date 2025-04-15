@@ -96,13 +96,12 @@ class FixedLossModel : public LossModel {
 
 class NetEqQualityTest : public ::testing::Test {
  protected:
-  NetEqQualityTest(
-      int block_duration_ms,
-      int in_sampling_khz,
-      int out_sampling_khz,
-      const SdpAudioFormat& format,
-      const rtc::scoped_refptr<AudioDecoderFactory>& decoder_factory =
-          webrtc::CreateBuiltinAudioDecoderFactory());
+  NetEqQualityTest(int block_duration_ms,
+                   int in_sampling_khz,
+                   int out_sampling_khz,
+                   const SdpAudioFormat& format,
+                   const scoped_refptr<AudioDecoderFactory>& decoder_factory =
+                       webrtc::CreateBuiltinAudioDecoderFactory());
   ~NetEqQualityTest() override;
 
   void SetUp() override;
@@ -114,7 +113,7 @@ class NetEqQualityTest : public ::testing::Test {
   // 3. returns the length of the payload (in bytes),
   virtual int EncodeBlock(int16_t* in_data,
                           size_t block_size_samples,
-                          rtc::Buffer* payload,
+                          Buffer* payload,
                           size_t max_bytes) = 0;
 
   // PacketLost(...) determines weather a packet sent at an indicated time gets
@@ -163,7 +162,7 @@ class NetEqQualityTest : public ::testing::Test {
   std::unique_ptr<LossModel> loss_model_;
 
   std::unique_ptr<int16_t[]> in_data_;
-  rtc::Buffer payload_;
+  Buffer payload_;
   AudioFrame out_frame_;
   RTPHeader rtp_header_;
 

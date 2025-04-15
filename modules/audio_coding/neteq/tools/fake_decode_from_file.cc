@@ -33,7 +33,7 @@ class FakeEncodedFrame : public AudioDecoder::EncodedAudioFrame {
   size_t Duration() const override { return duration_; }
 
   std::optional<DecodeResult> Decode(
-      rtc::ArrayView<int16_t> decoded) const override {
+      ArrayView<int16_t> decoded) const override {
     if (is_dtx_) {
       std::fill_n(decoded.data(), duration_, 0);
       return DecodeResult{duration_, AudioDecoder::kComfortNoise};
@@ -82,7 +82,7 @@ int FakeDecodeFromFile::DecodeInternal(const uint8_t* encoded,
   RTC_DCHECK_EQ(encoded_len, 0);
   RTC_DCHECK(!encoded);  // NetEq always sends nullptr in this case.
 
-  const int samples_to_decode = rtc::CheckedDivExact(SampleRateHz(), 100);
+  const int samples_to_decode = CheckedDivExact(SampleRateHz(), 100);
   const int total_samples_to_decode = samples_to_decode * (stereo_ ? 2 : 1);
   std::fill_n(decoded, total_samples_to_decode, 0);
   *speech_type = kComfortNoise;
@@ -92,7 +92,7 @@ int FakeDecodeFromFile::DecodeInternal(const uint8_t* encoded,
 void FakeDecodeFromFile::PrepareEncoded(uint32_t timestamp,
                                         size_t samples,
                                         size_t original_payload_size_bytes,
-                                        rtc::ArrayView<uint8_t> encoded) {
+                                        ArrayView<uint8_t> encoded) {
   RTC_CHECK_GE(encoded.size(), 12);
   ByteWriter<uint32_t>::WriteLittleEndian(&encoded[0], timestamp);
   ByteWriter<uint32_t>::WriteLittleEndian(&encoded[4],
@@ -102,7 +102,7 @@ void FakeDecodeFromFile::PrepareEncoded(uint32_t timestamp,
 }
 
 std::vector<AudioDecoder::ParseResult> FakeDecodeFromFile::ParsePayload(
-    rtc::Buffer&& payload,
+    Buffer&& payload,
     uint32_t timestamp) {
   RTC_CHECK_GE(payload.size(), 12);
   // Parse payload encoded in PrepareEncoded.

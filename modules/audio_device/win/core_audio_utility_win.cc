@@ -267,7 +267,7 @@ bool IsSupportedInternal() {
   if (!device_enumerator) {
     RTC_LOG(LS_ERROR)
         << "Failed to create Core Audio device enumerator on thread with ID "
-        << rtc::CurrentThreadId();
+        << webrtc::CurrentThreadId();
     return false;
   }
 
@@ -940,7 +940,7 @@ HRESULT SetClientProperties(IAudioClient2* client) {
   // an appropriate interface to use for communications scenarios.
   // This interface is mainly meant for pro audio scenarios.
   // props.Options |= AUDCLNT_STREAMOPTIONS_MATCH_FORMAT;
-  RTC_DLOG(LS_INFO) << "options: 0x" << rtc::ToHex(props.Options);
+  RTC_DLOG(LS_INFO) << "options: 0x" << webrtc::ToHex(props.Options);
 #endif
   error = client->SetClientProperties(&props);
   if (FAILED(error.Error())) {
@@ -1205,7 +1205,7 @@ HRESULT SharedModeInitialize(IAudioClient* client,
     stream_flags |= AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM;
     stream_flags |= AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY;
   }
-  RTC_DLOG(LS_INFO) << "stream_flags: 0x" << rtc::ToHex(stream_flags);
+  RTC_DLOG(LS_INFO) << "stream_flags: 0x" << webrtc::ToHex(stream_flags);
 
   // Initialize the shared mode client for minimal delay if `buffer_duration`
   // is 0 or possibly a higher delay (more robust) if `buffer_duration` is
@@ -1294,7 +1294,7 @@ HRESULT SharedModeInitializeLowLatency(IAudioClient3* client,
     stream_flags |= AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM;
     stream_flags |= AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY;
   }
-  RTC_DLOG(LS_INFO) << "stream_flags: 0x" << rtc::ToHex(stream_flags);
+  RTC_DLOG(LS_INFO) << "stream_flags: 0x" << webrtc::ToHex(stream_flags);
 
   // Initialize the shared mode client for lowest possible latency.
   // It is assumed that GetSharedModeEnginePeriod() has been used to query the
@@ -1478,7 +1478,7 @@ bool FillRenderEndpointBufferWithSilence(IAudioClient* client,
 
 std::string WaveFormatToString(const WaveFormatWrapper format) {
   char ss_buf[1024];
-  rtc::SimpleStringBuilder ss(ss_buf);
+  webrtc::SimpleStringBuilder ss(ss_buf);
   // Start with the WAVEFORMATEX part (which always exists).
   ss.AppendFormat("wFormatTag: %s (0x%X)",
                   WaveFormatTagToString(format->wFormatTag),
@@ -1519,7 +1519,7 @@ double FramesToMilliseconds(uint32_t num_frames, uint16_t sample_rate) {
 
 std::string ErrorToString(const _com_error& error) {
   char ss_buf[1024];
-  rtc::SimpleStringBuilder ss(ss_buf);
+  webrtc::SimpleStringBuilder ss(ss_buf);
   ss.AppendFormat("(HRESULT: 0x%08X)", error.Error());
   return ss.str();
 }

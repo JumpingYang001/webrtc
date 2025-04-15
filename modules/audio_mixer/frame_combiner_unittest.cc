@@ -82,7 +82,7 @@ void SetUpFrames(int sample_rate_hz, int number_of_channels) {
   frame2.packet_infos_ = RtpPacketInfos({packet_info2, packet_info3});
 
   for (auto* frame : {&frame1, &frame2}) {
-    frame->UpdateFrame(0, nullptr, rtc::CheckedDivExact(sample_rate_hz, 100),
+    frame->UpdateFrame(0, nullptr, CheckedDivExact(sample_rate_hz, 100),
                        sample_rate_hz, AudioFrame::kNormalSpeech,
                        AudioFrame::kVadActive, number_of_channels);
   }
@@ -319,9 +319,9 @@ TEST(FrameCombiner, GainCurveIsSmoothForAlternatingNumberOfStreams) {
                        config.sample_rate_hz, number_of_streams,
                        &audio_frame_for_mixing);
       cumulative_change += change_calculator.CalculateGainChange(
-          rtc::ArrayView<const int16_t>(frame1.data(), number_of_samples),
-          rtc::ArrayView<const int16_t>(audio_frame_for_mixing.data(),
-                                        number_of_samples));
+          ArrayView<const int16_t>(frame1.data(), number_of_samples),
+          ArrayView<const int16_t>(audio_frame_for_mixing.data(),
+                                   number_of_samples));
     }
 
     // Check that the gain doesn't vary too much.
