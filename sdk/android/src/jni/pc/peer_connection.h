@@ -68,17 +68,15 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
       PeerConnectionInterface::IceGatheringState new_state) override;
   void OnIceSelectedCandidatePairChanged(
       const CandidatePairChangeEvent& event) override;
-  void OnAddStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
-  void OnRemoveStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
-  void OnDataChannel(rtc::scoped_refptr<DataChannelInterface> channel) override;
+  void OnAddStream(scoped_refptr<MediaStreamInterface> stream) override;
+  void OnRemoveStream(scoped_refptr<MediaStreamInterface> stream) override;
+  void OnDataChannel(scoped_refptr<DataChannelInterface> channel) override;
   void OnRenegotiationNeeded() override;
-  void OnAddTrack(rtc::scoped_refptr<RtpReceiverInterface> receiver,
-                  const std::vector<rtc::scoped_refptr<MediaStreamInterface>>&
-                      streams) override;
-  void OnTrack(
-      rtc::scoped_refptr<RtpTransceiverInterface> transceiver) override;
-  void OnRemoveTrack(
-      rtc::scoped_refptr<RtpReceiverInterface> receiver) override;
+  void OnAddTrack(
+      scoped_refptr<RtpReceiverInterface> receiver,
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams) override;
+  void OnTrack(scoped_refptr<RtpTransceiverInterface> transceiver) override;
+  void OnRemoveTrack(scoped_refptr<RtpReceiverInterface> receiver) override;
 
  private:
   typedef std::map<MediaStreamInterface*, JavaMediaStream>
@@ -90,12 +88,12 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
   // Otherwise, create a new Java MediaStream. Returns a global jobject.
   JavaMediaStream& GetOrCreateJavaStream(
       JNIEnv* env,
-      const rtc::scoped_refptr<MediaStreamInterface>& stream);
+      const scoped_refptr<MediaStreamInterface>& stream);
 
   // Converts array of streams, creating or re-using Java streams as necessary.
   ScopedJavaLocalRef<jobjectArray> NativeToJavaMediaStreamArray(
       JNIEnv* jni,
-      const std::vector<rtc::scoped_refptr<MediaStreamInterface>>& streams);
+      const std::vector<scoped_refptr<MediaStreamInterface>>& streams);
 
   const ScopedJavaGlobalRef<jobject> j_observer_global_;
 
@@ -115,21 +113,19 @@ class PeerConnectionObserverJni : public PeerConnectionObserver {
 // Also stores reference to the deprecated PeerConnection constraints for now.
 class OwnedPeerConnection {
  public:
-  OwnedPeerConnection(
-      rtc::scoped_refptr<PeerConnectionInterface> peer_connection,
-      std::unique_ptr<PeerConnectionObserver> observer);
+  OwnedPeerConnection(scoped_refptr<PeerConnectionInterface> peer_connection,
+                      std::unique_ptr<PeerConnectionObserver> observer);
   // Deprecated. PC constraints are deprecated.
-  OwnedPeerConnection(
-      rtc::scoped_refptr<PeerConnectionInterface> peer_connection,
-      std::unique_ptr<PeerConnectionObserver> observer,
-      std::unique_ptr<MediaConstraints> constraints);
+  OwnedPeerConnection(scoped_refptr<PeerConnectionInterface> peer_connection,
+                      std::unique_ptr<PeerConnectionObserver> observer,
+                      std::unique_ptr<MediaConstraints> constraints);
   ~OwnedPeerConnection();
 
   PeerConnectionInterface* pc() const { return peer_connection_.get(); }
   const MediaConstraints* constraints() const { return constraints_.get(); }
 
  private:
-  rtc::scoped_refptr<PeerConnectionInterface> peer_connection_;
+  scoped_refptr<PeerConnectionInterface> peer_connection_;
   std::unique_ptr<PeerConnectionObserver> observer_;
   std::unique_ptr<MediaConstraints> constraints_;
 };

@@ -128,7 +128,7 @@ void AndroidVideoTrackSource::OnFrameCaptured(
     jint j_rotation,
     jlong j_timestamp_ns,
     const JavaRef<jobject>& j_video_frame_buffer) {
-  rtc::scoped_refptr<VideoFrameBuffer> buffer =
+  scoped_refptr<VideoFrameBuffer> buffer =
       JavaToNativeFrameBuffer(env, j_video_frame_buffer);
   const VideoRotation rotation = jintToVideoRotation(j_rotation);
 

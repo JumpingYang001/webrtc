@@ -231,7 +231,7 @@ ScopedJavaLocalRef<jstring> NativeToJavaString(
 
 ScopedJavaLocalRef<jbyteArray> NativeToJavaByteArray(
     JNIEnv* env,
-    rtc::ArrayView<int8_t> container) {
+    ArrayView<int8_t> container) {
   jni_zero::ScopedJavaLocalRef<jbyteArray> jarray(
       env, env->NewByteArray(container.size()));
   int8_t* array_ptr =
@@ -243,7 +243,7 @@ ScopedJavaLocalRef<jbyteArray> NativeToJavaByteArray(
 
 ScopedJavaLocalRef<jintArray> NativeToJavaIntArray(
     JNIEnv* env,
-    rtc::ArrayView<int32_t> container) {
+    ArrayView<int32_t> container) {
   jni_zero::ScopedJavaLocalRef<jintArray> jarray(
       env, env->NewIntArray(container.size()));
   int32_t* array_ptr =

@@ -22,7 +22,7 @@ namespace jni {
 // Creates java PeerConnectionFactory with specified `pcf`.
 jobject NativeToJavaPeerConnectionFactory(
     JNIEnv* jni,
-    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
+    scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
     std::unique_ptr<Thread> network_thread,
     std::unique_ptr<Thread> worker_thread,

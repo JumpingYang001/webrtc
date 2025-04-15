@@ -64,7 +64,7 @@ class OpenSLESRecorder : public AudioInput {
   static const int kNumOfOpenSLESBuffers = 2;
 
   OpenSLESRecorder(const AudioParameters& audio_parameters,
-                   rtc::scoped_refptr<OpenSLEngineManager> engine_manager);
+                   webrtc::scoped_refptr<OpenSLEngineManager> engine_manager);
   ~OpenSLESRecorder() override;
 
   int Init() override;
@@ -149,7 +149,7 @@ class OpenSLESRecorder : public AudioInput {
   bool initialized_;
   bool recording_;
 
-  const rtc::scoped_refptr<OpenSLEngineManager> engine_manager_;
+  const webrtc::scoped_refptr<OpenSLEngineManager> engine_manager_;
   // This interface exposes creation methods for all the OpenSL ES object types.
   // It is the OpenSL ES API entry point.
   SLEngineItf engine_;

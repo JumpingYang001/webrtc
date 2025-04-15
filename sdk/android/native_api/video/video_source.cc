@@ -28,11 +28,10 @@ class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
                            bool is_screencast,
                            bool align_timestamps)
       : android_video_track_source_(
-            rtc::make_ref_counted<jni::AndroidVideoTrackSource>(
-                signaling_thread,
-                env,
-                is_screencast,
-                align_timestamps)),
+            make_ref_counted<jni::AndroidVideoTrackSource>(signaling_thread,
+                                                           env,
+                                                           is_screencast,
+                                                           align_timestamps)),
         native_capturer_observer_(jni::CreateJavaNativeCapturerObserver(
             env,
             android_video_track_source_)) {}
@@ -93,22 +92,22 @@ class JavaVideoTrackSourceImpl : public JavaVideoTrackSourceInterface {
   bool SupportsEncodedOutput() const override { return false; }
   void GenerateKeyFrame() override {}
   void AddEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override {}
+      VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override {}
   void RemoveEncodedSink(
-      rtc::VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override {}
+      VideoSinkInterface<webrtc::RecordableEncodedFrame>* sink) override {}
 
-  rtc::scoped_refptr<jni::AndroidVideoTrackSource> android_video_track_source_;
+  scoped_refptr<jni::AndroidVideoTrackSource> android_video_track_source_;
   ScopedJavaGlobalRef<jobject> native_capturer_observer_;
 };
 
 }  // namespace
 
-rtc::scoped_refptr<JavaVideoTrackSourceInterface> CreateJavaVideoSource(
+scoped_refptr<JavaVideoTrackSourceInterface> CreateJavaVideoSource(
     JNIEnv* jni,
     Thread* signaling_thread,
     bool is_screencast,
     bool align_timestamps) {
-  return rtc::make_ref_counted<JavaVideoTrackSourceImpl>(
+  return make_ref_counted<JavaVideoTrackSourceImpl>(
       jni, signaling_thread, is_screencast, align_timestamps);
 }
 

@@ -62,7 +62,7 @@ class OpenSLESPlayer : public AudioOutput {
   static const int kNumOfOpenSLESBuffers = 2;
 
   OpenSLESPlayer(const AudioParameters& audio_parameters,
-                 rtc::scoped_refptr<OpenSLEngineManager> engine_manager);
+                 webrtc::scoped_refptr<OpenSLEngineManager> engine_manager);
   ~OpenSLESPlayer() override;
 
   int Init() override;
@@ -163,7 +163,7 @@ class OpenSLESPlayer : public AudioOutput {
   // Example (kNumOfOpenSLESBuffers = 2): counts 0, 1, 0, 1, ...
   int buffer_index_;
 
-  const rtc::scoped_refptr<OpenSLEngineManager> engine_manager_;
+  const webrtc::scoped_refptr<OpenSLEngineManager> engine_manager_;
   // This interface exposes creation methods for all the OpenSL ES object types.
   // It is the OpenSL ES API entry point.
   SLEngineItf engine_;

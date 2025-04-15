@@ -21,7 +21,7 @@ namespace jni {
 
 ScopedJavaLocalRef<jobject> NativeToJavaRtpSender(
     JNIEnv* env,
-    rtc::scoped_refptr<RtpSenderInterface> sender) {
+    scoped_refptr<RtpSenderInterface> sender) {
   if (!sender)
     return nullptr;
   // Sender is now owned by the Java object, and will be freed from
@@ -104,7 +104,7 @@ static void JNI_RtpSender_SetFrameEncryptor(JNIEnv* jni,
                                             jlong j_rtp_sender_pointer,
                                             jlong j_frame_encryptor_pointer) {
   reinterpret_cast<RtpSenderInterface*>(j_rtp_sender_pointer)
-      ->SetFrameEncryptor(rtc::scoped_refptr<FrameEncryptorInterface>(
+      ->SetFrameEncryptor(scoped_refptr<FrameEncryptorInterface>(
           reinterpret_cast<FrameEncryptorInterface*>(
               j_frame_encryptor_pointer)));
 }

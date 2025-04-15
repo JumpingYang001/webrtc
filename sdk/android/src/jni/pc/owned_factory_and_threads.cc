@@ -20,7 +20,7 @@ OwnedFactoryAndThreads::OwnedFactoryAndThreads(
     std::unique_ptr<Thread> network_thread,
     std::unique_ptr<Thread> worker_thread,
     std::unique_ptr<Thread> signaling_thread,
-    const rtc::scoped_refptr<PeerConnectionFactoryInterface>& factory)
+    const scoped_refptr<PeerConnectionFactoryInterface>& factory)
     : socket_factory_(std::move(socket_factory)),
       network_thread_(std::move(network_thread)),
       worker_thread_(std::move(worker_thread)),

@@ -95,7 +95,7 @@ bool IsLowLatencyOutputSupported(JNIEnv* env,
                                  const JavaRef<jobject>& j_context);
 
 // Glue together an audio input and audio output to get an AudioDeviceModule.
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(
     AudioDeviceModule::AudioLayer audio_layer,
     bool is_stereo_playout_supported,
     bool is_stereo_record_supported,

@@ -207,8 +207,8 @@ aaudio_data_callback_result_t AAudioPlayer::OnDataCallback(void* audio_data,
     memset(audio_data, 0, num_bytes);
   } else {
     fine_audio_buffer_->GetPlayoutData(
-        rtc::MakeArrayView(static_cast<int16_t*>(audio_data),
-                           aaudio_.samples_per_frame() * num_frames),
+        webrtc::MakeArrayView(static_cast<int16_t*>(audio_data),
+                              aaudio_.samples_per_frame() * num_frames),
         static_cast<int>(latency_millis_ + 0.5));
   }
 

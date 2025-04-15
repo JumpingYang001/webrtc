@@ -26,14 +26,13 @@ static jlong JNI_CallSessionFileRotatingLogSink_AddSink(
   CallSessionFileRotatingLogSink* sink =
       new CallSessionFileRotatingLogSink(dir_path, j_maxFileSize);
   if (!sink->Init()) {
-    RTC_LOG_V(rtc::LoggingSeverity::LS_WARNING)
+    RTC_LOG_V(LoggingSeverity::LS_WARNING)
         << "Failed to init CallSessionFileRotatingLogSink for path "
         << dir_path;
     delete sink;
     return 0;
   }
-  rtc::LogMessage::AddLogToStream(
-      sink, static_cast<rtc::LoggingSeverity>(j_severity));
+  LogMessage::AddLogToStream(sink, static_cast<LoggingSeverity>(j_severity));
   return jlongFromPointer(sink);
 }
 
@@ -41,7 +40,7 @@ static void JNI_CallSessionFileRotatingLogSink_DeleteSink(JNIEnv* jni,
                                                           jlong j_sink) {
   CallSessionFileRotatingLogSink* sink =
       reinterpret_cast<CallSessionFileRotatingLogSink*>(j_sink);
-  rtc::LogMessage::RemoveLogToStream(sink);
+  LogMessage::RemoveLogToStream(sink);
   delete sink;
 }
 
@@ -53,7 +52,7 @@ JNI_CallSessionFileRotatingLogSink_GetLogData(
   CallSessionFileRotatingStreamReader file_reader(dir_path);
   size_t log_size = file_reader.GetSize();
   if (log_size == 0) {
-    RTC_LOG_V(rtc::LoggingSeverity::LS_WARNING)
+    RTC_LOG_V(LoggingSeverity::LS_WARNING)
         << "CallSessionFileRotatingStream returns 0 size for path " << dir_path;
     return jni_zero::ScopedJavaLocalRef<jbyteArray>(jni, jni->NewByteArray(0));
   }

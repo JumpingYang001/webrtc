@@ -46,10 +46,10 @@ JNI_RtcCertificatePem_GenerateCertificate(
     JNIEnv* jni,
     const jni_zero::JavaParamRef<jobject>& j_key_type,
     jlong j_expires) {
-  rtc::KeyType key_type = JavaToNativeKeyType(jni, j_key_type);
+  KeyType key_type = JavaToNativeKeyType(jni, j_key_type);
   uint64_t expires = (uint64_t)j_expires;
-  rtc::scoped_refptr<RTCCertificate> certificate =
-      RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(key_type),
+  scoped_refptr<RTCCertificate> certificate =
+      RTCCertificateGenerator::GenerateCertificate(KeyParams(key_type),
                                                    expires);
   RTCCertificatePEM pem = certificate->ToPEM();
   return Java_RtcCertificatePem_Constructor(

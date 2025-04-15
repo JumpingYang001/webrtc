@@ -343,7 +343,7 @@ int32_t VideoEncoderWrapper::HandleReturnCode(JNIEnv* jni,
   return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 }
 
-int VideoEncoderWrapper::ParseQp(rtc::ArrayView<const uint8_t> buffer) {
+int VideoEncoderWrapper::ParseQp(ArrayView<const uint8_t> buffer) {
   int qp;
   bool success;
   switch (codec_settings_.codecType) {

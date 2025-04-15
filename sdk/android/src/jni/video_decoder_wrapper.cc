@@ -38,7 +38,7 @@ const int64_t kNumRtpTicksPerMillisec = 90000 / kNumMillisecsPerSec;
 
 template <typename Dst, typename Src>
 inline std::optional<Dst> cast_optional(const std::optional<Src>& value) {
-  return value ? std::optional<Dst>(rtc::dchecked_cast<Dst, Src>(*value))
+  return value ? std::optional<Dst>(dchecked_cast<Dst, Src>(*value))
                : std::nullopt;
 }
 }  // namespace

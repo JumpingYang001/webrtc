@@ -47,7 +47,7 @@ class RtpReceiverObserverJni : public RtpReceiverObserverInterface {
 
 ScopedJavaLocalRef<jobject> NativeToJavaRtpReceiver(
     JNIEnv* env,
-    rtc::scoped_refptr<RtpReceiverInterface> receiver) {
+    scoped_refptr<RtpReceiverInterface> receiver) {
   // Receiver is now owned by Java object, and will be freed from there.
   return Java_RtpReceiver_Constructor(env,
                                       jlongFromPointer(receiver.release()));
@@ -120,7 +120,7 @@ static void JNI_RtpReceiver_SetFrameDecryptor(JNIEnv* jni,
                                               jlong j_rtp_sender_pointer,
                                               jlong j_frame_decryptor_pointer) {
   reinterpret_cast<RtpReceiverInterface*>(j_rtp_sender_pointer)
-      ->SetFrameDecryptor(rtc::scoped_refptr<FrameDecryptorInterface>(
+      ->SetFrameDecryptor(scoped_refptr<FrameDecryptorInterface>(
           reinterpret_cast<FrameDecryptorInterface*>(
               j_frame_decryptor_pointer)));
 }

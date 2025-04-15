@@ -46,7 +46,7 @@ constexpr int kSignal = SIGURG;
 // Note: This class is only meant for use within this file, and for the
 // simplified use case of a single Wait() and a single Signal(), followed by
 // discarding the object (never reused).
-// This is a replacement of rtc::Event that is async-safe and doesn't use
+// This is a replacement of webrtc::Event that is async-safe and doesn't use
 // pthread api. This is necessary since signal handlers cannot allocate memory
 // or use pthread api. This class is ported from Chromium.
 class AsyncSafeWaitableEvent {

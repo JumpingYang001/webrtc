@@ -135,7 +135,7 @@ class AndroidNetworkMonitor : public NetworkMonitorInterface {
   ScopedJavaGlobalRef<jobject> j_network_monitor_;
   Thread* const network_thread_;
   bool started_ RTC_GUARDED_BY(network_thread_) = false;
-  std::map<std::string, NetworkHandle, rtc::AbslStringViewCmp>
+  std::map<std::string, NetworkHandle, AbslStringViewCmp>
       network_handle_by_if_name_ RTC_GUARDED_BY(network_thread_);
   std::map<IPAddress, NetworkHandle> network_handle_by_address_
       RTC_GUARDED_BY(network_thread_);
@@ -159,7 +159,7 @@ class AndroidNetworkMonitor : public NetworkMonitorInterface {
   // of IsAdapterAvailable().
   bool disable_is_adapter_available_ RTC_GUARDED_BY(network_thread_) = false;
 
-  rtc::scoped_refptr<PendingTaskSafetyFlag> safety_flag_
+  scoped_refptr<PendingTaskSafetyFlag> safety_flag_
       RTC_PT_GUARDED_BY(network_thread_) = nullptr;
 
   const FieldTrialsView& field_trials_;

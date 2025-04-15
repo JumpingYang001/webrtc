@@ -30,7 +30,7 @@ class JavaVideoTrackSourceInterface : public VideoTrackSourceInterface {
 };
 
 // Creates an instance of JavaVideoTrackSourceInterface,
-rtc::scoped_refptr<JavaVideoTrackSourceInterface> CreateJavaVideoSource(
+scoped_refptr<JavaVideoTrackSourceInterface> CreateJavaVideoSource(
     JNIEnv* env,
     Thread* signaling_thread,
     bool is_screencast,

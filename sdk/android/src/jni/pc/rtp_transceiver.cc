@@ -62,7 +62,7 @@ RtpTransceiverInit JavaToNativeRtpTransceiverInit(
 
 ScopedJavaLocalRef<jobject> NativeToJavaRtpTransceiver(
     JNIEnv* env,
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+    scoped_refptr<RtpTransceiverInterface> transceiver) {
   if (!transceiver) {
     return nullptr;
   }

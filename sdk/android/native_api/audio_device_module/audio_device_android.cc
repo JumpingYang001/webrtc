@@ -56,7 +56,7 @@ void GetDefaultAudioParameters(JNIEnv* env,
 }  // namespace
 
 #if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
-rtc::scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
     JNIEnv* env,
     jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -74,7 +74,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
       std::make_unique<jni::AAudioPlayer>(output_parameters));
 }
 
-rtc::scoped_refptr<AudioDeviceModule>
+webrtc::scoped_refptr<AudioDeviceModule>
 CreateJavaInputAndAAudioOutputAudioDeviceModule(JNIEnv* env,
                                                 jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -100,7 +100,7 @@ CreateJavaInputAndAAudioOutputAudioDeviceModule(JNIEnv* env,
 }
 #endif
 
-rtc::scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
     JNIEnv* env,
     jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -128,7 +128,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
       std::move(audio_output));
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
     JNIEnv* env,
     jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -138,7 +138,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
   GetDefaultAudioParameters(env, application_context, &input_parameters,
                             &output_parameters);
   // Create ADM from OpenSLESRecorder and OpenSLESPlayer.
-  rtc::scoped_refptr<jni::OpenSLEngineManager> engine_manager(
+  webrtc::scoped_refptr<jni::OpenSLEngineManager> engine_manager(
       new jni::OpenSLEngineManager());
   auto audio_input =
       std::make_unique<jni::OpenSLESRecorder>(input_parameters, engine_manager);
@@ -151,7 +151,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
       std::move(audio_output));
 }
 
-rtc::scoped_refptr<AudioDeviceModule>
+webrtc::scoped_refptr<AudioDeviceModule>
 CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
                                                   jobject application_context) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -169,7 +169,7 @@ CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
       jni::AudioRecordJni::CreateJavaWebRtcAudioRecord(env, j_context,
                                                        j_audio_manager));
 
-  rtc::scoped_refptr<jni::OpenSLEngineManager> engine_manager(
+  webrtc::scoped_refptr<jni::OpenSLEngineManager> engine_manager(
       new jni::OpenSLEngineManager());
   auto audio_output = std::make_unique<jni::OpenSLESPlayer>(
       output_parameters, std::move(engine_manager));
@@ -180,7 +180,7 @@ CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
       std::move(audio_output));
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
     AudioDeviceModule::AudioLayer audio_layer) {
   auto env = AttachCurrentThreadIfNeeded();
   auto j_context = webrtc::GetAppContext(env);

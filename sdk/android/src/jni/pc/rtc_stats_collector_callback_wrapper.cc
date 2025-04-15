@@ -105,7 +105,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaRtcStats(JNIEnv* env,
 
 ScopedJavaLocalRef<jobject> NativeToJavaRtcStatsReport(
     JNIEnv* env,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   ScopedJavaLocalRef<jobject> j_stats_map =
       NativeToJavaMap(env, *report, [](JNIEnv* env, const RTCStats& stats) {
         return std::make_pair(NativeToJavaString(env, stats.id()),
@@ -124,7 +124,7 @@ RTCStatsCollectorCallbackWrapper::RTCStatsCollectorCallbackWrapper(
 RTCStatsCollectorCallbackWrapper::~RTCStatsCollectorCallbackWrapper() = default;
 
 void RTCStatsCollectorCallbackWrapper::OnStatsDelivered(
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   JNIEnv* jni = AttachCurrentThreadIfNeeded();
   Java_RTCStatsCollectorCallback_onStatsDelivered(
       jni, j_callback_global_, NativeToJavaRtcStatsReport(jni, report));

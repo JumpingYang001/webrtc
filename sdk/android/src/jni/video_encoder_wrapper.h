@@ -71,7 +71,7 @@ class VideoEncoderWrapper : public VideoEncoder {
                            const JavaRef<jobject>& j_value,
                            const char* method_name);
 
-  int ParseQp(rtc::ArrayView<const uint8_t> buffer);
+  int ParseQp(ArrayView<const uint8_t> buffer);
 
   CodecSpecificInfo ParseCodecSpecificInfo(const EncodedImage& frame);
 

@@ -89,7 +89,7 @@ DataChannelInit JavaToNativeDataChannelInit(
 
 ScopedJavaLocalRef<jobject> WrapNativeDataChannel(
     JNIEnv* env,
-    rtc::scoped_refptr<DataChannelInterface> channel) {
+    scoped_refptr<DataChannelInterface> channel) {
   if (!channel)
     return nullptr;
   // Channel is now owned by Java object, and will be freed from there.
@@ -154,7 +154,7 @@ static jboolean JNI_DataChannel_Send(
     jboolean binary) {
   std::vector<int8_t> buffer = JavaToNativeByteArray(jni, data);
   bool ret = ExtractNativeDC(jni, j_dc)->Send(
-      DataBuffer(rtc::CopyOnWriteBuffer(buffer.data(), buffer.size()), binary));
+      DataBuffer(CopyOnWriteBuffer(buffer.data(), buffer.size()), binary));
   return ret;
 }
 

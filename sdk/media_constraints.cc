@@ -36,7 +36,7 @@ bool FindConstraint(const MediaConstraints* constraints,
   if (!FindConstraint(constraints, key, &string_value, mandatory_constraints)) {
     return false;
   }
-  return rtc::FromString(string_value, value);
+  return FromString(string_value, value);
 }
 
 // Specialization for std::string, since a string doesn't need conversion.

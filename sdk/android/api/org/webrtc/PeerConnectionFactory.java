@@ -439,10 +439,10 @@ public class PeerConnectionFactory {
 
   /**
    * Create video source with given parameters. If alignTimestamps is false, the caller is
-   * responsible for aligning the frame timestamps to rtc::TimeNanos(). This can be used to achieve
+   * responsible for aligning the frame timestamps to webrtc::TimeNanos(). This can be used to achieve
    * higher accuracy if there is a big delay between frame creation and frames being delivered to
    * the returned video source. If alignTimestamps is true, timestamps will be aligned to
-   * rtc::TimeNanos() when they arrive to the returned video source.
+   * webrtc::TimeNanos() when they arrive to the returned video source.
    */
   public VideoSource createVideoSource(boolean isScreencast, boolean alignTimestamps) {
     checkPeerConnectionFactoryExists();

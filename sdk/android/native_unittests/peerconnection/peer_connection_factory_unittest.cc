@@ -33,17 +33,17 @@ namespace test {
 namespace {
 
 // Create native peer connection factory, that will be wrapped by java one
-rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> CreateTestPCF(
+webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> CreateTestPCF(
     JNIEnv* jni,
-    rtc::Thread* network_thread,
-    rtc::Thread* worker_thread,
-    rtc::Thread* signaling_thread) {
+    webrtc::Thread* network_thread,
+    webrtc::Thread* worker_thread,
+    webrtc::Thread* signaling_thread) {
   // talk/ assumes pretty widely that the current Thread is ThreadManager'd, but
   // ThreadManager only WrapCurrentThread()s the thread where it is first
   // created.  Since the semantics around when auto-wrapping happens in
   // webrtc/rtc_base/ are convoluted, we simply wrap here to avoid having to
   // think about ramifications of auto-wrapping there.
-  rtc::ThreadManager::Instance()->WrapCurrentThread();
+  webrtc::ThreadManager::Instance()->WrapCurrentThread();
 
   PeerConnectionFactoryDependencies pcf_deps;
   pcf_deps.network_thread = network_thread;
@@ -75,22 +75,22 @@ TEST(PeerConnectionFactoryTest, NativeToJavaPeerConnectionFactory) {
       jni);
   RTC_LOG(LS_INFO) << "Java peer connection factory initialized.";
 
-  auto socket_server = std::make_unique<rtc::PhysicalSocketServer>();
+  auto socket_server = std::make_unique<webrtc::PhysicalSocketServer>();
 
   // Create threads.
-  auto network_thread = std::make_unique<rtc::Thread>(socket_server.get());
+  auto network_thread = std::make_unique<webrtc::Thread>(socket_server.get());
   network_thread->SetName("network_thread", nullptr);
   RTC_CHECK(network_thread->Start()) << "Failed to start thread";
 
-  std::unique_ptr<rtc::Thread> worker_thread = rtc::Thread::Create();
+  std::unique_ptr<webrtc::Thread> worker_thread = webrtc::Thread::Create();
   worker_thread->SetName("worker_thread", nullptr);
   RTC_CHECK(worker_thread->Start()) << "Failed to start thread";
 
-  std::unique_ptr<rtc::Thread> signaling_thread = rtc::Thread::Create();
+  std::unique_ptr<webrtc::Thread> signaling_thread = webrtc::Thread::Create();
   signaling_thread->SetName("signaling_thread", NULL);
   RTC_CHECK(signaling_thread->Start()) << "Failed to start thread";
 
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory =
+  webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory =
       CreateTestPCF(jni, network_thread.get(), worker_thread.get(),
                     signaling_thread.get());
 

@@ -31,11 +31,10 @@ TEST(JavaCodecsWrapperTest, JavaToNativeVideoCodecInfo) {
   const SdpVideoFormat video_format =
       JavaToNativeVideoCodecInfo(env, j_video_codec_info.obj());
 
-  EXPECT_EQ(cricket::kH264CodecName, video_format.name);
-  const auto it =
-      video_format.parameters.find(cricket::kH264FmtpProfileLevelId);
+  EXPECT_EQ(webrtc::kH264CodecName, video_format.name);
+  const auto it = video_format.parameters.find(webrtc::kH264FmtpProfileLevelId);
   ASSERT_NE(it, video_format.parameters.end());
-  EXPECT_EQ(cricket::kH264ProfileLevelConstrainedBaseline, it->second);
+  EXPECT_EQ(webrtc::kH264ProfileLevelConstrainedBaseline, it->second);
 }
 
 TEST(JavaCodecsWrapperTest, JavaToNativeResolutionBitrateLimits) {
