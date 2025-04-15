@@ -43,8 +43,7 @@ class ScalabilityStructureWrapper {
   // Returns false and ADD_FAILUREs for frames with invalid references.
   // In particular validates no frame frame reference to frame before frames[0].
   // In error messages frames are indexed starting with 0.
-  bool FrameReferencesAreValid(
-      rtc::ArrayView<const GenericFrameInfo> frames) const;
+  bool FrameReferencesAreValid(ArrayView<const GenericFrameInfo> frames) const;
 
  private:
   ScalableVideoController& structure_controller_;

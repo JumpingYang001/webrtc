@@ -35,7 +35,7 @@ const uint8_t start_code_h264[] = {0, 0, 0, 1};
 }  // namespace
 
 H264SpsPpsTracker::FixedBitstream H264SpsPpsTracker::CopyAndFixBitstream(
-    rtc::ArrayView<const uint8_t> bitstream,
+    ArrayView<const uint8_t> bitstream,
     RTPVideoHeader* video_header) {
   RTC_DCHECK(video_header);
   RTC_DCHECK(video_header->codec == kVideoCodecH264);
@@ -206,9 +206,9 @@ void H264SpsPpsTracker::InsertSpsPpsNalus(const std::vector<uint8_t>& sps,
     return;
   }
   std::optional<SpsParser::SpsState> parsed_sps = SpsParser::ParseSps(
-      rtc::ArrayView<const uint8_t>(sps).subview(kNaluHeaderOffset));
+      ArrayView<const uint8_t>(sps).subview(kNaluHeaderOffset));
   std::optional<PpsParser::PpsState> parsed_pps = PpsParser::ParsePps(
-      rtc::ArrayView<const uint8_t>(pps).subview(kNaluHeaderOffset));
+      ArrayView<const uint8_t>(pps).subview(kNaluHeaderOffset));
 
   if (!parsed_sps) {
     RTC_LOG(LS_WARNING) << "Failed to parse SPS.";

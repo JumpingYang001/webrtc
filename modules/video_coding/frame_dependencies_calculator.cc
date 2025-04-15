@@ -27,7 +27,7 @@ namespace webrtc {
 
 absl::InlinedVector<int64_t, 5> FrameDependenciesCalculator::FromBuffersUsage(
     int64_t frame_id,
-    rtc::ArrayView<const CodecBufferUsage> buffers_usage) {
+    ArrayView<const CodecBufferUsage> buffers_usage) {
   absl::InlinedVector<int64_t, 5> dependencies;
   RTC_DCHECK_GT(buffers_usage.size(), 0);
   for (const CodecBufferUsage& buffer_usage : buffers_usage) {

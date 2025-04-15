@@ -70,7 +70,7 @@ class ReceiveCallback : public VCMReceiveCallback {
     return ret;
   }
 
-  rtc::ArrayView<const VideoFrame> GetAllFrames() const { return frames_; }
+  ArrayView<const VideoFrame> GetAllFrames() const { return frames_; }
 
   void OnDroppedFrames(uint32_t frames_dropped) {
     frames_dropped_ += frames_dropped;

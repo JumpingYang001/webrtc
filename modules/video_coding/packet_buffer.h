@@ -62,7 +62,7 @@ class PacketBuffer {
     uint32_t timestamp = 0;
     int times_nacked = -1;
 
-    rtc::CopyOnWriteBuffer video_payload;
+    CopyOnWriteBuffer video_payload;
     RTPVideoHeader video_header;
   };
   struct InsertResult {

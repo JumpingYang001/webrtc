@@ -245,7 +245,7 @@ class VideoProcessor {
   // simulcast_svc_idx -> frame_number.
   std::vector<size_t> last_decoded_frame_num_ RTC_GUARDED_BY(sequence_checker_);
   // simulcast_svc_idx -> buffer.
-  std::vector<rtc::scoped_refptr<I420Buffer>> last_decoded_frame_buffer_
+  std::vector<scoped_refptr<I420Buffer>> last_decoded_frame_buffer_
       RTC_GUARDED_BY(sequence_checker_);
 
   // Time spent in frame encode callback. It is accumulated for layers and

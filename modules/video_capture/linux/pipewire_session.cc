@@ -103,8 +103,8 @@ void PipeWireNode::OnNodeInfo(void* data, const pw_node_info* info) {
 
     vid_str = spa_dict_lookup(info->props, SPA_KEY_DEVICE_VENDOR_ID);
     pid_str = spa_dict_lookup(info->props, SPA_KEY_DEVICE_PRODUCT_ID);
-    vid = vid_str ? rtc::StringToNumber<int>(vid_str) : std::nullopt;
-    pid = pid_str ? rtc::StringToNumber<int>(pid_str) : std::nullopt;
+    vid = vid_str ? webrtc::StringToNumber<int>(vid_str) : std::nullopt;
+    pid = pid_str ? webrtc::StringToNumber<int>(pid_str) : std::nullopt;
 
     if (vid && pid) {
       char model_str[10];

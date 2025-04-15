@@ -93,7 +93,7 @@ class SimulcastTestFixtureImpl final : public SimulcastTestFixture {
   std::unique_ptr<VideoDecoder> decoder_;
   MockDecodedImageCallback decoder_callback_;
   VideoCodec settings_;
-  rtc::scoped_refptr<I420Buffer> input_buffer_;
+  scoped_refptr<I420Buffer> input_buffer_;
   std::unique_ptr<VideoFrame> input_frame_;
   std::unique_ptr<SimulcastRateAllocator> rate_allocator_;
   VideoCodecType codec_type_;

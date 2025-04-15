@@ -84,14 +84,14 @@ class VideoCodecInitializerTest : public ::testing::Test {
       ASSERT_FALSE(num_spatial_streams.has_value());
       VideoCodecVP8 vp8_settings = VideoEncoder::GetDefaultVp8Settings();
       vp8_settings.numberOfTemporalLayers = num_temporal_streams;
-      config_.encoder_specific_settings = rtc::make_ref_counted<
+      config_.encoder_specific_settings = make_ref_counted<
           webrtc::VideoEncoderConfig::Vp8EncoderSpecificSettings>(vp8_settings);
     } else if (type == VideoCodecType::kVideoCodecVP9) {
       ASSERT_TRUE(num_spatial_streams.has_value());
       VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
       vp9_settings.numberOfSpatialLayers = num_spatial_streams.value();
       vp9_settings.numberOfTemporalLayers = num_temporal_streams;
-      config_.encoder_specific_settings = rtc::make_ref_counted<
+      config_.encoder_specific_settings = make_ref_counted<
           webrtc::VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
     }
   }

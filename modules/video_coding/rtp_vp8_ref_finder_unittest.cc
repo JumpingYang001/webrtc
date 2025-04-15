@@ -44,7 +44,7 @@ namespace {
 MATCHER_P2(HasIdAndRefs, id, refs, "") {
   return Matches(Eq(id))(arg->Id()) &&
          Matches(UnorderedElementsAreArray(refs))(
-             rtc::ArrayView<int64_t>(arg->references, arg->num_references));
+             ArrayView<int64_t>(arg->references, arg->num_references));
 }
 
 Matcher<const std::vector<std::unique_ptr<EncodedFrame>>&>

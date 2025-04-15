@@ -77,7 +77,7 @@ bool HasSps(const H26xPacketBuffer::Packet& packet) {
   });
 }
 
-int64_t* GetContinuousSequence(rtc::ArrayView<int64_t> last_continuous,
+int64_t* GetContinuousSequence(ArrayView<int64_t> last_continuous,
                                int64_t unwrapped_seq_num) {
   for (int64_t& last : last_continuous) {
     if (unwrapped_seq_num - 1 == last) {
@@ -361,9 +361,9 @@ void H26xPacketBuffer::InsertSpsPpsNalus(const std::vector<uint8_t>& sps,
     return;
   }
   std::optional<SpsParser::SpsState> parsed_sps = SpsParser::ParseSps(
-      rtc::ArrayView<const uint8_t>(sps).subview(kNaluHeaderOffset));
+      ArrayView<const uint8_t>(sps).subview(kNaluHeaderOffset));
   std::optional<PpsParser::PpsState> parsed_pps = PpsParser::ParsePps(
-      rtc::ArrayView<const uint8_t>(pps).subview(kNaluHeaderOffset));
+      ArrayView<const uint8_t>(pps).subview(kNaluHeaderOffset));
 
   if (!parsed_sps) {
     RTC_LOG(LS_WARNING) << "Failed to parse SPS.";
@@ -408,7 +408,7 @@ bool H26xPacketBuffer::FixH264Packet(Packet& packet) {
   RTPVideoHeaderH264& h264_header =
       std::get<RTPVideoHeaderH264>(video_header.video_type_header);
 
-  rtc::CopyOnWriteBuffer result;
+  CopyOnWriteBuffer result;
 
   if (h264_idr_only_keyframes_allowed_) {
     // Check if sps and pps insertion is needed.

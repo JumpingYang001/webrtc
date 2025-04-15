@@ -45,9 +45,9 @@ class RTC_EXPORT VideoCaptureImpl : public VideoCaptureModule {
    *   deviceUniqueIdUTF8 -  name of the device. Available names can be found by
    * using GetDeviceName
    */
-  static rtc::scoped_refptr<VideoCaptureModule> Create(
+  static scoped_refptr<VideoCaptureModule> Create(
       const char* deviceUniqueIdUTF8);
-  static rtc::scoped_refptr<VideoCaptureModule> Create(
+  static scoped_refptr<VideoCaptureModule> Create(
       VideoCaptureOptions* options,
       const char* deviceUniqueIdUTF8);
 

@@ -202,7 +202,7 @@ std::unique_ptr<ScalableVideoController> CreateVp9ScalabilityStructure(
 }
 
 vpx_svc_ref_frame_config_t Vp9References(
-    rtc::ArrayView<const ScalableVideoController::LayerFrameConfig> layers) {
+    ArrayView<const ScalableVideoController::LayerFrameConfig> layers) {
   vpx_svc_ref_frame_config_t ref_config = {};
   for (const ScalableVideoController::LayerFrameConfig& layer_frame : layers) {
     const auto& buffers = layer_frame.Buffers();
@@ -1174,9 +1174,9 @@ int LibvpxVp9Encoder::Encode(const VideoFrame& input_image,
 
   // In case we need to map the buffer, `mapped_buffer` is used to keep it alive
   // through reference counting until after encoding has finished.
-  rtc::scoped_refptr<const VideoFrameBuffer> mapped_buffer;
+  scoped_refptr<const VideoFrameBuffer> mapped_buffer;
   const I010BufferInterface* i010_buffer;
-  rtc::scoped_refptr<const I010BufferInterface> i010_copy;
+  scoped_refptr<const I010BufferInterface> i010_copy;
   switch (profile_) {
     case VP9Profile::kProfile0: {
       mapped_buffer = PrepareBufferForProfile0(scaled_image);
@@ -2070,13 +2070,13 @@ void LibvpxVp9Encoder::MaybeRewrapRawWithFormat(const vpx_img_fmt fmt,
   raw_->bit_depth = (fmt == VPX_IMG_FMT_I42016) ? 16 : 8;
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> LibvpxVp9Encoder::PrepareBufferForProfile0(
-    rtc::scoped_refptr<VideoFrameBuffer> buffer) {
+scoped_refptr<VideoFrameBuffer> LibvpxVp9Encoder::PrepareBufferForProfile0(
+    scoped_refptr<VideoFrameBuffer> buffer) {
   absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats>
       supported_formats = {VideoFrameBuffer::Type::kI420,
                            VideoFrameBuffer::Type::kNV12};
 
-  rtc::scoped_refptr<VideoFrameBuffer> mapped_buffer;
+  scoped_refptr<VideoFrameBuffer> mapped_buffer;
   if (buffer->type() != VideoFrameBuffer::Type::kNative) {
     // `buffer` is already mapped.
     mapped_buffer = buffer;

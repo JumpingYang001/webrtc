@@ -18,7 +18,7 @@ VideoCaptureModule::DeviceInfo* VideoCaptureImpl::CreateDeviceInfo() {
   return nullptr;
 }
 
-rtc::scoped_refptr<VideoCaptureModule> VideoCaptureImpl::Create(
+webrtc::scoped_refptr<VideoCaptureModule> VideoCaptureImpl::Create(
     const char* device_id) {
   return nullptr;
 }

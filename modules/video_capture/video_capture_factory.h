@@ -29,9 +29,9 @@ class RTC_EXPORT VideoCaptureFactory {
   // id - unique identifier of this video capture module object.
   // deviceUniqueIdUTF8 - name of the device.
   //                      Available names can be found by using GetDeviceName
-  static rtc::scoped_refptr<VideoCaptureModule> Create(
+  static scoped_refptr<VideoCaptureModule> Create(
       const char* deviceUniqueIdUTF8);
-  static rtc::scoped_refptr<VideoCaptureModule> Create(
+  static scoped_refptr<VideoCaptureModule> Create(
       VideoCaptureOptions* options,
       const char* deviceUniqueIdUTF8);
 

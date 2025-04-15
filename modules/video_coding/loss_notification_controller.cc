@@ -114,7 +114,7 @@ void LossNotificationController::OnAssembledFrame(
     uint16_t first_seq_num,
     int64_t frame_id,
     bool discardable,
-    rtc::ArrayView<const int64_t> frame_dependencies) {
+    ArrayView<const int64_t> frame_dependencies) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
   DiscardOldInformation();  // Prevent memory overconsumption.
@@ -140,7 +140,7 @@ void LossNotificationController::DiscardOldInformation() {
 }
 
 bool LossNotificationController::AllDependenciesDecodable(
-    rtc::ArrayView<const int64_t> frame_dependencies) const {
+    ArrayView<const int64_t> frame_dependencies) const {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
   // Due to packet reordering, frame buffering and asynchronous decoders, it is

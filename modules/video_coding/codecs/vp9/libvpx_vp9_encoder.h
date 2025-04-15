@@ -134,8 +134,8 @@ class LibvpxVp9Encoder : public VideoEncoder {
   // versions of `buffer`. Returns the buffer that got referenced as a result,
   // allowing the caller to keep a reference to it until after encoding has
   // finished. On failure to convert the buffer, null is returned.
-  rtc::scoped_refptr<VideoFrameBuffer> PrepareBufferForProfile0(
-      rtc::scoped_refptr<VideoFrameBuffer> buffer);
+  scoped_refptr<VideoFrameBuffer> PrepareBufferForProfile0(
+      scoped_refptr<VideoFrameBuffer> buffer);
 
   const Environment env_;
   const std::unique_ptr<LibvpxInterface> libvpx_;

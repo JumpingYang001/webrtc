@@ -100,8 +100,7 @@ void ConfigureSimulcast(VideoCodec* codec_settings) {
   encoder_config.simulcast_layers.resize(
       codec_settings->numberOfSimulcastStreams);
   VideoEncoder::EncoderInfo encoder_info;
-  auto stream_factory =
-      rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+  auto stream_factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
   const std::vector<VideoStream> streams = stream_factory->CreateEncoderStreams(
       trials, codec_settings->width, codec_settings->height, encoder_config);
 
@@ -431,13 +430,13 @@ class VideoCodecTestFixtureImpl::CpuProcessTime final {
   void Start() {
     if (config_.measure_cpu) {
       cpu_time_ -= GetProcessCpuTimeNanos();
-      wallclock_time_ -= rtc::SystemTimeNanos();
+      wallclock_time_ -= SystemTimeNanos();
     }
   }
   void Stop() {
     if (config_.measure_cpu) {
       cpu_time_ += GetProcessCpuTimeNanos();
-      wallclock_time_ += rtc::SystemTimeNanos();
+      wallclock_time_ += SystemTimeNanos();
     }
   }
   void Print() const {
@@ -588,7 +587,7 @@ void VideoCodecTestFixtureImpl::AnalyzeAllFrames(
                                    Unit unit,
                                    absl::string_view non_standard_unit_suffix,
                                    ImprovementDirection improvement_direction) {
-        rtc::StringBuilder metric_name(measurement);
+        StringBuilder metric_name(measurement);
         metric_name << modifier.str() << non_standard_unit_suffix;
         GetGlobalMetricsLogger()->LogSingleValueMetric(
             metric_name.str(), config_.test_name, value, unit,

@@ -43,7 +43,7 @@ TEST(VideoCodecTestOpenH264, ConstantHighBitrate) {
   auto frame_checker =
       std::make_unique<VideoCodecTestFixtureImpl::H264KeyframeChecker>();
   auto config = CreateConfig();
-  config.SetCodecSettings(cricket::kH264CodecName, 1, 1, 1, false, true, false,
+  config.SetCodecSettings(webrtc::kH264CodecName, 1, 1, 1, false, true, false,
                           kCifWidth, kCifHeight);
   config.encoded_frame_checker = frame_checker.get();
   auto fixture = CreateVideoCodecTestFixture(config);
@@ -67,7 +67,7 @@ TEST(VideoCodecTestOpenH264, SingleNalUnit) {
   config.h264_codec_settings.packetization_mode =
       H264PacketizationMode::SingleNalUnit;
   config.max_payload_size_bytes = 500;
-  config.SetCodecSettings(cricket::kH264CodecName, 1, 1, 1, false, true, false,
+  config.SetCodecSettings(webrtc::kH264CodecName, 1, 1, 1, false, true, false,
                           kCifWidth, kCifHeight);
   config.encoded_frame_checker = frame_checker.get();
   auto fixture = CreateVideoCodecTestFixture(config);

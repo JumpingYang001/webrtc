@@ -574,11 +574,11 @@ int32_t LibaomAv1Encoder::Encode(
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
-  rtc::scoped_refptr<VideoFrameBuffer> buffer = frame.video_frame_buffer();
+  scoped_refptr<VideoFrameBuffer> buffer = frame.video_frame_buffer();
   absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats>
       supported_formats = {VideoFrameBuffer::Type::kI420,
                            VideoFrameBuffer::Type::kNV12};
-  rtc::scoped_refptr<VideoFrameBuffer> mapped_buffer;
+  scoped_refptr<VideoFrameBuffer> mapped_buffer;
   if (buffer->type() != VideoFrameBuffer::Type::kNative) {
     // `buffer` is already mapped.
     mapped_buffer = buffer;
@@ -592,7 +592,7 @@ int32_t LibaomAv1Encoder::Encode(
       (absl::c_find(supported_formats, mapped_buffer->type()) ==
            supported_formats.end() &&
        mapped_buffer->type() != VideoFrameBuffer::Type::kI420A)) {
-    rtc::scoped_refptr<I420BufferInterface> converted_buffer(buffer->ToI420());
+    scoped_refptr<I420BufferInterface> converted_buffer(buffer->ToI420());
     if (!converted_buffer) {
       RTC_LOG(LS_ERROR) << "Failed to convert "
                         << VideoFrameBufferTypeToString(

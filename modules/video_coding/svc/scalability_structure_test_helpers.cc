@@ -67,7 +67,7 @@ void ScalabilityStructureWrapper::GenerateFrames(
 }
 
 bool ScalabilityStructureWrapper::FrameReferencesAreValid(
-    rtc::ArrayView<const GenericFrameInfo> frames) const {
+    ArrayView<const GenericFrameInfo> frames) const {
   bool valid = true;
   // VP9 and AV1 supports up to 8 buffers. Expect no more buffers are not used.
   std::bitset<8> buffer_contains_frame;

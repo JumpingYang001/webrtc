@@ -1096,7 +1096,7 @@ int LibvpxVp8Encoder::Encode(const VideoFrame& frame,
   // Because `raw_images_` are set to hold pointers to the prepared buffers, we
   // need to keep these buffers alive through reference counting until after
   // encoding is complete.
-  std::vector<rtc::scoped_refptr<VideoFrameBuffer>> prepared_buffers =
+  std::vector<scoped_refptr<VideoFrameBuffer>> prepared_buffers =
       PrepareBuffers(frame.video_frame_buffer());
   if (prepared_buffers.empty()) {
     return WEBRTC_VIDEO_CODEC_ERROR;
@@ -1104,7 +1104,7 @@ int LibvpxVp8Encoder::Encode(const VideoFrame& frame,
   struct CleanUpOnExit {
     explicit CleanUpOnExit(
         vpx_image_t* raw_image,
-        std::vector<rtc::scoped_refptr<VideoFrameBuffer>> prepared_buffers)
+        std::vector<scoped_refptr<VideoFrameBuffer>> prepared_buffers)
         : raw_image_(raw_image),
           prepared_buffers_(std::move(prepared_buffers)) {}
     ~CleanUpOnExit() {
@@ -1113,7 +1113,7 @@ int LibvpxVp8Encoder::Encode(const VideoFrame& frame,
       raw_image_->planes[VPX_PLANE_V] = nullptr;
     }
     vpx_image_t* raw_image_;
-    std::vector<rtc::scoped_refptr<VideoFrameBuffer>> prepared_buffers_;
+    std::vector<scoped_refptr<VideoFrameBuffer>> prepared_buffers_;
   } clean_up_on_exit(&raw_images_[0], std::move(prepared_buffers));
 
   if (send_key_frame) {
@@ -1442,15 +1442,15 @@ void LibvpxVp8Encoder::MaybeUpdatePixelFormat(vpx_img_fmt fmt) {
   }
 }
 
-std::vector<rtc::scoped_refptr<VideoFrameBuffer>>
-LibvpxVp8Encoder::PrepareBuffers(rtc::scoped_refptr<VideoFrameBuffer> buffer) {
+std::vector<scoped_refptr<VideoFrameBuffer>> LibvpxVp8Encoder::PrepareBuffers(
+    scoped_refptr<VideoFrameBuffer> buffer) {
   RTC_DCHECK_EQ(buffer->width(), raw_images_[0].d_w);
   RTC_DCHECK_EQ(buffer->height(), raw_images_[0].d_h);
   absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats>
       supported_formats = {VideoFrameBuffer::Type::kI420,
                            VideoFrameBuffer::Type::kNV12};
 
-  rtc::scoped_refptr<VideoFrameBuffer> mapped_buffer;
+  scoped_refptr<VideoFrameBuffer> mapped_buffer;
   if (buffer->type() != VideoFrameBuffer::Type::kNative) {
     // `buffer` is already mapped.
     mapped_buffer = buffer;
@@ -1495,7 +1495,7 @@ LibvpxVp8Encoder::PrepareBuffers(rtc::scoped_refptr<VideoFrameBuffer> buffer) {
 
   // Prepare `raw_images_` from `mapped_buffer` and, if simulcast, scaled
   // versions of `buffer`.
-  std::vector<rtc::scoped_refptr<VideoFrameBuffer>> prepared_buffers;
+  std::vector<scoped_refptr<VideoFrameBuffer>> prepared_buffers;
   SetRawImagePlanes(&raw_images_[0], mapped_buffer.get());
   prepared_buffers.push_back(mapped_buffer);
   for (size_t i = 1; i < encoders_.size(); ++i) {

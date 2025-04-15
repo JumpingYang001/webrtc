@@ -111,8 +111,8 @@ class LibvpxVp8Encoder : public VideoEncoder {
   // as a result, allowing the caller to keep references to them until after
   // encoding has finished. On failure to convert the buffer, an empty list is
   // returned.
-  std::vector<rtc::scoped_refptr<VideoFrameBuffer>> PrepareBuffers(
-      rtc::scoped_refptr<VideoFrameBuffer> buffer);
+  std::vector<scoped_refptr<VideoFrameBuffer>> PrepareBuffers(
+      scoped_refptr<VideoFrameBuffer> buffer);
 
   const Environment env_;
   const std::unique_ptr<LibvpxInterface> libvpx_;

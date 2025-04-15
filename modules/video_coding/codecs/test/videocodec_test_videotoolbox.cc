@@ -58,7 +58,7 @@ MAYBE_TEST(VideoCodecTestVideoToolbox, ForemanCif500kbpsH264CBP) {
   const auto frame_checker =
       std::make_unique<VideoCodecTestFixtureImpl::H264KeyframeChecker>();
   auto config = CreateConfig();
-  config.SetCodecSettings(cricket::kH264CodecName, 1, 1, 1, false, false, false,
+  config.SetCodecSettings(webrtc::kH264CodecName, 1, 1, 1, false, false, false,
                           352, 288);
   config.encoded_frame_checker = frame_checker.get();
   auto fixture = CreateTestFixtureWithConfig(config);
@@ -75,7 +75,7 @@ MAYBE_TEST(VideoCodecTestVideoToolbox, ForemanCif500kbpsH264CHP) {
       std::make_unique<VideoCodecTestFixtureImpl::H264KeyframeChecker>();
   auto config = CreateConfig();
   config.h264_codec_settings.profile = H264Profile::kProfileConstrainedHigh;
-  config.SetCodecSettings(cricket::kH264CodecName, 1, 1, 1, false, false, false,
+  config.SetCodecSettings(webrtc::kH264CodecName, 1, 1, 1, false, false, false,
                           352, 288);
   config.encoded_frame_checker = frame_checker.get();
   auto fixture = CreateTestFixtureWithConfig(config);

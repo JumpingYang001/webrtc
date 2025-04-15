@@ -130,7 +130,7 @@ class TestVideoCaptureCallback
   int64_t last_render_time_ms_;
   int incoming_frames_;
   int timing_warnings_;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> last_frame_;
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> last_frame_;
   webrtc::VideoRotation rotate_frame_;
 };
 
@@ -145,7 +145,7 @@ class VideoCaptureTest : public ::testing::Test {
     ASSERT_GT(number_of_devices_, 0u);
   }
 
-  rtc::scoped_refptr<VideoCaptureModule> OpenVideoCaptureDevice(
+  webrtc::scoped_refptr<VideoCaptureModule> OpenVideoCaptureDevice(
       unsigned int device,
       webrtc::VideoSinkInterface<webrtc::VideoFrame>* callback) {
     char device_name[256];
@@ -154,7 +154,7 @@ class VideoCaptureTest : public ::testing::Test {
     EXPECT_EQ(0, device_info_->GetDeviceName(device, device_name, 256,
                                              unique_name, 256));
 
-    rtc::scoped_refptr<VideoCaptureModule> module(
+    webrtc::scoped_refptr<VideoCaptureModule> module(
         VideoCaptureFactory::Create(unique_name));
     if (module.get() == NULL)
       return nullptr;
@@ -191,7 +191,7 @@ TEST_F(VideoCaptureTest, MAYBE_CreateDelete) {
   for (int i = 0; i < 5; ++i) {
     int64_t start_time = webrtc::TimeMillis();
     TestVideoCaptureCallback capture_observer;
-    rtc::scoped_refptr<VideoCaptureModule> module(
+    webrtc::scoped_refptr<VideoCaptureModule> module(
         OpenVideoCaptureDevice(0, &capture_observer));
     ASSERT_TRUE(module.get() != NULL);
 
@@ -235,7 +235,7 @@ TEST_F(VideoCaptureTest, MAYBE_CreateDelete) {
 TEST_F(VideoCaptureTest, MAYBE_Capabilities) {
   TestVideoCaptureCallback capture_observer;
 
-  rtc::scoped_refptr<VideoCaptureModule> module(
+  webrtc::scoped_refptr<VideoCaptureModule> module(
       OpenVideoCaptureDevice(0, &capture_observer));
   ASSERT_TRUE(module.get() != NULL);
 
@@ -299,7 +299,7 @@ TEST_F(VideoCaptureTest, DISABLED_TestTwoCameras) {
   }
 
   TestVideoCaptureCallback capture_observer1;
-  rtc::scoped_refptr<VideoCaptureModule> module1(
+  webrtc::scoped_refptr<VideoCaptureModule> module1(
       OpenVideoCaptureDevice(0, &capture_observer1));
   ASSERT_TRUE(module1.get() != NULL);
   VideoCaptureCapability capability1;
@@ -314,7 +314,7 @@ TEST_F(VideoCaptureTest, DISABLED_TestTwoCameras) {
   capture_observer1.SetExpectedCapability(capability1);
 
   TestVideoCaptureCallback capture_observer2;
-  rtc::scoped_refptr<VideoCaptureModule> module2(
+  webrtc::scoped_refptr<VideoCaptureModule> module2(
       OpenVideoCaptureDevice(1, &capture_observer2));
   ASSERT_TRUE(module1.get() != NULL);
 
@@ -351,7 +351,7 @@ TEST_F(VideoCaptureTest, DISABLED_TestTwoCameras) {
 #endif
 TEST_F(VideoCaptureTest, MAYBE_ConcurrentAccess) {
   TestVideoCaptureCallback capture_observer1;
-  rtc::scoped_refptr<VideoCaptureModule> module1(
+  webrtc::scoped_refptr<VideoCaptureModule> module1(
       OpenVideoCaptureDevice(0, &capture_observer1));
   ASSERT_TRUE(module1.get() != NULL);
   VideoCaptureCapability capability;
@@ -359,7 +359,7 @@ TEST_F(VideoCaptureTest, MAYBE_ConcurrentAccess) {
   capture_observer1.SetExpectedCapability(capability);
 
   TestVideoCaptureCallback capture_observer2;
-  rtc::scoped_refptr<VideoCaptureModule> module2(
+  webrtc::scoped_refptr<VideoCaptureModule> module2(
       OpenVideoCaptureDevice(0, &capture_observer2));
   ASSERT_TRUE(module2.get() != NULL);
   capture_observer2.SetExpectedCapability(capability);

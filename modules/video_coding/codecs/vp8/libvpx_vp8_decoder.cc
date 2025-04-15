@@ -282,9 +282,9 @@ int LibvpxVp8Decoder::ReturnFrame(
   last_frame_width_ = img->d_w;
   last_frame_height_ = img->d_h;
   // Allocate memory for decoded image.
-  rtc::scoped_refptr<VideoFrameBuffer> buffer;
+  scoped_refptr<VideoFrameBuffer> buffer;
 
-  rtc::scoped_refptr<I420Buffer> i420_buffer =
+  scoped_refptr<I420Buffer> i420_buffer =
       buffer_pool_.CreateI420Buffer(img->d_w, img->d_h);
   buffer = i420_buffer;
   if (i420_buffer.get()) {

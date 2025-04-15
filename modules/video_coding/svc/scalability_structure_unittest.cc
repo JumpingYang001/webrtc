@@ -117,11 +117,11 @@ TEST_P(ScalabilityStructureTest,
   EXPECT_EQ(config.num_spatial_layers, static_config->num_spatial_layers);
   EXPECT_EQ(config.num_temporal_layers, static_config->num_temporal_layers);
   EXPECT_THAT(
-      rtc::MakeArrayView(config.scaling_factor_num, config.num_spatial_layers),
+      MakeArrayView(config.scaling_factor_num, config.num_spatial_layers),
       ElementsAreArray(static_config->scaling_factor_num,
                        static_config->num_spatial_layers));
   EXPECT_THAT(
-      rtc::MakeArrayView(config.scaling_factor_den, config.num_spatial_layers),
+      MakeArrayView(config.scaling_factor_den, config.num_spatial_layers),
       ElementsAreArray(static_config->scaling_factor_den,
                        static_config->num_spatial_layers));
 }

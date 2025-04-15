@@ -68,13 +68,12 @@ class ScopedDav1dData {
   Dav1dData data_ = {};
 };
 
-class ScopedDav1dPicture
-    : public rtc::RefCountedNonVirtual<ScopedDav1dPicture> {
+class ScopedDav1dPicture : public RefCountedNonVirtual<ScopedDav1dPicture> {
  public:
   ~ScopedDav1dPicture() { dav1d_picture_unref(&picture_); }
 
   Dav1dPicture& Picture() { return picture_; }
-  using rtc::RefCountedNonVirtual<ScopedDav1dPicture>::HasOneRef;
+  using RefCountedNonVirtual<ScopedDav1dPicture>::HasOneRef;
 
  private:
   Dav1dPicture picture_ = {};
@@ -153,7 +152,7 @@ int32_t Dav1dDecoder::Decode(const EncodedImage& encoded_image,
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
-  rtc::scoped_refptr<ScopedDav1dPicture> scoped_dav1d_picture(
+  scoped_refptr<ScopedDav1dPicture> scoped_dav1d_picture(
       new ScopedDav1dPicture{});
   Dav1dPicture& dav1d_picture = scoped_dav1d_picture->Picture();
   if (int get_picture_res = dav1d_get_picture(context_, &dav1d_picture)) {
@@ -187,7 +186,7 @@ int32_t Dav1dDecoder::Decode(const EncodedImage& encoded_image,
     }
   }
 
-  rtc::scoped_refptr<VideoFrameBuffer> wrapped_buffer;
+  scoped_refptr<VideoFrameBuffer> wrapped_buffer;
   if (dav1d_picture.p.layout == DAV1D_PIXEL_LAYOUT_I420) {
     wrapped_buffer = WrapI420Buffer(
         width, height, static_cast<uint8_t*>(dav1d_picture.data[0]),

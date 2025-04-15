@@ -52,7 +52,7 @@ class IvfFileReaderTest : public ::testing::Test {
                             int spatial_layers_count) {
     EncodedImage frame;
     frame.SetSpatialIndex(spatial_layers_count);
-    rtc::scoped_refptr<EncodedImageBuffer> payload = EncodedImageBuffer::Create(
+    scoped_refptr<EncodedImageBuffer> payload = EncodedImageBuffer::Create(
         sizeof(kDummyPayload) * spatial_layers_count);
     for (int i = 0; i < spatial_layers_count; ++i) {
       memcpy(&payload->data()[i * sizeof(kDummyPayload)], kDummyPayload,

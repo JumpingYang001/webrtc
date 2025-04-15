@@ -111,7 +111,7 @@ void CalculateFrameQuality(const I420BufferInterface& ref_buffer,
     RTC_CHECK_GE(ref_buffer.width(), dec_buffer.width());
     RTC_CHECK_GE(ref_buffer.height(), dec_buffer.height());
     // Downscale reference frame.
-    rtc::scoped_refptr<I420Buffer> scaled_buffer =
+    scoped_refptr<I420Buffer> scaled_buffer =
         I420Buffer::Create(dec_buffer.width(), dec_buffer.height());
     I420Scale(ref_buffer.DataY(), ref_buffer.StrideY(), ref_buffer.DataU(),
               ref_buffer.StrideU(), ref_buffer.DataV(), ref_buffer.StrideV(),
@@ -263,9 +263,8 @@ void VideoProcessor::ProcessFrame() {
   FrameReader::Ratio framerate_scale = FrameReader::Ratio(
       {.num = config_.clip_fps.value_or(config_.codec_settings.maxFramerate),
        .den = static_cast<int>(config_.codec_settings.maxFramerate)});
-  rtc::scoped_refptr<I420BufferInterface> buffer =
-      input_frame_reader_->PullFrame(
-          /*frame_num*/ nullptr, resolution, framerate_scale);
+  scoped_refptr<I420BufferInterface> buffer = input_frame_reader_->PullFrame(
+      /*frame_num*/ nullptr, resolution, framerate_scale);
 
   RTC_CHECK(buffer) << "Tried to read too many frames from the file.";
   const size_t timestamp =
@@ -287,7 +286,7 @@ void VideoProcessor::ProcessFrame() {
     if (config_.reference_width != -1 && config_.reference_height != -1 &&
         (input_frame.width() != config_.reference_width ||
          input_frame.height() != config_.reference_height)) {
-      rtc::scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
+      scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
           config_.codec_settings.width, config_.codec_settings.height);
       scaled_buffer->ScaleFrom(*input_frame.video_frame_buffer()->ToI420());
 
@@ -325,7 +324,7 @@ void VideoProcessor::ProcessFrame() {
 
   if (input_frame.width() != config_.codec_settings.width ||
       input_frame.height() != config_.codec_settings.height) {
-    rtc::scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
+    scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
         config_.codec_settings.width, config_.codec_settings.height);
     scaled_buffer->ScaleFrom(*input_frame.video_frame_buffer()->ToI420());
     input_frame.set_video_frame_buffer(scaled_buffer);
@@ -538,7 +537,7 @@ void VideoProcessor::WriteDecodedFrame(const I420BufferInterface& decoded_frame,
   int input_video_width = config_.codec_settings.width;
   int input_video_height = config_.codec_settings.height;
 
-  rtc::scoped_refptr<I420Buffer> scaled_buffer;
+  scoped_refptr<I420Buffer> scaled_buffer;
   const I420BufferInterface* scaled_frame;
 
   if (decoded_frame.width() == input_video_width &&
@@ -616,7 +615,7 @@ void VideoProcessor::FrameDecoded(const VideoFrame& decoded_frame,
   // Skip quality metrics calculation to not affect CPU usage.
   if (analyze_frame_quality_ || decoded_frame_writers_) {
     // Save last decoded frame to handle possible future drops.
-    rtc::scoped_refptr<I420BufferInterface> i420buffer =
+    scoped_refptr<I420BufferInterface> i420buffer =
         decoded_frame.video_frame_buffer()->ToI420();
 
     // Copy decoded frame to a buffer without padding/stride such that we can

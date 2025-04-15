@@ -149,7 +149,7 @@ class SimulcastTestFixtureImpl::TestDecodedImageCallback
  public:
   TestDecodedImageCallback() : decoded_frames_(0) {}
   int32_t Decoded(VideoFrame& decoded_image) override {
-    rtc::scoped_refptr<I420BufferInterface> i420_buffer =
+    scoped_refptr<I420BufferInterface> i420_buffer =
         decoded_image.video_frame_buffer()->ToI420();
     for (int i = 0; i < decoded_image.width(); ++i) {
       EXPECT_NEAR(kColorY, i420_buffer->DataY()[i], 1);
@@ -192,7 +192,7 @@ void SetPlane(uint8_t* data, uint8_t value, int width, int height, int stride) {
 }
 
 // Fills in an I420Buffer from `plane_colors`.
-void CreateImage(const rtc::scoped_refptr<I420Buffer>& buffer,
+void CreateImage(const scoped_refptr<I420Buffer>& buffer,
                  int plane_colors[kNumOfPlanes]) {
   SetPlane(buffer->MutableDataY(), plane_colors[0], buffer->width(),
            buffer->height(), buffer->StrideY());

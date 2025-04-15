@@ -513,7 +513,7 @@ void Parse(BitstreamReader& br,
 }
 
 std::optional<Vp9UncompressedHeader> ParseUncompressedVp9Header(
-    rtc::ArrayView<const uint8_t> buf) {
+    ArrayView<const uint8_t> buf) {
   BitstreamReader reader(buf);
   Vp9UncompressedHeader frame_info;
   Parse(reader, &frame_info, /*qp_only=*/false);
@@ -526,7 +526,7 @@ std::optional<Vp9UncompressedHeader> ParseUncompressedVp9Header(
 namespace vp9 {
 
 bool GetQp(const uint8_t* buf, size_t length, int* qp) {
-  BitstreamReader reader(rtc::MakeArrayView(buf, length));
+  BitstreamReader reader(MakeArrayView(buf, length));
   Vp9UncompressedHeader frame_info;
   Parse(reader, &frame_info, /*qp_only=*/true);
   if (!reader.Ok()) {

@@ -39,7 +39,7 @@ constexpr uint8_t kAv1FrameWith36x20EncodededAnd32x16RenderResolution[] = {
     0x20, 0x03, 0xe0, 0x01, 0xf2, 0xb0, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,
     0x00, 0xf2, 0x44, 0xd6, 0xa5, 0x3b, 0x7c, 0x8b, 0x7c, 0x8c, 0x6b, 0x9a};
 
-EncodedImage CreateEncodedImage(rtc::ArrayView<const uint8_t> data) {
+EncodedImage CreateEncodedImage(ArrayView<const uint8_t> data) {
   EncodedImage image;
   image.SetEncodedData(EncodedImageBuffer::Create(data.data(), data.size()));
   return image;

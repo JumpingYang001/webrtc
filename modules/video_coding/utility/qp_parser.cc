@@ -58,7 +58,7 @@ std::optional<uint32_t> QpParser::H264QpParser::Parse(const uint8_t* frame_data,
                                                       size_t frame_size) {
   MutexLock lock(&mutex_);
   bitstream_parser_.ParseBitstream(
-      rtc::ArrayView<const uint8_t>(frame_data, frame_size));
+      ArrayView<const uint8_t>(frame_data, frame_size));
   return bitstream_parser_.GetLastSliceQp();
 }
 
@@ -67,7 +67,7 @@ std::optional<uint32_t> QpParser::H265QpParser::Parse(const uint8_t* frame_data,
                                                       size_t frame_size) {
   MutexLock lock(&mutex_);
   bitstream_parser_.ParseBitstream(
-      rtc::ArrayView<const uint8_t>(frame_data, frame_size));
+      ArrayView<const uint8_t>(frame_data, frame_size));
   return bitstream_parser_.GetLastSliceQp();
 }
 #endif

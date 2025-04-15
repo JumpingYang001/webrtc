@@ -128,7 +128,7 @@ std::optional<EncodedImage> IvfFileReader::NextFrame() {
     return std::nullopt;
   }
 
-  rtc::scoped_refptr<EncodedImageBuffer> payload = EncodedImageBuffer::Create();
+  scoped_refptr<EncodedImageBuffer> payload = EncodedImageBuffer::Create();
   std::vector<size_t> layer_sizes;
   // next_frame_header_ have to be presented by the way how it was loaded. If it
   // is missing it means there is a bug in error handling.
