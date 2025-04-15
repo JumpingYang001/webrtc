@@ -17,7 +17,7 @@
 #import "helpers/NSString+StdString.h"
 
 @implementation RTC_OBJC_TYPE (RTCVideoTrack) {
-  rtc::Thread *_workerThread;
+  webrtc::Thread *_workerThread;
   NSMutableArray *_adapters /* accessed on _workerThread */;
 }
 
@@ -31,7 +31,7 @@
   NSParameterAssert(source);
   NSParameterAssert(trackId.length);
   std::string nativeId = [NSString stdStringForString:trackId];
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> track =
+  webrtc::scoped_refptr<webrtc::VideoTrackInterface> track =
       factory.nativeFactory->CreateVideoTrack(source.nativeVideoSource,
                                               nativeId);
   self = [self initWithFactory:factory
@@ -45,7 +45,7 @@
 
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-        nativeTrack:(rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
+        nativeTrack:(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
                         nativeMediaTrack
                type:(RTCMediaStreamTrackType)type {
   NSParameterAssert(factory);
@@ -67,7 +67,7 @@
 
 - (RTC_OBJC_TYPE(RTCVideoSource) *)source {
   if (!_source) {
-    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source(
+    webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> source(
         self.nativeVideoTrack->GetSource());
     if (source) {
       _source =
@@ -97,7 +97,7 @@
       [[RTCVideoRendererAdapter alloc] initWithNativeRenderer:renderer];
   [_adapters addObject:adapter];
   self.nativeVideoTrack->AddOrUpdateSink(adapter.nativeVideoRenderer,
-                                         rtc::VideoSinkWants());
+                                         webrtc::VideoSinkWants());
 }
 
 - (void)removeRenderer:(id<RTC_OBJC_TYPE(RTCVideoRenderer)>)renderer {
@@ -127,8 +127,8 @@
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::VideoTrackInterface>)nativeVideoTrack {
-  return rtc::scoped_refptr<webrtc::VideoTrackInterface>(
+- (webrtc::scoped_refptr<webrtc::VideoTrackInterface>)nativeVideoTrack {
+  return webrtc::scoped_refptr<webrtc::VideoTrackInterface>(
       static_cast<webrtc::VideoTrackInterface *>(self.nativeTrack.get()));
 }
 

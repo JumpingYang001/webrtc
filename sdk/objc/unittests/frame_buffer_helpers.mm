@@ -65,9 +65,9 @@ void DrawGradientInRGBPixelBuffer(CVPixelBufferRef pixelBuffer) {
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 }
 
-rtc::scoped_refptr<webrtc::I420Buffer> CreateI420Gradient(int width,
-                                                          int height) {
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
+webrtc::scoped_refptr<webrtc::I420Buffer> CreateI420Gradient(int width,
+                                                             int height) {
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
       webrtc::I420Buffer::Create(width, height));
   // Initialize with gradient, Y = 128(x/w + y/h), U = 256 x/w, V = 256 y/h
   for (int x = 0; x < width; x++) {
@@ -90,7 +90,7 @@ rtc::scoped_refptr<webrtc::I420Buffer> CreateI420Gradient(int width,
 }
 
 void CopyI420BufferToCVPixelBuffer(
-    rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer,
+    webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer,
     CVPixelBufferRef pixelBuffer) {
   CVPixelBufferLockBaseAddress(pixelBuffer, 0);
 

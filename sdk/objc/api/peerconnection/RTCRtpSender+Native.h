@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
      * is enabled or not.
      */
     - (void)setFrameEncryptor
-    : (rtc::scoped_refptr<webrtc::FrameEncryptorInterface>)frameEncryptor;
+    : (webrtc::scoped_refptr<webrtc::FrameEncryptorInterface>)frameEncryptor;
 
 @end
 

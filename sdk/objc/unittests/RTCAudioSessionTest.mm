@@ -299,12 +299,12 @@
 
   RTC_OBJC_TYPE(RTCAudioSession) *audioSession = mockAudioSession;
 
-  std::unique_ptr<rtc::Thread> thread = rtc::Thread::Create();
+  std::unique_ptr<webrtc::Thread> thread = webrtc::Thread::Create();
   EXPECT_TRUE(thread);
   EXPECT_TRUE(thread->Start());
 
-  rtc::Event waitLock;
-  rtc::Event waitCleanup;
+  webrtc::Event waitLock;
+  webrtc::Event waitCleanup;
   constexpr webrtc::TimeDelta timeout = webrtc::TimeDelta::Seconds(5);
   thread->PostTask([audioSession, &waitLock, &waitCleanup, timeout] {
     [audioSession lockForConfiguration];

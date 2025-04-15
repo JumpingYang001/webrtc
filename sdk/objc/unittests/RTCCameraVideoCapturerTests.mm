@@ -331,7 +331,7 @@ CMSampleBufferRef createTestSampleBufferRef() {
 }
 
 - (void)setExif:(CMSampleBufferRef)sampleBuffer {
-  rtc::ScopedCFTypeRef<CFMutableDictionaryRef> exif(
+  webrtc::ScopedCFTypeRef<CFMutableDictionaryRef> exif(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
                                 0,
                                 &kCFTypeDictionaryKeyCallBacks,

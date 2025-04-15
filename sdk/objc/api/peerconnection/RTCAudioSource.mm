@@ -21,7 +21,7 @@
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeAudioSource:
-        (rtc::scoped_refptr<webrtc::AudioSourceInterface>)nativeAudioSource {
+        (webrtc::scoped_refptr<webrtc::AudioSourceInterface>)nativeAudioSource {
   RTC_DCHECK(factory);
   RTC_DCHECK(nativeAudioSource);
 
@@ -37,7 +37,7 @@
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaSource:
-        (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
+        (webrtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
                  type:(RTCMediaSourceType)type {
   RTC_DCHECK_NOTREACHED();
   return nil;

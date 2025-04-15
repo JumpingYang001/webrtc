@@ -20,7 +20,7 @@
 
 @interface RTCAudioDeviceTests : XCTestCase {
   bool _testEnabled;
-  rtc::scoped_refptr<webrtc::AudioDeviceModule> _audioDeviceModule;
+  webrtc::scoped_refptr<webrtc::AudioDeviceModule> _audioDeviceModule;
   std::unique_ptr<webrtc::ios_adm::AudioDeviceIOS> _audio_device;
 }
 
@@ -122,7 +122,7 @@
   [self.audioSession notifyDidBeginInterruption];
 
   // Wait for notification to propagate.
-  rtc::ThreadManager::ProcessAllMessageQueuesForTesting();
+  webrtc::ThreadManager::ProcessAllMessageQueuesForTesting();
   XCTAssertTrue(_audio_device->IsInterrupted());
 
   // Force it for testing.
@@ -130,7 +130,7 @@
 
   [self.audioSession notifyDidEndInterruptionWithShouldResumeSession:YES];
   // Wait for notification to propagate.
-  rtc::ThreadManager::ProcessAllMessageQueuesForTesting();
+  webrtc::ThreadManager::ProcessAllMessageQueuesForTesting();
   XCTAssertTrue(_audio_device->IsInterrupted());
 
   _audio_device->Init();

@@ -158,8 +158,8 @@ std::unique_ptr<webrtc::VideoEncoder> GetObjCEncoder(
                       kCVPixelFormatType_32ARGB,
                       nil,
                       &pixel_buffer);
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
-      rtc::make_ref_counted<webrtc::ObjCFrameBuffer>([[RTC_OBJC_TYPE(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
+      webrtc::make_ref_counted<webrtc::ObjCFrameBuffer>([[RTC_OBJC_TYPE(
           RTCCVPixelBuffer) alloc] initWithPixelBuffer:pixel_buffer]);
   webrtc::VideoFrame frame = webrtc::VideoFrame::Builder()
                                  .set_video_frame_buffer(buffer)
@@ -182,8 +182,8 @@ std::unique_ptr<webrtc::VideoEncoder> GetObjCEncoder(
                       kCVPixelFormatType_32ARGB,
                       nil,
                       &pixel_buffer);
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
-      rtc::make_ref_counted<webrtc::ObjCFrameBuffer>([[RTC_OBJC_TYPE(
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
+      webrtc::make_ref_counted<webrtc::ObjCFrameBuffer>([[RTC_OBJC_TYPE(
           RTCCVPixelBuffer) alloc] initWithPixelBuffer:pixel_buffer]);
   webrtc::VideoFrame frame = webrtc::VideoFrame::Builder()
                                  .set_video_frame_buffer(buffer)

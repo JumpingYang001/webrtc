@@ -17,10 +17,11 @@
 
 namespace webrtc {
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
     id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
-  return rtc::make_ref_counted<objc_adm::ObjCAudioDeviceModule>(audio_device);
+  return webrtc::make_ref_counted<objc_adm::ObjCAudioDeviceModule>(
+      audio_device);
 }
 
 }  // namespace webrtc

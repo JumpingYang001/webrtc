@@ -31,12 +31,12 @@ constexpr NSTimeInterval kPeferredInputIOBufferDuration = 0.02;
 constexpr NSTimeInterval kPeferredOutputIOBufferDuration = 0.02;
 
 class AudioDeviceDelegateImpl final
-    : public rtc::RefCountedNonVirtual<AudioDeviceDelegateImpl> {
+    : public webrtc::RefCountedNonVirtual<AudioDeviceDelegateImpl> {
  public:
   AudioDeviceDelegateImpl(
-      rtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>
+      webrtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>
           audio_device_module,
-      rtc::Thread* thread)
+      webrtc::Thread* thread)
       : audio_device_module_(audio_device_module), thread_(thread) {
     RTC_DCHECK(audio_device_module_);
     RTC_DCHECK(thread_);
@@ -46,20 +46,20 @@ class AudioDeviceDelegateImpl final
     return audio_device_module_.get();
   }
 
-  rtc::Thread* thread() const { return thread_; }
+  webrtc::Thread* thread() const { return thread_; }
 
   void reset_audio_device_module() { audio_device_module_ = nullptr; }
 
  private:
-  rtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>
+  webrtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>
       audio_device_module_;
-  rtc::Thread* thread_;
+  webrtc::Thread* thread_;
 };
 
 }  // namespace
 
 @implementation ObjCAudioDeviceDelegate {
-  rtc::scoped_refptr<AudioDeviceDelegateImpl> impl_;
+  webrtc::scoped_refptr<AudioDeviceDelegateImpl> impl_;
 }
 
 @synthesize getPlayoutData = getPlayoutData_;
@@ -76,20 +76,20 @@ class AudioDeviceDelegateImpl final
 
 - (instancetype)
     initWithAudioDeviceModule:
-        (rtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>)
+        (webrtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>)
             audioDeviceModule
-            audioDeviceThread:(rtc::Thread*)thread {
+            audioDeviceThread:(webrtc::Thread*)thread {
   RTC_DCHECK_RUN_ON(thread);
   self = [super init];
   if (self) {
-    impl_ = rtc::make_ref_counted<AudioDeviceDelegateImpl>(audioDeviceModule,
-                                                           thread);
+    impl_ = webrtc::make_ref_counted<AudioDeviceDelegateImpl>(audioDeviceModule,
+                                                              thread);
     preferredInputSampleRate_ = kPreferredInputSampleRate;
     preferredInputIOBufferDuration_ = kPeferredInputIOBufferDuration;
     preferredOutputSampleRate_ = kPreferredOutputSampleRate;
     preferredOutputIOBufferDuration_ = kPeferredOutputIOBufferDuration;
 
-    rtc::scoped_refptr<AudioDeviceDelegateImpl> playout_delegate = impl_;
+    webrtc::scoped_refptr<AudioDeviceDelegateImpl> playout_delegate = impl_;
     getPlayoutData_ =
         ^OSStatus(AudioUnitRenderActionFlags* _Nonnull actionFlags,
                   const AudioTimeStamp* _Nonnull timestamp,
@@ -108,7 +108,7 @@ class AudioDeviceDelegateImpl final
           }
         };
 
-    rtc::scoped_refptr<AudioDeviceDelegateImpl> record_delegate = impl_;
+    webrtc::scoped_refptr<AudioDeviceDelegateImpl> record_delegate = impl_;
     deliverRecordedData_ = ^OSStatus(
         AudioUnitRenderActionFlags* _Nonnull actionFlags,
         const AudioTimeStamp* _Nonnull timestamp,
@@ -174,7 +174,7 @@ class AudioDeviceDelegateImpl final
 }
 
 - (void)dispatchAsync:(dispatch_block_t)block {
-  rtc::Thread* thread = impl_->thread();
+  webrtc::Thread* thread = impl_->thread();
   RTC_DCHECK(thread);
   thread->PostTask([block] {
     @autoreleasepool {
@@ -184,7 +184,7 @@ class AudioDeviceDelegateImpl final
 }
 
 - (void)dispatchSync:(dispatch_block_t)block {
-  rtc::Thread* thread = impl_->thread();
+  webrtc::Thread* thread = impl_->thread();
   RTC_DCHECK(thread);
   if (thread->IsCurrent()) {
     @autoreleasepool {

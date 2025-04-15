@@ -300,7 +300,7 @@ constexpr const ToI420WithCropAndScaleSetting
                       NULL,
                       &pixelBufferRef);
 
-  rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
       CreateI420Gradient(1920, 1080);
   CopyI420BufferToCVPixelBuffer(i420Buffer, pixelBufferRef);
 
@@ -370,7 +370,7 @@ constexpr const ToI420WithCropAndScaleSetting
   CVPixelBufferRef pixelBufferRef = NULL;
   CVPixelBufferCreate(NULL, 720, 1280, inputFormat, NULL, &pixelBufferRef);
 
-  rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
       CreateI420Gradient(720, 1280);
   CopyI420BufferToCVPixelBuffer(i420Buffer, pixelBufferRef);
 
@@ -463,7 +463,7 @@ constexpr const ToI420WithCropAndScaleSetting
 }
 
 - (void)toI420WithPixelFormat:(OSType)pixelFormat {
-  rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
       CreateI420Gradient(360, 640);
 
   CVPixelBufferRef pixelBufferRef = NULL;
@@ -491,7 +491,7 @@ constexpr const ToI420WithCropAndScaleSetting
                                   setting:
                                       (const ToI420WithCropAndScaleSetting &)
                                           setting {
-  rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer =
       CreateI420Gradient(setting.inputWidth, setting.inputHeight);
 
   CVPixelBufferRef pixelBufferRef = NULL;

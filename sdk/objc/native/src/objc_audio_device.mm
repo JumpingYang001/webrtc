@@ -88,8 +88,8 @@ int32_t ObjCAudioDeviceModule::Init() {
   if (![audio_device_ isInitialized]) {
     if (audio_device_delegate_ == nil) {
       audio_device_delegate_ = [[ObjCAudioDeviceDelegate alloc]
-          initWithAudioDeviceModule:rtc::scoped_refptr<ObjCAudioDeviceModule>(
-                                        this)
+          initWithAudioDeviceModule:webrtc::scoped_refptr<
+                                        ObjCAudioDeviceModule>(this)
                   audioDeviceThread:thread_];
     }
 
@@ -240,9 +240,9 @@ int32_t ObjCAudioDeviceModule::StopPlayout() {
 int32_t ObjCAudioDeviceModule::PlayoutDelay(uint16_t* delayMS) const {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   *delayMS = static_cast<uint16_t>(
-      rtc::SafeClamp<int>(cached_playout_delay_ms_.load(),
-                          0,
-                          std::numeric_limits<uint16_t>::max()));
+      webrtc::SafeClamp<int>(cached_playout_delay_ms_.load(),
+                             0,
+                             std::numeric_limits<uint16_t>::max()));
   return 0;
 }
 
@@ -389,7 +389,8 @@ void ObjCAudioDeviceModule::UpdateAudioDelay(
     std::atomic<int>& delay_ms, const NSTimeInterval device_latency) {
   RTC_DLOG_F(LS_VERBOSE) << "";
   RTC_DCHECK_RUN_ON(&thread_checker_);
-  int latency_ms = static_cast<int>(rtc::kNumMillisecsPerSec * device_latency);
+  int latency_ms =
+      static_cast<int>(webrtc::kNumMillisecsPerSec * device_latency);
   if (latency_ms <= 0) {
     return;
   }
@@ -447,7 +448,7 @@ OSStatus ObjCAudioDeviceModule::OnDeliverRecordedData(
                audio_buffer->mNumberChannels == 2);
 
     record_fine_audio_buffer_->DeliverRecordedData(
-        rtc::ArrayView<const int16_t>(
+        webrtc::ArrayView<const int16_t>(
             static_cast<int16_t*>(audio_buffer->mData), num_frames),
         cached_recording_delay_ms_.load());
     return noErr;
@@ -524,8 +525,8 @@ OSStatus ObjCAudioDeviceModule::OnGetPlayoutData(
   // Read decoded 16-bit PCM samples from WebRTC into the
   // `io_data` destination buffer.
   playout_fine_audio_buffer_->GetPlayoutData(
-      rtc::ArrayView<int16_t>(static_cast<int16_t*>(audio_buffer->mData),
-                              num_frames * audio_buffer->mNumberChannels),
+      webrtc::ArrayView<int16_t>(static_cast<int16_t*>(audio_buffer->mData),
+                                 num_frames * audio_buffer->mNumberChannels),
       cached_playout_delay_ms_.load());
 
   return noErr;

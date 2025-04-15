@@ -23,12 +23,12 @@ namespace webrtc {
 // Warning: Setting `bypass_voice_processing` will have unpredictable
 // consequences for the audio path in the device. It is not advisable to use in
 // most scenarios.
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
     bool bypass_voice_processing = false);
 
 // If `muted_speech_event_handler` is exist, audio unit will catch speech
 // activity while muted.
-rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
     AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
     bool bypass_voice_processing = false);
 
@@ -36,7 +36,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
 // activity while muted.
 // Provide `error_handler` to receive callbacks on errors such as microphone
 // init failed or playout start failied.
-rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
     AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
     ADMErrorHandler error_handler,
     bool bypass_voice_processing = false);

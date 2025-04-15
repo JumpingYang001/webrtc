@@ -25,12 +25,13 @@ typedef NS_ENUM(NSInteger, RTCMediaSourceType) {
 ()
 
     @property(nonatomic, readonly)
-        rtc::scoped_refptr<webrtc::MediaSourceInterface> nativeMediaSource;
+        webrtc::scoped_refptr<webrtc::MediaSourceInterface>
+            nativeMediaSource;
 
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaSource:
-        (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
+        (webrtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
                  type:(RTCMediaSourceType)type NS_DESIGNATED_INITIALIZER;
 
 + (webrtc::MediaSourceInterface::SourceState)nativeSourceStateForState:

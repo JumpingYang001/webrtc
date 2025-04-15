@@ -86,9 +86,9 @@
     }
     _iceServers = iceServers;
     if (!config.certificates.empty()) {
-      rtc::scoped_refptr<rtc::RTCCertificate> native_cert;
+      webrtc::scoped_refptr<webrtc::RTCCertificate> native_cert;
       native_cert = config.certificates[0];
-      rtc::RTCCertificatePEM native_pem = native_cert->ToPEM();
+      webrtc::RTCCertificatePEM native_pem = native_cert->ToPEM();
       _certificate = [[RTC_OBJC_TYPE(RTCCertificate) alloc]
           initWithPrivateKey:@(native_pem.private_key().c_str())
                  certificate:@(native_pem.certificate().c_str())];
@@ -240,17 +240,17 @@
       _iceConnectionReceivingTimeout;
   nativeConfig->ice_backup_candidate_pair_ping_interval =
       _iceBackupCandidatePairPingInterval;
-  rtc::KeyType keyType =
+  webrtc::KeyType keyType =
       [[self class] nativeEncryptionKeyTypeForKeyType:_keyType];
   if (_certificate != nullptr) {
     // if offered a pemcert use it...
     RTC_LOG(LS_INFO) << "Have configured cert - using it.";
     std::string pem_private_key = [[_certificate private_key] UTF8String];
     std::string pem_certificate = [[_certificate certificate] UTF8String];
-    rtc::RTCCertificatePEM pem =
-        rtc::RTCCertificatePEM(pem_private_key, pem_certificate);
-    rtc::scoped_refptr<rtc::RTCCertificate> certificate =
-        rtc::RTCCertificate::FromPEM(pem);
+    webrtc::RTCCertificatePEM pem =
+        webrtc::RTCCertificatePEM(pem_private_key, pem_certificate);
+    webrtc::scoped_refptr<webrtc::RTCCertificate> certificate =
+        webrtc::RTCCertificate::FromPEM(pem);
     RTC_LOG(LS_INFO) << "Created cert from PEM strings.";
     if (!certificate) {
       RTC_LOG(LS_ERROR) << "Failed to generate certificate from PEM.";
@@ -260,10 +260,10 @@
   } else {
     RTC_LOG(LS_INFO) << "Don't have configured cert.";
     // Generate non-default certificate.
-    if (keyType != rtc::KT_DEFAULT) {
-      rtc::scoped_refptr<rtc::RTCCertificate> certificate =
-          rtc::RTCCertificateGenerator::GenerateCertificate(
-              rtc::KeyParams(keyType), std::optional<uint64_t>());
+    if (keyType != webrtc::KT_DEFAULT) {
+      webrtc::scoped_refptr<webrtc::RTCCertificate> certificate =
+          webrtc::RTCCertificateGenerator::GenerateCertificate(
+              webrtc::KeyParams(keyType), std::optional<uint64_t>());
       if (!certificate) {
         RTCLogError(@"Failed to generate certificate.");
         return nullptr;
@@ -524,13 +524,13 @@
   }
 }
 
-+ (rtc::KeyType)nativeEncryptionKeyTypeForKeyType:
++ (webrtc::KeyType)nativeEncryptionKeyTypeForKeyType:
     (RTCEncryptionKeyType)keyType {
   switch (keyType) {
     case RTCEncryptionKeyTypeRSA:
-      return rtc::KT_RSA;
+      return webrtc::KT_RSA;
     case RTCEncryptionKeyTypeECDSA:
-      return rtc::KT_ECDSA;
+      return webrtc::KT_ECDSA;
   }
 }
 

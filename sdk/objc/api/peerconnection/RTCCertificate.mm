@@ -40,28 +40,28 @@
 
 + (nullable RTC_OBJC_TYPE(RTCCertificate) *)generateCertificateWithParams:
     (NSDictionary *)params {
-  rtc::KeyType keyType = rtc::KT_ECDSA;
+  webrtc::KeyType keyType = webrtc::KT_ECDSA;
   NSString *keyTypeString = [params valueForKey:@"name"];
   if (keyTypeString && [keyTypeString isEqualToString:@"RSASSA-PKCS1-v1_5"]) {
-    keyType = rtc::KT_RSA;
+    keyType = webrtc::KT_RSA;
   }
 
   NSNumber *expires = [params valueForKey:@"expires"];
-  rtc::scoped_refptr<rtc::RTCCertificate> cc_certificate = nullptr;
+  webrtc::scoped_refptr<webrtc::RTCCertificate> cc_certificate = nullptr;
   if (expires != nil) {
     uint64_t expirationTimestamp = [expires unsignedLongLongValue];
-    cc_certificate = rtc::RTCCertificateGenerator::GenerateCertificate(
-        rtc::KeyParams(keyType), expirationTimestamp);
+    cc_certificate = webrtc::RTCCertificateGenerator::GenerateCertificate(
+        webrtc::KeyParams(keyType), expirationTimestamp);
   } else {
-    cc_certificate = rtc::RTCCertificateGenerator::GenerateCertificate(
-        rtc::KeyParams(keyType), std::nullopt);
+    cc_certificate = webrtc::RTCCertificateGenerator::GenerateCertificate(
+        webrtc::KeyParams(keyType), std::nullopt);
   }
   if (!cc_certificate) {
     RTCLogError(@"Failed to generate certificate.");
     return nullptr;
   }
   // grab PEMs and create an NS RTCCerticicate
-  rtc::RTCCertificatePEM pem = cc_certificate->ToPEM();
+  webrtc::RTCCertificatePEM pem = cc_certificate->ToPEM();
   std::string pem_private_key = pem.private_key();
   std::string pem_certificate = pem.certificate();
   RTC_LOG(LS_INFO) << "CERT PEM ";

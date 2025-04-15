@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
      * mechanism regardless of whether SRTP is enabled or not.
      */
     - (void)setFrameDecryptor
-    : (rtc::scoped_refptr<webrtc::FrameDecryptorInterface>)frameDecryptor;
+    : (webrtc::scoped_refptr<webrtc::FrameDecryptorInterface>)frameDecryptor;
 
 @end
 

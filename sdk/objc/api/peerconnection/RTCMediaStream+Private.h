@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
      * is needed to pass to the underlying C++ APIs.
      */
     @property(nonatomic, readonly)
-        rtc::scoped_refptr<webrtc::MediaStreamInterface> nativeMediaStream;
+        webrtc::scoped_refptr<webrtc::MediaStreamInterface>
+            nativeMediaStream;
 
 /** Initialize an RTCMediaStream with an id. */
 - (instancetype)initWithFactory:
@@ -33,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaStream:
-        (rtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream;
+        (webrtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream;
 
 @end
 

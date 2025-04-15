@@ -129,7 +129,7 @@ static const NSUInteger kNumIgnoreFirstCallbacks = 50;
 
 @interface RTCAudioDeviceModuleTests : XCTestCase {
   bool _testEnabled;
-  rtc::scoped_refptr<webrtc::AudioDeviceModule> audioDeviceModule;
+  webrtc::scoped_refptr<webrtc::AudioDeviceModule> audioDeviceModule;
   MockAudioTransport mock;
 }
 
@@ -263,7 +263,7 @@ static const NSUInteger kNumIgnoreFirstCallbacks = 50;
   XCTSkipIf(!_testEnabled);
   // Create and initialize a second/extra ADM instance. The default ADM is
   // created by the test harness.
-  rtc::scoped_refptr<webrtc::AudioDeviceModule> secondAudioDeviceModule =
+  webrtc::scoped_refptr<webrtc::AudioDeviceModule> secondAudioDeviceModule =
       webrtc::CreateAudioDeviceModule();
   XCTAssertNotEqual(secondAudioDeviceModule.get(), nullptr);
   XCTAssertEqual(0, secondAudioDeviceModule->Init());

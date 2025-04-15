@@ -23,7 +23,7 @@
 
 namespace webrtc {
 
-class ObjCVideoRenderer : public rtc::VideoSinkInterface<VideoFrame> {
+class ObjCVideoRenderer : public webrtc::VideoSinkInterface<VideoFrame> {
  public:
   ObjCVideoRenderer(id<RTC_OBJC_TYPE(RTCVideoRenderer)> renderer);
   void OnFrame(const VideoFrame& nativeVideoFrame) override;

@@ -21,7 +21,7 @@ void RTCEnableMetrics(void) {
 NSArray<RTC_OBJC_TYPE(RTCMetricsSampleInfo) *> *RTCGetAndResetMetrics(void) {
   std::map<std::string,
            std::unique_ptr<webrtc::metrics::SampleInfo>,
-           rtc::AbslStringViewCmp>
+           webrtc::AbslStringViewCmp>
       histograms;
   webrtc::metrics::GetAndReset(&histograms);
 

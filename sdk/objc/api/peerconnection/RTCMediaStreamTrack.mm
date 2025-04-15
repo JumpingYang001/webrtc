@@ -21,7 +21,7 @@ NSString *const kRTCMediaStreamTrackKindVideo =
 
 @implementation RTC_OBJC_TYPE (RTCMediaStreamTrack) {
   RTC_OBJC_TYPE(RTCPeerConnectionFactory) * _factory;
-  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> _nativeTrack;
+  webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> _nativeTrack;
   RTCMediaStreamTrackType _type;
 }
 
@@ -71,7 +71,7 @@ NSString *const kRTCMediaStreamTrackKindVideo =
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack {
+- (webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack {
   return _nativeTrack;
 }
 
@@ -79,8 +79,8 @@ NSString *const kRTCMediaStreamTrackKindVideo =
 
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-        nativeTrack:
-            (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
+        nativeTrack:(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
+                        nativeTrack
                type:(RTCMediaStreamTrackType)type {
   NSParameterAssert(nativeTrack);
   NSParameterAssert(factory);
@@ -95,8 +95,8 @@ NSString *const kRTCMediaStreamTrackKindVideo =
 
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-        nativeTrack:
-            (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack {
+        nativeTrack:(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
+                        nativeTrack {
   NSParameterAssert(nativeTrack);
   if (nativeTrack->kind() ==
       std::string(webrtc::MediaStreamTrackInterface::kAudioKind)) {
@@ -151,7 +151,7 @@ NSString *const kRTCMediaStreamTrackKindVideo =
 
 + (RTC_OBJC_TYPE(RTCMediaStreamTrack) *)
     mediaTrackForNativeTrack:
-        (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
+        (webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
                      factory:
                          (RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory {
   NSParameterAssert(nativeTrack);

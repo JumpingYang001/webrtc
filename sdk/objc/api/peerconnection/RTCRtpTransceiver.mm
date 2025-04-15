@@ -55,7 +55,7 @@ NSString *const kRTCRtpTransceiverErrorDomain = @"org.webrtc.RTCRtpTranceiver";
 
 @implementation RTC_OBJC_TYPE (RTCRtpTransceiver) {
   RTC_OBJC_TYPE(RTCPeerConnectionFactory) * _factory;
-  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> _nativeRtpTransceiver;
+  webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> _nativeRtpTransceiver;
 }
 
 - (RTCRtpMediaType)mediaType {
@@ -231,14 +231,15 @@ NSString *const kRTCRtpTransceiverErrorDomain = @"org.webrtc.RTCRtpTranceiver";
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::RtpTransceiverInterface>)nativeRtpTransceiver {
+- (webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>)nativeRtpTransceiver {
   return _nativeRtpTransceiver;
 }
 
-- (instancetype)
-         initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-    nativeRtpTransceiver:(rtc::scoped_refptr<webrtc::RtpTransceiverInterface>)
-                             nativeRtpTransceiver {
+- (instancetype)initWithFactory:
+                    (RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
+           nativeRtpTransceiver:
+               (webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>)
+                   nativeRtpTransceiver {
   NSParameterAssert(factory);
   NSParameterAssert(nativeRtpTransceiver);
   self = [super init];

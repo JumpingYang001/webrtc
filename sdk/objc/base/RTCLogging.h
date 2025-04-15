@@ -12,7 +12,7 @@
 
 #import "sdk/objc/base/RTCMacros.h"
 
-// Subset of rtc::LoggingSeverity.
+// Subset of webrtc::LoggingSeverity.
 typedef NS_ENUM(NSInteger, RTCLoggingSeverity) {
   RTCLoggingSeverityVerbose,
   RTCLoggingSeverityInfo,
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, RTCLoggingSeverity) {
 // Logs the log string to the webrtc logstream for the given severity.
 RTC_EXTERN void RTCLogEx(RTCLoggingSeverity severity, NSString* log_string);
 
-// Wrapper for rtc::LogMessage::LogToDebug.
+// Wrapper for webrtc::LogMessage::LogToDebug.
 // Sets the minimum severity to be logged to console.
 RTC_EXTERN void RTCSetMinDebugLogLevel(RTCLoggingSeverity severity);
 

@@ -274,7 +274,7 @@ class ObjCAudioDeviceModule : public AudioDeviceModule {
   std::unique_ptr<FineAudioBuffer> playout_fine_audio_buffer_;
 
   // Temporary storage for recorded data.
-  rtc::BufferT<int16_t> record_audio_buffer_;
+  webrtc::BufferT<int16_t> record_audio_buffer_;
 
   // Delegate object provided to RTCAudioDevice during initialization
   ObjCAudioDeviceDelegate* audio_device_delegate_;

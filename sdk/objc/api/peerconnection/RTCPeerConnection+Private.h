@@ -29,15 +29,16 @@ class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
   void OnSignalingChange(
       PeerConnectionInterface::SignalingState new_state) override;
 
-  void OnAddStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
+  void OnAddStream(webrtc::scoped_refptr<MediaStreamInterface> stream) override;
 
-  void OnRemoveStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
+  void OnRemoveStream(
+      webrtc::scoped_refptr<MediaStreamInterface> stream) override;
 
   void OnTrack(
-      rtc::scoped_refptr<RtpTransceiverInterface> transceiver) override;
+      webrtc::scoped_refptr<RtpTransceiverInterface> transceiver) override;
 
   void OnDataChannel(
-      rtc::scoped_refptr<DataChannelInterface> data_channel) override;
+      webrtc::scoped_refptr<DataChannelInterface> data_channel) override;
 
   void OnRenegotiationNeeded() override;
 
@@ -62,17 +63,17 @@ class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
                            const std::string &error_text) override;
 
   void OnIceCandidatesRemoved(
-      const std::vector<cricket::Candidate> &candidates) override;
+      const std::vector<webrtc::Candidate> &candidates) override;
 
   void OnIceSelectedCandidatePairChanged(
-      const cricket::CandidatePairChangeEvent &event) override;
+      const webrtc::CandidatePairChangeEvent &event) override;
 
-  void OnAddTrack(rtc::scoped_refptr<RtpReceiverInterface> receiver,
-                  const std::vector<rtc::scoped_refptr<MediaStreamInterface>>
+  void OnAddTrack(webrtc::scoped_refptr<RtpReceiverInterface> receiver,
+                  const std::vector<webrtc::scoped_refptr<MediaStreamInterface>>
                       &streams) override;
 
   void OnRemoveTrack(
-      rtc::scoped_refptr<RtpReceiverInterface> receiver) override;
+      webrtc::scoped_refptr<RtpReceiverInterface> receiver) override;
 
  private:
   __weak RTC_OBJC_TYPE(RTCPeerConnection) * peer_connection_;
@@ -91,7 +92,7 @@ class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
 
 /** The native PeerConnectionInterface created during construction. */
 @property(nonatomic, readonly)
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
         nativePeerConnection;
 
 /** Initialize an RTCPeerConnection with a configuration, constraints, and

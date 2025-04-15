@@ -72,11 +72,11 @@ int ObjCFrameBuffer::height() const {
   return height_;
 }
 
-rtc::scoped_refptr<I420BufferInterface> ObjCFrameBuffer::ToI420() {
-  return rtc::make_ref_counted<ObjCI420FrameBuffer>([frame_buffer_ toI420]);
+webrtc::scoped_refptr<I420BufferInterface> ObjCFrameBuffer::ToI420() {
+  return webrtc::make_ref_counted<ObjCI420FrameBuffer>([frame_buffer_ toI420]);
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> ObjCFrameBuffer::CropAndScale(
+webrtc::scoped_refptr<VideoFrameBuffer> ObjCFrameBuffer::CropAndScale(
     int offset_x,
     int offset_y,
     int crop_width,
@@ -87,7 +87,7 @@ rtc::scoped_refptr<VideoFrameBuffer> ObjCFrameBuffer::CropAndScale(
           respondsToSelector:@selector
           (cropAndScaleWith:
                     offsetY:cropWidth:cropHeight:scaleWidth:scaleHeight:)]) {
-    return rtc::make_ref_counted<ObjCFrameBuffer>([frame_buffer_
+    return webrtc::make_ref_counted<ObjCFrameBuffer>([frame_buffer_
         cropAndScaleWith:offset_x
                  offsetY:offset_y
                cropWidth:crop_width
@@ -107,7 +107,7 @@ id<RTC_OBJC_TYPE(RTCVideoFrameBuffer)> ObjCFrameBuffer::wrapped_frame_buffer()
 }
 
 id<RTC_OBJC_TYPE(RTCVideoFrameBuffer)> ToObjCVideoFrameBuffer(
-    const rtc::scoped_refptr<VideoFrameBuffer>& buffer) {
+    const webrtc::scoped_refptr<VideoFrameBuffer>& buffer) {
   if (buffer->type() == VideoFrameBuffer::Type::kNative) {
     return static_cast<ObjCFrameBuffer*>(buffer.get())->wrapped_frame_buffer();
   } else {

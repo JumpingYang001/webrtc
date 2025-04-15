@@ -60,7 +60,7 @@
 }
 
 - (instancetype)initWithFrameBuffer:
-    (rtc::scoped_refptr<webrtc::I420BufferInterface>)i420Buffer {
+    (webrtc::scoped_refptr<webrtc::I420BufferInterface>)i420Buffer {
   self = [super init];
   if (self) {
     _i420Buffer = i420Buffer;
@@ -114,12 +114,12 @@
                                                 cropHeight:(int)cropHeight
                                                 scaleWidth:(int)scaleWidth
                                                scaleHeight:(int)scaleHeight {
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> scaled_buffer =
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> scaled_buffer =
       _i420Buffer->CropAndScale(
           offsetX, offsetY, cropWidth, cropHeight, scaleWidth, scaleHeight);
   RTC_DCHECK_EQ(scaled_buffer->type(), webrtc::VideoFrameBuffer::Type::kI420);
   // Calling ToI420() doesn't do any conversions.
-  rtc::scoped_refptr<webrtc::I420BufferInterface> buffer =
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> buffer =
       scaled_buffer->ToI420();
   RTC_OBJC_TYPE(RTCI420Buffer) *result =
       [[RTC_OBJC_TYPE(RTCI420Buffer) alloc] initWithFrameBuffer:buffer];
@@ -132,7 +132,7 @@
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::I420BufferInterface>)nativeI420Buffer {
+- (webrtc::scoped_refptr<webrtc::I420BufferInterface>)nativeI420Buffer {
   return _i420Buffer;
 }
 

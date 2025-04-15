@@ -19,27 +19,27 @@
 
 namespace {
 
-rtc::AdapterType AdapterTypeFromInterfaceType(
+webrtc::AdapterType AdapterTypeFromInterfaceType(
     nw_interface_type_t interfaceType) {
-  rtc::AdapterType adapterType = rtc::ADAPTER_TYPE_UNKNOWN;
+  webrtc::AdapterType adapterType = webrtc::ADAPTER_TYPE_UNKNOWN;
   switch (interfaceType) {
     case nw_interface_type_other:
-      adapterType = rtc::ADAPTER_TYPE_UNKNOWN;
+      adapterType = webrtc::ADAPTER_TYPE_UNKNOWN;
       break;
     case nw_interface_type_wifi:
-      adapterType = rtc::ADAPTER_TYPE_WIFI;
+      adapterType = webrtc::ADAPTER_TYPE_WIFI;
       break;
     case nw_interface_type_cellular:
-      adapterType = rtc::ADAPTER_TYPE_CELLULAR;
+      adapterType = webrtc::ADAPTER_TYPE_CELLULAR;
       break;
     case nw_interface_type_wired:
-      adapterType = rtc::ADAPTER_TYPE_ETHERNET;
+      adapterType = webrtc::ADAPTER_TYPE_ETHERNET;
       break;
     case nw_interface_type_loopback:
-      adapterType = rtc::ADAPTER_TYPE_LOOPBACK;
+      adapterType = webrtc::ADAPTER_TYPE_LOOPBACK;
       break;
     default:
-      adapterType = rtc::ADAPTER_TYPE_UNKNOWN;
+      adapterType = webrtc::ADAPTER_TYPE_UNKNOWN;
       break;
   }
   return adapterType;
@@ -82,14 +82,14 @@ rtc::AdapterType AdapterTypeFromInterfaceType(
         } else if (status == nw_path_status_satisfiable) {
           RTCLog(@"NW path monitor status: satisfiable.");
         }
-        std::map<std::string, rtc::AdapterType, rtc::AbslStringViewCmp>
+        std::map<std::string, webrtc::AdapterType, webrtc::AbslStringViewCmp>
             owned_map;
         auto map = &owned_map;  // Capture raw pointer for Objective-C block
         nw_path_enumerate_interfaces(path, ^(nw_interface_t interface) {
           const char *name = nw_interface_get_name(interface);
           nw_interface_type_t interfaceType = nw_interface_get_type(interface);
           RTCLog(@"NW path monitor available interface: %s", name);
-          rtc::AdapterType adapterType =
+          webrtc::AdapterType adapterType =
               AdapterTypeFromInterfaceType(interfaceType);
           map->emplace(name, adapterType);
           return true;

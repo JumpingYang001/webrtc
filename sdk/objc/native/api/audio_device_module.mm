@@ -17,11 +17,11 @@
 
 namespace webrtc {
 
-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
     bool bypass_voice_processing) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
 #if defined(WEBRTC_IOS)
-  return rtc::make_ref_counted<ios_adm::AudioDeviceModuleIOS>(
+  return webrtc::make_ref_counted<ios_adm::AudioDeviceModuleIOS>(
       bypass_voice_processing,
       /*muted_speech_event_handler=*/nullptr,
       /*error_handler=*/nullptr);
@@ -32,7 +32,7 @@ rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
 #endif
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
     AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
     bool bypass_voice_processing) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
@@ -41,13 +41,13 @@ rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
                                             bypass_voice_processing);
 }
 
-rtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
+webrtc::scoped_refptr<AudioDeviceModule> CreateMutedDetectAudioDeviceModule(
     AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
     ADMErrorHandler error_handler,
     bool bypass_voice_processing) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
 #if defined(WEBRTC_IOS)
-  return rtc::make_ref_counted<ios_adm::AudioDeviceModuleIOS>(
+  return webrtc::make_ref_counted<ios_adm::AudioDeviceModuleIOS>(
       bypass_voice_processing, muted_speech_event_handler, error_handler);
 #else
   RTC_LOG(LS_ERROR)

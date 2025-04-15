@@ -16,21 +16,21 @@
 #include "media/base/media_constants.h"
 #include "rtc_base/checks.h"
 
-const NSString *const kRTCRtxCodecName = @(cricket::kRtxCodecName);
-const NSString *const kRTCRedCodecName = @(cricket::kRedCodecName);
-const NSString *const kRTCUlpfecCodecName = @(cricket::kUlpfecCodecName);
-const NSString *const kRTCFlexfecCodecName = @(cricket::kFlexfecCodecName);
-const NSString *const kRTCOpusCodecName = @(cricket::kOpusCodecName);
-const NSString *const kRTCL16CodecName = @(cricket::kL16CodecName);
-const NSString *const kRTCG722CodecName = @(cricket::kG722CodecName);
-const NSString *const kRTCPcmuCodecName = @(cricket::kPcmuCodecName);
-const NSString *const kRTCPcmaCodecName = @(cricket::kPcmaCodecName);
-const NSString *const kRTCDtmfCodecName = @(cricket::kDtmfCodecName);
+const NSString *const kRTCRtxCodecName = @(webrtc::kRtxCodecName);
+const NSString *const kRTCRedCodecName = @(webrtc::kRedCodecName);
+const NSString *const kRTCUlpfecCodecName = @(webrtc::kUlpfecCodecName);
+const NSString *const kRTCFlexfecCodecName = @(webrtc::kFlexfecCodecName);
+const NSString *const kRTCOpusCodecName = @(webrtc::kOpusCodecName);
+const NSString *const kRTCL16CodecName = @(webrtc::kL16CodecName);
+const NSString *const kRTCG722CodecName = @(webrtc::kG722CodecName);
+const NSString *const kRTCPcmuCodecName = @(webrtc::kPcmuCodecName);
+const NSString *const kRTCPcmaCodecName = @(webrtc::kPcmaCodecName);
+const NSString *const kRTCDtmfCodecName = @(webrtc::kDtmfCodecName);
 const NSString *const kRTCComfortNoiseCodecName =
-    @(cricket::kComfortNoiseCodecName);
-const NSString *const kRTCVp8CodecName = @(cricket::kVp8CodecName);
-const NSString *const kRTCVp9CodecName = @(cricket::kVp9CodecName);
-const NSString *const kRTCH264CodecName = @(cricket::kH264CodecName);
+    @(webrtc::kComfortNoiseCodecName);
+const NSString *const kRTCVp8CodecName = @(webrtc::kVp8CodecName);
+const NSString *const kRTCVp9CodecName = @(webrtc::kVp9CodecName);
+const NSString *const kRTCH264CodecName = @(webrtc::kH264CodecName);
 
 @implementation RTC_OBJC_TYPE (RTCRtpCodecParameters)
 

@@ -25,7 +25,7 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
   BOOL _hasStarted;
   NSString *_dirPath;
   NSUInteger _maxFileSize;
-  std::unique_ptr<rtc::FileRotatingLogSink> _logSink;
+  std::unique_ptr<webrtc::FileRotatingLogSink> _logSink;
 }
 
 @synthesize severity = _severity;
@@ -89,13 +89,13 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
   switch (_rotationType) {
     case RTCFileLoggerTypeApp:
       _logSink.reset(
-          new rtc::FileRotatingLogSink(_dirPath.UTF8String,
-                                       kRTCFileLoggerRotatingLogPrefix,
-                                       _maxFileSize,
-                                       _maxFileSize / 10));
+          new webrtc::FileRotatingLogSink(_dirPath.UTF8String,
+                                          kRTCFileLoggerRotatingLogPrefix,
+                                          _maxFileSize,
+                                          _maxFileSize / 10));
       break;
     case RTCFileLoggerTypeCall:
-      _logSink.reset(new rtc::CallSessionFileRotatingLogSink(
+      _logSink.reset(new webrtc::CallSessionFileRotatingLogSink(
           _dirPath.UTF8String, _maxFileSize));
       break;
   }
@@ -108,9 +108,9 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
   if (_shouldDisableBuffering) {
     _logSink->DisableBuffering();
   }
-  rtc::LogMessage::LogThreads(true);
-  rtc::LogMessage::LogTimestamps(true);
-  rtc::LogMessage::AddLogToStream(_logSink.get(), [self rtcSeverity]);
+  webrtc::LogMessage::LogThreads(true);
+  webrtc::LogMessage::LogTimestamps(true);
+  webrtc::LogMessage::AddLogToStream(_logSink.get(), [self rtcSeverity]);
   _hasStarted = YES;
 }
 
@@ -119,7 +119,7 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
     return;
   }
   RTC_DCHECK(_logSink);
-  rtc::LogMessage::RemoveLogToStream(_logSink.get());
+  webrtc::LogMessage::RemoveLogToStream(_logSink.get());
   _hasStarted = NO;
   _logSink.reset();
 }
@@ -129,14 +129,14 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
     return nil;
   }
   NSMutableData *logData = [NSMutableData data];
-  std::unique_ptr<rtc::FileRotatingStreamReader> stream;
+  std::unique_ptr<webrtc::FileRotatingStreamReader> stream;
   switch (_rotationType) {
     case RTCFileLoggerTypeApp:
-      stream = std::make_unique<rtc::FileRotatingStreamReader>(
+      stream = std::make_unique<webrtc::FileRotatingStreamReader>(
           _dirPath.UTF8String, kRTCFileLoggerRotatingLogPrefix);
       break;
     case RTCFileLoggerTypeCall:
-      stream = std::make_unique<rtc::CallSessionFileRotatingStreamReader>(
+      stream = std::make_unique<webrtc::CallSessionFileRotatingStreamReader>(
           _dirPath.UTF8String);
       break;
   }
@@ -155,16 +155,16 @@ const char *kRTCFileLoggerRotatingLogPrefix = "rotating_log";
 
 #pragma mark - Private
 
-- (rtc::LoggingSeverity)rtcSeverity {
+- (webrtc::LoggingSeverity)rtcSeverity {
   switch (_severity) {
     case RTCFileLoggerSeverityVerbose:
-      return rtc::LS_VERBOSE;
+      return webrtc::LS_VERBOSE;
     case RTCFileLoggerSeverityInfo:
-      return rtc::LS_INFO;
+      return webrtc::LS_INFO;
     case RTCFileLoggerSeverityWarning:
-      return rtc::LS_WARNING;
+      return webrtc::LS_WARNING;
     case RTCFileLoggerSeverityError:
-      return rtc::LS_ERROR;
+      return webrtc::LS_ERROR;
   }
 }
 

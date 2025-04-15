@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  * construction.
  */
 @property(nonatomic, readonly)
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
+    webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>
         nativeTrack;
 
 /**
@@ -40,14 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-        nativeTrack:
-            (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
+        nativeTrack:(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
+                        nativeTrack
                type:(RTCMediaStreamTrackType)type NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-        nativeTrack:
-            (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack;
+        nativeTrack:(webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)
+                        nativeTrack;
 
 - (BOOL)isEqualToTrack:(RTC_OBJC_TYPE(RTCMediaStreamTrack) *)track;
 
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (RTC_OBJC_TYPE(RTCMediaStreamTrack) *)
     mediaTrackForNativeTrack:
-        (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
+        (webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
                      factory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory;
 
 @end

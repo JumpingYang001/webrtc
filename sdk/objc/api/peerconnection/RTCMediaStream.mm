@@ -18,10 +18,10 @@
 
 @implementation RTC_OBJC_TYPE (RTCMediaStream) {
   RTC_OBJC_TYPE(RTCPeerConnectionFactory) * _factory;
-  rtc::Thread *_signalingThread;
+  webrtc::Thread *_signalingThread;
   NSMutableArray *_audioTracks /* accessed on _signalingThread */;
   NSMutableArray *_videoTracks /* accessed on _signalingThread */;
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> _nativeMediaStream;
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> _nativeMediaStream;
 }
 
 - (instancetype)initWithFactory:
@@ -30,7 +30,7 @@
   NSParameterAssert(factory);
   NSParameterAssert(streamId.length);
   std::string nativeId = [NSString stdStringForString:streamId];
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
       factory.nativeFactory->CreateLocalMediaStream(nativeId);
   return [self initWithFactory:factory nativeMediaStream:stream];
 }
@@ -118,14 +118,14 @@
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream {
+- (webrtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream {
   return _nativeMediaStream;
 }
 
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaStream:
-        (rtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream {
+        (webrtc::scoped_refptr<webrtc::MediaStreamInterface>)nativeMediaStream {
   NSParameterAssert(nativeMediaStream);
   self = [super init];
   if (self) {

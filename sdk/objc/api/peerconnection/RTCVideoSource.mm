@@ -15,7 +15,8 @@
 #include "sdk/objc/native/src/objc_video_track_source.h"
 
 static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
-    const rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> nativeSource) {
+    const webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>
+        nativeSource) {
   webrtc::VideoTrackSourceProxy *proxy_source =
       static_cast<webrtc::VideoTrackSourceProxy *>(nativeSource.get());
   return static_cast<webrtc::ObjCVideoTrackSource *>(proxy_source->internal());
@@ -25,12 +26,12 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 // RTCAVFoundationVideoSource is gone. See http://crbug/webrtc/7177 for more
 // info.
 @implementation RTC_OBJC_TYPE (RTCVideoSource) {
-  rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> _nativeVideoSource;
+  webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> _nativeVideoSource;
 }
 
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
-    nativeVideoSource:(rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>)
+    nativeVideoSource:(webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>)
                           nativeVideoSource {
   RTC_DCHECK(factory);
   RTC_DCHECK(nativeVideoSource);
@@ -46,7 +47,7 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaSource:
-        (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
+        (webrtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
                  type:(RTCMediaSourceType)type {
   RTC_DCHECK_NOTREACHED();
   return nil;
@@ -67,8 +68,8 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
                 signalingThread:(webrtc::Thread *)signalingThread
                    workerThread:(webrtc::Thread *)workerThread
                    isScreenCast:(BOOL)isScreenCast {
-  rtc::scoped_refptr<webrtc::ObjCVideoTrackSource> objCVideoTrackSource =
-      rtc::make_ref_counted<webrtc::ObjCVideoTrackSource>(isScreenCast);
+  webrtc::scoped_refptr<webrtc::ObjCVideoTrackSource> objCVideoTrackSource =
+      webrtc::make_ref_counted<webrtc::ObjCVideoTrackSource>(isScreenCast);
 
   return [self initWithFactory:factory
              nativeVideoSource:webrtc::VideoTrackSourceProxy::Create(
@@ -96,7 +97,7 @@ static webrtc::ObjCVideoTrackSource *getObjCVideoSource(
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>)nativeVideoSource {
+- (webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>)nativeVideoSource {
   return _nativeVideoSource;
 }
 

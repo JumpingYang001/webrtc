@@ -124,7 +124,7 @@ AudioDeviceIOS::AudioDeviceIOS(
   LOGI() << "ctor" << ios::GetCurrentThreadDescription()
          << ",bypass_voice_processing=" << bypass_voice_processing_;
   io_thread_checker_.Detach();
-  thread_ = rtc::Thread::Current();
+  thread_ = webrtc::Thread::Current();
 
   audio_session_observer_ =
       [[RTCNativeAudioSessionDelegateAdapter alloc] initWithObserver:this];
@@ -484,7 +484,7 @@ OSStatus AudioDeviceIOS::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
   // If so, we have an indication of a glitch in the output audio since the
   // core audio layer will most likely run dry in this state.
   ++num_playout_callbacks_;
-  const int64_t now_time = rtc::TimeMillis();
+  const int64_t now_time = webrtc::TimeMillis();
   if (time_stamp->mSampleTime != num_frames) {
     const int64_t delta_time = now_time - last_playout_time_;
     const int glitch_threshold =
@@ -531,8 +531,8 @@ OSStatus AudioDeviceIOS::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
   // the native I/O audio unit) and copy the result to the audio buffer in the
   // `io_data` destination.
   fine_audio_buffer_->GetPlayoutData(
-      rtc::ArrayView<int16_t>(static_cast<int16_t*>(audio_buffer->mData),
-                              num_frames),
+      webrtc::ArrayView<int16_t>(static_cast<int16_t*>(audio_buffer->mData),
+                                 num_frames),
       playout_delay_ms);
 
   last_hw_output_latency_update_sample_count_ += num_frames;
@@ -711,7 +711,7 @@ void AudioDeviceIOS::HandlePlayoutGlitchDetected(uint64_t glitch_duration_ms) {
   // Avoid doing glitch detection for two seconds after a volume change
   // has been detected to reduce the risk of false alarm.
   if (last_output_volume_change_time_ > 0 &&
-      rtc::TimeSince(last_output_volume_change_time_) < 2000) {
+      webrtc::TimeSince(last_output_volume_change_time_) < 2000) {
     RTCLog(@"Ignoring audio glitch due to recent output volume change.");
     return;
   }
@@ -734,7 +734,7 @@ void AudioDeviceIOS::HandleOutputVolumeChange() {
   RTCLog(@"Output volume change detected.");
   // Store time of this detection so it can be used to defer detection of
   // glitches too close in time to this event.
-  last_output_volume_change_time_ = rtc::TimeMillis();
+  last_output_volume_change_time_ = webrtc::TimeMillis();
 }
 
 void AudioDeviceIOS::UpdateAudioDeviceBuffer() {

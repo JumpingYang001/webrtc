@@ -22,7 +22,7 @@
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeMediaSource:
-        (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
+        (webrtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
                  type:(RTCMediaSourceType)type {
   RTC_DCHECK(factory);
   RTC_DCHECK(nativeMediaSource);

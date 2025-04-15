@@ -27,7 +27,7 @@ class ObjCAudioDeviceModule;
 
 - (instancetype)
     initWithAudioDeviceModule:
-        (rtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>)
+        (webrtc::scoped_refptr<webrtc::objc_adm::ObjCAudioDeviceModule>)
             audioDeviceModule
             audioDeviceThread:(webrtc::Thread*)thread;
 

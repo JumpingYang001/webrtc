@@ -63,11 +63,11 @@ void decompressionOutputCallback(void *decoderRef,
   // TODO(tkchin): Handle CVO properly.
   RTC_OBJC_TYPE(RTCCVPixelBuffer) *frameBuffer =
       [[RTC_OBJC_TYPE(RTCCVPixelBuffer) alloc] initWithPixelBuffer:imageBuffer];
-  RTC_OBJC_TYPE(RTCVideoFrame) *decodedFrame =
-      [[RTC_OBJC_TYPE(RTCVideoFrame) alloc]
-          initWithBuffer:frameBuffer
-                rotation:RTCVideoRotation_0
-             timeStampNs:CMTimeGetSeconds(timestamp) * rtc::kNumNanosecsPerSec];
+  RTC_OBJC_TYPE(
+      RTCVideoFrame) *decodedFrame = [[RTC_OBJC_TYPE(RTCVideoFrame) alloc]
+      initWithBuffer:frameBuffer
+            rotation:RTCVideoRotation_0
+         timeStampNs:CMTimeGetSeconds(timestamp) * webrtc::kNumNanosecsPerSec];
   decodedFrame.timeStamp = decodeParams->timestamp;
   decodeParams->callback(decodedFrame);
 }
@@ -113,8 +113,8 @@ void decompressionOutputCallback(void *decoderRef,
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
-  rtc::ScopedCFTypeRef<CMVideoFormatDescriptionRef> inputFormat =
-      rtc::ScopedCF(webrtc::CreateVideoFormatDescription(
+  webrtc::ScopedCFTypeRef<CMVideoFormatDescriptionRef> inputFormat =
+      webrtc::ScopedCF(webrtc::CreateVideoFormatDescription(
           (uint8_t *)inputImage.buffer.bytes, inputImage.buffer.length));
   if (inputFormat) {
     // Check if the video format has changed, and reinitialize decoder if

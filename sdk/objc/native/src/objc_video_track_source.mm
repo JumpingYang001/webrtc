@@ -64,16 +64,17 @@ bool ObjCVideoTrackSource::remote() const {
 void ObjCVideoTrackSource::OnOutputFormatRequest(int width,
                                                  int height,
                                                  int fps) {
-  cricket::VideoFormat format(
-      width, height, cricket::VideoFormat::FpsToInterval(fps), 0);
+  webrtc::VideoFormat format(
+      width, height, webrtc::VideoFormat::FpsToInterval(fps), 0);
   video_adapter()->OnOutputFormatRequest(format);
 }
 
 void ObjCVideoTrackSource::OnCapturedFrame(RTC_OBJC_TYPE(RTCVideoFrame) *
                                            frame) {
-  const int64_t timestamp_us = frame.timeStampNs / rtc::kNumNanosecsPerMicrosec;
+  const int64_t timestamp_us =
+      frame.timeStampNs / webrtc::kNumNanosecsPerMicrosec;
   const int64_t translated_timestamp_us =
-      timestamp_aligner_.TranslateTimestamp(timestamp_us, rtc::TimeMicros());
+      timestamp_aligner_.TranslateTimestamp(timestamp_us, webrtc::TimeMicros());
 
   int adapted_width;
   int adapted_height;
@@ -93,30 +94,30 @@ void ObjCVideoTrackSource::OnCapturedFrame(RTC_OBJC_TYPE(RTCVideoFrame) *
     return;
   }
 
-  rtc::scoped_refptr<VideoFrameBuffer> buffer;
+  webrtc::scoped_refptr<VideoFrameBuffer> buffer;
   if (adapted_width == frame.width && adapted_height == frame.height) {
     // No adaption - optimized path.
-    buffer = rtc::make_ref_counted<ObjCFrameBuffer>(frame.buffer);
+    buffer = webrtc::make_ref_counted<ObjCFrameBuffer>(frame.buffer);
   } else if ([frame.buffer
                  isKindOfClass:[RTC_OBJC_TYPE(RTCCVPixelBuffer) class]]) {
     // Adapted CVPixelBuffer frame.
     RTC_OBJC_TYPE(RTCCVPixelBuffer) *rtcPixelBuffer =
         (RTC_OBJC_TYPE(RTCCVPixelBuffer) *)frame.buffer;
-    buffer =
-        rtc::make_ref_counted<ObjCFrameBuffer>([[RTC_OBJC_TYPE(RTCCVPixelBuffer)
-            alloc] initWithPixelBuffer:rtcPixelBuffer.pixelBuffer
-                          adaptedWidth:adapted_width
-                         adaptedHeight:adapted_height
-                             cropWidth:crop_width
-                            cropHeight:crop_height
-                                 cropX:crop_x + rtcPixelBuffer.cropX
-                                 cropY:crop_y + rtcPixelBuffer.cropY]);
+    buffer = webrtc::make_ref_counted<ObjCFrameBuffer>(
+        [[RTC_OBJC_TYPE(RTCCVPixelBuffer) alloc]
+            initWithPixelBuffer:rtcPixelBuffer.pixelBuffer
+                   adaptedWidth:adapted_width
+                  adaptedHeight:adapted_height
+                      cropWidth:crop_width
+                     cropHeight:crop_height
+                          cropX:crop_x + rtcPixelBuffer.cropX
+                          cropY:crop_y + rtcPixelBuffer.cropY]);
   } else {
     // Adapted I420 frame.
     // TODO(magjed): Optimize this I420 path.
-    rtc::scoped_refptr<I420Buffer> i420_buffer =
+    webrtc::scoped_refptr<I420Buffer> i420_buffer =
         I420Buffer::Create(adapted_width, adapted_height);
-    buffer = rtc::make_ref_counted<ObjCFrameBuffer>(frame.buffer);
+    buffer = webrtc::make_ref_counted<ObjCFrameBuffer>(frame.buffer);
     i420_buffer->CropAndScaleFrom(
         *buffer->ToI420(), crop_x, crop_y, crop_width, crop_height);
     buffer = i420_buffer;

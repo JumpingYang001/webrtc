@@ -58,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)stringForCandidateNetworkPolicy:(RTCCandidateNetworkPolicy)policy;
 
-+ (rtc::KeyType)nativeEncryptionKeyTypeForKeyType:(RTCEncryptionKeyType)keyType;
++ (webrtc::KeyType)nativeEncryptionKeyTypeForKeyType:
+    (RTCEncryptionKeyType)keyType;
 
 + (webrtc::SdpSemantics)nativeSdpSemanticsForSdpSemantics:
     (RTCSdpSemantics)sdpSemantics;

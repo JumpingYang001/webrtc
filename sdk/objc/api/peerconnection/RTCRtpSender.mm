@@ -21,7 +21,7 @@
 
 @implementation RTC_OBJC_TYPE (RTCRtpSender) {
   RTC_OBJC_TYPE(RTCPeerConnectionFactory) * _factory;
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> _nativeRtpSender;
+  webrtc::scoped_refptr<webrtc::RtpSenderInterface> _nativeRtpSender;
 }
 
 @synthesize dtmfSender = _dtmfSender;
@@ -45,7 +45,7 @@
 }
 
 - (RTC_OBJC_TYPE(RTCMediaStreamTrack) *)track {
-  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack(
+  webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack(
       _nativeRtpSender->track());
   if (nativeTrack) {
     return
@@ -108,20 +108,20 @@
 #pragma mark - Native
 
 - (void)setFrameEncryptor:
-    (rtc::scoped_refptr<webrtc::FrameEncryptorInterface>)frameEncryptor {
+    (webrtc::scoped_refptr<webrtc::FrameEncryptorInterface>)frameEncryptor {
   _nativeRtpSender->SetFrameEncryptor(frameEncryptor);
 }
 
 #pragma mark - Private
 
-- (rtc::scoped_refptr<webrtc::RtpSenderInterface>)nativeRtpSender {
+- (webrtc::scoped_refptr<webrtc::RtpSenderInterface>)nativeRtpSender {
   return _nativeRtpSender;
 }
 
 - (instancetype)
     initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeRtpSender:
-        (rtc::scoped_refptr<webrtc::RtpSenderInterface>)nativeRtpSender {
+        (webrtc::scoped_refptr<webrtc::RtpSenderInterface>)nativeRtpSender {
   NSParameterAssert(factory);
   NSParameterAssert(nativeRtpSender);
   self = [super init];
@@ -129,7 +129,7 @@
     _factory = factory;
     _nativeRtpSender = nativeRtpSender;
     if (_nativeRtpSender->media_type() == webrtc::MediaType::AUDIO) {
-      rtc::scoped_refptr<webrtc::DtmfSenderInterface> nativeDtmfSender(
+      webrtc::scoped_refptr<webrtc::DtmfSenderInterface> nativeDtmfSender(
           _nativeRtpSender->GetDtmfSender());
       if (nativeDtmfSender) {
         _dtmfSender = [[RTC_OBJC_TYPE(RTCDtmfSender) alloc]

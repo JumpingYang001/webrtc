@@ -54,8 +54,8 @@ class DataChannelDelegateAdapter : public DataChannelObserver {
   NSParameterAssert(data);
   self = [super init];
   if (self) {
-    rtc::CopyOnWriteBuffer buffer(reinterpret_cast<const uint8_t *>(data.bytes),
-                                  data.length);
+    webrtc::CopyOnWriteBuffer buffer(
+        reinterpret_cast<const uint8_t *>(data.bytes), data.length);
     _dataBuffer.reset(new webrtc::DataBuffer(buffer, isBinary));
   }
   return self;
@@ -88,7 +88,7 @@ class DataChannelDelegateAdapter : public DataChannelObserver {
 
 @implementation RTC_OBJC_TYPE (RTCDataChannel) {
   RTC_OBJC_TYPE(RTCPeerConnectionFactory) * _factory;
-  rtc::scoped_refptr<webrtc::DataChannelInterface> _nativeDataChannel;
+  webrtc::scoped_refptr<webrtc::DataChannelInterface> _nativeDataChannel;
   std::unique_ptr<webrtc::DataChannelDelegateAdapter> _observer;
   BOOL _isObserverRegistered;
 }
@@ -179,7 +179,7 @@ class DataChannelDelegateAdapter : public DataChannelObserver {
 - (instancetype)
       initWithFactory:(RTC_OBJC_TYPE(RTCPeerConnectionFactory) *)factory
     nativeDataChannel:
-        (rtc::scoped_refptr<webrtc::DataChannelInterface>)nativeDataChannel {
+        (webrtc::scoped_refptr<webrtc::DataChannelInterface>)nativeDataChannel {
   NSParameterAssert(nativeDataChannel);
   self = [super init];
   if (self) {

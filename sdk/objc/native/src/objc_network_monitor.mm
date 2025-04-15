@@ -18,8 +18,9 @@
 
 namespace webrtc {
 
-rtc::NetworkMonitorInterface* ObjCNetworkMonitorFactory::CreateNetworkMonitor(
-    const FieldTrialsView& field_trials) {
+webrtc::NetworkMonitorInterface*
+    ObjCNetworkMonitorFactory::CreateNetworkMonitor(
+        const FieldTrialsView& field_trials) {
   return new ObjCNetworkMonitor();
 }
 
@@ -36,7 +37,7 @@ void ObjCNetworkMonitor::Start() {
   if (started_) {
     return;
   }
-  thread_ = rtc::Thread::Current();
+  thread_ = webrtc::Thread::Current();
   RTC_DCHECK_RUN_ON(thread_);
   safety_flag_->SetAlive();
   network_monitor_ = [[RTCNetworkMonitor alloc] initWithObserver:this];
@@ -58,21 +59,21 @@ void ObjCNetworkMonitor::Stop() {
   started_ = false;
 }
 
-rtc::NetworkMonitorInterface::InterfaceInfo
+webrtc::NetworkMonitorInterface::InterfaceInfo
     ObjCNetworkMonitor::GetInterfaceInfo(absl::string_view interface_name) {
   RTC_DCHECK_RUN_ON(thread_);
   if (adapter_type_by_name_.empty()) {
     // If we have no path update, assume everything's available, because it's
     // preferable for WebRTC to try all interfaces rather than none at all.
     return {
-        .adapter_type = rtc::ADAPTER_TYPE_UNKNOWN,
+        .adapter_type = webrtc::ADAPTER_TYPE_UNKNOWN,
         .available = true,
     };
   }
   auto iter = adapter_type_by_name_.find(interface_name);
   if (iter == adapter_type_by_name_.end()) {
     return {
-        .adapter_type = rtc::ADAPTER_TYPE_UNKNOWN,
+        .adapter_type = webrtc::ADAPTER_TYPE_UNKNOWN,
         .available = false,
     };
   }
@@ -84,7 +85,7 @@ rtc::NetworkMonitorInterface::InterfaceInfo
 }
 
 void ObjCNetworkMonitor::OnPathUpdate(
-    std::map<std::string, rtc::AdapterType, rtc::AbslStringViewCmp>
+    std::map<std::string, webrtc::AdapterType, webrtc::AbslStringViewCmp>
         adapter_type_by_name) {
   thread_->PostTask(SafeTask(safety_flag_, [this, adapter_type_by_name] {
     RTC_DCHECK_RUN_ON(thread_);
