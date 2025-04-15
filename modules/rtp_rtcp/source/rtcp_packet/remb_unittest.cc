@@ -46,7 +46,7 @@ TEST(RtcpPacketRembTest, Create) {
       std::vector<uint32_t>(std::begin(kRemoteSsrcs), std::end(kRemoteSsrcs)));
   remb.SetBitrateBps(kBitrateBps);
 
-  rtc::Buffer packet = remb.Build();
+  Buffer packet = remb.Build();
 
   EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));
@@ -66,7 +66,7 @@ TEST(RtcpPacketRembTest, CreateAndParseWithoutSsrcs) {
   Remb remb;
   remb.SetSenderSsrc(kSenderSsrc);
   remb.SetBitrateBps(kBitrateBps);
-  rtc::Buffer packet = remb.Build();
+  Buffer packet = remb.Build();
 
   Remb parsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &parsed));
@@ -78,7 +78,7 @@ TEST(RtcpPacketRembTest, CreateAndParseWithoutSsrcs) {
 TEST(RtcpPacketRembTest, CreateAndParse64bitBitrate) {
   Remb remb;
   remb.SetBitrateBps(kBitrateBps64bit);
-  rtc::Buffer packet = remb.Build();
+  Buffer packet = remb.Build();
 
   Remb parsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &parsed));

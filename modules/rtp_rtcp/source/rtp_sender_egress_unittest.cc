@@ -92,7 +92,7 @@ class MockStreamDataCountersCallback : public StreamDataCountersCallback {
 };
 
 struct TransmittedPacket {
-  TransmittedPacket(rtc::ArrayView<const uint8_t> data,
+  TransmittedPacket(ArrayView<const uint8_t> data,
                     const PacketOptions& packet_options,
                     RtpHeaderExtensionMap* extensions)
       : packet(extensions), options(packet_options) {
@@ -107,7 +107,7 @@ class TestTransport : public Transport {
   explicit TestTransport(RtpHeaderExtensionMap* extensions)
       : total_data_sent_(DataSize::Zero()), extensions_(extensions) {}
   MOCK_METHOD(void, SentRtp, (const PacketOptions& options), ());
-  bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override {
     total_data_sent_ += DataSize::Bytes(packet.size());
     last_packet_.emplace(packet, options, extensions_);
@@ -115,9 +115,7 @@ class TestTransport : public Transport {
     return true;
   }
 
-  bool SendRtcp(rtc::ArrayView<const uint8_t>) override {
-    RTC_CHECK_NOTREACHED();
-  }
+  bool SendRtcp(ArrayView<const uint8_t>) override { RTC_CHECK_NOTREACHED(); }
 
   std::optional<TransmittedPacket> last_packet() { return last_packet_; }
 
@@ -851,7 +849,7 @@ TEST_F(RtpSenderEgressTest,
 TEST_F(RtpSenderEgressTest, SendPacketUpdatesStats) {
   const size_t kPayloadSize = 1000;
 
-  const rtc::ArrayView<const RtpExtensionSize> kNoRtpHeaderExtensionSizes;
+  const ArrayView<const RtpExtensionSize> kNoRtpHeaderExtensionSizes;
   FlexfecSender flexfec(env_, kFlexfectPayloadType, kFlexFecSsrc, kSsrc,
                         /*mid=*/"",
                         /*header_extensions=*/{}, kNoRtpHeaderExtensionSizes,

@@ -200,7 +200,7 @@ void RtpSenderEgress::SendPacket(std::unique_ptr<RtpPacketToSend> packet,
     if (packet->is_red()) {
       RtpPacketToSend unpacked_packet(*packet);
 
-      const rtc::CopyOnWriteBuffer buffer = packet->Buffer();
+      const CopyOnWriteBuffer buffer = packet->Buffer();
       // Grab media payload type from RED header.
       const size_t headers_size = packet->headers_size();
       unpacked_packet.SetPayloadType(buffer[headers_size]);
@@ -379,7 +379,7 @@ void RtpSenderEgress::SetTimestampOffset(uint32_t timestamp) {
 }
 
 std::vector<RtpSequenceNumberMap::Info> RtpSenderEgress::GetSentRtpPacketInfos(
-    rtc::ArrayView<const uint16_t> sequence_numbers) const {
+    ArrayView<const uint16_t> sequence_numbers) const {
   RTC_DCHECK_RUN_ON(worker_queue_);
   RTC_DCHECK(!sequence_numbers.empty());
   if (!need_rtp_packet_infos_) {
@@ -419,7 +419,7 @@ RtpSenderEgress::FetchFecPackets() {
 }
 
 void RtpSenderEgress::OnAbortedRetransmissions(
-    rtc::ArrayView<const uint16_t> sequence_numbers) {
+    ArrayView<const uint16_t> sequence_numbers) {
   RTC_DCHECK_RUN_ON(worker_queue_);
   // Mark aborted retransmissions as sent, rather than leaving them in
   // a 'pending' state - otherwise they can not be requested again and

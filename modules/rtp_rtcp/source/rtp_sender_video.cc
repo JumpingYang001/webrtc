@@ -185,7 +185,7 @@ RTPSenderVideo::RTPSenderVideo(const Config& config)
       absolute_capture_time_sender_(config.clock),
       frame_transformer_delegate_(
           config.frame_transformer
-              ? rtc::make_ref_counted<RTPSenderVideoFrameTransformerDelegate>(
+              ? make_ref_counted<RTPSenderVideoFrameTransformerDelegate>(
                     this,
                     config.frame_transformer,
                     rtp_sender_->SSRC(),
@@ -513,7 +513,7 @@ bool RTPSenderVideo::SendVideo(int payload_type,
                                std::optional<VideoCodecType> codec_type,
                                uint32_t rtp_timestamp,
                                Timestamp capture_time,
-                               rtc::ArrayView<const uint8_t> payload,
+                               ArrayView<const uint8_t> payload,
                                size_t encoder_output_size,
                                RTPVideoHeader video_header,
                                TimeDelta expected_retransmission_time,
@@ -666,7 +666,7 @@ bool RTPSenderVideo::SendVideo(int payload_type,
     MinimizeDescriptor(&video_header);
   }
 
-  rtc::Buffer encrypted_video_payload;
+  Buffer encrypted_video_payload;
   if (frame_encryptor_ != nullptr) {
     const size_t max_ciphertext_size =
         frame_encryptor_->GetMaxCiphertextByteSize(webrtc::MediaType::VIDEO,

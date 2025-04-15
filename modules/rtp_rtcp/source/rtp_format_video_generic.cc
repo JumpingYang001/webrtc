@@ -30,7 +30,7 @@ constexpr size_t kExtendedHeaderLength = 2;
 }  // namespace
 
 RtpPacketizerGeneric::RtpPacketizerGeneric(
-    rtc::ArrayView<const uint8_t> payload,
+    ArrayView<const uint8_t> payload,
     PayloadSizeLimits limits,
     const RTPVideoHeader& rtp_video_header)
     : remaining_payload_(payload) {
@@ -41,9 +41,8 @@ RtpPacketizerGeneric::RtpPacketizerGeneric(
   current_packet_ = payload_sizes_.begin();
 }
 
-RtpPacketizerGeneric::RtpPacketizerGeneric(
-    rtc::ArrayView<const uint8_t> payload,
-    PayloadSizeLimits limits)
+RtpPacketizerGeneric::RtpPacketizerGeneric(ArrayView<const uint8_t> payload,
+                                           PayloadSizeLimits limits)
     : header_size_(0), remaining_payload_(payload) {
   payload_sizes_ = SplitAboutEqually(payload.size(), limits);
   current_packet_ = payload_sizes_.begin();

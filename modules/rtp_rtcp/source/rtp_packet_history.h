@@ -116,7 +116,7 @@ class RtpPacketHistory {
           encapsulate);
 
   // Cull packets that have been acknowledged as received by the remote end.
-  void CullAcknowledgedPackets(rtc::ArrayView<const uint16_t> sequence_numbers);
+  void CullAcknowledgedPackets(ArrayView<const uint16_t> sequence_numbers);
 
   // Remove all pending packets from the history, but keep storage mode and
   // capacity.

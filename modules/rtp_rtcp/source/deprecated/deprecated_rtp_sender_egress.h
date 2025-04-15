@@ -82,7 +82,7 @@ class DEPRECATED_RtpSenderEgress {
   // recalled, return a vector with all of them (in corresponding order).
   // If any could not be recalled, return an empty vector.
   std::vector<RtpSequenceNumberMap::Info> GetSentRtpPacketInfos(
-      rtc::ArrayView<const uint16_t> sequence_numbers) const
+      ArrayView<const uint16_t> sequence_numbers) const
       RTC_LOCKS_EXCLUDED(lock_);
 
  private:

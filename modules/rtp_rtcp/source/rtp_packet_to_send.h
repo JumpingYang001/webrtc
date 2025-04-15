@@ -80,10 +80,10 @@ class RtpPacketToSend : public RtpPacket {
 
   // An application can attach arbitrary data to an RTP packet using
   // `additional_data`. The additional data does not affect WebRTC processing.
-  rtc::scoped_refptr<rtc::RefCountedBase> additional_data() const {
+  scoped_refptr<RefCountedBase> additional_data() const {
     return additional_data_;
   }
-  void set_additional_data(rtc::scoped_refptr<rtc::RefCountedBase> data) {
+  void set_additional_data(scoped_refptr<RefCountedBase> data) {
     additional_data_ = std::move(data);
   }
 
@@ -160,7 +160,7 @@ class RtpPacketToSend : public RtpPacket {
   std::optional<int64_t> transport_sequence_number_;
   bool allow_retransmission_ = false;
   std::optional<uint16_t> retransmitted_sequence_number_;
-  rtc::scoped_refptr<rtc::RefCountedBase> additional_data_;
+  scoped_refptr<RefCountedBase> additional_data_;
   bool is_first_packet_of_frame_ = false;
   bool is_key_frame_ = false;
   bool fec_protect_packet_ = false;

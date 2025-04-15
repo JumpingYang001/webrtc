@@ -55,7 +55,7 @@ TEST(RtcpCompoundPacketTest, AppendPacket) {
   compound.Append(std::move(rr));
   compound.Append(std::move(fir));
 
-  rtc::Buffer packet = compound.Build();
+  Buffer packet = compound.Build();
   RtcpPacketParser parser;
   parser.Parse(packet);
   EXPECT_EQ(1, parser.receiver_report()->num_packets());
@@ -83,7 +83,7 @@ TEST(RtcpCompoundPacketTest, AppendPacketWithOwnAppendedPacket) {
   root.Append(std::move(bye));
   root.Append(std::move(leaf));
 
-  rtc::Buffer packet = root.Build();
+  Buffer packet = root.Build();
   RtcpPacketParser parser;
   parser.Parse(packet);
   EXPECT_EQ(1, parser.sender_report()->num_packets());
@@ -109,9 +109,9 @@ TEST(RtcpCompoundPacketTest, BuildWithInputBuffer) {
   const size_t kFirLength = 20;
 
   const size_t kBufferSize = kRrLength + kReportBlockLength + kFirLength;
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> callback;
+  MockFunction<void(ArrayView<const uint8_t>)> callback;
   EXPECT_CALL(callback, Call(_))
-      .WillOnce(Invoke([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillOnce(Invoke([&](ArrayView<const uint8_t> packet) {
         RtcpPacketParser parser;
         parser.Parse(packet);
         EXPECT_EQ(1, parser.receiver_report()->num_packets());
@@ -137,16 +137,16 @@ TEST(RtcpCompoundPacketTest, BuildWithTooSmallBuffer_FragmentedSend) {
   const size_t kReportBlockLength = 24;
 
   const size_t kBufferSize = kRrLength + kReportBlockLength;
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> callback;
+  MockFunction<void(ArrayView<const uint8_t>)> callback;
   EXPECT_CALL(callback, Call(_))
-      .WillOnce(Invoke([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillOnce(Invoke([&](ArrayView<const uint8_t> packet) {
         RtcpPacketParser parser;
         parser.Parse(packet);
         EXPECT_EQ(1, parser.receiver_report()->num_packets());
         EXPECT_EQ(1U, parser.receiver_report()->report_blocks().size());
         EXPECT_EQ(0, parser.fir()->num_packets());
       }))
-      .WillOnce(Invoke([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillOnce(Invoke([&](ArrayView<const uint8_t> packet) {
         RtcpPacketParser parser;
         parser.Parse(packet);
         EXPECT_EQ(0, parser.receiver_report()->num_packets());

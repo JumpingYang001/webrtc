@@ -82,7 +82,7 @@ TEST(RtpPacketizerVideoGeneric, WritesExtendedHeaderWhenPictureIdIsSet) {
   RtpPacketToSend packet(nullptr);
   ASSERT_TRUE(packetizer.NextPacket(&packet));
 
-  rtc::ArrayView<const uint8_t> payload = packet.payload();
+  ArrayView<const uint8_t> payload = packet.payload();
   EXPECT_EQ(payload.size(), 3 + kPayloadSize);
   EXPECT_TRUE(payload[0] & 0x04);  // Extended header bit is set.
   // Frame id is 37.
@@ -136,7 +136,7 @@ TEST(RtpPacketizerVideoGeneric, FrameIdOver15bitsWrapsAround) {
   RtpPacketToSend packet(nullptr);
   ASSERT_TRUE(packetizer.NextPacket(&packet));
 
-  rtc::ArrayView<const uint8_t> payload = packet.payload();
+  ArrayView<const uint8_t> payload = packet.payload();
   EXPECT_TRUE(payload[0] & 0x04);  // Extended header bit is set.
   // Frame id is 0x137.
   EXPECT_EQ(0x01u, payload[1]);
@@ -152,7 +152,7 @@ TEST(RtpPacketizerVideoGeneric, NoFrameIdDoesNotWriteExtendedHeader) {
   RtpPacketToSend packet(nullptr);
   ASSERT_TRUE(packetizer.NextPacket(&packet));
 
-  rtc::ArrayView<const uint8_t> payload = packet.payload();
+  ArrayView<const uint8_t> payload = packet.payload();
   EXPECT_FALSE(payload[0] & 0x04);
 }
 
@@ -164,7 +164,7 @@ TEST(RtpPacketizerVideoGeneric, DoesNotWriteHeaderForRawPayload) {
   RtpPacketToSend packet(nullptr);
   ASSERT_TRUE(packetizer.NextPacket(&packet));
 
-  rtc::ArrayView<const uint8_t> payload = packet.payload();
+  ArrayView<const uint8_t> payload = packet.payload();
   EXPECT_THAT(payload, ElementsAreArray(kPayload));
 }
 

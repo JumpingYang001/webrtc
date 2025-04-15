@@ -57,7 +57,7 @@ NextLayerIdc GetNextLayerIdc(const FrameDependencyTemplate& previous,
 }  // namespace
 
 RtpDependencyDescriptorWriter::RtpDependencyDescriptorWriter(
-    rtc::ArrayView<uint8_t> data,
+    ArrayView<uint8_t> data,
     const FrameDependencyStructure& structure,
     std::bitset<32> active_chains,
     const DependencyDescriptor& descriptor)
@@ -65,14 +65,13 @@ RtpDependencyDescriptorWriter::RtpDependencyDescriptorWriter(
       structure_(structure),
       active_chains_(active_chains),
       bit_writer_(data.data(), data.size()) {
-  if (rtc::SafeNe(descriptor.frame_dependencies.chain_diffs.size(),
-                  structure_.num_chains)) {
+  if (SafeNe(descriptor.frame_dependencies.chain_diffs.size(),
+             structure_.num_chains)) {
     build_failed_ = true;
     return;
   }
-  if (rtc::SafeNe(
-          descriptor.frame_dependencies.decode_target_indications.size(),
-          structure_.num_decode_targets)) {
+  if (SafeNe(descriptor.frame_dependencies.decode_target_indications.size(),
+             structure_.num_decode_targets)) {
     build_failed_ = true;
     return;
   }

@@ -228,8 +228,8 @@ TEST(ActiveDecodeTargetsHelperTest, ReturnsBitmaskWhenChanged) {
 }
 
 TEST(ActiveDecodeTargetsHelperTest, ReturnsNulloptWhenChainsAreNotUsed) {
-  const rtc::ArrayView<const int> kDecodeTargetProtectedByChain;
-  const rtc::ArrayView<const int> kNoChainDiffs;
+  const ArrayView<const int> kDecodeTargetProtectedByChain;
+  const ArrayView<const int> kNoChainDiffs;
 
   ActiveDecodeTargetsHelper helper;
   helper.OnFrame(kDecodeTargetProtectedByChain, /*active_decode_targets=*/kAll,

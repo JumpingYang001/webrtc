@@ -48,7 +48,7 @@ class RTPSenderAudio {
 
   struct RtpAudioFrame {
     AudioFrameType type = AudioFrameType::kAudioFrameSpeech;
-    rtc::ArrayView<const uint8_t> payload;
+    ArrayView<const uint8_t> payload;
 
     // Payload id to write to the payload type field of the rtp packet.
     int payload_id = -1;
@@ -65,7 +65,7 @@ class RTPSenderAudio {
     std::optional<int> audio_level_dbov;
 
     // Contributing sources list.
-    rtc::ArrayView<const uint32_t> csrcs;
+    ArrayView<const uint32_t> csrcs;
   };
   bool SendAudio(const RtpAudioFrame& frame);
 

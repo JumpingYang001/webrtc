@@ -62,7 +62,7 @@ bool ParseApStartOffsets(const uint8_t* nalu_ptr,
 // Aggregation Packet (AP) strcture
 // https://datatracker.ietf.org/doc/html/rfc7798#section-4.4.2
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessApOrSingleNalu(
-    rtc::CopyOnWriteBuffer rtp_payload) {
+    CopyOnWriteBuffer rtp_payload) {
   if (rtp_payload.size() < kH265PayloadHeaderSizeBytes) {
     RTC_LOG(LS_ERROR) << "RTP payload truncated.";
     return std::nullopt;
@@ -79,7 +79,7 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessApOrSingleNalu(
   const size_t nalu_length = rtp_payload.size() - kH265PayloadHeaderSizeBytes;
   uint8_t nal_type = (payload_data[0] & kH265TypeMask) >> 1;
   std::vector<size_t> nalu_start_offsets;
-  rtc::CopyOnWriteBuffer video_payload;
+  CopyOnWriteBuffer video_payload;
   if (nal_type == H265::NaluType::kAp) {
     // Skip the aggregated packet header (Aggregated packet NAL type + length).
     if (rtp_payload.size() <= kH265ApHeaderSizeBytes) {
@@ -118,8 +118,8 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessApOrSingleNalu(
 
     uint8_t nalu_type = (payload_data[start_offset] & kH265TypeMask) >> 1;
     start_offset += kH265NalHeaderSizeBytes;
-    rtc::ArrayView<const uint8_t> nalu_data(&payload_data[start_offset],
-                                            end_offset - start_offset);
+    ArrayView<const uint8_t> nalu_data(&payload_data[start_offset],
+                                       end_offset - start_offset);
     switch (nalu_type) {
       case H265::NaluType::kBlaWLp:
       case H265::NaluType::kBlaWRadl:
@@ -190,7 +190,7 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ProcessApOrSingleNalu(
 // Fragmentation Unit (FU) structure:
 // https://datatracker.ietf.org/doc/html/rfc7798#section-4.4.3
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ParseFuNalu(
-    rtc::CopyOnWriteBuffer rtp_payload) {
+    CopyOnWriteBuffer rtp_payload) {
   if (rtp_payload.size() < kH265FuHeaderSizeBytes + kH265NalHeaderSizeBytes) {
     RTC_LOG(LS_ERROR) << "FU NAL units truncated.";
     return std::nullopt;
@@ -213,8 +213,8 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ParseFuNalu(
           kH265FuHeaderSizeBytes + kH265PayloadHeaderSizeBytes;
       std::optional<bool> first_slice_segment_in_pic_flag =
           H265BitstreamParser::IsFirstSliceSegmentInPic(
-              rtc::ArrayView<const uint8_t>(rtp_payload.cdata() + slice_offset,
-                                            rtp_payload.size() - slice_offset));
+              ArrayView<const uint8_t>(rtp_payload.cdata() + slice_offset,
+                                       rtp_payload.size() - slice_offset));
       if (first_slice_segment_in_pic_flag.value_or(false)) {
         is_first_packet_in_frame = true;
       }
@@ -223,7 +223,7 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ParseFuNalu(
         kH265FuHeaderSizeBytes, rtp_payload.size() - kH265FuHeaderSizeBytes);
     rtp_payload.MutableData()[0] = f | original_nal_type << 1 | layer_id_h;
     rtp_payload.MutableData()[1] = layer_id_l_unshifted | tid;
-    rtc::CopyOnWriteBuffer video_payload;
+    CopyOnWriteBuffer video_payload;
     // Insert start code before the first fragment in FU.
     video_payload.AppendData(kStartCode);
     video_payload.AppendData(rtp_payload);
@@ -254,7 +254,7 @@ std::optional<VideoRtpDepacketizer::ParsedRtpPayload> ParseFuNalu(
 }  // namespace
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload>
-VideoRtpDepacketizerH265::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
+VideoRtpDepacketizerH265::Parse(CopyOnWriteBuffer rtp_payload) {
   if (rtp_payload.empty()) {
     RTC_LOG(LS_ERROR) << "Empty payload.";
     return std::nullopt;

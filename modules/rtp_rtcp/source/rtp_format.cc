@@ -34,7 +34,7 @@ namespace webrtc {
 
 std::unique_ptr<RtpPacketizer> RtpPacketizer::Create(
     std::optional<VideoCodecType> type,
-    rtc::ArrayView<const uint8_t> payload,
+    ArrayView<const uint8_t> payload,
     PayloadSizeLimits limits,
     // Codec-specific details.
     const RTPVideoHeader& rtp_video_header) {

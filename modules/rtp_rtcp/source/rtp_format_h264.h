@@ -38,7 +38,7 @@ class RtpPacketizerH264 : public RtpPacketizer {
  public:
   // Initialize with payload from encoder.
   // The payload_data must be exactly one encoded H264 frame.
-  RtpPacketizerH264(rtc::ArrayView<const uint8_t> payload,
+  RtpPacketizerH264(ArrayView<const uint8_t> payload,
                     PayloadSizeLimits limits,
                     H264PacketizationMode packetization_mode);
 
@@ -62,7 +62,7 @@ class RtpPacketizerH264 : public RtpPacketizer {
   // packet unit may represent a single NAL unit or a STAP-A packet, of which
   // there may be multiple in a single RTP packet (if so, aggregated = true).
   struct PacketUnit {
-    PacketUnit(rtc::ArrayView<const uint8_t> source_fragment,
+    PacketUnit(ArrayView<const uint8_t> source_fragment,
                bool first_fragment,
                bool last_fragment,
                bool aggregated,
@@ -73,7 +73,7 @@ class RtpPacketizerH264 : public RtpPacketizer {
           aggregated(aggregated),
           header(header) {}
 
-    rtc::ArrayView<const uint8_t> source_fragment;
+    ArrayView<const uint8_t> source_fragment;
     bool first_fragment;
     bool last_fragment;
     bool aggregated;
@@ -90,7 +90,7 @@ class RtpPacketizerH264 : public RtpPacketizer {
 
   const PayloadSizeLimits limits_;
   size_t num_packets_left_;
-  std::deque<rtc::ArrayView<const uint8_t>> input_fragments_;
+  std::deque<ArrayView<const uint8_t>> input_fragments_;
   std::queue<PacketUnit> packets_;
 };
 }  // namespace webrtc

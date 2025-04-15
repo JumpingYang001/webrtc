@@ -60,7 +60,7 @@ TEST(RtcpPacketAppTest, CreateWithoutData) {
   app.SetSubType(kSubtype);
   app.SetName(kName);
 
-  rtc::Buffer raw = app.Build();
+  Buffer raw = app.Build();
 
   EXPECT_THAT(make_tuple(raw.data(), raw.size()),
               ElementsAreArray(kPacketWithoutData));
@@ -83,7 +83,7 @@ TEST(RtcpPacketAppTest, CreateWithData) {
   app.SetName(kName);
   app.SetData(kData, sizeof(kData));
 
-  rtc::Buffer raw = app.Build();
+  Buffer raw = app.Build();
 
   EXPECT_THAT(make_tuple(raw.data(), raw.size()),
               ElementsAreArray(kPacketWithData));

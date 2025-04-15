@@ -37,15 +37,15 @@ TEST(VideoRtpDepacketizerH265Test, SingleNalu) {
   uint8_t packet[3] = {0x26, 0x02,
                        0xFF};  // F=0, Type=19 (Idr), LayerId=0, TID=2.
   uint8_t expected_packet[] = {0x00, 0x00, 0x00, 0x01, 0x26, 0x02, 0xff};
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed);
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_EQ(parsed->video_header.codec, kVideoCodecH265);
@@ -71,15 +71,15 @@ TEST(VideoRtpDepacketizerH265Test, SingleNaluSpsWithResolution) {
       0x03, 0x00, 0x9d, 0x08, 0x00, 0x00, 0x03, 0x00, 0x00, 0x5d, 0xb0,
       0x02, 0x80, 0x80, 0x2d, 0x16, 0x59, 0x59, 0xa4, 0x93, 0x2b, 0x80,
       0x40, 0x00, 0x00, 0x03, 0x00, 0x40, 0x00, 0x00, 0x07, 0x82};
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed);
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.codec, kVideoCodecH265);
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
@@ -89,7 +89,7 @@ TEST(VideoRtpDepacketizerH265Test, SingleNaluSpsWithResolution) {
 
 TEST(VideoRtpDepacketizerH265Test, PaciPackets) {
   uint8_t packet[2] = {0x64, 0x02};  // F=0, Type=50 (PACI), LayerId=0, TID=2.
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
@@ -135,7 +135,7 @@ TEST(VideoRtpDepacketizerH265Test, ApKey) {
                    0x7b, 0x30, 0x1c, 0xd7, 0xd4, 0x3a, 0xec, 0xad, 0xef, 0x73};
   uint8_t idr[] = {0x26, 0x02, 0xaf, 0x08, 0x4a, 0x31, 0x11, 0x15, 0xe5, 0xc0};
 
-  rtc::Buffer packet;
+  Buffer packet;
   packet.AppendData(payload_header);
   packet.AppendData(vps_nalu_size);
   packet.AppendData(vps);
@@ -146,7 +146,7 @@ TEST(VideoRtpDepacketizerH265Test, ApKey) {
   packet.AppendData(slice_nalu_size);
   packet.AppendData(idr);
 
-  rtc::Buffer expected_packet;
+  Buffer expected_packet;
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(vps);
   expected_packet.AppendData(start_code);
@@ -157,15 +157,15 @@ TEST(VideoRtpDepacketizerH265Test, ApKey) {
   expected_packet.AppendData(idr);
 
   // clang-format on
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed);
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_EQ(parsed->video_header.codec, kVideoCodecH265);
@@ -195,7 +195,7 @@ TEST(VideoRtpDepacketizerH265Test, ApNaluSpsWithResolution) {
                    0x7b, 0x30, 0x1c, 0xd7, 0xd4, 0x3a, 0xec, 0xad, 0xef, 0x73};
   uint8_t idr[] = {0x26, 0x02, 0xaf, 0x08, 0x4a, 0x31, 0x11, 0x15, 0xe5, 0xc0};
 
-  rtc::Buffer packet;
+  Buffer packet;
   packet.AppendData(payload_header);
   packet.AppendData(vps_nalu_size);
   packet.AppendData(vps);
@@ -206,7 +206,7 @@ TEST(VideoRtpDepacketizerH265Test, ApNaluSpsWithResolution) {
   packet.AppendData(slice_nalu_size);
   packet.AppendData(idr);
 
-  rtc::Buffer expected_packet;
+  Buffer expected_packet;
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(vps);
   expected_packet.AppendData(start_code);
@@ -216,15 +216,15 @@ TEST(VideoRtpDepacketizerH265Test, ApNaluSpsWithResolution) {
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(idr);
 
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed);
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_EQ(parsed->video_header.codec, kVideoCodecH265);
@@ -249,12 +249,10 @@ TEST(VideoRtpDepacketizerH265Test, EmptyApRejected) {
                                      0x00, 0x00};
 
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(lone_empty_packet)));
-  EXPECT_FALSE(
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(leading_empty_packet)));
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(middle_empty_packet)));
-  EXPECT_FALSE(
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(trailing_empty_packet)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(lone_empty_packet)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(leading_empty_packet)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(middle_empty_packet)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(trailing_empty_packet)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, ApDelta) {
@@ -267,15 +265,15 @@ TEST(VideoRtpDepacketizerH265Test, ApDelta) {
       0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0xFF,               // TrailR
       0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0xFF, 0x00,         // TrailR
       0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0xFF, 0x00, 0x11};  // TrailR
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed);
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
 
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameDelta);
@@ -312,12 +310,12 @@ TEST(VideoRtpDepacketizerH265Test, Fu) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed1 =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(packet1));
+      depacketizer.Parse(CopyOnWriteBuffer(packet1));
   ASSERT_TRUE(parsed1);
   // We expect that the first packet is one byte shorter since the FU header
   // has been replaced by the original nal header.
-  EXPECT_THAT(rtc::MakeArrayView(parsed1->video_payload.cdata(),
-                                 parsed1->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed1->video_payload.cdata(),
+                            parsed1->video_payload.size()),
               ElementsAreArray(kExpected1));
   EXPECT_EQ(parsed1->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_EQ(parsed1->video_header.codec, kVideoCodecH265);
@@ -325,17 +323,17 @@ TEST(VideoRtpDepacketizerH265Test, Fu) {
 
   // Following packets will be 2 bytes shorter since they will only be appended
   // onto the first packet.
-  auto parsed2 = depacketizer.Parse(rtc::CopyOnWriteBuffer(packet2));
-  EXPECT_THAT(rtc::MakeArrayView(parsed2->video_payload.cdata(),
-                                 parsed2->video_payload.size()),
+  auto parsed2 = depacketizer.Parse(CopyOnWriteBuffer(packet2));
+  EXPECT_THAT(MakeArrayView(parsed2->video_payload.cdata(),
+                            parsed2->video_payload.size()),
               ElementsAreArray(kExpected2));
   EXPECT_FALSE(parsed2->video_header.is_first_packet_in_frame);
   EXPECT_EQ(parsed2->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_EQ(parsed2->video_header.codec, kVideoCodecH265);
 
-  auto parsed3 = depacketizer.Parse(rtc::CopyOnWriteBuffer(packet3));
-  EXPECT_THAT(rtc::MakeArrayView(parsed3->video_payload.cdata(),
-                                 parsed3->video_payload.size()),
+  auto parsed3 = depacketizer.Parse(CopyOnWriteBuffer(packet3));
+  EXPECT_THAT(MakeArrayView(parsed3->video_payload.cdata(),
+                            parsed3->video_payload.size()),
               ElementsAreArray(kExpected3));
   EXPECT_FALSE(parsed3->video_header.is_first_packet_in_frame);
   EXPECT_EQ(parsed3->video_header.frame_type, VideoFrameType::kVideoFrameKey);
@@ -343,7 +341,7 @@ TEST(VideoRtpDepacketizerH265Test, Fu) {
 }
 
 TEST(VideoRtpDepacketizerH265Test, EmptyPayload) {
-  rtc::CopyOnWriteBuffer empty;
+  CopyOnWriteBuffer empty;
   VideoRtpDepacketizerH265 depacketizer;
   EXPECT_FALSE(depacketizer.Parse(empty));
 }
@@ -351,31 +349,31 @@ TEST(VideoRtpDepacketizerH265Test, EmptyPayload) {
 TEST(VideoRtpDepacketizerH265Test, TruncatedFuNalu) {
   const uint8_t kPayload[] = {0x62};
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, TruncatedSingleApNalu) {
   const uint8_t kPayload[] = {0xe0, 0x02, 0x40};
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, ApPacketWithTruncatedNalUnits) {
   const uint8_t kPayload[] = {0x60, 0x02, 0xED, 0xDF};
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, TruncationJustAfterSingleApNalu) {
   const uint8_t kPayload[] = {0x60, 0x02, 0x40, 0x40};
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, ShortSpsPacket) {
   const uint8_t kPayload[] = {0x40, 0x80, 0x00};
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_TRUE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_TRUE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, InvalidNaluSizeApNalu) {
@@ -385,7 +383,7 @@ TEST(VideoRtpDepacketizerH265Test, InvalidNaluSizeApNalu) {
                               0, 0x05, 0x02, 0x02, 0xFF, 0x00,
                               0x11};  // TrailR;
   VideoRtpDepacketizerH265 depacketizer;
-  EXPECT_FALSE(depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload)));
+  EXPECT_FALSE(depacketizer.Parse(CopyOnWriteBuffer(kPayload)));
 }
 
 TEST(VideoRtpDepacketizerH265Test, PrefixSeiSetsFirstPacketInFrame) {
@@ -394,7 +392,7 @@ TEST(VideoRtpDepacketizerH265Test, PrefixSeiSetsFirstPacketInFrame) {
       0x03, 0x03, 0x03, 0x03  // Payload.
   };
   VideoRtpDepacketizerH265 depacketizer;
-  auto parsed = depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+  auto parsed = depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
 }
@@ -425,7 +423,7 @@ TEST(VideoRtpDepacketizerH265Test, ApVpsSpsPpsMultiIdrSlices) {
   uint8_t idr_slice2[] = {0x28, 0x01, 0x27, 0xf8, 0x63,
                           0x6d, 0x7b, 0x6f, 0xcf, 0xff};
 
-  rtc::CopyOnWriteBuffer rtp_payload;
+  CopyOnWriteBuffer rtp_payload;
   rtp_payload.AppendData(payload_header);
   rtp_payload.AppendData(vps_nalu_size);
   rtp_payload.AppendData(vps);
@@ -438,7 +436,7 @@ TEST(VideoRtpDepacketizerH265Test, ApVpsSpsPpsMultiIdrSlices) {
   rtp_payload.AppendData(slice_nalu_size);
   rtp_payload.AppendData(idr_slice2);
 
-  rtc::Buffer expected_packet;
+  Buffer expected_packet;
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(vps);
   expected_packet.AppendData(start_code);
@@ -455,8 +453,8 @@ TEST(VideoRtpDepacketizerH265Test, ApVpsSpsPpsMultiIdrSlices) {
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed.has_value());
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
@@ -473,14 +471,14 @@ TEST(VideoRtpDepacketizerH265Test, ApMultiNonFirstSlicesFromSingleNonIdrFrame) {
   uint8_t non_idr_slice2[] = {0x02, 0x01, 0x27, 0xf8, 0x20,
                               0x42, 0xad, 0x1b, 0x68, 0xe0};
 
-  rtc::CopyOnWriteBuffer rtp_payload;
+  CopyOnWriteBuffer rtp_payload;
   rtp_payload.AppendData(payload_header);
   rtp_payload.AppendData(slice_nalu_size);
   rtp_payload.AppendData(non_idr_slice1);
   rtp_payload.AppendData(slice_nalu_size);
   rtp_payload.AppendData(non_idr_slice2);
 
-  rtc::Buffer expected_packet;
+  Buffer expected_packet;
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(non_idr_slice1);
   expected_packet.AppendData(start_code);
@@ -491,8 +489,8 @@ TEST(VideoRtpDepacketizerH265Test, ApMultiNonFirstSlicesFromSingleNonIdrFrame) {
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed.has_value());
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameDelta);
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
@@ -509,14 +507,14 @@ TEST(VideoRtpDepacketizerH265Test, ApFirstTwoSlicesFromSingleNonIdrFrame) {
   uint8_t non_idr_slice2[] = {0x02, 0x01, 0x23, 0xfc, 0x20,
                               0x42, 0xad, 0x1b, 0x68, 0xdf};
 
-  rtc::CopyOnWriteBuffer rtp_payload;
+  CopyOnWriteBuffer rtp_payload;
   rtp_payload.AppendData(payload_header);
   rtp_payload.AppendData(slice_nalu_size);
   rtp_payload.AppendData(non_idr_slice1);
   rtp_payload.AppendData(slice_nalu_size);
   rtp_payload.AppendData(non_idr_slice2);
 
-  rtc::Buffer expected_packet;
+  Buffer expected_packet;
   expected_packet.AppendData(start_code);
   expected_packet.AppendData(non_idr_slice1);
   expected_packet.AppendData(start_code);
@@ -527,8 +525,8 @@ TEST(VideoRtpDepacketizerH265Test, ApFirstTwoSlicesFromSingleNonIdrFrame) {
       depacketizer.Parse(rtp_payload);
   ASSERT_TRUE(parsed.has_value());
 
-  EXPECT_THAT(rtc::MakeArrayView(parsed->video_payload.cdata(),
-                                 parsed->video_payload.size()),
+  EXPECT_THAT(MakeArrayView(parsed->video_payload.cdata(),
+                            parsed->video_payload.size()),
               ElementsAreArray(expected_packet));
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameDelta);
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
@@ -543,7 +541,7 @@ TEST(VideoRtpDepacketizerH265Test, SingleNaluFromIdrSecondSlice) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
@@ -558,7 +556,7 @@ TEST(VideoRtpDepacketizerH265Test, SingleNaluFromNonIdrSecondSlice) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameDelta);
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
@@ -574,7 +572,7 @@ TEST(VideoRtpDepacketizerH265Test, FuFromIdrFrameSecondSlice) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameKey);
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
@@ -590,7 +588,7 @@ TEST(VideoRtpDepacketizerH265Test, FuFromNonIdrFrameSecondSlice) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_EQ(parsed->video_header.frame_type, VideoFrameType::kVideoFrameDelta);
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
@@ -601,7 +599,7 @@ TEST(VideoRtpDepacketizerH265Test, AudSetsFirstPacketInFrame) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
 }
@@ -616,7 +614,7 @@ TEST(VideoRtpDepacketizerH265Test, PpsSetsFirstPacketInFrame) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_TRUE(parsed->video_header.is_first_packet_in_frame);
 }
@@ -626,7 +624,7 @@ TEST(VideoRtpDepacketizerH265Test, SuffixSeiNotSetFirstPacketInFrame) {
 
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
   EXPECT_FALSE(parsed->video_header.is_first_packet_in_frame);
 }
@@ -635,7 +633,7 @@ TEST(VideoRtpDepacketizerH265Test, EmptyNaluPayload) {
   const uint8_t kPayload[] = {0x48, 0x00};  // F=0, Type=36 (H265::kEos).
   VideoRtpDepacketizerH265 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
-      depacketizer.Parse(rtc::CopyOnWriteBuffer(kPayload));
+      depacketizer.Parse(CopyOnWriteBuffer(kPayload));
   ASSERT_TRUE(parsed.has_value());
 }
 

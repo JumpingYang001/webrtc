@@ -730,7 +730,7 @@ class FecPacketMaskMetricsTest : public ::testing::Test {
       for (int num_fec_packets = 1; num_fec_packets <= num_media_packets;
            num_fec_packets++) {
         memset(packet_mask.get(), 0, num_media_packets * mask_bytes_fec_packet);
-        rtc::ArrayView<const uint8_t> mask =
+        ArrayView<const uint8_t> mask =
             mask_table.LookUp(num_media_packets, num_fec_packets);
         memcpy(packet_mask.get(), &mask[0], mask.size());
         // Convert to bit mask.

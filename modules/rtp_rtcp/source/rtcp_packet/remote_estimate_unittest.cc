@@ -20,7 +20,7 @@ TEST(RemoteEstimateTest, EncodesCapacityBounds) {
   NetworkStateEstimate src;
   src.link_capacity_lower = DataRate::KilobitsPerSec(10);
   src.link_capacity_upper = DataRate::KilobitsPerSec(1000000);
-  rtc::Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
+  Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
   NetworkStateEstimate dst;
   EXPECT_TRUE(GetRemoteEstimateSerializer()->Parse(data, &dst));
   EXPECT_EQ(src.link_capacity_lower, dst.link_capacity_lower);
@@ -33,7 +33,7 @@ TEST(RemoteEstimateTest, ExpandsToPlusInfinity) {
   // with kbps resolution. We expected it be represented as plus infinity.
   src.link_capacity_lower = DataRate::KilobitsPerSec(2 << 24);
   src.link_capacity_upper = DataRate::PlusInfinity();
-  rtc::Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
+  Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
 
   NetworkStateEstimate dst;
   EXPECT_TRUE(GetRemoteEstimateSerializer()->Parse(data, &dst));
@@ -45,7 +45,7 @@ TEST(RemoteEstimateTest, DoesNotEncodeNegative) {
   NetworkStateEstimate src;
   src.link_capacity_lower = DataRate::MinusInfinity();
   src.link_capacity_upper = DataRate::MinusInfinity();
-  rtc::Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
+  Buffer data = GetRemoteEstimateSerializer()->Serialize(src);
   // Since MinusInfinity can't be represented, the buffer should be empty.
   EXPECT_EQ(data.size(), 0u);
   NetworkStateEstimate dst;

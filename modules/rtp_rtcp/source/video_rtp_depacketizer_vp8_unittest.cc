@@ -232,7 +232,7 @@ TEST(VideoRtpDepacketizerVp8Test, ReferencesInputCopyOnWriteBuffer) {
   packet[1] = 0b1111'0000;  // with all extensions,
   packet[2] = 15;           // and one-byte picture id.
 
-  rtc::CopyOnWriteBuffer rtp_payload(packet);
+  CopyOnWriteBuffer rtp_payload(packet);
   VideoRtpDepacketizerVp8 depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
       depacketizer.Parse(rtp_payload);
@@ -244,7 +244,7 @@ TEST(VideoRtpDepacketizerVp8Test, ReferencesInputCopyOnWriteBuffer) {
 }
 
 TEST(VideoRtpDepacketizerVp8Test, FailsOnEmptyPayload) {
-  rtc::ArrayView<const uint8_t> empty;
+  ArrayView<const uint8_t> empty;
   RTPVideoHeader video_header;
   EXPECT_EQ(VideoRtpDepacketizerVp8::ParseRtpPayload(empty, &video_header), 0);
 }

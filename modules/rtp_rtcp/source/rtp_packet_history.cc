@@ -299,7 +299,7 @@ std::unique_ptr<RtpPacketToSend> RtpPacketHistory::GetPayloadPaddingPacket(
 }
 
 void RtpPacketHistory::CullAcknowledgedPackets(
-    rtc::ArrayView<const uint16_t> sequence_numbers) {
+    ArrayView<const uint16_t> sequence_numbers) {
   MutexLock lock(&lock_);
   for (uint16_t sequence_number : sequence_numbers) {
     int packet_index = GetPacketIndex(sequence_number);

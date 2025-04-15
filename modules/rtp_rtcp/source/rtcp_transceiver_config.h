@@ -81,7 +81,7 @@ class RtpStreamRtcpHandler {
   virtual RtpStats SentStats() = 0;
 
   virtual void OnNack(uint32_t /* sender_ssrc */,
-                      rtc::ArrayView<const uint16_t> /* sequence_numbers */) {}
+                      ArrayView<const uint16_t> /* sequence_numbers */) {}
   virtual void OnFir(uint32_t /* sender_ssrc */) {}
   virtual void OnPli(uint32_t /* sender_ssrc */) {}
 
@@ -117,7 +117,7 @@ struct RtcpTransceiverConfig {
   Clock* clock = nullptr;
 
   // Transport to send RTCP packets to.
-  std::function<void(rtc::ArrayView<const uint8_t>)> rtcp_transport;
+  std::function<void(ArrayView<const uint8_t>)> rtcp_transport;
 
   // Queue for scheduling delayed tasks, e.g. sending periodic compound packets.
   TaskQueueBase* task_queue = nullptr;

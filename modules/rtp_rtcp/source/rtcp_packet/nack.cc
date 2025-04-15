@@ -103,8 +103,7 @@ bool Nack::Create(uint8_t* packet,
 
     size_t payload_size_bytes =
         kCommonFeedbackLength + (num_nack_fields * kNackItemLength);
-    size_t payload_size_32bits =
-        rtc::CheckedDivExact<size_t>(payload_size_bytes, 4);
+    size_t payload_size_32bits = CheckedDivExact<size_t>(payload_size_bytes, 4);
     CreateHeader(kFeedbackMessageType, kPacketType, payload_size_32bits, packet,
                  index);
 

@@ -55,11 +55,11 @@ class TransformableVideoReceiverFrame
   ~TransformableVideoReceiverFrame() override = default;
 
   // Implements TransformableVideoFrameInterface.
-  rtc::ArrayView<const uint8_t> GetData() const override {
+  ArrayView<const uint8_t> GetData() const override {
     return *frame_->GetEncodedData();
   }
 
-  void SetData(rtc::ArrayView<const uint8_t> data) override {
+  void SetData(ArrayView<const uint8_t> data) override {
     frame_->SetEncodedData(
         EncodedImageBuffer::Create(data.data(), data.size()));
   }
@@ -137,7 +137,7 @@ RtpVideoStreamReceiverFrameTransformerDelegate::
     RtpVideoStreamReceiverFrameTransformerDelegate(
         RtpVideoFrameReceiver* receiver,
         Clock* clock,
-        rtc::scoped_refptr<FrameTransformerInterface> frame_transformer,
+        scoped_refptr<FrameTransformerInterface> frame_transformer,
         Thread* network_thread,
         uint32_t ssrc)
     : receiver_(receiver),
@@ -149,7 +149,7 @@ RtpVideoStreamReceiverFrameTransformerDelegate::
 void RtpVideoStreamReceiverFrameTransformerDelegate::Init() {
   RTC_DCHECK_RUN_ON(&network_sequence_checker_);
   frame_transformer_->RegisterTransformedFrameSinkCallback(
-      rtc::scoped_refptr<TransformedFrameCallback>(this), ssrc_);
+      scoped_refptr<TransformedFrameCallback>(this), ssrc_);
 }
 
 void RtpVideoStreamReceiverFrameTransformerDelegate::Reset() {
@@ -174,8 +174,7 @@ void RtpVideoStreamReceiverFrameTransformerDelegate::TransformFrame(
 
 void RtpVideoStreamReceiverFrameTransformerDelegate::OnTransformedFrame(
     std::unique_ptr<TransformableFrameInterface> frame) {
-  rtc::scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate> delegate(
-      this);
+  scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate> delegate(this);
   network_thread_->PostTask(
       [delegate = std::move(delegate), frame = std::move(frame)]() mutable {
         delegate->ManageFrame(std::move(frame));
@@ -183,8 +182,7 @@ void RtpVideoStreamReceiverFrameTransformerDelegate::OnTransformedFrame(
 }
 
 void RtpVideoStreamReceiverFrameTransformerDelegate::StartShortCircuiting() {
-  rtc::scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate> delegate(
-      this);
+  scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate> delegate(this);
   network_thread_->PostTask([delegate = std::move(delegate)]() mutable {
     delegate->StartShortCircuitingOnNetworkSequence();
   });
@@ -237,7 +235,7 @@ void RtpVideoStreamReceiverFrameTransformerDelegate::ManageFrame(
     VideoFrameMetadata metadata = transformed_frame->Metadata();
     RTPVideoHeader video_header = RTPVideoHeader::FromMetadata(metadata);
     VideoSendTiming timing;
-    rtc::ArrayView<const uint8_t> data = transformed_frame->GetData();
+    ArrayView<const uint8_t> data = transformed_frame->GetData();
     int64_t receive_time = clock_->CurrentTime().ms();
     receiver_->ManageFrame(std::make_unique<RtpFrameObject>(
         /*first_seq_num=*/metadata.GetFrameId().value_or(0),

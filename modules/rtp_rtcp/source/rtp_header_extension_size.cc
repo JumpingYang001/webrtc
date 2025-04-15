@@ -16,7 +16,7 @@
 
 namespace webrtc {
 
-int RtpHeaderExtensionSize(rtc::ArrayView<const RtpExtensionSize> extensions,
+int RtpHeaderExtensionSize(ArrayView<const RtpExtensionSize> extensions,
                            const RtpHeaderExtensionMap& registered_extensions) {
   // RFC3550 Section 5.3.1
   static constexpr int kExtensionBlockHeaderSize = 4;

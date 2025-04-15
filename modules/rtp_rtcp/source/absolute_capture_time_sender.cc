@@ -31,9 +31,8 @@ static_assert(
 AbsoluteCaptureTimeSender::AbsoluteCaptureTimeSender(Clock* clock)
     : clock_(clock) {}
 
-uint32_t AbsoluteCaptureTimeSender::GetSource(
-    uint32_t ssrc,
-    rtc::ArrayView<const uint32_t> csrcs) {
+uint32_t AbsoluteCaptureTimeSender::GetSource(uint32_t ssrc,
+                                              ArrayView<const uint32_t> csrcs) {
   return AbsoluteCaptureTimeInterpolator::GetSource(ssrc, csrcs);
 }
 

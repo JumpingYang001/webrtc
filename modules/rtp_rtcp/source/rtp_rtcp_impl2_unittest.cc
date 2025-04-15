@@ -125,13 +125,13 @@ class SendTransport : public Transport,
 
   void SetRtpRtcpModule(ModuleRtpRtcpImpl2* receiver) { receiver_ = receiver; }
   void SimulateNetworkDelay(TimeDelta delay) { delay_ = delay; }
-  bool SendRtp(rtc::ArrayView<const uint8_t> data,
+  bool SendRtp(ArrayView<const uint8_t> data,
                const PacketOptions& /* options */) override {
     EXPECT_TRUE(last_packet_.Parse(data));
     ++rtp_packets_sent_;
     return true;
   }
-  bool SendRtcp(rtc::ArrayView<const uint8_t> data) override {
+  bool SendRtcp(ArrayView<const uint8_t> data) override {
     test::RtcpPacketParser parser;
     parser.Parse(data);
     last_nack_list_ = parser.nack()->packet_ids();
@@ -407,7 +407,7 @@ class RtpRtcpImpl2Test : public ::testing::Test {
     nack.SetSenderSsrc(sender ? kReceiverSsrc : kSenderSsrc);
     nack.SetMediaSsrc(sender ? kSenderSsrc : kReceiverSsrc);
     nack.SetPacketIds(list, kListLength);
-    rtc::Buffer packet = nack.Build();
+    Buffer packet = nack.Build();
     module->impl_->IncomingRtcpPacket(packet);
   }
 };

@@ -34,7 +34,7 @@ TEST(RtcpPacketByeTest, CreateAndParseWithoutReason) {
   Bye bye;
   bye.SetSenderSsrc(kSenderSsrc);
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   Bye parsed_bye;
   EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed_bye));
 
@@ -49,7 +49,7 @@ TEST(RtcpPacketByeTest, CreateAndParseWithCsrcs) {
   EXPECT_TRUE(bye.SetCsrcs({kCsrc1, kCsrc2}));
   EXPECT_TRUE(bye.reason().empty());
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   Bye parsed_bye;
   EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed_bye));
 
@@ -66,7 +66,7 @@ TEST(RtcpPacketByeTest, CreateAndParseWithCsrcsAndAReason) {
   EXPECT_TRUE(bye.SetCsrcs({kCsrc1, kCsrc2}));
   bye.SetReason(kReason);
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   Bye parsed_bye;
   EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed_bye));
 
@@ -90,7 +90,7 @@ TEST(RtcpPacketByeTest, CreateAndParseWithAReason) {
   bye.SetSenderSsrc(kSenderSsrc);
   bye.SetReason(kReason);
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   Bye parsed_bye;
   EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed_bye));
 
@@ -108,7 +108,7 @@ TEST(RtcpPacketByeTest, CreateAndParseWithReasons) {
     bye.SetSenderSsrc(kSenderSsrc);
     bye.SetReason(kReason);
 
-    rtc::Buffer raw = bye.Build();
+    Buffer raw = bye.Build();
     Bye parsed_bye;
     EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed_bye));
 
@@ -129,7 +129,7 @@ TEST(RtcpPacketByeTest, ParseFailOnInvalidSrcCount) {
   Bye bye;
   bye.SetSenderSsrc(kSenderSsrc);
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   raw[0]++;  // Damage the packet: increase ssrc count by one.
 
   Bye parsed_bye;
@@ -141,7 +141,7 @@ TEST(RtcpPacketByeTest, ParseFailOnInvalidReasonLength) {
   bye.SetSenderSsrc(kSenderSsrc);
   bye.SetReason("18 characters long");
 
-  rtc::Buffer raw = bye.Build();
+  Buffer raw = bye.Build();
   // Damage the packet: decrease payload size by 4 bytes
   raw[3]--;
   raw.SetSize(raw.size() - 4);

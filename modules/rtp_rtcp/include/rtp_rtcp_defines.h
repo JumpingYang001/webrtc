@@ -175,9 +175,8 @@ class NetworkLinkRtcpObserver {
 
   // Called on an RTCP packet with sender or receiver reports with non zero
   // report blocks. Report blocks are combined from all reports into one array.
-  virtual void OnReport(
-      Timestamp /* receive_time */,
-      rtc::ArrayView<const ReportBlockData> /* report_blocks */) {}
+  virtual void OnReport(Timestamp /* receive_time */,
+                        ArrayView<const ReportBlockData> /* report_blocks */) {}
   virtual void OnRttUpdate(Timestamp /* receive_time */, TimeDelta /* rtt */) {}
 };
 

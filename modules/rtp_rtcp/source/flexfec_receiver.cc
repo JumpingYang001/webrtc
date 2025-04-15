@@ -117,7 +117,7 @@ FlexfecReceiver::AddReceivedPacket(const RtpPacketReceived& packet) {
     ++packet_counter_.num_fec_packets;
 
     // Insert packet payload into erasure code.
-    received_packet->pkt = rtc::scoped_refptr<ForwardErrorCorrection::Packet>(
+    received_packet->pkt = scoped_refptr<ForwardErrorCorrection::Packet>(
         new ForwardErrorCorrection::Packet());
     received_packet->pkt->data =
         packet.Buffer().Slice(packet.headers_size(), packet.payload_size());
@@ -131,7 +131,7 @@ FlexfecReceiver::AddReceivedPacket(const RtpPacketReceived& packet) {
 
     // Insert entire packet into erasure code.
     // Create a copy and fill with zeros all mutable extensions.
-    received_packet->pkt = rtc::scoped_refptr<ForwardErrorCorrection::Packet>(
+    received_packet->pkt = scoped_refptr<ForwardErrorCorrection::Packet>(
         new ForwardErrorCorrection::Packet());
     RtpPacketReceived packet_copy(packet);
     packet_copy.ZeroMutableExtensions();
@@ -191,8 +191,7 @@ void FlexfecReceiver::ProcessReceivedPacket(
     bool should_log_periodically =
         now - last_recovered_packet_ > kPacketLogInterval;
     if (RTC_LOG_CHECK_LEVEL(LS_VERBOSE) || should_log_periodically) {
-      rtc::LoggingSeverity level =
-          should_log_periodically ? rtc::LS_INFO : rtc::LS_VERBOSE;
+      LoggingSeverity level = should_log_periodically ? LS_INFO : LS_VERBOSE;
       RTC_LOG_V(level) << "Recovered media packet with SSRC: "
                        << parsed_packet.Ssrc() << " seq "
                        << parsed_packet.SequenceNumber() << " recovered length "

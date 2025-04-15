@@ -53,7 +53,7 @@ class RtpFrameObject : public EncodedFrame {
                                                   FrameInstrumentationData>>&
                      frame_instrumentation_data,
                  RtpPacketInfos packet_infos,
-                 rtc::scoped_refptr<EncodedImageBuffer> image_buffer);
+                 scoped_refptr<EncodedImageBuffer> image_buffer);
 
   ~RtpFrameObject() override;
   uint16_t first_seq_num() const;
@@ -78,7 +78,7 @@ class RtpFrameObject : public EncodedFrame {
 
  private:
   // Reference for mutable access.
-  rtc::scoped_refptr<EncodedImageBuffer> image_buffer_;
+  scoped_refptr<EncodedImageBuffer> image_buffer_;
   RTPVideoHeader rtp_video_header_;
   VideoCodecType codec_type_;
   uint16_t first_seq_num_;

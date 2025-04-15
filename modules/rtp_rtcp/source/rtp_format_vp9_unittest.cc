@@ -78,7 +78,7 @@ void ParseAndCheckPacket(const uint8_t* packet,
                          size_t expected_length) {
   RTPVideoHeader video_header;
   EXPECT_EQ(VideoRtpDepacketizerVp9::ParseRtpPayload(
-                rtc::MakeArrayView(packet, expected_length), &video_header),
+                MakeArrayView(packet, expected_length), &video_header),
             expected_hdr_length);
   EXPECT_EQ(kVideoCodecVP9, video_header.codec);
   auto& vp9_header =
@@ -154,9 +154,8 @@ class RtpPacketizerVp9Test : public ::testing::Test {
     EXPECT_EQ(last, payload_pos_ == payload_.size());
   }
 
-  void CreateParseAndCheckPackets(
-      rtc::ArrayView<const size_t> expected_hdr_sizes,
-      rtc::ArrayView<const size_t> expected_sizes) {
+  void CreateParseAndCheckPackets(ArrayView<const size_t> expected_hdr_sizes,
+                                  ArrayView<const size_t> expected_sizes) {
     ASSERT_EQ(expected_hdr_sizes.size(), expected_sizes.size());
     ASSERT_TRUE(packetizer_ != nullptr);
     EXPECT_EQ(expected_sizes.size(), num_packets_);

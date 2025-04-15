@@ -36,7 +36,7 @@ constexpr size_t kExtendedHeaderLength = 2;
 }  // namespace
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload>
-VideoRtpDepacketizerGeneric::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
+VideoRtpDepacketizerGeneric::Parse(CopyOnWriteBuffer rtp_payload) {
   if (rtp_payload.size() == 0) {
     RTC_LOG(LS_WARNING) << "Empty payload.";
     return std::nullopt;

@@ -58,7 +58,7 @@ class UlpfecHeaderWriter : public FecHeaderWriter {
   size_t FecHeaderSize(size_t packet_mask_row_size) const override;
 
   void FinalizeFecHeader(
-      rtc::ArrayView<const ProtectedStream> protected_streams,
+      ArrayView<const ProtectedStream> protected_streams,
       ForwardErrorCorrection::Packet& fec_packet) const override;
 };
 

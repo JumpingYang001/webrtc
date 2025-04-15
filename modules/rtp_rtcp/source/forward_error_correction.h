@@ -55,7 +55,7 @@ class ForwardErrorCorrection {
     // reaches zero.
     virtual int32_t Release();
 
-    rtc::CopyOnWriteBuffer data;  // Packet data.
+    CopyOnWriteBuffer data;  // Packet data.
 
    private:
     int32_t ref_count_;  // Counts the number of references to a packet.
@@ -86,7 +86,7 @@ class ForwardErrorCorrection {
                   // otherwise.
     bool is_recovered;
     RtpHeaderExtensionMap extensions;
-    rtc::scoped_refptr<Packet> pkt;  // Pointer to the packet storage.
+    scoped_refptr<Packet> pkt;  // Pointer to the packet storage.
   };
 
   // The recovered list parameter of DecodeFec() references structs of
@@ -102,7 +102,7 @@ class ForwardErrorCorrection {
                          // through the received packet list.
     bool returned;  // True when the packet already has been returned to the
                     // caller through the callback.
-    rtc::scoped_refptr<Packet> pkt;  // Pointer to the packet storage.
+    scoped_refptr<Packet> pkt;  // Pointer to the packet storage.
   };
 
   // Used to link media packets to their protecting FEC packets.
@@ -113,7 +113,7 @@ class ForwardErrorCorrection {
     ProtectedPacket();
     ~ProtectedPacket();
 
-    rtc::scoped_refptr<ForwardErrorCorrection::Packet> pkt;
+    scoped_refptr<ForwardErrorCorrection::Packet> pkt;
   };
 
   using ProtectedPacketList = std::list<std::unique_ptr<ProtectedPacket>>;
@@ -148,7 +148,7 @@ class ForwardErrorCorrection {
         protected_streams;
     size_t protection_length;
     // Raw data.
-    rtc::scoped_refptr<ForwardErrorCorrection::Packet> pkt;
+    scoped_refptr<ForwardErrorCorrection::Packet> pkt;
   };
 
   using PacketList = std::list<std::unique_ptr<Packet>>;
@@ -398,7 +398,7 @@ class FecHeaderWriter {
   struct ProtectedStream {
     uint32_t ssrc = 0;
     uint16_t seq_num_base = 0;
-    rtc::ArrayView<const uint8_t> packet_mask;
+    ArrayView<const uint8_t> packet_mask;
   };
 
   virtual ~FecHeaderWriter();
@@ -424,7 +424,7 @@ class FecHeaderWriter {
 
   // Writes FEC header.
   virtual void FinalizeFecHeader(
-      rtc::ArrayView<const ProtectedStream> protected_streams,
+      ArrayView<const ProtectedStream> protected_streams,
       ForwardErrorCorrection::Packet& fec_packet) const = 0;
 
  protected:

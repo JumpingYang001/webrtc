@@ -24,7 +24,7 @@
 namespace webrtc {
 
 RtpDependencyDescriptorReader::RtpDependencyDescriptorReader(
-    rtc::ArrayView<const uint8_t> raw_data,
+    ArrayView<const uint8_t> raw_data,
     const FrameDependencyStructure* structure,
     DependencyDescriptor* descriptor)
     : descriptor_(descriptor), buffer_(raw_data) {

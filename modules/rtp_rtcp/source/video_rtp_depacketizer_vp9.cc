@@ -156,7 +156,7 @@ void ParseSsData(BitstreamReader& parser, RTPVideoHeaderVP9* vp9) {
 }  // namespace
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload>
-VideoRtpDepacketizerVp9::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
+VideoRtpDepacketizerVp9::Parse(CopyOnWriteBuffer rtp_payload) {
   std::optional<ParsedRtpPayload> result(std::in_place);
   int offset = ParseRtpPayload(rtp_payload, &result->video_header);
   if (offset == 0)
@@ -168,7 +168,7 @@ VideoRtpDepacketizerVp9::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
 }
 
 int VideoRtpDepacketizerVp9::ParseRtpPayload(
-    rtc::ArrayView<const uint8_t> rtp_payload,
+    ArrayView<const uint8_t> rtp_payload,
     RTPVideoHeader* video_header) {
   RTC_DCHECK(video_header);
   // Parse mandatory first byte of payload descriptor.

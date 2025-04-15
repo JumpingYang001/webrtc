@@ -251,7 +251,7 @@ void DEPRECATED_RtpSenderEgress::SetTimestampOffset(uint32_t timestamp) {
 
 std::vector<RtpSequenceNumberMap::Info>
 DEPRECATED_RtpSenderEgress::GetSentRtpPacketInfos(
-    rtc::ArrayView<const uint16_t> sequence_numbers) const {
+    ArrayView<const uint16_t> sequence_numbers) const {
   RTC_DCHECK(!sequence_numbers.empty());
   if (!need_rtp_packet_infos_) {
     return std::vector<RtpSequenceNumberMap::Info>();

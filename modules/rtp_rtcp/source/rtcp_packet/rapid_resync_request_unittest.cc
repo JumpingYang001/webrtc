@@ -44,7 +44,7 @@ TEST(RtcpPacketRapidResyncRequestTest, Create) {
   rrr.SetSenderSsrc(kSenderSsrc);
   rrr.SetMediaSsrc(kRemoteSsrc);
 
-  rtc::Buffer packet = rrr.Build();
+  Buffer packet = rrr.Build();
 
   EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));

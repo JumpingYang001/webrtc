@@ -84,10 +84,10 @@ class RemoteEstimateSerializerImpl : public RemoteEstimateSerializer {
   explicit RemoteEstimateSerializerImpl(std::vector<DataRateSerializer> fields)
       : fields_(fields) {}
 
-  rtc::Buffer Serialize(const NetworkStateEstimate& src) const override {
+  Buffer Serialize(const NetworkStateEstimate& src) const override {
     size_t max_size = fields_.size() * kFieldSize;
     size_t size = 0;
-    rtc::Buffer buf(max_size);
+    Buffer buf(max_size);
     for (const auto& field : fields_) {
       if (field.Write(src, buf.data() + size)) {
         size += kFieldSize;
@@ -97,7 +97,7 @@ class RemoteEstimateSerializerImpl : public RemoteEstimateSerializer {
     return buf;
   }
 
-  bool Parse(rtc::ArrayView<const uint8_t> src,
+  bool Parse(ArrayView<const uint8_t> src,
              NetworkStateEstimate* target) const override {
     if (src.size() % kFieldSize != 0)
       return false;

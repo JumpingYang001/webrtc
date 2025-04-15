@@ -42,7 +42,7 @@ void VerifyHeader(uint16_t seq_num,
                   int red_payload_type,
                   int fec_payload_type,
                   bool marker_bit,
-                  const rtc::CopyOnWriteBuffer& data) {
+                  const CopyOnWriteBuffer& data) {
   // Marker bit not set.
   EXPECT_EQ(marker_bit ? 0x80 : 0, data[1] & 0x80);
   EXPECT_EQ(red_payload_type, data[1] & 0x7F);

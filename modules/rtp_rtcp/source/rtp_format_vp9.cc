@@ -308,7 +308,7 @@ RTPVideoHeaderVP9 RemoveInactiveSpatialLayers(
 }
 }  // namespace
 
-RtpPacketizerVp9::RtpPacketizerVp9(rtc::ArrayView<const uint8_t> payload,
+RtpPacketizerVp9::RtpPacketizerVp9(ArrayView<const uint8_t> payload,
                                    PayloadSizeLimits limits,
                                    const RTPVideoHeaderVP9& hdr)
     : hdr_(RemoveInactiveSpatialLayers(hdr)),
@@ -350,8 +350,7 @@ bool RtpPacketizerVp9::NextPacket(RtpPacketToSend* packet) {
   uint8_t* buffer = packet->AllocatePayload(header_size + packet_payload_len);
   RTC_CHECK(buffer);
 
-  if (!WriteHeader(layer_begin, layer_end,
-                   rtc::MakeArrayView(buffer, header_size)))
+  if (!WriteHeader(layer_begin, layer_end, MakeArrayView(buffer, header_size)))
     return false;
 
   memcpy(buffer + header_size, remaining_payload_.data(), packet_payload_len);
@@ -403,7 +402,7 @@ bool RtpPacketizerVp9::NextPacket(RtpPacketToSend* packet) {
 //      +-+-+-+-+-+-+-+-+
 bool RtpPacketizerVp9::WriteHeader(bool layer_begin,
                                    bool layer_end,
-                                   rtc::ArrayView<uint8_t> buffer) const {
+                                   ArrayView<uint8_t> buffer) const {
   // Required payload descriptor byte.
   bool i_bit = PictureIdPresent(hdr_);
   bool p_bit = hdr_.inter_pic_predicted;

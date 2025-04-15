@@ -30,7 +30,7 @@ using ::testing::SizeIs;
 TEST(VideoRtpDepacketizerGeneric, NonExtendedHeaderNoFrameId) {
   const size_t kRtpPayloadSize = 10;
   const uint8_t kPayload[kRtpPayloadSize] = {0x01};
-  rtc::CopyOnWriteBuffer rtp_payload(kPayload);
+  CopyOnWriteBuffer rtp_payload(kPayload);
 
   VideoRtpDepacketizerGeneric depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
@@ -44,7 +44,7 @@ TEST(VideoRtpDepacketizerGeneric, NonExtendedHeaderNoFrameId) {
 TEST(VideoRtpDepacketizerGeneric, ExtendedHeaderParsesFrameId) {
   const size_t kRtpPayloadSize = 10;
   const uint8_t kPayload[kRtpPayloadSize] = {0x05, 0x13, 0x37};
-  rtc::CopyOnWriteBuffer rtp_payload(kPayload);
+  CopyOnWriteBuffer rtp_payload(kPayload);
 
   VideoRtpDepacketizerGeneric depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =
@@ -60,7 +60,7 @@ TEST(VideoRtpDepacketizerGeneric, ExtendedHeaderParsesFrameId) {
 
 TEST(VideoRtpDepacketizerGeneric, PassRtpPayloadAsVideoPayload) {
   const uint8_t kPayload[] = {0x01, 0x25, 0x52};
-  rtc::CopyOnWriteBuffer rtp_payload(kPayload);
+  CopyOnWriteBuffer rtp_payload(kPayload);
 
   VideoRtpDepacketizerGeneric depacketizer;
   std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed =

@@ -53,15 +53,13 @@ class LoopbackTransportTest : public webrtc::Transport {
         kAbsoluteCaptureTimeExtensionId);
   }
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> data,
+  bool SendRtp(ArrayView<const uint8_t> data,
                const PacketOptions& /*options*/) override {
     sent_packets_.push_back(RtpPacketReceived(&receivers_extensions_));
     EXPECT_TRUE(sent_packets_.back().Parse(data));
     return true;
   }
-  bool SendRtcp(rtc::ArrayView<const uint8_t> /* data */) override {
-    return false;
-  }
+  bool SendRtcp(ArrayView<const uint8_t> /* data */) override { return false; }
   const RtpPacketReceived& last_sent_packet() { return sent_packets_.back(); }
   int packets_sent() { return sent_packets_.size(); }
 

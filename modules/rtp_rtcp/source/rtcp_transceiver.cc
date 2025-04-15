@@ -83,7 +83,7 @@ void RtcpTransceiver::SetReadyToSend(bool ready) {
   task_queue_->PostTask([ptr, ready] { ptr->SetReadyToSend(ready); });
 }
 
-void RtcpTransceiver::ReceivePacket(rtc::CopyOnWriteBuffer packet) {
+void RtcpTransceiver::ReceivePacket(CopyOnWriteBuffer packet) {
   RTC_CHECK(rtcp_transceiver_);
   RtcpTransceiverImpl* ptr = rtcp_transceiver_.get();
   Timestamp now = clock_->CurrentTime();

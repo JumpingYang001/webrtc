@@ -39,7 +39,7 @@ class RtpPacketizer {
   // If type is not set, returns a raw packetizer.
   static std::unique_ptr<RtpPacketizer> Create(
       std::optional<VideoCodecType> type,
-      rtc::ArrayView<const uint8_t> payload,
+      ArrayView<const uint8_t> payload,
       PayloadSizeLimits limits,
       // Codec-specific details.
       const RTPVideoHeader& rtp_video_header);

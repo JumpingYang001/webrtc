@@ -38,7 +38,7 @@ TEST(RtcpPacketTest, BuildWithTooSmallBuffer) {
   const size_t kReportBlockLength = 24;
 
   // No packet.
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> callback;
+  MockFunction<void(webrtc::ArrayView<const uint8_t>)> callback;
   EXPECT_CALL(callback, Call(_)).Times(0);
   const size_t kBufferSize = kRrLength + kReportBlockLength - 1;
   EXPECT_FALSE(rr.Build(kBufferSize, callback.AsStdFunction()));

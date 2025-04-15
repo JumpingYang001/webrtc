@@ -94,7 +94,7 @@ class ArrayOfArrayViews {
   }
 
  private:
-  using Storage = absl::InlinedVector<rtc::ArrayView<const uint8_t>, 2>;
+  using Storage = absl::InlinedVector<ArrayView<const uint8_t>, 2>;
 
   size_t size_ = 0;
   Storage data_;
@@ -196,10 +196,10 @@ int RtpStartsNewCodedVideoSequence(uint8_t aggregation_header) {
 // fills ObuInfo::data field.
 // Returns empty vector on error.
 VectorObuInfo ParseObus(
-    rtc::ArrayView<const rtc::ArrayView<const uint8_t>> rtp_payloads) {
+    ArrayView<const ArrayView<const uint8_t>> rtp_payloads) {
   VectorObuInfo obu_infos;
   bool expect_continues_obu = false;
-  for (rtc::ArrayView<const uint8_t> rtp_payload : rtp_payloads) {
+  for (ArrayView<const uint8_t> rtp_payload : rtp_payloads) {
     ByteBufferReader payload(rtp_payload);
     uint8_t aggregation_header;
     if (!payload.ReadUInt8(&aggregation_header)) {
@@ -337,8 +337,8 @@ bool CalculateObuSizes(ObuInfo* obu_info) {
 
 }  // namespace
 
-rtc::scoped_refptr<EncodedImageBuffer> VideoRtpDepacketizerAv1::AssembleFrame(
-    rtc::ArrayView<const rtc::ArrayView<const uint8_t>> rtp_payloads) {
+scoped_refptr<EncodedImageBuffer> VideoRtpDepacketizerAv1::AssembleFrame(
+    ArrayView<const ArrayView<const uint8_t>> rtp_payloads) {
   VectorObuInfo obu_infos = ParseObus(rtp_payloads);
   if (obu_infos.empty()) {
     return nullptr;
@@ -352,7 +352,7 @@ rtc::scoped_refptr<EncodedImageBuffer> VideoRtpDepacketizerAv1::AssembleFrame(
     frame_size += (obu_info.prefix_size + obu_info.payload_size);
   }
 
-  rtc::scoped_refptr<EncodedImageBuffer> bitstream =
+  scoped_refptr<EncodedImageBuffer> bitstream =
       EncodedImageBuffer::Create(frame_size);
   uint8_t* write_at = bitstream->data();
   for (const ObuInfo& obu_info : obu_infos) {
@@ -368,7 +368,7 @@ rtc::scoped_refptr<EncodedImageBuffer> VideoRtpDepacketizerAv1::AssembleFrame(
 }
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload>
-VideoRtpDepacketizerAv1::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
+VideoRtpDepacketizerAv1::Parse(CopyOnWriteBuffer rtp_payload) {
   if (rtp_payload.size() == 0) {
     RTC_DLOG(LS_ERROR) << "Empty rtp payload.";
     return std::nullopt;

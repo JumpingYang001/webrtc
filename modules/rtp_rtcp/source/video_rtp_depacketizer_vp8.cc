@@ -139,9 +139,8 @@ int ParseVP8Descriptor(RTPVideoHeaderVP8* vp8,
 }  // namespace
 
 std::optional<VideoRtpDepacketizer::ParsedRtpPayload>
-VideoRtpDepacketizerVp8::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
-  rtc::ArrayView<const uint8_t> payload(rtp_payload.cdata(),
-                                        rtp_payload.size());
+VideoRtpDepacketizerVp8::Parse(CopyOnWriteBuffer rtp_payload) {
+  ArrayView<const uint8_t> payload(rtp_payload.cdata(), rtp_payload.size());
   std::optional<ParsedRtpPayload> result(std::in_place);
   int offset = ParseRtpPayload(payload, &result->video_header);
   if (offset == kFailedToParse)
@@ -153,7 +152,7 @@ VideoRtpDepacketizerVp8::Parse(rtc::CopyOnWriteBuffer rtp_payload) {
 }
 
 int VideoRtpDepacketizerVp8::ParseRtpPayload(
-    rtc::ArrayView<const uint8_t> rtp_payload,
+    ArrayView<const uint8_t> rtp_payload,
     RTPVideoHeader* video_header) {
   RTC_DCHECK(video_header);
   if (rtp_payload.empty()) {

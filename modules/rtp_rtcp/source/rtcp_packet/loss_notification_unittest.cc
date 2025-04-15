@@ -63,7 +63,7 @@ TEST(RtcpPacketLossNotificationTest, CreateProducesExpectedWireFormat) {
   ASSERT_TRUE(
       loss_notification.Set(kLastDecoded, kLastReceived, kDecodabilityFlag));
 
-  rtc::Buffer packet = loss_notification.Build();
+  Buffer packet = loss_notification.Build();
 
   EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));

@@ -93,15 +93,14 @@ class RtpSenderEgress {
   // recalled, return a vector with all of them (in corresponding order).
   // If any could not be recalled, return an empty vector.
   std::vector<RtpSequenceNumberMap::Info> GetSentRtpPacketInfos(
-      rtc::ArrayView<const uint16_t> sequence_numbers) const;
+      ArrayView<const uint16_t> sequence_numbers) const;
 
   void SetFecProtectionParameters(const FecProtectionParams& delta_params,
                                   const FecProtectionParams& key_params);
   std::vector<std::unique_ptr<RtpPacketToSend>> FetchFecPackets();
 
   // Clears pending status for these sequence numbers in the packet history.
-  void OnAbortedRetransmissions(
-      rtc::ArrayView<const uint16_t> sequence_numbers);
+  void OnAbortedRetransmissions(ArrayView<const uint16_t> sequence_numbers);
 
  private:
   struct Packet {

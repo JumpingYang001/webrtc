@@ -31,7 +31,7 @@ AbsoluteCaptureTimeInterpolator::AbsoluteCaptureTimeInterpolator(Clock* clock)
 
 uint32_t AbsoluteCaptureTimeInterpolator::GetSource(
     uint32_t ssrc,
-    rtc::ArrayView<const uint32_t> csrcs) {
+    ArrayView<const uint32_t> csrcs) {
   if (csrcs.empty()) {
     return ssrc;
   }

@@ -251,7 +251,7 @@ size_t FlexfecHeaderWriter::FecHeaderSize(size_t packet_mask_size) const {
 // TODO(brandtr): Update this function when we support offset-based masks
 // and retransmissions.
 void FlexfecHeaderWriter::FinalizeFecHeader(
-    rtc::ArrayView<const ProtectedStream> protected_streams,
+    ArrayView<const ProtectedStream> protected_streams,
     ForwardErrorCorrection::Packet& fec_packet) const {
   uint8_t* data = fec_packet.data.MutableData();
   *data &= 0x7f;  // Clear R bit.

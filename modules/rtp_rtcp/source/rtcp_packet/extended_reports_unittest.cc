@@ -77,7 +77,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateWithoutReportBlocks) {
   ExtendedReports xr;
   xr.SetSenderSsrc(kSenderSsrc);
 
-  rtc::Buffer packet = xr.Build();
+  Buffer packet = xr.Build();
 
   EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kEmptyPacket));
@@ -96,7 +96,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateAndParseWithRrtrBlock) {
   ExtendedReports xr;
   xr.SetSenderSsrc(kSenderSsrc);
   xr.SetRrtr(kRrtr);
-  rtc::Buffer packet = xr.Build();
+  Buffer packet = xr.Build();
 
   ExtendedReports mparsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &mparsed));
@@ -112,7 +112,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateAndParseWithDlrrWithOneSubBlock) {
   xr.SetSenderSsrc(kSenderSsrc);
   xr.AddDlrrItem(kTimeInfo);
 
-  rtc::Buffer packet = xr.Build();
+  Buffer packet = xr.Build();
 
   ExtendedReports mparsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &mparsed));
@@ -130,7 +130,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateAndParseWithDlrrWithTwoSubBlocks) {
   xr.AddDlrrItem(kTimeInfo1);
   xr.AddDlrrItem(kTimeInfo2);
 
-  rtc::Buffer packet = xr.Build();
+  Buffer packet = xr.Build();
 
   ExtendedReports mparsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &mparsed));
@@ -161,7 +161,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateAndParseWithMaximumReportBlocks) {
   for (size_t i = 0; i < ExtendedReports::kMaxNumberOfDlrrItems; ++i)
     xr.AddDlrrItem(Rand<ReceiveTimeInfo>());
 
-  rtc::Buffer packet = xr.Build();
+  Buffer packet = xr.Build();
 
   ExtendedReports mparsed;
   EXPECT_TRUE(test::ParseSinglePacket(packet, &mparsed));

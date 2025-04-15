@@ -108,7 +108,7 @@ class MockRtpStreamRtcpHandler : public RtpStreamRtcpHandler {
   MOCK_METHOD(RtpStats, SentStats, (), (override));
   MOCK_METHOD(void,
               OnNack,
-              (uint32_t, rtc::ArrayView<const uint16_t>),
+              (uint32_t, ArrayView<const uint16_t>),
               (override));
   MOCK_METHOD(void, OnFir, (uint32_t), (override));
   MOCK_METHOD(void, OnPli, (uint32_t), (override));
@@ -131,8 +131,8 @@ class FakeRtcpTransport {
  public:
   explicit FakeRtcpTransport(TimeController& time) : time_(time) {}
 
-  std::function<void(rtc::ArrayView<const uint8_t>)> AsStdFunction() {
-    return [this](rtc::ArrayView<const uint8_t>) { sent_rtcp_ = true; };
+  std::function<void(ArrayView<const uint8_t>)> AsStdFunction() {
+    return [this](ArrayView<const uint8_t>) { sent_rtcp_ = true; };
   }
 
   // Returns true when packet was received by the transport.
@@ -148,9 +148,9 @@ class FakeRtcpTransport {
   bool sent_rtcp_ = false;
 };
 
-std::function<void(rtc::ArrayView<const uint8_t>)> RtcpParserTransport(
+std::function<void(ArrayView<const uint8_t>)> RtcpParserTransport(
     RtcpPacketParser& parser) {
-  return [&parser](rtc::ArrayView<const uint8_t> packet) {
+  return [&parser](ArrayView<const uint8_t> packet) {
     return parser.Parse(packet);
   };
 }
@@ -343,7 +343,7 @@ TEST_F(RtcpTransceiverImplTest, SendCompoundPacketDelaysPeriodicSendPackets) {
 }
 
 TEST_F(RtcpTransceiverImplTest, SendsNoRtcpWhenNetworkStateIsDown) {
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> mock_transport;
+  MockFunction<void(ArrayView<const uint8_t>)> mock_transport;
   RtcpTransceiverConfig config = DefaultTestConfig();
   config.initial_ready_to_send = false;
   config.rtcp_transport = mock_transport.AsStdFunction();
@@ -360,7 +360,7 @@ TEST_F(RtcpTransceiverImplTest, SendsNoRtcpWhenNetworkStateIsDown) {
 }
 
 TEST_F(RtcpTransceiverImplTest, SendsRtcpWhenNetworkStateIsUp) {
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> mock_transport;
+  MockFunction<void(ArrayView<const uint8_t>)> mock_transport;
   RtcpTransceiverConfig config = DefaultTestConfig();
   config.initial_ready_to_send = false;
   config.rtcp_transport = mock_transport.AsStdFunction();
@@ -426,7 +426,7 @@ TEST_F(RtcpTransceiverImplTest, SendsMinimalCompoundPacket) {
 }
 
 TEST_F(RtcpTransceiverImplTest, AvoidsEmptyPacketsInReducedMode) {
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> transport;
+  MockFunction<void(ArrayView<const uint8_t>)> transport;
   EXPECT_CALL(transport, Call).Times(0);
   NiceMock<MockReceiveStatisticsProvider> receive_statistics;
 
@@ -1632,10 +1632,10 @@ TEST_F(RtcpTransceiverImplTest, RotatesSendersWhenAllSenderReportDoNotFit) {
     rtcp_receiver.AddMediaReceiverRtcpObserver(kSenderSsrc[i], &receiver[i]);
   }
 
-  MockFunction<void(rtc::ArrayView<const uint8_t>)> transport;
+  MockFunction<void(ArrayView<const uint8_t>)> transport;
   EXPECT_CALL(transport, Call)
       .Times(kNumSenders)
-      .WillRepeatedly([&](rtc::ArrayView<const uint8_t> packet) {
+      .WillRepeatedly([&](ArrayView<const uint8_t> packet) {
         rtcp_receiver.ReceivePacket(packet, CurrentTime());
         return true;
       });

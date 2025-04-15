@@ -112,7 +112,7 @@ size_t UlpfecHeaderWriter::FecHeaderSize(size_t packet_mask_size) const {
 }
 
 void UlpfecHeaderWriter::FinalizeFecHeader(
-    rtc::ArrayView<const ProtectedStream> protected_streams,
+    ArrayView<const ProtectedStream> protected_streams,
     ForwardErrorCorrection::Packet& fec_packet) const {
   RTC_CHECK_EQ(protected_streams.size(), 1);
   uint16_t seq_num_base = protected_streams[0].seq_num_base;

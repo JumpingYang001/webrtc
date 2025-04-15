@@ -58,7 +58,7 @@ bool ValidateHeader(const RTPVideoHeaderVP8& hdr_info) {
 
 }  // namespace
 
-RtpPacketizerVp8::RtpPacketizerVp8(rtc::ArrayView<const uint8_t> payload,
+RtpPacketizerVp8::RtpPacketizerVp8(ArrayView<const uint8_t> payload,
                                    PayloadSizeLimits limits,
                                    const RTPVideoHeaderVP8& hdr_info)
     : hdr_(BuildHeader(hdr_info)), remaining_payload_(payload) {

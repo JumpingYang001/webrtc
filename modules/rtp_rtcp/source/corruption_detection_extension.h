@@ -38,9 +38,9 @@ class CorruptionDetectionExtension {
   static constexpr absl::string_view Uri() {
     return RtpExtension::kCorruptionDetectionUri;
   }
-  static bool Parse(rtc::ArrayView<const uint8_t> data,
+  static bool Parse(ArrayView<const uint8_t> data,
                     CorruptionDetectionMessage* message);
-  static bool Write(rtc::ArrayView<uint8_t> data,
+  static bool Write(ArrayView<uint8_t> data,
                     const CorruptionDetectionMessage& message);
   // Size of the header extension in bytes.
   static size_t ValueSize(const CorruptionDetectionMessage& message);

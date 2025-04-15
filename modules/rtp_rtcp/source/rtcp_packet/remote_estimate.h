@@ -24,9 +24,9 @@ namespace rtcp {
 class CommonHeader;
 class RemoteEstimateSerializer {
  public:
-  virtual bool Parse(rtc::ArrayView<const uint8_t> src,
+  virtual bool Parse(ArrayView<const uint8_t> src,
                      NetworkStateEstimate* target) const = 0;
-  virtual rtc::Buffer Serialize(const NetworkStateEstimate& src) const = 0;
+  virtual Buffer Serialize(const NetworkStateEstimate& src) const = 0;
   virtual ~RemoteEstimateSerializer() = default;
 };
 

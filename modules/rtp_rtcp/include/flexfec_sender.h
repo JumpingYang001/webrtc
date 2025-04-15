@@ -50,7 +50,7 @@ class FlexfecSender : public VideoFecGenerator {
                 uint32_t protected_media_ssrc,
                 absl::string_view mid,
                 const std::vector<RtpExtension>& rtp_header_extensions,
-                rtc::ArrayView<const RtpExtensionSize> extension_sizes,
+                ArrayView<const RtpExtensionSize> extension_sizes,
                 const RtpState* rtp_state);
   ~FlexfecSender();
 

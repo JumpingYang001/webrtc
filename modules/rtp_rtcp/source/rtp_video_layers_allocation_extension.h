@@ -30,10 +30,10 @@ class RtpVideoLayersAllocationExtension {
     return RtpExtension::kVideoLayersAllocationUri;
   }
 
-  static bool Parse(rtc::ArrayView<const uint8_t> data,
+  static bool Parse(ArrayView<const uint8_t> data,
                     VideoLayersAllocation* allocation);
   static size_t ValueSize(const VideoLayersAllocation& allocation);
-  static bool Write(rtc::ArrayView<uint8_t> data,
+  static bool Write(ArrayView<uint8_t> data,
                     const VideoLayersAllocation& allocation);
 };
 

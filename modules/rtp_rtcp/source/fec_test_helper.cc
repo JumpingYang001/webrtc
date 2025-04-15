@@ -194,7 +194,7 @@ RtpPacketReceived UlpfecPacketGenerator::BuildMediaRedPacket(
     const AugmentedPacket& packet,
     bool is_recovered) {
   // Create a temporary buffer used to wrap the media packet in RED.
-  rtc::CopyOnWriteBuffer red_buffer;
+  CopyOnWriteBuffer red_buffer;
   const size_t kHeaderLength = packet.header.headerLength;
   // Append header.
   red_buffer.SetData(packet.data.data(), kHeaderLength);

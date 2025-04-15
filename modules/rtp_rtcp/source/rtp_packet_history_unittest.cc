@@ -152,7 +152,7 @@ TEST_P(RtpPacketHistoryTest, GetRtpPacket) {
   Timestamp capture_time = Timestamp::Millis(1);
   std::unique_ptr<RtpPacketToSend> packet = CreateRtpPacket(kStartSeqNum);
   packet->set_capture_time(capture_time);
-  rtc::CopyOnWriteBuffer buffer = packet->Buffer();
+  CopyOnWriteBuffer buffer = packet->Buffer();
   hist_.PutRtpPacket(std::move(packet),
                      /*send_time=*/fake_clock_.CurrentTime());
 

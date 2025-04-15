@@ -43,7 +43,7 @@ class RtpVideoStreamReceiverFrameTransformerDelegate
   RtpVideoStreamReceiverFrameTransformerDelegate(
       RtpVideoFrameReceiver* receiver,
       Clock* clock,
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer,
+      scoped_refptr<FrameTransformerInterface> frame_transformer,
       Thread* network_thread,
       uint32_t ssrc);
 
@@ -72,7 +72,7 @@ class RtpVideoStreamReceiverFrameTransformerDelegate
 
   RTC_NO_UNIQUE_ADDRESS SequenceChecker network_sequence_checker_;
   RtpVideoFrameReceiver* receiver_ RTC_GUARDED_BY(network_sequence_checker_);
-  rtc::scoped_refptr<FrameTransformerInterface> frame_transformer_
+  scoped_refptr<FrameTransformerInterface> frame_transformer_
       RTC_GUARDED_BY(network_sequence_checker_);
   Thread* const network_thread_;
   const uint32_t ssrc_;

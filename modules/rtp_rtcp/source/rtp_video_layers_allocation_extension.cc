@@ -110,7 +110,7 @@ SpatialLayersBitmasks SpatialLayersBitmasksPerRtpStream(
 // for the description of the format.
 
 bool RtpVideoLayersAllocationExtension::Write(
-    rtc::ArrayView<uint8_t> data,
+    ArrayView<uint8_t> data,
     const VideoLayersAllocation& allocation) {
   RTC_DCHECK(AllocationIsValid(allocation));
   RTC_DCHECK_GE(data.size(), ValueSize(allocation));
@@ -179,7 +179,7 @@ bool RtpVideoLayersAllocationExtension::Write(
 }
 
 bool RtpVideoLayersAllocationExtension::Parse(
-    rtc::ArrayView<const uint8_t> data,
+    ArrayView<const uint8_t> data,
     VideoLayersAllocation* allocation) {
   if (data.empty() || allocation == nullptr) {
     return false;

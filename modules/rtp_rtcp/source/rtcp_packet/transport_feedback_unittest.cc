@@ -65,7 +65,7 @@ MATCHER(IsValidFeedback, "") {
          feedback.Parse(rtcp_header);
 }
 
-TransportFeedback Parse(rtc::ArrayView<const uint8_t> buffer) {
+TransportFeedback Parse(ArrayView<const uint8_t> buffer) {
   rtcp::CommonHeader header;
   EXPECT_TRUE(header.Parse(buffer.data(), buffer.size()));
   EXPECT_EQ(header.type(), TransportFeedback::kPacketType);
@@ -89,8 +89,8 @@ class FeedbackTester {
 
   void WithDefaultDelta(TimeDelta delta) { default_delta_ = delta; }
 
-  void WithInput(rtc::ArrayView<const uint16_t> received_seq,
-                 rtc::ArrayView<const Timestamp> received_ts = {}) {
+  void WithInput(ArrayView<const uint16_t> received_seq,
+                 ArrayView<const Timestamp> received_ts = {}) {
     std::vector<Timestamp> temp_timestamps;
     if (received_ts.empty()) {
       temp_timestamps = GenerateReceiveTimestamps(received_seq);
@@ -156,7 +156,7 @@ class FeedbackTester {
   }
 
   std::vector<Timestamp> GenerateReceiveTimestamps(
-      rtc::ArrayView<const uint16_t> seq_nums) {
+      ArrayView<const uint16_t> seq_nums) {
     RTC_CHECK(!seq_nums.empty());
     uint16_t last_seq = seq_nums[0];
     Timestamp time = Timestamp::Zero();
@@ -177,7 +177,7 @@ class FeedbackTester {
   size_t expected_size_;
   TimeDelta default_delta_;
   std::optional<TransportFeedback> feedback_;
-  rtc::Buffer serialized_;
+  Buffer serialized_;
   bool include_timestamps_;
 };
 
@@ -526,7 +526,7 @@ TEST(RtcpPacketTest, TransportFeedbackPadding) {
   feedback.SetBase(0, Timestamp::Zero());
   EXPECT_TRUE(feedback.AddReceivedPacket(0, Timestamp::Zero()));
 
-  rtc::Buffer packet = feedback.Build();
+  Buffer packet = feedback.Build();
   EXPECT_EQ(kExpectedSizeWords * 4, packet.size());
   ASSERT_GT(kExpectedSizeWords * 4, kExpectedSizeBytes);
   for (size_t i = kExpectedSizeBytes; i < (kExpectedSizeWords * 4 - 1); ++i)
@@ -565,7 +565,7 @@ TEST(RtcpPacketTest, TransportFeedbackPaddingBackwardsCompatibility) {
   feedback.SetBase(0, Timestamp::Zero());
   EXPECT_TRUE(feedback.AddReceivedPacket(0, Timestamp::Zero()));
 
-  rtc::Buffer packet = feedback.Build();
+  Buffer packet = feedback.Build();
   EXPECT_EQ(kExpectedSizeWords * 4, packet.size());
   ASSERT_GT(kExpectedSizeWords * 4, kExpectedSizeBytes);
   for (size_t i = kExpectedSizeBytes; i < (kExpectedSizeWords * 4 - 1); ++i)

@@ -199,19 +199,17 @@ RTPSender::~RTPSender() {
   // to understand performance attributes and possibly remove locks.
 }
 
-rtc::ArrayView<const RtpExtensionSize> RTPSender::FecExtensionSizes() {
-  return rtc::MakeArrayView(kFecOrPaddingExtensionSizes,
-                            arraysize(kFecOrPaddingExtensionSizes));
+ArrayView<const RtpExtensionSize> RTPSender::FecExtensionSizes() {
+  return MakeArrayView(kFecOrPaddingExtensionSizes,
+                       arraysize(kFecOrPaddingExtensionSizes));
 }
 
-rtc::ArrayView<const RtpExtensionSize> RTPSender::VideoExtensionSizes() {
-  return rtc::MakeArrayView(kVideoExtensionSizes,
-                            arraysize(kVideoExtensionSizes));
+ArrayView<const RtpExtensionSize> RTPSender::VideoExtensionSizes() {
+  return MakeArrayView(kVideoExtensionSizes, arraysize(kVideoExtensionSizes));
 }
 
-rtc::ArrayView<const RtpExtensionSize> RTPSender::AudioExtensionSizes() {
-  return rtc::MakeArrayView(kAudioExtensionSizes,
-                            arraysize(kAudioExtensionSizes));
+ArrayView<const RtpExtensionSize> RTPSender::AudioExtensionSizes() {
+  return MakeArrayView(kAudioExtensionSizes, arraysize(kAudioExtensionSizes));
 }
 
 void RTPSender::SetExtmapAllowMixed(bool extmap_allow_mixed) {
@@ -517,7 +515,7 @@ size_t RTPSender::ExpectedPerPacketOverhead() const {
 }
 
 std::unique_ptr<RtpPacketToSend> RTPSender::AllocatePacket(
-    rtc::ArrayView<const uint32_t> csrcs) {
+    ArrayView<const uint32_t> csrcs) {
   MutexLock lock(&send_mutex_);
   RTC_DCHECK_LE(csrcs.size(), kRtpCsrcSize);
   if (csrcs.size() > max_num_csrcs_) {
@@ -653,9 +651,9 @@ static void CopyHeaderAndExtensionsToRtxPacket(const RtpPacketToSend& packet,
       continue;
     }
 
-    rtc::ArrayView<const uint8_t> source = packet.FindExtension(extension);
+    ArrayView<const uint8_t> source = packet.FindExtension(extension);
 
-    rtc::ArrayView<uint8_t> destination =
+    ArrayView<uint8_t> destination =
         rtx_packet->AllocateExtension(extension, source.size());
 
     // Could happen if any:

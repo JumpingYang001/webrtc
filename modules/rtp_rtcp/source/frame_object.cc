@@ -49,7 +49,7 @@ RtpFrameObject::RtpFrameObject(
         std::variant<FrameInstrumentationSyncData, FrameInstrumentationData>>&
         frame_instrumentation_data,
     RtpPacketInfos packet_infos,
-    rtc::scoped_refptr<EncodedImageBuffer> image_buffer)
+    scoped_refptr<EncodedImageBuffer> image_buffer)
     : image_buffer_(image_buffer),
       first_seq_num_(first_seq_num),
       last_seq_num_(last_seq_num),

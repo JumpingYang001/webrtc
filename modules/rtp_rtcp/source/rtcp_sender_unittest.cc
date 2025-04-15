@@ -77,11 +77,11 @@ class TestTransport : public Transport {
  public:
   TestTransport() {}
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> /*data*/,
+  bool SendRtp(ArrayView<const uint8_t> /*data*/,
                const PacketOptions& /* options */) override {
     return false;
   }
-  bool SendRtcp(rtc::ArrayView<const uint8_t> data) override {
+  bool SendRtcp(ArrayView<const uint8_t> data) override {
     parser_.Parse(data);
     return true;
   }
@@ -681,7 +681,7 @@ TEST_F(RtcpSenderTest, SendsTmmbnIfSetAndEmpty) {
 TEST_F(RtcpSenderTest, ByeMustBeLast) {
   MockTransport mock_transport;
   EXPECT_CALL(mock_transport, SendRtcp(_))
-      .WillOnce(Invoke([](rtc::ArrayView<const uint8_t> data) {
+      .WillOnce(Invoke([](ArrayView<const uint8_t> data) {
         const uint8_t* next_packet = data.data();
         const uint8_t* const packet_end = data.data() + data.size();
         rtcp::CommonHeader packet;

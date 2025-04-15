@@ -106,7 +106,7 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
     // Update network2 instead of pacer_exit field of video timing extension.
     bool populate_network2_timestamp = false;
 
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer;
+    scoped_refptr<FrameTransformerInterface> frame_transformer;
 
     // E2EE Custom Video Frame Encryption
     FrameEncryptorInterface* frame_encryptor = nullptr;
@@ -185,8 +185,7 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
   // Receiver functions
   // **************************************************************************
 
-  virtual void IncomingRtcpPacket(
-      rtc::ArrayView<const uint8_t> incoming_packet) = 0;
+  virtual void IncomingRtcpPacket(ArrayView<const uint8_t> incoming_packet) = 0;
 
   virtual void SetRemoteSSRC(uint32_t ssrc) = 0;
 
@@ -346,16 +345,16 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
   virtual std::vector<std::unique_ptr<RtpPacketToSend>> FetchFecPackets() = 0;
 
   virtual void OnAbortedRetransmissions(
-      rtc::ArrayView<const uint16_t> sequence_numbers) = 0;
+      ArrayView<const uint16_t> sequence_numbers) = 0;
 
   virtual void OnPacketsAcknowledged(
-      rtc::ArrayView<const uint16_t> sequence_numbers) = 0;
+      ArrayView<const uint16_t> sequence_numbers) = 0;
 
   virtual std::vector<std::unique_ptr<RtpPacketToSend>> GeneratePadding(
       size_t target_size_bytes) = 0;
 
   virtual std::vector<RtpSequenceNumberMap::Info> GetSentRtpPacketInfos(
-      rtc::ArrayView<const uint16_t> sequence_numbers) const = 0;
+      ArrayView<const uint16_t> sequence_numbers) const = 0;
 
   // Returns an expected per packet overhead representing the main RTP header,
   // any CSRCs, and the registered header extensions that are expected on all

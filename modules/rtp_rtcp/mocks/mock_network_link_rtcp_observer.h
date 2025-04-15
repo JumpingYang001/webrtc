@@ -45,7 +45,7 @@ class MockNetworkLinkRtcpObserver : public NetworkLinkRtcpObserver {
   MOCK_METHOD(void,
               OnReport,
               (Timestamp receive_time,
-               rtc::ArrayView<const ReportBlockData> report_blocks),
+               ArrayView<const ReportBlockData> report_blocks),
               (override));
 };
 
