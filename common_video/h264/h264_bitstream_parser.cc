@@ -31,7 +31,7 @@ H264BitstreamParser::H264BitstreamParser() = default;
 H264BitstreamParser::~H264BitstreamParser() = default;
 
 H264BitstreamParser::Result H264BitstreamParser::ParseNonParameterSetNalu(
-    rtc::ArrayView<const uint8_t> source,
+    ArrayView<const uint8_t> source,
     uint8_t nalu_type) {
   if (!sps_ || !pps_)
     return kInvalidStream;
@@ -308,7 +308,7 @@ H264BitstreamParser::Result H264BitstreamParser::ParseNonParameterSetNalu(
   return kOk;
 }
 
-void H264BitstreamParser::ParseSlice(rtc::ArrayView<const uint8_t> slice) {
+void H264BitstreamParser::ParseSlice(ArrayView<const uint8_t> slice) {
   if (slice.empty()) {
     return;
   }
@@ -340,8 +340,7 @@ void H264BitstreamParser::ParseSlice(rtc::ArrayView<const uint8_t> slice) {
   }
 }
 
-void H264BitstreamParser::ParseBitstream(
-    rtc::ArrayView<const uint8_t> bitstream) {
+void H264BitstreamParser::ParseBitstream(ArrayView<const uint8_t> bitstream) {
   std::vector<H264::NaluIndex> nalu_indices = H264::FindNaluIndices(bitstream);
   for (const H264::NaluIndex& index : nalu_indices)
     ParseSlice(

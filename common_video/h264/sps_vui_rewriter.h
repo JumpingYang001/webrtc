@@ -43,23 +43,23 @@ class SpsVuiRewriter : private SpsParser {
   // SPS state. This function assumes that any previous headers
   // (NALU start, type, Stap-A, etc) have already been parsed and that RBSP
   // decoding has been performed.
-  static ParseResult ParseAndRewriteSps(rtc::ArrayView<const uint8_t> buffer,
+  static ParseResult ParseAndRewriteSps(ArrayView<const uint8_t> buffer,
                                         std::optional<SpsParser::SpsState>* sps,
                                         const ColorSpace* color_space,
-                                        rtc::Buffer* destination,
+                                        Buffer* destination,
                                         Direction Direction);
 
   // Parses NAL units from `buffer`, strips AUD blocks and rewrites VUI in SPS
   // blocks if necessary.
-  static rtc::Buffer ParseOutgoingBitstreamAndRewrite(
-      rtc::ArrayView<const uint8_t> buffer,
+  static Buffer ParseOutgoingBitstreamAndRewrite(
+      ArrayView<const uint8_t> buffer,
       const ColorSpace* color_space);
 
  private:
-  static ParseResult ParseAndRewriteSps(rtc::ArrayView<const uint8_t> buffer,
+  static ParseResult ParseAndRewriteSps(ArrayView<const uint8_t> buffer,
                                         std::optional<SpsParser::SpsState>* sps,
                                         const ColorSpace* color_space,
-                                        rtc::Buffer* destination);
+                                        Buffer* destination);
 
   static void UpdateStats(ParseResult result, Direction direction);
 };

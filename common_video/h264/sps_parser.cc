@@ -33,7 +33,7 @@ SpsParser::SpsState::~SpsState() = default;
 
 // Unpack RBSP and parse SPS state from the supplied buffer.
 std::optional<SpsParser::SpsState> SpsParser::ParseSps(
-    rtc::ArrayView<const uint8_t> data) {
+    ArrayView<const uint8_t> data) {
   std::vector<uint8_t> unpacked_buffer = H264::ParseRbsp(data);
   BitstreamReader reader(unpacked_buffer);
   return ParseSpsUpToVui(reader);

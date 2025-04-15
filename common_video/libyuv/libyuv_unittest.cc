@@ -103,7 +103,7 @@ void TestLibYuv::SetUp() {
   ASSERT_TRUE(source_file_ != NULL)
       << "Cannot read file: " << input_file_name << "\n";
 
-  rtc::scoped_refptr<I420BufferInterface> buffer(
+  scoped_refptr<I420BufferInterface> buffer(
       test::ReadI420Buffer(width_, height_, source_file_));
 
   orig_frame_ =
@@ -131,7 +131,7 @@ TEST_F(TestLibYuv, ConvertTest) {
 
   double psnr = 0.0;
 
-  rtc::scoped_refptr<I420Buffer> res_i420_buffer =
+  scoped_refptr<I420Buffer> res_i420_buffer =
       I420Buffer::Create(width_, height_);
 
   printf("\nConvert #%d I420 <-> I420 \n", j);
@@ -301,7 +301,7 @@ TEST_F(TestLibYuv, ConvertAlignedFrame) {
   int stride_uv = 0;
   Calc16ByteAlignedStride(width_, &stride_y, &stride_uv);
 
-  rtc::scoped_refptr<I420Buffer> res_i420_buffer =
+  scoped_refptr<I420Buffer> res_i420_buffer =
       I420Buffer::Create(width_, height_, stride_y, stride_uv, stride_uv);
   std::unique_ptr<uint8_t[]> out_i420_buffer(new uint8_t[frame_length_]);
   EXPECT_EQ(0, ConvertFromI420(*orig_frame_, VideoType::kI420, 0,
@@ -374,13 +374,13 @@ TEST_F(TestLibYuv, NV12Scale4x4to2x2) {
 TEST(I420WeightedPSNRTest, SmokeTest) {
   uint8_t ref_y[] = {0, 0, 0, 0};
   uint8_t ref_uv[] = {0};
-  rtc::scoped_refptr<I420Buffer> ref_buffer =
+  scoped_refptr<I420Buffer> ref_buffer =
       I420Buffer::Copy(/*width=*/2, /*height=*/2, ref_y, /*stride_y=*/2, ref_uv,
                        /*stride_u=*/1, ref_uv, /*stride_v=*/1);
 
   uint8_t test_y[] = {1, 1, 1, 1};
   uint8_t test_uv[] = {2};
-  rtc::scoped_refptr<I420Buffer> test_buffer = I420Buffer::Copy(
+  scoped_refptr<I420Buffer> test_buffer = I420Buffer::Copy(
       /*width=*/2, /*height=*/2, test_y, /*stride_y=*/2, test_uv,
       /*stride_u=*/1, test_uv, /*stride_v=*/1);
 

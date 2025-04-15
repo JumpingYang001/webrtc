@@ -192,7 +192,7 @@ TEST(H265BitstreamParserTest, ReportsFirstSliceSegmentInPicFalse) {
 }
 
 TEST(H265BitstreamParserTest, ReportsFirstSliceSegmentInPicParseInvalidSlice) {
-  rtc::ArrayView<const uint8_t> slice_data(kH265SliceChunk);
+  ArrayView<const uint8_t> slice_data(kH265SliceChunk);
   EXPECT_THAT(
       H265BitstreamParser::IsFirstSliceSegmentInPic(slice_data.subview(50)),
       Eq(std::nullopt));

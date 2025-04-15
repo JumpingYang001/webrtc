@@ -54,7 +54,7 @@ TEST(TestVideoFrameBufferPool, FailToReuseWrongSize) {
 }
 
 TEST(TestVideoFrameBufferPool, FrameValidAfterPoolDestruction) {
-  rtc::scoped_refptr<I420Buffer> buffer;
+  scoped_refptr<I420Buffer> buffer;
   {
     VideoFrameBufferPool pool;
     buffer = pool.CreateI420Buffer(16, 16);

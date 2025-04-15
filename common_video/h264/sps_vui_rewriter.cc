@@ -132,10 +132,10 @@ void SpsVuiRewriter::UpdateStats(ParseResult result, Direction direction) {
 }
 
 SpsVuiRewriter::ParseResult SpsVuiRewriter::ParseAndRewriteSps(
-    rtc::ArrayView<const uint8_t> buffer,
+    ArrayView<const uint8_t> buffer,
     std::optional<SpsParser::SpsState>* sps,
     const webrtc::ColorSpace* color_space,
-    rtc::Buffer* destination) {
+    Buffer* destination) {
   // Create temporary RBSP decoded buffer of the payload (exlcuding the
   // leading nalu type header byte (the SpsParser uses only the payload).
   std::vector<uint8_t> rbsp_buffer = H264::ParseRbsp(buffer);
@@ -149,7 +149,7 @@ SpsVuiRewriter::ParseResult SpsVuiRewriter::ParseAndRewriteSps(
 
   // We're going to completely muck up alignment, so we need a BitBufferWriter
   // to write with.
-  rtc::Buffer out_buffer(buffer.size() + kMaxVuiSpsIncrease);
+  Buffer out_buffer(buffer.size() + kMaxVuiSpsIncrease);
   BitBufferWriter sps_writer(out_buffer.data(), out_buffer.size());
 
   // Check how far the SpsParser has read, and copy that data in bulk.
@@ -208,10 +208,10 @@ SpsVuiRewriter::ParseResult SpsVuiRewriter::ParseAndRewriteSps(
 }
 
 SpsVuiRewriter::ParseResult SpsVuiRewriter::ParseAndRewriteSps(
-    rtc::ArrayView<const uint8_t> buffer,
+    ArrayView<const uint8_t> buffer,
     std::optional<SpsParser::SpsState>* sps,
     const webrtc::ColorSpace* color_space,
-    rtc::Buffer* destination,
+    Buffer* destination,
     Direction direction) {
   ParseResult result =
       ParseAndRewriteSps(buffer, sps, color_space, destination);
@@ -219,21 +219,21 @@ SpsVuiRewriter::ParseResult SpsVuiRewriter::ParseAndRewriteSps(
   return result;
 }
 
-rtc::Buffer SpsVuiRewriter::ParseOutgoingBitstreamAndRewrite(
-    rtc::ArrayView<const uint8_t> buffer,
+Buffer SpsVuiRewriter::ParseOutgoingBitstreamAndRewrite(
+    ArrayView<const uint8_t> buffer,
     const webrtc::ColorSpace* color_space) {
   std::vector<H264::NaluIndex> nalus = H264::FindNaluIndices(buffer);
 
   // Allocate some extra space for potentially adding a missing VUI.
-  rtc::Buffer output_buffer(/*size=*/0, /*capacity=*/buffer.size() +
-                                            nalus.size() * kMaxVuiSpsIncrease);
+  Buffer output_buffer(/*size=*/0, /*capacity=*/buffer.size() +
+                                       nalus.size() * kMaxVuiSpsIncrease);
 
   for (const H264::NaluIndex& nalu_index : nalus) {
     // Copy NAL unit start code.
-    rtc::ArrayView<const uint8_t> start_code = buffer.subview(
+    ArrayView<const uint8_t> start_code = buffer.subview(
         nalu_index.start_offset,
         nalu_index.payload_start_offset - nalu_index.start_offset);
-    rtc::ArrayView<const uint8_t> nalu = buffer.subview(
+    ArrayView<const uint8_t> nalu = buffer.subview(
         nalu_index.payload_start_offset, nalu_index.payload_size);
     if (nalu.empty()) {
       continue;
@@ -251,7 +251,7 @@ rtc::Buffer SpsVuiRewriter::ParseOutgoingBitstreamAndRewrite(
       // (receive side, in orderer to protect us from unknown or legacy send
       // clients).
       std::optional<SpsParser::SpsState> sps;
-      rtc::Buffer output_nalu;
+      Buffer output_nalu;
 
       // Add the type header to the output buffer first, so that the rewriter
       // can append modified payload on top of that.

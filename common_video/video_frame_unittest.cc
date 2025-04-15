@@ -58,8 +58,8 @@ SubSampling SubSamplingForType(VideoFrameBuffer::Type type) {
 // Helper function to create a buffer and fill it with a gradient for
 // PlanarYuvBuffer based buffers.
 template <class T>
-rtc::scoped_refptr<T> CreateGradient(int width, int height) {
-  rtc::scoped_refptr<T> buffer(T::Create(width, height));
+scoped_refptr<T> CreateGradient(int width, int height) {
+  scoped_refptr<T> buffer(T::Create(width, height));
   // Initialize with gradient, Y = 128(x/w + y/h), U = 256 x/w, V = 256 y/h
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
@@ -81,9 +81,8 @@ rtc::scoped_refptr<T> CreateGradient(int width, int height) {
 }
 
 // Helper function to create a buffer and fill it with a gradient.
-rtc::scoped_refptr<NV12BufferInterface> CreateNV12Gradient(int width,
-                                                           int height) {
-  rtc::scoped_refptr<NV12Buffer> buffer(NV12Buffer::Create(width, height));
+scoped_refptr<NV12BufferInterface> CreateNV12Gradient(int width, int height) {
+  scoped_refptr<NV12Buffer> buffer(NV12Buffer::Create(width, height));
   // Initialize with gradient, Y = 128(x/w + y/h), U = 256 x/w, V = 256 y/h
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
@@ -298,7 +297,7 @@ class TestPlanarYuvBuffer : public ::testing::Test {};
 TYPED_TEST_SUITE_P(TestPlanarYuvBuffer);
 
 template <class T>
-rtc::scoped_refptr<T> CreateAndFillBuffer() {
+scoped_refptr<T> CreateAndFillBuffer() {
   auto buf = T::Create(20, 10);
   memset(buf->MutableDataY(), 1, 200);
 
@@ -319,43 +318,43 @@ rtc::scoped_refptr<T> CreateAndFillBuffer() {
 }
 
 TYPED_TEST_P(TestPlanarYuvBuffer, Copy) {
-  rtc::scoped_refptr<TypeParam> buf1 = CreateAndFillBuffer<TypeParam>();
-  rtc::scoped_refptr<TypeParam> buf2 = TypeParam::Copy(*buf1);
+  scoped_refptr<TypeParam> buf1 = CreateAndFillBuffer<TypeParam>();
+  scoped_refptr<TypeParam> buf2 = TypeParam::Copy(*buf1);
   EXPECT_TRUE(test::FrameBufsEqual(buf1, buf2));
 }
 
 TYPED_TEST_P(TestPlanarYuvBuffer, CropXCenter) {
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
 
   // Pure center cropping, no scaling.
-  rtc::scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
+  scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
   scaled_buffer->CropAndScaleFrom(*buf, 50, 0, 100, 100);
   CheckCrop<TypeParam>(*scaled_buffer, 0.25, 0.0, 0.5, 1.0);
 }
 
 TYPED_TEST_P(TestPlanarYuvBuffer, CropXNotCenter) {
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
 
   // Non-center cropping, no scaling.
-  rtc::scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
+  scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
   scaled_buffer->CropAndScaleFrom(*buf, 25, 0, 100, 100);
   CheckCrop<TypeParam>(*scaled_buffer, 0.125, 0.0, 0.5, 1.0);
 }
 
 TYPED_TEST_P(TestPlanarYuvBuffer, CropYCenter) {
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(100, 200);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(100, 200);
 
   // Pure center cropping, no scaling.
-  rtc::scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
+  scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
   scaled_buffer->CropAndScaleFrom(*buf, 0, 50, 100, 100);
   CheckCrop<TypeParam>(*scaled_buffer, 0.0, 0.25, 1.0, 0.5);
 }
 
 TYPED_TEST_P(TestPlanarYuvBuffer, CropYNotCenter) {
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(100, 200);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(100, 200);
 
   // Pure center cropping, no scaling.
-  rtc::scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
+  scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(100, 100);
   scaled_buffer->CropAndScaleFrom(*buf, 0, 25, 100, 100);
   CheckCrop<TypeParam>(*scaled_buffer, 0.0, 0.125, 1.0, 0.5);
 }
@@ -365,14 +364,14 @@ TYPED_TEST_P(TestPlanarYuvBuffer, CropAndScale16x9) {
   const int buffer_height = 480;
   const int crop_width = 320;
   const int crop_height = 180;
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(640, 480);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(640, 480);
 
   // Pure center cropping, no scaling.
   const int out_width =
       std::min(buffer_width, crop_width * buffer_height / crop_height);
   const int out_height =
       std::min(buffer_height, crop_height * buffer_width / crop_width);
-  rtc::scoped_refptr<TypeParam> scaled_buffer =
+  scoped_refptr<TypeParam> scaled_buffer =
       TypeParam::Create(out_width, out_height);
   scaled_buffer->CropAndScaleFrom(*buf, (buffer_width - out_width) / 2,
                                   (buffer_height - out_height) / 2, out_width,
@@ -401,10 +400,10 @@ class TestPlanarYuvBufferScale : public ::testing::Test {};
 TYPED_TEST_SUITE_P(TestPlanarYuvBufferScale);
 
 TYPED_TEST_P(TestPlanarYuvBufferScale, Scale) {
-  rtc::scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
+  scoped_refptr<TypeParam> buf = CreateGradient<TypeParam>(200, 100);
 
   // Pure scaling, no cropping.
-  rtc::scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(150, 75);
+  scoped_refptr<TypeParam> scaled_buffer = TypeParam::Create(150, 75);
   scaled_buffer->ScaleFrom(*buf);
   CheckCrop<TypeParam>(*scaled_buffer, 0.0, 0.0, 1.0, 1.0);
 }
@@ -427,8 +426,8 @@ TYPED_TEST_SUITE_P(TestPlanarYuvBufferRotate);
 
 TYPED_TEST_P(TestPlanarYuvBufferRotate, Rotates) {
   for (const webrtc::VideoRotation& rotation : this->RotationParams) {
-    rtc::scoped_refptr<TypeParam> buffer = CreateGradient<TypeParam>(640, 480);
-    rtc::scoped_refptr<TypeParam> rotated_buffer =
+    scoped_refptr<TypeParam> buffer = CreateGradient<TypeParam>(640, 480);
+    scoped_refptr<TypeParam> rotated_buffer =
         TypeParam::Rotate(*buffer, rotation);
     CheckRotate(640, 480, rotation, *rotated_buffer);
   }
@@ -452,10 +451,10 @@ TEST(TestNV12Buffer, CropAndScale) {
   const int kCropRight = 0;
   const int kCropBottom = 30;
 
-  rtc::scoped_refptr<VideoFrameBuffer> buf =
+  scoped_refptr<VideoFrameBuffer> buf =
       CreateNV12Gradient(kSourceWidth, kSourceHeight);
 
-  rtc::scoped_refptr<VideoFrameBuffer> scaled_buffer = buf->CropAndScale(
+  scoped_refptr<VideoFrameBuffer> scaled_buffer = buf->CropAndScale(
       kCropLeft, kCropTop, kSourceWidth - kCropLeft - kCropRight,
       kSourceHeight - kCropTop - kCropBottom, kScaledWidth, kScaledHeight);
 

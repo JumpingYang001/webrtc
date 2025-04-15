@@ -34,19 +34,19 @@ class RTC_EXPORT H265BitstreamParser : public BitstreamParser {
   ~H265BitstreamParser() override;
 
   // New interface.
-  void ParseBitstream(rtc::ArrayView<const uint8_t> bitstream) override;
+  void ParseBitstream(ArrayView<const uint8_t> bitstream) override;
   std::optional<int> GetLastSliceQp() const override;
 
   std::optional<uint32_t> GetLastSlicePpsId() const;
 
   static std::optional<uint32_t> ParsePpsIdFromSliceSegmentLayerRbsp(
-      rtc::ArrayView<const uint8_t> data,
+      ArrayView<const uint8_t> data,
       uint8_t nalu_type);
 
   // Returns true if the slice segment is the first in the picture; otherwise
   // return false. If parse failed, return nullopt.
   static std::optional<bool> IsFirstSliceSegmentInPic(
-      rtc::ArrayView<const uint8_t> data);
+      ArrayView<const uint8_t> data);
 
  protected:
   enum Result {
@@ -54,8 +54,8 @@ class RTC_EXPORT H265BitstreamParser : public BitstreamParser {
     kInvalidStream,
     kUnsupportedStream,
   };
-  void ParseSlice(rtc::ArrayView<const uint8_t> slice);
-  Result ParseNonParameterSetNalu(rtc::ArrayView<const uint8_t> source,
+  void ParseSlice(ArrayView<const uint8_t> slice);
+  Result ParseNonParameterSetNalu(ArrayView<const uint8_t> source,
                                   uint8_t nalu_type);
 
   const H265PpsParser::PpsState* GetPPS(uint32_t id) const;
