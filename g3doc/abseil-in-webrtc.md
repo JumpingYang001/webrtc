@@ -62,16 +62,16 @@ on a monolithic Abseil build target that will generate a shared library.
 
 ### `absl::Span`
 
-*Use `rtc::ArrayView` instead.*
+*Use `webrtc::ArrayView` instead.*
 
-`absl::Span` differs from `rtc::ArrayView` on several points, and both
+`absl::Span` differs from `webrtc::ArrayView` on several points, and both
 of them differ from the `std::span` introduced in C++20. We should just keep
-using `rtc::ArrayView` and avoid `absl::Span`. When WebRTC switches to C++20,
-we will consider replacing `rtc::ArrayView` with `std::span`.
+using `webrtc::ArrayView` and avoid `absl::Span`. When WebRTC switches to C++20,
+we will consider replacing `webrtc::ArrayView` with `std::span`.
 
 ### `absl::StrCat`, `absl::StrAppend`, `absl::StrJoin`, `absl::StrSplit`
 
-*Use `rtc::SimpleStringBuilder` to build strings.*
+*Use `webrtc::SimpleStringBuilder` to build strings.*
 
 These are optimized for speed, not binary size. Even `StrCat` calls
 with a modest number of arguments can easily add several hundred bytes

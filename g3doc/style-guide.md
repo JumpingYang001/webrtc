@@ -134,7 +134,7 @@ readable way.
 
 ### ArrayView
 
-When passing an array of values to a function, use `rtc::ArrayView`
+When passing an array of values to a function, use `webrtc::ArrayView`
 whenever possible—that is, whenever you're not passing ownership of
 the array, and don't allow the callee to change the array size.
 
@@ -146,7 +146,7 @@ For example,
 | `const T* ptr, size_t num_elements` | `ArrayView<const T>` |
 | `T* ptr, size_t num_elements`       | `ArrayView<T>`       |
 
-See the [source code for `rtc::ArrayView`](api/array_view.h) for more detailed
+See the [source code for `webrtc::ArrayView`](api/array_view.h) for more detailed
 docs.
 
 ### Strings
@@ -154,7 +154,7 @@ docs.
 WebRTC uses std::string, with content assumed to be UTF-8. Note that this
 has to be verified whenever accepting external input.
 
-For concatenation of strings, use webrtc::StrJoin or rtc::SimpleStringBuilder
+For concatenation of strings, use webrtc::StrJoin or webrtc::SimpleStringBuilder
 directly.
 
 The following string building tools are NOT recommended:
@@ -199,7 +199,7 @@ already familiar to modern C++ programmers. See [Avoid std::bind][totw-108] for 
 
 `std::function` is allowed, but remember that it's not the right tool for every
 occasion. Prefer to use interfaces when that makes sense, and consider
-`rtc::FunctionView` for cases where the callee will not save the function
+`webrtc::FunctionView` for cases where the callee will not save the function
 object. Prefer `absl::AnyInvocable` over `std::function` when you can accomplish
  the task by moving the callable instead of copying it.
 
