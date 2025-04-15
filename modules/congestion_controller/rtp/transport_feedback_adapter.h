@@ -75,7 +75,7 @@ class TransportFeedbackAdapter {
                  Timestamp creation_time);
 
   std::optional<SentPacket> ProcessSentPacket(
-      const rtc::SentPacket& sent_packet);
+      const SentPacketInfo& sent_packet);
 
   std::optional<TransportPacketsFeedback> ProcessTransportFeedback(
       const rtcp::TransportFeedback& feedback,

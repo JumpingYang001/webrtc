@@ -187,7 +187,7 @@ void LossBasedBweV2::SetMinMaxBitrate(DataRate min_bitrate,
 }
 
 void LossBasedBweV2::UpdateBandwidthEstimate(
-    rtc::ArrayView<const PacketResult> packet_results,
+    ArrayView<const PacketResult> packet_results,
     DataRate delay_based_estimate,
     bool in_alr) {
   delay_based_estimate_ = delay_based_estimate;
@@ -1140,7 +1140,7 @@ void LossBasedBweV2::NewtonsMethodUpdate(
 }
 
 bool LossBasedBweV2::PushBackObservation(
-    rtc::ArrayView<const PacketResult> packet_results) {
+    ArrayView<const PacketResult> packet_results) {
   if (packet_results.empty()) {
     return false;
   }
