@@ -379,64 +379,64 @@ ParsedRtcEventLog::ParseStatus StoreRtpPackets(
   {
     RTPHeader header;
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<bool>(proto.marker()));
+        IsValueInRangeForNumericType<bool>(proto.marker()));
     header.markerBit = static_cast<bool>(proto.marker());
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<uint8_t>(proto.payload_type()));
+        IsValueInRangeForNumericType<uint8_t>(proto.payload_type()));
     header.payloadType = static_cast<uint8_t>(proto.payload_type());
 
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<uint16_t>(proto.sequence_number()));
+        IsValueInRangeForNumericType<uint16_t>(proto.sequence_number()));
     header.sequenceNumber = static_cast<uint16_t>(proto.sequence_number());
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<uint32_t>(proto.rtp_timestamp()));
+        IsValueInRangeForNumericType<uint32_t>(proto.rtp_timestamp()));
     header.timestamp = static_cast<uint32_t>(proto.rtp_timestamp());
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<uint32_t>(proto.ssrc()));
+        IsValueInRangeForNumericType<uint32_t>(proto.ssrc()));
     header.ssrc = static_cast<uint32_t>(proto.ssrc());
     header.numCSRCs = 0;  // TODO(terelius): Implement CSRC.
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<size_t>(proto.padding_size()));
+        IsValueInRangeForNumericType<size_t>(proto.padding_size()));
     header.paddingLength = static_cast<size_t>(proto.padding_size());
     RTC_PARSE_CHECK_OR_RETURN(
-        rtc::IsValueInRangeForNumericType<size_t>(proto.header_size()));
+        IsValueInRangeForNumericType<size_t>(proto.header_size()));
     header.headerLength = static_cast<size_t>(proto.header_size());
     // TODO(terelius): Should we implement payload_type_frequency?
     if (proto.has_transport_sequence_number()) {
       header.extension.hasTransportSequenceNumber = true;
-      RTC_PARSE_CHECK_OR_RETURN(rtc::IsValueInRangeForNumericType<uint16_t>(
+      RTC_PARSE_CHECK_OR_RETURN(IsValueInRangeForNumericType<uint16_t>(
           proto.transport_sequence_number()));
       header.extension.transportSequenceNumber =
           static_cast<uint16_t>(proto.transport_sequence_number());
     }
     if (proto.has_transmission_time_offset()) {
       header.extension.hasTransmissionTimeOffset = true;
-      RTC_PARSE_CHECK_OR_RETURN(rtc::IsValueInRangeForNumericType<int32_t>(
+      RTC_PARSE_CHECK_OR_RETURN(IsValueInRangeForNumericType<int32_t>(
           proto.transmission_time_offset()));
       header.extension.transmissionTimeOffset =
           static_cast<int32_t>(proto.transmission_time_offset());
     }
     if (proto.has_absolute_send_time()) {
       header.extension.hasAbsoluteSendTime = true;
-      RTC_PARSE_CHECK_OR_RETURN(rtc::IsValueInRangeForNumericType<uint32_t>(
-          proto.absolute_send_time()));
+      RTC_PARSE_CHECK_OR_RETURN(
+          IsValueInRangeForNumericType<uint32_t>(proto.absolute_send_time()));
       header.extension.absoluteSendTime =
           static_cast<uint32_t>(proto.absolute_send_time());
     }
     if (proto.has_video_rotation()) {
       header.extension.hasVideoRotation = true;
       RTC_PARSE_CHECK_OR_RETURN(
-          rtc::IsValueInRangeForNumericType<uint8_t>(proto.video_rotation()));
+          IsValueInRangeForNumericType<uint8_t>(proto.video_rotation()));
       header.extension.videoRotation = ConvertCVOByteToVideoRotation(
           static_cast<uint8_t>(proto.video_rotation()));
     }
     if (proto.has_audio_level()) {
       RTC_PARSE_CHECK_OR_RETURN(proto.has_voice_activity());
       RTC_PARSE_CHECK_OR_RETURN(
-          rtc::IsValueInRangeForNumericType<bool>(proto.voice_activity()));
+          IsValueInRangeForNumericType<bool>(proto.voice_activity()));
       bool voice_activity = static_cast<bool>(proto.voice_activity());
       RTC_PARSE_CHECK_OR_RETURN(
-          rtc::IsValueInRangeForNumericType<int>(proto.audio_level()));
+          IsValueInRangeForNumericType<int>(proto.audio_level()));
       int audio_level = static_cast<int>(proto.audio_level());
       RTC_PARSE_CHECK_OR_RETURN_LE(audio_level, 0x7F);
       header.extension.set_audio_level(AudioLevel(voice_activity, audio_level));
@@ -1748,7 +1748,7 @@ ParsedRtcEventLog::ParseStatus ParsedRtcEventLog::StoreParsedLegacyEvent(
       // has a buildin convertion to RTPHeader.
       RtpPacketReceived rtp_header;
       RTC_PARSE_CHECK_OR_RETURN(
-          rtp_header.Parse(rtc::CopyOnWriteBuffer(rtp_packet.header())));
+          rtp_header.Parse(CopyOnWriteBuffer(rtp_packet.header())));
 
       if (const RtpHeaderExtensionMap* extension_map = GetRtpHeaderExtensionMap(
               rtp_packet.incoming(), rtp_header.Ssrc())) {
