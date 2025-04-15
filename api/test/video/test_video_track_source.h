@@ -52,9 +52,9 @@ class TestVideoTrackSource : public Notifier<VideoTrackSourceInterface> {
   bool SupportsEncodedOutput() const override { return false; }
   void GenerateKeyFrame() override {}
   void AddEncodedSink(
-      rtc::VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
+      VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
   void RemoveEncodedSink(
-      rtc::VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
+      VideoSinkInterface<RecordableEncodedFrame>* /* sink */) override {}
 
   // Starts producing video.
   virtual void Start() = 0;

@@ -29,7 +29,7 @@
 //
 // Example use:
 //
-//   void SomeFunction(rtc::FunctionView<int(int)> index_transform);
+//   void SomeFunction(webrtc::FunctionView<int(int)> index_transform);
 //   ...
 //   SomeFunction([](int i) { return 2 * i + 1; });
 //

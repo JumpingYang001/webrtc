@@ -16,10 +16,8 @@
 
 namespace webrtc {
 
-const char* const MediaStreamTrackInterface::kVideoKind =
-    cricket::kMediaTypeVideo;
-const char* const MediaStreamTrackInterface::kAudioKind =
-    cricket::kMediaTypeAudio;
+const char* const MediaStreamTrackInterface::kVideoKind = kMediaTypeVideo;
+const char* const MediaStreamTrackInterface::kAudioKind = kMediaTypeAudio;
 
 VideoTrackInterface::ContentHint VideoTrackInterface::content_hint() const {
   return ContentHint::kNone;
@@ -29,7 +27,7 @@ bool AudioTrackInterface::GetSignalLevel(int* /* level */) {
   return false;
 }
 
-rtc::scoped_refptr<AudioProcessorInterface>
+scoped_refptr<AudioProcessorInterface>
 AudioTrackInterface::GetAudioProcessor() {
   return nullptr;
 }

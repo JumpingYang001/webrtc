@@ -148,9 +148,9 @@ InterleavedView<const int16_t> AudioFrame::data_view() const {
   // If you get a nullptr from `data_view()`, it's likely because the
   // samples_per_channel_ and/or num_channels_ members haven't been properly
   // set. Since `data_view()` returns an InterleavedView<> (which internally
-  // uses rtc::ArrayView<>), we inherit the behavior in InterleavedView when the
-  // view size is 0 that ArrayView<>::data() returns nullptr. So, even when an
-  // AudioFrame is muted and we want to return `zeroed_data()`, if
+  // uses webrtc::ArrayView<>), we inherit the behavior in InterleavedView when
+  // the view size is 0 that ArrayView<>::data() returns nullptr. So, even when
+  // an AudioFrame is muted and we want to return `zeroed_data()`, if
   // samples_per_channel_ or  num_channels_ is 0, the view will point to
   // nullptr.
   return InterleavedView<const int16_t>(muted_ ? &zeroed_data()[0] : &data_[0],
@@ -227,9 +227,9 @@ void AudioFrame::SetSampleRateAndChannelSize(int sample_rate) {
 }
 
 // static
-rtc::ArrayView<const int16_t> AudioFrame::zeroed_data() {
+ArrayView<const int16_t> AudioFrame::zeroed_data() {
   static int16_t* null_data = new int16_t[kMaxDataSizeSamples]();
-  return rtc::ArrayView<const int16_t>(null_data, kMaxDataSizeSamples);
+  return ArrayView<const int16_t>(null_data, kMaxDataSizeSamples);
 }
 
 }  // namespace webrtc

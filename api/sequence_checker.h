@@ -100,14 +100,14 @@ class RTC_LOCKABLE SequenceChecker
 //  public:
 //   class Encoder {
 //    public:
-//     rtc::TaskQueueBase& Queue() { return encoder_queue_; }
+//     webrtc::TaskQueueBase& Queue() { return encoder_queue_; }
 //     void Encode() {
 //       RTC_DCHECK_RUN_ON(&encoder_queue_);
 //       DoSomething(var_);
 //     }
 //
 //    private:
-//     rtc::TaskQueueBase& encoder_queue_;
+//     webrtc::TaskQueueBase& encoder_queue_;
 //     Frame var_ RTC_GUARDED_BY(encoder_queue_);
 //   };
 //
@@ -115,12 +115,12 @@ class RTC_LOCKABLE SequenceChecker
 //     // Will fail at runtime when DCHECK is enabled:
 //     // encoder_->Encode();
 //     // Will work:
-//     rtc::scoped_refptr<Encoder> encoder = encoder_;
+//     webrtc::scoped_refptr<Encoder> encoder = encoder_;
 //     encoder_->Queue().PostTask([encoder] { encoder->Encode(); });
 //   }
 //
 //  private:
-//   rtc::scoped_refptr<Encoder> encoder_;
+//   webrtc::scoped_refptr<Encoder> encoder_;
 // }
 
 // Document if a function expected to be called from same thread/task queue.

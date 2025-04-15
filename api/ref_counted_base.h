@@ -49,11 +49,11 @@ class RefCountedBase {
 // vtable.
 //
 // To use:
-//   struct MyInt : public rtc::RefCountedNonVirtual<MyInt>  {
+//   struct MyInt : public webrtc::RefCountedNonVirtual<MyInt>  {
 //     int foo_ = 0;
 //   };
 //
-//   rtc::scoped_refptr<MyInt> my_int(new MyInt());
+//   webrtc::scoped_refptr<MyInt> my_int(new MyInt());
 //
 // sizeof(MyInt) on a 32 bit system would then be 8, int + refcount and no
 // vtable generated.
@@ -73,7 +73,7 @@ class RefCountedNonVirtual {
     //    so the virtual attribute(s) can be removed.
     // 2) The virtual methods are a part of the design of the class. In this
     //    case you can consider using `RefCountedBase` instead or alternatively
-    //    use `rtc::RefCountedObject`.
+    //    use `webrtc::RefCountedObject`.
     static_assert(!std::is_polymorphic<T>::value,
                   "T has virtual methods. RefCountedBase is a better fit.");
     const auto status = ref_count_.DecRef();

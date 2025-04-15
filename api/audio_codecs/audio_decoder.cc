@@ -29,7 +29,7 @@ namespace {
 
 class OldStyleEncodedFrame final : public AudioDecoder::EncodedAudioFrame {
  public:
-  OldStyleEncodedFrame(AudioDecoder* decoder, rtc::Buffer&& payload)
+  OldStyleEncodedFrame(AudioDecoder* decoder, Buffer&& payload)
       : decoder_(decoder), payload_(std::move(payload)) {}
 
   size_t Duration() const override {
@@ -38,7 +38,7 @@ class OldStyleEncodedFrame final : public AudioDecoder::EncodedAudioFrame {
   }
 
   std::optional<DecodeResult> Decode(
-      rtc::ArrayView<int16_t> decoded) const override {
+      ArrayView<int16_t> decoded) const override {
     auto speech_type = AudioDecoder::kSpeech;
     const int ret = decoder_->Decode(
         payload_.data(), payload_.size(), decoder_->SampleRateHz(),
@@ -50,7 +50,7 @@ class OldStyleEncodedFrame final : public AudioDecoder::EncodedAudioFrame {
 
  private:
   AudioDecoder* const decoder_;
-  const rtc::Buffer payload_;
+  const Buffer payload_;
 };
 
 }  // namespace
@@ -74,7 +74,7 @@ AudioDecoder::ParseResult& AudioDecoder::ParseResult::operator=(
     ParseResult&& b) = default;
 
 std::vector<AudioDecoder::ParseResult> AudioDecoder::ParsePayload(
-    rtc::Buffer&& payload,
+    Buffer&& payload,
     uint32_t timestamp) {
   std::vector<ParseResult> results;
   std::unique_ptr<EncodedAudioFrame> frame(
@@ -90,7 +90,7 @@ int AudioDecoder::Decode(const uint8_t* encoded,
                          int16_t* decoded,
                          SpeechType* speech_type) {
   TRACE_EVENT0("webrtc", "AudioDecoder::Decode");
-  MsanCheckInitialized(rtc::MakeArrayView(encoded, encoded_len));
+  MsanCheckInitialized(MakeArrayView(encoded, encoded_len));
   int duration = PacketDuration(encoded, encoded_len);
   if (duration >= 0 &&
       duration * Channels() * sizeof(int16_t) > max_decoded_bytes) {
@@ -107,7 +107,7 @@ int AudioDecoder::DecodeRedundant(const uint8_t* encoded,
                                   int16_t* decoded,
                                   SpeechType* speech_type) {
   TRACE_EVENT0("webrtc", "AudioDecoder::DecodeRedundant");
-  MsanCheckInitialized(rtc::MakeArrayView(encoded, encoded_len));
+  MsanCheckInitialized(MakeArrayView(encoded, encoded_len));
   int duration = PacketDurationRedundant(encoded, encoded_len);
   if (duration >= 0 &&
       duration * Channels() * sizeof(int16_t) > max_decoded_bytes) {
@@ -137,7 +137,7 @@ size_t AudioDecoder::DecodePlc(size_t /* num_frames */,
 
 // TODO(bugs.webrtc.org/9676): Remove default implementation.
 void AudioDecoder::GeneratePlc(size_t /*requested_samples_per_channel*/,
-                               rtc::BufferT<int16_t>* /*concealment_audio*/) {}
+                               BufferT<int16_t>* /*concealment_audio*/) {}
 
 int AudioDecoder::ErrorCode() {
   return 0;

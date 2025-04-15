@@ -29,7 +29,7 @@ EncodedImageBuffer::EncodedImageBuffer(size_t size) : buffer_(size) {}
 EncodedImageBuffer::EncodedImageBuffer(const uint8_t* data, size_t size)
     : buffer_(data, size) {}
 
-EncodedImageBuffer::EncodedImageBuffer(rtc::Buffer buffer)
+EncodedImageBuffer::EncodedImageBuffer(Buffer buffer)
     : buffer_(std::move(buffer)) {}
 
 // static
@@ -43,8 +43,7 @@ scoped_refptr<EncodedImageBuffer> EncodedImageBuffer::Create(
   return make_ref_counted<EncodedImageBuffer>(data, size);
 }
 // static
-scoped_refptr<EncodedImageBuffer> EncodedImageBuffer::Create(
-    rtc::Buffer buffer) {
+scoped_refptr<EncodedImageBuffer> EncodedImageBuffer::Create(Buffer buffer) {
   return make_ref_counted<EncodedImageBuffer>(std::move(buffer));
 }
 

@@ -93,7 +93,7 @@ class RTC_EXPORT Environment final {
 
  private:
   friend class EnvironmentFactory;
-  Environment(scoped_refptr<const rtc::RefCountedBase> storage,
+  Environment(scoped_refptr<const RefCountedBase> storage,
               const FieldTrialsView* absl_nonnull field_trials,
               Clock* absl_nonnull clock,
               TaskQueueFactory* absl_nonnull task_queue_factory,
@@ -110,7 +110,7 @@ class RTC_EXPORT Environment final {
   // be copyable. It is up to the `EnvironmentFactory` to provide an object that
   // ensures references to utilties below are valid while object in the
   // `storage_` is alive.
-  scoped_refptr<const rtc::RefCountedBase> storage_;
+  scoped_refptr<const RefCountedBase> storage_;
 
   const FieldTrialsView* absl_nonnull field_trials_;
   Clock* absl_nonnull clock_;

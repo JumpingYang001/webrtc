@@ -23,11 +23,10 @@
 
 namespace webrtc {
 
-class MockVideoTrack
-    : public rtc::RefCountedObject<webrtc::VideoTrackInterface> {
+class MockVideoTrack : public RefCountedObject<webrtc::VideoTrackInterface> {
  public:
-  static rtc::scoped_refptr<MockVideoTrack> Create() {
-    return rtc::scoped_refptr<MockVideoTrack>(new MockVideoTrack());
+  static scoped_refptr<MockVideoTrack> Create() {
+    return scoped_refptr<MockVideoTrack>(new MockVideoTrack());
   }
 
   // NotifierInterface

@@ -28,9 +28,9 @@ class MockFrameDecryptor : public FrameDecryptorInterface {
               Decrypt,
               (webrtc::MediaType,
                const std::vector<uint32_t>&,
-               rtc::ArrayView<const uint8_t>,
-               rtc::ArrayView<const uint8_t>,
-               rtc::ArrayView<uint8_t>),
+               webrtc::ArrayView<const uint8_t>,
+               webrtc::ArrayView<const uint8_t>,
+               webrtc::ArrayView<uint8_t>),
               (override));
 
   MOCK_METHOD(size_t,

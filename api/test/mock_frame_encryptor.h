@@ -27,9 +27,9 @@ class MockFrameEncryptor : public FrameEncryptorInterface {
               Encrypt,
               (webrtc::MediaType,
                uint32_t,
-               rtc::ArrayView<const uint8_t>,
-               rtc::ArrayView<const uint8_t>,
-               rtc::ArrayView<uint8_t>,
+               webrtc::ArrayView<const uint8_t>,
+               webrtc::ArrayView<const uint8_t>,
+               webrtc::ArrayView<uint8_t>,
                size_t*),
               (override));
 

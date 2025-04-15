@@ -40,9 +40,9 @@ class FrameEncryptorInterface : public RefCountInterface {
   // selected by the implementer to represent error codes.
   virtual int Encrypt(webrtc::MediaType media_type,
                       uint32_t ssrc,
-                      rtc::ArrayView<const uint8_t> additional_data,
-                      rtc::ArrayView<const uint8_t> frame,
-                      rtc::ArrayView<uint8_t> encrypted_frame,
+                      ArrayView<const uint8_t> additional_data,
+                      ArrayView<const uint8_t> frame,
+                      ArrayView<uint8_t> encrypted_frame,
                       size_t* bytes_written) = 0;
 
   // Returns the total required length in bytes for the output of the

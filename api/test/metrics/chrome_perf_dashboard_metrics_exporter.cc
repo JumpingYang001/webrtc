@@ -102,7 +102,7 @@ ChromePerfDashboardMetricsExporter::ChromePerfDashboardMetricsExporter(
     : export_file_path_(export_file_path) {}
 
 bool ChromePerfDashboardMetricsExporter::Export(
-    rtc::ArrayView<const Metric> metrics) {
+    ArrayView<const Metric> metrics) {
   std::unique_ptr<PerfTestResultWriter> writer =
       absl::WrapUnique<PerfTestResultWriter>(CreateHistogramWriter());
   for (const Metric& metric : metrics) {

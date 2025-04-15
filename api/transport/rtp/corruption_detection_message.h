@@ -38,8 +38,8 @@ class CorruptionDetectionMessage {
   double std_dev() const { return std_dev_; }
   int luma_error_threshold() const { return luma_error_threshold_; }
   int chroma_error_threshold() const { return chroma_error_threshold_; }
-  rtc::ArrayView<const double> sample_values() const {
-    return rtc::MakeArrayView(sample_values_.data(), sample_values_.size());
+  ArrayView<const double> sample_values() const {
+    return MakeArrayView(sample_values_.data(), sample_values_.size());
   }
 
  private:
@@ -138,7 +138,7 @@ class CorruptionDetectionMessage::Builder {
     return *this;
   }
 
-  Builder& WithSampleValues(const rtc::ArrayView<const double>& sample_values) {
+  Builder& WithSampleValues(const ArrayView<const double>& sample_values) {
     message_.sample_values_.assign(sample_values.cbegin(),
                                    sample_values.cend());
     return *this;

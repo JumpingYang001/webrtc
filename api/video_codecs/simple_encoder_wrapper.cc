@@ -153,7 +153,7 @@ void SimpleEncoderWrapper::SetEncodeFps(int fps) {
 }
 
 void SimpleEncoderWrapper::Encode(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
+    scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
     bool force_keyframe,
     EncodeResultCallback callback) {
   std::vector<ScalableVideoController::LayerFrameConfig> configs =
@@ -191,7 +191,7 @@ void SimpleEncoderWrapper::Encode(
     }
 
     struct FrameOut : public VideoEncoderInterface::FrameOutput {
-      rtc::ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
+      ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
         bitstream.resize(size.bytes());
         return bitstream;
       }

@@ -212,7 +212,7 @@ class AudioFrame {
   // A permanently zeroed out buffer to represent muted frames. This is a
   // header-only class, so the only way to avoid creating a separate zeroed
   // buffer per translation unit is to wrap a static in an inline function.
-  static rtc::ArrayView<const int16_t> zeroed_data();
+  static ArrayView<const int16_t> zeroed_data();
 
   std::array<int16_t, kMaxDataSizeSamples> data_;
   bool muted_ = true;
@@ -221,7 +221,7 @@ class AudioFrame {
   // Absolute capture timestamp when this audio frame was originally captured.
   // This is only valid for audio frames captured on this machine. The absolute
   // capture timestamp of a received frame is found in `packet_infos_`.
-  // This timestamp MUST be based on the same clock as rtc::TimeMillis().
+  // This timestamp MUST be based on the same clock as webrtc::TimeMillis().
   std::optional<int64_t> absolute_capture_timestamp_ms_;
 };
 

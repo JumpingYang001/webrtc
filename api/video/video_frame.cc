@@ -178,7 +178,7 @@ VideoFrame VideoFrame::Builder::build() {
 }
 
 VideoFrame::Builder& VideoFrame::Builder::set_video_frame_buffer(
-    const rtc::scoped_refptr<VideoFrameBuffer>& buffer) {
+    const scoped_refptr<VideoFrameBuffer>& buffer) {
   video_frame_buffer_ = buffer;
   return *this;
 }
@@ -264,7 +264,7 @@ VideoFrame::Builder& VideoFrame::Builder::set_packet_infos(
   return *this;
 }
 
-VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
+VideoFrame::VideoFrame(const scoped_refptr<VideoFrameBuffer>& buffer,
                        webrtc::VideoRotation rotation,
                        int64_t timestamp_us)
     : video_frame_buffer_(buffer),
@@ -273,7 +273,7 @@ VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
       timestamp_us_(timestamp_us),
       rotation_(rotation) {}
 
-VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
+VideoFrame::VideoFrame(const scoped_refptr<VideoFrameBuffer>& buffer,
                        uint32_t timestamp_rtp,
                        int64_t render_time_ms,
                        VideoRotation rotation)
@@ -286,7 +286,7 @@ VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
 }
 
 VideoFrame::VideoFrame(uint16_t id,
-                       const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
+                       const scoped_refptr<VideoFrameBuffer>& buffer,
                        int64_t timestamp_us,
                        const std::optional<Timestamp>& presentation_timestamp,
                        const std::optional<Timestamp>& reference_time,
@@ -336,12 +336,12 @@ uint32_t VideoFrame::size() const {
   return width() * height();
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> VideoFrame::video_frame_buffer() const {
+scoped_refptr<VideoFrameBuffer> VideoFrame::video_frame_buffer() const {
   return video_frame_buffer_;
 }
 
 void VideoFrame::set_video_frame_buffer(
-    const rtc::scoped_refptr<VideoFrameBuffer>& buffer) {
+    const scoped_refptr<VideoFrameBuffer>& buffer) {
   RTC_CHECK(buffer);
   video_frame_buffer_ = buffer;
 }

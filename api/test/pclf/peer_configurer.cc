@@ -92,12 +92,12 @@ PeerConfigurer* PeerConfigurer::SetVideoDecoderFactory(
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioEncoderFactory(
-    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory) {
+    scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory) {
   components_->pcf_dependencies->audio_encoder_factory = audio_encoder_factory;
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioDecoderFactory(
-    rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory) {
+    scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory) {
   components_->pcf_dependencies->audio_decoder_factory = audio_decoder_factory;
   return this;
 }
@@ -182,12 +182,12 @@ PeerConfigurer* PeerConfigurer::SetNetEqFactory(
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioProcessing(
-    rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing) {
+    scoped_refptr<webrtc::AudioProcessing> audio_processing) {
   components_->pcf_dependencies->audio_processing = audio_processing;
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioMixer(
-    rtc::scoped_refptr<webrtc::AudioMixer> audio_mixer) {
+    scoped_refptr<webrtc::AudioMixer> audio_mixer) {
   components_->pcf_dependencies->audio_mixer = audio_mixer;
   return this;
 }

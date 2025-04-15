@@ -72,15 +72,14 @@ class PeerConfigurer {
   PeerConfigurer* SetVideoDecoderFactory(
       std::unique_ptr<VideoDecoderFactory> video_decoder_factory);
   PeerConfigurer* SetAudioEncoderFactory(
-      rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory);
+      scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory);
   PeerConfigurer* SetAudioDecoderFactory(
-      rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory);
+      scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory);
   // Set a custom NetEqFactory to be used in the call.
   PeerConfigurer* SetNetEqFactory(std::unique_ptr<NetEqFactory> neteq_factory);
   PeerConfigurer* SetAudioProcessing(
-      rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing);
-  PeerConfigurer* SetAudioMixer(
-      rtc::scoped_refptr<webrtc::AudioMixer> audio_mixer);
+      scoped_refptr<webrtc::AudioProcessing> audio_processing);
+  PeerConfigurer* SetAudioMixer(scoped_refptr<webrtc::AudioMixer> audio_mixer);
 
   // Forces the Peerconnection to use the network thread as the worker thread.
   // Ie, worker thread and the network thread is the same thread.
@@ -98,19 +97,19 @@ class PeerConfigurer {
       std::unique_ptr<SSLCertificateVerifier> tls_cert_verifier);
   PeerConfigurer* SetIceTransportFactory(
       std::unique_ptr<IceTransportFactory> factory);
-  // Flags to set on `cricket::PortAllocator`. These flags will be added
-  // to the cricket::kDefaultPortAllocatorFlags with
-  // cricket::PORTALLOCATOR_DISABLE_TCP disabled. For possible values check
+  // Flags to set on `webrtc::PortAllocator`. These flags will be added
+  // to the webrtc::kDefaultPortAllocatorFlags with
+  // webrtc::PORTALLOCATOR_DISABLE_TCP disabled. For possible values check
   // p2p/base/port_allocator.h.
   PeerConfigurer* SetPortAllocatorExtraFlags(uint32_t extra_flags);
-  // Flags to set on `cricket::PortAllocator`. These flags will override
+  // Flags to set on `webrtc::PortAllocator`. These flags will override
   // the default ones that are presented on the port allocator.
   //
   // For possible values check p2p/base/port_allocator.h.
   //
   // IMPORTANT: if you use WebRTC Network Emulation
   // (api/test/network_emulation_manager.h) and set this field, remember to set
-  // cricket::PORTALLOCATOR_DISABLE_TCP to 0.
+  // webrtc::PORTALLOCATOR_DISABLE_TCP to 0.
   PeerConfigurer* SetPortAllocatorFlags(uint32_t flags);
 
   // Add new video stream to the call that will be sent from this peer.

@@ -9,13 +9,13 @@
  */
 
 // This file contains declarations of interfaces that wrap SDP-related
-// constructs; session descriptions and ICE candidates. The inner "cricket::"
+// constructs; session descriptions and ICE candidates. The inner "webrtc::"
 // objects shouldn't be accessed directly; the intention is that an application
 // using the PeerConnection API only creates these objects from strings, and
 // them passes them into the PeerConnection.
 //
 // Though in the future, we're planning to provide an SDP parsing API, with a
-// structure more friendly than cricket::SessionDescription.
+// structure more friendly than webrtc::SessionDescription.
 
 #ifndef API_JSEP_H_
 #define API_JSEP_H_

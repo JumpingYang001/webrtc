@@ -409,13 +409,13 @@ int32_t VideoEncoderSoftwareFallbackWrapper::EncodeWithMainEncoder(
     } else {
       RTC_LOG(LS_INFO) << "Fallback encoder does not support native handle - "
                           "converting frame to I420";
-      rtc::scoped_refptr<I420BufferInterface> src_buffer =
+      scoped_refptr<I420BufferInterface> src_buffer =
           frame.video_frame_buffer()->ToI420();
       if (!src_buffer) {
         RTC_LOG(LS_ERROR) << "Failed to convert from to I420";
         return WEBRTC_VIDEO_CODEC_ENCODER_FAILURE;
       }
-      rtc::scoped_refptr<VideoFrameBuffer> dst_buffer =
+      scoped_refptr<VideoFrameBuffer> dst_buffer =
           src_buffer->Scale(codec_settings_.width, codec_settings_.height);
       if (!dst_buffer) {
         RTC_LOG(LS_ERROR) << "Failed to scale video frame.";

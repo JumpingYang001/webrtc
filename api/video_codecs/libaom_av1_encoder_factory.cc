@@ -105,7 +105,7 @@ class LibaomAv1Encoder : public VideoEncoderInterface {
       const VideoEncoderFactoryInterface::StaticEncoderSettings& settings,
       const std::map<std::string, std::string>& encoder_specific_settings);
 
-  void Encode(rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
+  void Encode(scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
               const TemporalUnitSettings& tu_settings,
               std::vector<FrameEncodeSettings> frame_settings) override;
 
@@ -635,7 +635,7 @@ aom_svc_params_t GetSvcParams(
 }
 
 void LibaomAv1Encoder::Encode(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
+    scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
     const TemporalUnitSettings& tu_settings,
     std::vector<FrameEncodeSettings> frame_settings) {
   absl::Cleanup on_return = [&] {
@@ -785,7 +785,7 @@ void LibaomAv1Encoder::Encode(
         result.frame_type = pkt->data.frame.flags & AOM_EFLAG_FORCE_KF
                                 ? FrameType::kKeyframe
                                 : FrameType::kDeltaFrame;
-        rtc::ArrayView<uint8_t> output_buffer =
+        ArrayView<uint8_t> output_buffer =
             settings.frame_output->GetBitstreamOutputBuffer(
                 DataSize::Bytes(pkt->data.frame.sz));
         if (output_buffer.size() != pkt->data.frame.sz) {

@@ -24,7 +24,7 @@ namespace webrtc {
 
 EmulatedIpPacket::EmulatedIpPacket(const SocketAddress& from,
                                    const SocketAddress& to,
-                                   rtc::CopyOnWriteBuffer data,
+                                   CopyOnWriteBuffer data,
                                    Timestamp arrival_time,
                                    uint16_t application_overhead,
                                    EcnMarking ecn)

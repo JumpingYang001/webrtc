@@ -56,22 +56,22 @@ NV12Buffer::NV12Buffer(int width, int height, int stride_y, int stride_uv)
 NV12Buffer::~NV12Buffer() = default;
 
 // static
-rtc::scoped_refptr<NV12Buffer> NV12Buffer::Create(int width, int height) {
-  return rtc::make_ref_counted<NV12Buffer>(width, height);
+scoped_refptr<NV12Buffer> NV12Buffer::Create(int width, int height) {
+  return make_ref_counted<NV12Buffer>(width, height);
 }
 
 // static
-rtc::scoped_refptr<NV12Buffer> NV12Buffer::Create(int width,
-                                                  int height,
-                                                  int stride_y,
-                                                  int stride_uv) {
-  return rtc::make_ref_counted<NV12Buffer>(width, height, stride_y, stride_uv);
+scoped_refptr<NV12Buffer> NV12Buffer::Create(int width,
+                                             int height,
+                                             int stride_y,
+                                             int stride_uv) {
+  return make_ref_counted<NV12Buffer>(width, height, stride_y, stride_uv);
 }
 
 // static
-rtc::scoped_refptr<NV12Buffer> NV12Buffer::Copy(
+scoped_refptr<NV12Buffer> NV12Buffer::Copy(
     const I420BufferInterface& i420_buffer) {
-  rtc::scoped_refptr<NV12Buffer> buffer =
+  scoped_refptr<NV12Buffer> buffer =
       NV12Buffer::Create(i420_buffer.width(), i420_buffer.height());
   libyuv::I420ToNV12(
       i420_buffer.DataY(), i420_buffer.StrideY(), i420_buffer.DataU(),
@@ -81,9 +81,8 @@ rtc::scoped_refptr<NV12Buffer> NV12Buffer::Copy(
   return buffer;
 }
 
-rtc::scoped_refptr<I420BufferInterface> NV12Buffer::ToI420() {
-  rtc::scoped_refptr<I420Buffer> i420_buffer =
-      I420Buffer::Create(width(), height());
+scoped_refptr<I420BufferInterface> NV12Buffer::ToI420() {
+  scoped_refptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
   libyuv::NV12ToI420(DataY(), StrideY(), DataUV(), StrideUV(),
                      i420_buffer->MutableDataY(), i420_buffer->StrideY(),
                      i420_buffer->MutableDataU(), i420_buffer->StrideU(),

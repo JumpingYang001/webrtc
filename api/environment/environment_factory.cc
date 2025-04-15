@@ -31,10 +31,10 @@ namespace {
 
 template <typename T>
 void Store(absl_nonnull std::unique_ptr<T> value,
-           scoped_refptr<const rtc::RefCountedBase>& leaf) {
-  class StorageNode : public rtc::RefCountedBase {
+           scoped_refptr<const webrtc::RefCountedBase>& leaf) {
+  class StorageNode : public RefCountedBase {
    public:
-    StorageNode(scoped_refptr<const rtc::RefCountedBase> parent,
+    StorageNode(scoped_refptr<const RefCountedBase> parent,
                 absl_nonnull std::unique_ptr<T> value)
         : parent_(std::move(parent)), value_(std::move(value)) {}
 
@@ -44,7 +44,7 @@ void Store(absl_nonnull std::unique_ptr<T> value,
     ~StorageNode() override = default;
 
    private:
-    scoped_refptr<const rtc::RefCountedBase> parent_;
+    scoped_refptr<const RefCountedBase> parent_;
     absl_nonnull std::unique_ptr<T> value_;
   };
 
@@ -55,7 +55,7 @@ void Store(absl_nonnull std::unique_ptr<T> value,
   // 'leaf_' - node with the last provided utility. This way `Environment` keeps
   // ownership of a single branch of the storage tree with each used utiltity
   // owned by one of the nodes on that branch.
-  leaf = rtc::make_ref_counted<StorageNode>(std::move(leaf), std::move(value));
+  leaf = make_ref_counted<StorageNode>(std::move(leaf), std::move(value));
 }
 
 }  // namespace

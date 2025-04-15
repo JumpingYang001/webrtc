@@ -229,7 +229,7 @@ VideoCodecConfig::VideoCodecConfig(
     : name(name), required_params(std::move(required_params)) {}
 
 std::optional<VideoResolution> VideoSubscription::GetMaxResolution(
-    rtc::ArrayView<const VideoConfig> video_configs) {
+    ArrayView<const VideoConfig> video_configs) {
   std::vector<VideoResolution> resolutions;
   for (const auto& video_config : video_configs) {
     resolutions.push_back(video_config.GetResolution());
@@ -238,7 +238,7 @@ std::optional<VideoResolution> VideoSubscription::GetMaxResolution(
 }
 
 std::optional<VideoResolution> VideoSubscription::GetMaxResolution(
-    rtc::ArrayView<const VideoResolution> resolutions) {
+    ArrayView<const VideoResolution> resolutions) {
   if (resolutions.empty()) {
     return std::nullopt;
   }

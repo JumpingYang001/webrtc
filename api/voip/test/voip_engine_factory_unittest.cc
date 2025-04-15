@@ -31,8 +31,8 @@ using ::testing::NiceMock;
 // Create voip engine with mock modules as normal use case.
 TEST(VoipEngineFactoryTest, CreateEngineWithMockModules) {
   VoipEngineConfig config;
-  config.encoder_factory = rtc::make_ref_counted<MockAudioEncoderFactory>();
-  config.decoder_factory = rtc::make_ref_counted<MockAudioDecoderFactory>();
+  config.encoder_factory = make_ref_counted<MockAudioEncoderFactory>();
+  config.decoder_factory = make_ref_counted<MockAudioDecoderFactory>();
   config.env = CreateEnvironment(FieldTrials::CreateNoGlobal(""));
   config.audio_processing_builder =
       std::make_unique<NiceMock<test::MockAudioProcessingBuilder>>();
@@ -45,8 +45,8 @@ TEST(VoipEngineFactoryTest, CreateEngineWithMockModules) {
 // Create voip engine without setting optional components.
 TEST(VoipEngineFactoryTest, UseNoAudioProcessing) {
   VoipEngineConfig config;
-  config.encoder_factory = rtc::make_ref_counted<MockAudioEncoderFactory>();
-  config.decoder_factory = rtc::make_ref_counted<MockAudioDecoderFactory>();
+  config.encoder_factory = make_ref_counted<MockAudioEncoderFactory>();
+  config.decoder_factory = make_ref_counted<MockAudioDecoderFactory>();
   config.audio_device_module = test::MockAudioDeviceModule::CreateNice();
 
   auto voip_engine = CreateVoipEngine(std::move(config));

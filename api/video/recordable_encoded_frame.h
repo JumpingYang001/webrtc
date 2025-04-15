@@ -37,7 +37,7 @@ class RecordableEncodedFrame {
   virtual ~RecordableEncodedFrame() = default;
 
   // Provides access to encoded data
-  virtual rtc::scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
+  virtual scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
       const = 0;
 
   // Optionally returns the colorspace of the encoded frame. This can differ

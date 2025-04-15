@@ -54,7 +54,7 @@ TEST_P(TaskQueueTest, PostAndCheckCurrent) {
   auto queue = CreateTaskQueue(factory, "PostAndCheckCurrent");
 
   // We're not running a task, so `queue` shouldn't be current.
-  // Note that because rtc::Thread also supports the TQ interface and
+  // Note that because webrtc::Thread also supports the TQ interface and
   // TestMainImpl::Init wraps the main test thread (bugs.webrtc.org/9714), that
   // means that TaskQueueBase::Current() will still return a valid value.
   EXPECT_FALSE(queue->IsCurrent());
@@ -141,7 +141,7 @@ TEST_P(TaskQueueTest, PostMultipleDelayed) {
         TimeDelta::Millis(i));
   }
 
-  for (rtc::Event& e : events)
+  for (Event& e : events)
     EXPECT_TRUE(e.Wait(TimeDelta::Seconds(1)));
 }
 

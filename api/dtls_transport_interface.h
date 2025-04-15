@@ -110,7 +110,7 @@ class DtlsTransportObserverInterface {
 class DtlsTransportInterface : public webrtc::RefCountInterface {
  public:
   // Returns a pointer to the ICE transport that is owned by the DTLS transport.
-  virtual rtc::scoped_refptr<IceTransportInterface> ice_transport() = 0;
+  virtual scoped_refptr<IceTransportInterface> ice_transport() = 0;
   // Returns information on the state of the DtlsTransport.
   // This function can be called from other threads.
   virtual DtlsTransportInformation Information() = 0;

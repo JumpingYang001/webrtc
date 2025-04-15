@@ -64,7 +64,7 @@ class RTC_EXPORT BuiltinAudioProcessingBuilder
 
   // Sets the echo detector to inject when APM is created.
   BuiltinAudioProcessingBuilder& SetEchoDetector(
-      rtc::scoped_refptr<EchoDetector> echo_detector) {
+      scoped_refptr<EchoDetector> echo_detector) {
     echo_detector_ = std::move(echo_detector);
     return *this;
   }

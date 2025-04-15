@@ -25,7 +25,7 @@
 namespace webrtc {
 class MockRecordableEncodedFrame : public RecordableEncodedFrame {
  public:
-  MOCK_METHOD(rtc::scoped_refptr<const EncodedImageBufferInterface>,
+  MOCK_METHOD(scoped_refptr<const EncodedImageBufferInterface>,
               encoded_buffer,
               (),
               (const, override));

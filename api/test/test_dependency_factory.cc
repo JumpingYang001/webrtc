@@ -23,7 +23,7 @@ namespace {
 // This checks everything in this file gets called on the same thread. It's
 // static because it needs to look at the static methods too.
 bool IsValidTestDependencyFactoryThread() {
-  const rtc::PlatformThreadRef main_thread = CurrentThreadRef();
+  const PlatformThreadRef main_thread = CurrentThreadRef();
   return IsThreadRefEqual(main_thread, CurrentThreadRef());
 }
 }  // namespace

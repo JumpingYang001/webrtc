@@ -21,7 +21,7 @@ namespace webrtc {
 // Creates a proxy source for `source` which makes sure the real
 // VideoTrackSourceInterface implementation is destroyed on the signaling thread
 // and marshals calls to `worker_thread` and `signaling_thread`.
-rtc::scoped_refptr<VideoTrackSourceInterface> RTC_EXPORT
+scoped_refptr<VideoTrackSourceInterface> RTC_EXPORT
 CreateVideoTrackSourceProxy(Thread* signaling_thread,
                             Thread* worker_thread,
                             VideoTrackSourceInterface* source);

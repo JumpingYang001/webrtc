@@ -29,7 +29,7 @@ class StdoutMetricsExporter : public MetricsExporter {
   StdoutMetricsExporter(const StdoutMetricsExporter&) = delete;
   StdoutMetricsExporter& operator=(const StdoutMetricsExporter&) = delete;
 
-  bool Export(rtc::ArrayView<const Metric> metrics) override;
+  bool Export(ArrayView<const Metric> metrics) override;
 
  private:
   void PrintMetric(const Metric& metric);

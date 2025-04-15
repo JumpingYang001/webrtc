@@ -33,18 +33,18 @@ class AudioFrameProcessor;
 // Create a new instance of PeerConnectionFactoryInterface with optional video
 // codec factories. These video factories represents all video codecs, i.e. no
 // extra internal video codecs will be added.
-RTC_EXPORT rtc::scoped_refptr<PeerConnectionFactoryInterface>
+RTC_EXPORT scoped_refptr<PeerConnectionFactoryInterface>
 CreatePeerConnectionFactory(
     Thread* network_thread,
     Thread* worker_thread,
     Thread* signaling_thread,
-    rtc::scoped_refptr<AudioDeviceModule> default_adm,
-    rtc::scoped_refptr<AudioEncoderFactory> audio_encoder_factory,
-    rtc::scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
+    scoped_refptr<AudioDeviceModule> default_adm,
+    scoped_refptr<AudioEncoderFactory> audio_encoder_factory,
+    scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
     std::unique_ptr<VideoEncoderFactory> video_encoder_factory,
     std::unique_ptr<VideoDecoderFactory> video_decoder_factory,
-    rtc::scoped_refptr<AudioMixer> audio_mixer,
-    rtc::scoped_refptr<AudioProcessing> audio_processing,
+    scoped_refptr<AudioMixer> audio_mixer,
+    scoped_refptr<AudioProcessing> audio_processing,
     std::unique_ptr<AudioFrameProcessor> audio_frame_processor = nullptr,
     std::unique_ptr<FieldTrialsView> field_trials = nullptr);
 

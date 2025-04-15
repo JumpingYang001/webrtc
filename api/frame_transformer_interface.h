@@ -45,10 +45,10 @@ class TransformableFrameInterface {
 
   // Returns the frame payload data. The data is valid until the next non-const
   // method call.
-  virtual rtc::ArrayView<const uint8_t> GetData() const = 0;
+  virtual ArrayView<const uint8_t> GetData() const = 0;
 
   // Copies `data` into the owned frame payload data.
-  virtual void SetData(rtc::ArrayView<const uint8_t> data) = 0;
+  virtual void SetData(ArrayView<const uint8_t> data) = 0;
 
   virtual uint8_t GetPayloadType() const = 0;
   virtual uint32_t GetSsrc() const = 0;
@@ -117,7 +117,7 @@ class TransformableAudioFrameInterface : public TransformableFrameInterface {
   RTC_EXPORT explicit TransformableAudioFrameInterface(Passkey passkey);
   virtual ~TransformableAudioFrameInterface() = default;
 
-  virtual rtc::ArrayView<const uint32_t> GetContributingSources() const = 0;
+  virtual ArrayView<const uint32_t> GetContributingSources() const = 0;
 
   virtual const std::optional<uint16_t> SequenceNumber() const = 0;
 
@@ -161,9 +161,9 @@ class FrameTransformerInterface : public RefCountInterface {
       std::unique_ptr<TransformableFrameInterface> transformable_frame) = 0;
 
   virtual void RegisterTransformedFrameCallback(
-      rtc::scoped_refptr<TransformedFrameCallback>) {}
+      scoped_refptr<TransformedFrameCallback>) {}
   virtual void RegisterTransformedFrameSinkCallback(
-      rtc::scoped_refptr<TransformedFrameCallback>,
+      scoped_refptr<TransformedFrameCallback>,
       uint32_t /* ssrc */) {}
   virtual void UnregisterTransformedFrameCallback() {}
   virtual void UnregisterTransformedFrameSinkCallback(uint32_t /* ssrc */) {}
@@ -178,7 +178,7 @@ class FrameTransformerHost {
  public:
   virtual ~FrameTransformerHost() {}
   virtual void SetFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) = 0;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) = 0;
   // TODO: bugs.webrtc.org/15929 - To be added:
   // virtual AddIncomingMediaType(RtpCodec codec) = 0;
   // virtual AddOutgoingMediaType(RtpCodec codec) = 0;

@@ -186,14 +186,14 @@ class NetEq {
   virtual ~NetEq() {}
 
   virtual int InsertPacket(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload) {
+                           ArrayView<const uint8_t> payload) {
     return InsertPacket(rtp_header, payload,
                         /*receive_time=*/Timestamp::MinusInfinity());
   }
 
   // TODO: webrtc:343501093 - removed unused method.
   virtual int InsertPacket(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload,
+                           ArrayView<const uint8_t> payload,
                            Timestamp receive_time) {
     return InsertPacket(rtp_header, payload,
                         RtpPacketInfo(rtp_header, receive_time));
@@ -203,7 +203,7 @@ class NetEq {
   // Returns 0 on success, -1 on failure.
   // TODO: webrtc:343501093 - Make this method pure virtual.
   virtual int InsertPacket(const RTPHeader& rtp_header,
-                           rtc::ArrayView<const uint8_t> payload,
+                           ArrayView<const uint8_t> payload,
                            const RtpPacketInfo& /* rtp_packet_info */) {
     return InsertPacket(rtp_header, payload);
   }

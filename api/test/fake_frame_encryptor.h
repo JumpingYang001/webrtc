@@ -25,8 +25,7 @@ namespace webrtc {
 // FrameEncryptorInterface. It is constructed with a simple single digit key and
 // a fixed postfix byte. This is just to validate that the core code works
 // as expected.
-class FakeFrameEncryptor
-    : public rtc::RefCountedObject<FrameEncryptorInterface> {
+class FakeFrameEncryptor : public RefCountedObject<FrameEncryptorInterface> {
  public:
   // Provide a key (0,255) and some postfix byte (0,255).
   explicit FakeFrameEncryptor(uint8_t fake_key = 0xAA,
@@ -35,9 +34,9 @@ class FakeFrameEncryptor
   // bit to the end. This will always fail if fail_encryption_ is set to true.
   int Encrypt(webrtc::MediaType media_type,
               uint32_t ssrc,
-              rtc::ArrayView<const uint8_t> additional_data,
-              rtc::ArrayView<const uint8_t> frame,
-              rtc::ArrayView<uint8_t> encrypted_frame,
+              ArrayView<const uint8_t> additional_data,
+              ArrayView<const uint8_t> frame,
+              ArrayView<uint8_t> encrypted_frame,
               size_t* bytes_written) override;
   // Always returns 1 more than the size of the frame.
   size_t GetMaxCiphertextByteSize(webrtc::MediaType media_type,

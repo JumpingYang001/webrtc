@@ -156,8 +156,8 @@ TEST(AudioDecoderFactoryTemplateTest,
 
 TEST(AudioDecoderFactoryTemplateTest, NoDecoderTypes) {
   const Environment env = CreateEnvironment();
-  rtc::scoped_refptr<AudioDecoderFactory> factory(
-      rtc::make_ref_counted<
+  scoped_refptr<AudioDecoderFactory> factory(
+      make_ref_counted<
           audio_decoder_factory_template_impl::AudioDecoderFactoryT<>>());
   EXPECT_THAT(factory->GetSupportedDecoders(), ::testing::IsEmpty());
   EXPECT_FALSE(factory->IsSupportedDecoder({"foo", 8000, 1}));

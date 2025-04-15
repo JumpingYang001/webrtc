@@ -182,7 +182,7 @@ class AudioEncoderFactoryT : public AudioEncoderFactory {
 // TODO(kwiberg): Point at CreateBuiltinAudioEncoderFactory() for an example of
 // how it is used.
 template <typename... Ts>
-rtc::scoped_refptr<AudioEncoderFactory> CreateAudioEncoderFactory() {
+scoped_refptr<AudioEncoderFactory> CreateAudioEncoderFactory() {
   // There's no technical reason we couldn't allow zero template parameters,
   // but such a factory couldn't create any encoders, and callers can do this
   // by mistake by simply forgetting the <> altogether. So we forbid it in
@@ -190,7 +190,7 @@ rtc::scoped_refptr<AudioEncoderFactory> CreateAudioEncoderFactory() {
   static_assert(sizeof...(Ts) >= 1,
                 "Caller must give at least one template parameter");
 
-  return rtc::make_ref_counted<
+  return make_ref_counted<
       audio_encoder_factory_template_impl::AudioEncoderFactoryT<Ts...>>();
 }
 

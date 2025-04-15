@@ -36,7 +36,7 @@ void Increment(int16_t& t) {
 
 // Fills a given buffer with monotonically increasing values.
 template <typename T>
-void FillBuffer(rtc::ArrayView<T> buffer) {
+void FillBuffer(ArrayView<T> buffer) {
   T value = {};
   for (T& t : buffer) {
     Increment<T>(value);
@@ -49,7 +49,7 @@ void FillBuffer(rtc::ArrayView<T> buffer) {
 TEST(AudioViewTest, MonoView) {
   const size_t kArraySize = 100u;
   int16_t arr[kArraySize];
-  FillBuffer(rtc::ArrayView<int16_t>(arr));
+  FillBuffer(ArrayView<int16_t>(arr));
 
   MonoView<int16_t> mono(arr);
   MonoView<const int16_t> const_mono(arr);
@@ -68,7 +68,7 @@ TEST(AudioViewTest, MonoView) {
 TEST(AudioViewTest, InterleavedView) {
   const size_t kArraySize = 100u;
   int16_t arr[kArraySize];
-  FillBuffer(rtc::ArrayView<int16_t>(arr));
+  FillBuffer(ArrayView<int16_t>(arr));
 
   InterleavedView<int16_t> interleaved(arr, kArraySize, 1);
   EXPECT_EQ(NumChannels(interleaved), 1u);
@@ -140,7 +140,7 @@ TEST(AudioViewTest, CopySamples) {
   const size_t kArraySize = 100u;
   int16_t source_arr[kArraySize] = {};
   int16_t dest_arr[kArraySize] = {};
-  FillBuffer(rtc::ArrayView<int16_t>(source_arr));
+  FillBuffer(ArrayView<int16_t>(source_arr));
 
   InterleavedView<const int16_t> source(source_arr, 2);
   InterleavedView<int16_t> destination(dest_arr, 2);
@@ -163,7 +163,7 @@ TEST(AudioViewTest, CopySamples) {
 
 TEST(AudioViewTest, ClearSamples) {
   std::array<int16_t, 100u> samples = {};
-  FillBuffer(rtc::ArrayView<int16_t>(samples));
+  FillBuffer(ArrayView<int16_t>(samples));
   ASSERT_NE(samples[0], 0);
   ClearSamples(samples);
   for (const auto s : samples) {
@@ -171,7 +171,7 @@ TEST(AudioViewTest, ClearSamples) {
   }
 
   std::array<float, 100u> samples_f = {};
-  FillBuffer(rtc::ArrayView<float>(samples_f));
+  FillBuffer(ArrayView<float>(samples_f));
   ASSERT_NE(samples_f[0], 0.0);
   ClearSamples(samples_f);
   for (const auto s : samples_f) {
@@ -179,7 +179,7 @@ TEST(AudioViewTest, ClearSamples) {
   }
 
   // Clear only half of the buffer
-  FillBuffer(rtc::ArrayView<int16_t>(samples));
+  FillBuffer(ArrayView<int16_t>(samples));
   const auto half_way = samples.size() / 2;
   ClearSamples(samples, half_way);
   for (size_t i = 0u; i < samples.size(); ++i) {

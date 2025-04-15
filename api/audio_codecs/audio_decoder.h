@@ -62,7 +62,7 @@ class AudioDecoder {
     // decoder produced comfort noise or speech. On failure, returns an empty
     // std::optional. Decode may be called at most once per frame object.
     virtual std::optional<DecodeResult> Decode(
-        rtc::ArrayView<int16_t> decoded) const = 0;
+        ArrayView<int16_t> decoded) const = 0;
   };
 
   struct ParseResult {
@@ -90,7 +90,7 @@ class AudioDecoder {
   // this call. The decoder is free to swap or move the data from the `payload`
   // buffer. `timestamp` is the input timestamp, in samples, corresponding to
   // the start of the payload.
-  virtual std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+  virtual std::vector<ParseResult> ParsePayload(Buffer&& payload,
                                                 uint32_t timestamp);
 
   // TODO(bugs.webrtc.org/10098): The Decode and DecodeRedundant methods are
@@ -140,7 +140,7 @@ class AudioDecoder {
   // implementations must provide their own, which can be a simple as a no-op.
   // TODO(bugs.webrtc.org/9676): Remove default implementation.
   virtual void GeneratePlc(size_t requested_samples_per_channel,
-                           rtc::BufferT<int16_t>* concealment_audio);
+                           BufferT<int16_t>* concealment_audio);
 
   // Resets the decoder state (empty buffers etc.).
   virtual void Reset() = 0;

@@ -191,7 +191,7 @@ bool SdpVideoFormat::IsSameCodec(const SdpVideoFormat& other) const {
 }
 
 bool SdpVideoFormat::IsCodecInList(
-    rtc::ArrayView<const webrtc::SdpVideoFormat> formats) const {
+    ArrayView<const webrtc::SdpVideoFormat> formats) const {
   for (const auto& format : formats) {
     if (IsSameCodec(format)) {
       return true;
@@ -264,7 +264,7 @@ const SdpVideoFormat SdpVideoFormat::AV1Profile1() {
 }
 
 std::optional<SdpVideoFormat> FuzzyMatchSdpVideoFormat(
-    rtc::ArrayView<const SdpVideoFormat> supported_formats,
+    ArrayView<const SdpVideoFormat> supported_formats,
     const SdpVideoFormat& format) {
   std::optional<SdpVideoFormat> res;
   int best_parameter_match = 0;

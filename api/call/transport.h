@@ -40,9 +40,9 @@ struct PacketOptions {
 
 class Transport {
  public:
-  virtual bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  virtual bool SendRtp(ArrayView<const uint8_t> packet,
                        const PacketOptions& options) = 0;
-  virtual bool SendRtcp(rtc::ArrayView<const uint8_t> packet) = 0;
+  virtual bool SendRtcp(ArrayView<const uint8_t> packet) = 0;
 
  protected:
   virtual ~Transport() {}

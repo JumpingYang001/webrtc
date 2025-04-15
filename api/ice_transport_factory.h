@@ -25,7 +25,7 @@ namespace webrtc {
 // The PortAllocator must outlive the created IceTransportInterface object.
 // TODO(steveanton): Remove in favor of the overload that takes
 // IceTransportInit.
-RTC_EXPORT rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+RTC_EXPORT scoped_refptr<IceTransportInterface> CreateIceTransport(
     PortAllocator* port_allocator);
 
 // Static factory for an IceTransport object that can be created
@@ -36,7 +36,7 @@ RTC_EXPORT rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
 //     IceTransportInterface object.
 // `init.async_resolver_factory()` and `init.event_log()` are optional, but if
 //     provided must outlive the created IceTransportInterface object.
-RTC_EXPORT rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+RTC_EXPORT scoped_refptr<IceTransportInterface> CreateIceTransport(
     IceTransportInit);
 
 }  // namespace webrtc

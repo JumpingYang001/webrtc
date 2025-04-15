@@ -65,17 +65,16 @@ I010Buffer::I010Buffer(int width,
 I010Buffer::~I010Buffer() {}
 
 // static
-rtc::scoped_refptr<I010Buffer> I010Buffer::Create(int width, int height) {
-  return rtc::make_ref_counted<I010Buffer>(width, height, width,
-                                           (width + 1) / 2, (width + 1) / 2);
+scoped_refptr<I010Buffer> I010Buffer::Create(int width, int height) {
+  return make_ref_counted<I010Buffer>(width, height, width, (width + 1) / 2,
+                                      (width + 1) / 2);
 }
 
 // static
-rtc::scoped_refptr<I010Buffer> I010Buffer::Copy(
-    const I010BufferInterface& source) {
+scoped_refptr<I010Buffer> I010Buffer::Copy(const I010BufferInterface& source) {
   const int width = source.width();
   const int height = source.height();
-  rtc::scoped_refptr<I010Buffer> buffer = Create(width, height);
+  scoped_refptr<I010Buffer> buffer = Create(width, height);
   int res = libyuv::I010Copy(
       source.DataY(), source.StrideY(), source.DataU(), source.StrideU(),
       source.DataV(), source.StrideV(), buffer->MutableDataY(),
@@ -87,11 +86,10 @@ rtc::scoped_refptr<I010Buffer> I010Buffer::Copy(
 }
 
 // static
-rtc::scoped_refptr<I010Buffer> I010Buffer::Copy(
-    const I420BufferInterface& source) {
+scoped_refptr<I010Buffer> I010Buffer::Copy(const I420BufferInterface& source) {
   const int width = source.width();
   const int height = source.height();
-  rtc::scoped_refptr<I010Buffer> buffer = Create(width, height);
+  scoped_refptr<I010Buffer> buffer = Create(width, height);
   int res = libyuv::I420ToI010(
       source.DataY(), source.StrideY(), source.DataU(), source.StrideU(),
       source.DataV(), source.StrideV(), buffer->MutableDataY(),
@@ -103,9 +101,8 @@ rtc::scoped_refptr<I010Buffer> I010Buffer::Copy(
 }
 
 // static
-rtc::scoped_refptr<I010Buffer> I010Buffer::Rotate(
-    const I010BufferInterface& src,
-    VideoRotation rotation) {
+scoped_refptr<I010Buffer> I010Buffer::Rotate(const I010BufferInterface& src,
+                                             VideoRotation rotation) {
   if (rotation == webrtc::kVideoRotation_0)
     return Copy(src);
 
@@ -119,7 +116,7 @@ rtc::scoped_refptr<I010Buffer> I010Buffer::Rotate(
     std::swap(rotated_width, rotated_height);
   }
 
-  rtc::scoped_refptr<webrtc::I010Buffer> buffer =
+  scoped_refptr<webrtc::I010Buffer> buffer =
       Create(rotated_width, rotated_height);
 
   int res = libyuv::I010Rotate(
@@ -133,9 +130,8 @@ rtc::scoped_refptr<I010Buffer> I010Buffer::Rotate(
   return buffer;
 }
 
-rtc::scoped_refptr<I420BufferInterface> I010Buffer::ToI420() {
-  rtc::scoped_refptr<I420Buffer> i420_buffer =
-      I420Buffer::Create(width(), height());
+scoped_refptr<I420BufferInterface> I010Buffer::ToI420() {
+  scoped_refptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
   int res = libyuv::I010ToI420(
       DataY(), StrideY(), DataU(), StrideU(), DataV(), StrideV(),
       i420_buffer->MutableDataY(), i420_buffer->StrideY(),

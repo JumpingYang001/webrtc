@@ -54,7 +54,7 @@ struct TestMetricsExporterFactory {
         : factory_(factory), export_result_(export_result) {}
     ~TestMetricsExporter() override = default;
 
-    bool Export(rtc::ArrayView<const Metric> metrics) override {
+    bool Export(ArrayView<const Metric> metrics) override {
       factory_->exported_metrics =
           std::vector<Metric>(metrics.begin(), metrics.end());
       return export_result_;

@@ -345,14 +345,14 @@ class NetworkEmulationManager {
   // `stats_callback`. Callback will be executed on network emulation
   // internal task queue.
   virtual void GetStats(
-      rtc::ArrayView<EmulatedEndpoint* const> endpoints,
+      ArrayView<EmulatedEndpoint* const> endpoints,
       std::function<void(EmulatedNetworkStats)> stats_callback) = 0;
 
   // Passes combined network stats for all specified `nodes` into specified
   // `stats_callback`. Callback will be executed on network emulation
   // internal task queue.
   virtual void GetStats(
-      rtc::ArrayView<EmulatedNetworkNode* const> nodes,
+      ArrayView<EmulatedNetworkNode* const> nodes,
       std::function<void(EmulatedNetworkNodeStats)> stats_callback) = 0;
 
   // Create a EmulatedTURNServer.

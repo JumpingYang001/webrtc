@@ -31,7 +31,7 @@ namespace webrtc {
 // A collection of stats.
 // This is accessible as a map from `RTCStats::id` to `RTCStats`.
 class RTC_EXPORT RTCStatsReport final
-    : public rtc::RefCountedNonVirtual<RTCStatsReport> {
+    : public RefCountedNonVirtual<RTCStatsReport> {
  public:
   typedef std::map<std::string, std::unique_ptr<const RTCStats>> StatsMap;
 
@@ -49,20 +49,20 @@ class RTC_EXPORT RTCStatsReport final
 
    private:
     friend class RTCStatsReport;
-    ConstIterator(const rtc::scoped_refptr<const RTCStatsReport>& report,
+    ConstIterator(const scoped_refptr<const RTCStatsReport>& report,
                   StatsMap::const_iterator it);
 
     // Reference report to make sure it is kept alive.
-    rtc::scoped_refptr<const RTCStatsReport> report_;
+    scoped_refptr<const RTCStatsReport> report_;
     StatsMap::const_iterator it_;
   };
 
-  static rtc::scoped_refptr<RTCStatsReport> Create(Timestamp timestamp);
+  static scoped_refptr<RTCStatsReport> Create(Timestamp timestamp);
 
   explicit RTCStatsReport(Timestamp timestamp);
 
   RTCStatsReport(const RTCStatsReport& other) = delete;
-  rtc::scoped_refptr<RTCStatsReport> Copy() const;
+  scoped_refptr<RTCStatsReport> Copy() const;
 
   Timestamp timestamp() const { return timestamp_; }
   void AddStats(std::unique_ptr<const RTCStats> stats);
@@ -98,7 +98,7 @@ class RTC_EXPORT RTCStatsReport final
   // if there is no object with `id`.
   std::unique_ptr<const RTCStats> Take(const std::string& id);
   // Takes ownership of all the stats in `other`, leaving it empty.
-  void TakeMembersFrom(rtc::scoped_refptr<RTCStatsReport> other);
+  void TakeMembersFrom(scoped_refptr<RTCStatsReport> other);
 
   // Stats iterators. Stats are ordered lexicographically on `RTCStats::id`.
   ConstIterator begin() const;

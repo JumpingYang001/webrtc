@@ -29,15 +29,15 @@
 namespace webrtc {
 
 class MockPeerConnectionFactoryInterface
-    : public rtc::RefCountedObject<webrtc::PeerConnectionFactoryInterface> {
+    : public RefCountedObject<webrtc::PeerConnectionFactoryInterface> {
  public:
-  static rtc::scoped_refptr<MockPeerConnectionFactoryInterface> Create() {
-    return rtc::scoped_refptr<MockPeerConnectionFactoryInterface>(
+  static scoped_refptr<MockPeerConnectionFactoryInterface> Create() {
+    return scoped_refptr<MockPeerConnectionFactoryInterface>(
         new MockPeerConnectionFactoryInterface());
   }
 
   MOCK_METHOD(void, SetOptions, (const Options&), (override));
-  MOCK_METHOD(RTCErrorOr<rtc::scoped_refptr<PeerConnectionInterface>>,
+  MOCK_METHOD(RTCErrorOr<scoped_refptr<PeerConnectionInterface>>,
               CreatePeerConnectionOrError,
               (const PeerConnectionInterface::RTCConfiguration&,
                PeerConnectionDependencies),
@@ -50,24 +50,24 @@ class MockPeerConnectionFactoryInterface
               GetRtpReceiverCapabilities,
               (webrtc::MediaType),
               (const, override));
-  MOCK_METHOD(rtc::scoped_refptr<MediaStreamInterface>,
+  MOCK_METHOD(scoped_refptr<MediaStreamInterface>,
               CreateLocalMediaStream,
               (const std::string&),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<AudioSourceInterface>,
+  MOCK_METHOD(scoped_refptr<AudioSourceInterface>,
               CreateAudioSource,
               (const webrtc::AudioOptions&),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<VideoTrackInterface>,
+  MOCK_METHOD(scoped_refptr<VideoTrackInterface>,
               CreateVideoTrack,
               (const std::string&, VideoTrackSourceInterface*),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<VideoTrackInterface>,
+  MOCK_METHOD(scoped_refptr<VideoTrackInterface>,
               CreateVideoTrack,
-              (rtc::scoped_refptr<VideoTrackSourceInterface>,
+              (webrtc::scoped_refptr<VideoTrackSourceInterface>,
                absl::string_view),
               (override));
-  MOCK_METHOD(rtc::scoped_refptr<AudioTrackInterface>,
+  MOCK_METHOD(scoped_refptr<AudioTrackInterface>,
               CreateAudioTrack,
               (const std::string&, AudioSourceInterface*),
               (override));

@@ -70,34 +70,32 @@ I422Buffer::I422Buffer(int width,
 I422Buffer::~I422Buffer() {}
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Create(int width, int height) {
-  return rtc::make_ref_counted<I422Buffer>(width, height);
+scoped_refptr<I422Buffer> I422Buffer::Create(int width, int height) {
+  return make_ref_counted<I422Buffer>(width, height);
 }
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Create(int width,
-                                                  int height,
-                                                  int stride_y,
-                                                  int stride_u,
-                                                  int stride_v) {
-  return rtc::make_ref_counted<I422Buffer>(width, height, stride_y, stride_u,
-                                           stride_v);
+scoped_refptr<I422Buffer> I422Buffer::Create(int width,
+                                             int height,
+                                             int stride_y,
+                                             int stride_u,
+                                             int stride_v) {
+  return make_ref_counted<I422Buffer>(width, height, stride_y, stride_u,
+                                      stride_v);
 }
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Copy(
-    const I422BufferInterface& source) {
+scoped_refptr<I422Buffer> I422Buffer::Copy(const I422BufferInterface& source) {
   return Copy(source.width(), source.height(), source.DataY(), source.StrideY(),
               source.DataU(), source.StrideU(), source.DataV(),
               source.StrideV());
 }
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Copy(
-    const I420BufferInterface& source) {
+scoped_refptr<I422Buffer> I422Buffer::Copy(const I420BufferInterface& source) {
   const int width = source.width();
   const int height = source.height();
-  rtc::scoped_refptr<I422Buffer> buffer = Create(width, height);
+  scoped_refptr<I422Buffer> buffer = Create(width, height);
   int res = libyuv::I420ToI422(
       source.DataY(), source.StrideY(), source.DataU(), source.StrideU(),
       source.DataV(), source.StrideV(), buffer->MutableDataY(),
@@ -109,16 +107,16 @@ rtc::scoped_refptr<I422Buffer> I422Buffer::Copy(
 }
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Copy(int width,
-                                                int height,
-                                                const uint8_t* data_y,
-                                                int stride_y,
-                                                const uint8_t* data_u,
-                                                int stride_u,
-                                                const uint8_t* data_v,
-                                                int stride_v) {
+scoped_refptr<I422Buffer> I422Buffer::Copy(int width,
+                                           int height,
+                                           const uint8_t* data_y,
+                                           int stride_y,
+                                           const uint8_t* data_u,
+                                           int stride_u,
+                                           const uint8_t* data_v,
+                                           int stride_v) {
   // Note: May use different strides than the input data.
-  rtc::scoped_refptr<I422Buffer> buffer = Create(width, height);
+  scoped_refptr<I422Buffer> buffer = Create(width, height);
   int res = libyuv::I422Copy(data_y, stride_y, data_u, stride_u, data_v,
                              stride_v, buffer->MutableDataY(),
                              buffer->StrideY(), buffer->MutableDataU(),
@@ -130,9 +128,8 @@ rtc::scoped_refptr<I422Buffer> I422Buffer::Copy(int width,
 }
 
 // static
-rtc::scoped_refptr<I422Buffer> I422Buffer::Rotate(
-    const I422BufferInterface& src,
-    VideoRotation rotation) {
+scoped_refptr<I422Buffer> I422Buffer::Rotate(const I422BufferInterface& src,
+                                             VideoRotation rotation) {
   RTC_CHECK(src.DataY());
   RTC_CHECK(src.DataU());
   RTC_CHECK(src.DataV());
@@ -144,7 +141,7 @@ rtc::scoped_refptr<I422Buffer> I422Buffer::Rotate(
     std::swap(rotated_width, rotated_height);
   }
 
-  rtc::scoped_refptr<webrtc::I422Buffer> buffer =
+  scoped_refptr<webrtc::I422Buffer> buffer =
       I422Buffer::Create(rotated_width, rotated_height);
 
   int res = libyuv::I422Rotate(
@@ -158,9 +155,8 @@ rtc::scoped_refptr<I422Buffer> I422Buffer::Rotate(
   return buffer;
 }
 
-rtc::scoped_refptr<I420BufferInterface> I422Buffer::ToI420() {
-  rtc::scoped_refptr<I420Buffer> i420_buffer =
-      I420Buffer::Create(width(), height());
+scoped_refptr<I420BufferInterface> I422Buffer::ToI420() {
+  scoped_refptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
   int res = libyuv::I422ToI420(
       DataY(), StrideY(), DataU(), StrideU(), DataV(), StrideV(),
       i420_buffer->MutableDataY(), i420_buffer->StrideY(),

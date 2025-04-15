@@ -30,17 +30,17 @@
 
 namespace webrtc {
 
-rtc::scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
+scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
     Thread* network_thread,
     Thread* worker_thread,
     Thread* signaling_thread,
-    rtc::scoped_refptr<AudioDeviceModule> default_adm,
-    rtc::scoped_refptr<AudioEncoderFactory> audio_encoder_factory,
-    rtc::scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
+    scoped_refptr<AudioDeviceModule> default_adm,
+    scoped_refptr<AudioEncoderFactory> audio_encoder_factory,
+    scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
     std::unique_ptr<VideoEncoderFactory> video_encoder_factory,
     std::unique_ptr<VideoDecoderFactory> video_decoder_factory,
-    rtc::scoped_refptr<AudioMixer> audio_mixer,
-    rtc::scoped_refptr<AudioProcessing> audio_processing,
+    scoped_refptr<AudioMixer> audio_mixer,
+    scoped_refptr<AudioProcessing> audio_processing,
     std::unique_ptr<AudioFrameProcessor> audio_frame_processor,
     std::unique_ptr<FieldTrialsView> field_trials) {
   PeerConnectionFactoryDependencies dependencies;
@@ -51,7 +51,7 @@ rtc::scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
   dependencies.trials = std::move(field_trials);
 
   if (network_thread) {
-    // TODO(bugs.webrtc.org/13145): Add an rtc::SocketFactory* argument.
+    // TODO(bugs.webrtc.org/13145): Add an webrtc::SocketFactory* argument.
     dependencies.socket_factory = network_thread->socketserver();
   }
   dependencies.adm = std::move(default_adm);

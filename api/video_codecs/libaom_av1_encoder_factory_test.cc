@@ -98,7 +98,7 @@ class Av1Decoder : public DecodedImageCallback {
     return 0;
   }
 
-  VideoFrame Decode(rtc::ArrayView<uint8_t> bitstream_data) {
+  VideoFrame Decode(ArrayView<uint8_t> bitstream_data) {
     EncodedImage img;
     img.SetEncodedData(EncodedImageBuffer::Create(bitstream_data.data(),
                                                   bitstream_data.size()));
@@ -127,7 +127,7 @@ class FrameEncoderSettingsBuilder {
   FrameEncoderSettingsBuilder() {
     class IgnoredOutput : public VideoEncoderInterface::FrameOutput {
      public:
-      rtc::ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
+      ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
         unread_.resize(size.bytes());
         return unread_;
       }
@@ -203,9 +203,9 @@ class FrameEncoderSettingsBuilder {
  private:
   struct FrameOut : public VideoEncoderInterface::FrameOutput {
     explicit FrameOut(EncOut& e) : eo(e) {}
-    rtc::ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
+    ArrayView<uint8_t> GetBitstreamOutputBuffer(DataSize size) override {
       eo.bitstream.resize(size.bytes());
-      return rtc::ArrayView<uint8_t>(eo.bitstream);
+      return ArrayView<uint8_t>(eo.bitstream);
     }
     void EncodeComplete(const EncodeResult& encode_result) override {
       eo.res = encode_result;
@@ -256,7 +256,7 @@ MATCHER(HasBitstreamAndMetaData, "") {
   return !arg.bitstream.empty() && std::holds_alternative<EncodedData>(arg.res);
 }
 
-double Psnr(const rtc::scoped_refptr<I420BufferInterface>& ref_buffer,
+double Psnr(const scoped_refptr<I420BufferInterface>& ref_buffer,
             const VideoFrame& decoded_frame) {
   return I420PSNR(*ref_buffer, *decoded_frame.video_frame_buffer()->ToI420());
 }
@@ -348,17 +348,17 @@ TEST(LibaomAv1Encoder, ResolutionSwitching) {
   auto frame_reader = CreateFrameReader();
   auto enc = LibaomAv1EncoderFactory().CreateEncoder(kCbrEncoderSettings, {});
 
-  rtc::scoped_refptr<I420Buffer> in0 = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> in0 = frame_reader->PullFrame();
   EncOut tu0;
   enc->Encode(in0, {.presentation_timestamp = Timestamp::Millis(0)},
               ToVec({Fb().Rate(kCbr).Res(320, 180).Upd(0).Key().Out(tu0)}));
 
-  rtc::scoped_refptr<I420Buffer> in1 = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> in1 = frame_reader->PullFrame();
   EncOut tu1;
   enc->Encode(in1, {.presentation_timestamp = Timestamp::Millis(100)},
               ToVec({Fb().Rate(kCbr).Res(640, 360).Ref({0}).Out(tu1)}));
 
-  rtc::scoped_refptr<I420Buffer> in2 = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> in2 = frame_reader->PullFrame();
   EncOut tu2;
   enc->Encode(in2, {.presentation_timestamp = Timestamp::Millis(200)},
               ToVec({Fb().Rate(kCbr).Res(160, 90).Ref({0}).Out(tu2)}));
@@ -383,12 +383,12 @@ TEST(LibaomAv1Encoder, InputResolutionSwitching) {
   auto frame_reader = CreateFrameReader();
   auto enc = LibaomAv1EncoderFactory().CreateEncoder(kCbrEncoderSettings, {});
 
-  rtc::scoped_refptr<I420Buffer> in0 = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> in0 = frame_reader->PullFrame();
   EncOut tu0;
   enc->Encode(in0, {.presentation_timestamp = Timestamp::Millis(0)},
               ToVec({Fb().Rate(kCbr).Res(160, 90).Upd(0).Key().Out(tu0)}));
 
-  rtc::scoped_refptr<I420Buffer> in1 = frame_reader->PullFrame(
+  scoped_refptr<I420Buffer> in1 = frame_reader->PullFrame(
       /*frame_num=*/nullptr,
       /*resolution=*/{320, 180},
       /*framerate_scale=*/{1, 1});
@@ -396,7 +396,7 @@ TEST(LibaomAv1Encoder, InputResolutionSwitching) {
   enc->Encode(in1, {.presentation_timestamp = Timestamp::Millis(100)},
               ToVec({Fb().Rate(kCbr).Res(160, 90).Ref({0}).Out(tu1)}));
 
-  rtc::scoped_refptr<I420Buffer> in2 = frame_reader->PullFrame(
+  scoped_refptr<I420Buffer> in2 = frame_reader->PullFrame(
       /*frame_num=*/nullptr,
       /*resolution=*/{160, 90},
       /*framerate_scale=*/{1, 1});
@@ -446,7 +446,7 @@ TEST(LibaomAv1Encoder, TempoSpatial) {
               ToVec({Fb().Rate(k20Fps).Res(640, 360).S(2).Ref({2}).Upd(2).Out(
                   tu1_s2)}));
 
-  rtc::scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
   EncOut tu2_s0;
   EncOut tu2_s1;
   EncOut tu2_s2;
@@ -491,7 +491,7 @@ TEST(DISABLED_LibaomAv1Encoder, InvertedTempoSpatial) {
 
   EncOut tu2_s0;
   EncOut tu2_s1;
-  rtc::scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
   enc->Encode(
       frame, {.presentation_timestamp = Timestamp::Millis(200)},
       ToVec(
@@ -531,7 +531,7 @@ TEST(LibaomAv1Encoder, SkipMidLayer) {
   EncOut tu2_s0;
   EncOut tu2_s1;
   EncOut tu2_s2;
-  rtc::scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
+  scoped_refptr<I420Buffer> frame = frame_reader->PullFrame();
   enc->Encode(
       frame, {.presentation_timestamp = Timestamp::Millis(200)},
       ToVec(

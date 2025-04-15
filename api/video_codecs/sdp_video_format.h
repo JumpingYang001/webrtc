@@ -55,8 +55,7 @@ struct RTC_EXPORT SdpVideoFormat {
   // specific parameters. Please note that two SdpVideoFormats can represent the
   // same codec even though not all parameters are the same.
   bool IsSameCodec(const SdpVideoFormat& other) const;
-  bool IsCodecInList(
-      rtc::ArrayView<const webrtc::SdpVideoFormat> formats) const;
+  bool IsCodecInList(ArrayView<const webrtc::SdpVideoFormat> formats) const;
 
   std::string ToString() const;
 
@@ -93,7 +92,7 @@ struct RTC_EXPORT SdpVideoFormat {
 // anymore. Until we stop misusing SdpVideoFormats provide this convenience
 // function to perform fuzzy matching.
 std::optional<SdpVideoFormat> FuzzyMatchSdpVideoFormat(
-    rtc::ArrayView<const SdpVideoFormat> supported_formats,
+    ArrayView<const SdpVideoFormat> supported_formats,
     const SdpVideoFormat& format);
 
 }  // namespace webrtc

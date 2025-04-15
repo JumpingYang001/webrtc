@@ -66,13 +66,13 @@ struct PeerConnectionFactoryComponents {
 
   std::unique_ptr<VideoEncoderFactory> video_encoder_factory;
   std::unique_ptr<VideoDecoderFactory> video_decoder_factory;
-  rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory;
-  rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory;
+  scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory;
+  scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory;
 
   std::unique_ptr<FieldTrialsView> trials;
 
-  rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing;
-  rtc::scoped_refptr<webrtc::AudioMixer> audio_mixer;
+  scoped_refptr<webrtc::AudioProcessing> audio_processing;
+  scoped_refptr<webrtc::AudioMixer> audio_mixer;
 };
 
 // Contains most parts from PeerConnectionDependencies. Also all fields are
@@ -125,7 +125,7 @@ struct Params {
   //
   // IMPORTANT: if you use WebRTC Network Emulation
   // (api/test/network_emulation_manager.h) and set this field, remember to set
-  // cricket::PORTALLOCATOR_DISABLE_TCP.
+  // webrtc::PORTALLOCATOR_DISABLE_TCP.
   uint32_t port_allocator_flags = PORTALLOCATOR_DISABLE_TCP;
   // If `rtc_event_log_path` is set, an RTCEventLog will be saved in that
   // location and it will be available for further analysis.

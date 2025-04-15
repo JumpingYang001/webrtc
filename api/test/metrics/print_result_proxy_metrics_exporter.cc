@@ -78,8 +78,7 @@ bool NameEndsWithConnected(const std::string& name) {
 
 }  // namespace
 
-bool PrintResultProxyMetricsExporter::Export(
-    rtc::ArrayView<const Metric> metrics) {
+bool PrintResultProxyMetricsExporter::Export(ArrayView<const Metric> metrics) {
   static const std::unordered_set<std::string> per_call_metrics{
       "actual_encode_bitrate",
       "encode_frame_rate",

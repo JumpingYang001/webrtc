@@ -59,7 +59,7 @@ class RTC_EXPORT EncodedImageBuffer : public EncodedImageBufferInterface {
   static scoped_refptr<EncodedImageBuffer> Create(size_t size);
   static scoped_refptr<EncodedImageBuffer> Create(const uint8_t* data,
                                                   size_t size);
-  static scoped_refptr<EncodedImageBuffer> Create(rtc::Buffer buffer);
+  static scoped_refptr<EncodedImageBuffer> Create(Buffer buffer);
 
   const uint8_t* data() const override;
   uint8_t* data() override;
@@ -69,9 +69,9 @@ class RTC_EXPORT EncodedImageBuffer : public EncodedImageBufferInterface {
  protected:
   explicit EncodedImageBuffer(size_t size);
   EncodedImageBuffer(const uint8_t* data, size_t size);
-  explicit EncodedImageBuffer(rtc::Buffer buffer);
+  explicit EncodedImageBuffer(Buffer buffer);
 
-  rtc::Buffer buffer_;
+  Buffer buffer_;
 };
 
 // TODO(bug.webrtc.org/9378): This is a legacy api class, which is slowly being
@@ -179,8 +179,7 @@ class RTC_EXPORT EncodedImage {
     size_ = new_size;
   }
 
-  void SetEncodedData(
-      rtc::scoped_refptr<EncodedImageBufferInterface> encoded_data) {
+  void SetEncodedData(scoped_refptr<EncodedImageBufferInterface> encoded_data) {
     encoded_data_ = encoded_data;
     size_ = encoded_data->size();
   }
@@ -190,7 +189,7 @@ class RTC_EXPORT EncodedImage {
     size_ = 0;
   }
 
-  rtc::scoped_refptr<EncodedImageBufferInterface> GetEncodedData() const {
+  scoped_refptr<EncodedImageBufferInterface> GetEncodedData() const {
     return encoded_data_;
   }
 
@@ -270,7 +269,7 @@ class RTC_EXPORT EncodedImage {
   // limits until the application indicates a change again.
   std::optional<VideoPlayoutDelay> playout_delay_;
 
-  rtc::scoped_refptr<EncodedImageBufferInterface> encoded_data_;
+  scoped_refptr<EncodedImageBufferInterface> encoded_data_;
   size_t size_ = 0;  // Size of encoded frame data.
   uint32_t timestamp_rtp_ = 0;
   std::optional<int> simulcast_index_;

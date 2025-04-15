@@ -57,7 +57,7 @@ struct RTC_EXPORT SdpAudioFormat {
 
   template <typename Sink>
   friend void AbslStringify(Sink& sink, const SdpAudioFormat& saf) {
-    rtc::StringBuilder sb("{");
+    StringBuilder sb("{");
     bool first = true;
     for (const auto& [key, value] : saf.parameters) {
       if (!first) {

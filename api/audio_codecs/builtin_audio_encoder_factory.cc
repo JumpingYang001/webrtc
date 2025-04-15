@@ -59,7 +59,7 @@ struct NotAdvertised {
 
 }  // namespace
 
-rtc::scoped_refptr<AudioEncoderFactory> CreateBuiltinAudioEncoderFactory() {
+scoped_refptr<AudioEncoderFactory> CreateBuiltinAudioEncoderFactory() {
   return CreateAudioEncoderFactory<
 
 #if WEBRTC_USE_BUILTIN_OPUS

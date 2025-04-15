@@ -70,39 +70,38 @@ I444Buffer::I444Buffer(int width,
 I444Buffer::~I444Buffer() {}
 
 // static
-rtc::scoped_refptr<I444Buffer> I444Buffer::Create(int width, int height) {
-  return rtc::make_ref_counted<I444Buffer>(width, height);
+scoped_refptr<I444Buffer> I444Buffer::Create(int width, int height) {
+  return make_ref_counted<I444Buffer>(width, height);
 }
 
 // static
-rtc::scoped_refptr<I444Buffer> I444Buffer::Create(int width,
-                                                  int height,
-                                                  int stride_y,
-                                                  int stride_u,
-                                                  int stride_v) {
-  return rtc::make_ref_counted<I444Buffer>(width, height, stride_y, stride_u,
-                                           stride_v);
+scoped_refptr<I444Buffer> I444Buffer::Create(int width,
+                                             int height,
+                                             int stride_y,
+                                             int stride_u,
+                                             int stride_v) {
+  return make_ref_counted<I444Buffer>(width, height, stride_y, stride_u,
+                                      stride_v);
 }
 
 // static
-rtc::scoped_refptr<I444Buffer> I444Buffer::Copy(
-    const I444BufferInterface& source) {
+scoped_refptr<I444Buffer> I444Buffer::Copy(const I444BufferInterface& source) {
   return Copy(source.width(), source.height(), source.DataY(), source.StrideY(),
               source.DataU(), source.StrideU(), source.DataV(),
               source.StrideV());
 }
 
 // static
-rtc::scoped_refptr<I444Buffer> I444Buffer::Copy(int width,
-                                                int height,
-                                                const uint8_t* data_y,
-                                                int stride_y,
-                                                const uint8_t* data_u,
-                                                int stride_u,
-                                                const uint8_t* data_v,
-                                                int stride_v) {
+scoped_refptr<I444Buffer> I444Buffer::Copy(int width,
+                                           int height,
+                                           const uint8_t* data_y,
+                                           int stride_y,
+                                           const uint8_t* data_u,
+                                           int stride_u,
+                                           const uint8_t* data_v,
+                                           int stride_v) {
   // Note: May use different strides than the input data.
-  rtc::scoped_refptr<I444Buffer> buffer = Create(width, height);
+  scoped_refptr<I444Buffer> buffer = Create(width, height);
   RTC_CHECK_EQ(0, libyuv::I444Copy(data_y, stride_y, data_u, stride_u, data_v,
                                    stride_v, buffer->MutableDataY(),
                                    buffer->StrideY(), buffer->MutableDataU(),
@@ -112,9 +111,8 @@ rtc::scoped_refptr<I444Buffer> I444Buffer::Copy(int width,
 }
 
 // static
-rtc::scoped_refptr<I444Buffer> I444Buffer::Rotate(
-    const I444BufferInterface& src,
-    VideoRotation rotation) {
+scoped_refptr<I444Buffer> I444Buffer::Rotate(const I444BufferInterface& src,
+                                             VideoRotation rotation) {
   RTC_CHECK(src.DataY());
   RTC_CHECK(src.DataU());
   RTC_CHECK(src.DataV());
@@ -126,7 +124,7 @@ rtc::scoped_refptr<I444Buffer> I444Buffer::Rotate(
     std::swap(rotated_width, rotated_height);
   }
 
-  rtc::scoped_refptr<webrtc::I444Buffer> buffer =
+  scoped_refptr<webrtc::I444Buffer> buffer =
       I444Buffer::Create(rotated_width, rotated_height);
 
   RTC_CHECK_EQ(0,
@@ -140,9 +138,8 @@ rtc::scoped_refptr<I444Buffer> I444Buffer::Rotate(
   return buffer;
 }
 
-rtc::scoped_refptr<I420BufferInterface> I444Buffer::ToI420() {
-  rtc::scoped_refptr<I420Buffer> i420_buffer =
-      I420Buffer::Create(width(), height());
+scoped_refptr<I420BufferInterface> I444Buffer::ToI420() {
+  scoped_refptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
   libyuv::I444ToI420(DataY(), StrideY(), DataU(), StrideU(), DataV(), StrideV(),
                      i420_buffer->MutableDataY(), i420_buffer->StrideY(),
                      i420_buffer->MutableDataU(), i420_buffer->StrideU(),

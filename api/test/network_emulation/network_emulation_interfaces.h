@@ -33,7 +33,7 @@ struct EmulatedIpPacket {
  public:
   EmulatedIpPacket(const SocketAddress& from,
                    const SocketAddress& to,
-                   rtc::CopyOnWriteBuffer data,
+                   CopyOnWriteBuffer data,
                    Timestamp arrival_time,
                    uint16_t application_overhead = 0,
                    EcnMarking ecn = EcnMarking::kNotEct);
@@ -52,7 +52,7 @@ struct EmulatedIpPacket {
   SocketAddress from;
   SocketAddress to;
   // Holds the UDP payload.
-  rtc::CopyOnWriteBuffer data;
+  CopyOnWriteBuffer data;
   uint16_t headers_size;
   Timestamp arrival_time;
   EcnMarking ecn;
@@ -260,7 +260,7 @@ class EmulatedEndpoint : public EmulatedNetworkReceiverInterface {
   // on destination endpoint.
   virtual void SendPacket(const SocketAddress& from,
                           const SocketAddress& to,
-                          rtc::CopyOnWriteBuffer packet_data,
+                          CopyOnWriteBuffer packet_data,
                           uint16_t application_overhead = 0,
                           EcnMarking ecn = EcnMarking::kNotEct) = 0;
 

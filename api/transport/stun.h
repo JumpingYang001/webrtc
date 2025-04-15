@@ -255,7 +255,7 @@ class StunMessage {
 
   // Verify that a buffer has stun magic cookie and one of the specified
   // methods. Note that it does not check for the existance of FINGERPRINT.
-  static bool IsStunMethod(rtc::ArrayView<int> methods,
+  static bool IsStunMethod(ArrayView<int> methods,
                            const char* data,
                            size_t size);
 
@@ -522,8 +522,8 @@ class StunByteStringAttribute : public StunAttribute {
   }
   // Returns the attribute value as an uint8_t view.
   // Use this function for values that are not text.
-  rtc::ArrayView<uint8_t> array_view() const {
-    return rtc::MakeArrayView(bytes_, length());
+  ArrayView<uint8_t> array_view() const {
+    return MakeArrayView(bytes_, length());
   }
 
   [[deprecated]] std::string GetString() const {

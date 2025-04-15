@@ -35,7 +35,7 @@ class IceTransportInterface : public RefCountInterface {
   // The returned object can only be safely used on the signalling thread.
   // TODO(crbug.com/907849): Add API calls for the functions that have to
   // be exposed to clients, and stop allowing access to the
-  // cricket::IceTransportInternal API.
+  // webrtc::IceTransportInternal API.
   virtual IceTransportInternal* internal() = 0;
 };
 
@@ -121,7 +121,7 @@ class IceTransportFactory {
   // requires the returned transport to be constructed and destroyed on the
   // network thread and an ICE transport factory that intends to work with a
   // peer connection should offer transports compatible with these assumptions.
-  virtual rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+  virtual scoped_refptr<IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       int component,
       IceTransportInit init) = 0;

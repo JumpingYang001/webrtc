@@ -65,7 +65,7 @@ class RTC_EXPORT EnvironmentFactory final {
  private:
   Environment CreateWithDefaults() &&;
 
-  scoped_refptr<const rtc::RefCountedBase> leaf_;
+  scoped_refptr<const RefCountedBase> leaf_;
 
   const FieldTrialsView* absl_nullable field_trials_ = nullptr;
   Clock* absl_nullable clock_ = nullptr;

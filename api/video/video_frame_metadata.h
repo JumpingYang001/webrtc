@@ -67,13 +67,12 @@ class RTC_EXPORT VideoFrameMetadata {
   int GetTemporalIndex() const;
   void SetTemporalIndex(int temporal_index);
 
-  rtc::ArrayView<const int64_t> GetFrameDependencies() const;
-  void SetFrameDependencies(rtc::ArrayView<const int64_t> frame_dependencies);
+  ArrayView<const int64_t> GetFrameDependencies() const;
+  void SetFrameDependencies(ArrayView<const int64_t> frame_dependencies);
 
-  rtc::ArrayView<const DecodeTargetIndication> GetDecodeTargetIndications()
-      const;
+  ArrayView<const DecodeTargetIndication> GetDecodeTargetIndications() const;
   void SetDecodeTargetIndications(
-      rtc::ArrayView<const DecodeTargetIndication> decode_target_indications);
+      ArrayView<const DecodeTargetIndication> decode_target_indications);
 
   bool GetIsLastFrameInPicture() const;
   void SetIsLastFrameInPicture(bool is_last_frame_in_picture);

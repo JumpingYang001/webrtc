@@ -43,7 +43,7 @@ bool VideoBitrateAllocation::SetBitrate(size_t spatial_index,
     return false;
 
   layer_bitrate = bitrate_bps;
-  sum_ = rtc::dchecked_cast<uint32_t>(new_bitrate_sum_bps);
+  sum_ = dchecked_cast<uint32_t>(new_bitrate_sum_bps);
   return true;
 }
 
