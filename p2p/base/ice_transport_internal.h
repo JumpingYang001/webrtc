@@ -283,6 +283,18 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
   virtual void SetRemoteIceCredentials(absl::string_view ice_ufrag,
                                        absl::string_view ice_pwd);
 
+  // TODO: bugs.webrtc.org/367395350 - Make virtual when all downstream
+  // overrides are gone.
+  // Returns the current local ICE parameters.
+  virtual const cricket::IceParameters* local_ice_parameters() const {
+    RTC_CHECK_NOTREACHED();
+  }
+  // Returns the latest remote ICE parameters or nullptr if there are no remote
+  // ICE parameters yet.
+  virtual const cricket::IceParameters* remote_ice_parameters() const {
+    RTC_CHECK_NOTREACHED();
+  }
+
   // The ufrag and pwd in `ice_params` must be set
   // before candidate gathering can start.
   virtual void SetIceParameters(const IceParameters& ice_params) = 0;
@@ -293,7 +305,7 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   virtual void SetIceConfig(const IceConfig& config) = 0;
   // Default implementation in order to allow downstream usage deletion.
-  // TODO: bugs.webrtc.org/367395350 - Make virutal when all downstream
+  // TODO: bugs.webrtc.org/367395350 - Make virtual when all downstream
   // overrides are gone.
   virtual const IceConfig& config() const { RTC_CHECK_NOTREACHED(); }
 

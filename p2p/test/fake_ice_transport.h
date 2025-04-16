@@ -195,17 +195,13 @@ class FakeIceTransport : public IceTransportInternal {
     RTC_DCHECK_RUN_ON(network_thread_);
     return remote_ice_mode_;
   }
-  const std::string& ice_ufrag() const { return ice_parameters_.ufrag; }
-  const std::string& ice_pwd() const { return ice_parameters_.pwd; }
-  const std::string& remote_ice_ufrag() const {
-    return remote_ice_parameters_.ufrag;
+  const IceParameters* local_ice_parameters() const override {
+    RTC_DCHECK_RUN_ON(network_thread_);
+    return &ice_parameters_;
   }
-  const std::string& remote_ice_pwd() const {
-    return remote_ice_parameters_.pwd;
-  }
-  const IceParameters& ice_parameters() const { return ice_parameters_; }
-  const IceParameters& remote_ice_parameters() const {
-    return remote_ice_parameters_;
+  const IceParameters* remote_ice_parameters() const override {
+    RTC_DCHECK_RUN_ON(network_thread_);
+    return &remote_ice_parameters_;
   }
 
   IceTransportStateInternal GetState() const override {
