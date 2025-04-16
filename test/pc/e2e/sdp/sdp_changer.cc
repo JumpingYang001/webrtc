@@ -53,7 +53,7 @@ std::string CodecRequiredParamsToString(
 }
 
 std::string SupportedCodecsToString(
-    rtc::ArrayView<const RtpCodecCapability> supported_codecs) {
+    ArrayView<const RtpCodecCapability> supported_codecs) {
   StringBuilder out;
   for (const auto& codec : supported_codecs) {
     out << codec.name;
@@ -72,11 +72,11 @@ std::string SupportedCodecsToString(
 }  // namespace
 
 std::vector<RtpCodecCapability> FilterVideoCodecCapabilities(
-    rtc::ArrayView<const VideoCodecConfig> video_codecs,
+    ArrayView<const VideoCodecConfig> video_codecs,
     bool use_rtx,
     bool use_ulpfec,
     bool use_flexfec,
-    rtc::ArrayView<const RtpCodecCapability> supported_codecs) {
+    ArrayView<const RtpCodecCapability> supported_codecs) {
   std::vector<RtpCodecCapability> output_codecs;
   // Find requested codecs among supported and add them to output in the order
   // they were requested.
@@ -301,7 +301,7 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp8Offer(
   std::vector<TransportInfo> transport_infos = desc->transport_infos();
   transport_infos.erase(std::remove_if(
       transport_infos.begin(), transport_infos.end(),
-      [this](const cricket::TransportInfo& ti) {
+      [this](const TransportInfo& ti) {
         // Remove transport infos that correspond to simulcast video sections.
         return context_.simulcast_infos_by_mid.find(ti.content_name) !=
                context_.simulcast_infos_by_mid.end();
@@ -538,7 +538,7 @@ LocalAndRemoteSdp SignalingInterceptor::PatchVp9Answer(
 
 std::vector<std::unique_ptr<IceCandidateInterface>>
 SignalingInterceptor::PatchOffererIceCandidates(
-    rtc::ArrayView<const IceCandidateInterface* const> candidates) {
+    ArrayView<const IceCandidateInterface* const> candidates) {
   std::vector<std::unique_ptr<IceCandidateInterface>> out;
   for (auto* candidate : candidates) {
     auto simulcast_info_it =
@@ -562,7 +562,7 @@ SignalingInterceptor::PatchOffererIceCandidates(
 
 std::vector<std::unique_ptr<IceCandidateInterface>>
 SignalingInterceptor::PatchAnswererIceCandidates(
-    rtc::ArrayView<const IceCandidateInterface* const> candidates) {
+    ArrayView<const IceCandidateInterface* const> candidates) {
   std::vector<std::unique_ptr<IceCandidateInterface>> out;
   for (auto* candidate : candidates) {
     auto simulcast_info_it =

@@ -62,7 +62,7 @@ void VideoFrameMatcher::OnDecodedFrame(const VideoFrame& frame,
                                        int layer_id,
                                        Timestamp render_time,
                                        Timestamp at_time) {
-  rtc::scoped_refptr<DecodedFrame> decoded(new DecodedFrame{});
+  scoped_refptr<DecodedFrame> decoded(new DecodedFrame{});
   decoded->decoded_time = at_time;
   decoded->render_time = render_time;
   decoded->frame = frame.video_frame_buffer();

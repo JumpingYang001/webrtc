@@ -64,7 +64,7 @@ void VideoQualityMetricsReporter::Start(
 
 void VideoQualityMetricsReporter::OnStatsReports(
     absl::string_view pc_label,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   RTC_CHECK(start_time_)
       << "Please invoke Start(...) method before calling OnStatsReports(...)";
 

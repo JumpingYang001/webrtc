@@ -54,7 +54,7 @@ struct TrafficCounterFixture {
   TaskQueueForTest task_queue_;
   EmulatedEndpointImpl endpoint{EmulatedEndpointImpl::Options{
                                     /*id=*/1,
-                                    rtc::IPAddress(kTestIpAddress),
+                                    IPAddress(kTestIpAddress),
                                     EmulatedEndpointConfig(),
                                     EmulatedNetworkStatsGatheringMode::kDefault,
                                 },

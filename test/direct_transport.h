@@ -48,8 +48,8 @@ class DirectTransport : public Transport {
                   std::unique_ptr<SimulatedPacketReceiverInterface> pipe,
                   Call* send_call,
                   const std::map<uint8_t, MediaType>& payload_type_map,
-                  rtc::ArrayView<const RtpExtension> audio_extensions,
-                  rtc::ArrayView<const RtpExtension> video_extensions);
+                  ArrayView<const RtpExtension> audio_extensions,
+                  ArrayView<const RtpExtension> video_extensions);
 
   ~DirectTransport() override;
 
@@ -61,9 +61,9 @@ class DirectTransport : public Transport {
   using Transport::SendRtcp;
   using Transport::SendRtp;
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> data,
+  bool SendRtp(ArrayView<const uint8_t> data,
                const PacketOptions& options) override;
-  bool SendRtcp(rtc::ArrayView<const uint8_t> data) override;
+  bool SendRtcp(ArrayView<const uint8_t> data) override;
 
   int GetAverageDelayMs();
 

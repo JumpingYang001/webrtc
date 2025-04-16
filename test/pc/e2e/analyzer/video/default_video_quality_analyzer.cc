@@ -155,10 +155,9 @@ DefaultVideoQualityAnalyzer::~DefaultVideoQualityAnalyzer() {
   Stop();
 }
 
-void DefaultVideoQualityAnalyzer::Start(
-    std::string test_case_name,
-    rtc::ArrayView<const std::string> peer_names,
-    int max_threads_count) {
+void DefaultVideoQualityAnalyzer::Start(std::string test_case_name,
+                                        ArrayView<const std::string> peer_names,
+                                        int max_threads_count) {
   test_label_ = std::move(test_case_name);
   frames_comparator_.Start(max_threads_count);
   {

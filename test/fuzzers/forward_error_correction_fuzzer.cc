@@ -39,7 +39,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
       ForwardErrorCorrection::CreateFlexfec(kFecSsrc, kMediaSsrc);
 
   // Entropy from fuzzer.
-  rtc::ByteBufferReader fuzz_buffer(rtc::MakeArrayView(data, size));
+  webrtc::ByteBufferReader fuzz_buffer(webrtc::MakeArrayView(data, size));
 
   // Initial stream state.
   uint16_t media_seqnum;
@@ -59,8 +59,9 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
        ++i) {
     ForwardErrorCorrection::RecoveredPacket* recovered_packet =
         new ForwardErrorCorrection::RecoveredPacket();
-    recovered_packet->pkt = rtc::scoped_refptr<ForwardErrorCorrection::Packet>(
-        new ForwardErrorCorrection::Packet());
+    recovered_packet->pkt =
+        webrtc::scoped_refptr<ForwardErrorCorrection::Packet>(
+            new ForwardErrorCorrection::Packet());
     recovered_packet->pkt->data.SetSize(kPacketSize);
     memset(recovered_packet->pkt->data.MutableData(), 0, kPacketSize);
     recovered_packet->ssrc = kMediaSsrc;
@@ -70,7 +71,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
 
   // New packets received from the network.
   ForwardErrorCorrection::ReceivedPacket received_packet;
-  received_packet.pkt = rtc::scoped_refptr<ForwardErrorCorrection::Packet>(
+  received_packet.pkt = webrtc::scoped_refptr<ForwardErrorCorrection::Packet>(
       new ForwardErrorCorrection::Packet());
   received_packet.pkt->data.SetSize(kPacketSize);
   received_packet.pkt->data.EnsureCapacity(IP_PACKET_SIZE);
@@ -81,7 +82,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   uint8_t packet_loss;
   while (true) {
     if (!fuzz_buffer.ReadBytes(
-            rtc::ArrayView<uint8_t>(packet_buffer, kPacketSize))) {
+            webrtc::ArrayView<uint8_t>(packet_buffer, kPacketSize))) {
       return;
     }
     if (!fuzz_buffer.ReadUInt8(&reordering))

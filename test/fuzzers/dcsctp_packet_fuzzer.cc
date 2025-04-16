@@ -20,7 +20,7 @@ using dcsctp::SctpPacket;
 
 void FuzzOneInput(const uint8_t* data, size_t size) {
   std::optional<SctpPacket> c =
-      SctpPacket::Parse(rtc::ArrayView<const uint8_t>(data, size),
+      SctpPacket::Parse(webrtc::ArrayView<const uint8_t>(data, size),
                         {.disable_checksum_verification = true});
 
   if (!c.has_value()) {

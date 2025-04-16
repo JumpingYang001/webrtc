@@ -201,7 +201,7 @@ QualityAnalyzingVideoDecoder::DecoderCallback::IrrelevantSimulcastStreamDecoded(
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer>
+scoped_refptr<webrtc::VideoFrameBuffer>
 QualityAnalyzingVideoDecoder::DecoderCallback::GetDummyFrameBuffer() {
   if (!dummy_frame_buffer_) {
     dummy_frame_buffer_ = CreateDummyFrameBuffer();

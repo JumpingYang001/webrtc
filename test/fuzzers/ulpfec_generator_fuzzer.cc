@@ -52,7 +52,8 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
     size_t payload_size = data[i++] % 10;
     if (i + payload_size + rtp_header_length + 2 > size)
       break;
-    rtc::CopyOnWriteBuffer packet(&data[i], payload_size + rtp_header_length);
+    webrtc::CopyOnWriteBuffer packet(&data[i],
+                                     payload_size + rtp_header_length);
     packet.EnsureCapacity(IP_PACKET_SIZE);
     // Write a valid parsable header (version = 2, no padding, no extensions,
     // no CSRCs).

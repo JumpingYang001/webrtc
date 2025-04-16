@@ -257,7 +257,7 @@ void EmulatedNetworkStatsBuilder::AddEmulatedNetworkStats(
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
   // Append IPs from other endpoints stats to the builder.
-  for (const rtc::IPAddress& addr : stats.local_addresses) {
+  for (const IPAddress& addr : stats.local_addresses) {
     local_addresses_.push_back(addr);
   }
 
@@ -631,7 +631,7 @@ uint64_t EmulatedEndpointImpl::GetId() const {
 
 void EmulatedEndpointImpl::SendPacket(const SocketAddress& from,
                                       const SocketAddress& to,
-                                      rtc::CopyOnWriteBuffer packet_data,
+                                      CopyOnWriteBuffer packet_data,
                                       uint16_t application_overhead,
                                       EcnMarking ecn) {
   if (!options_.allow_send_packet_with_different_source_ip) {

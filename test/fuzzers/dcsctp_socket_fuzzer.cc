@@ -23,7 +23,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   options.disable_checksum_verification = true;
   dcsctp::DcSctpSocket socket("A", cb, nullptr, options);
 
-  dcsctp::dcsctp_fuzzers::FuzzSocket(socket, cb,
-                                     rtc::ArrayView<const uint8_t>(data, size));
+  dcsctp::dcsctp_fuzzers::FuzzSocket(
+      socket, cb, webrtc::ArrayView<const uint8_t>(data, size));
 }
 }  // namespace webrtc

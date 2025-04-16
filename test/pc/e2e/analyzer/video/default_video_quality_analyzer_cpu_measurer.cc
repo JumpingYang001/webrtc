@@ -18,13 +18,13 @@ namespace webrtc {
 void DefaultVideoQualityAnalyzerCpuMeasurer::StartMeasuringCpuProcessTime() {
   MutexLock lock(&mutex_);
   cpu_time_ -= GetProcessCpuTimeNanos();
-  wallclock_time_ -= rtc::SystemTimeNanos();
+  wallclock_time_ -= SystemTimeNanos();
 }
 
 void DefaultVideoQualityAnalyzerCpuMeasurer::StopMeasuringCpuProcessTime() {
   MutexLock lock(&mutex_);
   cpu_time_ += GetProcessCpuTimeNanos();
-  wallclock_time_ += rtc::SystemTimeNanos();
+  wallclock_time_ += SystemTimeNanos();
 }
 
 void DefaultVideoQualityAnalyzerCpuMeasurer::StartExcludingCpuThreadTime() {

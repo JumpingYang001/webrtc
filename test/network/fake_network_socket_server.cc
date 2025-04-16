@@ -58,7 +58,7 @@ class FakeNetworkSocket : public Socket,
   // Will be invoked by EmulatedEndpoint to deliver packets into this socket.
   void OnPacketReceived(EmulatedIpPacket packet) override;
 
-  // rtc::Socket methods:
+  // webrtc::Socket methods:
   SocketAddress GetLocalAddress() const override;
   SocketAddress GetRemoteAddress() const override;
   int Bind(const SocketAddress& addr) override;
@@ -90,7 +90,7 @@ class FakeNetworkSocket : public Socket,
   std::map<Option, int> options_map_ RTC_GUARDED_BY(&thread_);
 
   std::optional<EmulatedIpPacket> pending_ RTC_GUARDED_BY(thread_);
-  rtc::scoped_refptr<PendingTaskSafetyFlag> alive_;
+  scoped_refptr<PendingTaskSafetyFlag> alive_;
 };
 
 FakeNetworkSocket::FakeNetworkSocket(FakeNetworkSocketServer* socket_server,
@@ -188,7 +188,7 @@ int FakeNetworkSocket::SendTo(const void* pv,
     error_ = ENETDOWN;
     return -1;
   }
-  rtc::CopyOnWriteBuffer packet(static_cast<const uint8_t*>(pv), cb);
+  CopyOnWriteBuffer packet(static_cast<const uint8_t*>(pv), cb);
   EcnMarking ecn = EcnMarking::kNotEct;
   auto it = options_map_.find(OPT_SEND_ECN);
   if (it != options_map_.end() && it->second == 1) {

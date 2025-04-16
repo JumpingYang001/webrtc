@@ -49,7 +49,7 @@ void CrossMediaMetricsReporter::Start(
 
 void CrossMediaMetricsReporter::OnStatsReports(
     absl::string_view pc_label,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   auto inbound_stats = report->GetStatsOfType<RTCInboundRtpStreamStats>();
   std::map<std::string, std::vector<const RTCInboundRtpStreamStats*>>
       sync_group_stats;

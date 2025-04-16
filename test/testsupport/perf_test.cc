@@ -46,7 +46,7 @@ std::string UnitWithDirection(
 
 std::vector<SamplesStatsCounter::StatsSample> GetSortedSamples(
     const SamplesStatsCounter& counter) {
-  rtc::ArrayView<const SamplesStatsCounter::StatsSample> view =
+  ArrayView<const SamplesStatsCounter::StatsSample> view =
       counter.GetTimedSamples();
   std::vector<SamplesStatsCounter::StatsSample> out(view.begin(), view.end());
   std::stable_sort(out.begin(), out.end(),
@@ -178,7 +178,7 @@ class ResultsLinePrinter {
 
   void PrintResultList(absl::string_view graph_name,
                        absl::string_view trace_name,
-                       const rtc::ArrayView<const double> values,
+                       const ArrayView<const double> values,
                        absl::string_view units,
                        const bool important,
                        webrtc::test::ImproveDirection improve_direction) {
@@ -335,7 +335,7 @@ void PrintResultMeanAndError(absl::string_view measurement,
 void PrintResultList(absl::string_view measurement,
                      absl::string_view modifier,
                      absl::string_view trace,
-                     const rtc::ArrayView<const double> values,
+                     const ArrayView<const double> values,
                      absl::string_view units,
                      bool important,
                      ImproveDirection improve_direction) {

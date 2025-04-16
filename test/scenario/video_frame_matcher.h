@@ -48,24 +48,24 @@ class VideoFrameMatcher {
     int id;
     Timestamp decoded_time = Timestamp::PlusInfinity();
     Timestamp render_time = Timestamp::PlusInfinity();
-    rtc::scoped_refptr<VideoFrameBuffer> frame;
-    rtc::scoped_refptr<VideoFrameBuffer> thumb;
+    scoped_refptr<VideoFrameBuffer> frame;
+    scoped_refptr<VideoFrameBuffer> thumb;
     int repeat_count = 0;
   };
-  using DecodedFrame = rtc::FinalRefCountedObject<DecodedFrameBase>;
+  using DecodedFrame = FinalRefCountedObject<DecodedFrameBase>;
   struct CapturedFrame {
     int id;
     Timestamp capture_time = Timestamp::PlusInfinity();
-    rtc::scoped_refptr<VideoFrameBuffer> frame;
-    rtc::scoped_refptr<VideoFrameBuffer> thumb;
+    scoped_refptr<VideoFrameBuffer> frame;
+    scoped_refptr<VideoFrameBuffer> thumb;
     double best_score = INFINITY;
-    rtc::scoped_refptr<DecodedFrame> best_decode;
+    scoped_refptr<DecodedFrame> best_decode;
     bool matched = false;
   };
   struct VideoLayer {
     int layer_id;
     std::deque<CapturedFrame> captured_frames;
-    rtc::scoped_refptr<DecodedFrame> last_decode;
+    scoped_refptr<DecodedFrame> last_decode;
     int next_decoded_id = 1;
   };
   void HandleMatch(CapturedFrame captured, int layer_id);

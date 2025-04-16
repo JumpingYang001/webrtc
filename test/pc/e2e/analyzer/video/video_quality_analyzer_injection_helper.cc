@@ -148,7 +148,7 @@ VideoQualityAnalyzerInjectionHelper::CreateVideoSink(
 
 void VideoQualityAnalyzerInjectionHelper::Start(
     std::string test_case_name,
-    rtc::ArrayView<const std::string> peer_names,
+    ArrayView<const std::string> peer_names,
     int max_threads_count) {
   analyzer_->Start(std::move(test_case_name), peer_names, max_threads_count);
   extractor_->Start(peer_names.size());
@@ -168,7 +168,7 @@ void VideoQualityAnalyzerInjectionHelper::UnregisterParticipantInCall(
 
 void VideoQualityAnalyzerInjectionHelper::OnStatsReports(
     absl::string_view pc_label,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   analyzer_->OnStatsReports(pc_label, report);
 }
 

@@ -116,14 +116,13 @@ class FixturePeerConnectionObserver : public MockPeerConnectionObserver {
   // of reconnect this callback can be called again, so it should be tolerant
   // to such behavior.
   FixturePeerConnectionObserver(
-      std::function<void(rtc::scoped_refptr<RtpTransceiverInterface>)>
+      std::function<void(webrtc::scoped_refptr<RtpTransceiverInterface>)>
           on_track_callback,
       std::function<void()> on_connected_callback)
       : on_track_callback_(std::move(on_track_callback)),
         on_connected_callback_(std::move(on_connected_callback)) {}
 
-  void OnTrack(
-      rtc::scoped_refptr<RtpTransceiverInterface> transceiver) override {
+  void OnTrack(scoped_refptr<RtpTransceiverInterface> transceiver) override {
     MockPeerConnectionObserver::OnTrack(transceiver);
     on_track_callback_(transceiver);
   }
@@ -137,7 +136,7 @@ class FixturePeerConnectionObserver : public MockPeerConnectionObserver {
   }
 
  private:
-  std::function<void(rtc::scoped_refptr<RtpTransceiverInterface>)>
+  std::function<void(webrtc::scoped_refptr<RtpTransceiverInterface>)>
       on_track_callback_;
   std::function<void()> on_connected_callback_;
 };
@@ -313,7 +312,7 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
       std::move(alice_configurer),
       std::make_unique<FixturePeerConnectionObserver>(
           [this, alice_name, alice_subscription, bob_video_configs](
-              rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+              scoped_refptr<RtpTransceiverInterface> transceiver) {
             OnTrackCallback(alice_name, alice_subscription, transceiver,
                             bob_video_configs);
           },
@@ -323,7 +322,7 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
       std::move(bob_configurer),
       std::make_unique<FixturePeerConnectionObserver>(
           [this, bob_name, bob_subscription, alice_video_configs](
-              rtc::scoped_refptr<RtpTransceiverInterface> transceiver) {
+              scoped_refptr<RtpTransceiverInterface> transceiver) {
             OnTrackCallback(bob_name, bob_subscription, transceiver,
                             alice_video_configs);
           },
@@ -485,9 +484,9 @@ std::string PeerConnectionE2EQualityTest::GetFieldTrials(
 void PeerConnectionE2EQualityTest::OnTrackCallback(
     absl::string_view peer_name,
     VideoSubscription peer_subscription,
-    rtc::scoped_refptr<RtpTransceiverInterface> transceiver,
+    scoped_refptr<RtpTransceiverInterface> transceiver,
     std::vector<VideoConfig> remote_video_configs) {
-  const rtc::scoped_refptr<MediaStreamTrackInterface>& track =
+  const scoped_refptr<MediaStreamTrackInterface>& track =
       transceiver->receiver()->track();
   RTC_CHECK_EQ(transceiver->receiver()->stream_ids().size(), 2)
       << "Expected 2 stream ids: 1st - sync group, 2nd - unique stream label";
@@ -505,7 +504,7 @@ void PeerConnectionE2EQualityTest::OnTrackCallback(
   std::unique_ptr<VideoSinkInterface<VideoFrame>> video_sink =
       video_quality_analyzer_injection_helper_->CreateVideoSink(
           peer_name, peer_subscription, /*report_infra_stats=*/false);
-  video_track->AddOrUpdateSink(video_sink.get(), rtc::VideoSinkWants());
+  video_track->AddOrUpdateSink(video_sink.get(), VideoSinkWants());
   output_video_sinks_.push_back(std::move(video_sink));
 }
 
@@ -521,7 +520,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
     // Setup receive audio transceiver if Bob has audio to send. If we'll need
     // multiple audio streams, then we need transceiver for each Bob's audio
     // stream.
-    RTCErrorOr<rtc::scoped_refptr<RtpTransceiverInterface>> result =
+    RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
         alice_->AddTransceiver(webrtc::MediaType::AUDIO,
                                receive_only_transceiver_init);
     RTC_CHECK(result.ok());
@@ -561,7 +560,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
 
       alice_video_transceivers_non_simulcast_counter++;
     }
-    RTCErrorOr<rtc::scoped_refptr<RtpTransceiverInterface>> result =
+    RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
         alice_->AddTransceiver(webrtc::MediaType::VIDEO, transceiver_params);
     RTC_CHECK(result.ok());
 
@@ -572,7 +571,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
   // Alice.
   for (size_t i = alice_video_transceivers_non_simulcast_counter;
        i < bob_->configurable_params().video_configs.size(); ++i) {
-    RTCErrorOr<rtc::scoped_refptr<RtpTransceiverInterface>> result =
+    RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
         alice_->AddTransceiver(webrtc::MediaType::VIDEO,
                                receive_only_transceiver_init);
     RTC_CHECK(result.ok());
@@ -745,7 +744,7 @@ void PeerConnectionE2EQualityTest::ExchangeIceCandidates(
 }
 
 void PeerConnectionE2EQualityTest::StartVideo(
-    const std::vector<rtc::scoped_refptr<TestVideoCapturerVideoTrackSource>>&
+    const std::vector<scoped_refptr<TestVideoCapturerVideoTrackSource>>&
         sources) {
   for (auto& source : sources) {
     if (source->state() != MediaSourceInterface::SourceState::kLive) {

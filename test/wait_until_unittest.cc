@@ -36,7 +36,7 @@ using testing::Lt;
 using testing::MatchesRegex;
 
 TEST(WaitUntilTest, ReturnsWhenConditionIsMet) {
-  rtc::AutoThread thread;
+  AutoThread thread;
 
   int counter = 0;
   RTCErrorOr<int> result = WaitUntil([&] { return ++counter; }, Eq(3));
@@ -44,7 +44,7 @@ TEST(WaitUntilTest, ReturnsWhenConditionIsMet) {
 }
 
 TEST(WaitUntilTest, ReturnsErrorWhenTimeoutIsReached) {
-  rtc::AutoThread thread;
+  AutoThread thread;
   int counter = 0;
   RTCErrorOr<int> result =
       WaitUntil([&] { return --counter; }, Eq(1),
@@ -60,7 +60,7 @@ TEST(WaitUntilTest, ReturnsErrorWhenTimeoutIsReached) {
 }
 
 TEST(WaitUntilTest, ErrorContainsMatcherExplanation) {
-  rtc::AutoThread thread;
+  AutoThread thread;
   int counter = 0;
   auto matcher = AllOf(Gt(0), Lt(10));
   RTCErrorOr<int> result =

@@ -85,7 +85,7 @@ class TestPcapFileReader : public ::testing::Test {
     PacketsPerSsrc pps;
     test::RtpPacket packet;
     while (rtp_packet_source_->NextPacket(&packet)) {
-      rtc::ArrayView<const uint8_t> raw(packet.data, packet.length);
+      ArrayView<const uint8_t> raw(packet.data, packet.length);
       if (IsRtpPacket(raw)) {
         pps[ParseRtpSsrc(raw)]++;
       }

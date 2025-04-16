@@ -170,7 +170,7 @@ VideoFrame AnalyzingVideoSink::ScaleVideoFrame(
       << required_resolution.ToString()
       << "; actual resolution=" << frame.width() << "x" << frame.height();
 
-  rtc::scoped_refptr<I420Buffer> scaled_buffer(I420Buffer::Create(
+  scoped_refptr<I420Buffer> scaled_buffer(I420Buffer::Create(
       required_resolution.width(), required_resolution.height()));
   scaled_buffer->ScaleFrom(*frame.video_frame_buffer()->ToI420());
 

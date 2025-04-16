@@ -23,7 +23,7 @@ ColumnPrinter::ColumnPrinter(
 
 ColumnPrinter ColumnPrinter::Fixed(const char* headers, std::string fields) {
   return ColumnPrinter(
-      headers, [fields](rtc::SimpleStringBuilder& sb) { sb << fields; },
+      headers, [fields](SimpleStringBuilder& sb) { sb << fields; },
       fields.size());
 }
 

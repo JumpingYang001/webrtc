@@ -18,10 +18,9 @@ namespace webrtc {
 ExampleVideoQualityAnalyzer::ExampleVideoQualityAnalyzer() = default;
 ExampleVideoQualityAnalyzer::~ExampleVideoQualityAnalyzer() = default;
 
-void ExampleVideoQualityAnalyzer::Start(
-    std::string test_case_name,
-    rtc::ArrayView<const std::string> peer_names,
-    int max_threads_count) {}
+void ExampleVideoQualityAnalyzer::Start(std::string test_case_name,
+                                        ArrayView<const std::string> peer_names,
+                                        int max_threads_count) {}
 
 uint16_t ExampleVideoQualityAnalyzer::OnFrameCaptured(
     absl::string_view peer_name,

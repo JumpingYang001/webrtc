@@ -83,7 +83,7 @@ class SimulatedTimeControllerImpl : public TaskQueueFactory,
   void StopYield(TaskQueueBase* yielding_from);
 
  private:
-  const rtc::PlatformThreadId thread_id_;
+  const PlatformThreadId thread_id_;
   const std::unique_ptr<Thread> dummy_thread_ = Thread::Create();
   mutable Mutex time_lock_;
   Timestamp current_time_ RTC_GUARDED_BY(time_lock_);
@@ -122,8 +122,8 @@ class TokenTaskQueue : public TaskQueueBase {
 // TimeController implementation using completely simulated time. Task queues
 // and process threads created by this controller will run delayed activities
 // when AdvanceTime() is called. Overrides the global clock backing
-// rtc::TimeMillis() and rtc::TimeMicros(). Note that this is not thread safe
-// since it modifies global state.
+// webrtc::TimeMillis() and webrtc::TimeMicros(). Note that this is not thread
+// safe since it modifies global state.
 class GlobalSimulatedTimeController : public TimeController {
  public:
   explicit GlobalSimulatedTimeController(Timestamp start_time);

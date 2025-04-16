@@ -295,7 +295,7 @@ class EmulatedEndpointImpl : public EmulatedEndpoint {
 
   void SendPacket(const SocketAddress& from,
                   const SocketAddress& to,
-                  rtc::CopyOnWriteBuffer packet_data,
+                  CopyOnWriteBuffer packet_data,
                   uint16_t application_overhead = 0,
                   EcnMarking ecn = EcnMarking::kNotEct) override;
 
@@ -385,7 +385,7 @@ class EndpointsContainer {
   EmulatedEndpointImpl* LookupByLocalAddress(const IPAddress& local_ip) const;
   bool HasEndpoint(EmulatedEndpointImpl* endpoint) const;
   // Returns list of networks for enabled endpoints. Caller takes ownership of
-  // returned rtc::Network objects.
+  // returned webrtc::Network objects.
   std::vector<std::unique_ptr<Network>> GetEnabledNetworks() const;
   std::vector<EmulatedEndpoint*> GetEndpoints() const;
   EmulatedNetworkStats GetStats() const;
@@ -411,7 +411,7 @@ class FakePacketRoute : public EmulatedNetworkReceiverInterface {
   void SendPacket(size_t size, FakePacketType packet) {
     RTC_CHECK_GE(size, sizeof(int));
     sent_.emplace(next_packet_id_, packet);
-    rtc::CopyOnWriteBuffer buf(size);
+    CopyOnWriteBuffer buf(size);
     memset(buf.MutableData(), 0, size);
     reinterpret_cast<int*>(buf.MutableData())[0] = next_packet_id_++;
     route_->from->SendPacket(send_addr_, recv_addr_, buf);

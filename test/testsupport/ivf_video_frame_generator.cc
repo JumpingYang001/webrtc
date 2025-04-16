@@ -108,8 +108,7 @@ FrameGeneratorInterface::VideoFrameData IvfVideoFrameGenerator::NextFrame() {
                      << kMaxNextFrameWaitTimeout << ". Can't continue";
 
   MutexLock frame_lock(&frame_decode_lock_);
-  rtc::scoped_refptr<VideoFrameBuffer> buffer =
-      next_frame_->video_frame_buffer();
+  scoped_refptr<VideoFrameBuffer> buffer = next_frame_->video_frame_buffer();
 
   // Set original resolution to resolution of decoded frame.
   original_resolution_ = {.width = static_cast<size_t>(buffer->width()),
@@ -120,7 +119,7 @@ FrameGeneratorInterface::VideoFrameData IvfVideoFrameGenerator::NextFrame() {
        output_resolution_->height != original_resolution_.height)) {
     // Video adapter has requested a down-scale. Allocate a new buffer and
     // return scaled version.
-    rtc::scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
+    scoped_refptr<I420Buffer> scaled_buffer = I420Buffer::Create(
         output_resolution_->width, output_resolution_->height);
     scaled_buffer->ScaleFrom(*buffer->ToI420());
     buffer = scaled_buffer;

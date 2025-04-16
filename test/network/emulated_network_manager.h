@@ -41,7 +41,7 @@ class EmulatedNetworkManager : public EmulatedNetworkManagerInterface {
   Thread* absl_nonnull network_thread() override {
     return network_thread_.get();
   }
-  rtc::SocketFactory* absl_nonnull socket_factory() override {
+  SocketFactory* absl_nonnull socket_factory() override {
     return socket_server_;
   }
   absl_nonnull std::unique_ptr<NetworkManager> ReleaseNetworkManager() override;
@@ -59,7 +59,7 @@ class EmulatedNetworkManager : public EmulatedNetworkManagerInterface {
   const EndpointsContainer* absl_nonnull const endpoints_container_;
 
   // Socket server is owned by the `network_thread_'
-  rtc::SocketServer* absl_nonnull const socket_server_;
+  SocketServer* absl_nonnull const socket_server_;
 
   const absl_nonnull std::unique_ptr<Thread> network_thread_;
   absl_nullable std::unique_ptr<NetworkManagerImpl> network_manager_;

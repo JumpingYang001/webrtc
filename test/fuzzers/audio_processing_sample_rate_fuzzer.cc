@@ -85,7 +85,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   if (size > 100) {
     return;
   }
-  test::FuzzDataHelper fuzz_data(rtc::ArrayView<const uint8_t>(data, size));
+  test::FuzzDataHelper fuzz_data(webrtc::ArrayView<const uint8_t>(data, size));
 
   std::unique_ptr<CustomProcessing> capture_processor =
       fuzz_data.ReadOrDefaultValue(true)

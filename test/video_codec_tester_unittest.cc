@@ -89,10 +89,10 @@ const DataRate kBitrate = DataRate::BytesPerSec(100);
 const Frequency kFramerate = Frequency::Hertz(30);
 constexpr Frequency k90kHz = Frequency::Hertz(90000);
 
-rtc::scoped_refptr<I420Buffer> CreateYuvBuffer(uint8_t y = 0,
-                                               uint8_t u = 0,
-                                               uint8_t v = 0) {
-  rtc::scoped_refptr<I420Buffer> buffer(I420Buffer::Create(2, 2));
+scoped_refptr<I420Buffer> CreateYuvBuffer(uint8_t y = 0,
+                                          uint8_t u = 0,
+                                          uint8_t v = 0) {
+  scoped_refptr<I420Buffer> buffer(I420Buffer::Create(2, 2));
 
   libyuv::I420Rect(buffer->MutableDataY(), buffer->StrideY(),
                    buffer->MutableDataU(), buffer->StrideU(),
@@ -114,7 +114,7 @@ std::string CreateYuvFile(int width, int height, int num_frames) {
     uint8_t y = (frame_num * 3 + 0) & 255;
     uint8_t u = (frame_num * 3 + 1) & 255;
     uint8_t v = (frame_num * 3 + 2) & 255;
-    rtc::scoped_refptr<I420Buffer> buffer = CreateYuvBuffer(y, u, v);
+    scoped_refptr<I420Buffer> buffer = CreateYuvBuffer(y, u, v);
     fwrite(buffer->DataY(), 1, width * height, file);
     int chroma_size_bytes = (width + 1) / 2 * (height + 1) / 2;
     fwrite(buffer->DataU(), 1, chroma_size_bytes, file);
@@ -173,7 +173,7 @@ class TestVideoDecoder : public MockVideoDecoder {
     uint8_t y = (encoded_frame.size() + 0) & 255;
     uint8_t u = (encoded_frame.size() + 2) & 255;
     uint8_t v = (encoded_frame.size() + 4) & 255;
-    rtc::scoped_refptr<I420Buffer> frame_buffer = CreateYuvBuffer(y, u, v);
+    scoped_refptr<I420Buffer> frame_buffer = CreateYuvBuffer(y, u, v);
     VideoFrame decoded_frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(frame_buffer)

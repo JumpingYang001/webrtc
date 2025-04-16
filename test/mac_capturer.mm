@@ -25,9 +25,10 @@
 
 - (void)capturer:(RTC_OBJC_TYPE(RTCVideoCapturer) *)capturer
     didCaptureVideoFrame:(RTC_OBJC_TYPE(RTCVideoFrame) *)frame {
-  const int64_t timestamp_us = frame.timeStampNs / rtc::kNumNanosecsPerMicrosec;
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
-      rtc::make_ref_counted<webrtc::ObjCFrameBuffer>(frame.buffer);
+  const int64_t timestamp_us =
+      frame.timeStampNs / webrtc::kNumNanosecsPerMicrosec;
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
+      webrtc::make_ref_counted<webrtc::ObjCFrameBuffer>(frame.buffer);
   _capturer->OnFrame(webrtc::VideoFrame::Builder()
                          .set_video_frame_buffer(buffer)
                          .set_rotation(webrtc::kVideoRotation_0)

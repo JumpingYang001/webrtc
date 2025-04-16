@@ -27,15 +27,15 @@ namespace test {
 class FakeNetworkSocket;
 
 // FakeNetworkSocketServer must outlive any sockets it creates.
-class FakeNetworkSocketServer : public rtc::SocketServer {
+class FakeNetworkSocketServer : public SocketServer {
  public:
   explicit FakeNetworkSocketServer(EndpointsContainer* endpoints_controller);
   ~FakeNetworkSocketServer() override;
 
-  // rtc::SocketFactory methods:
+  // webrtc::SocketFactory methods:
   Socket* CreateSocket(int family, int type) override;
 
-  // rtc::SocketServer methods:
+  // webrtc::SocketServer methods:
   // Called by the network thread when this server is installed, kicking off the
   // message handler loop.
   void SetMessageQueue(Thread* thread) override;

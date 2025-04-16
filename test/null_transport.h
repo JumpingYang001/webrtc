@@ -19,9 +19,9 @@ class PacketReceiver;
 namespace test {
 class NullTransport : public Transport {
  public:
-  bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override;
-  bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(ArrayView<const uint8_t> packet) override;
 };
 }  // namespace test
 }  // namespace webrtc

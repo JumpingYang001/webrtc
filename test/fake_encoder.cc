@@ -164,7 +164,7 @@ int32_t FakeEncoder::Encode(const VideoFrame& input_image,
 
 CodecSpecificInfo FakeEncoder::EncodeHook(
     EncodedImage& encoded_image,
-    rtc::scoped_refptr<EncodedImageBuffer> buffer) {
+    scoped_refptr<EncodedImageBuffer> buffer) {
   CodecSpecificInfo codec_specific;
   codec_specific.codecType = kVideoCodecGeneric;
   return codec_specific;
@@ -317,7 +317,7 @@ FakeH264Encoder::FakeH264Encoder(const Environment& env)
 
 CodecSpecificInfo FakeH264Encoder::EncodeHook(
     EncodedImage& encoded_image,
-    rtc::scoped_refptr<EncodedImageBuffer> buffer) {
+    scoped_refptr<EncodedImageBuffer> buffer) {
   static constexpr std::array<uint8_t, 3> kStartCode = {0, 0, 1};
   const size_t kSpsSize = 8;
   const size_t kPpsSize = 11;

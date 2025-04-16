@@ -57,7 +57,7 @@ Y4mFrameGenerator::Y4mFrameGenerator(absl::string_view filename,
 Y4mFrameGenerator::VideoFrameData Y4mFrameGenerator::NextFrame() {
   webrtc::VideoFrame::UpdateRect update_rect{0, 0, static_cast<int>(width_),
                                              static_cast<int>(height_)};
-  rtc::scoped_refptr<webrtc::I420Buffer> next_frame_buffer =
+  scoped_refptr<webrtc::I420Buffer> next_frame_buffer =
       frame_reader_->PullFrame();
 
   if (!next_frame_buffer ||
@@ -67,7 +67,7 @@ Y4mFrameGenerator::VideoFrameData Y4mFrameGenerator::NextFrame() {
   }
 
   // Allocate a new buffer and return scaled version.
-  rtc::scoped_refptr<webrtc::I420Buffer> scaled_buffer(
+  scoped_refptr<webrtc::I420Buffer> scaled_buffer(
       I420Buffer::Create(width_, height_));
   webrtc::I420Buffer::SetBlack(scaled_buffer.get());
   scaled_buffer->ScaleFrom(*next_frame_buffer->ToI420());

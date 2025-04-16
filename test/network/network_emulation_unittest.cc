@@ -94,7 +94,7 @@ class SocketReader : public sigslot::has_slots<> {
  private:
   Socket* const socket_;
   Thread* const network_thread_;
-  rtc::Buffer payload_;
+  Buffer payload_;
   webrtc::EcnMarking last_ecn_mark_;
 
   mutable Mutex lock_;
@@ -156,22 +156,22 @@ class NetworkEmulationManagerThreeNodesRoutingTest : public ::testing::Test {
     // Send packet from e1 to e2.
     e1_->SendPacket(SocketAddress(e1_->GetPeerLocalAddress(), common_send_port),
                     SocketAddress(e2_->GetPeerLocalAddress(), r_e1_e2_port),
-                    rtc::CopyOnWriteBuffer(10));
+                    CopyOnWriteBuffer(10));
 
     // Send packet from e2 to e1.
     e2_->SendPacket(SocketAddress(e2_->GetPeerLocalAddress(), common_send_port),
                     SocketAddress(e1_->GetPeerLocalAddress(), r_e2_e1_port),
-                    rtc::CopyOnWriteBuffer(10));
+                    CopyOnWriteBuffer(10));
 
     // Send packet from e1 to e3.
     e1_->SendPacket(SocketAddress(e1_->GetPeerLocalAddress(), common_send_port),
                     SocketAddress(e3_->GetPeerLocalAddress(), r_e1_e3_port),
-                    rtc::CopyOnWriteBuffer(10));
+                    CopyOnWriteBuffer(10));
 
     // Send packet from e3 to e1.
     e3_->SendPacket(SocketAddress(e3_->GetPeerLocalAddress(), common_send_port),
                     SocketAddress(e1_->GetPeerLocalAddress(), r_e3_e1_port),
-                    rtc::CopyOnWriteBuffer(10));
+                    CopyOnWriteBuffer(10));
 
     // Sleep at the end to wait for async packets delivery.
     emulation_.time_controller()->AdvanceTime(kNetworkPacketWaitTimeout);
@@ -251,7 +251,7 @@ TEST(NetworkEmulationManagerTest, Run) {
   Thread* t1 = nt1->network_thread();
   Thread* t2 = nt2->network_thread();
 
-  rtc::CopyOnWriteBuffer data("Hello");
+  CopyOnWriteBuffer data("Hello");
   for (uint64_t j = 0; j < 2; j++) {
     Socket* s1 = nullptr;
     Socket* s2 = nullptr;
@@ -433,7 +433,7 @@ TEST(NetworkEmulationManagerTest, EcnMarkingIsPropagated) {
 
   t1->PostTask([&]() {
     s1->SetOption(Socket::Option::OPT_SEND_ECN, 1);
-    rtc::CopyOnWriteBuffer data("Hello");
+    CopyOnWriteBuffer data("Hello");
     s1->Send(data.data(), data.size());
   });
 
@@ -492,7 +492,7 @@ TEST(NetworkEmulationManagerTest, DebugStatsCollectedInDebugMode) {
   Thread* t1 = nt1->network_thread();
   Thread* t2 = nt2->network_thread();
 
-  rtc::CopyOnWriteBuffer data("Hello");
+  CopyOnWriteBuffer data("Hello");
   for (uint64_t j = 0; j < 2; j++) {
     Socket* s1 = nullptr;
     Socket* s2 = nullptr;
@@ -595,7 +595,7 @@ TEST(NetworkEmulationManagerTest, ThroughputStats) {
 
   constexpr int64_t kUdpPayloadSize = 100;
   constexpr int64_t kSinglePacketSize = kUdpPayloadSize + kOverheadIpv4Udp;
-  rtc::CopyOnWriteBuffer data(kUdpPayloadSize);
+  CopyOnWriteBuffer data(kUdpPayloadSize);
 
   Socket* s1 = nullptr;
   Socket* s2 = nullptr;
@@ -791,7 +791,7 @@ TEST(NetworkEmulationManagerTURNTest, ClientTraffic) {
   StunMessage ping(STUN_BINDING_REQUEST);
   ByteBufferWriter buf;
   ping.Write(&buf);
-  rtc::CopyOnWriteBuffer packet(buf.Data(), buf.Length());
+  CopyOnWriteBuffer packet(buf.Data(), buf.Length());
 
   // We expect to get a ping reply.
   EXPECT_CALL(recv, OnPacketReceived(::testing::_)).Times(1);
@@ -827,7 +827,7 @@ TEST(LinkEmulationTest, HandlesDeliveryTimeChangedCallback) {
           10));
   link->OnPacketReceived(EmulatedIpPacket(
       SocketAddress(kEndpointIp, 50), SocketAddress(kEndpointIp, 79),
-      rtc::CopyOnWriteBuffer(10), Timestamp::Millis(1)));
+      CopyOnWriteBuffer(10), Timestamp::Millis(1)));
   network_manager.time_controller()->AdvanceTime(TimeDelta::Zero());
 
   // Test that NetworkBehaviour can reschedule time for delivery. When

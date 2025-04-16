@@ -53,7 +53,7 @@ The framework API is located in the namespace *`webrtc::webrtc_pc_e2e`*.
     *   Generated audio
     *   Audio from specified file
     *   Dumping of captured/rendered audio into file
-    *   Parameterizing of `cricket::AudioOptions`
+    *   Parameterizing of `webrtc::AudioOptions`
     *   Echo emulation
 *   Injection of various WebRTC components into underlying
     *`webrtc::PeerConnection`* or *`webrtc::PeerConnectionFactory`*. You can see

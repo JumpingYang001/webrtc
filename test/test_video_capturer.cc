@@ -62,7 +62,7 @@ void TestVideoCapturer::OnFrame(const VideoFrame& original_frame) {
     // Video adapter has requested a down-scale. Allocate a new buffer and
     // return scaled version.
     // For simplicity, only scale here without cropping.
-    rtc::scoped_refptr<I420Buffer> scaled_buffer =
+    scoped_refptr<I420Buffer> scaled_buffer =
         I420Buffer::Create(out_width, out_height);
     scaled_buffer->ScaleFrom(*frame.video_frame_buffer()->ToI420());
     VideoFrame::Builder new_frame_builder =

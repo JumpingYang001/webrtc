@@ -20,7 +20,7 @@
 
 namespace webrtc {
 void FuzzOneInput(const uint8_t* data, size_t size) {
-  test::FuzzDataHelper fuzz_input(rtc::MakeArrayView(data, size));
+  test::FuzzDataHelper fuzz_input(webrtc::MakeArrayView(data, size));
 
   RtpPacketizer::PayloadSizeLimits limits;
   limits.max_payload_len = 1200;

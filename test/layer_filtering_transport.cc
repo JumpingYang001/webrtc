@@ -40,8 +40,8 @@ LayerFilteringTransport::LayerFilteringTransport(
     const std::map<uint8_t, MediaType>& payload_type_map,
     uint32_t ssrc_to_filter_min,
     uint32_t ssrc_to_filter_max,
-    rtc::ArrayView<const RtpExtension> audio_extensions,
-    rtc::ArrayView<const RtpExtension> video_extensions)
+    ArrayView<const RtpExtension> audio_extensions,
+    ArrayView<const RtpExtension> video_extensions)
     : DirectTransport(task_queue,
                       std::move(pipe),
                       send_call,
@@ -67,8 +67,8 @@ LayerFilteringTransport::LayerFilteringTransport(
     int selected_tl,
     int selected_sl,
     const std::map<uint8_t, MediaType>& payload_type_map,
-    rtc::ArrayView<const RtpExtension> audio_extensions,
-    rtc::ArrayView<const RtpExtension> video_extensions)
+    ArrayView<const RtpExtension> audio_extensions,
+    ArrayView<const RtpExtension> video_extensions)
     : LayerFilteringTransport(task_queue,
                               std::move(pipe),
                               send_call,
@@ -86,7 +86,7 @@ bool LayerFilteringTransport::DiscardedLastPacket() const {
   return discarded_last_packet_;
 }
 
-bool LayerFilteringTransport::SendRtp(rtc::ArrayView<const uint8_t> packet,
+bool LayerFilteringTransport::SendRtp(ArrayView<const uint8_t> packet,
                                       const PacketOptions& options) {
   if (selected_tl_ == -1 && selected_sl_ == -1) {
     // Nothing to change, forward the packet immediately.

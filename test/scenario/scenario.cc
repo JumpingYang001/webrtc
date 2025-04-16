@@ -89,7 +89,7 @@ Scenario::~Scenario() {
 ColumnPrinter Scenario::TimePrinter() {
   return ColumnPrinter::Lambda(
       "time",
-      [this](rtc::SimpleStringBuilder& sb) {
+      [this](SimpleStringBuilder& sb) {
         sb.AppendFormat("%.3lf", Now().seconds<double>());
       },
       32);

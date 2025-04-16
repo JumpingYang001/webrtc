@@ -97,7 +97,7 @@ class FrameGeneratorCapturer : public TestVideoCapturer {
 
   Mutex lock_;
   std::unique_ptr<FrameGeneratorInterface> frame_generator_;
-  rtc::scoped_refptr<VideoFrameBuffer> last_frame_captured_;
+  scoped_refptr<VideoFrameBuffer> last_frame_captured_;
 
   int source_fps_ RTC_GUARDED_BY(&lock_);
   int target_capture_fps_ RTC_GUARDED_BY(&lock_);

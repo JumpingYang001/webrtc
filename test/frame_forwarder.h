@@ -18,7 +18,7 @@ namespace webrtc {
 namespace test {
 
 // FrameForwarder can be used as an implementation
-// of rtc::VideoSourceInterface<VideoFrame> where the caller controls when
+// of webrtc::VideoSourceInterface<VideoFrame> where the caller controls when
 // a frame should be forwarded to its sink.
 // Currently this implementation only support one sink.
 class FrameForwarder : public VideoSourceInterface<VideoFrame> {

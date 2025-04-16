@@ -18,7 +18,7 @@ namespace webrtc {
 void FuzzOneInput(const uint8_t* data, size_t size) {
   H264BitstreamParser h264_bitstream_parser;
   h264_bitstream_parser.ParseBitstream(
-      rtc::ArrayView<const uint8_t>(data, size));
+      webrtc::ArrayView<const uint8_t>(data, size));
   h264_bitstream_parser.GetLastSliceQp();
 }
 }  // namespace webrtc

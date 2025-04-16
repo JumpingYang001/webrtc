@@ -58,7 +58,7 @@ SimulatedNetwork::Config CreateSimulationConfig(
 }
 
 RouteEndpoint CreateRouteEndpoint(uint16_t network_id, uint16_t adapter_id) {
-  return RouteEndpoint(rtc::ADAPTER_TYPE_UNKNOWN, adapter_id, network_id,
+  return RouteEndpoint(ADAPTER_TYPE_UNKNOWN, adapter_id, network_id,
                        /* uses_turn = */ false);
 }
 }  // namespace
@@ -87,8 +87,7 @@ void SimulationNode::PauseTransmissionUntil(Timestamp until) {
 
 ColumnPrinter SimulationNode::ConfigPrinter() const {
   return ColumnPrinter::Lambda(
-      "propagation_delay capacity loss_rate",
-      [this](rtc::SimpleStringBuilder& sb) {
+      "propagation_delay capacity loss_rate", [this](SimpleStringBuilder& sb) {
         sb.AppendFormat("%.3lf %.0lf %.2lf", config_.delay.seconds<double>(),
                         config_.bandwidth.bps() / 8.0, config_.loss_rate);
       });
@@ -102,10 +101,10 @@ NetworkNodeTransport::NetworkNodeTransport(Clock* sender_clock,
 
 NetworkNodeTransport::~NetworkNodeTransport() = default;
 
-bool NetworkNodeTransport::SendRtp(rtc::ArrayView<const uint8_t> packet,
+bool NetworkNodeTransport::SendRtp(ArrayView<const uint8_t> packet,
                                    const PacketOptions& options) {
   int64_t send_time_ms = sender_clock_->TimeInMilliseconds();
-  rtc::SentPacket sent_packet;
+  SentPacketInfo sent_packet;
   sent_packet.packet_id = options.packet_id;
   sent_packet.info.included_in_feedback = options.included_in_feedback;
   sent_packet.info.included_in_allocation = options.included_in_allocation;
@@ -117,14 +116,14 @@ bool NetworkNodeTransport::SendRtp(rtc::ArrayView<const uint8_t> packet,
   MutexLock lock(&mutex_);
   if (!endpoint_)
     return false;
-  rtc::CopyOnWriteBuffer buffer(packet);
+  CopyOnWriteBuffer buffer(packet);
   endpoint_->SendPacket(local_address_, remote_address_, buffer,
                         packet_overhead_.bytes());
   return true;
 }
 
-bool NetworkNodeTransport::SendRtcp(rtc::ArrayView<const uint8_t> packet) {
-  rtc::CopyOnWriteBuffer buffer(packet);
+bool NetworkNodeTransport::SendRtcp(ArrayView<const uint8_t> packet) {
+  CopyOnWriteBuffer buffer(packet);
   MutexLock lock(&mutex_);
   if (!endpoint_)
     return false;

@@ -42,7 +42,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   DummyCallback callback;
   UlpfecReceiver receiver(ulpfec_ssrc, 0, &callback, Clock::GetRealTimeClock());
 
-  test::FuzzDataHelper fuzz_data(rtc::MakeArrayView(data, size));
+  test::FuzzDataHelper fuzz_data(webrtc::MakeArrayView(data, size));
   while (fuzz_data.CanReadBytes(kMinDataNeeded)) {
     size_t packet_length = kRtpHeaderSize + fuzz_data.Read<uint8_t>();
     auto raw_packet = fuzz_data.ReadByteArray(packet_length);

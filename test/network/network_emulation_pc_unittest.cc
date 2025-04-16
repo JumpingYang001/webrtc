@@ -60,7 +60,7 @@ bool AddIceCandidates(PeerConnectionWrapper* peer,
   return success;
 }
 
-rtc::scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
+scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
     Thread* signaling_thread,
     EmulatedNetworkManagerInterface* network) {
   PeerConnectionFactoryDependencies pcf_deps;
@@ -82,16 +82,15 @@ rtc::scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
   return CreateModularPeerConnectionFactory(std::move(pcf_deps));
 }
 
-rtc::scoped_refptr<PeerConnectionInterface> CreatePeerConnection(
-    const rtc::scoped_refptr<PeerConnectionFactoryInterface>& pcf,
+scoped_refptr<PeerConnectionInterface> CreatePeerConnection(
+    const scoped_refptr<PeerConnectionFactoryInterface>& pcf,
     PeerConnectionObserver* observer,
     EmulatedTURNServerInterface* turn_server = nullptr) {
   PeerConnectionDependencies pc_deps(observer);
   PeerConnectionInterface::RTCConfiguration rtc_configuration;
   rtc_configuration.sdp_semantics = SdpSemantics::kUnifiedPlan;
   // This test does not support TCP
-  rtc_configuration.port_allocator_config.flags =
-      cricket::PORTALLOCATOR_DISABLE_TCP;
+  rtc_configuration.port_allocator_config.flags = PORTALLOCATOR_DISABLE_TCP;
   if (turn_server != nullptr) {
     webrtc::PeerConnectionInterface::IceServer server;
     server.username = turn_server->GetIceServerConfig().username;
@@ -135,13 +134,13 @@ TEST(NetworkEmulationManagerPCTest, Run) {
       emulation.CreateEmulatedNetworkManagerInterface({bob_endpoint});
 
   // Setup peer connections.
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> alice_pcf;
-  rtc::scoped_refptr<PeerConnectionInterface> alice_pc;
+  scoped_refptr<PeerConnectionFactoryInterface> alice_pcf;
+  scoped_refptr<PeerConnectionInterface> alice_pc;
   std::unique_ptr<MockPeerConnectionObserver> alice_observer =
       std::make_unique<MockPeerConnectionObserver>();
 
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> bob_pcf;
-  rtc::scoped_refptr<PeerConnectionInterface> bob_pc;
+  scoped_refptr<PeerConnectionFactoryInterface> bob_pcf;
+  scoped_refptr<PeerConnectionInterface> bob_pc;
   std::unique_ptr<MockPeerConnectionObserver> bob_observer =
       std::make_unique<MockPeerConnectionObserver>();
 
@@ -162,9 +161,9 @@ TEST(NetworkEmulationManagerPCTest, Run) {
                                               std::move(bob_observer));
 
   SendTask(signaling_thread.get(), [&]() {
-    rtc::scoped_refptr<webrtc::AudioSourceInterface> source =
+    scoped_refptr<webrtc::AudioSourceInterface> source =
         alice_pcf->CreateAudioSource(AudioOptions());
-    rtc::scoped_refptr<AudioTrackInterface> track =
+    scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());
     alice->AddTransceiver(track);
 
@@ -245,13 +244,13 @@ TEST(NetworkEmulationManagerPCTest, RunTURN) {
       emulation.CreateEmulatedNetworkManagerInterface({bob_endpoint});
 
   // Setup peer connections.
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> alice_pcf;
-  rtc::scoped_refptr<PeerConnectionInterface> alice_pc;
+  scoped_refptr<PeerConnectionFactoryInterface> alice_pcf;
+  scoped_refptr<PeerConnectionInterface> alice_pc;
   std::unique_ptr<MockPeerConnectionObserver> alice_observer =
       std::make_unique<MockPeerConnectionObserver>();
 
-  rtc::scoped_refptr<PeerConnectionFactoryInterface> bob_pcf;
-  rtc::scoped_refptr<PeerConnectionInterface> bob_pc;
+  scoped_refptr<PeerConnectionFactoryInterface> bob_pcf;
+  scoped_refptr<PeerConnectionInterface> bob_pc;
   std::unique_ptr<MockPeerConnectionObserver> bob_observer =
       std::make_unique<MockPeerConnectionObserver>();
 
@@ -273,9 +272,9 @@ TEST(NetworkEmulationManagerPCTest, RunTURN) {
                                               std::move(bob_observer));
 
   SendTask(signaling_thread.get(), [&]() {
-    rtc::scoped_refptr<webrtc::AudioSourceInterface> source =
+    scoped_refptr<webrtc::AudioSourceInterface> source =
         alice_pcf->CreateAudioSource(AudioOptions());
-    rtc::scoped_refptr<AudioTrackInterface> track =
+    scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());
     alice->AddTransceiver(track);
 

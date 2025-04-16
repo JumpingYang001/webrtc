@@ -464,7 +464,7 @@ class PcapReader : public RtpFileReaderImpl {
 
   int ProcessPacket(RtpPacketMarker& marker,
                     const std::set<uint32_t>& ssrc_filter,
-                    rtc::ArrayView<const uint8_t> packet) {
+                    ArrayView<const uint8_t> packet) {
     if (IsRtcpPacket(packet)) {
       marker.payload_type = packet[1];
       packets_.push_back(marker);

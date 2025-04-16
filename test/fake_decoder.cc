@@ -46,7 +46,7 @@ int32_t FakeDecoder::Decode(const EncodedImage& input, int64_t render_time_ms) {
     height_ = input._encodedHeight;
   }
 
-  rtc::scoped_refptr<I420Buffer> buffer = I420Buffer::Create(width_, height_);
+  scoped_refptr<I420Buffer> buffer = I420Buffer::Create(width_, height_);
   I420Buffer::SetBlack(buffer.get());
   VideoFrame frame = VideoFrame::Builder()
                          .set_video_frame_buffer(buffer)

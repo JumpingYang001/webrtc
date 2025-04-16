@@ -49,11 +49,11 @@ using ::testing::Test;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
-rtc::scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
+scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
     PeerScenario& s,
     PeerScenarioClient* client) {
   auto stats_collector =
-      rtc::make_ref_counted<webrtc::MockRTCStatsCollectorCallback>();
+      make_ref_counted<webrtc::MockRTCStatsCollectorCallback>();
   client->pc()->GetStats(stats_collector.get());
   s.ProcessMessages(TimeDelta::Millis(0));
   RTC_CHECK(stats_collector->called());
@@ -61,7 +61,7 @@ rtc::scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
 }
 
 DataRate GetAvailableSendBitrate(
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   auto stats = report->GetStatsOfType<RTCIceCandidatePairStats>();
   if (stats.empty()) {
     return DataRate::Zero();

@@ -40,7 +40,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   test::ScopedKeyValueConfig field_trials;
   FrameBuffer buffer(/*max_frame_slots=*/100, /*max_decode_history=*/1000,
                      field_trials);
-  test::FuzzDataHelper helper(rtc::MakeArrayView(data, size));
+  test::FuzzDataHelper helper(webrtc::MakeArrayView(data, size));
   SeqNumUnwrapper<uint16_t, kFrameIdLength> unwrapper;
 
   while (helper.BytesLeft() > 0) {

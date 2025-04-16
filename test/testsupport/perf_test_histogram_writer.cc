@@ -66,7 +66,7 @@ class PerfTestHistogramWriter : public PerfTestResultWriter {
   }
   void LogResultList(absl::string_view graph_name,
                      absl::string_view trace_name,
-                     const rtc::ArrayView<const double> values,
+                     const ArrayView<const double> values,
                      absl::string_view units,
                      const bool important,
                      ImproveDirection improve_direction) override {

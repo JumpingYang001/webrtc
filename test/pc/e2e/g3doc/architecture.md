@@ -49,7 +49,7 @@ thread for all `PeerConnection`'s is owned by
 `PeerConnectionE2EQualityTestFixture` and shared between all participants in the
 call. The network thread is owned by the network layer (it maybe either emulated
 network provided by [Network Emulation Framework][24] or network thread and
-`rtc::NetworkManager` provided by user) and provided when peer is added to the
+`webrtc::NetworkManager` provided by user) and provided when peer is added to the
 fixture via [`AddPeer(...)`][15] API.
 
 ## GetStats API based metrics reporters

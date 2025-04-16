@@ -46,7 +46,7 @@ class FakeSctpTransport : public webrtc::SctpTransportInternal {
   bool ResetStream(int sid) override { return true; }
   webrtc::RTCError SendData(int sid,
                             const webrtc::SendDataParams& params,
-                            const rtc::CopyOnWriteBuffer& payload) override {
+                            const webrtc::CopyOnWriteBuffer& payload) override {
     return webrtc::RTCError::OK();
   }
   bool ReadyToSendData() override { return true; }

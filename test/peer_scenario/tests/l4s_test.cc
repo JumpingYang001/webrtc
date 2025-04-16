@@ -91,11 +91,11 @@ class RtcpFeedbackCounter {
   int ce_ = 0;
 };
 
-rtc::scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
+scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
     PeerScenario& s,
     PeerScenarioClient* client) {
   auto stats_collector =
-      rtc::make_ref_counted<webrtc::MockRTCStatsCollectorCallback>();
+      make_ref_counted<webrtc::MockRTCStatsCollectorCallback>();
   client->pc()->GetStats(stats_collector.get());
   s.ProcessMessages(TimeDelta::Millis(0));
   RTC_CHECK(stats_collector->called());
@@ -103,7 +103,7 @@ rtc::scoped_refptr<const RTCStatsReport> GetStatsAndProcess(
 }
 
 DataRate GetAvailableSendBitrate(
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   auto stats = report->GetStatsOfType<RTCIceCandidatePairStats>();
   if (stats.empty()) {
     return DataRate::Zero();
@@ -288,11 +288,11 @@ TEST(L4STest, SendsEct1AfterRouteChange) {
 
   PeerScenarioClient::Config config;
   config.disable_encryption = true;
-  config.endpoints = {{0, {.type = rtc::AdapterType::ADAPTER_TYPE_WIFI}}};
+  config.endpoints = {{0, {.type = AdapterType::ADAPTER_TYPE_WIFI}}};
   PeerScenarioClient* caller = s.CreateClient(config);
   // Callee has booth wifi and cellular adapters.
-  config.endpoints = {{0, {.type = rtc::AdapterType::ADAPTER_TYPE_WIFI}},
-                      {1, {.type = rtc::AdapterType::ADAPTER_TYPE_CELLULAR}}};
+  config.endpoints = {{0, {.type = AdapterType::ADAPTER_TYPE_WIFI}},
+                      {1, {.type = AdapterType::ADAPTER_TYPE_CELLULAR}}};
   PeerScenarioClient* callee = s.CreateClient(config);
 
   // Create network path from caller to callee.

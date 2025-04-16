@@ -95,7 +95,7 @@ VideoFrame DeepCopy(const VideoFrame& frame) {
 }
 
 std::vector<StatsSample> GetSortedSamples(const SamplesStatsCounter& counter) {
-  rtc::ArrayView<const StatsSample> view = counter.GetTimedSamples();
+  ArrayView<const StatsSample> view = counter.GetTimedSamples();
   std::vector<StatsSample> out(view.begin(), view.end());
   std::sort(out.begin(), out.end(),
             [](const StatsSample& a, const StatsSample& b) {
@@ -105,7 +105,7 @@ std::vector<StatsSample> GetSortedSamples(const SamplesStatsCounter& counter) {
 }
 
 std::vector<double> GetTimeSortedValues(const SamplesStatsCounter& counter) {
-  rtc::ArrayView<const StatsSample> view = counter.GetTimedSamples();
+  ArrayView<const StatsSample> view = counter.GetTimedSamples();
   std::vector<StatsSample> sorted(view.begin(), view.end());
   std::sort(sorted.begin(), sorted.end(),
             [](const StatsSample& a, const StatsSample& b) {
@@ -599,7 +599,7 @@ TEST(DefaultVideoQualityAnalyzerTest,
     VideoFrame received_frame = frame;
     // Shift frame by a few pixels.
     test::CropRegion crop_region{0, 1, 3, 0};
-    rtc::scoped_refptr<VideoFrameBuffer> cropped_buffer =
+    scoped_refptr<VideoFrameBuffer> cropped_buffer =
         CropAndZoom(crop_region, received_frame.video_frame_buffer()->ToI420());
     received_frame.set_video_frame_buffer(cropped_buffer);
 

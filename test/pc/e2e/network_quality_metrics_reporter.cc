@@ -67,7 +67,7 @@ void NetworkQualityMetricsReporter::Start(
 
 void NetworkQualityMetricsReporter::OnStatsReports(
     absl::string_view pc_label,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   DataSize payload_received = DataSize::Zero();
   DataSize payload_sent = DataSize::Zero();
 

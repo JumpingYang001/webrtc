@@ -42,12 +42,12 @@ class SineGenerator : public EncodeNetEqInput::Generator {
   explicit SineGenerator(int sample_rate_hz)
       : sample_rate_hz_(sample_rate_hz) {}
 
-  rtc::ArrayView<const int16_t> Generate(size_t num_samples) override {
+  webrtc::ArrayView<const int16_t> Generate(size_t num_samples) override {
     if (samples_.size() < num_samples) {
       samples_.resize(num_samples);
     }
 
-    rtc::ArrayView<int16_t> output(samples_.data(), num_samples);
+    webrtc::ArrayView<int16_t> output(samples_.data(), num_samples);
     for (auto& x : output) {
       x = static_cast<int16_t>(2000.0 * std::sin(phase_));
       phase_ += 2 * kPi * kFreqHz / sample_rate_hz_;
@@ -65,7 +65,7 @@ class SineGenerator : public EncodeNetEqInput::Generator {
 
 class FuzzRtpInput : public NetEqInput {
  public:
-  explicit FuzzRtpInput(rtc::ArrayView<const uint8_t> data) : data_(data) {
+  explicit FuzzRtpInput(webrtc::ArrayView<const uint8_t> data) : data_(data) {
     AudioEncoderPcm16B::Config config;
     config.payload_type = kPayloadType;
     config.sample_rate_hz = 32000;
@@ -163,7 +163,7 @@ class FuzzRtpInput : public NetEqInput {
   }
 
   bool ended_ = false;
-  rtc::ArrayView<const uint8_t> data_;
+  webrtc::ArrayView<const uint8_t> data_;
   size_t data_ix_ = 0;
   std::unique_ptr<EncodeNetEqInput> input_;
   std::unique_ptr<PacketData> packet_;
@@ -172,7 +172,7 @@ class FuzzRtpInput : public NetEqInput {
 
 void FuzzOneInputTest(const uint8_t* data, size_t size) {
   std::unique_ptr<FuzzRtpInput> input(
-      new FuzzRtpInput(rtc::ArrayView<const uint8_t>(data, size)));
+      new FuzzRtpInput(webrtc::ArrayView<const uint8_t>(data, size)));
   std::unique_ptr<AudioChecksum> output(new AudioChecksum);
   NetEqTest::Callbacks callbacks;
   NetEq::Config config;

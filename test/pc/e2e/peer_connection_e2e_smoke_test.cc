@@ -198,7 +198,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, SmokeH264) {
     audio.sampling_frequency_in_hz = 48000;
     audio.sync_group = "alice-media";
     alice->SetAudioConfig(std::move(audio));
-    alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+    alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
     alice->SetVideoEncoderFactory(webrtc::test::CreateObjCEncoderFactory());
     alice->SetVideoDecoderFactory(webrtc::test::CreateObjCDecoderFactory());
   });
@@ -214,7 +214,7 @@ TEST_F(PeerConnectionE2EQualityTestSmokeTest, SmokeH264) {
     audio.input_file_name =
         test::ResourcePath("pc_quality_smoke_test_bob_source", "wav");
     charlie->SetAudioConfig(std::move(audio));
-    charlie->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+    charlie->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
     charlie->SetVideoEncoderFactory(webrtc::test::CreateObjCEncoderFactory());
     charlie->SetVideoDecoderFactory(webrtc::test::CreateObjCDecoderFactory());
   });

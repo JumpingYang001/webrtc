@@ -124,8 +124,8 @@ const std::set<ScalabilityMode> kKeySvcScalabilityModes{
     ScalabilityMode::kL3T1_KEY,       ScalabilityMode::kL3T2_KEY,
     ScalabilityMode::kL3T3_KEY};
 
-rtc::scoped_refptr<VideoFrameBuffer> ScaleFrame(
-    rtc::scoped_refptr<VideoFrameBuffer> buffer,
+scoped_refptr<VideoFrameBuffer> ScaleFrame(
+    scoped_refptr<VideoFrameBuffer> buffer,
     int scaled_width,
     int scaled_height) {
   if (buffer->width() == scaled_width && buffer->height() == scaled_height) {
@@ -169,7 +169,7 @@ class VideoSource {
     *time_delta_ -= 1 / output_framerate;
 
     if (seek > 0 || last_frame_ == nullptr) {
-      rtc::scoped_refptr<VideoFrameBuffer> buffer;
+      scoped_refptr<VideoFrameBuffer> buffer;
       do {
         if (yuv_reader_) {
           buffer = yuv_reader_->PullFrame();
@@ -182,7 +182,7 @@ class VideoSource {
       last_frame_ = buffer;
     }
 
-    rtc::scoped_refptr<VideoFrameBuffer> buffer = ScaleFrame(
+    scoped_refptr<VideoFrameBuffer> buffer = ScaleFrame(
         last_frame_, output_resolution.width, output_resolution.height);
     return VideoFrame::Builder()
         .set_video_frame_buffer(buffer)
@@ -195,7 +195,7 @@ class VideoSource {
   VideoSourceSettings source_settings_;
   std::unique_ptr<FrameReader> yuv_reader_;
   std::unique_ptr<FrameGeneratorInterface> ivf_reader_;
-  rtc::scoped_refptr<VideoFrameBuffer> last_frame_;
+  scoped_refptr<VideoFrameBuffer> last_frame_;
   // Time delta between the source and output video. Used for frame rate
   // scaling. This value increases by the source frame duration each time a
   // frame is read from the source, and decreases by the output frame duration
@@ -521,13 +521,13 @@ class VideoCodecAnalyzer : public VideoCodecTester::VideoCodecStats {
     if (ref_frame.has_value()) {
       // Copy hardware-backed frame into main memory to release output buffers
       // which number may be limited in hardware decoders.
-      rtc::scoped_refptr<I420BufferInterface> decoded_buffer =
+      scoped_refptr<I420BufferInterface> decoded_buffer =
           decoded_frame.video_frame_buffer()->ToI420();
 
       task_queue_.PostTask([this, decoded_buffer, ref_frame,
                             timestamp_rtp = decoded_frame.rtp_timestamp(),
                             spatial_idx]() {
-        rtc::scoped_refptr<I420BufferInterface> ref_buffer =
+        scoped_refptr<I420BufferInterface> ref_buffer =
             ScaleFrame(ref_frame->video_frame_buffer(), decoded_buffer->width(),
                        decoded_buffer->height())
                 ->ToI420();
@@ -588,8 +588,8 @@ class VideoCodecAnalyzer : public VideoCodecTester::VideoCodecStats {
       }
 
       Frame superframe = subframes.back();
-      for (const Frame& frame :
-           rtc::ArrayView<Frame>(subframes).subview(0, subframes.size() - 1)) {
+      for (const Frame& frame : webrtc::ArrayView<Frame>(subframes).subview(
+               0, subframes.size() - 1)) {
         superframe.decoded |= frame.decoded;
         superframe.encoded |= frame.encoded;
         superframe.frame_size += frame.frame_size;
@@ -1078,7 +1078,7 @@ class Encoder : public EncodedImageCallback {
  private:
   struct Superframe {
     EncodedImage encoded_frame;
-    rtc::scoped_refptr<EncodedImageBuffer> encoded_data;
+    scoped_refptr<EncodedImageBuffer> encoded_data;
     ScalabilityMode scalability_mode;
   };
 
@@ -1341,8 +1341,7 @@ void ConfigureSimulcast(const FieldTrialsView& field_trials, VideoCodec* vc) {
   encoder_config.number_of_streams = num_spatial_layers;
   encoder_config.simulcast_layers.resize(num_spatial_layers);
   VideoEncoder::EncoderInfo encoder_info;
-  auto stream_factory =
-      rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+  auto stream_factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
   const std::vector<VideoStream> streams = stream_factory->CreateEncoderStreams(
       field_trials, vc->width, vc->height, encoder_config);
   vc->numberOfSimulcastStreams = streams.size();

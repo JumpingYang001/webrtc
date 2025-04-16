@@ -151,8 +151,7 @@ TEST_P(UnsignaledStreamTest, ReplacesUnsignaledStreamOnCompletedSignaling) {
         // Obtain the MID header extension ID and if we want the
         // MidTestConfiguration::kMidNotNegotiated setup then we remove the MID
         // header extension through SDP munging (otherwise SDP is not modified).
-        for (cricket::ContentInfo& content_info :
-             offer->description()->contents()) {
+        for (ContentInfo& content_info : offer->description()->contents()) {
           std::vector<RtpExtension> header_extensions =
               content_info.media_description()->rtp_header_extensions();
           for (auto it = header_extensions.begin();
@@ -216,7 +215,7 @@ TEST_P(UnsignaledStreamTest, ReplacesUnsignaledStreamOnCompletedSignaling) {
                 break;
             }
             // Inject the modified packet.
-            rtc::CopyOnWriteBuffer updated_buffer = parsed_packet.Buffer();
+            CopyOnWriteBuffer updated_buffer = parsed_packet.Buffer();
             EmulatedIpPacket updated_packet(
                 packet.from, packet.to, updated_buffer, packet.arrival_time);
             send_node->OnPacketReceived(std::move(updated_packet));

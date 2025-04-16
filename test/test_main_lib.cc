@@ -288,8 +288,8 @@ class TestMainImpl : public TestMain {
         << trace_output_file << "\"";
     tracing_session_->StartBlocking();
 #else
-    rtc::tracing::SetupInternalTracer();
-    rtc::tracing::StartInternalCapture(trace_output_file);
+    tracing::SetupInternalTracer();
+    tracing::StartInternalCapture(trace_output_file);
 #endif
   }
 
@@ -312,7 +312,7 @@ class TestMainImpl : public TestMain {
     }
 
 #else
-    rtc::tracing::StopInternalCapture();
+    tracing::StopInternalCapture();
 #endif
   }
 };

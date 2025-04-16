@@ -294,7 +294,7 @@ void StatsBasedNetworkQualityMetricsReporter::Start(
 
 void StatsBasedNetworkQualityMetricsReporter::OnStatsReports(
     absl::string_view pc_label,
-    const rtc::scoped_refptr<const RTCStatsReport>& report) {
+    const scoped_refptr<const RTCStatsReport>& report) {
   PCStats cur_stats;
 
   auto inbound_stats = report->GetStatsOfType<RTCInboundRtpStreamStats>();

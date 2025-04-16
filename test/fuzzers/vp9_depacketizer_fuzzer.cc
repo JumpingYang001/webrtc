@@ -17,7 +17,7 @@
 namespace webrtc {
 void FuzzOneInput(const uint8_t* data, size_t size) {
   RTPVideoHeader video_header;
-  VideoRtpDepacketizerVp9::ParseRtpPayload(rtc::MakeArrayView(data, size),
+  VideoRtpDepacketizerVp9::ParseRtpPayload(webrtc::MakeArrayView(data, size),
                                            &video_header);
 }
 }  // namespace webrtc

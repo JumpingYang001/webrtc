@@ -91,7 +91,7 @@ class PeerConnectionE2EQualityTest
   std::string GetFieldTrials(const RunParams& run_params);
   void OnTrackCallback(absl::string_view peer_name,
                        VideoSubscription peer_subscription,
-                       rtc::scoped_refptr<RtpTransceiverInterface> transceiver,
+                       scoped_refptr<RtpTransceiverInterface> transceiver,
                        std::vector<VideoConfig> remote_video_configs);
   // Have to be run on the signaling thread.
   void SetupCallOnSignalingThread(const RunParams& run_params);
@@ -104,7 +104,7 @@ class PeerConnectionE2EQualityTest
   void ExchangeOfferAnswer(SignalingInterceptor* signaling_interceptor);
   void ExchangeIceCandidates(SignalingInterceptor* signaling_interceptor);
   void StartVideo(
-      const std::vector<rtc::scoped_refptr<TestVideoCapturerVideoTrackSource>>&
+      const std::vector<scoped_refptr<TestVideoCapturerVideoTrackSource>>&
           sources);
   void TearDownCall();
   void ReportGeneralTestResults();
@@ -129,9 +129,9 @@ class PeerConnectionE2EQualityTest
   std::vector<std::unique_ptr<QualityMetricsReporter>>
       quality_metrics_reporters_;
 
-  std::vector<rtc::scoped_refptr<TestVideoCapturerVideoTrackSource>>
+  std::vector<scoped_refptr<TestVideoCapturerVideoTrackSource>>
       alice_video_sources_;
-  std::vector<rtc::scoped_refptr<TestVideoCapturerVideoTrackSource>>
+  std::vector<scoped_refptr<TestVideoCapturerVideoTrackSource>>
       bob_video_sources_;
   std::vector<std::unique_ptr<VideoSinkInterface<VideoFrame>>>
       output_video_sinks_;

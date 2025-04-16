@@ -21,7 +21,7 @@ namespace webrtc {
 
 void FuzzOneInput(const uint8_t* data, size_t size) {
   std::optional<std::string> decoded_encoded_data =
-      Base64Decode(Base64Encode(rtc::MakeArrayView(data, size)));
+      Base64Decode(Base64Encode(webrtc::MakeArrayView(data, size)));
   RTC_CHECK(decoded_encoded_data.has_value());
   RTC_CHECK_EQ(std::memcmp(data, decoded_encoded_data->data(), size), 0);
 }

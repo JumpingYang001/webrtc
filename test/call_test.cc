@@ -457,7 +457,7 @@ void CallTest::CreateMatchingAudioConfigs(Transport* transport,
 
 AudioReceiveStreamInterface::Config CallTest::CreateMatchingAudioConfig(
     const AudioSendStream::Config& send_config,
-    rtc::scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
+    scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
     Transport* transport,
     std::string sync_group) {
   AudioReceiveStreamInterface::Config audio_config;

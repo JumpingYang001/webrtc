@@ -15,7 +15,7 @@
 
 namespace webrtc {
 void FuzzOneInput(const uint8_t* data, size_t size) {
-  cricket::GetDtlsHandshakeAcks(rtc::MakeArrayView(data, size));
+  webrtc::GetDtlsHandshakeAcks(webrtc::MakeArrayView(data, size));
 }
 
 }  // namespace webrtc

@@ -68,7 +68,7 @@ template <typename Fn, typename Matcher>
     -> RTCErrorOr<decltype(fn())> {
   if (std::holds_alternative<std::monostate>(settings.clock)) {
     RTC_CHECK(Thread::Current()) << "A current thread is required. An "
-                                    "rtc::AutoThread can work for tests.";
+                                    "webrtc::AutoThread can work for tests.";
   }
 
   Timestamp start =

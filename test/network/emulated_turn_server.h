@@ -28,15 +28,15 @@
 namespace webrtc {
 namespace test {
 
-// EmulatedTURNServer wraps cricket::TurnServer to be used inside
+// EmulatedTURNServer wraps webrtc::TurnServer to be used inside
 // a emulated network.
 //
 // Packets from EmulatedEndpoint (client or peer) are received in
 // EmulatedTURNServer::OnPacketReceived which performs a map lookup
-// and delivers them into cricket::TurnServer using
+// and delivers them into webrtc::TurnServer using
 // AsyncPacketSocket::SignalReadPacket
 //
-// Packets from cricket::TurnServer to EmulatedEndpoint are sent into
+// Packets from webrtc::TurnServer to EmulatedEndpoint are sent into
 // using a wrapper around AsyncPacketSocket (no lookup required as the
 // wrapper around AsyncPacketSocket keep a pointer to the EmulatedEndpoint).
 class EmulatedTURNServer : public EmulatedTURNServerInterface,
@@ -44,7 +44,7 @@ class EmulatedTURNServer : public EmulatedTURNServerInterface,
                            public webrtc::EmulatedNetworkReceiverInterface {
  public:
   // Create an EmulatedTURNServer.
-  // `thread` is a thread that will be used to run cricket::TurnServer
+  // `thread` is a thread that will be used to run webrtc::TurnServer
   // that expects all calls to be made from a single thread.
   EmulatedTURNServer(const EmulatedTURNServerConfig& config,
                      std::unique_ptr<Thread> thread,
@@ -62,7 +62,7 @@ class EmulatedTURNServer : public EmulatedTURNServerInterface,
 
   EmulatedEndpoint* GetPeerEndpoint() const override { return peer_; }
 
-  // cricket::TurnAuthInterface
+  // webrtc::TurnAuthInterface
   bool GetKey(absl::string_view username,
               absl::string_view realm,
               std::string* key) override {
@@ -94,7 +94,7 @@ class EmulatedTURNServer : public EmulatedTURNServerInterface,
       RTC_GUARDED_BY(&thread_);
 
   // Wraps a EmulatedEndpoint in a AsyncPacketSocket to bridge interaction
-  // with TurnServer. cricket::TurnServer gets ownership of the socket.
+  // with TurnServer. webrtc::TurnServer gets ownership of the socket.
   AsyncPacketSocket* Wrap(EmulatedEndpoint* endpoint);
 };
 

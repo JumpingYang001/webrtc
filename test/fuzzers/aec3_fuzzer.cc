@@ -46,7 +46,7 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
     return;
   }
 
-  test::FuzzDataHelper fuzz_data(rtc::ArrayView<const uint8_t>(data, size));
+  test::FuzzDataHelper fuzz_data(webrtc::ArrayView<const uint8_t>(data, size));
 
   constexpr int kSampleRates[] = {16000, 32000, 48000};
   const int sample_rate_hz =

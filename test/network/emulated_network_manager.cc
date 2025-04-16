@@ -31,7 +31,7 @@
 namespace webrtc {
 namespace test {
 
-// Framework assumes that rtc::NetworkManager is called from network thread.
+// Framework assumes that webrtc::NetworkManager is called from network thread.
 class EmulatedNetworkManager::NetworkManagerImpl : public NetworkManagerBase {
  public:
   explicit NetworkManagerImpl(Thread* absl_nonnull network_thread,
@@ -123,7 +123,7 @@ void EmulatedNetworkManager::NetworkManagerImpl::UpdateNetworksOnce() {
   RTC_DCHECK_RUN_ON(network_thread_);
 
   std::vector<std::unique_ptr<Network>> networks;
-  for (std::unique_ptr<rtc::Network>& net :
+  for (std::unique_ptr<Network>& net :
        endpoints_container_->GetEnabledNetworks()) {
     net->set_default_local_address_provider(this);
     networks.push_back(std::move(net));

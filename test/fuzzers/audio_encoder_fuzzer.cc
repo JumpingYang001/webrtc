@@ -25,7 +25,7 @@ namespace webrtc {
 // This function reads bytes from `data_view`, interprets them as RTP timestamp
 // and input samples, and sends them for encoding. The process continues until
 // no more data is available.
-void FuzzAudioEncoder(rtc::ArrayView<const uint8_t> data_view,
+void FuzzAudioEncoder(ArrayView<const uint8_t> data_view,
                       std::unique_ptr<AudioEncoder> encoder) {
   test::FuzzDataHelper data(data_view);
   const size_t block_size_samples =
@@ -37,8 +37,8 @@ void FuzzAudioEncoder(rtc::ArrayView<const uint8_t> data_view,
     return;
   }
 
-  rtc::BufferT<int16_t> input_aligned(block_size_samples);
-  rtc::Buffer encoded;
+  BufferT<int16_t> input_aligned(block_size_samples);
+  Buffer encoded;
 
   // Each round in the loop below will need one block of samples + a 32-bit
   // timestamp from the fuzzer input.

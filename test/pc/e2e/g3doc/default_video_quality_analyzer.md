@@ -48,7 +48,7 @@ factory methods for components, that will be used to inject
 *   [`webrtc::test::TestVideoCapturer::FramePreprocessor`][8] which is used to
     pass generated frames into analyzer on capturing and then set the returned
     frame ID. It also configures dumping of captured frames if requried.
-*   [`rtc::VideoSinkInterface<VideoFrame>`][9] which is used to pass frames to
+*   [`webrtc::VideoSinkInterface<VideoFrame>`][9] which is used to pass frames to
     the analyzer before they will be rendered to compute per frame metrics. It
     also configures dumping of rendered video if requried.
 

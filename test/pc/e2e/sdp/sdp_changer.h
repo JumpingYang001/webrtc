@@ -40,11 +40,11 @@ namespace webrtc_pc_e2e {
 // vector and they will be added in the same order, as they were in
 // `supported_codecs`.
 std::vector<RtpCodecCapability> FilterVideoCodecCapabilities(
-    rtc::ArrayView<const VideoCodecConfig> video_codecs,
+    ArrayView<const VideoCodecConfig> video_codecs,
     bool use_rtx,
     bool use_ulpfec,
     bool use_flexfec,
-    rtc::ArrayView<const RtpCodecCapability> supported_codecs);
+    ArrayView<const RtpCodecCapability> supported_codecs);
 
 struct LocalAndRemoteSdp {
   LocalAndRemoteSdp(std::unique_ptr<SessionDescriptionInterface> local_sdp,
@@ -82,10 +82,10 @@ class SignalingInterceptor {
       const VideoCodecConfig& first_codec);
 
   std::vector<std::unique_ptr<IceCandidateInterface>> PatchOffererIceCandidates(
-      rtc::ArrayView<const IceCandidateInterface* const> candidates);
+      ArrayView<const IceCandidateInterface* const> candidates);
   std::vector<std::unique_ptr<IceCandidateInterface>>
   PatchAnswererIceCandidates(
-      rtc::ArrayView<const IceCandidateInterface* const> candidates);
+      ArrayView<const IceCandidateInterface* const> candidates);
 
  private:
   // Contains information about simulcast section, that is required to perform

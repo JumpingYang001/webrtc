@@ -32,7 +32,7 @@ class ScenarioIceConnection {
   class IceConnectionObserver {
    public:
     // Called on network thread.
-    virtual void OnPacketReceived(rtc::CopyOnWriteBuffer packet) = 0;
+    virtual void OnPacketReceived(CopyOnWriteBuffer packet) = 0;
     // Called on signaling thread.
     virtual void OnIceCandidates(const std::string& mid,
                                  const std::vector<Candidate>& candidates) = 0;
@@ -48,8 +48,8 @@ class ScenarioIceConnection {
   virtual ~ScenarioIceConnection() = default;
 
   // Posts tasks to send packets to network thread.
-  virtual void SendRtpPacket(rtc::ArrayView<const uint8_t> packet_view) = 0;
-  virtual void SendRtcpPacket(rtc::ArrayView<const uint8_t> packet_view) = 0;
+  virtual void SendRtpPacket(ArrayView<const uint8_t> packet_view) = 0;
+  virtual void SendRtcpPacket(ArrayView<const uint8_t> packet_view) = 0;
 
   // Used for ICE configuration, called on signaling thread.
   virtual void SetRemoteSdp(SdpType type, const std::string& remote_sdp) = 0;

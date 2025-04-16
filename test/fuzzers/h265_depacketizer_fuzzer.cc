@@ -18,6 +18,6 @@ void FuzzOneInput(const uint8_t* data, size_t size) {
   if (size > 200000)
     return;
   VideoRtpDepacketizerH265 depacketizer;
-  depacketizer.Parse(rtc::CopyOnWriteBuffer(data, size));
+  depacketizer.Parse(webrtc::CopyOnWriteBuffer(data, size));
 }
 }  // namespace webrtc

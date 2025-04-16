@@ -60,9 +60,9 @@ class NetworkNodeTransport : public Transport {
 
   void UpdateAdapterId(int adapter_id);
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override;
-  bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(ArrayView<const uint8_t> packet) override;
 
   void Connect(EmulatedEndpoint* endpoint,
                const SocketAddress& receiver_address,

@@ -326,7 +326,7 @@ NetworkEmulationManagerImpl::CreateEmulatedNetworkManagerInterface(
 }
 
 void NetworkEmulationManagerImpl::GetStats(
-    rtc::ArrayView<EmulatedEndpoint* const> endpoints,
+    ArrayView<EmulatedEndpoint* const> endpoints,
     std::function<void(EmulatedNetworkStats)> stats_callback) {
   task_queue_.PostTask([endpoints, stats_callback,
                         stats_gathering_mode = stats_gathering_mode_]() {
@@ -343,7 +343,7 @@ void NetworkEmulationManagerImpl::GetStats(
 }
 
 void NetworkEmulationManagerImpl::GetStats(
-    rtc::ArrayView<EmulatedNetworkNode* const> nodes,
+    ArrayView<EmulatedNetworkNode* const> nodes,
     std::function<void(EmulatedNetworkNodeStats)> stats_callback) {
   task_queue_.PostTask(
       [nodes, stats_callback, stats_gathering_mode = stats_gathering_mode_]() {

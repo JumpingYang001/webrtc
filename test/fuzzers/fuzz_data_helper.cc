@@ -17,8 +17,7 @@
 namespace webrtc {
 namespace test {
 
-FuzzDataHelper::FuzzDataHelper(rtc::ArrayView<const uint8_t> data)
-    : data_(data) {}
+FuzzDataHelper::FuzzDataHelper(ArrayView<const uint8_t> data) : data_(data) {}
 
 }  // namespace test
 }  // namespace webrtc

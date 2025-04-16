@@ -302,7 +302,7 @@ void DefaultVideoQualityAnalyzerFramesComparator::EnsureStatsForStream(
 }
 
 void DefaultVideoQualityAnalyzerFramesComparator::RegisterParticipantInCall(
-    rtc::ArrayView<std::pair<InternalStatsKey, Timestamp>> stream_started_time,
+    ArrayView<std::pair<InternalStatsKey, Timestamp>> stream_started_time,
     Timestamp start_time) {
   MutexLock lock(&mutex_);
   RTC_CHECK_EQ(state_, State::kActive)
@@ -418,9 +418,9 @@ void DefaultVideoQualityAnalyzerFramesComparator::ProcessComparison(
   double ssim = -1.0;
   if ((options_.compute_psnr || options_.compute_ssim) &&
       comparison.captured.has_value() && comparison.rendered.has_value()) {
-    rtc::scoped_refptr<I420BufferInterface> reference_buffer =
+    scoped_refptr<I420BufferInterface> reference_buffer =
         comparison.captured->video_frame_buffer()->ToI420();
-    rtc::scoped_refptr<I420BufferInterface> test_buffer =
+    scoped_refptr<I420BufferInterface> test_buffer =
         comparison.rendered->video_frame_buffer()->ToI420();
     if (options_.adjust_cropping_before_comparing_frames) {
       test_buffer = ScaleVideoFrameBuffer(

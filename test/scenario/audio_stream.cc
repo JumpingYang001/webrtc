@@ -102,7 +102,7 @@ std::vector<RtpExtension> GetAudioRtpExtensions(
 SendAudioStream::SendAudioStream(
     CallClient* sender,
     AudioStreamConfig config,
-    rtc::scoped_refptr<AudioEncoderFactory> encoder_factory,
+    scoped_refptr<AudioEncoderFactory> encoder_factory,
     Transport* send_transport)
     : sender_(sender), config_(config) {
   AudioSendStream::Config send_config(send_transport);
@@ -183,7 +183,7 @@ void SendAudioStream::SetMuted(bool mute) {
 ColumnPrinter SendAudioStream::StatsPrinter() {
   return ColumnPrinter::Lambda(
       "audio_target_rate",
-      [this](rtc::SimpleStringBuilder& sb) {
+      [this](SimpleStringBuilder& sb) {
         sender_->SendTask([this, &sb] {
           AudioSendStream::Stats stats = send_stream_->GetStats();
           sb.AppendFormat("%.0lf", stats.target_bitrate_bps / 8.0);
@@ -196,7 +196,7 @@ ReceiveAudioStream::ReceiveAudioStream(
     CallClient* receiver,
     AudioStreamConfig config,
     SendAudioStream* send_stream,
-    rtc::scoped_refptr<AudioDecoderFactory> decoder_factory,
+    scoped_refptr<AudioDecoderFactory> decoder_factory,
     Transport* feedback_transport)
     : receiver_(receiver), config_(config) {
   AudioReceiveStreamInterface::Config recv_config;
@@ -240,9 +240,9 @@ AudioStreamPair::~AudioStreamPair() = default;
 
 AudioStreamPair::AudioStreamPair(
     CallClient* sender,
-    rtc::scoped_refptr<AudioEncoderFactory> encoder_factory,
+    scoped_refptr<AudioEncoderFactory> encoder_factory,
     CallClient* receiver,
-    rtc::scoped_refptr<AudioDecoderFactory> decoder_factory,
+    scoped_refptr<AudioDecoderFactory> decoder_factory,
     AudioStreamConfig config)
     : config_(config),
       send_stream_(sender, config, encoder_factory, sender->transport_.get()),
