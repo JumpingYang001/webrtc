@@ -29,7 +29,7 @@ namespace webrtc {
 
 StunServer::StunServer(AsyncUDPSocket* socket) : socket_(socket) {
   socket_->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         OnPacket(socket, packet);
       });
 }
@@ -40,7 +40,7 @@ StunServer::~StunServer() {
 }
 
 void StunServer::OnPacket(AsyncPacketSocket* socket,
-                          const rtc::ReceivedPacket& packet) {
+                          const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   // Parse the STUN message; eat any messages that fail to parse.
   ByteBufferReader bbuf(packet.payload());
@@ -91,7 +91,7 @@ void StunServer::SendResponse(const StunMessage& msg,
                               const SocketAddress& addr) {
   ByteBufferWriter buf;
   msg.Write(&buf);
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   if (socket_->SendTo(buf.Data(), buf.Length(), addr, options) < 0)
     RTC_LOG_ERR(LS_ERROR) << "sendto";
 }

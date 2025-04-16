@@ -41,14 +41,11 @@ class MockIceController : public IceControllerInterface {
               OnConnectionDestroyed,
               (const webrtc::Connection*),
               (override));
-  MOCK_METHOD(rtc::ArrayView<const Connection* const>,
+  MOCK_METHOD(ArrayView<const Connection* const>,
               GetConnections,
               (),
               (const, override));
-  MOCK_METHOD(rtc::ArrayView<const Connection*>,
-              connections,
-              (),
-              (const, override));
+  MOCK_METHOD(ArrayView<const Connection*>, connections, (), (const, override));
   MOCK_METHOD(bool, HasPingableConnection, (), (const, override));
   MOCK_METHOD(IceControllerInterface::PingResult,
               SelectConnectionToPing,

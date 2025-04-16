@@ -454,7 +454,7 @@ void Connection::OnSendStunPacket(const void* data,
                                   size_t size,
                                   StunRequest* req) {
   RTC_DCHECK_RUN_ON(network_thread_);
-  rtc::PacketOptions options(port_->StunDscpValue());
+  AsyncSocketPacketOptions options(port_->StunDscpValue());
   options.info_signaled_after_sent.packet_type =
       PacketType::kIceConnectivityCheck;
   auto err =
@@ -463,12 +463,13 @@ void Connection::OnSendStunPacket(const void* data,
     RTC_LOG(LS_WARNING) << ToString()
                         << ": Failed to send STUN ping "
                            " err="
-                        << err << " id=" << rtc::hex_encode(req->id());
+                        << err << " id=" << hex_encode(req->id());
   }
 }
 
 void Connection::RegisterReceivedPacketCallback(
-    absl::AnyInvocable<void(webrtc::Connection*, const rtc::ReceivedPacket&)>
+    absl::AnyInvocable<void(webrtc::Connection*,
+                            const webrtc::ReceivedIpPacket&)>
         received_packet_callback) {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_CHECK(!received_packet_callback_);
@@ -483,10 +484,9 @@ void Connection::DeregisterReceivedPacketCallback() {
 void Connection::OnReadPacket(const char* data,
                               size_t size,
                               int64_t packet_time_us) {
-  OnReadPacket(
-      rtc::ReceivedPacket::CreateFromLegacy(data, size, packet_time_us));
+  OnReadPacket(ReceivedIpPacket::CreateFromLegacy(data, size, packet_time_us));
 }
-void Connection::OnReadPacket(const rtc::ReceivedPacket& packet) {
+void Connection::OnReadPacket(const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(network_thread_);
   std::unique_ptr<IceMessage> msg;
   std::string remote_ufrag;
@@ -530,7 +530,7 @@ void Connection::OnReadPacket(const rtc::ReceivedPacket& packet) {
       // "silently" discard the request.
       RTC_LOG(LS_VERBOSE) << ToString() << ": Discarding "
                           << StunMethodToString(msg->type())
-                          << ", id=" << rtc::hex_encode(msg->transaction_id())
+                          << ", id=" << hex_encode(msg->transaction_id())
                           << " with invalid message integrity: "
                           << static_cast<int>(msg->integrity());
       return;
@@ -544,7 +544,7 @@ void Connection::OnReadPacket(const rtc::ReceivedPacket& packet) {
       // "silently" discard the response.
       RTC_LOG(LS_VERBOSE) << ToString() << ": Discarding "
                           << StunMethodToString(msg->type())
-                          << ", id=" << rtc::hex_encode(msg->transaction_id())
+                          << ", id=" << hex_encode(msg->transaction_id())
                           << " with invalid message integrity: "
                           << static_cast<int>(msg->integrity());
       return;
@@ -554,12 +554,12 @@ void Connection::OnReadPacket(const rtc::ReceivedPacket& packet) {
     // No message integrity.
   }
 
-  LoggingSeverity sev = (!writable() ? rtc::LS_INFO : rtc::LS_VERBOSE);
+  LoggingSeverity sev = (!writable() ? LS_INFO : LS_VERBOSE);
   switch (msg->type()) {
     case STUN_BINDING_REQUEST:
       RTC_LOG_V(sev) << ToString() << ": Received "
                      << StunMethodToString(msg->type())
-                     << ", id=" << rtc::hex_encode(msg->transaction_id());
+                     << ", id=" << hex_encode(msg->transaction_id());
       if (remote_ufrag == remote_candidate_.username()) {
         HandleStunBindingOrGoogPingRequest(msg.get());
       } else {
@@ -835,7 +835,7 @@ void Connection::SendResponseMessage(const StunMessage& response) {
   // Send the response.
   ByteBufferWriter buf;
   response.Write(&buf);
-  rtc::PacketOptions options(port_->StunDscpValue());
+  AsyncSocketPacketOptions options(port_->StunDscpValue());
   options.info_signaled_after_sent.packet_type =
       PacketType::kIceConnectivityCheckResponse;
   auto err = port_->SendTo(buf.Data(), buf.Length(), addr, options, false);
@@ -843,15 +843,15 @@ void Connection::SendResponseMessage(const StunMessage& response) {
     RTC_LOG(LS_ERROR) << ToString() << ": Failed to send "
                       << StunMethodToString(response.type())
                       << ", to=" << addr.ToSensitiveString() << ", err=" << err
-                      << ", id=" << rtc::hex_encode(response.transaction_id());
+                      << ", id=" << hex_encode(response.transaction_id());
   } else {
     // Log at LS_INFO if we send a stun ping response on an unwritable
     // connection.
-    LoggingSeverity sev = (!writable()) ? rtc::LS_INFO : rtc::LS_VERBOSE;
+    LoggingSeverity sev = (!writable()) ? LS_INFO : LS_VERBOSE;
     RTC_LOG_V(sev) << ToString() << ": Sent "
                    << StunMethodToString(response.type())
                    << ", to=" << addr.ToSensitiveString()
-                   << ", id=" << rtc::hex_encode(response.transaction_id());
+                   << ", id=" << hex_encode(response.transaction_id());
 
     stats_.sent_ping_responses++;
     LogCandidatePairEvent(IceCandidatePairEventType::kCheckResponseSent,
@@ -949,12 +949,12 @@ void Connection::PrintPingsSinceLastResponse(std::string* s, size_t max) {
   if (pings_since_last_response_.size() > max) {
     for (size_t i = 0; i < max; i++) {
       const SentPing& ping = pings_since_last_response_[i];
-      oss << rtc::hex_encode(ping.id) << " ";
+      oss << hex_encode(ping.id) << " ";
     }
     oss << "... " << (pings_since_last_response_.size() - max) << " more";
   } else {
     for (const SentPing& ping : pings_since_last_response_) {
-      oss << rtc::hex_encode(ping.id) << " ";
+      oss << hex_encode(ping.id) << " ";
     }
   }
   *s = oss.Release();
@@ -1075,8 +1075,8 @@ void Connection::Ping(int64_t now,
   }
 
   pings_since_last_response_.push_back(SentPing(req->id(), now, nomination));
-  RTC_LOG(LS_VERBOSE) << ToString() << ": Sending STUN ping, id="
-                      << rtc::hex_encode(req->id())
+  RTC_LOG(LS_VERBOSE) << ToString()
+                      << ": Sending STUN ping, id=" << hex_encode(req->id())
                       << ", nomination=" << nomination_;
   requests_.Send(req.release());
   state_ = IceCandidatePairState::IN_PROGRESS;
@@ -1199,10 +1199,10 @@ void Connection::HandlePiggybackCheckAcknowledgementIfAny(StunMessage* msg) {
         pings_since_last_response_,
         [&request_id](const SentPing& ping) { return ping.id == request_id; });
     if (iter != pings_since_last_response_.end()) {
-      LoggingSeverity sev = !writable() ? rtc::LS_INFO : rtc::LS_VERBOSE;
+      LoggingSeverity sev = !writable() ? LS_INFO : LS_VERBOSE;
       RTC_LOG_V(sev) << ToString()
                      << ": Received piggyback STUN ping response, id="
-                     << rtc::hex_encode(request_id);
+                     << hex_encode(request_id);
       const int64_t rtt = webrtc::TimeMillis() - iter->sent_time;
       ReceivedPingResponse(rtt, request_id, iter->nomination);
     }
@@ -1471,7 +1471,7 @@ void Connection::OnConnectionRequestResponse(StunRequest* request,
   RTC_DCHECK_RUN_ON(network_thread_);
   // Log at LS_INFO if we receive a ping response on an unwritable
   // connection.
-  LoggingSeverity sev = !writable() ? rtc::LS_INFO : rtc::LS_VERBOSE;
+  LoggingSeverity sev = !writable() ? LS_INFO : LS_VERBOSE;
 
   int rtt = request->Elapsed();
 
@@ -1480,7 +1480,7 @@ void Connection::OnConnectionRequestResponse(StunRequest* request,
     PrintPingsSinceLastResponse(&pings, 5);
     RTC_LOG_V(sev) << ToString() << ": Received "
                    << StunMethodToString(response->type())
-                   << ", id=" << rtc::hex_encode(request->id())
+                   << ", id=" << hex_encode(request->id())
                    << ", code=0"  // Makes logging easier to parse.
                       ", rtt="
                    << rtt << ", pings_since_last_response=" << pings;
@@ -1575,7 +1575,7 @@ void Connection::OnConnectionRequestErrorResponse(ConnectionRequest* request,
   int error_code = response->GetErrorCodeValue();
   RTC_LOG(LS_WARNING) << ToString() << ": Received "
                       << StunMethodToString(response->type())
-                      << " id=" << rtc::hex_encode(request->id())
+                      << " id=" << hex_encode(request->id())
                       << " code=" << error_code
                       << " rtt=" << request->Elapsed();
 
@@ -1600,19 +1600,19 @@ void Connection::OnConnectionRequestErrorResponse(ConnectionRequest* request,
 
 void Connection::OnConnectionRequestTimeout(ConnectionRequest* request) {
   // Log at LS_INFO if we miss a ping on a writable connection.
-  LoggingSeverity sev = writable() ? rtc::LS_INFO : rtc::LS_VERBOSE;
+  LoggingSeverity sev = writable() ? LS_INFO : LS_VERBOSE;
   RTC_LOG_V(sev) << ToString() << ": Timing-out STUN ping "
-                 << rtc::hex_encode(request->id()) << " after "
-                 << request->Elapsed() << " ms";
+                 << hex_encode(request->id()) << " after " << request->Elapsed()
+                 << " ms";
 }
 
 void Connection::OnConnectionRequestSent(ConnectionRequest* request) {
   RTC_DCHECK_RUN_ON(network_thread_);
   // Log at LS_INFO if we send a ping on an unwritable connection.
-  LoggingSeverity sev = !writable() ? rtc::LS_INFO : rtc::LS_VERBOSE;
+  LoggingSeverity sev = !writable() ? LS_INFO : LS_VERBOSE;
   RTC_LOG_V(sev) << ToString() << ": Sent "
                  << StunMethodToString(request->msg()->type())
-                 << ", id=" << rtc::hex_encode(request->id())
+                 << ", id=" << hex_encode(request->id())
                  << ", use_candidate=" << use_candidate_attr()
                  << ", nomination=" << nomination_;
   stats_.sent_ping_requests_total++;
@@ -1864,7 +1864,7 @@ ProxyConnection::ProxyConnection(WeakPtr<PortInterface> port,
 
 int ProxyConnection::Send(const void* data,
                           size_t size,
-                          const rtc::PacketOptions& options) {
+                          const AsyncSocketPacketOptions& options) {
   RTC_DCHECK(port_) << ToDebugId() << ": port_ null in Send()";
   if (!port_)
     return SOCKET_ERROR;

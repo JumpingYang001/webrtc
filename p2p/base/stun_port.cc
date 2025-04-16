@@ -220,7 +220,7 @@ bool UDPPort::Init() {
       return false;
     }
     socket_->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnReadPacket(socket, packet);
         });
   }
@@ -294,9 +294,9 @@ Connection* UDPPort::CreateConnection(const Candidate& address,
 int UDPPort::SendTo(const void* data,
                     size_t size,
                     const SocketAddress& addr,
-                    const rtc::PacketOptions& options,
+                    const AsyncSocketPacketOptions& options,
                     bool /* payload */) {
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   CopyPortInformationToPacketInfo(&modified_options.info_signaled_after_sent);
   int sent = socket_->SendTo(data, size, addr, modified_options);
   if (sent < 0) {
@@ -342,7 +342,7 @@ int UDPPort::GetError() {
 }
 
 bool UDPPort::HandleIncomingPacket(AsyncPacketSocket* socket,
-                                   const rtc::ReceivedPacket& packet) {
+                                   const ReceivedIpPacket& packet) {
   // All packets given to UDP port will be consumed.
   OnReadPacket(socket, packet);
   return true;
@@ -386,7 +386,7 @@ void UDPPort::PostAddAddress(bool /* is_final */) {
 }
 
 void UDPPort::OnReadPacket(AsyncPacketSocket* socket,
-                           const rtc::ReceivedPacket& packet) {
+                           const ReceivedIpPacket& packet) {
   RTC_DCHECK(socket == socket_);
   RTC_DCHECK(!packet.source_address().IsUnresolvedIP());
 
@@ -410,7 +410,7 @@ void UDPPort::OnReadPacket(AsyncPacketSocket* socket,
 }
 
 void UDPPort::OnSentPacket(AsyncPacketSocket* /* socket */,
-                           const rtc::SentPacket& sent_packet) {
+                           const SentPacketInfo& sent_packet) {
   PortInterface::SignalSentPacket(sent_packet);
 }
 
@@ -423,13 +423,13 @@ void UDPPort::SendStunBindingRequests() {
   // open until the deadline (specified in SendStunBindingRequest).
   RTC_DCHECK(request_manager_.empty());
 
-  for (cricket::ServerAddresses::const_iterator it = server_addresses_.begin();
+  for (ServerAddresses::const_iterator it = server_addresses_.begin();
        it != server_addresses_.end();) {
     // sending a STUN binding request may cause the current SocketAddress to be
     // erased from the set, invalidating the loop iterator before it is
     // incremented (even if the SocketAddress itself still exists). So make a
     // copy of the loop iterator, which may be safely invalidated.
-    cricket::ServerAddresses::const_iterator addr = it++;
+    ServerAddresses::const_iterator addr = it++;
     SendStunBindingRequest(*addr);
   }
 }
@@ -437,7 +437,7 @@ void UDPPort::SendStunBindingRequests() {
 void UDPPort::ResolveStunAddress(const SocketAddress& stun_addr) {
   if (!resolver_) {
     resolver_.reset(new AddressResolver(
-        socket_factory(), [&](const rtc::SocketAddress& input, int error) {
+        socket_factory(), [&](const SocketAddress& input, int error) {
           OnResolveResult(input, error);
         }));
   }
@@ -600,7 +600,7 @@ void UDPPort::MaybeSetPortCompleteOrError() {
 // TODO(?): merge this with SendTo above.
 void UDPPort::OnSendPacket(const void* data, size_t size, StunRequest* req) {
   StunBindingRequest* sreq = static_cast<StunBindingRequest*>(req);
-  rtc::PacketOptions options(StunDscpValue());
+  AsyncSocketPacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type = PacketType::kStunMessage;
   CopyPortInformationToPacketInfo(&options.info_signaled_after_sent);
   if (socket_->SendTo(data, size, sreq->server_addr(), options) < 0) {
@@ -626,7 +626,7 @@ std::unique_ptr<StunPort> StunPort::Create(
     const PortParametersRef& args,
     uint16_t min_port,
     uint16_t max_port,
-    const cricket::ServerAddresses& servers,
+    const ServerAddresses& servers,
     std::optional<int> stun_keepalive_interval) {
   // Using `new` to access a non-public constructor.
   auto port = absl::WrapUnique(new StunPort(args, min_port, max_port, servers));
@@ -640,7 +640,7 @@ std::unique_ptr<StunPort> StunPort::Create(
 StunPort::StunPort(const PortParametersRef& args,
                    uint16_t min_port,
                    uint16_t max_port,
-                   const cricket::ServerAddresses& servers)
+                   const ServerAddresses& servers)
     : UDPPort(args, IceCandidateType::kSrflx, min_port, max_port, false) {
   set_server_addresses(servers);
 }

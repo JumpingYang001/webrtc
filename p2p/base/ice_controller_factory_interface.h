@@ -24,7 +24,7 @@ namespace webrtc {
 
 // struct with arguments to IceControllerFactoryInterface::Create
 struct IceControllerFactoryArgs {
-  std::function<cricket::IceTransportState()> ice_transport_state_func;
+  std::function<IceTransportStateInternal()> ice_transport_state_func;
   std::function<IceRole()> ice_role_func;
   std::function<bool(const webrtc::Connection*)> is_connection_pruned_func;
   const IceFieldTrials* ice_field_trials;

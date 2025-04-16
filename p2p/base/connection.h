@@ -144,22 +144,23 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   // covers.
   virtual int Send(const void* data,
                    size_t size,
-                   const rtc::PacketOptions& options) = 0;
+                   const AsyncSocketPacketOptions& options) = 0;
 
   // Error if Send() returns < 0
   virtual int GetError() = 0;
 
   // Register as a recipient of received packets. There can only be one.
   void RegisterReceivedPacketCallback(
-      absl::AnyInvocable<void(webrtc::Connection*, const rtc::ReceivedPacket&)>
+      absl::AnyInvocable<void(webrtc::Connection*,
+                              const webrtc::ReceivedIpPacket&)>
           received_packet_callback);
   void DeregisterReceivedPacketCallback();
 
   sigslot::signal1<Connection*> SignalReadyToSend;
 
   // Called when a packet is received on this connection.
-  void OnReadPacket(const rtc::ReceivedPacket& packet);
-  [[deprecated("Pass a rtc::ReceivedPacket")]] void
+  void OnReadPacket(const ReceivedIpPacket& packet);
+  [[deprecated("Pass a webrtc::ReceivedIpPacket")]] void
   OnReadPacket(const char* data, size_t size, int64_t packet_time_us);
 
   // Called when the socket is currently able to send.
@@ -517,7 +518,7 @@ class RTC_EXPORT Connection : public CandidatePairInterface {
   std::optional<
       std::function<void(RTCErrorOr<const webrtc::StunUInt64Attribute*>)>>
       goog_delta_ack_consumer_;
-  absl::AnyInvocable<void(webrtc::Connection*, const rtc::ReceivedPacket&)>
+  absl::AnyInvocable<void(webrtc::Connection*, const webrtc::ReceivedIpPacket&)>
       received_packet_callback_;
 
   void MaybeAddDtlsPiggybackingAttributes(StunMessage* msg);
@@ -533,7 +534,7 @@ class ProxyConnection : public Connection {
 
   int Send(const void* data,
            size_t size,
-           const rtc::PacketOptions& options) override;
+           const AsyncSocketPacketOptions& options) override;
   int GetError() override;
 
  private:

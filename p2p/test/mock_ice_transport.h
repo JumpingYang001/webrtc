@@ -39,19 +39,22 @@ class MockIceTransport : public IceTransportInternal {
               SendPacket,
               (const char* data,
                size_t len,
-               const rtc::PacketOptions& options,
+               const webrtc::AsyncSocketPacketOptions& options,
                int flags),
               (override));
-  MOCK_METHOD(int, SetOption, (rtc::Socket::Option opt, int value), (override));
+  MOCK_METHOD(int,
+              SetOption,
+              (webrtc::Socket::Option opt, int value),
+              (override));
   MOCK_METHOD(int, GetError, (), (override));
-  MOCK_METHOD(cricket::IceRole, GetIceRole, (), (const, override));
+  MOCK_METHOD(IceRole, GetIceRole, (), (const, override));
   MOCK_METHOD(bool,
               GetStats,
               (webrtc::IceTransportStats * ice_transport_stats),
               (override));
 
-  cricket::IceTransportState GetState() const override {
-    return cricket::IceTransportState::STATE_INIT;
+  IceTransportStateInternal GetState() const override {
+    return IceTransportStateInternal::STATE_INIT;
   }
   IceTransportState GetIceTransportState() const override {
     return IceTransportState::kNew;
@@ -59,28 +62,22 @@ class MockIceTransport : public IceTransportInternal {
 
   const std::string& transport_name() const override { return transport_name_; }
   int component() const override { return 0; }
-  void SetIceRole(cricket::IceRole /* role */) override {}
+  void SetIceRole(IceRole /* role */) override {}
   // The ufrag and pwd in `ice_params` must be set
   // before candidate gathering can start.
-  void SetIceParameters(
-      const cricket::IceParameters& /* ice_params */) override {}
-  void SetRemoteIceParameters(
-      const cricket::IceParameters& /* ice_params */) override {}
-  void SetRemoteIceMode(cricket::IceMode /* mode */) override {}
+  void SetIceParameters(const IceParameters& /* ice_params */) override {}
+  void SetRemoteIceParameters(const IceParameters& /* ice_params */) override {}
+  void SetRemoteIceMode(IceMode /* mode */) override {}
   void SetIceConfig(const IceConfig& config) override { ice_config_ = config; }
   const IceConfig& config() const override { return ice_config_; }
   std::optional<int> GetRttEstimate() override { return std::nullopt; }
-  const cricket::Connection* selected_connection() const override {
-    return nullptr;
-  }
-  std::optional<const cricket::CandidatePair> GetSelectedCandidatePair()
-      const override {
+  const Connection* selected_connection() const override { return nullptr; }
+  std::optional<const CandidatePair> GetSelectedCandidatePair() const override {
     return std::nullopt;
   }
   void MaybeStartGathering() override {}
-  void AddRemoteCandidate(const cricket::Candidate& /* candidate */) override {}
-  void RemoveRemoteCandidate(
-      const cricket::Candidate& /* candidate */) override {}
+  void AddRemoteCandidate(const Candidate& /* candidate */) override {}
+  void RemoveRemoteCandidate(const Candidate& /* candidate */) override {}
   void RemoveAllRemoteCandidates() override {}
   IceGatheringState gathering_state() const override {
     return IceGatheringState::kIceGatheringComplete;

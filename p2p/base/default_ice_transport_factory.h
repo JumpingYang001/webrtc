@@ -48,7 +48,7 @@ class DefaultIceTransportFactory : public IceTransportFactory {
   ~DefaultIceTransportFactory() = default;
 
   // Must be called on the network thread and returns a DefaultIceTransport.
-  rtc::scoped_refptr<IceTransportInterface> CreateIceTransport(
+  scoped_refptr<IceTransportInterface> CreateIceTransport(
       const std::string& transport_name,
       int component,
       IceTransportInit init) override;

@@ -83,7 +83,7 @@ class TCPPort : public Port {
   int SendTo(const void* data,
              size_t size,
              const SocketAddress& addr,
-             const rtc::PacketOptions& options,
+             const AsyncSocketPacketOptions& options,
              bool payload) override;
 
   // Accepts incoming TCP connection.
@@ -102,11 +102,10 @@ class TCPPort : public Port {
                                  bool remove = false);
 
   // Receives packet signal from the local TCP Socket.
-  void OnReadPacket(AsyncPacketSocket* socket,
-                    const rtc::ReceivedPacket& packet);
+  void OnReadPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet);
 
   void OnSentPacket(AsyncPacketSocket* socket,
-                    const rtc::SentPacket& sent_packet) override;
+                    const SentPacketInfo& sent_packet) override;
 
   void OnReadyToSend(AsyncPacketSocket* socket);
 
@@ -134,7 +133,7 @@ class TCPConnection : public Connection, public sigslot::has_slots<> {
 
   int Send(const void* data,
            size_t size,
-           const rtc::PacketOptions& options) override;
+           const AsyncSocketPacketOptions& options) override;
   int GetError() override;
 
   AsyncPacketSocket* socket() { return socket_.get(); }
@@ -169,9 +168,8 @@ class TCPConnection : public Connection, public sigslot::has_slots<> {
   void OnConnect(AsyncPacketSocket* socket);
   void OnClose(AsyncPacketSocket* socket, int error);
   void OnSentPacket(AsyncPacketSocket* socket,
-                    const rtc::SentPacket& sent_packet);
-  void OnReadPacket(AsyncPacketSocket* socket,
-                    const rtc::ReceivedPacket& packet);
+                    const SentPacketInfo& sent_packet);
+  void OnReadPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet);
   void OnReadyToSend(AsyncPacketSocket* socket);
   void OnDestroyed(Connection* c);
 

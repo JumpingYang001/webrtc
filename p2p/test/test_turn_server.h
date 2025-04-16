@@ -105,7 +105,7 @@ class TestTurnServer : public TurnAuthInterface {
     RTC_DCHECK(thread_checker_.IsCurrent());
     if (proto == webrtc::PROTO_UDP) {
       server_.AddInternalSocket(
-          rtc::AsyncUDPSocket::Create(socket_factory_, int_addr), proto);
+          AsyncUDPSocket::Create(socket_factory_, int_addr), proto);
     } else if (proto == webrtc::PROTO_TCP || proto == webrtc::PROTO_TLS) {
       // For TCP we need to create a server socket which can listen for incoming
       // new connections.
@@ -117,8 +117,8 @@ class TestTurnServer : public TurnAuthInterface {
         // be configured with a self-signed certificate for testing.
         // Additionally, the client will not present a valid certificate, so we
         // must not fail when checking the peer's identity.
-        std::unique_ptr<rtc::SSLAdapterFactory> ssl_adapter_factory =
-            rtc::SSLAdapterFactory::Create();
+        std::unique_ptr<SSLAdapterFactory> ssl_adapter_factory =
+            SSLAdapterFactory::Create();
         ssl_adapter_factory->SetRole(webrtc::SSL_SERVER);
         ssl_adapter_factory->SetIdentity(
             SSLIdentity::Create(common_name, KeyParams()));

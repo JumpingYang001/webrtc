@@ -203,7 +203,7 @@ void ReportStats() {
 
 uint32_t PseudoTcp::Now() {
 #if 0  // Use this to synchronize timers with logging timestamps (easier debug)
-  return static_cast<uint32_t>(rtc::TimeSince(StartTime()));
+  return static_cast<uint32_t>(webrtc::TimeSince(StartTime()));
 #else
   return webrtc::Time32();
 #endif
@@ -627,7 +627,7 @@ bool PseudoTcp::clock_check(uint32_t now, long& nTimeout) {
   if (m_state == TCP_ESTABLISHED) {
     nTimeout = std::min<int32_t>(
         nTimeout,
-        rtc::TimeDiff32(
+        webrtc::TimeDiff32(
             m_lasttraffic + (m_bOutgoing ? IDLE_PING * 3 / 2 : IDLE_PING),
             now));
   }
@@ -1196,7 +1196,7 @@ void PseudoTcp::parseOptions(const char* data, uint32_t len) {
   // See http://www.freesoft.org/CIE/Course/Section4/8.htm for
   // parsing the options list.
   ByteBufferReader buf(
-      rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), len));
+      MakeArrayView(reinterpret_cast<const uint8_t*>(data), len));
   while (buf.Length()) {
     uint8_t kind = TCP_OPT_EOL;
     buf.ReadUInt8(&kind);

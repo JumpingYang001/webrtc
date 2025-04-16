@@ -23,14 +23,14 @@ namespace webrtc {
 const size_t kDtlsRecordHeaderLen = 13;
 const size_t kMaxDtlsPacketLen = 2048;
 
-bool IsDtlsPacket(rtc::ArrayView<const uint8_t> payload);
-bool IsDtlsClientHelloPacket(rtc::ArrayView<const uint8_t> payload);
-bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload);
+bool IsDtlsPacket(ArrayView<const uint8_t> payload);
+bool IsDtlsClientHelloPacket(ArrayView<const uint8_t> payload);
+bool IsDtlsHandshakePacket(ArrayView<const uint8_t> payload);
 
 std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
-    rtc::ArrayView<const uint8_t> dtls_packet);
+    ArrayView<const uint8_t> dtls_packet);
 
-uint32_t ComputeDtlsPacketHash(rtc::ArrayView<const uint8_t> dtls_packet);
+uint32_t ComputeDtlsPacketHash(ArrayView<const uint8_t> dtls_packet);
 
 }  //  namespace webrtc
 

@@ -118,7 +118,7 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   P2PTransportChannel& operator=(const P2PTransportChannel&) = delete;
 
   // From TransportChannelImpl:
-  cricket::IceTransportState GetState() const override;
+  IceTransportStateInternal GetState() const override;
   IceTransportState GetIceTransportState() const override;
 
   const std::string& transport_name() const override;
@@ -150,7 +150,7 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   // From TransportChannel:
   int SendPacket(const char* data,
                  size_t len,
-                 const rtc::PacketOptions& options,
+                 const AsyncSocketPacketOptions& options,
                  int flags) override;
   int SetOption(Socket::Option opt, int value) override;
   bool GetOption(Socket::Option opt, int* value) override;
@@ -169,9 +169,9 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   void SwitchSelectedConnection(const Connection* connection,
                                 IceSwitchReason reason) override;
   void ForgetLearnedStateForConnections(
-      rtc::ArrayView<const Connection* const> connections) override;
+      ArrayView<const Connection* const> connections) override;
   bool PruneConnections(
-      rtc::ArrayView<const Connection* const> connections) override;
+      ArrayView<const Connection* const> connections) override;
 
   // TODO(honghaiz): Remove this method once the reference of it in
   // Chromoting is removed.
@@ -215,7 +215,7 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   void MarkConnectionPinged(Connection* conn);
 
   // Public for unit tests.
-  rtc::ArrayView<Connection* const> connections() const;
+  ArrayView<Connection* const> connections() const;
   void RemoveConnectionForTest(Connection* connection);
 
   // Public for unit tests.
@@ -292,7 +292,7 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   // https://w3c.github.io/webrtc-pc/#dom-rtcicetransportstate. ComputeState
   // computes the value we currently export as RTCIceTransportState.
   // TODO(bugs.webrtc.org/9308): Remove ComputeState once it's no longer used.
-  cricket::IceTransportState ComputeState() const;
+  IceTransportStateInternal ComputeState() const;
   IceTransportState ComputeIceTransportState() const;
 
   bool CreateConnections(const Candidate& remote_candidate,
@@ -337,8 +337,8 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   void OnRoleConflict(PortInterface* port);
 
   void OnConnectionStateChange(Connection* connection);
-  void OnReadPacket(Connection* connection, const rtc::ReceivedPacket& packet);
-  void OnSentPacket(const rtc::SentPacket& sent_packet);
+  void OnReadPacket(Connection* connection, const ReceivedIpPacket& packet);
+  void OnSentPacket(const SentPacketInfo& sent_packet);
   void OnReadyToSend(Connection* connection);
   void OnConnectionDestroyed(Connection* connection);
 
@@ -449,8 +449,8 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   int weak_ping_interval_ RTC_GUARDED_BY(network_thread_) = WEAK_PING_INTERVAL;
   // TODO(jonasolsson): Remove state_ and rename standardized_state_ once state_
   // is no longer used to compute the ICE connection state.
-  cricket::IceTransportState state_ RTC_GUARDED_BY(network_thread_) =
-      cricket::IceTransportState::STATE_INIT;
+  IceTransportStateInternal state_ RTC_GUARDED_BY(network_thread_) =
+      IceTransportStateInternal::STATE_INIT;
   IceTransportState standardized_state_ RTC_GUARDED_BY(network_thread_) =
       IceTransportState::kNew;
   IceConfig config_ RTC_GUARDED_BY(network_thread_);
@@ -501,7 +501,7 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   uint32_t selected_candidate_pair_changes_ = 0;
 
   // When was last data received on a existing connection,
-  // from connection->last_data_received() that uses rtc::TimeMillis().
+  // from connection->last_data_received() that uses webrtc::TimeMillis().
   int64_t last_data_received_ms_ = 0;
 
   // Parsed field trials.

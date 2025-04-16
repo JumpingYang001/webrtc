@@ -33,7 +33,8 @@
 namespace webrtc {
 
 DtlsStunPiggybackController::DtlsStunPiggybackController(
-    absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback)
+    absl::AnyInvocable<void(webrtc::ArrayView<const uint8_t>)>
+        dtls_data_callback)
     : dtls_data_callback_(std::move(dtls_data_callback)) {}
 
 DtlsStunPiggybackController::~DtlsStunPiggybackController() {}
@@ -61,8 +62,7 @@ void DtlsStunPiggybackController::SetDtlsHandshakeComplete(bool is_dtls_client,
   state_ = State::PENDING;
 }
 
-void DtlsStunPiggybackController::CapturePacket(
-    rtc::ArrayView<const uint8_t> data) {
+void DtlsStunPiggybackController::CapturePacket(ArrayView<const uint8_t> data) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   if (!webrtc::IsDtlsPacket(data)) {
     return;

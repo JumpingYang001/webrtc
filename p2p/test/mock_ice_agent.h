@@ -22,7 +22,7 @@
 
 namespace webrtc {
 
-class MockIceAgent : public cricket::IceAgentInterface {
+class MockIceAgent : public IceAgentInterface {
  public:
   ~MockIceAgent() override = default;
 
@@ -33,7 +33,7 @@ class MockIceAgent : public cricket::IceAgentInterface {
   MOCK_METHOD(void, UpdateState, (), (override));
   MOCK_METHOD(void,
               ForgetLearnedStateForConnections,
-              (rtc::ArrayView<const webrtc::Connection* const>),
+              (webrtc::ArrayView<const webrtc::Connection* const>),
               (override));
   MOCK_METHOD(void, SendPingRequest, (const webrtc::Connection*), (override));
   MOCK_METHOD(void,
@@ -42,7 +42,7 @@ class MockIceAgent : public cricket::IceAgentInterface {
               (override));
   MOCK_METHOD(bool,
               PruneConnections,
-              (rtc::ArrayView<const webrtc::Connection* const>),
+              (webrtc::ArrayView<const webrtc::Connection* const>),
               (override));
 };
 

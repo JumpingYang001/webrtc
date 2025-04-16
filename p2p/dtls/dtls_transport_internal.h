@@ -90,7 +90,7 @@ class DtlsTransportInternal : public PacketTransportInternal {
 
   // Allows key material to be extracted for external encryption.
   virtual bool ExportSrtpKeyingMaterial(
-      rtc::ZeroOnFreeBuffer<uint8_t>& keying_material) = 0;
+      ZeroOnFreeBuffer<uint8_t>& keying_material) = 0;
 
   // Set DTLS remote fingerprint. Must be after local identity set.
   ABSL_DEPRECATED("Use SetRemoteParameters instead.")
@@ -134,7 +134,7 @@ class DtlsTransportInternal : public PacketTransportInternal {
   }
 
   // Emitted whenever the Dtls handshake failed on some transport channel.
-  // F: void(rtc::SSLHandshakeError)
+  // F: void(webrtc::SSLHandshakeError)
   template <typename F>
   void SubscribeDtlsHandshakeError(F&& callback) {
     dtls_handshake_error_callback_list_.AddReceiver(std::forward<F>(callback));

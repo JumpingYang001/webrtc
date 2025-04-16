@@ -102,14 +102,14 @@ class AsyncStunTCPSocketTest : public ::testing::Test,
   }
 
   void OnReadPacket(AsyncPacketSocket* /* socket */,
-                    const rtc::ReceivedPacket& packet) {
+                    const ReceivedIpPacket& packet) {
     recv_packets_.push_back(
         std::string(reinterpret_cast<const char*>(packet.payload().data()),
                     packet.payload().size()));
   }
 
   void OnSentPacket(AsyncPacketSocket* /* socket */,
-                    const rtc::SentPacket& /* packet */) {
+                    const SentPacketInfo& /* packet */) {
     ++sent_packets_;
   }
 
@@ -117,13 +117,13 @@ class AsyncStunTCPSocketTest : public ::testing::Test,
                        AsyncPacketSocket* new_socket) {
     recv_socket_ = absl::WrapUnique(new_socket);
     new_socket->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnReadPacket(socket, packet);
         });
   }
 
   bool Send(const void* data, size_t len) {
-    rtc::PacketOptions options;
+    AsyncSocketPacketOptions options;
     int ret =
         send_socket_->Send(reinterpret_cast<const char*>(data), len, options);
     vss_->ProcessMessagesUntilIdle();
@@ -173,8 +173,7 @@ TEST_F(AsyncStunTCPSocketTest, TestMultipleStunPackets) {
 
 TEST_F(AsyncStunTCPSocketTest, ProcessInputHandlesMultiplePackets) {
   send_socket_->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* /* socket */,
-          const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* /* socket */, const ReceivedIpPacket& packet) {
         recv_packets_.push_back(
             std::string(reinterpret_cast<const char*>(packet.payload().data()),
                         packet.payload().size()));

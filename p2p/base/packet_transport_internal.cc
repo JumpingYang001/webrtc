@@ -38,7 +38,7 @@ std::optional<NetworkRoute> PacketTransportInternal::network_route() const {
 void PacketTransportInternal::RegisterReceivedPacketCallback(
     void* id,
     absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
-                            const rtc::ReceivedPacket&)> callback) {
+                            const webrtc::ReceivedIpPacket&)> callback) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   received_packet_callback_list_.AddReceiver(id, std::move(callback));
 }
@@ -56,7 +56,7 @@ void PacketTransportInternal::SetOnCloseCallback(
 }
 
 void PacketTransportInternal::NotifyPacketReceived(
-    const rtc::ReceivedPacket& packet) {
+    const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   received_packet_callback_list_.Send(this, packet);
 }

@@ -67,7 +67,7 @@ class FakePacketTransport : public PacketTransportInternal {
   bool receiving() const override { return receiving_; }
   int SendPacket(const char* data,
                  size_t len,
-                 const rtc::PacketOptions& options,
+                 const AsyncSocketPacketOptions& options,
                  int /* flags */) override {
     if (!dest_ || error_ != 0) {
       return -1;
@@ -75,7 +75,7 @@ class FakePacketTransport : public PacketTransportInternal {
     CopyOnWriteBuffer packet(data, len);
     SendPacketInternal(packet, options);
 
-    rtc::SentPacket sent_packet(options.packet_id, rtc::TimeMillis());
+    SentPacketInfo sent_packet(options.packet_id, TimeMillis());
     SignalSentPacket(this, sent_packet);
     return static_cast<int>(len);
   }
@@ -131,11 +131,11 @@ class FakePacketTransport : public PacketTransportInternal {
   }
 
   void SendPacketInternal(const CopyOnWriteBuffer& packet,
-                          const rtc::PacketOptions& options) {
+                          const AsyncSocketPacketOptions& options) {
     last_sent_packet_ = packet;
     if (dest_) {
-      dest_->NotifyPacketReceived(rtc::ReceivedPacket(
-          packet, SocketAddress(), Timestamp::Micros(rtc::TimeMicros()),
+      dest_->NotifyPacketReceived(ReceivedIpPacket(
+          packet, SocketAddress(), Timestamp::Micros(TimeMicros()),
           options.ecn_1 ? EcnMarking::kEct1 : EcnMarking::kNotEct));
     }
   }

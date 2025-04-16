@@ -83,10 +83,8 @@ class RTC_EXPORT UDPPort : public Port {
 
   SocketAddress GetLocalAddress() const { return socket_->GetLocalAddress(); }
 
-  const cricket::ServerAddresses& server_addresses() const {
-    return server_addresses_;
-  }
-  void set_server_addresses(const cricket::ServerAddresses& addresses) {
+  const ServerAddresses& server_addresses() const { return server_addresses_; }
+  void set_server_addresses(const ServerAddresses& addresses) {
     server_addresses_ = addresses;
   }
 
@@ -99,7 +97,7 @@ class RTC_EXPORT UDPPort : public Port {
   int GetError() override;
 
   bool HandleIncomingPacket(AsyncPacketSocket* socket,
-                            const rtc::ReceivedPacket& packet) override;
+                            const ReceivedIpPacket& packet) override;
 
   bool SupportsProtocol(absl::string_view protocol) const override;
   ProtocolType GetProtocol() const override;
@@ -132,7 +130,7 @@ class RTC_EXPORT UDPPort : public Port {
   int SendTo(const void* data,
              size_t size,
              const SocketAddress& addr,
-             const rtc::PacketOptions& options,
+             const AsyncSocketPacketOptions& options,
              bool payload) override;
 
   void UpdateNetworkCost() override;
@@ -144,11 +142,10 @@ class RTC_EXPORT UDPPort : public Port {
 
   void PostAddAddress(bool is_final) override;
 
-  void OnReadPacket(AsyncPacketSocket* socket,
-                    const rtc::ReceivedPacket& packet);
+  void OnReadPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet);
 
   void OnSentPacket(AsyncPacketSocket* socket,
-                    const rtc::SentPacket& sent_packet) override;
+                    const SentPacketInfo& sent_packet) override;
 
   void OnReadyToSend(AsyncPacketSocket* socket);
 
@@ -165,7 +162,7 @@ class RTC_EXPORT UDPPort : public Port {
 
  private:
   // A helper class which can be called repeatedly to resolve multiple
-  // addresses, as opposed to rtc::AsyncDnsResolverInterface, which can only
+  // addresses, as opposed to webrtc::AsyncDnsResolverInterface, which can only
   // resolve one address per instance.
   class AddressResolver {
    public:
@@ -215,7 +212,7 @@ class RTC_EXPORT UDPPort : public Port {
   // Sends STUN requests to the server.
   void OnSendPacket(const void* data, size_t size, StunRequest* req);
 
-  // TODO(mallinaht) - Move this up to cricket::Port when SignalAddressReady is
+  // TODO(mallinaht): Move this up to webrtc::Port when SignalAddressReady is
   // changed to SignalPortReady.
   void MaybeSetPortCompleteOrError();
 
@@ -230,9 +227,9 @@ class RTC_EXPORT UDPPort : public Port {
                : INFINITE_LIFETIME;
   }
 
-  cricket::ServerAddresses server_addresses_;
-  cricket::ServerAddresses bind_request_succeeded_servers_;
-  cricket::ServerAddresses bind_request_failed_servers_;
+  ServerAddresses server_addresses_;
+  ServerAddresses bind_request_succeeded_servers_;
+  ServerAddresses bind_request_failed_servers_;
   StunRequestManager request_manager_;
   AsyncPacketSocket* socket_;
   int error_;
@@ -258,7 +255,7 @@ class StunPort : public UDPPort {
       const PortParametersRef& args,
       uint16_t min_port,
       uint16_t max_port,
-      const cricket::ServerAddresses& servers,
+      const ServerAddresses& servers,
       std::optional<int> stun_keepalive_interval);
 
   void PrepareAddress() override;
@@ -267,7 +264,7 @@ class StunPort : public UDPPort {
   StunPort(const PortParametersRef& args,
            uint16_t min_port,
            uint16_t max_port,
-           const cricket::ServerAddresses& servers);
+           const ServerAddresses& servers);
 };
 
 }  //  namespace webrtc

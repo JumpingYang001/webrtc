@@ -294,7 +294,7 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   // port implemented this method.
   // TODO(mallinath) - Make it pure virtual.
   virtual bool HandleIncomingPacket(AsyncPacketSocket* socket,
-                                    const rtc::ReceivedPacket& packet);
+                                    const ReceivedIpPacket& packet);
 
   // Shall the port handle packet from this `remote_addr`.
   // This method is overridden by TurnPort.
@@ -341,7 +341,7 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   // listen to AsyncPacketSocket::SignalSentPacket and then call
   // PortInterface::OnSentPacket.
   virtual void OnSentPacket(AsyncPacketSocket* socket,
-                            const rtc::SentPacket& sent_packet) = 0;
+                            const SentPacketInfo& sent_packet) = 0;
 
   // Called when the socket is currently able to send.
   void OnReadyToSend();
@@ -383,16 +383,16 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
   // Called when a packet is received from an unknown address that is not
   // currently a connection.  If this is an authenticated STUN binding request,
   // then we will signal the client.
-  void OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType proto);
+  void OnReadPacket(const ReceivedIpPacket& packet, ProtocolType proto);
 
   [[deprecated(
-      "Use OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType "
+      "Use OnReadPacket(const webrtc::ReceivedIpPacket& packet, ProtocolType "
       "proto)")]] void
   OnReadPacket(const char* data,
                size_t size,
                const SocketAddress& addr,
                ProtocolType proto) {
-    OnReadPacket(rtc::ReceivedPacket::CreateFromLegacy(
+    OnReadPacket(ReceivedIpPacket::CreateFromLegacy(
                      data, size, /*packet_time_us = */ -1, addr),
                  proto);
   }

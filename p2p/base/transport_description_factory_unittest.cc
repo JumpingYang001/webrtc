@@ -184,8 +184,8 @@ class TransportDescriptionFactoryTest : public ::testing::Test {
   TransportDescriptionFactory f1_;
   TransportDescriptionFactory f2_;
 
-  rtc::scoped_refptr<webrtc::RTCCertificate> cert1_;
-  rtc::scoped_refptr<webrtc::RTCCertificate> cert2_;
+  webrtc::scoped_refptr<webrtc::RTCCertificate> cert1_;
+  webrtc::scoped_refptr<webrtc::RTCCertificate> cert2_;
 };
 
 TEST_F(TransportDescriptionFactoryTest, TestOfferDtls) {

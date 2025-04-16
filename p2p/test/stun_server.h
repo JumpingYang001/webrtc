@@ -36,7 +36,7 @@ class StunServer {
 
  protected:
   // Callback for packets from socket.
-  void OnPacket(AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet);
+  void OnPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet);
 
   // Handlers for the different types of STUN/TURN requests:
   virtual void OnBindingRequest(StunMessage* msg, const SocketAddress& addr);

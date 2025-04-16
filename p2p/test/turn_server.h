@@ -94,7 +94,7 @@ class TurnServerAllocation final {
   std::string ToString() const;
 
   void HandleTurnMessage(const TurnMessage* msg);
-  void HandleChannelData(rtc::ArrayView<const uint8_t> payload);
+  void HandleChannelData(ArrayView<const uint8_t> payload);
 
  private:
   struct Channel {
@@ -118,7 +118,7 @@ class TurnServerAllocation final {
   void HandleChannelBindRequest(const TurnMessage* msg);
 
   void OnExternalPacket(AsyncPacketSocket* socket,
-                        const rtc::ReceivedPacket& packet);
+                        const ReceivedIpPacket& packet);
 
   static TimeDelta ComputeLifetime(const TurnMessage& msg);
   bool HasPermission(const IPAddress& addr);
@@ -170,7 +170,7 @@ class TurnRedirectInterface {
 class StunMessageObserver {
  public:
   virtual void ReceivedMessage(const TurnMessage* msg) = 0;
-  virtual void ReceivedChannelData(rtc::ArrayView<const uint8_t> payload) = 0;
+  virtual void ReceivedChannelData(ArrayView<const uint8_t> payload) = 0;
   virtual ~StunMessageObserver() {}
 };
 
@@ -274,7 +274,7 @@ class TurnServer : public sigslot::has_slots<> {
 
   std::string GenerateNonce(int64_t now) const RTC_RUN_ON(thread_);
   void OnInternalPacket(AsyncPacketSocket* socket,
-                        const rtc::ReceivedPacket& packet) RTC_RUN_ON(thread_);
+                        const ReceivedIpPacket& packet) RTC_RUN_ON(thread_);
 
   void OnNewInternalConnection(Socket* socket);
 
@@ -283,8 +283,7 @@ class TurnServer : public sigslot::has_slots<> {
   void OnInternalSocketClose(AsyncPacketSocket* socket, int err);
 
   void HandleStunMessage(TurnServerConnection* conn,
-                         rtc::ArrayView<const uint8_t> payload)
-      RTC_RUN_ON(thread_);
+                         ArrayView<const uint8_t> payload) RTC_RUN_ON(thread_);
   void HandleBindingRequest(TurnServerConnection* conn, const StunMessage* msg)
       RTC_RUN_ON(thread_);
   void HandleAllocateRequest(TurnServerConnection* conn,

@@ -50,13 +50,13 @@ class PortAllocatorTest : public ::testing::Test, public sigslot::has_slots<> {
  protected:
   void SetConfigurationWithPoolSize(int candidate_pool_size) {
     EXPECT_TRUE(allocator_->SetConfiguration(
-        cricket::ServerAddresses(), std::vector<webrtc::RelayServerConfig>(),
+        webrtc::ServerAddresses(), std::vector<webrtc::RelayServerConfig>(),
         candidate_pool_size, webrtc::NO_PRUNE));
   }
 
   void SetConfigurationWithPoolSizeExpectFailure(int candidate_pool_size) {
     EXPECT_FALSE(allocator_->SetConfiguration(
-        cricket::ServerAddresses(), std::vector<webrtc::RelayServerConfig>(),
+        webrtc::ServerAddresses(), std::vector<webrtc::RelayServerConfig>(),
         candidate_pool_size, webrtc::NO_PRUNE));
   }
 
@@ -97,12 +97,12 @@ class PortAllocatorTest : public ::testing::Test, public sigslot::has_slots<> {
   std::unique_ptr<webrtc::FakePortAllocator> allocator_;
   webrtc::SocketAddress stun_server_1{"11.11.11.11", 3478};
   webrtc::SocketAddress stun_server_2{"22.22.22.22", 3478};
-  webrtc::RelayServerConfig turn_server_1{"11.11.11.11",      3478,
-                                          kTurnUsername,      kTurnPassword,
-                                          cricket::PROTO_UDP, false};
-  webrtc::RelayServerConfig turn_server_2{"22.22.22.22",      3478,
-                                          kTurnUsername,      kTurnPassword,
-                                          cricket::PROTO_UDP, false};
+  webrtc::RelayServerConfig turn_server_1{"11.11.11.11",     3478,
+                                          kTurnUsername,     kTurnPassword,
+                                          webrtc::PROTO_UDP, false};
+  webrtc::RelayServerConfig turn_server_2{"22.22.22.22",     3478,
+                                          kTurnUsername,     kTurnPassword,
+                                          webrtc::PROTO_UDP, false};
 };
 
 TEST_F(PortAllocatorTest, TestDefaults) {
@@ -126,7 +126,7 @@ TEST_F(PortAllocatorTest, CreateSession) {
 }
 
 TEST_F(PortAllocatorTest, SetConfigurationUpdatesIceServers) {
-  cricket::ServerAddresses stun_servers_1 = {stun_server_1};
+  webrtc::ServerAddresses stun_servers_1 = {stun_server_1};
   std::vector<webrtc::RelayServerConfig> turn_servers_1 = {turn_server_1};
   EXPECT_TRUE(allocator_->SetConfiguration(stun_servers_1, turn_servers_1, 0,
                                            webrtc::NO_PRUNE));
@@ -134,7 +134,7 @@ TEST_F(PortAllocatorTest, SetConfigurationUpdatesIceServers) {
   EXPECT_EQ(turn_servers_1, allocator_->turn_servers());
 
   // Update with a different set of servers.
-  cricket::ServerAddresses stun_servers_2 = {stun_server_2};
+  webrtc::ServerAddresses stun_servers_2 = {stun_server_2};
   std::vector<webrtc::RelayServerConfig> turn_servers_2 = {turn_server_2};
   EXPECT_TRUE(allocator_->SetConfiguration(stun_servers_2, turn_servers_2, 0,
                                            webrtc::NO_PRUNE));
@@ -186,7 +186,7 @@ TEST_F(PortAllocatorTest, SetConfigurationDestroysPooledSessions) {
 // ones created when the ICE servers change.
 TEST_F(PortAllocatorTest,
        SetConfigurationRecreatesPooledSessionsWhenIceServersChange) {
-  cricket::ServerAddresses stun_servers_1 = {stun_server_1};
+  webrtc::ServerAddresses stun_servers_1 = {stun_server_1};
   std::vector<webrtc::RelayServerConfig> turn_servers_1 = {turn_server_1};
   allocator_->SetConfiguration(stun_servers_1, turn_servers_1, 1,
                                webrtc::NO_PRUNE);
@@ -194,7 +194,7 @@ TEST_F(PortAllocatorTest,
   EXPECT_EQ(turn_servers_1, allocator_->turn_servers());
 
   // Update with a different set of servers (and also change pool size).
-  cricket::ServerAddresses stun_servers_2 = {stun_server_2};
+  webrtc::ServerAddresses stun_servers_2 = {stun_server_2};
   std::vector<webrtc::RelayServerConfig> turn_servers_2 = {turn_server_2};
   allocator_->SetConfiguration(stun_servers_2, turn_servers_2, 2,
                                webrtc::NO_PRUNE);

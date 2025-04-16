@@ -55,8 +55,8 @@ class FakeDtlsTransport : public DtlsTransportInternal {
         dtls_fingerprint_("", nullptr) {
     RTC_DCHECK(ice_transport_);
     ice_transport_->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnIceTransportReadPacket(transport, packet);
         });
     ice_transport_->SignalNetworkRouteChanged.connect(
@@ -67,11 +67,11 @@ class FakeDtlsTransport : public DtlsTransportInternal {
       : owned_ice_transport_(std::move(ice)),
         transport_name_(owned_ice_transport_->transport_name()),
         component_(owned_ice_transport_->component()),
-        dtls_fingerprint_("", rtc::ArrayView<const uint8_t>()) {
+        dtls_fingerprint_("", ArrayView<const uint8_t>()) {
     ice_transport_ = owned_ice_transport_.get();
     ice_transport_->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnIceTransportReadPacket(transport, packet);
         });
     ice_transport_->SignalNetworkRouteChanged.connect(
@@ -176,8 +176,7 @@ class FakeDtlsTransport : public DtlsTransportInternal {
   bool SetRemoteFingerprint(absl::string_view alg,
                             const uint8_t* digest,
                             size_t digest_len) {
-    dtls_fingerprint_ =
-        SSLFingerprint(alg, rtc::MakeArrayView(digest, digest_len));
+    dtls_fingerprint_ = SSLFingerprint(alg, MakeArrayView(digest, digest_len));
     return true;
   }
   bool SetDtlsRole(SSLRole role) override {
@@ -242,7 +241,7 @@ class FakeDtlsTransport : public DtlsTransportInternal {
     return std::make_unique<SSLCertChain>(remote_cert_->Clone());
   }
   bool ExportSrtpKeyingMaterial(
-      rtc::ZeroOnFreeBuffer<uint8_t>& keying_material) override {
+      ZeroOnFreeBuffer<uint8_t>& keying_material) override {
     if (do_dtls_) {
       std::memset(keying_material.data(), 0xff, keying_material.size());
     }
@@ -263,7 +262,7 @@ class FakeDtlsTransport : public DtlsTransportInternal {
   bool receiving() const override { return receiving_; }
   int SendPacket(const char* data,
                  size_t len,
-                 const rtc::PacketOptions& options,
+                 const AsyncSocketPacketOptions& options,
                  int flags) override {
     // We expect only SRTP packets to be sent through this interface.
     if (flags != PF_SRTP_BYPASS && flags != 0) {
@@ -285,7 +284,7 @@ class FakeDtlsTransport : public DtlsTransportInternal {
 
  private:
   void OnIceTransportReadPacket(PacketTransportInternal* /* ice_ */,
-                                const rtc::ReceivedPacket& packet) {
+                                const ReceivedIpPacket& packet) {
     NotifyPacketReceived(packet);
   }
 

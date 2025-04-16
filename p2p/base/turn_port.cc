@@ -199,7 +199,7 @@ class TurnEntry : public sigslot::has_slots<> {
   int Send(const void* data,
            size_t size,
            bool payload,
-           const rtc::PacketOptions& options);
+           const AsyncSocketPacketOptions& options);
 
   void OnCreatePermissionSuccess();
   void OnCreatePermissionError(StunMessage* response, int code);
@@ -243,7 +243,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
       stun_dscp_value_(webrtc::DSCP_NO_CHANGE),
       request_manager_(
           args.network_thread,
-          [this](const void* data, size_t size, cricket::StunRequest* request) {
+          [this](const void* data, size_t size, StunRequest* request) {
             OnSendStunPacket(data, size, request);
           }),
       next_channel_number_(TURN_CHANNEL_NUMBER_START),
@@ -274,7 +274,7 @@ TurnPort::TurnPort(const PortParametersRef& args,
       stun_dscp_value_(webrtc::DSCP_NO_CHANGE),
       request_manager_(
           args.network_thread,
-          [this](const void* data, size_t size, cricket::StunRequest* request) {
+          [this](const void* data, size_t size, StunRequest* request) {
             OnSendStunPacket(data, size, request);
           }),
       next_channel_number_(TURN_CHANNEL_NUMBER_START),
@@ -450,7 +450,7 @@ bool TurnPort::CreateTurnClientSocket() {
   if (!SharedSocket()) {
     // If socket is shared, AllocationSequence will receive the packet.
     socket_->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnReadPacket(socket, packet);
         });
   }
@@ -465,8 +465,7 @@ bool TurnPort::CreateTurnClientSocket() {
       server_address_.proto == webrtc::PROTO_TLS) {
     socket_->SignalConnect.connect(this, &TurnPort::OnSocketConnect);
     socket_->SubscribeCloseEvent(
-        this,
-        [this](rtc::AsyncPacketSocket* s, int err) { OnSocketClose(s, err); });
+        this, [this](AsyncPacketSocket* s, int err) { OnSocketClose(s, err); });
   } else {
     state_ = STATE_CONNECTED;
   }
@@ -495,7 +494,7 @@ void TurnPort::OnSocketConnect(AsyncPacketSocket* socket) {
   // identical to that in TcpPort.
   const SocketAddress& socket_address = socket->GetLocalAddress();
   if (absl::c_none_of(Network()->GetIPs(),
-                      [socket_address](const rtc::InterfaceAddress& addr) {
+                      [socket_address](const InterfaceAddress& addr) {
                         return socket_address.ipaddr() == addr;
                       })) {
     if (socket->GetLocalAddress().IsLoopbackIP()) {
@@ -654,7 +653,7 @@ int TurnPort::GetError() {
 int TurnPort::SendTo(const void* data,
                      size_t size,
                      const SocketAddress& addr,
-                     const rtc::PacketOptions& options,
+                     const AsyncSocketPacketOptions& options,
                      bool payload) {
   // Try to find an entry for this specific address; we should have one.
   TurnEntry* entry = FindEntry(addr);
@@ -666,7 +665,7 @@ int TurnPort::SendTo(const void* data,
   }
 
   // Send the actual contents to the server using the usual mechanism.
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   CopyPortInformationToPacketInfo(&modified_options.info_signaled_after_sent);
   int sent = entry->Send(data, size, payload, modified_options);
   if (sent <= 0) {
@@ -694,7 +693,7 @@ void TurnPort::SendBindingErrorResponse(StunMessage* message,
 }
 
 bool TurnPort::HandleIncomingPacket(AsyncPacketSocket* socket,
-                                    const rtc::ReceivedPacket& packet) {
+                                    const ReceivedIpPacket& packet) {
   if (socket != socket_) {
     // The packet was received on a shared socket after we've allocated a new
     // socket for this TURN port.
@@ -760,12 +759,12 @@ bool TurnPort::HandleIncomingPacket(AsyncPacketSocket* socket,
 }
 
 void TurnPort::OnReadPacket(AsyncPacketSocket* socket,
-                            const rtc::ReceivedPacket& packet) {
+                            const ReceivedIpPacket& packet) {
   HandleIncomingPacket(socket, packet);
 }
 
 void TurnPort::OnSentPacket(AsyncPacketSocket* socket,
-                            const rtc::SentPacket& sent_packet) {
+                            const SentPacketInfo& sent_packet) {
   PortInterface::SignalSentPacket(sent_packet);
 }
 
@@ -865,7 +864,7 @@ void TurnPort::OnSendStunPacket(const void* data,
                                 size_t size,
                                 StunRequest* request) {
   RTC_DCHECK(connected());
-  rtc::PacketOptions options(StunDscpValue());
+  AsyncSocketPacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type = PacketType::kTurnMessage;
   CopyPortInformationToPacketInfo(&options.info_signaled_after_sent);
   if (Send(data, size, options) < 0) {
@@ -1009,7 +1008,7 @@ void TurnPort::HandleDataIndication(const char* data,
                                     int64_t packet_time_us) {
   // Read in the message, and process according to RFC5766, Section 10.4.
   ByteBufferReader buf(
-      rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
+      MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   TurnMessage msg;
   if (!msg.Read(&buf)) {
     RTC_LOG(LS_WARNING) << ToString()
@@ -1098,7 +1097,7 @@ void TurnPort::DispatchPacket(const char* data,
                               const SocketAddress& remote_addr,
                               ProtocolType proto,
                               int64_t packet_time_us) {
-  rtc::ReceivedPacket packet = rtc::ReceivedPacket::CreateFromLegacy(
+  ReceivedIpPacket packet = ReceivedIpPacket::CreateFromLegacy(
       data, size, packet_time_us, remote_addr);
   if (Connection* conn = GetConnection(remote_addr)) {
     conn->OnReadPacket(packet);
@@ -1159,7 +1158,7 @@ void TurnPort::AddRequestAuthInfo(StunMessage* msg) {
 
 int TurnPort::Send(const void* data,
                    size_t len,
-                   const rtc::PacketOptions& options) {
+                   const AsyncSocketPacketOptions& options) {
   return socket_->SendTo(data, len, server_address_.address, options);
 }
 
@@ -1782,7 +1781,7 @@ void TurnEntry::SendChannelBindRequest(int delay) {
 int TurnEntry::Send(const void* data,
                     size_t size,
                     bool payload,
-                    const rtc::PacketOptions& options) {
+                    const AsyncSocketPacketOptions& options) {
   ByteBufferWriter buf;
   if (state_ != STATE_BOUND ||
       !port_->TurnCustomizerAllowChannelData(data, size, payload)) {
@@ -1811,7 +1810,7 @@ int TurnEntry::Send(const void* data,
     buf.Write(
         ArrayView<const uint8_t>(reinterpret_cast<const uint8_t*>(data), size));
   }
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   modified_options.info_signaled_after_sent.turn_overhead_bytes =
       buf.Length() - size;
   return port_->Send(buf.Data(), buf.Length(), modified_options);

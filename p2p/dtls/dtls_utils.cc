@@ -33,12 +33,12 @@ const uint8_t kLengthPresentBitmask = 0b00000100;
 
 namespace webrtc {
 
-bool IsDtlsPacket(rtc::ArrayView<const uint8_t> payload) {
+bool IsDtlsPacket(ArrayView<const uint8_t> payload) {
   const uint8_t* u = payload.data();
   return (payload.size() >= kDtlsRecordHeaderLen && (u[0] > 19 && u[0] < 64));
 }
 
-bool IsDtlsClientHelloPacket(rtc::ArrayView<const uint8_t> payload) {
+bool IsDtlsClientHelloPacket(ArrayView<const uint8_t> payload) {
   if (!IsDtlsPacket(payload)) {
     return false;
   }
@@ -46,7 +46,7 @@ bool IsDtlsClientHelloPacket(rtc::ArrayView<const uint8_t> payload) {
   return payload.size() > 17 && u[0] == kDtlsHandshakeRecord && u[13] == 1;
 }
 
-bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload) {
+bool IsDtlsHandshakePacket(ArrayView<const uint8_t> payload) {
   if (!IsDtlsPacket(payload)) {
     return false;
   }
@@ -60,7 +60,7 @@ bool IsDtlsHandshakePacket(rtc::ArrayView<const uint8_t> payload) {
 
 // Returns a (unsorted) list of (msg_seq) received as part of the handshake.
 std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
-    rtc::ArrayView<const uint8_t> dtls_packet) {
+    ArrayView<const uint8_t> dtls_packet) {
   std::vector<uint16_t> acks;
   ByteBufferReader record_buf(dtls_packet);
   // https://datatracker.ietf.org/doc/html/rfc6347#section-4.1
@@ -142,7 +142,7 @@ std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
   return acks;
 }
 
-uint32_t ComputeDtlsPacketHash(rtc::ArrayView<const uint8_t> dtls_packet) {
+uint32_t ComputeDtlsPacketHash(ArrayView<const uint8_t> dtls_packet) {
   return webrtc::ComputeCrc32(dtls_packet.data(), dtls_packet.size());
 }
 

@@ -61,8 +61,8 @@ enum IceConnectionState {
 };
 
 struct IceTransportStats {
-  cricket::CandidateStatsList candidate_stats_list;
-  cricket::ConnectionInfos connection_infos;
+  CandidateStatsList candidate_stats_list;
+  ConnectionInfos connection_infos;
   // Number of times the selected candidate pair has changed
   // Initially 0 and 1 once the first candidate pair has been selected.
   // The counter is increase also when "unselecting" a connection.
@@ -115,7 +115,7 @@ enum class NominationMode {
 // is valid RTCError::OK() is returned.
 RTCError VerifyCandidate(const Candidate& cand);
 
-// Runs through a list of cricket::Candidate instances and calls VerifyCandidate
+// Runs through a list of webrtc::Candidate instances and calls VerifyCandidate
 // for each one, stopping on the first error encounted and returning that error
 // value if so. On success returns RTCError::OK().
 RTCError VerifyCandidates(const Candidates& candidates);
@@ -417,7 +417,7 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
 
   CallbackList<IceTransportInternal*,
                const StunDictionaryView&,
-               rtc::ArrayView<uint16_t>>
+               ArrayView<uint16_t>>
       dictionary_view_updated_callback_list_;
   CallbackList<IceTransportInternal*, const StunDictionaryWriter&>
       dictionary_writer_synced_callback_list_;

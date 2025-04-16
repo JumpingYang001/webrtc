@@ -67,12 +67,11 @@ class RegatheringControllerTest : public ::testing::Test,
 
   // Initializes the allocator and gathers candidates once by StartGettingPorts.
   void InitializeAndGatherOnce() {
-    cricket::ServerAddresses stun_servers;
+    ServerAddresses stun_servers;
     stun_servers.insert(kStunAddr);
     RelayServerConfig turn_server;
     turn_server.credentials = kRelayCredentials;
-    turn_server.ports.push_back(
-        ProtocolAddress(kTurnUdpIntAddr, cricket::PROTO_UDP));
+    turn_server.ports.push_back(ProtocolAddress(kTurnUdpIntAddr, PROTO_UDP));
     std::vector<RelayServerConfig> turn_servers(1, turn_server);
     allocator_->set_flags(kOnlyLocalPorts);
     allocator_->SetConfiguration(stun_servers, turn_servers, 0 /* pool size */,

@@ -81,8 +81,8 @@ using State = DtlsStunPiggybackController::State;
 class DtlsStunPiggybackControllerTest : public ::testing::Test {
  protected:
   DtlsStunPiggybackControllerTest()
-      : client_([](rtc::ArrayView<const uint8_t> data) {}),
-        server_([](rtc::ArrayView<const uint8_t> data) {}) {}
+      : client_([](ArrayView<const uint8_t> data) {}),
+        server_([](ArrayView<const uint8_t> data) {}) {}
 
   void SendClientToServer(const std::vector<uint8_t> data,
                           StunMessageType type) {
@@ -128,14 +128,13 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
     }
   }
 
-  std::unique_ptr<StunByteStringAttribute> WrapInStun(
-      cricket::IceAttributeType type,
-      absl::string_view data) {
+  std::unique_ptr<StunByteStringAttribute> WrapInStun(IceAttributeType type,
+                                                      absl::string_view data) {
     return std::make_unique<StunByteStringAttribute>(type, data);
   }
 
   std::unique_ptr<StunByteStringAttribute> WrapInStun(
-      cricket::IceAttributeType type,
+      IceAttributeType type,
       const std::vector<uint8_t>& data) {
     return std::make_unique<StunByteStringAttribute>(type, data.data(),
                                                      data.size());

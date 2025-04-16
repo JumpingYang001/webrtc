@@ -105,13 +105,13 @@ class IceControllerInterface {
   virtual void OnConnectionDestroyed(const Connection* connection) = 0;
 
   // These are all connections that has been added and not destroyed.
-  virtual rtc::ArrayView<const Connection* const> GetConnections() const {
+  virtual ArrayView<const Connection* const> GetConnections() const {
     // Stub implementation to simplify downstream roll.
     RTC_CHECK_NOTREACHED();
     return {};
   }
   // TODO(bugs.webrtc.org/15702): Remove this after downstream is cleaned up.
-  virtual rtc::ArrayView<const Connection*> connections() const {
+  virtual ArrayView<const Connection*> connections() const {
     // Stub implementation to simplify downstream removal.
     RTC_CHECK_NOTREACHED();
     return {};

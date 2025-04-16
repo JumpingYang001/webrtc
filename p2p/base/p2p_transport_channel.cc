@@ -106,7 +106,7 @@ RouteEndpoint CreateRouteEndpointFromCandidate(bool local,
                                                const Candidate& candidate,
                                                bool uses_turn) {
   auto adapter_type = candidate.network_type();
-  if (!local && adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
+  if (!local && adapter_type == ADAPTER_TYPE_UNKNOWN) {
     bool vpn;
     std::tie(adapter_type, vpn) =
         Network::GuessAdapterFromNetworkCost(candidate.network_cost());
@@ -282,7 +282,7 @@ void P2PTransportChannel::AddConnection(Connection* connection) {
   connection->set_unwritable_min_checks(config_.ice_unwritable_min_checks);
   connection->set_inactive_timeout(config_.ice_inactive_timeout);
   connection->RegisterReceivedPacketCallback(
-      [&](Connection* connection, const rtc::ReceivedPacket& packet) {
+      [&](Connection* connection, const ReceivedIpPacket& packet) {
         OnReadPacket(connection, packet);
       });
   connection->SignalReadyToSend.connect(this,
@@ -321,7 +321,7 @@ void P2PTransportChannel::AddConnection(Connection* connection) {
 }
 
 void P2PTransportChannel::ForgetLearnedStateForConnections(
-    rtc::ArrayView<const Connection* const> connections) {
+    ArrayView<const Connection* const> connections) {
   for (const Connection* con : connections) {
     FromIceController(con)->ForgetLearnedState();
   }
@@ -347,7 +347,7 @@ IceRole P2PTransportChannel::GetIceRole() const {
   return ice_role_;
 }
 
-cricket::IceTransportState P2PTransportChannel::GetState() const {
+IceTransportStateInternal P2PTransportChannel::GetState() const {
   RTC_DCHECK_RUN_ON(network_thread_);
   return state_;
 }
@@ -408,10 +408,10 @@ P2PTransportChannel::GetSelectedCandidatePair() const {
 
 // A channel is considered ICE completed once there is at most one active
 // connection per network and at least one active connection.
-cricket::IceTransportState P2PTransportChannel::ComputeState() const {
+IceTransportStateInternal P2PTransportChannel::ComputeState() const {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (!had_connection_) {
-    return cricket::IceTransportState::STATE_INIT;
+    return IceTransportStateInternal::STATE_INIT;
   }
 
   std::vector<Connection*> active_connections;
@@ -421,7 +421,7 @@ cricket::IceTransportState P2PTransportChannel::ComputeState() const {
     }
   }
   if (active_connections.empty()) {
-    return cricket::IceTransportState::STATE_FAILED;
+    return IceTransportStateInternal::STATE_FAILED;
   }
 
   std::set<const Network*> networks;
@@ -434,12 +434,12 @@ cricket::IceTransportState P2PTransportChannel::ComputeState() const {
                           << ": Ice not completed yet for this channel as "
                           << network->ToString()
                           << " has more than 1 connection.";
-      return cricket::IceTransportState::STATE_CONNECTING;
+      return IceTransportStateInternal::STATE_CONNECTING;
     }
   }
 
   ice_event_log_.DumpCandidatePairDescriptionToMemoryAsConfigEvents();
-  return cricket::IceTransportState::STATE_COMPLETED;
+  return IceTransportStateInternal::STATE_COMPLETED;
 }
 
 // Compute the current RTCIceTransportState as described in
@@ -1560,7 +1560,7 @@ int P2PTransportChannel::GetError() {
 // Send data to the other side, using our selected connection.
 int P2PTransportChannel::SendPacket(const char* data,
                                     size_t len,
-                                    const rtc::PacketOptions& options,
+                                    const AsyncSocketPacketOptions& options,
                                     int flags) {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (flags != 0) {
@@ -1577,7 +1577,7 @@ int P2PTransportChannel::SendPacket(const char* data,
 
   packets_sent_++;
   last_sent_packet_id_ = options.packet_id;
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   modified_options.info_signaled_after_sent.packet_type = PacketType::kData;
   int sent = selected_connection_->Send(data, len, modified_options);
   if (sent <= 0) {
@@ -1639,10 +1639,9 @@ DiffServCodePoint P2PTransportChannel::DefaultDscpValue() const {
   return static_cast<DiffServCodePoint>(it->second);
 }
 
-rtc::ArrayView<Connection* const> P2PTransportChannel::connections() const {
+ArrayView<Connection* const> P2PTransportChannel::connections() const {
   RTC_DCHECK_RUN_ON(network_thread_);
-  return rtc::ArrayView<Connection* const>(connections_.data(),
-                                           connections_.size());
+  return ArrayView<Connection* const>(connections_.data(), connections_.size());
 }
 
 void P2PTransportChannel::RemoveConnectionForTest(Connection* connection) {
@@ -1728,7 +1727,7 @@ bool P2PTransportChannel::AllowedToPruneConnections() const {
 }
 
 bool P2PTransportChannel::PruneConnections(
-    rtc::ArrayView<const Connection* const> connections) {
+    ArrayView<const Connection* const> connections) {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (!AllowedToPruneConnections()) {
     RTC_LOG(LS_WARNING) << "Not allowed to prune connections";
@@ -1873,7 +1872,7 @@ void P2PTransportChannel::UpdateTransportState() {
   }
   SetReceiving(receiving);
 
-  cricket::IceTransportState state = ComputeState();
+  IceTransportStateInternal state = ComputeState();
   IceTransportState current_standardized_state = ComputeIceTransportState();
 
   if (state_ != state) {
@@ -1885,29 +1884,29 @@ void P2PTransportChannel::UpdateTransportState() {
     // ICE states from the standard; the difference is covered by
     // TransportController and PeerConnection.
     switch (state_) {
-      case cricket::IceTransportState::STATE_INIT:
+      case IceTransportStateInternal::STATE_INIT:
         // TODO(deadbeef): Once we implement end-of-candidates signaling,
         // we shouldn't go from INIT to COMPLETED.
-        RTC_DCHECK(state == cricket::IceTransportState::STATE_CONNECTING ||
-                   state == cricket::IceTransportState::STATE_COMPLETED ||
-                   state == cricket::IceTransportState::STATE_FAILED);
+        RTC_DCHECK(state == IceTransportStateInternal::STATE_CONNECTING ||
+                   state == IceTransportStateInternal::STATE_COMPLETED ||
+                   state == IceTransportStateInternal::STATE_FAILED);
         break;
-      case cricket::IceTransportState::STATE_CONNECTING:
-        RTC_DCHECK(state == cricket::IceTransportState::STATE_COMPLETED ||
-                   state == cricket::IceTransportState::STATE_FAILED);
+      case IceTransportStateInternal::STATE_CONNECTING:
+        RTC_DCHECK(state == IceTransportStateInternal::STATE_COMPLETED ||
+                   state == IceTransportStateInternal::STATE_FAILED);
         break;
-      case cricket::IceTransportState::STATE_COMPLETED:
+      case IceTransportStateInternal::STATE_COMPLETED:
         // TODO(deadbeef): Once we implement end-of-candidates signaling,
         // we shouldn't go from COMPLETED to CONNECTING.
         // Though we *can* go from COMPlETED to FAILED, if consent expires.
-        RTC_DCHECK(state == cricket::IceTransportState::STATE_CONNECTING ||
-                   state == cricket::IceTransportState::STATE_FAILED);
+        RTC_DCHECK(state == IceTransportStateInternal::STATE_CONNECTING ||
+                   state == IceTransportStateInternal::STATE_FAILED);
         break;
-      case cricket::IceTransportState::STATE_FAILED:
+      case IceTransportStateInternal::STATE_FAILED:
         // TODO(deadbeef): Once we implement end-of-candidates signaling,
         // we shouldn't go from FAILED to CONNECTING or COMPLETED.
-        RTC_DCHECK(state == cricket::IceTransportState::STATE_CONNECTING ||
-                   state == cricket::IceTransportState::STATE_COMPLETED);
+        RTC_DCHECK(state == IceTransportStateInternal::STATE_CONNECTING ||
+                   state == IceTransportStateInternal::STATE_COMPLETED);
         break;
       default:
         RTC_DCHECK_NOTREACHED();
@@ -2185,7 +2184,7 @@ bool P2PTransportChannel::PrunePort(PortInterface* port) {
 
 // We data is available, let listeners know
 void P2PTransportChannel::OnReadPacket(Connection* connection,
-                                       const rtc::ReceivedPacket& packet) {
+                                       const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(network_thread_);
   if (connection != selected_connection_ && !FindConnection(connection)) {
     // Do not deliver, if packet doesn't belong to the correct transport
@@ -2212,7 +2211,7 @@ void P2PTransportChannel::OnReadPacket(Connection* connection,
   }
 }
 
-void P2PTransportChannel::OnSentPacket(const rtc::SentPacket& sent_packet) {
+void P2PTransportChannel::OnSentPacket(const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(network_thread_);
 
   SignalSentPacket(this, sent_packet);

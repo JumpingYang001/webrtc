@@ -131,7 +131,7 @@ void PortAllocator::set_restrict_ice_credentials_change(bool value) {
 
 // Deprecated
 bool PortAllocator::SetConfiguration(
-    const cricket::ServerAddresses& stun_servers,
+    const ServerAddresses& stun_servers,
     const std::vector<RelayServerConfig>& turn_servers,
     int candidate_pool_size,
     bool prune_turn_ports,
@@ -145,7 +145,7 @@ bool PortAllocator::SetConfiguration(
 }
 
 bool PortAllocator::SetConfiguration(
-    const cricket::ServerAddresses& stun_servers,
+    const ServerAddresses& stun_servers,
     const std::vector<RelayServerConfig>& turn_servers,
     int candidate_pool_size,
     PortPrunePolicy turn_port_prune_policy,
@@ -291,7 +291,7 @@ void PortAllocator::SetCandidateFilter(uint32_t filter) {
 }
 
 void PortAllocator::GetCandidateStatsFromPooledSessions(
-    cricket::CandidateStatsList* candidate_stats_list) {
+    CandidateStatsList* candidate_stats_list) {
   CheckRunOnValidThreadAndInitialized();
   for (const auto& session : pooled_sessions()) {
     session->GetCandidateStatsFromReadyPorts(candidate_stats_list);

@@ -63,7 +63,7 @@ class IceAgentInterface {
   //
   // SignalStateChange will not be triggered.
   virtual void ForgetLearnedStateForConnections(
-      rtc::ArrayView<const Connection* const> connections) = 0;
+      ArrayView<const Connection* const> connections) = 0;
 
   // Send a STUN ping request for the given connection.
   virtual void SendPingRequest(const Connection* connection) = 0;
@@ -75,7 +75,7 @@ class IceAgentInterface {
   // Prune away the given connections. Returns true if pruning is permitted and
   // successfully performed.
   virtual bool PruneConnections(
-      rtc::ArrayView<const Connection* const> connections) = 0;
+      ArrayView<const Connection* const> connections) = 0;
 };
 
 }  //  namespace webrtc

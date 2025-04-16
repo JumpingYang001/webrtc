@@ -239,7 +239,7 @@ bool TestConnectivity(const webrtc::SocketAddress& src,
   int sent = client->SendTo(buf, len, server->GetLocalAddress());
 
   webrtc::Thread::Current()->SleepMs(100);
-  rtc::Buffer payload;
+  Buffer payload;
   webrtc::Socket::ReceiveBuffer receive_buffer(payload);
   int received = server->RecvFrom(receive_buffer);
   return received == sent && ::memcmp(buf, payload.data(), len) == 0;

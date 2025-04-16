@@ -145,7 +145,7 @@ class FakeIceTransport : public IceTransportInternal {
   }
 
   void SetTransportState(IceTransportState state,
-                         cricket::IceTransportState legacy_state) {
+                         IceTransportStateInternal legacy_state) {
     RTC_DCHECK_RUN_ON(network_thread_);
     transport_state_ = state;
     legacy_transport_state_ = legacy_state;
@@ -208,22 +208,22 @@ class FakeIceTransport : public IceTransportInternal {
     return remote_ice_parameters_;
   }
 
-  cricket::IceTransportState GetState() const override {
+  IceTransportStateInternal GetState() const override {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (legacy_transport_state_) {
       return *legacy_transport_state_;
     }
 
     if (connection_count_ == 0) {
-      return had_connection_ ? cricket::IceTransportState::STATE_FAILED
-                             : cricket::IceTransportState::STATE_INIT;
+      return had_connection_ ? IceTransportStateInternal::STATE_FAILED
+                             : IceTransportStateInternal::STATE_INIT;
     }
 
     if (connection_count_ == 1) {
-      return cricket::IceTransportState::STATE_COMPLETED;
+      return IceTransportStateInternal::STATE_COMPLETED;
     }
 
-    return cricket::IceTransportState::STATE_CONNECTING;
+    return IceTransportStateInternal::STATE_CONNECTING;
   }
 
   IceTransportState GetIceTransportState() const override {
@@ -340,7 +340,7 @@ class FakeIceTransport : public IceTransportInternal {
   }
   int SendPacket(const char* data,
                  size_t len,
-                 const rtc::PacketOptions& options,
+                 const AsyncSocketPacketOptions& options,
                  int flags) override {
     RTC_DCHECK_RUN_ON(network_thread_);
     if (!dest_) {
@@ -355,7 +355,7 @@ class FakeIceTransport : public IceTransportInternal {
       }
     }
 
-    rtc::SentPacket sent_packet(options.packet_id, webrtc::TimeMillis());
+    SentPacketInfo sent_packet(options.packet_id, webrtc::TimeMillis());
     SignalSentPacket(this, sent_packet);
     return static_cast<int>(len);
   }
@@ -400,7 +400,7 @@ class FakeIceTransport : public IceTransportInternal {
   void set_packet_send_filter(
       absl::AnyInvocable<bool(const char* data,
                               size_t len,
-                              const rtc::PacketOptions& options,
+                              const webrtc::AsyncSocketPacketOptions& options,
                               int /* flags */)> func) {
     RTC_DCHECK_RUN_ON(network_thread_);
     packet_send_filter_func_ = std::move(func);
@@ -444,7 +444,7 @@ class FakeIceTransport : public IceTransportInternal {
     msg->AddFingerprint();
     ByteBufferWriter buf;
     msg->Write(&buf);
-    rtc::PacketOptions options;
+    AsyncSocketPacketOptions options;
     options.info_signaled_after_sent.packet_type =
         PacketType::kIceConnectivityCheck;
     SendPacketInternal(CopyOnWriteBuffer(buf.DataView()), options, 0);
@@ -481,7 +481,7 @@ class FakeIceTransport : public IceTransportInternal {
     msg->AddFingerprint();
     ByteBufferWriter buf;
     msg->Write(&buf);
-    rtc::PacketOptions options;
+    AsyncSocketPacketOptions options;
     options.info_signaled_after_sent.packet_type =
         PacketType::kIceConnectivityCheckResponse;
     SendPacketInternal(CopyOnWriteBuffer(buf.DataView()), options, 0);
@@ -524,7 +524,7 @@ class FakeIceTransport : public IceTransportInternal {
   }
 
   bool SendPacketInternal(const CopyOnWriteBuffer& packet,
-                          const rtc::PacketOptions& options,
+                          const AsyncSocketPacketOptions& options,
                           int flags)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(network_thread_) {
     last_sent_packet_ = packet;
@@ -603,7 +603,7 @@ class FakeIceTransport : public IceTransportInternal {
                         << static_cast<uint8_t>(packet.data()[0]);
     } else {
       received_packets_++;
-      NotifyPacketReceived(rtc::ReceivedPacket::CreateFromLegacy(
+      NotifyPacketReceived(ReceivedIpPacket::CreateFromLegacy(
           packet.data(), packet.size(), now));
     }
   }
@@ -614,7 +614,7 @@ class FakeIceTransport : public IceTransportInternal {
     }
 
     std::unique_ptr<IceMessage> stun_msg(new IceMessage());
-    ByteBufferReader buf(rtc::MakeArrayView(packet.data(), packet.size()));
+    ByteBufferReader buf(MakeArrayView(packet.data(), packet.size()));
     RTC_CHECK(stun_msg->Read(&buf));
     return stun_msg;
   }
@@ -633,7 +633,7 @@ class FakeIceTransport : public IceTransportInternal {
   size_t connection_count_ RTC_GUARDED_BY(network_thread_) = 0;
   std::optional<IceTransportState> transport_state_
       RTC_GUARDED_BY(network_thread_);
-  std::optional<cricket::IceTransportState> legacy_transport_state_
+  std::optional<IceTransportStateInternal> legacy_transport_state_
       RTC_GUARDED_BY(network_thread_);
   IceGatheringState gathering_state_ RTC_GUARDED_BY(network_thread_) =
       webrtc::kIceGatheringNew;
@@ -651,7 +651,9 @@ class FakeIceTransport : public IceTransportInternal {
   std::optional<int64_t> last_sent_ping_timestamp_;
 
   // If filter func return TRUE means that packet will be dropped.
-  absl::AnyInvocable<bool(const char*, size_t, const rtc::PacketOptions&, int)>
+  absl::AnyInvocable<
+      // NOLINTNEXTLINE(readability/casting) - not a cast; false positive!
+      bool(const char*, size_t, const AsyncSocketPacketOptions&, int)>
       packet_send_filter_func_ RTC_GUARDED_BY(network_thread_) = nullptr;
   absl::AnyInvocable<bool(const CopyOnWriteBuffer&, uint64_t)>
       packet_recv_filter_func_ RTC_GUARDED_BY(network_thread_) = nullptr;

@@ -160,7 +160,7 @@ NATServer::NATServer(NATType type,
   internal_socket_thread_.BlockingCall([&] {
     udp_server_socket_ = AsyncUDPSocket::Create(internal, internal_udp_addr);
     udp_server_socket_->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnInternalUDPPacket(socket, packet);
         });
   });
@@ -185,7 +185,7 @@ NATServer::~NATServer() {
 }
 
 void NATServer::OnInternalUDPPacket(AsyncPacketSocket* socket,
-                                    const rtc::ReceivedPacket& packet) {
+                                    const ReceivedIpPacket& packet) {
   RTC_DCHECK(internal_socket_thread_.IsCurrent());
   // Read the intended destination from the wire.
   SocketAddress dest_addr;
@@ -204,14 +204,14 @@ void NATServer::OnInternalUDPPacket(AsyncPacketSocket* socket,
   iter->second->AllowlistInsert(dest_addr);
 
   // Send the packet to its intended destination.
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   const char* buf = reinterpret_cast<const char*>(packet.payload().data());
   size_t size = packet.payload().size();
   iter->second->socket->SendTo(buf + length, size - length, dest_addr, options);
 }
 
 void NATServer::OnExternalUDPPacket(AsyncPacketSocket* socket,
-                                    const rtc::ReceivedPacket& packet) {
+                                    const ReceivedIpPacket& packet) {
   RTC_DCHECK(external_socket_thread_.IsCurrent());
   SocketAddress local_addr = socket->GetLocalAddress();
 
@@ -236,7 +236,7 @@ void NATServer::OnExternalUDPPacket(AsyncPacketSocket* socket,
       packet.payload().size() + webrtc::kNATEncodedIPv6AddressSize,
       packet.source_address());
   // Copy the data part after the address.
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   memcpy(real_buf.get() + addrlength, packet.payload().data(),
          packet.payload().size());
   udp_server_socket_->SendTo(real_buf.get(),
@@ -257,7 +257,7 @@ void NATServer::Translate(const SocketAddressPair& route) {
     (*int_map_)[route] = entry;
     (*ext_map_)[socket->GetLocalAddress()] = entry;
     socket->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
           OnExternalUDPPacket(socket, packet);
         });
   });

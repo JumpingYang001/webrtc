@@ -90,7 +90,7 @@ RTCError VerifyCandidate(const Candidate& cand) {
 }
 
 RTCError VerifyCandidates(const Candidates& candidates) {
-  for (const cricket::Candidate& candidate : candidates) {
+  for (const Candidate& candidate : candidates) {
     RTCError error = VerifyCandidate(candidate);
     if (!error.ok())
       return error;

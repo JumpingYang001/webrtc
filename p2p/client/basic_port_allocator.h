@@ -143,7 +143,7 @@ class RTC_EXPORT BasicPortAllocatorSession : public PortAllocatorSession {
   // the type of candidates to gather and the candidate filter only controls the
   // signaling of candidates. As a result, with the candidate filter changed
   // alone, all newly allowed candidates for signaling should already be
-  // gathered by the respective cricket::Port.
+  // gathered by the respective webrtc::Port.
   void SetCandidateFilter(uint32_t filter) override;
   void StartGettingPorts() override;
   void StopGettingPorts() override;
@@ -151,13 +151,13 @@ class RTC_EXPORT BasicPortAllocatorSession : public PortAllocatorSession {
   bool IsGettingPorts() override;
   bool IsCleared() const override;
   bool IsStopped() const override;
-  // These will all be cricket::Ports.
+  // These will all be webrtc::Ports.
   std::vector<PortInterface*> ReadyPorts() const override;
   std::vector<Candidate> ReadyCandidates() const override;
   bool CandidatesAllocationDone() const override;
   void RegatherOnFailedNetworks() override;
   void GetCandidateStatsFromReadyPorts(
-      cricket::CandidateStatsList* candidate_stats_list) const override;
+      CandidateStatsList* candidate_stats_list) const override;
   void SetStunKeepaliveIntervalForReadyPorts(
       const std::optional<int>& stun_keepalive_interval) override;
   void PruneAllPorts() override;
@@ -301,7 +301,7 @@ class RTC_EXPORT BasicPortAllocatorSession : public PortAllocatorSession {
 struct RTC_EXPORT PortConfiguration {
   // TODO(jiayl): remove `stun_address` when Chrome is updated.
   SocketAddress stun_address;
-  cricket::ServerAddresses stun_servers;
+  ServerAddresses stun_servers;
   std::string username;
   std::string password;
   bool use_turn_server_as_stun_server_disabled = false;
@@ -309,14 +309,14 @@ struct RTC_EXPORT PortConfiguration {
   typedef std::vector<RelayServerConfig> RelayList;
   RelayList relays;
 
-  PortConfiguration(const cricket::ServerAddresses& stun_servers,
+  PortConfiguration(const ServerAddresses& stun_servers,
                     absl::string_view username,
                     absl::string_view password,
                     const FieldTrialsView* field_trials = nullptr);
 
   // Returns addresses of both the explicitly configured STUN servers,
   // and TURN servers that should be used as STUN servers.
-  cricket::ServerAddresses StunServers();
+  ServerAddresses StunServers();
 
   // Adds another relay server, with the given ports and modifier, to the list.
   void AddRelay(const RelayServerConfig& config);
@@ -327,7 +327,7 @@ struct RTC_EXPORT PortConfiguration {
   bool SupportsProtocol(ProtocolType type) const;
   // Helper method returns the server addresses for the matching RelayType and
   // Protocol type.
-  cricket::ServerAddresses GetRelayServerAddresses(ProtocolType type) const;
+  ServerAddresses GetRelayServerAddresses(ProtocolType type) const;
 };
 
 // Performs the allocation of ports, in a sequenced (timed) manner, for a given
@@ -388,8 +388,7 @@ class AllocationSequence {
   void CreateStunPorts();
   void CreateRelayPorts();
 
-  void OnReadPacket(AsyncPacketSocket* socket,
-                    const rtc::ReceivedPacket& packet);
+  void OnReadPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet);
 
   void OnPortDestroyed(PortInterface* port);
 

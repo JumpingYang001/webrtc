@@ -97,7 +97,7 @@ class PortInterface {
   virtual int SendTo(const void* data,
                      size_t size,
                      const SocketAddress& addr,
-                     const rtc::PacketOptions& options,
+                     const AsyncSocketPacketOptions& options,
                      bool payload) = 0;
 
   // Indicates that we received a successful STUN binding request from an
@@ -135,7 +135,7 @@ class PortInterface {
       SignalReadPacket;
 
   // Emitted each time a packet is sent on this port.
-  sigslot::signal1<const rtc::SentPacket&> SignalSentPacket;
+  sigslot::signal1<const SentPacketInfo&> SignalSentPacket;
 
   virtual std::string ToString() const = 0;
 

@@ -115,7 +115,7 @@ void TurnServer::AddInternalSocket(AsyncPacketSocket* socket,
   RTC_DCHECK(server_sockets_.end() == server_sockets_.find(socket));
   server_sockets_[socket] = proto;
   socket->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         RTC_DCHECK_RUN_ON(thread_);
         OnInternalPacket(socket, packet);
       });
@@ -164,7 +164,7 @@ void TurnServer::AcceptConnection(Socket* server_socket) {
     AsyncStunTCPSocket* tcp_socket = new AsyncStunTCPSocket(accepted_socket);
 
     tcp_socket->SubscribeCloseEvent(this,
-                                    [this](rtc::AsyncPacketSocket* s, int err) {
+                                    [this](AsyncPacketSocket* s, int err) {
                                       OnInternalSocketClose(s, err);
                                     });
     // Finally add the socket so it can start communicating with the client.
@@ -178,7 +178,7 @@ void TurnServer::OnInternalSocketClose(AsyncPacketSocket* socket, int err) {
 }
 
 void TurnServer::OnInternalPacket(AsyncPacketSocket* socket,
-                                  const rtc::ReceivedPacket& packet) {
+                                  const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(thread_);
   // Fail if the packet is too small to even contain a channel header.
   if (packet.payload().size() < TURN_CHANNEL_HEADER_SIZE) {
@@ -204,7 +204,7 @@ void TurnServer::OnInternalPacket(AsyncPacketSocket* socket,
 }
 
 void TurnServer::HandleStunMessage(TurnServerConnection* conn,
-                                   rtc::ArrayView<const uint8_t> payload) {
+                                   ArrayView<const uint8_t> payload) {
   RTC_DCHECK_RUN_ON(thread_);
   TurnMessage msg;
   ByteBufferReader buf(payload);
@@ -403,7 +403,7 @@ bool TurnServer::ValidateNonce(absl::string_view nonce) const {
   // Decode the timestamp.
   int64_t then;
   char* p = reinterpret_cast<char*>(&then);
-  size_t len = hex_decode(rtc::ArrayView<char>(p, sizeof(then)),
+  size_t len = hex_decode(ArrayView<char>(p, sizeof(then)),
                           nonce.substr(0, sizeof(then) * 2));
   if (len != sizeof(then)) {
     return false;
@@ -500,7 +500,7 @@ void TurnServer::SendStun(TurnServerConnection* conn, StunMessage* msg) {
 
 void TurnServer::Send(TurnServerConnection* conn, const ByteBufferWriter& buf) {
   RTC_DCHECK_RUN_ON(thread_);
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   conn->socket()->SendTo(buf.Data(), buf.Length(), conn->src(), options);
 }
 
@@ -570,7 +570,7 @@ TurnServerAllocation::TurnServerAllocation(TurnServer* server,
       external_socket_(socket),
       key_(key) {
   external_socket_->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         RTC_DCHECK_RUN_ON(thread_);
         OnExternalPacket(socket, packet);
       });
@@ -779,8 +779,7 @@ void TurnServerAllocation::HandleChannelBindRequest(const TurnMessage* msg) {
   SendResponse(&response);
 }
 
-void TurnServerAllocation::HandleChannelData(
-    rtc::ArrayView<const uint8_t> payload) {
+void TurnServerAllocation::HandleChannelData(ArrayView<const uint8_t> payload) {
   // Extract the channel number from the data.
   uint16_t channel_id = webrtc::GetBE16(payload.data());
   auto channel = FindChannel(channel_id);
@@ -796,7 +795,7 @@ void TurnServerAllocation::HandleChannelData(
 }
 
 void TurnServerAllocation::OnExternalPacket(AsyncPacketSocket* socket,
-                                            const rtc::ReceivedPacket& packet) {
+                                            const ReceivedIpPacket& packet) {
   RTC_DCHECK(external_socket_.get() == socket);
   auto channel = FindChannel(packet.source_address());
   if (channel != channels_.end()) {
@@ -883,7 +882,7 @@ void TurnServerAllocation::SendErrorResponse(const TurnMessage* req,
 void TurnServerAllocation::SendExternal(const void* data,
                                         size_t size,
                                         const SocketAddress& peer) {
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   external_socket_->SendTo(data, size, peer, options);
 }
 

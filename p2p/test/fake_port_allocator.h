@@ -163,7 +163,7 @@ class FakePortAllocatorSession : public PortAllocatorSession {
 
   int port_config_count() { return port_config_count_; }
 
-  const cricket::ServerAddresses& stun_servers() const { return stun_servers_; }
+  const ServerAddresses& stun_servers() const { return stun_servers_; }
 
   const std::vector<RelayServerConfig>& turn_servers() const {
     return turn_servers_;
@@ -218,7 +218,7 @@ class FakePortAllocatorSession : public PortAllocatorSession {
   std::vector<PortInterface*> ready_ports_;
   bool allocation_done_ = false;
   bool is_cleared = false;
-  cricket::ServerAddresses stun_servers_;
+  ServerAddresses stun_servers_;
   std::vector<RelayServerConfig> turn_servers_;
   uint32_t candidate_filter_ = webrtc::CF_ALL;
   int transport_info_update_count_ = 0;

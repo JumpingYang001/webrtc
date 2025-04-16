@@ -350,7 +350,7 @@ bool BasicIceController::IsPingable(const Connection* conn, int64_t now) const {
 // is completed, the connection is not the selected connection and it is active.
 bool BasicIceController::IsBackupConnection(const Connection* conn) const {
   return ice_transport_state_func_() ==
-             cricket::IceTransportState::STATE_COMPLETED &&
+             IceTransportStateInternal::STATE_COMPLETED &&
          conn != selected_connection_ && conn->active();
 }
 

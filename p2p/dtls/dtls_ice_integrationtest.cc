@@ -154,8 +154,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
   void SetupEndpoint(
       Endpoint& ep,
       bool client,
-      const rtc::scoped_refptr<webrtc::RTCCertificate> client_certificate,
-      const rtc::scoped_refptr<webrtc::RTCCertificate> server_certificate) {
+      const scoped_refptr<webrtc::RTCCertificate> client_certificate,
+      const scoped_refptr<webrtc::RTCCertificate> server_certificate) {
     thread(ep)->BlockingCall([&]() {
       if (network_emulation_manager_ == nullptr) {
         ep.allocator = std::make_unique<webrtc::BasicPortAllocator>(
@@ -309,9 +309,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
 
   webrtc::Thread* server_thread() { return thread(server_); }
 
-  void SetRemoteFingerprintFromCert(
-      Endpoint& ep,
-      const rtc::scoped_refptr<rtc::RTCCertificate>& cert) {
+  void SetRemoteFingerprintFromCert(Endpoint& ep,
+                                    const scoped_refptr<RTCCertificate>& cert) {
     ep.remote_fingerprint =
         webrtc::SSLFingerprint::CreateFromCertificate(*cert);
     if (ep.store_but_dont_set_remote_fingerprint) {
@@ -330,9 +329,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
         ep.remote_fingerprint->digest.size(), std::nullopt);
   }
 
-  void SetLocalCertificate(
-      Endpoint& ep,
-      const rtc::scoped_refptr<rtc::RTCCertificate> certificate) {
+  void SetLocalCertificate(Endpoint& ep,
+                           const scoped_refptr<RTCCertificate> certificate) {
     RTC_CHECK(certificate);
     RTC_LOG(LS_INFO) << ((&ep == &client_) ? "client" : "server")
                      << "::SetLocalCertificate: ";

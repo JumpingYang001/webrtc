@@ -113,8 +113,7 @@ int ComparePort(const Port* a, const Port* b) {
 struct NetworkFilter {
   using Predicate = std::function<bool(const Network*)>;
   NetworkFilter(Predicate pred, absl::string_view description)
-      : predRemain(
-            [pred](const rtc::Network* network) { return !pred(network); }),
+      : predRemain([pred](const Network* network) { return !pred(network); }),
         description(description) {}
   Predicate predRemain;
   const std::string description;
@@ -194,8 +193,8 @@ BasicPortAllocator::BasicPortAllocator(
       relay_port_factory_(relay_port_factory) {
   RTC_CHECK(socket_factory_);
   RTC_DCHECK(network_manager_);
-  SetConfiguration(cricket::ServerAddresses(), std::vector<RelayServerConfig>(),
-                   0, webrtc::NO_PRUNE, turn_customizer);
+  SetConfiguration(ServerAddresses(), std::vector<RelayServerConfig>(), 0,
+                   webrtc::NO_PRUNE, turn_customizer);
 }
 
 BasicPortAllocator::~BasicPortAllocator() {
@@ -424,7 +423,7 @@ std::vector<const Network*> BasicPortAllocatorSession::GetFailedNetworks() {
 
   networks.erase(
       std::remove_if(networks.begin(), networks.end(),
-                     [networks_with_connection](const rtc::Network* network) {
+                     [networks_with_connection](const Network* network) {
                        // If a network does not have any connection, it is
                        // considered failed.
                        return networks_with_connection.find(network->name()) !=
@@ -481,7 +480,7 @@ void BasicPortAllocatorSession::Regather(
 }
 
 void BasicPortAllocatorSession::GetCandidateStatsFromReadyPorts(
-    cricket::CandidateStatsList* candidate_stats_list) const {
+    CandidateStatsList* candidate_stats_list) const {
   auto ports = ReadyPorts();
   for (auto* port : ports) {
     auto candidates = port->Candidates();
@@ -702,7 +701,7 @@ std::vector<const Network*> BasicPortAllocatorSession::GetNetworks() {
                       any_address_networks.end());
     }
     RTC_LOG(LS_INFO) << "Count of networks: " << networks.size();
-    for (const rtc::Network* network : networks) {
+    for (const Network* network : networks) {
       RTC_LOG(LS_INFO) << network->ToString();
     }
   }
@@ -718,14 +717,14 @@ std::vector<const Network*> BasicPortAllocatorSession::GetNetworks() {
   // Do some more filtering, depending on the network ignore mask and "disable
   // costly networks" flag.
   NetworkFilter ignored_filter(
-      [this](const rtc::Network* network) {
+      [this](const Network* network) {
         return allocator_->GetNetworkIgnoreMask() & network->type();
       },
       "ignored");
   FilterNetworks(&networks, ignored_filter);
   if (flags() & webrtc::PORTALLOCATOR_DISABLE_COSTLY_NETWORKS) {
     uint16_t lowest_cost = webrtc::kNetworkCostMax;
-    for (const rtc::Network* network : networks) {
+    for (const Network* network : networks) {
       // Don't determine the lowest cost from a link-local network.
       // On iOS, a device connected to the computer will get a link-local
       // network for communicating with the computer, however this network can't
@@ -737,7 +736,7 @@ std::vector<const Network*> BasicPortAllocatorSession::GetNetworks() {
           lowest_cost, network->GetCost(allocator()->env().field_trials()));
     }
     NetworkFilter costly_filter(
-        [lowest_cost, this](const rtc::Network* network) {
+        [lowest_cost, this](const Network* network) {
           return network->GetCost(allocator()->env().field_trials()) >
                  lowest_cost + webrtc::kNetworkCostLow;
         },
@@ -1288,8 +1287,7 @@ void AllocationSequence::Init() {
         session_->allocator()->min_port(), session_->allocator()->max_port()));
     if (udp_socket_) {
       udp_socket_->RegisterReceivedPacketCallback(
-          [&](rtc::AsyncPacketSocket* socket,
-              const rtc::ReceivedPacket& packet) {
+          [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
             OnReadPacket(socket, packet);
           });
     }
@@ -1664,7 +1662,7 @@ void AllocationSequence::CreateTurnPort(const RelayServerConfig& config,
 }
 
 void AllocationSequence::OnReadPacket(AsyncPacketSocket* socket,
-                                      const rtc::ReceivedPacket& packet) {
+                                      const ReceivedIpPacket& packet) {
   RTC_DCHECK(socket == udp_socket_.get());
 
   bool turn_port_found = false;
@@ -1685,8 +1683,7 @@ void AllocationSequence::OnReadPacket(AsyncPacketSocket* socket,
   }
 
   if (udp_port_) {
-    const cricket::ServerAddresses& stun_servers =
-        udp_port_->server_addresses();
+    const ServerAddresses& stun_servers = udp_port_->server_addresses();
 
     // Pass the packet to the UdpPort if there is no matching TurnPort, or if
     // the TURN server is also a STUN server.
@@ -1713,11 +1710,10 @@ void AllocationSequence::OnPortDestroyed(PortInterface* port) {
   }
 }
 
-PortConfiguration::PortConfiguration(
-    const cricket::ServerAddresses& stun_servers,
-    absl::string_view username,
-    absl::string_view password,
-    const FieldTrialsView* field_trials)
+PortConfiguration::PortConfiguration(const ServerAddresses& stun_servers,
+                                     absl::string_view username,
+                                     absl::string_view password,
+                                     const FieldTrialsView* field_trials)
     : stun_servers(stun_servers), username(username), password(password) {
   if (!stun_servers.empty())
     stun_address = *(stun_servers.begin());
@@ -1728,7 +1724,7 @@ PortConfiguration::PortConfiguration(
   }
 }
 
-cricket::ServerAddresses PortConfiguration::StunServers() {
+ServerAddresses PortConfiguration::StunServers() {
   if (!stun_address.IsNil() &&
       stun_servers.find(stun_address) == stun_servers.end()) {
     stun_servers.insert(stun_address);
@@ -1741,9 +1737,8 @@ cricket::ServerAddresses PortConfiguration::StunServers() {
   // Every UDP TURN server should also be used as a STUN server if
   // use_turn_server_as_stun_server is not disabled or the stun servers are
   // empty.
-  cricket::ServerAddresses turn_servers =
-      GetRelayServerAddresses(webrtc::PROTO_UDP);
-  for (const rtc::SocketAddress& turn_server : turn_servers) {
+  ServerAddresses turn_servers = GetRelayServerAddresses(webrtc::PROTO_UDP);
+  for (const SocketAddress& turn_server : turn_servers) {
     if (stun_servers.find(turn_server) == stun_servers.end()) {
       stun_servers.insert(turn_server);
     }
@@ -1774,9 +1769,9 @@ bool PortConfiguration::SupportsProtocol(ProtocolType type) const {
   return false;
 }
 
-cricket::ServerAddresses PortConfiguration::GetRelayServerAddresses(
+ServerAddresses PortConfiguration::GetRelayServerAddresses(
     ProtocolType type) const {
-  cricket::ServerAddresses servers;
+  ServerAddresses servers;
   for (size_t i = 0; i < relays.size(); ++i) {
     if (SupportsProtocol(relays[i], type)) {
       servers.insert(relays[i].ports.front().address);

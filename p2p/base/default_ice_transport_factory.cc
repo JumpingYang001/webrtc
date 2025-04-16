@@ -45,14 +45,14 @@ DefaultIceTransport::~DefaultIceTransport() {
   RTC_DCHECK_RUN_ON(&thread_checker_);
 }
 
-rtc::scoped_refptr<IceTransportInterface>
+scoped_refptr<IceTransportInterface>
 DefaultIceTransportFactory::CreateIceTransport(
     const std::string& transport_name,
     int component,
     IceTransportInit init) {
   BasicIceControllerFactory factory;
   init.set_ice_controller_factory(&factory);
-  return rtc::make_ref_counted<DefaultIceTransport>(
+  return make_ref_counted<DefaultIceTransport>(
       P2PTransportChannel::Create(transport_name, component, std::move(init)));
 }
 

@@ -155,14 +155,14 @@ class TurnPort : public Port {
   int SendTo(const void* data,
              size_t size,
              const SocketAddress& addr,
-             const rtc::PacketOptions& options,
+             const AsyncSocketPacketOptions& options,
              bool payload) override;
   int SetOption(Socket::Option opt, int value) override;
   int GetOption(Socket::Option opt, int* value) override;
   int GetError() override;
 
   bool HandleIncomingPacket(AsyncPacketSocket* socket,
-                            const rtc::ReceivedPacket& packet) override;
+                            const ReceivedIpPacket& packet) override;
   bool CanHandleIncomingPacketsFrom(const SocketAddress& addr) const override;
 
   // Checks if a connection exists for `addr` before forwarding the call to
@@ -173,10 +173,10 @@ class TurnPort : public Port {
                                 absl::string_view reason) override;
 
   virtual void OnReadPacket(AsyncPacketSocket* socket,
-                            const rtc::ReceivedPacket& packet);
+                            const ReceivedIpPacket& packet);
 
   void OnSentPacket(AsyncPacketSocket* socket,
-                    const rtc::SentPacket& sent_packet) override;
+                    const SentPacketInfo& sent_packet) override;
   virtual void OnReadyToSend(AsyncPacketSocket* socket);
   bool SupportsProtocol(absl::string_view protocol) const override;
 
@@ -286,7 +286,9 @@ class TurnPort : public Port {
 
   bool ScheduleRefresh(uint32_t lifetime);
   void SendRequest(StunRequest* request, int delay);
-  int Send(const void* data, size_t size, const rtc::PacketOptions& options);
+  int Send(const void* data,
+           size_t size,
+           const AsyncSocketPacketOptions& options);
   void UpdateHash();
   bool UpdateNonce(StunMessage* response);
   void ResetNonce();

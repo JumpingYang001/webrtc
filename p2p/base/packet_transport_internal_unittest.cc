@@ -27,20 +27,20 @@ TEST(PacketTransportInternal,
      NotifyPacketReceivedPassthrougPacketToRegisteredListener) {
   webrtc::FakePacketTransport packet_transport("test");
   MockFunction<void(webrtc::PacketTransportInternal*,
-                    const rtc::ReceivedPacket&)>
+                    const webrtc::ReceivedIpPacket&)>
       receiver;
 
   packet_transport.RegisterReceivedPacketCallback(&receiver,
                                                   receiver.AsStdFunction());
   EXPECT_CALL(receiver, Call)
       .WillOnce([](webrtc::PacketTransportInternal*,
-                   const rtc::ReceivedPacket& packet) {
+                   const webrtc::ReceivedIpPacket& packet) {
         EXPECT_EQ(packet.decryption_info(),
-                  rtc::ReceivedPacket::kDtlsDecrypted);
+                  webrtc::ReceivedIpPacket::kDtlsDecrypted);
       });
-  packet_transport.NotifyPacketReceived(rtc::ReceivedPacket(
-      {}, webrtc::SocketAddress(), std::nullopt, rtc::EcnMarking::kNotEct,
-      rtc::ReceivedPacket::kDtlsDecrypted));
+  packet_transport.NotifyPacketReceived(webrtc::ReceivedIpPacket(
+      {}, webrtc::SocketAddress(), std::nullopt, webrtc::EcnMarking::kNotEct,
+      webrtc::ReceivedIpPacket::kDtlsDecrypted));
 
   packet_transport.DeregisterReceivedPacketCallback(&receiver);
 }

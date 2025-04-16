@@ -49,7 +49,7 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
   // TODO(johan): Remove the default argument once channel code is updated.
   virtual int SendPacket(const char* data,
                          size_t len,
-                         const rtc::PacketOptions& options,
+                         const AsyncSocketPacketOptions& options,
                          int flags = 0) = 0;
 
   // Sets a socket option. Note that not all options are
@@ -84,12 +84,12 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
   void RegisterReceivedPacketCallback(
       void* id,
       absl::AnyInvocable<void(webrtc::PacketTransportInternal*,
-                              const rtc::ReceivedPacket&)> callback);
+                              const webrtc::ReceivedIpPacket&)> callback);
 
   void DeregisterReceivedPacketCallback(void* id);
 
   // Signalled each time a packet is sent on this channel.
-  sigslot::signal2<PacketTransportInternal*, const rtc::SentPacket&>
+  sigslot::signal2<PacketTransportInternal*, const SentPacketInfo&>
       SignalSentPacket;
 
   // Signalled when the current network route has changed.
@@ -102,13 +102,13 @@ class RTC_EXPORT PacketTransportInternal : public sigslot::has_slots<> {
   PacketTransportInternal();
   ~PacketTransportInternal() override;
 
-  void NotifyPacketReceived(const rtc::ReceivedPacket& packet);
+  void NotifyPacketReceived(const ReceivedIpPacket& packet);
   void NotifyOnClose();
 
   SequenceChecker network_checker_{SequenceChecker::kDetached};
 
  private:
-  CallbackList<PacketTransportInternal*, const rtc::ReceivedPacket&>
+  CallbackList<PacketTransportInternal*, const ReceivedIpPacket&>
       received_packet_callback_list_ RTC_GUARDED_BY(&network_checker_);
   absl::AnyInvocable<void() &&> on_close_;
 };

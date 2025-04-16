@@ -61,7 +61,6 @@
 #include "test/scoped_key_value_config.h"
 #include "test/wait_until.h"
 
-using ::rtc::IPAddress;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::IsTrue;
@@ -69,6 +68,7 @@ using ::testing::Not;
 using ::webrtc::CreateEnvironment;
 using ::webrtc::Environment;
 using ::webrtc::IceCandidateType;
+using ::webrtc::IPAddress;
 using ::webrtc::SocketAddress;
 
 #define MAYBE_SKIP_IPV4                        \
@@ -128,7 +128,7 @@ static const int kDefaultAllocationTimeout = 3000;
 static const char kTurnUsername[] = "test";
 static const char kTurnPassword[] = "test";
 
-// STUN timeout (with all retries) is cricket::STUN_TOTAL_TIMEOUT.
+// STUN timeout (with all retries) is webrtc::STUN_TOTAL_TIMEOUT.
 // Add some margin of error for slow bots.
 static const int kStunTimeoutMs = webrtc::STUN_TOTAL_TIMEOUT;
 
@@ -371,7 +371,7 @@ class BasicPortAllocatorTestBase : public ::testing::Test,
   static bool HasNetwork(const std::vector<const Network*>& networks,
                          const Network& to_be_found) {
     auto it =
-        absl::c_find_if(networks, [to_be_found](const rtc::Network* network) {
+        absl::c_find_if(networks, [to_be_found](const Network* network) {
           return network->description() == to_be_found.description() &&
                  network->name() == to_be_found.name() &&
                  network->prefix() == to_be_found.prefix();
@@ -477,14 +477,14 @@ class BasicPortAllocatorTestBase : public ::testing::Test,
   void ResetWithStunServer(const SocketAddress& stun_server, bool with_nat) {
     if (with_nat) {
       nat_server_.reset(new NATServer(
-          rtc::NAT_OPEN_CONE, thread_, vss_.get(), kNatUdpAddr, kNatTcpAddr,
-          thread_, vss_.get(), SocketAddress(kNatUdpAddr.ipaddr(), 0)));
+          NAT_OPEN_CONE, thread_, vss_.get(), kNatUdpAddr, kNatTcpAddr, thread_,
+          vss_.get(), SocketAddress(kNatUdpAddr.ipaddr(), 0)));
     } else {
       nat_socket_factory_ =
           std::make_unique<BasicPacketSocketFactory>(fss_.get());
     }
 
-    cricket::ServerAddresses stun_servers;
+    ServerAddresses stun_servers;
     if (!stun_server.IsNil()) {
       stun_servers.insert(stun_server);
     }
@@ -693,10 +693,10 @@ class BasicPortAllocatorTest : public FakeClockBase,
     turn_server_.AddInternalSocket(kTurnUdpIntIPv6Addr, webrtc::PROTO_UDP);
     turn_server_.AddInternalSocket(kTurnTcpIntIPv6Addr, webrtc::PROTO_TCP);
     // Add two interfaces both having IPv4 and IPv6 addresses.
-    AddInterface(kClientAddr, "net1", rtc::ADAPTER_TYPE_WIFI);
-    AddInterface(kClientIPv6Addr, "net1", rtc::ADAPTER_TYPE_WIFI);
-    AddInterface(kClientAddr2, "net2", rtc::ADAPTER_TYPE_CELLULAR);
-    AddInterface(kClientIPv6Addr2, "net2", rtc::ADAPTER_TYPE_CELLULAR);
+    AddInterface(kClientAddr, "net1", ADAPTER_TYPE_WIFI);
+    AddInterface(kClientIPv6Addr, "net1", ADAPTER_TYPE_WIFI);
+    AddInterface(kClientAddr2, "net2", ADAPTER_TYPE_CELLULAR);
+    AddInterface(kClientIPv6Addr2, "net2", ADAPTER_TYPE_CELLULAR);
     allocator_.emplace(env_, &network_manager_, &socket_factory_);
     allocator_->Initialize();
     allocator_->SetConfiguration(allocator_->stun_servers(),
@@ -783,15 +783,15 @@ TEST_F(BasicPortAllocatorTest, TestBasic) {
 // Tests that our network filtering works properly.
 TEST_F(BasicPortAllocatorTest, TestIgnoreOnlyLoopbackNetworkByDefault) {
   AddInterface(SocketAddress(IPAddress(0x12345600U), 0), "test_eth0",
-               rtc::ADAPTER_TYPE_ETHERNET);
+               ADAPTER_TYPE_ETHERNET);
   AddInterface(SocketAddress(IPAddress(0x12345601U), 0), "test_wlan0",
-               rtc::ADAPTER_TYPE_WIFI);
+               ADAPTER_TYPE_WIFI);
   AddInterface(SocketAddress(IPAddress(0x12345602U), 0), "test_cell0",
-               rtc::ADAPTER_TYPE_CELLULAR);
+               ADAPTER_TYPE_CELLULAR);
   AddInterface(SocketAddress(IPAddress(0x12345603U), 0), "test_vpn0",
-               rtc::ADAPTER_TYPE_VPN);
+               ADAPTER_TYPE_VPN);
   AddInterface(SocketAddress(IPAddress(0x12345604U), 0), "test_lo",
-               rtc::ADAPTER_TYPE_LOOPBACK);
+               ADAPTER_TYPE_LOOPBACK);
   ASSERT_TRUE(CreateSession(ICE_CANDIDATE_COMPONENT_RTP));
   session_->set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                       webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -810,14 +810,13 @@ TEST_F(BasicPortAllocatorTest, TestIgnoreOnlyLoopbackNetworkByDefault) {
 
 TEST_F(BasicPortAllocatorTest, TestIgnoreNetworksAccordingToIgnoreMask) {
   AddInterface(SocketAddress(IPAddress(0x12345600U), 0), "test_eth0",
-               rtc::ADAPTER_TYPE_ETHERNET);
+               ADAPTER_TYPE_ETHERNET);
   AddInterface(SocketAddress(IPAddress(0x12345601U), 0), "test_wlan0",
-               rtc::ADAPTER_TYPE_WIFI);
+               ADAPTER_TYPE_WIFI);
   AddInterface(SocketAddress(IPAddress(0x12345602U), 0), "test_cell0",
-               rtc::ADAPTER_TYPE_CELLULAR);
-  allocator_->SetNetworkIgnoreMask(rtc::ADAPTER_TYPE_ETHERNET |
-                                   rtc::ADAPTER_TYPE_LOOPBACK |
-                                   rtc::ADAPTER_TYPE_WIFI);
+               ADAPTER_TYPE_CELLULAR);
+  allocator_->SetNetworkIgnoreMask(ADAPTER_TYPE_ETHERNET |
+                                   ADAPTER_TYPE_LOOPBACK | ADAPTER_TYPE_WIFI);
   ASSERT_TRUE(CreateSession(ICE_CANDIDATE_COMPONENT_RTP));
   session_->set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                       webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -838,8 +837,8 @@ TEST_F(BasicPortAllocatorTest,
        WifiUsedInsteadOfCellWhenCostlyNetworksDisabled) {
   SocketAddress wifi(IPAddress(0x12345600U), 0);
   SocketAddress cell(IPAddress(0x12345601U), 0);
-  AddInterface(wifi, "test_wlan0", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(cell, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
+  AddInterface(wifi, "test_wlan0", ADAPTER_TYPE_WIFI);
+  AddInterface(cell, "test_cell0", ADAPTER_TYPE_CELLULAR);
   // Disable all but UDP candidates to make the test simpler.
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -866,9 +865,9 @@ TEST_F(BasicPortAllocatorTest,
   SocketAddress cell(IPAddress(0x12345601U), 0);
   SocketAddress unknown1(IPAddress(0x12345602U), 0);
   SocketAddress unknown2(IPAddress(0x12345603U), 0);
-  AddInterface(cell, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
-  AddInterface(unknown1, "test_unknown0", rtc::ADAPTER_TYPE_UNKNOWN);
-  AddInterface(unknown2, "test_unknown1", rtc::ADAPTER_TYPE_UNKNOWN);
+  AddInterface(cell, "test_cell0", ADAPTER_TYPE_CELLULAR);
+  AddInterface(unknown1, "test_unknown0", ADAPTER_TYPE_UNKNOWN);
+  AddInterface(unknown2, "test_unknown1", ADAPTER_TYPE_UNKNOWN);
   // Disable all but UDP candidates to make the test simpler.
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -898,10 +897,10 @@ TEST_F(BasicPortAllocatorTest,
   SocketAddress cellular(IPAddress(0x12345601U), 0);
   SocketAddress unknown1(IPAddress(0x12345602U), 0);
   SocketAddress unknown2(IPAddress(0x12345603U), 0);
-  AddInterface(wifi, "test_wlan0", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(cellular, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
-  AddInterface(unknown1, "test_unknown0", rtc::ADAPTER_TYPE_UNKNOWN);
-  AddInterface(unknown2, "test_unknown1", rtc::ADAPTER_TYPE_UNKNOWN);
+  AddInterface(wifi, "test_wlan0", ADAPTER_TYPE_WIFI);
+  AddInterface(cellular, "test_cell0", ADAPTER_TYPE_CELLULAR);
+  AddInterface(unknown1, "test_unknown0", ADAPTER_TYPE_UNKNOWN);
+  AddInterface(unknown2, "test_unknown1", ADAPTER_TYPE_UNKNOWN);
   // Disable all but UDP candidates to make the test simpler.
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -925,7 +924,7 @@ TEST_F(BasicPortAllocatorTest,
 TEST_F(BasicPortAllocatorTest,
        CellUsedWhenCostlyNetworksDisabledButThereAreNoOtherInterfaces) {
   SocketAddress cellular(IPAddress(0x12345601U), 0);
-  AddInterface(cellular, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
+  AddInterface(cellular, "test_cell0", ADAPTER_TYPE_CELLULAR);
   // Disable all but UDP candidates to make the test simpler.
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -951,8 +950,8 @@ TEST_F(BasicPortAllocatorTest,
        CellNotRemovedWhenCostlyNetworksDisabledAndWifiIsLinkLocal) {
   SocketAddress wifi_link_local("169.254.0.1", 0);
   SocketAddress cellular(IPAddress(0x12345601U), 0);
-  AddInterface(wifi_link_local, "test_wlan0", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(cellular, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
+  AddInterface(wifi_link_local, "test_wlan0", ADAPTER_TYPE_WIFI);
+  AddInterface(cellular, "test_cell0", ADAPTER_TYPE_CELLULAR);
 
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -982,9 +981,9 @@ TEST_F(BasicPortAllocatorTest,
   SocketAddress wifi(IPAddress(0x12345600U), 0);
   SocketAddress wifi_link_local("169.254.0.1", 0);
   SocketAddress cellular(IPAddress(0x12345601U), 0);
-  AddInterface(wifi, "test_wlan0", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(wifi_link_local, "test_wlan1", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(cellular, "test_cell0", rtc::ADAPTER_TYPE_CELLULAR);
+  AddInterface(wifi, "test_wlan0", ADAPTER_TYPE_WIFI);
+  AddInterface(wifi_link_local, "test_wlan1", ADAPTER_TYPE_WIFI);
+  AddInterface(cellular, "test_cell0", ADAPTER_TYPE_CELLULAR);
 
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
@@ -1010,8 +1009,8 @@ TEST_F(BasicPortAllocatorTest,
 // set.
 TEST_F(BasicPortAllocatorTest,
        EthernetIsNotFilteredOutWhenCostlyNetworksDisabledAndVpnPresent) {
-  AddInterface(kClientAddr, "eth0", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientAddr2, "tap0", rtc::ADAPTER_TYPE_VPN);
+  AddInterface(kClientAddr, "eth0", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientAddr2, "tap0", ADAPTER_TYPE_VPN);
   allocator().set_flags(webrtc::PORTALLOCATOR_DISABLE_COSTLY_NETWORKS |
                         webrtc::PORTALLOCATOR_DISABLE_RELAY |
                         webrtc::PORTALLOCATOR_DISABLE_TCP);
@@ -1034,9 +1033,9 @@ TEST_F(BasicPortAllocatorTest,
 TEST_F(BasicPortAllocatorTest, MaxIpv6NetworksLimitEnforced) {
   // Add three IPv6 network interfaces, but tell the allocator to only use two.
   allocator().set_max_ipv6_networks(2);
-  AddInterface(kClientIPv6Addr, "eth0", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr2, "eth1", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr3, "eth2", rtc::ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr, "eth0", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr2, "eth1", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr3, "eth2", ADAPTER_TYPE_ETHERNET);
 
   // To simplify the test, only gather UDP host candidates.
   allocator().set_flags(
@@ -1063,10 +1062,10 @@ TEST_F(BasicPortAllocatorTest, MaxIpv6NetworksLimitEnforced) {
 TEST_F(BasicPortAllocatorTest, MaxIpv6NetworksLimitDoesNotImpactIpv4Networks) {
   // Set the "max IPv6" limit to 1, adding two IPv6 and two IPv4 networks.
   allocator().set_max_ipv6_networks(1);
-  AddInterface(kClientIPv6Addr, "eth0", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr2, "eth1", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientAddr, "eth2", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientAddr2, "eth3", rtc::ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr, "eth0", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr2, "eth1", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientAddr, "eth2", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientAddr2, "eth3", ADAPTER_TYPE_ETHERNET);
 
   // To simplify the test, only gather UDP host candidates.
   allocator().set_flags(
@@ -1093,7 +1092,7 @@ TEST_F(BasicPortAllocatorTest, MaxIpv6NetworksLimitDoesNotImpactIpv4Networks) {
 
 // Test that we could use loopback interface as host candidate.
 TEST_F(BasicPortAllocatorTest, TestLoopbackNetworkInterface) {
-  AddInterface(kLoopbackAddr, "test_loopback", rtc::ADAPTER_TYPE_LOOPBACK);
+  AddInterface(kLoopbackAddr, "test_loopback", ADAPTER_TYPE_LOOPBACK);
   allocator_->SetNetworkIgnoreMask(0);
   ASSERT_TRUE(CreateSession(ICE_CANDIDATE_COMPONENT_RTP));
   session_->set_flags(webrtc::PORTALLOCATOR_DISABLE_STUN |
@@ -1610,7 +1609,7 @@ TEST_F(BasicPortAllocatorTest, TestGetAllPortsNoUdpAllowed) {
   EXPECT_TRUE(
       HasCandidate(candidates_, IceCandidateType::kHost, "tcp", kClientAddr));
   // We wait at least for a full STUN timeout, which
-  // cricket::STUN_TOTAL_TIMEOUT seconds.
+  // webrtc::STUN_TOTAL_TIMEOUT seconds.
   EXPECT_THAT(
       webrtc::WaitUntil([&] { return candidate_allocation_done_; }, IsTrue(),
                         {.timeout = TimeDelta::Millis(STUN_TOTAL_TIMEOUT),
@@ -2552,7 +2551,7 @@ TEST_F(
                    .clock = &fake_clock}),
               webrtc::IsRtcOk());
   EXPECT_TRUE(candidates_.back().is_local());
-  // We use a shared socket and cricket::UDPPort handles the srflx candidate.
+  // We use a shared socket and webrtc::UDPPort handles the srflx candidate.
   EXPECT_EQ(2u, ports_.size());
 }
 
@@ -2744,7 +2743,7 @@ TEST_F(BasicPortAllocatorTest, HostCandidateAddressIsReplacedByHostname) {
 }
 
 TEST_F(BasicPortAllocatorTest, TestUseTurnServerAsStunSever) {
-  cricket::ServerAddresses stun_servers;
+  ServerAddresses stun_servers;
   stun_servers.insert(kStunAddr);
   PortConfiguration port_config(stun_servers, "", "");
   RelayServerConfig turn_servers =
@@ -2757,7 +2756,7 @@ TEST_F(BasicPortAllocatorTest, TestUseTurnServerAsStunSever) {
 TEST_F(BasicPortAllocatorTest, TestDoNotUseTurnServerAsStunSever) {
   test::ScopedKeyValueConfig field_trials(
       "WebRTC-UseTurnServerAsStunServer/Disabled/");
-  cricket::ServerAddresses stun_servers;
+  ServerAddresses stun_servers;
   stun_servers.insert(kStunAddr);
   PortConfiguration port_config(stun_servers, "" /* user_name */,
                                 "" /* password */, &field_trials);
@@ -2798,11 +2797,11 @@ TEST_F(BasicPortAllocatorTest, AssignsUniqueLocalPreferencetoRelayCandidates) {
 // to gather candidates.
 TEST_F(BasicPortAllocatorTest, TwoIPv6AreSelectedBecauseOfMaxIpv6Limit) {
   Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   Network ethe1("ethe1", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   Network wifi2("wifi2", "Test NetworkAdapter 3", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   std::vector<const Network*> networks = {&wifi1, &ethe1, &wifi2};
 
   // Ensure that only 2 interfaces were selected.
@@ -2815,9 +2814,9 @@ TEST_F(BasicPortAllocatorTest, TwoIPv6AreSelectedBecauseOfMaxIpv6Limit) {
 // allocator.max_ipv6_networks(), all IPv6 networks will be selected.
 TEST_F(BasicPortAllocatorTest, AllIPv6AreSelected) {
   Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   Network ethe1("ethe1", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   std::vector<const Network*> networks = {&wifi1, &ethe1};
 
   // Ensure that all 2 interfaces were selected.
@@ -2830,15 +2829,15 @@ TEST_F(BasicPortAllocatorTest, AllIPv6AreSelected) {
 // networks.
 TEST_F(BasicPortAllocatorTest, TwoIPv6WifiAreSelectedIfThereAreTwo) {
   Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   Network ethe1("ethe1", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   Network ethe2("ethe2", "Test NetworkAdapter 3", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   Network unknown1("unknown1", "Test NetworkAdapter 4",
-                   kClientIPv6Addr2.ipaddr(), 64, rtc::ADAPTER_TYPE_UNKNOWN);
+                   kClientIPv6Addr2.ipaddr(), 64, ADAPTER_TYPE_UNKNOWN);
   Network cell1("cell1", "Test NetworkAdapter 5", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_4G);
+                ADAPTER_TYPE_CELLULAR_4G);
   std::vector<const Network*> networks = {&wifi1, &ethe1, &ethe2, &unknown1,
                                           &cell1};
 
@@ -2859,15 +2858,15 @@ TEST_F(BasicPortAllocatorTest, TwoIPv6WifiAreSelectedIfThereAreTwo) {
 TEST_F(BasicPortAllocatorTest, IPv6WithSameTypeAreSelectedIfNoOtherOption) {
   // Add 5 cellular interfaces
   Network cell1("cell1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_2G);
+                ADAPTER_TYPE_CELLULAR_2G);
   Network cell2("cell2", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_3G);
+                ADAPTER_TYPE_CELLULAR_3G);
   Network cell3("cell3", "Test NetworkAdapter 3", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_4G);
+                ADAPTER_TYPE_CELLULAR_4G);
   Network cell4("cell4", "Test NetworkAdapter 4", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_5G);
+                ADAPTER_TYPE_CELLULAR_5G);
   Network cell5("cell5", "Test NetworkAdapter 5", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_3G);
+                ADAPTER_TYPE_CELLULAR_3G);
   std::vector<const Network*> networks = {&cell1, &cell2, &cell3, &cell4,
                                           &cell5};
 
@@ -2879,11 +2878,11 @@ TEST_F(BasicPortAllocatorTest, IPv6WithSameTypeAreSelectedIfNoOtherOption) {
 
 TEST_F(BasicPortAllocatorTest, IPv6EthernetHasHigherPriorityThanWifi) {
   Network wifi1("wifi1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   Network ethe1("ethe1", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   Network wifi2("wifi2", "Test NetworkAdapter 3", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   std::vector<const Network*> networks = {&wifi1, &ethe1, &wifi2};
 
   networks = BasicPortAllocatorSession::SelectIPv6Networks(
@@ -2896,15 +2895,15 @@ TEST_F(BasicPortAllocatorTest, IPv6EthernetHasHigherPriorityThanWifi) {
 
 TEST_F(BasicPortAllocatorTest, IPv6EtherAndWifiHaveHigherPriorityThanOthers) {
   Network cell1("cell1", "Test NetworkAdapter 1", kClientIPv6Addr.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_CELLULAR_3G);
+                ADAPTER_TYPE_CELLULAR_3G);
   Network ethe1("ethe1", "Test NetworkAdapter 2", kClientIPv6Addr2.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_ETHERNET);
+                ADAPTER_TYPE_ETHERNET);
   Network wifi1("wifi1", "Test NetworkAdapter 3", kClientIPv6Addr3.ipaddr(), 64,
-                rtc::ADAPTER_TYPE_WIFI);
+                ADAPTER_TYPE_WIFI);
   Network unknown("unknown", "Test NetworkAdapter 4", kClientIPv6Addr2.ipaddr(),
-                  64, rtc::ADAPTER_TYPE_UNKNOWN);
+                  64, ADAPTER_TYPE_UNKNOWN);
   Network vpn1("vpn1", "Test NetworkAdapter 5", kClientIPv6Addr3.ipaddr(), 64,
-               rtc::ADAPTER_TYPE_VPN);
+               ADAPTER_TYPE_VPN);
   std::vector<const Network*> networks = {&cell1, &ethe1, &wifi1, &unknown,
                                           &vpn1};
 
@@ -2919,11 +2918,11 @@ TEST_F(BasicPortAllocatorTest, IPv6EtherAndWifiHaveHigherPriorityThanOthers) {
 
 TEST_F(BasicPortAllocatorTest, Select2DifferentIntefaces) {
   allocator().set_max_ipv6_networks(2);
-  AddInterface(kClientIPv6Addr, "ethe1", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr2, "ethe2", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr3, "wifi1", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr4, "wifi2", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr5, "cell1", rtc::ADAPTER_TYPE_CELLULAR_3G);
+  AddInterface(kClientIPv6Addr, "ethe1", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr2, "ethe2", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr3, "wifi1", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr4, "wifi2", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr5, "cell1", ADAPTER_TYPE_CELLULAR_3G);
 
   // To simplify the test, only gather UDP host candidates.
   allocator().set_flags(
@@ -2949,11 +2948,11 @@ TEST_F(BasicPortAllocatorTest, Select2DifferentIntefaces) {
 
 TEST_F(BasicPortAllocatorTest, Select3DifferentIntefaces) {
   allocator().set_max_ipv6_networks(3);
-  AddInterface(kClientIPv6Addr, "ethe1", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr2, "ethe2", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr3, "wifi1", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr4, "wifi2", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr5, "cell1", rtc::ADAPTER_TYPE_CELLULAR_3G);
+  AddInterface(kClientIPv6Addr, "ethe1", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr2, "ethe2", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr3, "wifi1", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr4, "wifi2", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr5, "cell1", ADAPTER_TYPE_CELLULAR_3G);
 
   // To simplify the test, only gather UDP host candidates.
   allocator().set_flags(
@@ -2981,11 +2980,11 @@ TEST_F(BasicPortAllocatorTest, Select3DifferentIntefaces) {
 
 TEST_F(BasicPortAllocatorTest, Select4DifferentIntefaces) {
   allocator().set_max_ipv6_networks(4);
-  AddInterface(kClientIPv6Addr, "ethe1", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr2, "ethe2", rtc::ADAPTER_TYPE_ETHERNET);
-  AddInterface(kClientIPv6Addr3, "wifi1", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr4, "wifi2", rtc::ADAPTER_TYPE_WIFI);
-  AddInterface(kClientIPv6Addr5, "cell1", rtc::ADAPTER_TYPE_CELLULAR_3G);
+  AddInterface(kClientIPv6Addr, "ethe1", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr2, "ethe2", ADAPTER_TYPE_ETHERNET);
+  AddInterface(kClientIPv6Addr3, "wifi1", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr4, "wifi2", ADAPTER_TYPE_WIFI);
+  AddInterface(kClientIPv6Addr5, "cell1", ADAPTER_TYPE_CELLULAR_3G);
 
   // To simplify the test, only gather UDP host candidates.
   allocator().set_flags(

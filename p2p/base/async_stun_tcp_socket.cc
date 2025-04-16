@@ -62,7 +62,7 @@ AsyncStunTCPSocket::AsyncStunTCPSocket(Socket* socket)
 
 int AsyncStunTCPSocket::Send(const void* pv,
                              size_t cb,
-                             const rtc::PacketOptions& options) {
+                             const AsyncSocketPacketOptions& options) {
   if (cb > kBufSize || cb < kPacketLenSize + kPacketLenOffset) {
     SetError(EMSGSIZE);
     return -1;
@@ -92,14 +92,14 @@ int AsyncStunTCPSocket::Send(const void* pv,
     return res;
   }
 
-  rtc::SentPacket sent_packet(options.packet_id, TimeMillis());
+  SentPacketInfo sent_packet(options.packet_id, TimeMillis());
   SignalSentPacket(this, sent_packet);
 
   // We claim to have sent the whole thing, even if we only sent partial
   return static_cast<int>(cb);
 }
 
-size_t AsyncStunTCPSocket::ProcessInput(rtc::ArrayView<const uint8_t> data) {
+size_t AsyncStunTCPSocket::ProcessInput(ArrayView<const uint8_t> data) {
   SocketAddress remote_addr(GetRemoteAddress());
   // STUN packet - First 4 bytes. Total header size is 20 bytes.
   // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -127,7 +127,7 @@ size_t AsyncStunTCPSocket::ProcessInput(rtc::ArrayView<const uint8_t> data) {
       return processed_bytes;
     }
 
-    rtc::ReceivedPacket received_packet(
+    ReceivedIpPacket received_packet(
         data.subview(processed_bytes, expected_pkt_len), remote_addr,
         Timestamp::Micros(TimeMicros()));
     NotifyPacketReceived(received_packet);

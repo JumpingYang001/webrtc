@@ -206,7 +206,7 @@ void TCPPort::PrepareAddress() {
 int TCPPort::SendTo(const void* data,
                     size_t size,
                     const SocketAddress& addr,
-                    const rtc::PacketOptions& options,
+                    const AsyncSocketPacketOptions& options,
                     bool payload) {
   AsyncPacketSocket* socket = NULL;
   TCPConnection* conn = static_cast<TCPConnection*>(GetConnection(addr));
@@ -239,7 +239,7 @@ int TCPPort::SendTo(const void* data,
       return SOCKET_ERROR;
     }
   }
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   CopyPortInformationToPacketInfo(&modified_options.info_signaled_after_sent);
   int sent = socket->Send(data, size, modified_options);
   if (sent < 0) {
@@ -291,7 +291,7 @@ void TCPPort::OnNewConnection(AsyncListenSocket* socket,
   incoming.addr = new_socket->GetRemoteAddress();
   incoming.socket = new_socket;
   incoming.socket->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         OnReadPacket(socket, packet);
       });
   incoming.socket->SignalReadyToSend.connect(this, &TCPPort::OnReadyToSend);
@@ -331,12 +331,12 @@ AsyncPacketSocket* TCPPort::GetIncoming(const SocketAddress& addr,
 }
 
 void TCPPort::OnReadPacket(AsyncPacketSocket* socket,
-                           const rtc::ReceivedPacket& packet) {
+                           const ReceivedIpPacket& packet) {
   Port::OnReadPacket(packet, webrtc::PROTO_TCP);
 }
 
 void TCPPort::OnSentPacket(AsyncPacketSocket* socket,
-                           const rtc::SentPacket& sent_packet) {
+                           const SentPacketInfo& sent_packet) {
   PortInterface::SignalSentPacket(sent_packet);
 }
 
@@ -373,7 +373,7 @@ TCPConnection::TCPConnection(WeakPtr<Port> tcp_port,
                         << socket_->GetLocalAddress().ToSensitiveString()
                         << ", port() Network:" << port()->Network()->ToString();
     RTC_DCHECK(absl::c_any_of(
-        port_->Network()->GetIPs(), [this](const rtc::InterfaceAddress& addr) {
+        port_->Network()->GetIPs(), [this](const InterfaceAddress& addr) {
           return socket_->GetLocalAddress().ipaddr() == addr;
         }));
     ConnectSocketSignals(socket);
@@ -386,7 +386,7 @@ TCPConnection::~TCPConnection() {
 
 int TCPConnection::Send(const void* data,
                         size_t size,
-                        const rtc::PacketOptions& options) {
+                        const AsyncSocketPacketOptions& options) {
   if (!socket_) {
     error_ = ENOTCONN;
     return SOCKET_ERROR;
@@ -409,7 +409,7 @@ int TCPConnection::Send(const void* data,
     return SOCKET_ERROR;
   }
   stats_.sent_total_packets++;
-  rtc::PacketOptions modified_options(options);
+  AsyncSocketPacketOptions modified_options(options);
   tcp_port()->CopyPortInformationToPacketInfo(
       &modified_options.info_signaled_after_sent);
   int sent = socket_->Send(data, size, modified_options);
@@ -429,7 +429,7 @@ int TCPConnection::GetError() {
 }
 
 void TCPConnection::OnSentPacket(AsyncPacketSocket* socket,
-                                 const rtc::SentPacket& sent_packet) {
+                                 const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(network_thread());
   if (port()) {
     port()->SignalSentPacket(sent_packet);
@@ -475,7 +475,7 @@ void TCPConnection::OnConnect(AsyncPacketSocket* socket) {
   // identical to that in TurnPort.
   const SocketAddress& socket_address = socket->GetLocalAddress();
   if (absl::c_any_of(port_->Network()->GetIPs(),
-                     [socket_address](const rtc::InterfaceAddress& addr) {
+                     [socket_address](const InterfaceAddress& addr) {
                        return socket_address.ipaddr() == addr;
                      })) {
     RTC_LOG(LS_VERBOSE) << ToString() << ": Connection established to "
@@ -570,7 +570,7 @@ void TCPConnection::MaybeReconnect() {
 }
 
 void TCPConnection::OnReadPacket(AsyncPacketSocket* socket,
-                                 const rtc::ReceivedPacket& packet) {
+                                 const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(network_thread());
   RTC_DCHECK_EQ(socket, socket_.get());
   Connection::OnReadPacket(packet);
@@ -638,11 +638,11 @@ void TCPConnection::ConnectSocketSignals(AsyncPacketSocket* socket) {
   // For incoming connections, this re-register ReceivedPacketCallback to the
   // connection instead of the port.
   socket->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         OnReadPacket(socket, packet);
       });
   socket->SubscribeCloseEvent(this, [this, safety = network_safety_.flag()](
-                                        rtc::AsyncPacketSocket* s, int err) {
+                                        AsyncPacketSocket* s, int err) {
     if (safety->alive())
       OnClose(s, err);
   });

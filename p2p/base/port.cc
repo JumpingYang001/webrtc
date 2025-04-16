@@ -270,7 +270,7 @@ bool Port::MaybeObfuscateAddress(const Candidate& c, bool is_final) {
 
   auto copy = c;
   auto weak_ptr = weak_factory_.GetWeakPtr();
-  auto callback = [weak_ptr, copy, is_final](const rtc::IPAddress& addr,
+  auto callback = [weak_ptr, copy, is_final](const IPAddress& addr,
                                              absl::string_view name) mutable {
     RTC_DCHECK(copy.address().ipaddr() == addr);
     SocketAddress hostname_address(name, copy.address().port());
@@ -325,7 +325,7 @@ void Port::AddOrReplaceConnection(Connection* conn) {
   }
 }
 
-void Port::OnReadPacket(const rtc::ReceivedPacket& packet, ProtocolType proto) {
+void Port::OnReadPacket(const ReceivedIpPacket& packet, ProtocolType proto) {
   const char* data = reinterpret_cast<const char*>(packet.payload().data());
   size_t size = packet.payload().size();
   const SocketAddress& addr = packet.source_address();
@@ -419,7 +419,7 @@ bool Port::GetStunMessage(const char* data,
   // STUN message, then ignore it.
   std::unique_ptr<IceMessage> stun_msg(new IceMessage());
   ByteBufferReader buf(
-      rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
+      MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   if (!stun_msg->Read(&buf) || (buf.Length() > 0)) {
     return false;
   }
@@ -692,7 +692,7 @@ std::string Port::CreateStunUsername(absl::string_view remote_username) const {
 }
 
 bool Port::HandleIncomingPacket(AsyncPacketSocket* /* socket */,
-                                const rtc::ReceivedPacket& /* packet */) {
+                                const ReceivedIpPacket& /* packet */) {
   RTC_DCHECK_NOTREACHED();
   return false;
 }
@@ -741,7 +741,7 @@ void Port::SendBindingErrorResponse(StunMessage* message,
   // Send the response message.
   ByteBufferWriter buf;
   response.Write(&buf);
-  rtc::PacketOptions options(StunDscpValue());
+  AsyncSocketPacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
       PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
@@ -779,7 +779,7 @@ void Port::SendUnknownAttributesErrorResponse(
   // Send the response message.
   ByteBufferWriter buf;
   response.Write(&buf);
-  rtc::PacketOptions options(StunDscpValue());
+  AsyncSocketPacketOptions options(StunDscpValue());
   options.info_signaled_after_sent.packet_type =
       PacketType::kIceConnectivityCheckResponse;
   SendTo(buf.Data(), buf.Length(), addr, options, false);
@@ -869,7 +869,7 @@ void Port::UpdateNetworkCost() {
                    << ". Number of connections created: "
                    << connections_.size();
   network_cost_ = new_cost;
-  for (cricket::Candidate& candidate : candidates_)
+  for (Candidate& candidate : candidates_)
     candidate.set_network_cost(network_cost_);
 
   for (auto& [unused, connection] : connections_)

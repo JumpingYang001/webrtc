@@ -41,11 +41,11 @@ class BasicIceController : public IceControllerInterface {
   void SetSelectedConnection(const Connection* selected_connection) override;
   void AddConnection(const Connection* connection) override;
   void OnConnectionDestroyed(const Connection* connection) override;
-  rtc::ArrayView<const Connection* const> GetConnections() const override {
+  ArrayView<const Connection* const> GetConnections() const override {
     return connections_;
   }
-  rtc::ArrayView<const Connection*> connections() const override {
-    return rtc::ArrayView<const Connection*>(
+  ArrayView<const Connection*> connections() const override {
+    return ArrayView<const Connection*>(
         const_cast<const Connection**>(connections_.data()),
         connections_.size());
   }
@@ -151,7 +151,7 @@ class BasicIceController : public IceControllerInterface {
   SwitchResult HandleInitialSelectDampening(IceSwitchReason reason,
                                             const Connection* new_connection);
 
-  std::function<cricket::IceTransportState()> ice_transport_state_func_;
+  std::function<IceTransportStateInternal()> ice_transport_state_func_;
   std::function<IceRole()> ice_role_func_;
   std::function<bool(const Connection*)> is_connection_pruned_func_;
 

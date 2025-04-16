@@ -39,7 +39,7 @@ class DtlsStunPiggybackController {
   // dtls_data_callback will be called with any DTLS packets received
   // piggybacked.
   DtlsStunPiggybackController(
-      absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)>
+      absl::AnyInvocable<void(webrtc::ArrayView<const uint8_t>)>
           dtls_data_callback);
   ~DtlsStunPiggybackController();
 
@@ -69,7 +69,7 @@ class DtlsStunPiggybackController {
 
   // Intercepts DTLS packets which should go into the STUN packets during the
   // handshake.
-  void CapturePacket(rtc::ArrayView<const uint8_t> data);
+  void CapturePacket(ArrayView<const uint8_t> data);
   void ClearCachedPacketForTesting();
 
   // Inform piggybackcontroller that a flight is complete.
@@ -92,9 +92,10 @@ class DtlsStunPiggybackController {
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
   bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
   uint32_t pending_packet_pos_ RTC_GUARDED_BY(sequence_checker_) = 0;
-  std::vector<std::pair<uint32_t, std::unique_ptr<rtc::Buffer>>>
-      pending_packets_ RTC_GUARDED_BY(sequence_checker_);
-  absl::AnyInvocable<void(rtc::ArrayView<const uint8_t>)> dtls_data_callback_;
+  std::vector<std::pair<uint32_t, std::unique_ptr<Buffer>>> pending_packets_
+      RTC_GUARDED_BY(sequence_checker_);
+  absl::AnyInvocable<void(webrtc::ArrayView<const uint8_t>)>
+      dtls_data_callback_;
   absl::AnyInvocable<void()> disable_piggybacking_callback_;
 
   std::vector<uint32_t> handshake_messages_received_

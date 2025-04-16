@@ -57,7 +57,7 @@
 #include "test/wait_until.h"
 
 #define MAYBE_SKIP_TEST(feature)                              \
-  if (!(rtc::SSLStreamAdapter::feature())) {                  \
+  if (!(SSLStreamAdapter::feature())) {                       \
     GTEST_SKIP() << #feature " feature disabled... skipping"; \
   }
 
@@ -79,10 +79,9 @@ static bool IsRtpLeadByte(uint8_t b) {
 
 // `modify_digest` is used to set modified fingerprints that are meant to fail
 // validation.
-void SetRemoteFingerprintFromCert(
-    DtlsTransportInternalImpl* transport,
-    const rtc::scoped_refptr<RTCCertificate>& cert,
-    bool modify_digest = false) {
+void SetRemoteFingerprintFromCert(DtlsTransportInternalImpl* transport,
+                                  const scoped_refptr<RTCCertificate>& cert,
+                                  bool modify_digest = false) {
   std::unique_ptr<SSLFingerprint> fingerprint =
       SSLFingerprint::CreateFromCertificate(*cert);
   if (modify_digest) {
@@ -105,9 +104,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
   void CreateCertificate(KeyType key_type) {
     certificate_ = RTCCertificate::Create(SSLIdentity::Create(name_, key_type));
   }
-  const rtc::scoped_refptr<RTCCertificate>& certificate() {
-    return certificate_;
-  }
+  const scoped_refptr<RTCCertificate>& certificate() { return certificate_; }
   void SetupMaxProtocolVersion(SSLProtocolVersion version) {
     ssl_max_version_ = version;
   }
@@ -134,8 +131,8 @@ class DtlsTestClient : public sigslot::has_slots<> {
     fake_ice_transport_->SetIceRole(role);
     // Hook the raw packets so that we can verify they are encrypted.
     fake_ice_transport_->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnFakeIceTransportReadPacket(transport, packet);
         });
 
@@ -147,8 +144,8 @@ class DtlsTestClient : public sigslot::has_slots<> {
     dtls_transport_->SignalWritableState.connect(
         this, &DtlsTestClient::OnTransportWritableState);
     dtls_transport_->RegisterReceivedPacketCallback(
-        this, [&](rtc::PacketTransportInternal* transport,
-                  const rtc::ReceivedPacket& packet) {
+        this, [&](PacketTransportInternal* transport,
+                  const ReceivedIpPacket& packet) {
           OnTransportReadPacket(transport, packet);
         });
     dtls_transport_->SignalSentPacket.connect(
@@ -253,7 +250,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
 
       // Only set the bypass flag if we've activated DTLS.
       int flags = (certificate_ && srtp) ? PF_SRTP_BYPASS : 0;
-      rtc::PacketOptions packet_options;
+      AsyncSocketPacketOptions packet_options;
       packet_options.packet_id = kFakePacketId;
       int rv = dtls_transport_->SendPacket(packet.get(), size, packet_options,
                                            flags);
@@ -268,7 +265,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
     // Fill the packet with 0 to form an invalid SRTP packet.
     memset(packet.get(), 0, size);
 
-    rtc::PacketOptions packet_options;
+    AsyncSocketPacketOptions packet_options;
     return dtls_transport_->SendPacket(packet.get(), size, packet_options,
                                        PF_SRTP_BYPASS);
   }
@@ -281,7 +278,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
   size_t NumPacketsReceived() { return received_.size(); }
 
   // Inverse of SendPackets.
-  bool VerifyPacket(rtc::ArrayView<const uint8_t> payload, uint32_t* out_num) {
+  bool VerifyPacket(ArrayView<const uint8_t> payload, uint32_t* out_num) {
     const uint8_t* data = payload.data();
     size_t size = payload.size();
 
@@ -328,35 +325,35 @@ class DtlsTestClient : public sigslot::has_slots<> {
   }
 
   void OnTransportReadPacket(PacketTransportInternal* /* transport */,
-                             const rtc::ReceivedPacket& packet) {
+                             const ReceivedIpPacket& packet) {
     uint32_t packet_num = 0;
     ASSERT_TRUE(VerifyPacket(packet.payload(), &packet_num));
     received_.insert(packet_num);
     switch (packet.decryption_info()) {
-      case rtc::ReceivedPacket::kSrtpEncrypted:
+      case ReceivedIpPacket::kSrtpEncrypted:
         ASSERT_TRUE(certificate_ && IsRtpLeadByte(packet.payload()[0]));
         break;
-      case rtc::ReceivedPacket::kDtlsDecrypted:
+      case ReceivedIpPacket::kDtlsDecrypted:
         ASSERT_TRUE(certificate_ && !IsRtpLeadByte(packet.payload()[0]));
         break;
-      case rtc::ReceivedPacket::kNotDecrypted:
+      case ReceivedIpPacket::kNotDecrypted:
         ASSERT_FALSE(certificate_);
         break;
     }
   }
 
   void OnTransportSentPacket(PacketTransportInternal* /* transport */,
-                             const rtc::SentPacket& sent_packet) {
+                             const SentPacketInfo& sent_packet) {
     sent_packet_ = sent_packet;
   }
 
-  rtc::SentPacket sent_packet() const { return sent_packet_; }
+  SentPacketInfo sent_packet() const { return sent_packet_; }
 
   // Hook into the raw packet stream to make sure DTLS packets are encrypted.
   void OnFakeIceTransportReadPacket(PacketTransportInternal* /* transport */,
-                                    const rtc::ReceivedPacket& packet) {
+                                    const ReceivedIpPacket& packet) {
     // Packets should not be decrypted on the underlying Transport packets.
-    ASSERT_EQ(packet.decryption_info(), rtc::ReceivedPacket::kNotDecrypted);
+    ASSERT_EQ(packet.decryption_info(), ReceivedIpPacket::kNotDecrypted);
 
     // Look at the handshake packets to see what role we played.
     // Check that non-handshake packets are DTLS data or SRTP bypass.
@@ -382,7 +379,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
 
  private:
   std::string name_;
-  rtc::scoped_refptr<RTCCertificate> certificate_;
+  scoped_refptr<RTCCertificate> certificate_;
   std::unique_ptr<FakeIceTransport> fake_ice_transport_;
   std::unique_ptr<DtlsTransportInternalImpl> dtls_transport_;
   size_t packet_size_ = 0u;
@@ -390,7 +387,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
   SSLProtocolVersion ssl_max_version_ = SSL_PROTOCOL_DTLS_12;
   int received_dtls_client_hellos_ = 0;
   int received_dtls_server_hellos_ = 0;
-  rtc::SentPacket sent_packet_;
+  SentPacketInfo sent_packet_;
   absl::AnyInvocable<void()> writable_func_;
   int async_delay_ms_ = 100;
 };
@@ -519,7 +516,7 @@ class DtlsTransportInternalImplTestBase {
     client2_.fake_ice_transport()->set_packet_recv_filter(nullptr);
   }
 
-  bool LogRecv(absl::string_view name, const rtc::CopyOnWriteBuffer& packet) {
+  bool LogRecv(absl::string_view name, const CopyOnWriteBuffer& packet) {
     auto timestamp_ms = (fake_clock_.TimeNanos() - start_time_ns_) / 1000000;
     RTC_LOG(LS_INFO) << "time=" << timestamp_ms << " : " << name
                      << ": ReceivePacket packet len=" << packet.size()
@@ -621,8 +618,8 @@ TEST_F(DtlsTransportInternalImplTest, KeyingMaterialExporter) {
   int key_len;
   int salt_len;
   EXPECT_TRUE(GetSrtpKeyAndSaltLengths(crypto_suite, &key_len, &salt_len));
-  rtc::ZeroOnFreeBuffer<uint8_t> client1_out(2 * (key_len + salt_len));
-  rtc::ZeroOnFreeBuffer<uint8_t> client2_out(2 * (key_len + salt_len));
+  ZeroOnFreeBuffer<uint8_t> client1_out(2 * (key_len + salt_len));
+  ZeroOnFreeBuffer<uint8_t> client2_out(2 * (key_len + salt_len));
   EXPECT_TRUE(client1_.dtls_transport()->ExportSrtpKeyingMaterial(client1_out));
   EXPECT_TRUE(client2_.dtls_transport()->ExportSrtpKeyingMaterial(client2_out));
   EXPECT_EQ(client1_out, client2_out);

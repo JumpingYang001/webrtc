@@ -244,7 +244,7 @@ class RTC_EXPORT PortAllocatorSession : public sigslot::has_slots<> {
   // Get candidate-level stats from all candidates on the ready ports and return
   // the stats to the given list.
   virtual void GetCandidateStatsFromReadyPorts(
-      cricket::CandidateStatsList* /* candidate_stats_list */) const {}
+      CandidateStatsList* /* candidate_stats_list */) const {}
   // Set the interval at which STUN candidates will resend STUN binding requests
   // on the underlying ports to keep NAT bindings open.
   // The default value of the interval in implementation is restored if a null
@@ -359,14 +359,14 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
   //
   // Returns true if the configuration could successfully be changed.
   // Deprecated
-  bool SetConfiguration(const cricket::ServerAddresses& stun_servers,
+  bool SetConfiguration(const ServerAddresses& stun_servers,
                         const std::vector<RelayServerConfig>& turn_servers,
                         int candidate_pool_size,
                         bool prune_turn_ports,
                         TurnCustomizer* turn_customizer = nullptr,
                         const std::optional<int>&
                             stun_candidate_keepalive_interval = std::nullopt);
-  bool SetConfiguration(const cricket::ServerAddresses& stun_servers,
+  bool SetConfiguration(const ServerAddresses& stun_servers,
                         const std::vector<RelayServerConfig>& turn_servers,
                         int candidate_pool_size,
                         PortPrunePolicy turn_port_prune_policy,
@@ -374,7 +374,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
                         const std::optional<int>&
                             stun_candidate_keepalive_interval = std::nullopt);
 
-  const cricket::ServerAddresses& stun_servers() const {
+  const ServerAddresses& stun_servers() const {
     CheckRunOnValidThreadIfInitialized();
     return stun_servers_;
   }
@@ -567,7 +567,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
   // pooled session is taken by P2PTransportChannel, and the
   // candidate stats can be collected from P2PTransportChannel::GetStats.
   virtual void GetCandidateStatsFromPooledSessions(
-      cricket::CandidateStatsList* candidate_stats_list);
+      CandidateStatsList* candidate_stats_list);
 
   // Return IceParameters of the pooled sessions.
   std::vector<IceParameters> GetPooledIceCredentials();
@@ -615,7 +615,7 @@ class RTC_EXPORT PortAllocator : public sigslot::has_slots<> {
   VpnPreference vpn_preference_ = VpnPreference::kDefault;
 
  private:
-  cricket::ServerAddresses stun_servers_;
+  ServerAddresses stun_servers_;
   std::vector<RelayServerConfig> turn_servers_;
   int candidate_pool_size_ = 0;  // Last value passed into SetConfiguration.
   std::vector<std::unique_ptr<PortAllocatorSession>> pooled_sessions_;
