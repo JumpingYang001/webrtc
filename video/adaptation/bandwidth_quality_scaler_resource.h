@@ -32,7 +32,7 @@ class BandwidthQualityScalerResource
     : public VideoStreamEncoderResource,
       public BandwidthQualityScalerUsageHandlerInterface {
  public:
-  static rtc::scoped_refptr<BandwidthQualityScalerResource> Create();
+  static scoped_refptr<BandwidthQualityScalerResource> Create();
 
   BandwidthQualityScalerResource();
   ~BandwidthQualityScalerResource() override;

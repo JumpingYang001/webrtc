@@ -383,7 +383,7 @@ int main(int argc, char* argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
   absl::ParseCommandLine(argc, argv);
 
-  rtc::LogMessage::SetLogToStderr(absl::GetFlag(FLAGS_logs));
+  webrtc::LogMessage::SetLogToStderr(absl::GetFlag(FLAGS_logs));
 
   // InitFieldTrialsFromString stores the char*, so the char array must outlive
   // the application.

@@ -125,7 +125,7 @@ class OveruseFrameDetectorTest : public ::testing::Test,
       int width,
       int height,
       // One element per layer
-      rtc::ArrayView<const int> delays_us) {
+      ArrayView<const int> delays_us) {
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))

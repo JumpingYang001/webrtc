@@ -67,9 +67,8 @@ class VideoStreamEncoderInterface {
   // TODO(https://crbug.com/webrtc/11565): When the ResourceAdaptationProcessor
   // is moved to Call this method could be deleted altogether in favor of
   // Call-level APIs only.
-  virtual void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) = 0;
-  virtual std::vector<rtc::scoped_refptr<Resource>>
-  GetAdaptationResources() = 0;
+  virtual void AddAdaptationResource(scoped_refptr<Resource> resource) = 0;
+  virtual std::vector<scoped_refptr<Resource>> GetAdaptationResources() = 0;
 
   // Sets the source that will provide video frames to the VideoStreamEncoder's
   // OnFrame method. `degradation_preference` control whether or not resolution

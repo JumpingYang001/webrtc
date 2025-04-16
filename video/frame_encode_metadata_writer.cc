@@ -28,7 +28,7 @@ const int kThrottleRatio = 100000;
 
 class EncodedImageBufferWrapper : public EncodedImageBufferInterface {
  public:
-  explicit EncodedImageBufferWrapper(rtc::Buffer&& buffer)
+  explicit EncodedImageBufferWrapper(Buffer&& buffer)
       : buffer_(std::move(buffer)) {}
 
   const uint8_t* data() const override { return buffer_.data(); }
@@ -36,7 +36,7 @@ class EncodedImageBufferWrapper : public EncodedImageBufferInterface {
   size_t size() const override { return buffer_.size(); }
 
  private:
-  rtc::Buffer buffer_;
+  Buffer buffer_;
 };
 
 }  // namespace
@@ -183,7 +183,7 @@ void FrameEncodeMetadataWriter::FillMetadataAndTimingInfo(
 
   // If encode start is not available that means that encoder uses internal
   // source. In that case capture timestamp may be from a different clock with a
-  // drift relative to rtc::TimeMillis(). We can't use it for Timing frames,
+  // drift relative to webrtc::TimeMillis(). We can't use it for Timing frames,
   // because to being sent in the network capture time required to be less than
   // all the other timestamps.
   if (encode_start_ms) {
@@ -205,13 +205,11 @@ void FrameEncodeMetadataWriter::UpdateBitstream(
 
   // Make sure that the data is not copied if owned by EncodedImage.
   const EncodedImage& buffer = *encoded_image;
-  rtc::Buffer modified_buffer =
-      SpsVuiRewriter::ParseOutgoingBitstreamAndRewrite(
-          buffer, encoded_image->ColorSpace());
+  Buffer modified_buffer = SpsVuiRewriter::ParseOutgoingBitstreamAndRewrite(
+      buffer, encoded_image->ColorSpace());
 
   encoded_image->SetEncodedData(
-      rtc::make_ref_counted<EncodedImageBufferWrapper>(
-          std::move(modified_buffer)));
+      make_ref_counted<EncodedImageBufferWrapper>(std::move(modified_buffer)));
 }
 
 void FrameEncodeMetadataWriter::Reset() {

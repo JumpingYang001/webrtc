@@ -150,7 +150,7 @@ class RtpVideoStreamReceiver2 : public LossNotificationSender,
 
   // Public only for tests.
   // Returns true if the packet should be stashed and retried at a later stage.
-  bool OnReceivedPayloadData(rtc::CopyOnWriteBuffer codec_payload,
+  bool OnReceivedPayloadData(CopyOnWriteBuffer codec_payload,
                              const RtpPacketReceived& rtp_packet,
                              const RTPVideoHeader& video,
                              int times_nacked);
@@ -186,12 +186,12 @@ class RtpVideoStreamReceiver2 : public LossNotificationSender,
   // Optionally set a frame decryptor after a stream has started. This will not
   // reset the decoder state.
   void SetFrameDecryptor(
-      rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor);
+      scoped_refptr<FrameDecryptorInterface> frame_decryptor);
 
   // Sets a frame transformer after a stream has started, if no transformer
   // has previously been set. Does not reset the decoder state.
   void SetDepacketizerToDecoderFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer);
+      scoped_refptr<FrameTransformerInterface> frame_transformer);
 
   // Called by VideoReceiveStreamInterface when stats are updated.
   void UpdateRtt(int64_t max_rtt_ms);
@@ -465,7 +465,7 @@ class RtpVideoStreamReceiver2 : public LossNotificationSender,
 
   int64_t last_completed_picture_id_ = 0;
 
-  rtc::scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate>
+  scoped_refptr<RtpVideoStreamReceiverFrameTransformerDelegate>
       frame_transformer_delegate_;
 
   SeqNumUnwrapper<uint16_t> rtp_seq_num_unwrapper_

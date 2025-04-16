@@ -65,7 +65,7 @@ TEST(VideoSourceSinkControllerTest, UnconstrainedByDefault) {
   EXPECT_EQ(controller.resolution_alignment(), 1);
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_FALSE(wants.rotation_applied);
         EXPECT_EQ(wants.max_pixel_count, kIntUnconstrained);
@@ -91,7 +91,7 @@ TEST(VideoSourceSinkControllerTest, VideoRestrictionsToSinkWants) {
   restrictions.set_max_frame_rate(30.0);
   controller.SetRestrictions(restrictions);
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_EQ(wants.max_pixel_count, 42);
         EXPECT_EQ(wants.target_pixel_count, 200);
@@ -105,7 +105,7 @@ TEST(VideoSourceSinkControllerTest, VideoRestrictionsToSinkWants) {
   controller.SetFrameRateUpperLimit(10.0);
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_EQ(wants.max_pixel_count, 24);
         EXPECT_EQ(wants.max_framerate_fps, 10);
@@ -121,7 +121,7 @@ TEST(VideoSourceSinkControllerTest, RotationApplied) {
   EXPECT_TRUE(controller.rotation_applied());
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_TRUE(wants.rotation_applied);
       });
@@ -136,7 +136,7 @@ TEST(VideoSourceSinkControllerTest, ResolutionAlignment) {
   EXPECT_EQ(controller.resolution_alignment(), 13);
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_EQ(wants.resolution_alignment, 13);
       });
@@ -173,7 +173,7 @@ TEST(VideoSourceSinkControllerTest, ScaleResolutionDownToPropagatesToWants) {
   EXPECT_TRUE(controller.scale_resolution_down_to().has_value());
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
-      .WillOnce([](rtc::VideoSinkInterface<VideoFrame>* sink,
+      .WillOnce([](VideoSinkInterface<VideoFrame>* sink,
                    const VideoSinkWants& wants) {
         EXPECT_EQ(*wants.requested_resolution, FrameSize(640, 360));
       });
@@ -189,7 +189,7 @@ TEST(VideoSourceSinkControllerTest, ActivePropagatesToWants) {
 
   EXPECT_CALL(source, AddOrUpdateSink(_, _))
       .WillOnce(
-          [](rtc::VideoSinkInterface<VideoFrame>* sink,
+          [](VideoSinkInterface<VideoFrame>* sink,
              const VideoSinkWants& wants) { EXPECT_TRUE(wants.is_active); });
   controller.PushSourceSinkSettings();
 }

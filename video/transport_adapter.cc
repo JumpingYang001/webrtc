@@ -22,7 +22,7 @@ TransportAdapter::TransportAdapter(Transport* transport)
 
 TransportAdapter::~TransportAdapter() = default;
 
-bool TransportAdapter::SendRtp(rtc::ArrayView<const uint8_t> packet,
+bool TransportAdapter::SendRtp(ArrayView<const uint8_t> packet,
                                const PacketOptions& options) {
   if (!enabled_.load())
     return false;
@@ -30,7 +30,7 @@ bool TransportAdapter::SendRtp(rtc::ArrayView<const uint8_t> packet,
   return transport_->SendRtp(packet, options);
 }
 
-bool TransportAdapter::SendRtcp(rtc::ArrayView<const uint8_t> packet) {
+bool TransportAdapter::SendRtcp(ArrayView<const uint8_t> packet) {
   if (!enabled_.load())
     return false;
 

@@ -29,8 +29,8 @@ namespace webrtc {
 namespace {
 
 std::vector<FilteredSample> ConvertSampleValuesToFilteredSamples(
-    rtc::ArrayView<const double> values,
-    rtc::ArrayView<const FilteredSample> samples) {
+    ArrayView<const double> values,
+    ArrayView<const FilteredSample> samples) {
   RTC_CHECK_EQ(values.size(), samples.size())
       << "values and samples must have the same size";
   std::vector<FilteredSample> filtered_samples;

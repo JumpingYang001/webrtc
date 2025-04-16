@@ -93,7 +93,7 @@ bool EqualFlags(const std::vector<bool>& a, const std::vector<bool>& b) {
 class VideoStreamEncoderResourceManager::InitialFrameDropper {
  public:
   explicit InitialFrameDropper(
-      rtc::scoped_refptr<QualityScalerResource> quality_scaler_resource,
+      scoped_refptr<QualityScalerResource> quality_scaler_resource,
       const FieldTrialsView& field_trials)
       : quality_scaler_resource_(quality_scaler_resource),
         quality_scaler_settings_(field_trials),
@@ -219,7 +219,7 @@ class VideoStreamEncoderResourceManager::InitialFrameDropper {
   // achieve desired bitrate.
   static const int kMaxInitialFramedrop = 4;
 
-  const rtc::scoped_refptr<QualityScalerResource> quality_scaler_resource_;
+  const scoped_refptr<QualityScalerResource> quality_scaler_resource_;
   const QualityScalerSettings quality_scaler_settings_;
   bool has_seen_first_bwe_drop_;
   DataRate set_start_bitrate_;
@@ -378,7 +378,7 @@ void VideoStreamEncoderResourceManager::StopManagedResources() {
 }
 
 void VideoStreamEncoderResourceManager::AddResource(
-    rtc::scoped_refptr<Resource> resource,
+    scoped_refptr<Resource> resource,
     VideoAdaptationReason reason) {
   RTC_DCHECK_RUN_ON(encoder_queue_);
   RTC_DCHECK(resource);
@@ -390,7 +390,7 @@ void VideoStreamEncoderResourceManager::AddResource(
 }
 
 void VideoStreamEncoderResourceManager::RemoveResource(
-    rtc::scoped_refptr<Resource> resource) {
+    scoped_refptr<Resource> resource) {
   {
     RTC_DCHECK_RUN_ON(encoder_queue_);
     RTC_DCHECK(resource);
@@ -620,7 +620,7 @@ void VideoStreamEncoderResourceManager::ConfigureBandwidthQualityScaler(
 }
 
 VideoAdaptationReason VideoStreamEncoderResourceManager::GetReasonFromResource(
-    rtc::scoped_refptr<Resource> resource) const {
+    scoped_refptr<Resource> resource) const {
   RTC_DCHECK_RUN_ON(encoder_queue_);
   const auto& registered_resource = resources_.find(resource);
   RTC_DCHECK(registered_resource != resources_.end())
@@ -663,7 +663,7 @@ int VideoStreamEncoderResourceManager::LastFrameSizeOrDefault() const {
 void VideoStreamEncoderResourceManager::OnVideoSourceRestrictionsUpdated(
     VideoSourceRestrictions restrictions,
     const VideoAdaptationCounters& adaptation_counters,
-    rtc::scoped_refptr<Resource> reason,
+    scoped_refptr<Resource> reason,
     const VideoSourceRestrictions& unfiltered_restrictions) {
   RTC_DCHECK_RUN_ON(encoder_queue_);
   current_adaptation_counters_ = adaptation_counters;
@@ -680,8 +680,8 @@ void VideoStreamEncoderResourceManager::OnVideoSourceRestrictionsUpdated(
 }
 
 void VideoStreamEncoderResourceManager::OnResourceLimitationChanged(
-    rtc::scoped_refptr<Resource> resource,
-    const std::map<rtc::scoped_refptr<Resource>, VideoAdaptationCounters>&
+    scoped_refptr<Resource> resource,
+    const std::map<scoped_refptr<Resource>, VideoAdaptationCounters>&
         resource_limitations) {
   RTC_DCHECK_RUN_ON(encoder_queue_);
   if (!resource) {

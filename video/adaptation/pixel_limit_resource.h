@@ -33,7 +33,7 @@ namespace webrtc {
 // purposes.
 class PixelLimitResource : public Resource {
  public:
-  static rtc::scoped_refptr<PixelLimitResource> Create(
+  static scoped_refptr<PixelLimitResource> Create(
       TaskQueueBase* task_queue,
       VideoStreamInputStateProvider* input_state_provider);
 

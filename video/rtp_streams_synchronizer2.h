@@ -52,7 +52,7 @@ class RtpStreamsSynchronizer {
 
   // Used to check if we're running on the main thread/task queue.
   // The reason we currently don't use RTC_DCHECK_RUN_ON(task_queue_) is because
-  // we might be running on an rtc::Thread implementation of TaskQueue, which
+  // we might be running on an webrtc::Thread implementation of TaskQueue, which
   // does not consistently set itself as the active TaskQueue.
   // Instead, we rely on a SequenceChecker for now.
   RTC_NO_UNIQUE_ADDRESS SequenceChecker main_checker_;

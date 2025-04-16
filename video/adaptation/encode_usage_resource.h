@@ -30,7 +30,7 @@ namespace webrtc {
 class EncodeUsageResource : public VideoStreamEncoderResource,
                             public OveruseFrameDetectorObserverInterface {
  public:
-  static rtc::scoped_refptr<EncodeUsageResource> Create(
+  static scoped_refptr<EncodeUsageResource> Create(
       std::unique_ptr<OveruseFrameDetector> overuse_detector);
 
   explicit EncodeUsageResource(

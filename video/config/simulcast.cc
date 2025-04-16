@@ -250,7 +250,7 @@ SimulcastFormat InterpolateSimulcastFormat(
 }
 
 std::vector<VideoStream> GetNormalSimulcastLayers(
-    rtc::ArrayView<const Resolution> resolutions,
+    ArrayView<const Resolution> resolutions,
     bool temporal_layers_supported,
     bool base_heavy_tl3_rate_alloc,
     const FieldTrialsView& trials,
@@ -424,7 +424,7 @@ DataRate GetTotalMaxBitrate(const std::vector<VideoStream>& layers) {
 }
 
 std::vector<VideoStream> GetSimulcastConfig(
-    rtc::ArrayView<const Resolution> resolutions,
+    ArrayView<const Resolution> resolutions,
     bool is_screenshare_with_conference_mode,
     bool temporal_layers_supported,
     const FieldTrialsView& trials,

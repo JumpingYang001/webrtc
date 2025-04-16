@@ -56,7 +56,7 @@ class DecryptedFrameObserver : public test::EndToEndTest,
       recv_config.decoders.clear();
       recv_config.decoders.push_back(decoder);
       recv_config.renderer = this;
-      recv_config.frame_decryptor = rtc::make_ref_counted<FakeFrameDecryptor>();
+      recv_config.frame_decryptor = make_ref_counted<FakeFrameDecryptor>();
       recv_config.crypto_options.sframe.require_frame_encryption = true;
     }
   }

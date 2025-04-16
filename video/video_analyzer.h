@@ -67,7 +67,7 @@ class VideoAnalyzer : public PacketReceiver,
   VideoSinkInterface<VideoFrame>* InputInterface();
   VideoSourceInterface<VideoFrame>* OutputInterface();
 
-  void DeliverRtcpPacket(rtc::CopyOnWriteBuffer packet) override;
+  void DeliverRtcpPacket(CopyOnWriteBuffer packet) override;
   void DeliverRtpPacket(MediaType media_type,
                         RtpPacketReceived packet,
                         PacketReceiver::OnUndemuxablePacketHandler
@@ -76,10 +76,10 @@ class VideoAnalyzer : public PacketReceiver,
   void PreEncodeOnFrame(const VideoFrame& video_frame);
   void PostEncodeOnFrame(size_t stream_id, uint32_t timestamp);
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override;
 
-  bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(ArrayView<const uint8_t> packet) override;
   void OnFrame(const VideoFrame& video_frame) override;
   void Wait();
 

@@ -34,7 +34,6 @@
 
 namespace webrtc {
 namespace {
-using ::cricket::EncoderStreamFactory;
 using test::ExplicitKeyValueConfig;
 using ::testing::Combine;
 using ::testing::ElementsAre;
@@ -43,6 +42,7 @@ using ::testing::Not;
 using ::testing::SizeIs;
 using ::testing::TestWithParam;
 using ::testing::Values;
+using ::webrtc::EncoderStreamFactory;
 
 struct CreateVideoStreamParams {
   int width = 0;
@@ -85,7 +85,7 @@ std::vector<VideoStream> CreateEncoderStreams(
     std::optional<VideoSourceRestrictions> restrictions = std::nullopt) {
   VideoEncoder::EncoderInfo encoder_info;
   auto factory =
-      rtc::make_ref_counted<EncoderStreamFactory>(encoder_info, restrictions);
+      make_ref_counted<EncoderStreamFactory>(encoder_info, restrictions);
   return factory->CreateEncoderStreams(field_trials, resolution.width,
                                        resolution.height, encoder_config);
 }
@@ -245,7 +245,7 @@ TEST(EncoderStreamFactory, BitratePriority) {
 
 TEST(EncoderStreamFactory, SetsMinBitrateToDefaultValue) {
   VideoEncoder::EncoderInfo encoder_info;
-  auto factory = rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+  auto factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 2;
   encoder_config.simulcast_layers.resize(encoder_config.number_of_streams);
@@ -257,7 +257,7 @@ TEST(EncoderStreamFactory, SetsMinBitrateToDefaultValue) {
 
 TEST(EncoderStreamFactory, SetsMinBitrateToExperimentalValue) {
   VideoEncoder::EncoderInfo encoder_info;
-  auto factory = rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+  auto factory = make_ref_counted<EncoderStreamFactory>(encoder_info);
   VideoEncoderConfig encoder_config;
   encoder_config.number_of_streams = 2;
   encoder_config.simulcast_layers.resize(encoder_config.number_of_streams);
@@ -491,7 +491,7 @@ TEST(EncoderStreamFactory, VP9TemporalLayerCountTransferToStreamSettings) {
   VideoEncoderConfig encoder_config;
   VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
   encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   encoder_config.codec_type = VideoCodecType::kVideoCodecVP9;
   encoder_config.number_of_streams = 1;
@@ -545,7 +545,7 @@ TEST(EncoderStreamFactory, VP9SetsMaxBitrateToConfiguredEncodingValue) {
   VideoEncoderConfig encoder_config;
   VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
   encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   encoder_config.codec_type = VideoCodecType::kVideoCodecVP9;
   encoder_config.number_of_streams = 1;

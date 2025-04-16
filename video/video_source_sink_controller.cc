@@ -21,7 +21,7 @@
 namespace webrtc {
 
 VideoSourceSinkController::VideoSourceSinkController(
-    rtc::VideoSinkInterface<VideoFrame>* sink,
+    VideoSinkInterface<VideoFrame>* sink,
     VideoSourceInterface<VideoFrame>* source)
     : sink_(sink), source_(source) {
   RTC_DCHECK(sink_);
@@ -162,11 +162,11 @@ VideoSinkWants VideoSourceSinkController::CurrentSettingsToSinkWants() const {
   wants.rotation_applied = rotation_applied_;
   // `wants.black_frames` is not used, it always has its default value false.
   wants.max_pixel_count =
-      rtc::dchecked_cast<int>(restrictions_.max_pixels_per_frame().value_or(
+      dchecked_cast<int>(restrictions_.max_pixels_per_frame().value_or(
           std::numeric_limits<int>::max()));
   wants.target_pixel_count =
       restrictions_.target_pixels_per_frame().has_value()
-          ? std::optional<int>(rtc::dchecked_cast<int>(
+          ? std::optional<int>(dchecked_cast<int>(
                 restrictions_.target_pixels_per_frame().value()))
           : std::nullopt;
   wants.max_framerate_fps =
@@ -176,7 +176,7 @@ VideoSinkWants VideoSourceSinkController::CurrentSettingsToSinkWants() const {
   wants.resolution_alignment = resolution_alignment_;
   wants.max_pixel_count =
       std::min(wants.max_pixel_count,
-               rtc::dchecked_cast<int>(pixels_per_frame_upper_limit_.value_or(
+               dchecked_cast<int>(pixels_per_frame_upper_limit_.value_or(
                    std::numeric_limits<int>::max())));
   wants.max_framerate_fps =
       std::min(wants.max_framerate_fps,

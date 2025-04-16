@@ -43,7 +43,7 @@ void HistogramTest::VerifyHistogramStats(bool use_rtx,
                                          bool use_fec,
                                          bool screenshare) {
   class FrameObserver : public test::EndToEndTest,
-                        public rtc::VideoSinkInterface<VideoFrame> {
+                        public VideoSinkInterface<VideoFrame> {
    public:
     FrameObserver(bool use_rtx, bool use_fec, bool screenshare)
         : EndToEndTest(test::VideoTestConstants::kLongTimeout),
@@ -70,7 +70,7 @@ void HistogramTest::VerifyHistogramStats(bool use_rtx,
       }
     }
 
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       if (MinMetricRunTimePassed() && MinNumberOfFramesReceived())
         observation_complete_.Set();
 

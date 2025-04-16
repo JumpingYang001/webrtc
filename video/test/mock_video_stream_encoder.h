@@ -21,15 +21,15 @@ class MockVideoStreamEncoder : public VideoStreamEncoderInterface {
  public:
   MOCK_METHOD(void,
               AddAdaptationResource,
-              (rtc::scoped_refptr<Resource>),
+              (webrtc::scoped_refptr<Resource>),
               (override));
-  MOCK_METHOD(std::vector<rtc::scoped_refptr<Resource>>,
+  MOCK_METHOD(std::vector<scoped_refptr<Resource>>,
               GetAdaptationResources,
               (),
               (override));
   MOCK_METHOD(void,
               SetSource,
-              (rtc::VideoSourceInterface<VideoFrame>*,
+              (webrtc::VideoSourceInterface<VideoFrame>*,
                const DegradationPreference&),
               (override));
   MOCK_METHOD(void, SetSink, (EncoderSink*, bool), (override));

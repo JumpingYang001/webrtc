@@ -27,7 +27,7 @@ namespace webrtc {
 namespace test {
 namespace {
 
-const rtc::scoped_refptr<I420Buffer> kFrameBuffer = I420Buffer::Create(4, 4);
+const scoped_refptr<I420Buffer> kFrameBuffer = I420Buffer::Create(4, 4);
 
 inline size_t FrameSize(const size_t& min_frame_size,
                         const size_t& max_frame_size,

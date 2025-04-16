@@ -18,10 +18,9 @@
 namespace webrtc {
 
 // static
-rtc::scoped_refptr<EncodeUsageResource> EncodeUsageResource::Create(
+scoped_refptr<EncodeUsageResource> EncodeUsageResource::Create(
     std::unique_ptr<OveruseFrameDetector> overuse_detector) {
-  return rtc::make_ref_counted<EncodeUsageResource>(
-      std::move(overuse_detector));
+  return make_ref_counted<EncodeUsageResource>(std::move(overuse_detector));
 }
 
 EncodeUsageResource::EncodeUsageResource(

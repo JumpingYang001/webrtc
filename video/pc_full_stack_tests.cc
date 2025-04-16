@@ -535,10 +535,10 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Net_Delay_0_0_Plr_0_H264) {
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       });
   fixture->Run(RunParams(TimeDelta::Seconds(kTestDurationSec)));
 }
@@ -563,10 +563,10 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_30kbps_Net_Delay_0_0_Plr_0_H264) {
         bitrate_settings.start_bitrate_bps = 30000;
         bitrate_settings.max_bitrate_bps = 30000;
         alice->SetBitrateSettings(bitrate_settings);
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       });
   fixture->Run(RunParams(TimeDelta::Seconds(kTestDurationSec)));
 }
@@ -588,10 +588,10 @@ TEST(PCGenericDescriptorTest,
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       });
   fixture->Run(RunParams(TimeDelta::Seconds(kTestDurationSec)));
 }
@@ -615,10 +615,10 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Sps_Pps_Idr) {
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
       });
   fixture->Run(RunParams(TimeDelta::Seconds(kTestDurationSec)));
 }
@@ -639,11 +639,11 @@ TEST(PCFullStackTest, Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Flexfec) {
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
         alice->SetUseFlexFEC(true);
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
         bob->SetUseFlexFEC(true);
       });
   RunParams run_params(TimeDelta::Seconds(kTestDurationSec));
@@ -669,11 +669,11 @@ TEST(PCFullStackTest, DISABLED_Pc_Foreman_Cif_Delay_50_0_Plr_5_H264_Ulpfec) {
         auto frame_generator = CreateFromYuvFileFrameGenerator(
             video, ClipNameToClipPath("foreman_cif"));
         alice->AddVideoConfig(std::move(video), std::move(frame_generator));
-        alice->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        alice->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
         alice->SetUseUlpFEC(true);
       },
       [](PeerConfigurer* bob) {
-        bob->SetVideoCodecs({VideoCodecConfig(cricket::kH264CodecName)});
+        bob->SetVideoCodecs({VideoCodecConfig(webrtc::kH264CodecName)});
         bob->SetUseUlpFEC(true);
       });
   fixture->Run(RunParams(TimeDelta::Seconds(kTestDurationSec)));

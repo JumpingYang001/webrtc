@@ -20,9 +20,9 @@
 namespace webrtc {
 
 // static
-rtc::scoped_refptr<BandwidthQualityScalerResource>
+scoped_refptr<BandwidthQualityScalerResource>
 BandwidthQualityScalerResource::Create() {
-  return rtc::make_ref_counted<BandwidthQualityScalerResource>();
+  return make_ref_counted<BandwidthQualityScalerResource>();
 }
 
 BandwidthQualityScalerResource::BandwidthQualityScalerResource()

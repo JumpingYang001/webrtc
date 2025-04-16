@@ -659,7 +659,7 @@ void VideoQualityTest::FillScalabilitySettings(
     encoder_config.spatial_layers = params->ss[video_idx].spatial_layers;
     encoder_config.simulcast_layers = std::vector<VideoStream>(num_streams);
     encoder_config.video_stream_factory =
-        rtc::make_ref_counted<EncoderStreamFactory>(encoder_info);
+        make_ref_counted<EncoderStreamFactory>(encoder_info);
     params->ss[video_idx].streams =
         encoder_config.video_stream_factory->CreateEncoderStreams(
             env().field_trials(), params->video[video_idx].width,
@@ -866,8 +866,8 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
         vp8_settings.numberOfTemporalLayers = static_cast<unsigned char>(
             params_.video[video_idx].num_temporal_layers);
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp8EncoderSpecificSettings>(vp8_settings);
+            make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+                vp8_settings);
       } else if (params_.video[video_idx].codec == "VP9") {
         VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
         vp9_settings.denoisingOn = false;
@@ -882,8 +882,8 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
           vp9_settings.flexibleMode = true;
         }
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
+            make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+                vp9_settings);
       }
     } else if (params_.ss[video_idx].num_spatial_layers > 1) {
       // If SVC mode without screenshare, still need to set codec specifics.
@@ -896,7 +896,7 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
       vp9_settings.interLayerPred = params_.ss[video_idx].inter_layer_pred;
       vp9_settings.automaticResizeOn = false;
       video_encoder_configs_[video_idx].encoder_specific_settings =
-          rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+          make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
               vp9_settings);
       RTC_DCHECK_EQ(video_encoder_configs_[video_idx].simulcast_layers.size(),
                     1);
@@ -907,16 +907,16 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
         VideoCodecVP8 vp8_settings = VideoEncoder::GetDefaultVp8Settings();
         vp8_settings.automaticResizeOn = true;
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp8EncoderSpecificSettings>(vp8_settings);
+            make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+                vp8_settings);
       } else if (params_.video[video_idx].codec == "VP9") {
         VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
         // Only enable quality scaler for single spatial layer.
         vp9_settings.automaticResizeOn =
             params_.ss[video_idx].num_spatial_layers == 1;
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
+            make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+                vp9_settings);
       } else if (params_.video[video_idx].codec == "H264") {
         // Quality scaling is always on for H.264.
       } else if (params_.video[video_idx].codec == kAv1CodecName) {
@@ -934,14 +934,14 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
         VideoCodecVP8 vp8_settings = VideoEncoder::GetDefaultVp8Settings();
         vp8_settings.automaticResizeOn = false;
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp8EncoderSpecificSettings>(vp8_settings);
+            make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+                vp8_settings);
       } else if (params_.video[video_idx].codec == "VP9") {
         VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
         vp9_settings.automaticResizeOn = false;
         video_encoder_configs_[video_idx].encoder_specific_settings =
-            rtc::make_ref_counted<
-                VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
+            make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+                vp9_settings);
       } else if (params_.video[video_idx].codec == "H264") {
         video_encoder_configs_[video_idx].encoder_specific_settings = nullptr;
       }
@@ -1014,7 +1014,7 @@ void VideoQualityTest::SetupThumbnails(Transport* send_transport,
     thumbnail_encoder_config.max_bitrate_bps = 50000;
     std::vector<VideoStream> streams{params_.ss[0].streams[0]};
     thumbnail_encoder_config.video_stream_factory =
-        rtc::make_ref_counted<VideoStreamFactory>(streams);
+        make_ref_counted<VideoStreamFactory>(streams);
     thumbnail_encoder_config.spatial_layers = params_.ss[0].spatial_layers;
 
     thumbnail_encoder_configs_.push_back(thumbnail_encoder_config.Copy());
@@ -1047,7 +1047,7 @@ void VideoQualityTest::DestroyThumbnailStreams() {
   }
   thumbnail_send_streams_.clear();
   thumbnail_receive_streams_.clear();
-  for (std::unique_ptr<rtc::VideoSourceInterface<VideoFrame>>& video_capturer :
+  for (std::unique_ptr<VideoSourceInterface<VideoFrame>>& video_capturer :
        thumbnail_capturers_) {
     video_capturer.reset();
   }
@@ -1373,7 +1373,7 @@ void VideoQualityTest::RunWithAnalyzer(const Params& params) {
   analyzer_ = nullptr;
 }
 
-rtc::scoped_refptr<AudioDeviceModule> VideoQualityTest::CreateAudioDevice() {
+scoped_refptr<AudioDeviceModule> VideoQualityTest::CreateAudioDevice() {
 #ifdef WEBRTC_WIN
   RTC_LOG(LS_INFO) << "Using latest version of ADM on Windows";
   // We must initialize the COM library on a thread before we calling any of
@@ -1397,7 +1397,7 @@ rtc::scoped_refptr<AudioDeviceModule> VideoQualityTest::CreateAudioDevice() {
 void VideoQualityTest::InitializeAudioDevice(CallConfig* send_call_config,
                                              CallConfig* recv_call_config,
                                              bool use_real_adm) {
-  rtc::scoped_refptr<AudioDeviceModule> audio_device;
+  scoped_refptr<AudioDeviceModule> audio_device;
   if (use_real_adm) {
     // Run test with real ADM (using default audio devices) if user has
     // explicitly set the --audio and --use_real_adm command-line flags.
@@ -1533,7 +1533,7 @@ void VideoQualityTest::RunWithRenderers(const Params& params) {
         const size_t num_streams = params_.ss[video_idx].streams.size();
         if (selected_stream_id == num_streams) {
           for (size_t stream_id = 0; stream_id < num_streams; ++stream_id) {
-            rtc::StringBuilder oss;
+            StringBuilder oss;
             oss << "Loopback Video #" << video_idx << " - Stream #"
                 << static_cast<int>(stream_id);
             loopback_renderers.emplace_back(test::VideoRenderer::Create(
@@ -1547,7 +1547,7 @@ void VideoQualityTest::RunWithRenderers(const Params& params) {
                   .sync_group = kSyncGroup;
           }
         } else {
-          rtc::StringBuilder oss;
+          StringBuilder oss;
           oss << "Loopback Video #" << video_idx;
           loopback_renderers.emplace_back(test::VideoRenderer::Create(
               oss.str().c_str(),

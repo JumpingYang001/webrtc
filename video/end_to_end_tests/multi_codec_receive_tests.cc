@@ -76,7 +76,7 @@ class FrameObserver : public test::RtpRtcpObserver,
 
  private:
   // Sends kFramesToObserve.
-  Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+  Action OnSendRtp(ArrayView<const uint8_t> packet) override {
     MutexLock lock(&mutex_);
 
     RtpPacket rtp_packet;

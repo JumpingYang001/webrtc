@@ -40,7 +40,7 @@ BufferedFrameDecryptor::BufferedFrameDecryptor(
 BufferedFrameDecryptor::~BufferedFrameDecryptor() {}
 
 void BufferedFrameDecryptor::SetFrameDecryptor(
-    rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   frame_decryptor_ = std::move(frame_decryptor);
 }
 
@@ -77,8 +77,8 @@ BufferedFrameDecryptor::FrameDecision BufferedFrameDecryptor::DecryptFrame(
                                                 frame->size());
   RTC_CHECK_LE(max_plaintext_byte_size, frame->size());
   // Place the decrypted frame inline into the existing frame.
-  rtc::ArrayView<uint8_t> inline_decrypted_bitstream(frame->mutable_data(),
-                                                     max_plaintext_byte_size);
+  ArrayView<uint8_t> inline_decrypted_bitstream(frame->mutable_data(),
+                                                max_plaintext_byte_size);
 
   // Enable authenticating the header if the field trial isn't disabled.
   std::vector<uint8_t> additional_data;

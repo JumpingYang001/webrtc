@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <utility>
 
 #include "modules/video_coding/include/video_codec_interface.h"
@@ -50,7 +51,7 @@ const char* UmaPrefixForContentType(VideoContentType content_type) {
 }
 
 // TODO(https://bugs.webrtc.org/11572): Workaround for an issue with some
-// rtc::Thread instances and/or implementations that don't register as the
+// webrtc::Thread instances and/or implementations that don't register as the
 // current task queue.
 bool IsCurrentTaskQueueOrThread(TaskQueueBase* task_queue) {
   if (task_queue->IsCurrent())

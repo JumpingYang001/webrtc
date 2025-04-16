@@ -262,13 +262,12 @@ class ZeroHertzAdapterMode : public AdapterMode {
 // Implements a frame cadence adapter supporting VSync aligned encoding.
 class VSyncEncodeAdapterMode : public AdapterMode {
  public:
-  VSyncEncodeAdapterMode(
-      Clock* clock,
-      TaskQueueBase* queue,
-      rtc::scoped_refptr<PendingTaskSafetyFlag> queue_safety_flag,
-      Metronome* metronome,
-      TaskQueueBase* worker_queue,
-      FrameCadenceAdapterInterface::Callback* callback)
+  VSyncEncodeAdapterMode(Clock* clock,
+                         TaskQueueBase* queue,
+                         scoped_refptr<PendingTaskSafetyFlag> queue_safety_flag,
+                         Metronome* metronome,
+                         TaskQueueBase* worker_queue,
+                         FrameCadenceAdapterInterface::Callback* callback)
       : clock_(clock),
         queue_(queue),
         queue_safety_flag_(queue_safety_flag),
@@ -321,7 +320,7 @@ class VSyncEncodeAdapterMode : public AdapterMode {
   TaskQueueBase* queue_ RTC_GUARDED_BY(queue_lock_)
       RTC_PT_GUARDED_BY(queue_lock_);
   RTC_NO_UNIQUE_ADDRESS SequenceChecker queue_sequence_checker_;
-  rtc::scoped_refptr<PendingTaskSafetyFlag> queue_safety_flag_;
+  scoped_refptr<PendingTaskSafetyFlag> queue_safety_flag_;
   // Input frame rate statistics for use when not in zero-hertz mode.
   std::optional<uint64_t> last_frame_rate_
       RTC_GUARDED_BY(queue_sequence_checker_);

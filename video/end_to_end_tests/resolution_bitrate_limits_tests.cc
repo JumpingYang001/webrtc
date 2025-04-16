@@ -31,8 +31,7 @@ void SetEncoderSpecific(VideoEncoderConfig* encoder_config,
     VideoCodecVP9 vp9 = VideoEncoder::GetDefaultVp9Settings();
     vp9.numberOfSpatialLayers = num_spatial_layers;
     encoder_config->encoder_specific_settings =
-        rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
-            vp9);
+        make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9);
   }
 }
 

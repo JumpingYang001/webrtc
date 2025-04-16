@@ -97,8 +97,8 @@ class VideoSendStreamImpl : public webrtc::VideoSendStream,
   void Stop() override;
   bool started() override;
 
-  void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) override;
-  std::vector<rtc::scoped_refptr<Resource>> GetAdaptationResources() override;
+  void AddAdaptationResource(scoped_refptr<Resource> resource) override;
+  std::vector<scoped_refptr<Resource>> GetAdaptationResources() override;
 
   void SetSource(VideoSourceInterface<webrtc::VideoFrame>* source,
                  const DegradationPreference& degradation_preference) override;

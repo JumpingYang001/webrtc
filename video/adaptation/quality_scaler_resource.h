@@ -31,7 +31,7 @@ namespace webrtc {
 class QualityScalerResource : public VideoStreamEncoderResource,
                               public QualityScalerQpUsageHandlerInterface {
  public:
-  static rtc::scoped_refptr<QualityScalerResource> Create();
+  static scoped_refptr<QualityScalerResource> Create();
 
   QualityScalerResource();
   ~QualityScalerResource() override;

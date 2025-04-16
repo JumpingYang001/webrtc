@@ -41,7 +41,7 @@ TEST_F(SsrcEndToEndTest, ReceiverUsesLocalSsrc) {
     SyncRtcpObserver()
         : EndToEndTest(test::VideoTestConstants::kDefaultTimeout) {}
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
       test::RtcpPacketParser parser;
       EXPECT_TRUE(parser.Parse(packet));
       EXPECT_EQ(test::VideoTestConstants::kReceiverLocalVideoSsrc,
@@ -85,7 +85,7 @@ TEST_F(SsrcEndToEndTest, UnknownRtpPacketTriggersUndemuxablePacketHandler) {
       receiver_->DeliverRtpPacket(media_type, std::move(packet),
                                   std::move(handler));
     }
-    void DeliverRtcpPacket(rtc::CopyOnWriteBuffer packet) override {}
+    void DeliverRtcpPacket(CopyOnWriteBuffer packet) override {}
 
     PacketReceiver* receiver_;
     Event undemuxable_packet_handler_triggered_;
@@ -163,7 +163,7 @@ void SsrcEndToEndTest::TestSendsSetSsrcs(size_t num_ssrcs,
     }
 
    private:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
 
@@ -271,7 +271,7 @@ TEST_F(SsrcEndToEndTest, DISABLED_RedundantPayloadsTransmittedOnAllSsrcs) {
     }
 
    private:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
 

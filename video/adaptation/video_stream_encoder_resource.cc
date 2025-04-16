@@ -51,7 +51,7 @@ void VideoStreamEncoderResource::OnResourceUsageStateMeasured(
     ResourceUsageState usage_state) {
   MutexLock crit(&lock_);
   if (listener_) {
-    listener_->OnResourceUsageStateMeasured(rtc::scoped_refptr<Resource>(this),
+    listener_->OnResourceUsageStateMeasured(scoped_refptr<Resource>(this),
                                             usage_state);
   }
 }

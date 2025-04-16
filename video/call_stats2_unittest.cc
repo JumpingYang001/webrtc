@@ -59,9 +59,9 @@ class CallStats2Test : public ::testing::Test {
           "CallStats",
           TaskQueueFactory::Priority::NORMAL);
 
-  // Note: Since rtc::Thread doesn't support injecting a Clock, we're going
+  // Note: Since webrtc::Thread doesn't support injecting a Clock, we're going
   // to be using a mix of the fake clock (used by CallStats) as well as the
-  // system clock (used by rtc::Thread). This isn't ideal and will result in
+  // system clock (used by webrtc::Thread). This isn't ideal and will result in
   // the tests taking longer to execute in some cases than they need to.
   SimulatedClock fake_clock_{12345};
   CallStats call_stats_{&fake_clock_, loop_.task_queue()};

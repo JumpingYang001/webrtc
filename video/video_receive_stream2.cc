@@ -127,7 +127,7 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
   }
 
   // VideoEncodedSinkInterface::FrameBuffer
-  rtc::scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
+  scoped_refptr<const EncodedImageBufferInterface> encoded_buffer()
       const override {
     return buffer_;
   }
@@ -151,7 +151,7 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
   }
 
  private:
-  rtc::scoped_refptr<EncodedImageBufferInterface> buffer_;
+  scoped_refptr<EncodedImageBufferInterface> buffer_;
   int64_t render_time_ms_;
   VideoCodecType codec_;
   bool is_key_frame_;
@@ -728,12 +728,12 @@ void VideoReceiveStream2::OnFrame(const VideoFrame& video_frame) {
 }
 
 void VideoReceiveStream2::SetFrameDecryptor(
-    rtc::scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) {
   rtp_video_stream_receiver_.SetFrameDecryptor(std::move(frame_decryptor));
 }
 
 void VideoReceiveStream2::SetDepacketizerToDecoderFrameTransformer(
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   rtp_video_stream_receiver_.SetDepacketizerToDecoderFrameTransformer(
       std::move(frame_transformer));
 }

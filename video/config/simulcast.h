@@ -43,7 +43,7 @@ size_t LimitSimulcastLayerCount(size_t min_num_layers,
 
 // Gets simulcast settings.
 std::vector<VideoStream> GetSimulcastConfig(
-    rtc::ArrayView<const Resolution> resolutions,
+    ArrayView<const Resolution> resolutions,
     bool is_screenshare_with_conference_mode,
     bool temporal_layers_supported,
     const FieldTrialsView& trials,

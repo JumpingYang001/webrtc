@@ -60,7 +60,7 @@ TEST_F(RetransmissionEndToEndTest, ReceivesAndRetransmitsNack) {
           nacks_left_(kNumberOfNacksToObserve) {}
 
    private:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
@@ -97,7 +97,7 @@ TEST_F(RetransmissionEndToEndTest, ReceivesAndRetransmitsNack) {
       return SEND_PACKET;
     }
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       test::RtcpPacketParser parser;
       EXPECT_TRUE(parser.Parse(packet));
@@ -145,7 +145,7 @@ TEST_F(RetransmissionEndToEndTest, ReceivesNackAndRetransmitsAudio) {
     size_t GetNumVideoStreams() const override { return 0; }
     size_t GetNumAudioStreams() const override { return 1; }
 
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
 
@@ -164,7 +164,7 @@ TEST_F(RetransmissionEndToEndTest, ReceivesNackAndRetransmitsAudio) {
         nack.SetMediaSsrc(remote_ssrc_);
         uint16_t nack_list[] = {*sequence_number_to_retransmit_};
         nack.SetPacketIds(nack_list, 1);
-        rtc::Buffer buffer = nack.Build();
+        Buffer buffer = nack.Build();
 
         EXPECT_TRUE(receive_transport_->SendRtcp(buffer));
       }
@@ -212,7 +212,7 @@ TEST_F(RetransmissionEndToEndTest,
       receive_stream_ = receive_streams[0];
     }
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
       test::RtcpPacketParser parser;
       EXPECT_TRUE(parser.Parse(packet));
       if (parser.pli()->num_packets() > 0)
@@ -284,7 +284,7 @@ void RetransmissionEndToEndTest::ReceivesPliAndRecovers(int rtp_history_ms) {
           received_pli_(false) {}
 
    private:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
@@ -302,7 +302,7 @@ void RetransmissionEndToEndTest::ReceivesPliAndRecovers(int rtp_history_ms) {
       return SEND_PACKET;
     }
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       test::RtcpPacketParser parser;
       EXPECT_TRUE(parser.Parse(packet));
@@ -380,7 +380,7 @@ void RetransmissionEndToEndTest::DecodesRetransmittedFrame(bool enable_rtx,
           retransmitted_timestamp_(0) {}
 
    private:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));

@@ -86,7 +86,7 @@ class RtcpXrObserver : public test::EndToEndTest {
 
  private:
   // Receive stream should send RR packets (and RRTR packets if enabled).
-  Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+  Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
     MutexLock lock(&mutex_);
     test::RtcpPacketParser parser;
     EXPECT_TRUE(parser.Parse(packet));
@@ -103,7 +103,7 @@ class RtcpXrObserver : public test::EndToEndTest {
     return SEND_PACKET;
   }
   // Send stream should send SR packets (and DLRR packets if enabled).
-  Action OnSendRtcp(rtc::ArrayView<const uint8_t> packet) override {
+  Action OnSendRtcp(ArrayView<const uint8_t> packet) override {
     MutexLock lock(&mutex_);
     test::RtcpPacketParser parser;
     EXPECT_TRUE(parser.Parse(packet));

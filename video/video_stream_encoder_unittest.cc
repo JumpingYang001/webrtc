@@ -179,7 +179,7 @@ const DataRate kDefaultH265Bitrate180p = DataRate::KilobitsPerSec(150);
 
 VideoFrame CreateSimpleNV12Frame() {
   return VideoFrame::Builder()
-      .set_video_frame_buffer(rtc::make_ref_counted<NV12Buffer>(
+      .set_video_frame_buffer(make_ref_counted<NV12Buffer>(
           /*width=*/16, /*height=*/16))
       .build();
 }
@@ -217,18 +217,17 @@ class FakeNativeBuffer : public webrtc::VideoFrameBuffer {
   webrtc::VideoFrameBuffer::Type type() const override { return Type::kNative; }
   int width() const override { return width_; }
   int height() const override { return height_; }
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+  scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
     return nullptr;
   }
-  rtc::scoped_refptr<VideoFrameBuffer> CropAndScale(
-      int offset_x,
-      int offset_y,
-      int crop_width,
-      int crop_height,
-      int scaled_width,
-      int scaled_height) override {
-    return rtc::make_ref_counted<FakeNativeBuffer>(nullptr, scaled_width,
-                                                   scaled_height);
+  scoped_refptr<VideoFrameBuffer> CropAndScale(int offset_x,
+                                               int offset_y,
+                                               int crop_width,
+                                               int crop_height,
+                                               int scaled_width,
+                                               int scaled_height) override {
+    return make_ref_counted<FakeNativeBuffer>(nullptr, scaled_width,
+                                              scaled_height);
   }
 
  private:
@@ -251,11 +250,11 @@ class FakeNV12NativeBuffer : public webrtc::VideoFrameBuffer {
   webrtc::VideoFrameBuffer::Type type() const override { return Type::kNative; }
   int width() const override { return nv12_buffer_->width(); }
   int height() const override { return nv12_buffer_->height(); }
-  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+  scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
     return nv12_buffer_->ToI420();
   }
-  rtc::scoped_refptr<VideoFrameBuffer> GetMappedFrameBuffer(
-      rtc::ArrayView<VideoFrameBuffer::Type> types) override {
+  scoped_refptr<VideoFrameBuffer> GetMappedFrameBuffer(
+      ArrayView<VideoFrameBuffer::Type> types) override {
     if (absl::c_find(types, Type::kNV12) != types.end()) {
       return nv12_buffer_;
     }
@@ -269,7 +268,7 @@ class FakeNV12NativeBuffer : public webrtc::VideoFrameBuffer {
     if (event_)
       event_->Set();
   }
-  rtc::scoped_refptr<NV12Buffer> nv12_buffer_;
+  scoped_refptr<NV12Buffer> nv12_buffer_;
   Event* const event_;
 };
 
@@ -320,7 +319,7 @@ class FakeVideoSourceRestrictionsListener
   void OnVideoSourceRestrictionsUpdated(
       VideoSourceRestrictions restrictions,
       const VideoAdaptationCounters& adaptation_counters,
-      rtc::scoped_refptr<Resource> reason,
+      scoped_refptr<Resource> reason,
       const VideoSourceRestrictions& unfiltered_restrictions) override {
     was_restrictions_updated_ = true;
     restrictions_updated_event_.Set();
@@ -547,8 +546,8 @@ class VideoStreamEncoderUnderTest : public VideoStreamEncoder {
 
   TimeController* const time_controller_;
   CpuOveruseDetectorProxy* overuse_detector_proxy_;
-  rtc::scoped_refptr<FakeResource> fake_cpu_resource_;
-  rtc::scoped_refptr<FakeResource> fake_quality_resource_;
+  scoped_refptr<FakeResource> fake_cpu_resource_;
+  scoped_refptr<FakeResource> fake_quality_resource_;
   FakeAdaptationConstraint fake_adaptation_constraint_;
 };
 
@@ -588,7 +587,7 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
     return adaptation_enabled_;
   }
 
-  // The "last wants" is a snapshot of the previous rtc::VideoSinkWants where
+  // The "last wants" is a snapshot of the previous webrtc::VideoSinkWants where
   // the resolution or frame rate was different than it is currently. If
   // something else is modified, such as encoder resolutions, but the resolution
   // and frame rate stays the same, last wants is not updated.
@@ -618,7 +617,7 @@ class AdaptingFrameForwarder : public test::FrameForwarder {
               &cropped_height, &out_width, &out_height)) {
         VideoFrame adapted_frame =
             VideoFrame::Builder()
-                .set_video_frame_buffer(rtc::make_ref_counted<TestBuffer>(
+                .set_video_frame_buffer(make_ref_counted<TestBuffer>(
                     nullptr, out_width, out_height))
                 .set_ntp_time_ms(video_frame.ntp_time_ms())
                 .set_timestamp_ms(video_frame.timestamp_us() * 1000)
@@ -743,7 +742,7 @@ class SimpleVideoStreamEncoderFactory {
     MOCK_METHOD(CodecSpecificInfo,
                 EncodeHook,
                 (EncodedImage & encoded_image,
-                 rtc::scoped_refptr<EncodedImageBuffer> buffer),
+                 webrtc::scoped_refptr<EncodedImageBuffer> buffer),
                 (override));
     MOCK_METHOD(VideoEncoder::EncoderInfo,
                 GetEncoderInfo,
@@ -993,7 +992,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
       vp9_settings.numberOfSpatialLayers = num_spatial_layers;
       vp9_settings.automaticResizeOn = num_spatial_layers <= 1;
       video_encoder_config.encoder_specific_settings =
-          rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+          make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
               vp9_settings);
     }
     ConfigureEncoder(std::move(video_encoder_config), allocation_callback_type,
@@ -1002,7 +1001,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
 
   VideoFrame CreateFrame(int64_t ntp_time_ms, Event* destruction_event) const {
     return VideoFrame::Builder()
-        .set_video_frame_buffer(rtc::make_ref_counted<TestBuffer>(
+        .set_video_frame_buffer(make_ref_counted<TestBuffer>(
             destruction_event, codec_width_, codec_height_))
         .set_ntp_time_ms(ntp_time_ms)
         .set_timestamp_ms(ntp_time_ms)
@@ -1014,7 +1013,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
                                          Event* destruction_event,
                                          int offset_x) const {
     return VideoFrame::Builder()
-        .set_video_frame_buffer(rtc::make_ref_counted<TestBuffer>(
+        .set_video_frame_buffer(make_ref_counted<TestBuffer>(
             destruction_event, codec_width_, codec_height_))
         .set_ntp_time_ms(ntp_time_ms)
         .set_timestamp_ms(ntp_time_ms)
@@ -1024,7 +1023,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
   }
 
   VideoFrame CreateFrame(int64_t ntp_time_ms, int width, int height) const {
-    auto buffer = rtc::make_ref_counted<TestBuffer>(nullptr, width, height);
+    auto buffer = make_ref_counted<TestBuffer>(nullptr, width, height);
     I420Buffer::SetBlack(buffer.get());
     return VideoFrame::Builder()
         .set_video_frame_buffer(std::move(buffer))
@@ -1048,7 +1047,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
                                    int width,
                                    int height) const {
     return VideoFrame::Builder()
-        .set_video_frame_buffer(rtc::make_ref_counted<FakeNativeBuffer>(
+        .set_video_frame_buffer(make_ref_counted<FakeNativeBuffer>(
             destruction_event, width, height))
         .set_ntp_time_ms(ntp_time_ms)
         .set_timestamp_ms(ntp_time_ms)
@@ -1061,7 +1060,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
                                        int width,
                                        int height) const {
     return VideoFrame::Builder()
-        .set_video_frame_buffer(rtc::make_ref_counted<FakeNV12NativeBuffer>(
+        .set_video_frame_buffer(make_ref_counted<FakeNV12NativeBuffer>(
             destruction_event, width, height))
         .set_ntp_time_ms(ntp_time_ms)
         .set_timestamp_ms(ntp_time_ms)
@@ -1238,7 +1237,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
     }
 
     void SetEncodedImageData(
-        rtc::scoped_refptr<EncodedImageBufferInterface> encoded_image_data) {
+        scoped_refptr<EncodedImageBufferInterface> encoded_image_data) {
       MutexLock lock(&local_mutex_);
       encoded_image_data_ = encoded_image_data;
     }
@@ -1329,7 +1328,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
 
     CodecSpecificInfo EncodeHook(
         EncodedImage& encoded_image,
-        rtc::scoped_refptr<EncodedImageBuffer> buffer) override {
+        scoped_refptr<EncodedImageBuffer> buffer) override {
       CodecSpecificInfo codec_specific;
       {
         MutexLock lock(&mutex_);
@@ -1412,7 +1411,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
     bool apply_alignment_to_all_simulcast_layers_ RTC_GUARDED_BY(local_mutex_) =
         false;
     bool is_hardware_accelerated_ RTC_GUARDED_BY(local_mutex_) = false;
-    rtc::scoped_refptr<EncodedImageBufferInterface> encoded_image_data_
+    scoped_refptr<EncodedImageBufferInterface> encoded_image_data_
         RTC_GUARDED_BY(local_mutex_);
     std::unique_ptr<Vp8FrameBufferController> frame_buffer_controller_
         RTC_GUARDED_BY(local_mutex_);
@@ -1987,7 +1986,7 @@ TEST_F(VideoStreamEncoderTest,
        NativeFrameWithoutI420SupportGetsCroppedIfNecessary) {
   // Use the cropping factory.
   video_encoder_config_.video_stream_factory =
-      rtc::make_ref_counted<CroppingVideoStreamFactory>();
+      make_ref_counted<CroppingVideoStreamFactory>();
   video_stream_encoder_->ConfigureEncoder(std::move(video_encoder_config_),
                                           kMaxPayloadLength);
   video_stream_encoder_->WaitUntilTaskQueueIsIdle();
@@ -5196,7 +5195,7 @@ TEST_F(VideoStreamEncoderTest,
   video_encoder_config.content_type =
       VideoEncoderConfig::ContentType::kRealtimeVideo;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
           VideoEncoder::GetDefaultVp8Settings());
   for (auto& layer : video_encoder_config.simulcast_layers) {
     layer.num_temporal_layers = 2;
@@ -5239,7 +5238,7 @@ TEST_F(VideoStreamEncoderTest,
   video_encoder_config.content_type =
       VideoEncoderConfig::ContentType::kRealtimeVideo;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp8EncoderSpecificSettings>(
           VideoEncoder::GetDefaultVp8Settings());
   for (auto& layer : video_encoder_config.simulcast_layers) {
     layer.num_temporal_layers = 2;
@@ -5286,7 +5285,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   ConfigureEncoder(std::move(video_encoder_config),
                    VideoStreamEncoder::BitrateAllocationCallbackType::
@@ -5339,7 +5338,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   ConfigureEncoder(std::move(video_encoder_config),
                    VideoStreamEncoder::BitrateAllocationCallbackType::
@@ -5385,7 +5384,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOnKeyPic;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   ConfigureEncoder(std::move(video_encoder_config),
                    VideoStreamEncoder::BitrateAllocationCallbackType::
@@ -5431,7 +5430,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   // Simulcast layers are used for enabling/disabling streams.
   video_encoder_config.simulcast_layers.resize(3);
@@ -5488,7 +5487,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   // Simulcast layers are used for enabling/disabling streams.
   video_encoder_config.simulcast_layers.resize(3);
@@ -5538,7 +5537,7 @@ TEST_F(VideoStreamEncoderTest,
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   // Simulcast layers are used for enabling/disabling streams.
   video_encoder_config.simulcast_layers.resize(3);
@@ -6234,7 +6233,7 @@ TEST_F(VideoStreamEncoderTest, InitialFrameDropActivatesWhenSVCLayersChange) {
   // Since only one layer is active - automatic resize should be enabled.
   vp9_settings.automaticResizeOn = true;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.max_bitrate_bps = kSimulcastTargetBitrate.bps();
   video_encoder_config.content_type =
@@ -6295,7 +6294,7 @@ TEST_F(VideoStreamEncoderTest,
   // Since only one layer is active - automatic resize should be enabled.
   vp9_settings.automaticResizeOn = true;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.max_bitrate_bps = kSimulcastTargetBitrate.bps();
   video_encoder_config.content_type =
@@ -6350,7 +6349,7 @@ TEST_F(VideoStreamEncoderTest,
   // Since only one layer is active - automatic resize should be enabled.
   vp9_settings.automaticResizeOn = true;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.max_bitrate_bps = kSimulcastTargetBitrate.bps();
   video_encoder_config.content_type =
@@ -6412,7 +6411,7 @@ TEST_F(VideoStreamEncoderTest, DefaultMaxAndMinBitratesNotUsedIfDisabled) {
   // Since only one layer is active - automatic resize should be enabled.
   vp9_settings.automaticResizeOn = true;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.max_bitrate_bps = kSimulcastTargetBitrate.bps();
   video_encoder_config.content_type =
@@ -6486,7 +6485,7 @@ TEST_F(VideoStreamEncoderTest,
   // Since only one layer is active - automatic resize should be enabled.
   vp9_settings.automaticResizeOn = true;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.max_bitrate_bps = kSimulcastTargetBitrate.bps();
   video_encoder_config.content_type =
@@ -7515,7 +7514,7 @@ TEST_F(VideoStreamEncoderTest, AcceptsFullHdAdaptedDownSimulcastFrames) {
   video_encoder_config.simulcast_layers[0].max_framerate = kFramerate;
   video_encoder_config.max_bitrate_bps = kTargetBitrate.bps();
   video_encoder_config.video_stream_factory =
-      rtc::make_ref_counted<CroppingVideoStreamFactory>();
+      make_ref_counted<CroppingVideoStreamFactory>();
   video_stream_encoder_->ConfigureEncoder(std::move(video_encoder_config),
                                           kMaxPayloadLength);
   video_stream_encoder_->WaitUntilTaskQueueIsIdle();
@@ -9328,7 +9327,7 @@ TEST_F(VideoStreamEncoderTest, RecreatesEncoderWhenEnableVp9SpatialLayer) {
   vp9_settings.interLayerPred = InterLayerPredMode::kOn;
   vp9_settings.automaticResizeOn = false;
   video_encoder_config.encoder_specific_settings =
-      rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+      make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
           vp9_settings);
   video_encoder_config.spatial_layers = GetSvcConfig(1280, 720,
                                                      /*fps=*/30.0,
@@ -9451,7 +9450,7 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeI420) {
 
   auto mappable_native_buffer =
       test::GetMappableNativeBufferFromVideoFrame(native_i420_frame);
-  std::vector<rtc::scoped_refptr<VideoFrameBuffer>> mapped_frame_buffers =
+  std::vector<scoped_refptr<VideoFrameBuffer>> mapped_frame_buffers =
       mappable_native_buffer->GetMappedFramedBuffers();
   ASSERT_EQ(mapped_frame_buffers.size(), 1u);
   EXPECT_EQ(mapped_frame_buffers[0]->width(), codec_width_);
@@ -9467,7 +9466,7 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeNV12) {
 
   auto mappable_native_buffer =
       test::GetMappableNativeBufferFromVideoFrame(native_nv12_frame);
-  std::vector<rtc::scoped_refptr<VideoFrameBuffer>> mapped_frame_buffers =
+  std::vector<scoped_refptr<VideoFrameBuffer>> mapped_frame_buffers =
       mappable_native_buffer->GetMappedFramedBuffers();
   ASSERT_EQ(mapped_frame_buffers.size(), 1u);
   EXPECT_EQ(mapped_frame_buffers[0]->width(), codec_width_);
@@ -9500,7 +9499,7 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, HandlesLayerToggling) {
     vp9_settings.numberOfTemporalLayers = 3;
     vp9_settings.automaticResizeOn = false;
     config.encoder_specific_settings =
-        rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+        make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
             vp9_settings);
     config.spatial_layers = GetSvcConfig(kFrameWidth, kFrameHeight,
                                          /*fps=*/30.0,
@@ -9934,7 +9933,7 @@ TEST(VideoStreamEncoderFrameCadenceTest,
       &video_source, webrtc::DegradationPreference::MAINTAIN_FRAMERATE);
 
   EXPECT_CALL(*adapter_ptr, OnFrame);
-  auto buffer = rtc::make_ref_counted<NV12Buffer>(/*width=*/16, /*height=*/16);
+  auto buffer = make_ref_counted<NV12Buffer>(/*width=*/16, /*height=*/16);
   video_source.IncomingCapturedFrame(
       VideoFrame::Builder().set_video_frame_buffer(std::move(buffer)).build());
 }
@@ -10064,7 +10063,7 @@ TEST(VideoStreamEncoderFrameCadenceTest, UpdatesQualityConvergence) {
   PassAFrame(encoder_queue, video_stream_encoder_callback, /*ntp_time_ms=*/1);
   EXPECT_CALL(factory.GetMockFakeEncoder(), EncodeHook)
       .WillRepeatedly(Invoke([](EncodedImage& encoded_image,
-                                rtc::scoped_refptr<EncodedImageBuffer> buffer) {
+                                scoped_refptr<EncodedImageBuffer> buffer) {
         encoded_image.qp_ = kVp8SteadyStateQpThreshold + 1;
         CodecSpecificInfo codec_specific;
         codec_specific.codecType = kVideoCodecVP8;
@@ -10080,7 +10079,7 @@ TEST(VideoStreamEncoderFrameCadenceTest, UpdatesQualityConvergence) {
   PassAFrame(encoder_queue, video_stream_encoder_callback, /*ntp_time_ms=*/2);
   EXPECT_CALL(factory.GetMockFakeEncoder(), EncodeHook)
       .WillRepeatedly(Invoke([](EncodedImage& encoded_image,
-                                rtc::scoped_refptr<EncodedImageBuffer> buffer) {
+                                scoped_refptr<EncodedImageBuffer> buffer) {
         // This sets simulcast index 0 content to be at target quality, while
         // index 1 content is not.
         encoded_image.qp_ = kVp8SteadyStateQpThreshold +
@@ -10203,7 +10202,7 @@ class VideoStreamEncoderFrameCadenceRestrictionTest : public ::testing::Test {
       std::make_unique<NiceMock<MockFrameCadenceAdapter>>()};
   NiceMock<MockFrameCadenceAdapter>* adapter_ptr_;
   TaskQueueBase* encoder_queue_{nullptr};
-  rtc::scoped_refptr<FakeResource> fake_resource_;
+  scoped_refptr<FakeResource> fake_resource_;
   VideoSourceRestrictions restrictions_;
   std::unique_ptr<SimpleVideoStreamEncoderFactory::AdaptedVideoStreamEncoder>
       video_stream_encoder_;

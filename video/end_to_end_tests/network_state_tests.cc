@@ -36,13 +36,13 @@ class NetworkStateEndToEndTest : public test::CallTest {
  protected:
   class UnusedTransport : public Transport {
    private:
-    bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+    bool SendRtp(ArrayView<const uint8_t> packet,
                  const PacketOptions& options) override {
       ADD_FAILURE() << "Unexpected RTP sent.";
       return false;
     }
 
-    bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    bool SendRtcp(ArrayView<const uint8_t> packet) override {
       ADD_FAILURE() << "Unexpected RTCP sent.";
       return false;
     }
@@ -61,14 +61,14 @@ class NetworkStateEndToEndTest : public test::CallTest {
     }
 
    private:
-    bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+    bool SendRtp(ArrayView<const uint8_t> packet,
                  const PacketOptions& options) override {
       MutexLock lock(&mutex_);
       need_rtp_ = false;
       return true;
     }
 
-    bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    bool SendRtcp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&mutex_);
       need_rtcp_ = false;
       return true;
@@ -172,7 +172,7 @@ TEST_F(NetworkStateEndToEndTest, RespectsNetworkState) {
           receiver_rtcp_(0),
           down_frames_(0) {}
 
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&test_mutex_);
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
@@ -183,19 +183,19 @@ TEST_F(NetworkStateEndToEndTest, RespectsNetworkState) {
       return SEND_PACKET;
     }
 
-    Action OnSendRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtcp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&test_mutex_);
       ++sender_rtcp_;
       packet_event_.Set();
       return SEND_PACKET;
     }
 
-    Action OnReceiveRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtp(ArrayView<const uint8_t> packet) override {
       ADD_FAILURE() << "Unexpected receiver RTP, should not be sending.";
       return SEND_PACKET;
     }
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> packet) override {
       MutexLock lock(&test_mutex_);
       ++receiver_rtcp_;
       packet_event_.Set();

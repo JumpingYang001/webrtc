@@ -92,7 +92,7 @@ class VideoQualityTest : public test::CallTest,
   void StopThumbnails();
   void DestroyThumbnailStreams();
   // Helper method for creating a real ADM (using hardware) for all platforms.
-  rtc::scoped_refptr<AudioDeviceModule> CreateAudioDevice();
+  scoped_refptr<AudioDeviceModule> CreateAudioDevice();
   void InitializeAudioDevice(CallConfig* send_call_config,
                              CallConfig* recv_call_config,
                              bool use_real_adm);

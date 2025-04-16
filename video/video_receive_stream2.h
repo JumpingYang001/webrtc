@@ -181,11 +181,11 @@ class VideoReceiveStream2
   int GetBaseMinimumPlayoutDelayMs() const override;
 
   void SetFrameDecryptor(
-      rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
+      scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
   void SetDepacketizerToDecoderFrameTransformer(
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) override;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) override;
 
-  // Implements rtc::VideoSinkInterface<VideoFrame>.
+  // Implements webrtc::VideoSinkInterface<VideoFrame>.
   void OnFrame(const VideoFrame& video_frame) override;
 
   // Implements RtpVideoStreamReceiver2::OnCompleteFrameCallback.

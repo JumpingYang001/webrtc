@@ -125,9 +125,9 @@ class VideoStreamEncoderResourceManager
 
   // Resources need to be mapped to an AdaptReason (kCpu or kQuality) in order
   // to update legacy getStats().
-  void AddResource(rtc::scoped_refptr<Resource> resource,
+  void AddResource(scoped_refptr<Resource> resource,
                    VideoAdaptationReason reason);
-  void RemoveResource(rtc::scoped_refptr<Resource> resource);
+  void RemoveResource(scoped_refptr<Resource> resource);
   std::vector<AdaptationConstraint*> AdaptationConstraints() const;
   // If true, the VideoStreamEncoder should execute its logic to maybe drop
   // frames based on size and bitrate.
@@ -140,11 +140,11 @@ class VideoStreamEncoderResourceManager
   void OnVideoSourceRestrictionsUpdated(
       VideoSourceRestrictions restrictions,
       const VideoAdaptationCounters& adaptation_counters,
-      rtc::scoped_refptr<Resource> reason,
+      scoped_refptr<Resource> reason,
       const VideoSourceRestrictions& unfiltered_restrictions) override;
   void OnResourceLimitationChanged(
-      rtc::scoped_refptr<Resource> resource,
-      const std::map<rtc::scoped_refptr<Resource>, VideoAdaptationCounters>&
+      scoped_refptr<Resource> resource,
+      const std::map<scoped_refptr<Resource>, VideoAdaptationCounters>&
           resource_limitations) override;
 
   static bool IsSimulcastOrMultipleSpatialLayers(
@@ -155,7 +155,7 @@ class VideoStreamEncoderResourceManager
   class InitialFrameDropper;
 
   VideoAdaptationReason GetReasonFromResource(
-      rtc::scoped_refptr<Resource> resource) const;
+      scoped_refptr<Resource> resource) const;
 
   CpuOveruseOptions GetCpuOveruseOptions() const;
   int LastFrameSizeOrDefault() const;
@@ -186,10 +186,10 @@ class VideoStreamEncoderResourceManager
       RTC_GUARDED_BY(encoder_queue_);
   const std::unique_ptr<BalancedConstraint> balanced_constraint_
       RTC_GUARDED_BY(encoder_queue_);
-  const rtc::scoped_refptr<EncodeUsageResource> encode_usage_resource_;
-  const rtc::scoped_refptr<QualityScalerResource> quality_scaler_resource_;
-  rtc::scoped_refptr<PixelLimitResource> pixel_limit_resource_;
-  const rtc::scoped_refptr<BandwidthQualityScalerResource>
+  const scoped_refptr<EncodeUsageResource> encode_usage_resource_;
+  const scoped_refptr<QualityScalerResource> quality_scaler_resource_;
+  scoped_refptr<PixelLimitResource> pixel_limit_resource_;
+  const scoped_refptr<BandwidthQualityScalerResource>
       bandwidth_quality_scaler_resource_;
 
   TaskQueueBase* encoder_queue_;
@@ -224,7 +224,7 @@ class VideoStreamEncoderResourceManager
 
   // Ties a resource to a reason for statistical reporting. This AdaptReason is
   // also used by this module to make decisions about how to adapt up/down.
-  std::map<rtc::scoped_refptr<Resource>, VideoAdaptationReason> resources_
+  std::map<scoped_refptr<Resource>, VideoAdaptationReason> resources_
       RTC_GUARDED_BY(encoder_queue_);
 };
 

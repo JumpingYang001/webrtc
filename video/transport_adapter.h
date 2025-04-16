@@ -25,9 +25,9 @@ class TransportAdapter : public Transport {
   explicit TransportAdapter(Transport* transport);
   ~TransportAdapter() override;
 
-  bool SendRtp(rtc::ArrayView<const uint8_t> packet,
+  bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override;
-  bool SendRtcp(rtc::ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(ArrayView<const uint8_t> packet) override;
 
   void Enable();
   void Disable();

@@ -128,7 +128,8 @@ class MockRtpVideoSender : public RtpVideoSenderInterface {
   MOCK_METHOD(void, SetEncodingData, (size_t, size_t, size_t), (override));
   MOCK_METHOD(std::vector<RtpSequenceNumberMap::Info>,
               GetSentRtpPacketInfos,
-              (uint32_t ssrc, rtc::ArrayView<const uint16_t> sequence_numbers),
+              (uint32_t ssrc,
+               webrtc::ArrayView<const uint16_t> sequence_numbers),
               (const, override));
 
   MOCK_METHOD(void, SetFecAllowed, (bool fec_allowed), (override));

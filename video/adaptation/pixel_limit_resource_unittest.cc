@@ -64,7 +64,7 @@ TEST_F(PixelLimitResourceTest, ResourceIsSilentByDefault) {
   // OnResourceUsageStateMeasured() is invoked.
   testing::StrictMock<MockResourceListener> resource_listener;
   RunTaskOnTaskQueue([&]() {
-    rtc::scoped_refptr<PixelLimitResource> pixel_limit_resource =
+    scoped_refptr<PixelLimitResource> pixel_limit_resource =
         PixelLimitResource::Create(task_queue_.get(), &input_state_provider_);
     pixel_limit_resource->SetResourceListener(&resource_listener);
     // Set a current pixel count.
@@ -80,7 +80,7 @@ TEST_F(PixelLimitResourceTest,
   constexpr int kMaxPixels = 640 * 480;
   testing::StrictMock<MockResourceListener> resource_listener;
   RunTaskOnTaskQueue([&]() {
-    rtc::scoped_refptr<PixelLimitResource> pixel_limit_resource =
+    scoped_refptr<PixelLimitResource> pixel_limit_resource =
         PixelLimitResource::Create(task_queue_.get(), &input_state_provider_);
     pixel_limit_resource->SetResourceListener(&resource_listener);
     time_controller_.AdvanceTime(TimeDelta::Zero());
@@ -115,7 +115,7 @@ TEST_F(PixelLimitResourceTest,
   const int kMinPixels = GetLowerResolutionThan(kMaxPixels);
   testing::StrictMock<MockResourceListener> resource_listener;
   RunTaskOnTaskQueue([&]() {
-    rtc::scoped_refptr<PixelLimitResource> pixel_limit_resource =
+    scoped_refptr<PixelLimitResource> pixel_limit_resource =
         PixelLimitResource::Create(task_queue_.get(), &input_state_provider_);
     pixel_limit_resource->SetResourceListener(&resource_listener);
     time_controller_.AdvanceTime(TimeDelta::Zero());

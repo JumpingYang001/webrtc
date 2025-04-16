@@ -175,11 +175,11 @@ class VideoEncoderConfig {
   // Note: This factory can be unset, and VideoStreamEncoder will
   // then use the EncoderStreamFactory. The factory is only set by
   // tests.
-  rtc::scoped_refptr<VideoStreamFactoryInterface> video_stream_factory;
+  scoped_refptr<VideoStreamFactoryInterface> video_stream_factory;
   std::vector<SpatialLayer> spatial_layers;
   ContentType content_type;
   bool frame_drop_enabled;
-  rtc::scoped_refptr<const EncoderSpecificSettings> encoder_specific_settings;
+  scoped_refptr<const EncoderSpecificSettings> encoder_specific_settings;
 
   // Padding will be used up to this bitrate regardless of the bitrate produced
   // by the encoder. Padding above what's actually produced by the encoder helps

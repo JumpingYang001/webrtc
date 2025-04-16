@@ -251,7 +251,7 @@ VideoSourceInterface<VideoFrame>* VideoAnalyzer::OutputInterface() {
   return &captured_frame_forwarder_;
 }
 
-void VideoAnalyzer::DeliverRtcpPacket(rtc::CopyOnWriteBuffer packet) {
+void VideoAnalyzer::DeliverRtcpPacket(CopyOnWriteBuffer packet) {
   return receiver_->DeliverRtcpPacket(std::move(packet));
 }
 
@@ -304,7 +304,7 @@ void VideoAnalyzer::PostEncodeOnFrame(size_t stream_id, uint32_t timestamp) {
   }
 }
 
-bool VideoAnalyzer::SendRtp(rtc::ArrayView<const uint8_t> packet,
+bool VideoAnalyzer::SendRtp(ArrayView<const uint8_t> packet,
                             const PacketOptions& options) {
   RtpPacket rtp_packet;
   rtp_packet.Parse(packet);
@@ -337,7 +337,7 @@ bool VideoAnalyzer::SendRtp(rtc::ArrayView<const uint8_t> packet,
   return result;
 }
 
-bool VideoAnalyzer::SendRtcp(rtc::ArrayView<const uint8_t> packet) {
+bool VideoAnalyzer::SendRtcp(ArrayView<const uint8_t> packet) {
   return transport_->SendRtcp(packet);
 }
 
@@ -444,13 +444,13 @@ void VideoAnalyzer::Wait() {
 void VideoAnalyzer::StartMeasuringCpuProcessTime() {
   MutexLock lock(&cpu_measurement_lock_);
   cpu_time_ -= GetProcessCpuTimeNanos();
-  wallclock_time_ -= rtc::SystemTimeNanos();
+  wallclock_time_ -= SystemTimeNanos();
 }
 
 void VideoAnalyzer::StopMeasuringCpuProcessTime() {
   MutexLock lock(&cpu_measurement_lock_);
   cpu_time_ += GetProcessCpuTimeNanos();
-  wallclock_time_ += rtc::SystemTimeNanos();
+  wallclock_time_ += SystemTimeNanos();
 }
 
 void VideoAnalyzer::StartExcludingCpuThreadTime() {

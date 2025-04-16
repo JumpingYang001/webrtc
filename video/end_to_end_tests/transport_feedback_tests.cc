@@ -50,8 +50,8 @@ TEST(TransportFeedbackMultiStreamTest, AssignsTransportSequenceNumbers) {
         Call* sender_call,
         const std::map<uint32_t, uint32_t>& ssrc_map,
         const std::map<uint8_t, MediaType>& payload_type_map,
-        rtc::ArrayView<const RtpExtension> audio_extensions,
-        rtc::ArrayView<const RtpExtension> video_extensions)
+        ArrayView<const RtpExtension> audio_extensions,
+        ArrayView<const RtpExtension> video_extensions)
         : DirectTransport(task_queue,
                           std::make_unique<FakeNetworkPipe>(
                               Clock::GetRealTimeClock(),
@@ -70,7 +70,7 @@ TEST(TransportFeedbackMultiStreamTest, AssignsTransportSequenceNumbers) {
     }
     virtual ~RtpExtensionHeaderObserver() {}
 
-    bool SendRtp(rtc::ArrayView<const uint8_t> data,
+    bool SendRtp(ArrayView<const uint8_t> data,
                  const PacketOptions& options) override {
       {
         MutexLock lock(&lock_);
@@ -261,18 +261,18 @@ class TransportFeedbackTester : public test::EndToEndTest {
   }
 
  protected:
-  Action OnSendRtcp(rtc::ArrayView<const uint8_t> data) override {
+  Action OnSendRtcp(ArrayView<const uint8_t> data) override {
     EXPECT_FALSE(HasTransportFeedback(data));
     return SEND_PACKET;
   }
 
-  Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> data) override {
+  Action OnReceiveRtcp(ArrayView<const uint8_t> data) override {
     if (HasTransportFeedback(data))
       observation_complete_.Set();
     return SEND_PACKET;
   }
 
-  bool HasTransportFeedback(rtc::ArrayView<const uint8_t> data) const {
+  bool HasTransportFeedback(ArrayView<const uint8_t> data) const {
     test::RtcpPacketParser parser;
     EXPECT_TRUE(parser.Parse(data));
     return parser.transport_feedback()->num_packets() > 0;
@@ -339,7 +339,7 @@ TEST_F(TransportFeedbackEndToEndTest,
     }
 
    protected:
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       RtpPacket rtp_packet;
       EXPECT_TRUE(rtp_packet.Parse(packet));
       const bool only_padding = rtp_packet.payload_size() == 0;
@@ -362,7 +362,7 @@ TEST_F(TransportFeedbackEndToEndTest,
       return SEND_PACKET;
     }
 
-    Action OnReceiveRtcp(rtc::ArrayView<const uint8_t> data) override {
+    Action OnReceiveRtcp(ArrayView<const uint8_t> data) override {
       MutexLock lock(&mutex_);
       // To fill up the congestion window we drop feedback on packets after 20
       // packets have been sent. This means that any packets that has not yet
@@ -379,7 +379,7 @@ TEST_F(TransportFeedbackEndToEndTest,
       return SEND_PACKET;
     }
 
-    bool HasTransportFeedback(rtc::ArrayView<const uint8_t> data) const {
+    bool HasTransportFeedback(ArrayView<const uint8_t> data) const {
       test::RtcpPacketParser parser;
       EXPECT_TRUE(parser.Parse(data));
       return parser.transport_feedback()->num_packets() > 0;
@@ -433,7 +433,7 @@ TEST_F(TransportFeedbackEndToEndTest, TransportSeqNumOnAudioAndVideo) {
                        kTransportSequenceNumberExtensionId));
     }
 
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> packet) override {
+    Action OnSendRtp(ArrayView<const uint8_t> packet) override {
       RtpPacket rtp_packet(&extensions_);
       EXPECT_TRUE(rtp_packet.Parse(packet));
       uint16_t transport_sequence_number = 0;
