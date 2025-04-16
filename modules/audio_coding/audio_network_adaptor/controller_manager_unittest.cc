@@ -10,13 +10,25 @@
 
 #include "modules/audio_coding/audio_network_adaptor/controller_manager.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/units/time_delta.h"
+#include "modules/audio_coding/audio_network_adaptor/controller.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 #include "modules/audio_coding/audio_network_adaptor/mock/mock_controller.h"
 #include "modules/audio_coding/audio_network_adaptor/mock/mock_debug_dump_writer.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/fake_clock.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 
 #if WEBRTC_ENABLE_PROTOBUF
@@ -298,8 +310,6 @@ void CheckControllersOrder(const std::vector<Controller*>& controllers,
   ASSERT_EQ(expected_types.size(), controllers.size());
 
   // We also check that the controllers follow the initial settings.
-  AudioEncoderRuntimeConfig encoder_config;
-
   for (size_t i = 0; i < controllers.size(); ++i) {
     AudioEncoderRuntimeConfig encoder_config;
     // We check the order of `controllers` by judging their decisions.

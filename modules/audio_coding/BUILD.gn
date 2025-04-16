@@ -530,6 +530,7 @@ rtc_library("neteq") {
     "../../api/units:timestamp",
     "../../common_audio",
     "../../common_audio:common_audio_c",
+    "../../common_audio:common_audio_cc",
     "../../rtc_base:buffer",
     "../../rtc_base:checks",
     "../../rtc_base:event_tracer",

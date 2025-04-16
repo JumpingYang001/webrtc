@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "api/array_view.h"
 #include "api/audio_codecs/audio_decoder.h"
 #include "api/audio_codecs/audio_decoder_factory.h"
@@ -1156,7 +1157,7 @@ int NetEqImpl::GetDecision(Operation* operation,
       // TODO(hlundin): Write test for this.
       // Update timestamp.
       timestamp_ = end_timestamp;
-      const uint64_t generated_noise_samples =
+      generated_noise_samples =
           generated_noise_stopwatch_
               ? generated_noise_stopwatch_->ElapsedTicks() *
                         output_size_samples_ +

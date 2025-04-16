@@ -191,6 +191,7 @@ rtc_library("common_audio_c") {
 }
 
 rtc_library("common_audio_cc") {
+  visibility += webrtc_default_visibility
   sources = [
     "signal_processing/dot_product_with_scale.cc",
     "signal_processing/dot_product_with_scale.h",

@@ -10,6 +10,11 @@
 
 #include "modules/audio_coding/codecs/legacy_encoded_audio_frame.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"
 
@@ -148,8 +153,8 @@ TEST_P(SplitBySamplesTest, PayloadSizes) {
       EXPECT_EQ(expected_timestamp, result.timestamp);
       const Buffer& payload = frame->payload();
       // Allow wrap-around of value in counter below.
-      for (size_t i = 0; i != payload.size(); ++i, ++value) {
-        ASSERT_EQ(value, payload[i]);
+      for (size_t j = 0; j != payload.size(); ++j, ++value) {
+        ASSERT_EQ(value, payload[j]);
       }
 
       expected_timestamp += checked_cast<uint32_t>(
