@@ -182,8 +182,8 @@ PeerConfigurer* PeerConfigurer::SetNetEqFactory(
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioProcessing(
-    scoped_refptr<webrtc::AudioProcessing> audio_processing) {
-  components_->pcf_dependencies->audio_processing = audio_processing;
+    std::unique_ptr<AudioProcessingBuilderInterface> audio_processing) {
+  components_->pcf_dependencies->audio_processing = std::move(audio_processing);
   return this;
 }
 PeerConfigurer* PeerConfigurer::SetAudioMixer(

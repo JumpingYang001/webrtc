@@ -13,9 +13,11 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
+#include "absl/base/macros.h"
 #include "absl/strings/string_view.h"
 #include "api/async_dns_resolver.h"
 #include "api/audio/audio_mixer.h"
@@ -78,7 +80,13 @@ class PeerConfigurer {
   // Set a custom NetEqFactory to be used in the call.
   PeerConfigurer* SetNetEqFactory(std::unique_ptr<NetEqFactory> neteq_factory);
   PeerConfigurer* SetAudioProcessing(
-      scoped_refptr<webrtc::AudioProcessing> audio_processing);
+      std::unique_ptr<AudioProcessingBuilderInterface> audio_processing);
+  ABSL_DEPRECATE_AND_INLINE()
+  PeerConfigurer* SetAudioProcessing(
+      scoped_refptr<webrtc::AudioProcessing> audio_processing) {
+    return SetAudioProcessing(
+        CustomAudioProcessing(std::move(audio_processing)));
+  }
   PeerConfigurer* SetAudioMixer(scoped_refptr<webrtc::AudioMixer> audio_mixer);
 
   // Forces the Peerconnection to use the network thread as the worker thread.

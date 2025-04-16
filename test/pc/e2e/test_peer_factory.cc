@@ -18,7 +18,6 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/audio/audio_device.h"
-#include "api/audio/audio_processing.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/scoped_refptr.h"
@@ -227,10 +226,8 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
 
   // Media dependencies
   pcf_deps.adm = std::move(audio_device_module);
-  if (pcf_dependencies->audio_processing != nullptr) {
-    pcf_deps.audio_processing_builder =
-        CustomAudioProcessing(pcf_dependencies->audio_processing);
-  }
+  pcf_deps.audio_processing_builder =
+      std::move(pcf_dependencies->audio_processing);
   pcf_deps.audio_mixer = pcf_dependencies->audio_mixer;
   pcf_deps.video_encoder_factory =
       std::move(pcf_dependencies->video_encoder_factory);

@@ -71,7 +71,7 @@ struct PeerConnectionFactoryComponents {
 
   std::unique_ptr<FieldTrialsView> trials;
 
-  scoped_refptr<webrtc::AudioProcessing> audio_processing;
+  std::unique_ptr<AudioProcessingBuilderInterface> audio_processing;
   scoped_refptr<webrtc::AudioMixer> audio_mixer;
 };
 

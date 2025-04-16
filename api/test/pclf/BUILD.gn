@@ -96,6 +96,7 @@ rtc_library("peer_configurer") {
     "../../transport:bitrate_settings",
     "../../transport:network_control",
     "../../video_codecs:video_codecs_api",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
