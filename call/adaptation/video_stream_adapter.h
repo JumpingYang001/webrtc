@@ -46,7 +46,7 @@ class VideoSourceRestrictionsListener {
   virtual void OnVideoSourceRestrictionsUpdated(
       VideoSourceRestrictions restrictions,
       const VideoAdaptationCounters& adaptation_counters,
-      rtc::scoped_refptr<Resource> reason,
+      scoped_refptr<Resource> reason,
       const VideoSourceRestrictions& unfiltered_restrictions) = 0;
 };
 
@@ -158,7 +158,7 @@ class VideoStreamAdapter {
 
   // Updates source_restrictions() the Adaptation.
   void ApplyAdaptation(const Adaptation& adaptation,
-                       rtc::scoped_refptr<Resource> resource);
+                       scoped_refptr<Resource> resource);
 
   struct RestrictionsWithCounters {
     VideoSourceRestrictions restrictions;
@@ -171,7 +171,7 @@ class VideoStreamAdapter {
  private:
   void BroadcastVideoRestrictionsUpdate(
       const VideoStreamInputState& input_state,
-      const rtc::scoped_refptr<Resource>& resource);
+      const scoped_refptr<Resource>& resource);
 
   bool HasSufficientInputForAdaptation(const VideoStreamInputState& input_state)
       const RTC_RUN_ON(&sequence_checker_);

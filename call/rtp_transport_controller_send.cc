@@ -166,7 +166,7 @@ RtpVideoSenderInterface* RtpTransportControllerSend::CreateRtpVideoSender(
     const RtpSenderObservers& observers,
     std::unique_ptr<FecController> fec_controller,
     const RtpSenderFrameEncryptionConfig& frame_encryption_config,
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   video_rtp_senders_.push_back(std::make_unique<RtpVideoSender>(
       env_, task_queue_, suspended_ssrcs, states, rtp_config,
@@ -454,7 +454,7 @@ void RtpTransportControllerSend::EnablePeriodicAlrProbing(bool enable) {
   UpdateStreamsConfig();
 }
 void RtpTransportControllerSend::OnSentPacket(
-    const rtc::SentPacket& sent_packet) {
+    const SentPacketInfo& sent_packet) {
   // Normally called on the network thread!
   // TODO(crbug.com/1373439): Clarify other thread contexts calling in,
   // and simplify task posting logic when the combined network/worker project
@@ -472,7 +472,7 @@ void RtpTransportControllerSend::OnSentPacket(
 }
 
 void RtpTransportControllerSend::ProcessSentPacket(
-    const rtc::SentPacket& sent_packet) {
+    const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   std::optional<SentPacket> packet_msg =
       transport_feedback_adapter_.ProcessSentPacket(sent_packet);
@@ -809,7 +809,7 @@ void RtpTransportControllerSend::PostUpdates(NetworkControlUpdate update) {
 
 void RtpTransportControllerSend::OnReport(
     Timestamp receive_time,
-    rtc::ArrayView<const ReportBlockData> report_blocks) {
+    ArrayView<const ReportBlockData> report_blocks) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   if (report_blocks.empty())
     return;

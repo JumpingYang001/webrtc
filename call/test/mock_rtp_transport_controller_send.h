@@ -50,7 +50,7 @@ class MockRtpTransportControllerSend
                const RtpSenderObservers&,
                std::unique_ptr<FecController>,
                const RtpSenderFrameEncryptionConfig&,
-               rtc::scoped_refptr<FrameTransformerInterface>),
+               scoped_refptr<FrameTransformerInterface>),
               (override));
   MOCK_METHOD(void,
               DestroyRtpVideoSender,
@@ -97,7 +97,7 @@ class MockRtpTransportControllerSend
               (),
               (const, override));
   MOCK_METHOD(void, EnablePeriodicAlrProbing, (bool), (override));
-  MOCK_METHOD(void, OnSentPacket, (const rtc::SentPacket&), (override));
+  MOCK_METHOD(void, OnSentPacket, (const SentPacketInfo&), (override));
   MOCK_METHOD(void,
               SetSdpBitrateParameters,
               (const BitrateConstraints&),

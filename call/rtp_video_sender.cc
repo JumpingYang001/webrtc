@@ -234,7 +234,7 @@ std::vector<RtpStreamSender> CreateRtpStreamSenders(
     RateLimiter* retransmission_rate_limiter,
     FrameEncryptorInterface* frame_encryptor,
     const CryptoOptions& crypto_options,
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_GT(rtp_config.ssrcs.size(), 0);
 
   RtpRtcpInterface::Configuration configuration;
@@ -404,7 +404,7 @@ RtpVideoSender::RtpVideoSender(
     std::unique_ptr<FecController> fec_controller,
     FrameEncryptorInterface* frame_encryptor,
     const CryptoOptions& crypto_options,
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer)
+    scoped_refptr<FrameTransformerInterface> frame_transformer)
     : env_(env),
       use_frame_rate_for_overhead_(absl::StartsWith(
           env.field_trials().Lookup("WebRTC-Video-UseFrameRateForOverhead"),
@@ -726,7 +726,7 @@ DataRate RtpVideoSender::GetPostEncodeOverhead() const {
 void RtpVideoSender::DeliverRtcp(const uint8_t* packet, size_t length) {
   // Runs on a network thread.
   for (const RtpStreamSender& stream : rtp_streams_)
-    stream.rtp_rtcp->IncomingRtcpPacket(rtc::MakeArrayView(packet, length));
+    stream.rtp_rtcp->IncomingRtcpPacket(MakeArrayView(packet, length));
 }
 
 void RtpVideoSender::ConfigureSsrcs(
@@ -924,7 +924,7 @@ uint32_t RtpVideoSender::GetProtectionBitrateBps() const {
 
 std::vector<RtpSequenceNumberMap::Info> RtpVideoSender::GetSentRtpPacketInfos(
     uint32_t ssrc,
-    rtc::ArrayView<const uint16_t> sequence_numbers) const {
+    ArrayView<const uint16_t> sequence_numbers) const {
   for (const auto& rtp_stream : rtp_streams_) {
     if (ssrc == rtp_stream.rtp_rtcp->SSRC()) {
       return rtp_stream.rtp_rtcp->GetSentRtpPacketInfos(sequence_numbers);
@@ -1019,7 +1019,7 @@ void RtpVideoSender::OnPacketFeedbackVector(
       // clean up anyway.
       continue;
     }
-    rtc::ArrayView<const uint16_t> rtp_sequence_numbers(kv.second);
+    ArrayView<const uint16_t> rtp_sequence_numbers(kv.second);
     it->second->OnPacketsAcknowledged(rtp_sequence_numbers);
   }
 }

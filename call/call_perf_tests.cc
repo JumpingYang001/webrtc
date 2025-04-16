@@ -235,7 +235,7 @@ void CallPerfTest::TestAudioVideoSync(FecMode fec,
 
   SendTask(task_queue(), [&]() {
     metrics::Reset();
-    rtc::scoped_refptr<AudioDeviceModule> fake_audio_device =
+    scoped_refptr<AudioDeviceModule> fake_audio_device =
         TestAudioDeviceModule::Create(
             &env().task_queue_factory(),
             TestAudioDeviceModule::CreatePulsedNoiseCapturer(256, 48000),
@@ -569,7 +569,7 @@ void CallPerfTest::TestMinTransmitBitrate(bool pad_to_min_bitrate) {
 
    private:
     // TODO(holmer): Run this with a timer instead of once per packet.
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> /* packet */) override {
+    Action OnSendRtp(ArrayView<const uint8_t> /* packet */) override {
       task_queue_->PostTask(SafeTask(task_safety_flag_, [this]() {
         VideoSendStream::Stats stats = send_stream_->GetStats();
 
@@ -629,7 +629,7 @@ void CallPerfTest::TestMinTransmitBitrate(bool pad_to_min_bitrate) {
     int num_bitrate_observations_in_range_;
     SamplesStatsCounter bitrate_kbps_list_;
     TaskQueueBase* task_queue_;
-    rtc::scoped_refptr<PendingTaskSafetyFlag> task_safety_flag_;
+    scoped_refptr<PendingTaskSafetyFlag> task_safety_flag_;
   } test(pad_to_min_bitrate, task_queue());
 
   fake_encoder_max_bitrate_ = kMaxEncodeBitrateKbps;
@@ -739,7 +739,7 @@ TEST_F(CallPerfTest, MAYBE_KeepsHighBitrateWhenReconfiguringSender) {
           bitrate_allocator_factory_.get();
       encoder_config->max_bitrate_bps = 2 * kReconfigureThresholdKbps * 1000;
       encoder_config->video_stream_factory =
-          rtc::make_ref_counted<VideoStreamFactory>();
+          make_ref_counted<VideoStreamFactory>();
 
       encoder_config_ = encoder_config->Copy();
     }
@@ -1021,7 +1021,7 @@ void CallPerfTest::TestEncodeFramerate(VideoEncoderFactory* encoder_factory,
       }
     }
 
-    Action OnSendRtp(rtc::ArrayView<const uint8_t> /* packet */) override {
+    Action OnSendRtp(ArrayView<const uint8_t> /* packet */) override {
       const Timestamp now = clock_->CurrentTime();
       if (now - last_getstats_time_ > kMinGetStatsInterval) {
         last_getstats_time_ = now;

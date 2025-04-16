@@ -46,9 +46,9 @@ namespace {
 // writing tests that don't depend on the logging system.
 class LogObserver {
  public:
-  LogObserver() { rtc::LogMessage::AddLogToStream(&callback_, rtc::LS_INFO); }
+  LogObserver() { LogMessage::AddLogToStream(&callback_, LS_INFO); }
 
-  ~LogObserver() { rtc::LogMessage::RemoveLogToStream(&callback_); }
+  ~LogObserver() { LogMessage::RemoveLogToStream(&callback_); }
 
   void PushExpectedLogLine(absl::string_view expected_log_line) {
     callback_.PushExpectedLogLine(expected_log_line);
@@ -57,7 +57,7 @@ class LogObserver {
   bool Wait() { return callback_.Wait(); }
 
  private:
-  class Callback : public rtc::LogSink {
+  class Callback : public LogSink {
    public:
     void OnLogMessage(const std::string& message) override {
       OnLogMessage(absl::string_view(message));

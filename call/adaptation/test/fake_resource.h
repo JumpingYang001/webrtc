@@ -22,7 +22,7 @@ namespace webrtc {
 // Fake resource used for testing.
 class FakeResource : public Resource {
  public:
-  static rtc::scoped_refptr<FakeResource> Create(absl::string_view name);
+  static scoped_refptr<FakeResource> Create(absl::string_view name);
 
   explicit FakeResource(absl::string_view name);
   ~FakeResource() override;

@@ -150,7 +150,7 @@ class AudioReceiveStreamInterface : public MediaReceiveStreamInterface {
     // Decoder specifications for every payload type that we can receive.
     std::map<int, SdpAudioFormat> decoder_map;
 
-    rtc::scoped_refptr<AudioDecoderFactory> decoder_factory;
+    scoped_refptr<AudioDecoderFactory> decoder_factory;
 
     std::optional<AudioCodecPairId> codec_pair_id;
 
@@ -163,14 +163,14 @@ class AudioReceiveStreamInterface : public MediaReceiveStreamInterface {
     // TODO(tommi): Remove this member variable from the struct. It's not
     // a part of the AudioReceiveStreamInterface state but rather a pass through
     // variable.
-    rtc::scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor;
+    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor;
 
     // An optional frame transformer used by insertable streams to transform
     // encoded frames.
     // TODO(tommi): Remove this member variable from the struct. It's not
     // a part of the AudioReceiveStreamInterface state but rather a pass through
     // variable.
-    rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
+    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
   };
 
   // Methods that support reconfiguring the stream post initialization.

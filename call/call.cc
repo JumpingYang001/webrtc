@@ -189,8 +189,8 @@ namespace internal {
 // and removing adapter resources to individual VideoSendStreams.
 class ResourceVideoSendStreamForwarder {
  public:
-  ResourceVideoSendStreamForwarder(
-      rtc::scoped_refptr<webrtc::Resource> resource)
+  explicit ResourceVideoSendStreamForwarder(
+      scoped_refptr<webrtc::Resource> resource)
       : broadcast_resource_listener_(resource) {
     broadcast_resource_listener_.StartListening();
   }
@@ -199,7 +199,7 @@ class ResourceVideoSendStreamForwarder {
     broadcast_resource_listener_.StopListening();
   }
 
-  rtc::scoped_refptr<webrtc::Resource> Resource() const {
+  scoped_refptr<webrtc::Resource> Resource() const {
     return broadcast_resource_listener_.SourceResource();
   }
 
@@ -222,7 +222,7 @@ class ResourceVideoSendStreamForwarder {
 
  private:
   BroadcastResourceListener broadcast_resource_listener_;
-  std::map<VideoSendStream*, rtc::scoped_refptr<webrtc::Resource>>
+  std::map<VideoSendStream*, scoped_refptr<webrtc::Resource>>
       adapter_resources_;
 };
 
@@ -269,7 +269,7 @@ class Call final : public webrtc::Call,
   void DestroyFlexfecReceiveStream(
       FlexfecReceiveStream* receive_stream) override;
 
-  void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) override;
+  void AddAdaptationResource(scoped_refptr<Resource> resource) override;
 
   RtpTransportControllerSendInterface* GetTransportControllerSend() override;
 
@@ -287,7 +287,7 @@ class Call final : public webrtc::Call,
   TaskQueueBase* network_thread() const override;
   TaskQueueBase* worker_thread() const override;
 
-  void DeliverRtcpPacket(rtc::CopyOnWriteBuffer packet) override;
+  void DeliverRtcpPacket(CopyOnWriteBuffer packet) override;
 
   void DeliverRtpPacket(
       MediaType media_type,
@@ -309,7 +309,7 @@ class Call final : public webrtc::Call,
   void OnUpdateSyncGroup(webrtc::AudioReceiveStreamInterface& stream,
                          absl::string_view sync_group) override;
 
-  void OnSentPacket(const rtc::SentPacket& sent_packet) override;
+  void OnSentPacket(const SentPacketInfo& sent_packet) override;
 
   // Implements TargetTransferRateObserver,
   void OnTargetTransferRate(TargetTransferRate msg) override;
@@ -378,7 +378,7 @@ class Call final : public webrtc::Call,
         RTC_GUARDED_BY(destructor_sequence_checker_);
   };
 
-  void DeliverRtcp(MediaType media_type, rtc::CopyOnWriteBuffer packet)
+  void DeliverRtcp(MediaType media_type, CopyOnWriteBuffer packet)
       RTC_RUN_ON(network_thread_);
 
   AudioReceiveStreamImpl* FindAudioStreamForSyncGroup(
@@ -506,7 +506,7 @@ class Call final : public webrtc::Call,
   // Sequence checker for outgoing network traffic. Could be the network thread.
   // Could also be a pacer owned thread or TQ such as the TaskQueueSender.
   RTC_NO_UNIQUE_ADDRESS SequenceChecker sent_packet_sequence_checker_;
-  std::optional<rtc::SentPacket> last_sent_packet_
+  std::optional<SentPacketInfo> last_sent_packet_
       RTC_GUARDED_BY(sent_packet_sequence_checker_);
   // Declared last since it will issue callbacks from a task queue. Declaring it
   // last ensures that it is destroyed first and any running tasks are finished.
@@ -1118,7 +1118,7 @@ void Call::DestroyFlexfecReceiveStream(FlexfecReceiveStream* receive_stream) {
   delete receive_stream_impl;
 }
 
-void Call::AddAdaptationResource(rtc::scoped_refptr<Resource> resource) {
+void Call::AddAdaptationResource(scoped_refptr<Resource> resource) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   adaptation_resource_forwarders_.push_back(
       std::make_unique<ResourceVideoSendStreamForwarder>(resource));
@@ -1297,7 +1297,7 @@ void Call::OnUpdateSyncGroup(webrtc::AudioReceiveStreamInterface& stream,
   ConfigureSync(sync_group);
 }
 
-void Call::OnSentPacket(const rtc::SentPacket& sent_packet) {
+void Call::OnSentPacket(const SentPacketInfo& sent_packet) {
   RTC_DCHECK_RUN_ON(&sent_packet_sequence_checker_);
   // When bundling is in effect, multiple senders may be sharing the same
   // transport. It means every |sent_packet| will be multiply notified from
@@ -1399,7 +1399,7 @@ void Call::ConfigureSync(absl::string_view sync_group) {
   }
 }
 
-void Call::DeliverRtcpPacket(rtc::CopyOnWriteBuffer packet) {
+void Call::DeliverRtcpPacket(CopyOnWriteBuffer packet) {
   RTC_DCHECK_RUN_ON(worker_thread_);
   RTC_DCHECK(IsRtcpPacket(packet));
   TRACE_EVENT0("webrtc", "Call::DeliverRtcp");

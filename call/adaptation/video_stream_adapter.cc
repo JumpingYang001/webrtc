@@ -657,9 +657,8 @@ VideoStreamAdapter::GetAdaptDownResolutionStepForBalanced(
   return first_step;
 }
 
-void VideoStreamAdapter::ApplyAdaptation(
-    const Adaptation& adaptation,
-    rtc::scoped_refptr<Resource> resource) {
+void VideoStreamAdapter::ApplyAdaptation(const Adaptation& adaptation,
+                                         scoped_refptr<Resource> resource) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   RTC_DCHECK_EQ(adaptation.validation_id_, adaptation_validation_id_);
   if (adaptation.status() != Adaptation::Status::kValid)
@@ -693,7 +692,7 @@ Adaptation VideoStreamAdapter::GetAdaptationTo(
 
 void VideoStreamAdapter::BroadcastVideoRestrictionsUpdate(
     const VideoStreamInputState& /* input_state */,
-    const rtc::scoped_refptr<Resource>& resource) {
+    const scoped_refptr<Resource>& resource) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   VideoSourceRestrictions filtered = FilterRestrictionsByDegradationPreference(
       source_restrictions(), degradation_preference_);

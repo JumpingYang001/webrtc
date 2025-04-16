@@ -48,12 +48,12 @@ void ResourceAdaptationProcessor::ResourceListenerDelegate::
 }
 
 void ResourceAdaptationProcessor::ResourceListenerDelegate::
-    OnResourceUsageStateMeasured(rtc::scoped_refptr<Resource> resource,
+    OnResourceUsageStateMeasured(scoped_refptr<Resource> resource,
                                  ResourceUsageState usage_state) {
   if (!task_queue_->IsCurrent()) {
     task_queue_->PostTask(
-        [this_ref = rtc::scoped_refptr<ResourceListenerDelegate>(this),
-         resource, usage_state] {
+        [this_ref = scoped_refptr<ResourceListenerDelegate>(this), resource,
+         usage_state] {
           this_ref->OnResourceUsageStateMeasured(resource, usage_state);
         });
     return;
@@ -77,7 +77,7 @@ ResourceAdaptationProcessor::ResourceAdaptationProcessor(
     VideoStreamAdapter* stream_adapter)
     : task_queue_(TaskQueueBase::Current()),
       resource_listener_delegate_(
-          rtc::make_ref_counted<ResourceListenerDelegate>(this)),
+          make_ref_counted<ResourceListenerDelegate>(this)),
       resources_(),
       stream_adapter_(stream_adapter),
       last_reported_source_restrictions_(),
@@ -116,7 +116,7 @@ void ResourceAdaptationProcessor::RemoveResourceLimitationsListener(
 }
 
 void ResourceAdaptationProcessor::AddResource(
-    rtc::scoped_refptr<Resource> resource) {
+    scoped_refptr<Resource> resource) {
   RTC_DCHECK(resource);
   {
     MutexLock crit(&resources_lock_);
@@ -128,14 +128,14 @@ void ResourceAdaptationProcessor::AddResource(
   RTC_LOG(LS_INFO) << "Registered resource \"" << resource->Name() << "\".";
 }
 
-std::vector<rtc::scoped_refptr<Resource>>
-ResourceAdaptationProcessor::GetResources() const {
+std::vector<scoped_refptr<Resource>> ResourceAdaptationProcessor::GetResources()
+    const {
   MutexLock crit(&resources_lock_);
   return resources_;
 }
 
 void ResourceAdaptationProcessor::RemoveResource(
-    rtc::scoped_refptr<Resource> resource) {
+    scoped_refptr<Resource> resource) {
   RTC_DCHECK(resource);
   RTC_LOG(LS_INFO) << "Removing resource \"" << resource->Name() << "\".";
   resource->SetResourceListener(nullptr);
@@ -150,7 +150,7 @@ void ResourceAdaptationProcessor::RemoveResource(
 }
 
 void ResourceAdaptationProcessor::RemoveLimitationsImposedByResource(
-    rtc::scoped_refptr<Resource> resource) {
+    scoped_refptr<Resource> resource) {
   if (!task_queue_->IsCurrent()) {
     task_queue_->PostTask(
         [this, resource]() { RemoveLimitationsImposedByResource(resource); });
@@ -193,7 +193,7 @@ void ResourceAdaptationProcessor::RemoveLimitationsImposedByResource(
 }
 
 void ResourceAdaptationProcessor::OnResourceUsageStateMeasured(
-    rtc::scoped_refptr<Resource> resource,
+    scoped_refptr<Resource> resource,
     ResourceUsageState usage_state) {
   RTC_DCHECK_RUN_ON(task_queue_);
   RTC_DCHECK(resource);
@@ -236,7 +236,7 @@ void ResourceAdaptationProcessor::OnResourceUsageStateMeasured(
 
 ResourceAdaptationProcessor::MitigationResultAndLogMessage
 ResourceAdaptationProcessor::OnResourceUnderuse(
-    rtc::scoped_refptr<Resource> reason_resource) {
+    scoped_refptr<Resource> reason_resource) {
   RTC_DCHECK_RUN_ON(task_queue_);
   // How can this stream be adapted up?
   Adaptation adaptation = stream_adapter_->GetAdaptationUp();
@@ -248,7 +248,7 @@ ResourceAdaptationProcessor::OnResourceUnderuse(
                                          message.Release());
   }
   // Check that resource is most limited.
-  std::vector<rtc::scoped_refptr<Resource>> most_limited_resources;
+  std::vector<scoped_refptr<Resource>> most_limited_resources;
   VideoStreamAdapter::RestrictionsWithCounters most_limited_restrictions;
   std::tie(most_limited_resources, most_limited_restrictions) =
       FindMostLimitedResources();
@@ -292,7 +292,7 @@ ResourceAdaptationProcessor::OnResourceUnderuse(
 
 ResourceAdaptationProcessor::MitigationResultAndLogMessage
 ResourceAdaptationProcessor::OnResourceOveruse(
-    rtc::scoped_refptr<Resource> reason_resource) {
+    scoped_refptr<Resource> reason_resource) {
   RTC_DCHECK_RUN_ON(task_queue_);
   // How can this stream be adapted up?
   Adaptation adaptation = stream_adapter_->GetAdaptationDown();
@@ -321,10 +321,10 @@ ResourceAdaptationProcessor::OnResourceOveruse(
                                        message.Release());
 }
 
-std::pair<std::vector<rtc::scoped_refptr<Resource>>,
+std::pair<std::vector<scoped_refptr<Resource>>,
           VideoStreamAdapter::RestrictionsWithCounters>
 ResourceAdaptationProcessor::FindMostLimitedResources() const {
-  std::vector<rtc::scoped_refptr<Resource>> most_limited_resources;
+  std::vector<scoped_refptr<Resource>> most_limited_resources;
   VideoStreamAdapter::RestrictionsWithCounters most_limited_restrictions{
       VideoSourceRestrictions(), VideoAdaptationCounters()};
 
@@ -347,7 +347,7 @@ ResourceAdaptationProcessor::FindMostLimitedResources() const {
 }
 
 void ResourceAdaptationProcessor::UpdateResourceLimitations(
-    rtc::scoped_refptr<Resource> reason_resource,
+    scoped_refptr<Resource> reason_resource,
     const VideoSourceRestrictions& restrictions,
     const VideoAdaptationCounters& counters) {
   auto& adaptation_limits = adaptation_limits_by_resources_[reason_resource];
@@ -357,7 +357,7 @@ void ResourceAdaptationProcessor::UpdateResourceLimitations(
   }
   adaptation_limits = {restrictions, counters};
 
-  std::map<rtc::scoped_refptr<Resource>, VideoAdaptationCounters> limitations;
+  std::map<scoped_refptr<Resource>, VideoAdaptationCounters> limitations;
   for (const auto& p : adaptation_limits_by_resources_) {
     limitations.insert(std::make_pair(p.first, p.second.counters));
   }
@@ -370,7 +370,7 @@ void ResourceAdaptationProcessor::UpdateResourceLimitations(
 void ResourceAdaptationProcessor::OnVideoSourceRestrictionsUpdated(
     VideoSourceRestrictions /* restrictions */,
     const VideoAdaptationCounters& adaptation_counters,
-    rtc::scoped_refptr<Resource> reason,
+    scoped_refptr<Resource> reason,
     const VideoSourceRestrictions& unfiltered_restrictions) {
   RTC_DCHECK_RUN_ON(task_queue_);
   if (reason) {

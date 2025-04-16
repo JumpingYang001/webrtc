@@ -63,7 +63,7 @@ class VideoSourceRestrictions {
   void UpdateMin(const VideoSourceRestrictions& other);
 
  private:
-  // These map to rtc::VideoSinkWants's `max_pixel_count` and
+  // These map to VideoSinkWants's `max_pixel_count` and
   // `target_pixel_count`.
   std::optional<size_t> max_pixels_per_frame_;
   std::optional<size_t> target_pixels_per_frame_;

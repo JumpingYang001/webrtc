@@ -177,7 +177,7 @@ void RampUpTester::ModifyVideoConfigs(
   encoder_config->number_of_streams = num_video_streams_;
   encoder_config->max_bitrate_bps = 2000000;
   encoder_config->video_stream_factory =
-      rtc::make_ref_counted<RampUpTester::VideoStreamFactory>();
+      make_ref_counted<RampUpTester::VideoStreamFactory>();
   if (num_video_streams_ == 1) {
     // For single stream rampup until 1mbps
     expected_bitrate_bps_ = kSingleStreamTargetBps;

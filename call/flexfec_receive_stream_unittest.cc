@@ -51,7 +51,7 @@ FlexfecReceiveStream::Config CreateDefaultConfig(
   return config;
 }
 
-RtpPacketReceived ParsePacket(rtc::ArrayView<const uint8_t> packet) {
+RtpPacketReceived ParsePacket(ArrayView<const uint8_t> packet) {
   RtpPacketReceived parsed_packet(nullptr);
   EXPECT_TRUE(parsed_packet.Parse(packet));
   return parsed_packet;

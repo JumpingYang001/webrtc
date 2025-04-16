@@ -113,7 +113,7 @@ class FakeVideoStreamAdapterListner : public VideoSourceRestrictionsListener {
   void OnVideoSourceRestrictionsUpdated(
       VideoSourceRestrictions /* restrictions */,
       const VideoAdaptationCounters& /* adaptation_counters */,
-      rtc::scoped_refptr<Resource> /* reason */,
+      scoped_refptr<Resource> /* reason */,
       const VideoSourceRestrictions& unfiltered_restrictions) override {
     calls_++;
     last_restrictions_ = unfiltered_restrictions;
@@ -157,7 +157,7 @@ class VideoStreamAdapterTest : public ::testing::Test {
  protected:
   webrtc::test::ScopedKeyValueConfig field_trials_;
   FakeVideoStreamInputStateProvider input_state_provider_;
-  rtc::scoped_refptr<Resource> resource_;
+  scoped_refptr<Resource> resource_;
   testing::StrictMock<MockVideoStreamEncoderObserver> encoder_stats_observer_;
   VideoStreamAdapter adapter_;
 };

@@ -202,7 +202,7 @@ class VideoSendStream {
     // An optional custom frame encryptor that allows the entire frame to be
     // encrypted in whatever way the caller chooses. This is not required by
     // default.
-    rtc::scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor;
+    scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor;
 
     // An optional encoder selector provided by the user.
     // Overrides VideoEncoderFactory::GetEncoderSelector().
@@ -212,7 +212,7 @@ class VideoSendStream {
     // Per PeerConnection cryptography options.
     CryptoOptions crypto_options;
 
-    rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
+    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
 
    private:
     // Access to the copy constructor is private to force use of the Copy()
@@ -239,9 +239,8 @@ class VideoSendStream {
   // TODO(https://crbug.com/webrtc/11565): When the ResourceAdaptationProcessor
   // is moved to Call this method could be deleted altogether in favor of
   // Call-level APIs only.
-  virtual void AddAdaptationResource(rtc::scoped_refptr<Resource> resource) = 0;
-  virtual std::vector<rtc::scoped_refptr<Resource>>
-  GetAdaptationResources() = 0;
+  virtual void AddAdaptationResource(scoped_refptr<Resource> resource) = 0;
+  virtual std::vector<scoped_refptr<Resource>> GetAdaptationResources() = 0;
 
   virtual void SetSource(
       VideoSourceInterface<webrtc::VideoFrame>* source,

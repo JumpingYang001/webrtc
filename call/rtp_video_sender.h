@@ -97,7 +97,7 @@ class RtpVideoSender : public RtpVideoSenderInterface,
       std::unique_ptr<FecController> fec_controller,
       FrameEncryptorInterface* frame_encryptor,
       const CryptoOptions& crypto_options,  // move inside RtpTransport
-      rtc::scoped_refptr<FrameTransformerInterface> frame_transformer);
+      scoped_refptr<FrameTransformerInterface> frame_transformer);
   ~RtpVideoSender() override;
 
   RtpVideoSender(const RtpVideoSender&) = delete;
@@ -154,7 +154,7 @@ class RtpVideoSender : public RtpVideoSenderInterface,
 
   std::vector<RtpSequenceNumberMap::Info> GetSentRtpPacketInfos(
       uint32_t ssrc,
-      rtc::ArrayView<const uint16_t> sequence_numbers) const
+      ArrayView<const uint16_t> sequence_numbers) const
       RTC_LOCKS_EXCLUDED(mutex_) override;
 
   // From StreamFeedbackObserver.

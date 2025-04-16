@@ -153,7 +153,7 @@ class AudioSendStream : public AudioSender {
     };
 
     std::optional<SendCodecSpec> send_codec_spec;
-    rtc::scoped_refptr<AudioEncoderFactory> encoder_factory;
+    scoped_refptr<AudioEncoderFactory> encoder_factory;
     std::optional<AudioCodecPairId> codec_pair_id;
 
     // Track ID as specified during track creation.
@@ -165,11 +165,11 @@ class AudioSendStream : public AudioSender {
     // An optional custom frame encryptor that allows the entire frame to be
     // encryptor in whatever way the caller choses. This is not required by
     // default.
-    rtc::scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor;
+    scoped_refptr<webrtc::FrameEncryptorInterface> frame_encryptor;
 
     // An optional frame transformer used by insertable streams to transform
     // encoded frames.
-    rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
+    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
   };
 
   virtual ~AudioSendStream() = default;

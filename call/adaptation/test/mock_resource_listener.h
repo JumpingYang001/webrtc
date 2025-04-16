@@ -21,7 +21,7 @@ class MockResourceListener : public ResourceListener {
  public:
   MOCK_METHOD(void,
               OnResourceUsageStateMeasured,
-              (rtc::scoped_refptr<Resource> resource,
+              (scoped_refptr<Resource> resource,
                ResourceUsageState usage_state),
               (override));
 };

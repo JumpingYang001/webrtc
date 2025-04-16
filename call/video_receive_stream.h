@@ -286,12 +286,12 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
     // An optional custom frame decryptor that allows the entire frame to be
     // decrypted in whatever way the caller choses. This is not required by
     // default.
-    rtc::scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor;
+    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor;
 
     // Per PeerConnection cryptography options.
     CryptoOptions crypto_options;
 
-    rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
+    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer;
   };
 
   // TODO(pbos): Add info on currently-received codec to Stats.

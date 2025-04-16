@@ -27,8 +27,8 @@ class ResourceLimitationsListener {
   // The limitations on a resource were changed. This does not mean the current
   // video restrictions have changed.
   virtual void OnResourceLimitationChanged(
-      rtc::scoped_refptr<Resource> resource,
-      const std::map<rtc::scoped_refptr<Resource>, VideoAdaptationCounters>&
+      scoped_refptr<Resource> resource,
+      const std::map<scoped_refptr<Resource>, VideoAdaptationCounters>&
           resource_limitations) = 0;
 };
 
@@ -50,9 +50,9 @@ class ResourceAdaptationProcessorInterface {
   // with AddResource() and RemoveResource() instead. When the processor is
   // multi-stream aware, stream-specific resouces will get added and removed
   // over time.
-  virtual void AddResource(rtc::scoped_refptr<Resource> resource) = 0;
-  virtual std::vector<rtc::scoped_refptr<Resource>> GetResources() const = 0;
-  virtual void RemoveResource(rtc::scoped_refptr<Resource> resource) = 0;
+  virtual void AddResource(scoped_refptr<Resource> resource) = 0;
+  virtual std::vector<scoped_refptr<Resource>> GetResources() const = 0;
+  virtual void RemoveResource(scoped_refptr<Resource> resource) = 0;
 };
 
 }  // namespace webrtc

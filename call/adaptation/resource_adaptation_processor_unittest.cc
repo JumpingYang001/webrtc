@@ -66,7 +66,7 @@ class VideoSourceRestrictionsListenerForTesting
     RTC_DCHECK_RUN_ON(&sequence_checker_);
     return adaptation_counters_;
   }
-  rtc::scoped_refptr<Resource> reason() const {
+  scoped_refptr<Resource> reason() const {
     RTC_DCHECK_RUN_ON(&sequence_checker_);
     return reason_;
   }
@@ -75,7 +75,7 @@ class VideoSourceRestrictionsListenerForTesting
   void OnVideoSourceRestrictionsUpdated(
       VideoSourceRestrictions restrictions,
       const VideoAdaptationCounters& adaptation_counters,
-      rtc::scoped_refptr<Resource> reason,
+      scoped_refptr<Resource> reason,
       const VideoSourceRestrictions& /* unfiltered_restrictions */) override {
     RTC_DCHECK_RUN_ON(&sequence_checker_);
     ++restrictions_updated_count_;
@@ -90,7 +90,7 @@ class VideoSourceRestrictionsListenerForTesting
   VideoSourceRestrictions restrictions_ RTC_GUARDED_BY(&sequence_checker_);
   VideoAdaptationCounters adaptation_counters_
       RTC_GUARDED_BY(&sequence_checker_);
-  rtc::scoped_refptr<Resource> reason_ RTC_GUARDED_BY(&sequence_checker_);
+  scoped_refptr<Resource> reason_ RTC_GUARDED_BY(&sequence_checker_);
 };
 
 class ResourceAdaptationProcessorTest : public ::testing::Test {
@@ -150,8 +150,8 @@ class ResourceAdaptationProcessorTest : public ::testing::Test {
   webrtc::test::ScopedKeyValueConfig field_trials_;
   FakeFrameRateProvider frame_rate_provider_;
   VideoStreamInputStateProvider input_state_provider_;
-  rtc::scoped_refptr<FakeResource> resource_;
-  rtc::scoped_refptr<FakeResource> other_resource_;
+  scoped_refptr<FakeResource> resource_;
+  scoped_refptr<FakeResource> other_resource_;
   std::unique_ptr<VideoStreamAdapter> video_stream_adapter_;
   std::unique_ptr<ResourceAdaptationProcessor> processor_;
   VideoSourceRestrictionsListenerForTesting restrictions_listener_;
