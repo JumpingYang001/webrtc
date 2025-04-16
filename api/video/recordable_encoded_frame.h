@@ -46,11 +46,7 @@ class RecordableEncodedFrame {
 
   // Optionally returns the rotation of the encoded frame. This is limited to
   // {0,90,180,270} degrees.
-  // TODO(crbug.com/391786486): Change to virtual once dependent chromium change
-  // is in.
-  virtual std::optional<webrtc::VideoRotation> video_rotation() const {
-    return std::nullopt;
-  }
+  virtual std::optional<webrtc::VideoRotation> video_rotation() const = 0;
 
   // Returns the codec of the encoded frame
   virtual VideoCodecType codec() const = 0;
