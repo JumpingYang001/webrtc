@@ -2360,6 +2360,104 @@ GetWrapImageFunction(vpx_image_t* img) {
   };
 }
 
+TEST_F(TestVp9Impl, ScalesInputToActiveResolution) {
+  // Keep a raw pointer for EXPECT calls and the like. Ownership is otherwise
+  // passed on to LibvpxVp9Encoder.
+  auto* const vpx = new NiceMock<MockLibvpxInterface>();
+  LibvpxVp9Encoder encoder(CreateEnvironment(), {},
+                           absl::WrapUnique<LibvpxInterface>(vpx));
+
+  VideoCodec settings = DefaultCodecSettings();
+  settings.width = 1280;
+  settings.height = 720;
+  constexpr int kNumSpatialLayers = 3;
+  constexpr int kNumTemporalLayers = 3;
+  ConfigureSvc(settings, kNumSpatialLayers, kNumTemporalLayers);
+  VideoBitrateAllocation bitrate_allocation;
+  for (int si = 0; si < kNumSpatialLayers; ++si) {
+    for (int ti = 0; ti < kNumTemporalLayers; ++ti) {
+      uint32_t bitrate_bps =
+          settings.spatialLayers[si].targetBitrate * 1'000 / kNumTemporalLayers;
+      bitrate_allocation.SetBitrate(si, ti, bitrate_bps);
+    }
+  }
+  vpx_image_t img;
+
+  ON_CALL(*vpx, img_wrap).WillByDefault(GetWrapImageFunction(&img));
+  ON_CALL(*vpx, codec_enc_init)
+      .WillByDefault(WithArg<0>([](vpx_codec_ctx_t* ctx) {
+        memset(ctx, 0, sizeof(*ctx));
+        return VPX_CODEC_OK;
+      }));
+  ON_CALL(*vpx, codec_enc_config_default)
+      .WillByDefault(DoAll(WithArg<1>([](vpx_codec_enc_cfg_t* cfg) {
+                             memset(cfg, 0, sizeof(vpx_codec_enc_cfg_t));
+                           }),
+                           Return(VPX_CODEC_OK)));
+
+  vpx_codec_priv_output_cx_pkt_cb_pair_t callback_pointer = {};
+  EXPECT_CALL(*vpx, codec_control(_, VP9E_REGISTER_CX_CALLBACK, A<void*>()))
+      .WillOnce(WithArg<2>([&](void* cbp) {
+        callback_pointer =
+            *reinterpret_cast<vpx_codec_priv_output_cx_pkt_cb_pair_t*>(cbp);
+        return VPX_CODEC_OK;
+      }));
+
+  EXPECT_CALL(
+      *vpx,
+      codec_control(
+          _, VP9E_SET_SVC_PARAMETERS,
+          SafeMatcherCast<vpx_svc_extra_cfg_t*>(AllOf(
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_num,
+                    ElementsAreArray({1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0})),
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_den,
+                    ElementsAreArray({4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}))))));
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder.InitEncode(&settings, kSettings));
+
+  Mock::VerifyAndClearExpectations(vpx);
+
+  // All layers active.
+  encoder.SetRates(VideoEncoder::RateControlParameters(bitrate_allocation,
+                                                       settings.maxFramerate));
+
+  // Deactivate SL2
+  bitrate_allocation.SetBitrate(2, 0, 0);
+  bitrate_allocation.SetBitrate(2, 1, 0);
+  bitrate_allocation.SetBitrate(2, 2, 0);
+
+  EXPECT_CALL(
+      *vpx,
+      codec_control(
+          _, VP9E_SET_SVC_PARAMETERS,
+          SafeMatcherCast<vpx_svc_extra_cfg_t*>(AllOf(
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_num,
+                    ElementsAreArray({1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0})),
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_den,
+                    ElementsAreArray({2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}))))));
+
+  encoder.SetRates(VideoEncoder::RateControlParameters(bitrate_allocation,
+                                                       settings.maxFramerate));
+
+  // Deactivate SL1
+  bitrate_allocation.SetBitrate(1, 0, 0);
+  bitrate_allocation.SetBitrate(1, 1, 0);
+  bitrate_allocation.SetBitrate(1, 2, 0);
+
+  EXPECT_CALL(
+      *vpx,
+      codec_control(
+          _, VP9E_SET_SVC_PARAMETERS,
+          SafeMatcherCast<vpx_svc_extra_cfg_t*>(AllOf(
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_num,
+                    ElementsAreArray({1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0})),
+              Field(&vpx_svc_extra_cfg_t::scaling_factor_den,
+                    ElementsAreArray({1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0}))))));
+
+  encoder.SetRates(VideoEncoder::RateControlParameters(bitrate_allocation,
+                                                       settings.maxFramerate));
+}
+
 TEST(Vp9SpeedSettingsTrialsTest, NoSvcUsesGlobalSpeedFromTl0InLayerConfig) {
   // TL0 speed 8 at >= 480x270, 5 if below that.
   test::ExplicitKeyValueConfig trials(

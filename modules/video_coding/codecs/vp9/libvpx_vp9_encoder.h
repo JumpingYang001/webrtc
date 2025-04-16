@@ -97,6 +97,10 @@ class LibvpxVp9Encoder : public VideoEncoder {
   bool ExplicitlyConfiguredSpatialLayers() const;
   bool SetSvcRates(const VideoBitrateAllocation& bitrate_allocation);
 
+  // Adjust sclaing factors assuming that the top active SVC layer
+  // will be the input resolution.
+  void AdjustScalingFactorsForTopActiveLayer();
+
   // Configures which spatial layers libvpx should encode according to
   // configuration provided by svc_controller_.
   void EnableSpatialLayer(int sid);
@@ -123,7 +127,9 @@ class LibvpxVp9Encoder : public VideoEncoder {
 
   size_t SteadyStateSize(int sid, int tid);
 
-  void MaybeRewrapRawWithFormat(vpx_img_fmt fmt);
+  void MaybeRewrapRawWithFormat(const vpx_img_fmt fmt,
+                                unsigned int width,
+                                unsigned int height);
   // Prepares `raw_` to reference image data of `buffer`, or of mapped or scaled
   // versions of `buffer`. Returns the buffer that got referenced as a result,
   // allowing the caller to keep a reference to it until after encoding has
@@ -188,6 +194,10 @@ class LibvpxVp9Encoder : public VideoEncoder {
   std::vector<ScalableVideoController::LayerFrameConfig> layer_frames_;
 
   FramerateControllerDeprecated variable_framerate_controller_;
+
+  // Original scaling factors for all configured layers active and inactive.
+  // `svc_config_` stores factors ignoring top inactive layers.
+  std::vector<int> scaling_factors_num_, scaling_factors_den_;
 
   const struct QualityScalerExperiment {
     int low_qp;
