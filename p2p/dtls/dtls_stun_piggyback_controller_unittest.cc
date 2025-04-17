@@ -81,8 +81,11 @@ using State = DtlsStunPiggybackController::State;
 class DtlsStunPiggybackControllerTest : public ::testing::Test {
  protected:
   DtlsStunPiggybackControllerTest()
-      : client_([](ArrayView<const uint8_t> data) {}),
-        server_([](ArrayView<const uint8_t> data) {}) {}
+      : client_(
+            [this](ArrayView<const uint8_t> data) { ClientPacketSink(data); }),
+        server_([this](ArrayView<const uint8_t> data) {
+          ServerPacketSink(data);
+        }) {}
 
   void SendClientToServer(const std::vector<uint8_t> packet,
                           StunMessageType type) {
@@ -148,6 +151,9 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
 
   DtlsStunPiggybackController client_;
   DtlsStunPiggybackController server_;
+
+  MOCK_METHOD(void, ClientPacketSink, (ArrayView<const uint8_t>));
+  MOCK_METHOD(void, ServerPacketSink, (ArrayView<const uint8_t>));
 };
 
 TEST_F(DtlsStunPiggybackControllerTest, BasicHandshake) {
@@ -333,6 +339,15 @@ TEST_F(DtlsStunPiggybackControllerTest, AckDataNoDuplicates) {
                 ComputeDtlsPacketHash(dtls_flight1),
                 ComputeDtlsPacketHash(dtls_flight3),
             }));
+}
+
+TEST_F(DtlsStunPiggybackControllerTest, IgnoresNonDtlsData) {
+  std::vector<uint8_t> ascii = {0x64, 0x72, 0x6f, 0x70, 0x6d, 0x65};
+
+  EXPECT_CALL(*this, ServerPacketSink).Times(0);
+  server_.ReportDataPiggybacked(
+      WrapInStun(STUN_ATTR_META_DTLS_IN_STUN, ascii).get(), nullptr);
+  EXPECT_EQ(0, server_.GetCountOfReceivedData());
 }
 
 TEST_F(DtlsStunPiggybackControllerTest, DontSendAckedPackets) {

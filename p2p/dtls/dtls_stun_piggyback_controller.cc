@@ -61,7 +61,7 @@ void DtlsStunPiggybackController::SetDtlsHandshakeComplete(bool is_dtls_client,
 
 void DtlsStunPiggybackController::CapturePacket(ArrayView<const uint8_t> data) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
-  if (!webrtc::IsDtlsPacket(data)) {
+  if (!IsDtlsPacket(data)) {
     return;
   }
 
@@ -133,8 +133,6 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
     const StunByteStringAttribute* ack) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
-  data_recv_count_ += (data != nullptr);
-
   // Drop silently when receiving acked data when the peer previously did not
   // support or we already moved to the complete state.
   if (state_ == State::OFF || state_ == State::COMPLETE) {
@@ -171,14 +169,14 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
       // Unpack the ACK attribute (a list of uint32_t)
       absl::flat_hash_set<uint32_t> acked_packets;
       {
-        webrtc::ByteBufferReader ack_reader(ack->array_view());
+        ByteBufferReader ack_reader(ack->array_view());
         uint32_t packet_hash;
         while (ack_reader.ReadUInt32(&packet_hash)) {
           acked_packets.insert(packet_hash);
         }
       }
       RTC_LOG(LS_VERBOSE) << "DTLS-STUN piggybacking ACK: "
-                          << webrtc::StrJoin(acked_packets, ",");
+                          << StrJoin(acked_packets, ",");
 
       // Remove all acked packets from pending_packets_.
       pending_packets_.Prune(acked_packets);
@@ -201,6 +199,13 @@ void DtlsStunPiggybackController::ReportDataPiggybacked(
   if (!data || data->length() == 0) {
     return;
   }
+
+  // Drop non-DTLS packets.
+  if (!IsDtlsPacket(data->array_view())) {
+    RTC_LOG(LS_WARNING) << "Dropping non-DTLS data.";
+    return;
+  }
+  data_recv_count_++;
 
   // Extract the received message id of the handshake
   // from the packet and prepare the ack to be sent.
