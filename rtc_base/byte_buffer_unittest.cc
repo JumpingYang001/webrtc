@@ -30,7 +30,7 @@ using ::testing::ElementsAreArray;
 
 TEST(ByteBufferTest, WriterAccessors) {
   // To be changed into ByteBufferWriter when base type is converted.
-  ByteBufferWriterT<rtc::BufferT<uint8_t>> buffer;
+  ByteBufferWriterT<BufferT<uint8_t>> buffer;
   buffer.WriteString("abc");
   EXPECT_EQ(buffer.Length(), 3U);
   EXPECT_THAT(buffer.DataView(), ElementsAre('a', 'b', 'c'));
@@ -106,7 +106,7 @@ TEST(ByteBufferTest, TestBufferLength) {
 
 TEST(ByteBufferTest, TestReadWriteBuffer) {
   ByteBufferWriter buffer;
-  ByteBufferReader read_buf(rtc::ArrayView<const uint8_t>(nullptr, 0));
+  ByteBufferReader read_buf(ArrayView<const uint8_t>(nullptr, 0));
   uint8_t ru8;
   EXPECT_FALSE(read_buf.ReadUInt8(&ru8));
 
@@ -252,7 +252,7 @@ TEST(ByteBufferTest, TestWriteBuffer) {
 TEST(ByteBufferTest, TestWriteArrayView) {
   const uint8_t write_data[3] = {3, 2, 1};
   // Write and read arrayview
-  rtc::ArrayView<const uint8_t> write_view(write_data);
+  ArrayView<const uint8_t> write_view(write_data);
   ByteBufferWriter buffer;
   buffer.Write(write_view);
   ByteBufferReader read_buf12(buffer);
@@ -277,8 +277,8 @@ TEST(ByteBufferTest, TestReadStringView) {
   for (const auto& test : tests)
     buffer += test;
 
-  rtc::ArrayView<const uint8_t> bytes(
-      reinterpret_cast<const uint8_t*>(&buffer[0]), buffer.size());
+  ArrayView<const uint8_t> bytes(reinterpret_cast<const uint8_t*>(&buffer[0]),
+                                 buffer.size());
 
   ByteBufferReader read_buf(bytes);
   size_t consumed = 0;
@@ -350,7 +350,7 @@ TEST(ByteBufferTest, TestReadWriteUVarint) {
 
 TEST(ByteBufferTest, ReadFromArrayView) {
   const uint8_t buf[] = {'a', 'b', 'c'};
-  rtc::ArrayView<const uint8_t> view(buf, 3);
+  ArrayView<const uint8_t> view(buf, 3);
 
   ByteBufferReader read_buffer(view);
   uint8_t val;
@@ -365,16 +365,16 @@ TEST(ByteBufferTest, ReadFromArrayView) {
 
 TEST(ByteBufferTest, ReadToArrayView) {
   const uint8_t buf[] = {'a', 'b', 'c'};
-  rtc::ArrayView<const uint8_t> stored_view(buf, 3);
+  ArrayView<const uint8_t> stored_view(buf, 3);
   ByteBufferReader read_buffer(stored_view);
   uint8_t result[] = {'1', '2', '3'};
-  EXPECT_TRUE(read_buffer.ReadBytes(rtc::MakeArrayView(result, 2)));
+  EXPECT_TRUE(read_buffer.ReadBytes(MakeArrayView(result, 2)));
   EXPECT_EQ(result[0], 'a');
   EXPECT_EQ(result[1], 'b');
   EXPECT_EQ(result[2], '3');
-  EXPECT_TRUE(read_buffer.ReadBytes(rtc::MakeArrayView(&result[2], 1)));
+  EXPECT_TRUE(read_buffer.ReadBytes(MakeArrayView(&result[2], 1)));
   EXPECT_EQ(result[2], 'c');
-  EXPECT_FALSE(read_buffer.ReadBytes(rtc::MakeArrayView(result, 1)));
+  EXPECT_FALSE(read_buffer.ReadBytes(MakeArrayView(result, 1)));
 }
 
 }  // namespace webrtc

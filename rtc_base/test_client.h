@@ -29,7 +29,7 @@ class TestClient : public sigslot::has_slots<> {
  public:
   // Records the contents of a packet that was received.
   struct Packet {
-    Packet(const rtc::ReceivedPacket& received_packet);
+    Packet(const ReceivedIpPacket& received_packet);
     Packet(const Packet& p);
 
     SocketAddress addr;
@@ -96,7 +96,7 @@ class TestClient : public sigslot::has_slots<> {
   Socket::ConnState GetState();
 
   void OnPacket(AsyncPacketSocket* socket,
-                const rtc::ReceivedPacket& received_packet);
+                const ReceivedIpPacket& received_packet);
   void OnReadyToSend(AsyncPacketSocket* socket);
   bool CheckTimestamp(std::optional<Timestamp> packet_timestamp);
   void AdvanceTime(int ms);

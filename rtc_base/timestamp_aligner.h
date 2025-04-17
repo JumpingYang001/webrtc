@@ -19,14 +19,14 @@
 namespace webrtc {
 
 // The TimestampAligner class helps translating timestamps of a capture system
-// into the same timescale as is used by rtc::TimeMicros(). Some capture systems
-// provide timestamps, which comes from the capturing hardware (camera or sound
-// card) or stamped close to the capturing hardware. Such timestamps are more
-// accurate (less jittery) than reading the system clock, but may have a
-// different epoch and unknown clock drift. Frame timestamps in webrtc should
-// use rtc::TimeMicros (system monotonic time), and this class provides a filter
-// which lets us use the rtc::TimeMicros timescale, and at the same time take
-// advantage of higher accuracy of the capturer's clock.
+// into the same timescale as is used by webrtc::TimeMicros(). Some capture
+// systems provide timestamps, which comes from the capturing hardware (camera
+// or sound card) or stamped close to the capturing hardware. Such timestamps
+// are more accurate (less jittery) than reading the system clock, but may have
+// a different epoch and unknown clock drift. Frame timestamps in webrtc should
+// use webrtc::TimeMicros (system monotonic time), and this class provides a
+// filter which lets us use the webrtc::TimeMicros timescale, and at the same
+// time take advantage of higher accuracy of the capturer's clock.
 
 // This class is not thread safe, so all calls to it must be synchronized
 // externally.
@@ -46,9 +46,9 @@ class RTC_EXPORT TimestampAligner {
   static constexpr int64_t kMinFrameIntervalUs = kNumMicrosecsPerMillisec;
 
   // Translates timestamps of a capture system to the same timescale as is used
-  // by rtc::TimeMicros(). `capturer_time_us` is assumed to be accurate, but
+  // by webrtc::TimeMicros(). `capturer_time_us` is assumed to be accurate, but
   // with an unknown epoch and clock drift. `system_time_us` is
-  // time according to rtc::TimeMicros(), preferably read as soon as
+  // time according to webrtc::TimeMicros(), preferably read as soon as
   // possible when the frame is captured. It may have poor accuracy
   // due to poor resolution or scheduling delays. Returns the
   // translated timestamp.

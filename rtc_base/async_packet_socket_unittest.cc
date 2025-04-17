@@ -28,7 +28,9 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
   MOCK_METHOD(SocketAddress, GetRemoteAddress, (), (const, override));
   MOCK_METHOD(int,
               Send,
-              (const void* pv, size_t cb, const rtc::PacketOptions& options),
+              (const void* pv,
+               size_t cb,
+               const webrtc::AsyncSocketPacketOptions& options),
               (override));
 
   MOCK_METHOD(int,
@@ -36,7 +38,7 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
               (const void* pv,
                size_t cb,
                const SocketAddress& addr,
-               const rtc::PacketOptions& options),
+               const webrtc::AsyncSocketPacketOptions& options),
               (override));
   MOCK_METHOD(int, Close, (), (override));
   MOCK_METHOD(State, GetState, (), (const, override));
@@ -50,12 +52,13 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
 
 TEST(AsyncPacketSocket, RegisteredCallbackReceivePacketsFromNotify) {
   MockAsyncPacketSocket mock_socket;
-  MockFunction<void(webrtc::AsyncPacketSocket*, const rtc::ReceivedPacket&)>
+  MockFunction<void(webrtc::AsyncPacketSocket*,
+                    const webrtc::ReceivedIpPacket&)>
       received_packet;
 
   EXPECT_CALL(received_packet, Call);
   mock_socket.RegisterReceivedPacketCallback(received_packet.AsStdFunction());
-  mock_socket.NotifyPacketReceived(rtc::ReceivedPacket({}, SocketAddress()));
+  mock_socket.NotifyPacketReceived(ReceivedIpPacket({}, SocketAddress()));
 }
 
 }  // namespace

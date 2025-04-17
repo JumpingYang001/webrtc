@@ -148,7 +148,7 @@ class OpenSSLAdapter final : public SSLAdapter {
 #ifdef OPENSSL_IS_BORINGSSL
   std::unique_ptr<BoringSSLIdentity> identity_;
 #else
-  std::unique_ptr<rtc::OpenSSLIdentity> identity_;
+  std::unique_ptr<webrtc::OpenSSLIdentity> identity_;
 #endif
   // Indicates whethere this is a client or a server.
   SSLRole role_;

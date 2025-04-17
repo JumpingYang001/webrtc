@@ -104,7 +104,7 @@ class FakeNetworkBinder : public NetworkBinderInterface {
   int num_binds() { return num_binds_; }
 
  private:
-  NetworkBindingResult result_ = rtc::NetworkBindingResult::SUCCESS;
+  NetworkBindingResult result_ = NetworkBindingResult::SUCCESS;
   int num_binds_ = 0;
 };
 

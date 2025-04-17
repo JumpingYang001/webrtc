@@ -82,7 +82,7 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   void SetServerRole(SSLRole role = webrtc::SSL_SERVER) override;
   SSLPeerCertificateDigestError SetPeerCertificateDigest(
       absl::string_view digest_alg,
-      rtc::ArrayView<const uint8_t> digest_val) override;
+      ArrayView<const uint8_t> digest_val) override;
 
   std::unique_ptr<SSLCertChain> GetPeerSSLCertChain() const override;
 
@@ -94,10 +94,8 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   void SetInitialRetransmissionTimeout(int timeout_ms) override;
   void SetMTU(int mtu) override;
 
-  StreamResult Read(rtc::ArrayView<uint8_t> data,
-                    size_t& read,
-                    int& error) override;
-  StreamResult Write(rtc::ArrayView<const uint8_t> data,
+  StreamResult Read(ArrayView<uint8_t> data, size_t& read, int& error) override;
+  StreamResult Write(ArrayView<const uint8_t> data,
                      size_t& written,
                      int& error) override;
   void Close() override;
@@ -111,7 +109,7 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   bool GetSslVersionBytes(int* version) const override;
   // Key Extractor interface
   bool ExportSrtpKeyingMaterial(
-      rtc::ZeroOnFreeBuffer<uint8_t>& keying_material) override;
+      ZeroOnFreeBuffer<uint8_t>& keying_material) override;
 
   uint16_t GetPeerSignatureAlgorithm() const override;
 
@@ -230,7 +228,7 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
 #ifdef OPENSSL_IS_BORINGSSL
   std::unique_ptr<BoringSSLIdentity> identity_;
 #else
-  std::unique_ptr<rtc::OpenSSLIdentity> identity_;
+  std::unique_ptr<webrtc::OpenSSLIdentity> identity_;
 #endif
   // The certificate chain that the peer presented. Initially null, until the
   // connection is established.

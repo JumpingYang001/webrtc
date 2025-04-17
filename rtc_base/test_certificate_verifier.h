@@ -15,12 +15,12 @@
 
 namespace webrtc {
 
-class TestCertificateVerifier : public rtc::SSLCertificateVerifier {
+class TestCertificateVerifier : public SSLCertificateVerifier {
  public:
   TestCertificateVerifier() = default;
   ~TestCertificateVerifier() override = default;
 
-  bool Verify(const rtc::SSLCertificate& certificate) override {
+  bool Verify(const SSLCertificate& certificate) override {
     call_count_++;
     return verify_certificate_;
   }

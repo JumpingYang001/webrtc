@@ -90,7 +90,7 @@ std::string hex_encode_with_delimiter(absl::string_view source,
   return s;
 }
 
-size_t hex_decode_with_delimiter(rtc::ArrayView<char> cbuffer,
+size_t hex_decode_with_delimiter(ArrayView<char> cbuffer,
                                  absl::string_view source,
                                  char delimiter) {
   if (cbuffer.empty())
@@ -130,7 +130,7 @@ size_t hex_decode_with_delimiter(rtc::ArrayView<char> cbuffer,
   return bufpos;
 }
 
-size_t hex_decode(rtc::ArrayView<char> buffer, absl::string_view source) {
+size_t hex_decode(ArrayView<char> buffer, absl::string_view source) {
   return hex_decode_with_delimiter(buffer, source, 0);
 }
 

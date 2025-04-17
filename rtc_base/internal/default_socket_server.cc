@@ -24,7 +24,7 @@ namespace webrtc {
 
 std::unique_ptr<SocketServer> CreateDefaultSocketServer() {
 #if defined(__native_client__)
-  return std::unique_ptr<SocketServer>(new rtc::NullSocketServer);
+  return std::unique_ptr<SocketServer>(new webrtc::NullSocketServer);
 #else
   return std::unique_ptr<SocketServer>(new PhysicalSocketServer);
 #endif

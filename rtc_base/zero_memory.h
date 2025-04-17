@@ -26,7 +26,7 @@ void ExplicitZeroMemory(void* ptr, size_t len);
 template <typename T,
           typename std::enable_if<!std::is_const<T>::value &&
                                   std::is_trivial<T>::value>::type* = nullptr>
-void ExplicitZeroMemory(rtc::ArrayView<T> a) {
+void ExplicitZeroMemory(ArrayView<T> a) {
   ExplicitZeroMemory(a.data(), a.size());
 }
 

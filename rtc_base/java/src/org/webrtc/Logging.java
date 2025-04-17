@@ -24,8 +24,8 @@ import org.webrtc.Loggable;
  * log messages will then be redirected to the injected Loggable, except those with a severity lower
  * than the specified severity, which will be discarded.
  *
- * It is also possible to switch to native logging (rtc::LogMessage) if one of the following static
- * functions are called from the app:
+ * It is also possible to switch to native logging (webrtc::LogMessage) if one
+ * of the following static functions are called from the app:
  * - Logging.enableLogThreads
  * - Logging.enableLogTimeStamps
  * - Logging.enableLogToDebugOutput

@@ -140,7 +140,7 @@ class FakeNetworkMonitor : public NetworkMonitorInterface {
   std::vector<IPAddress> addresses_;
 };
 
-class FakeNetworkMonitorFactory : public rtc::NetworkMonitorFactory {
+class FakeNetworkMonitorFactory : public NetworkMonitorFactory {
  public:
   FakeNetworkMonitorFactory() {}
   NetworkMonitorInterface* CreateNetworkMonitor(
@@ -234,8 +234,7 @@ class NetworkTest : public ::testing::Test, public sigslot::has_slots<> {
       std::vector<std::unique_ptr<Network>>* networks) {
     RTC_DCHECK_RUN_ON(network_manager.thread_);
     // Use the base IfAddrsConverter for test cases.
-    std::unique_ptr<rtc::IfAddrsConverter> ifaddrs_converter(
-        new rtc::IfAddrsConverter());
+    std::unique_ptr<IfAddrsConverter> ifaddrs_converter(new IfAddrsConverter());
     network_manager.ConvertIfAddrs(interfaces, ifaddrs_converter.get(),
                                    include_ignored, networks);
   }
@@ -412,7 +411,7 @@ TEST_F(NetworkTest, DISABLED_TestCreateNetworks) {
     IPAddress ip = (*it)->GetBestIP();
     SocketAddress bindaddress(ip, 0);
     bindaddress.SetScopeID((*it)->scope_id());
-    // TODO(thaloun): Use rtc::Socket once it supports IPv6.
+    // TODO(thaloun): Use webrtc::Socket once it supports IPv6.
     int fd = static_cast<int>(socket(ip.family(), SOCK_STREAM, IPPROTO_TCP));
     if (fd > 0) {
       size_t ipsize = bindaddress.ToSockAddrStorage(&storage);
@@ -1646,8 +1645,8 @@ TEST_F(NetworkTest, HardcodedVpn) {
   EXPECT_TRUE(NetworkManagerBase::IsVpnMacAddress(cisco));
   EXPECT_TRUE(NetworkManagerBase::IsVpnMacAddress(global));
 
-  EXPECT_FALSE(NetworkManagerBase::IsVpnMacAddress(
-      rtc::ArrayView<const uint8_t>(cisco, 5)));
+  EXPECT_FALSE(
+      NetworkManagerBase::IsVpnMacAddress(ArrayView<const uint8_t>(cisco, 5)));
   EXPECT_FALSE(NetworkManagerBase::IsVpnMacAddress(five_bytes));
   EXPECT_FALSE(NetworkManagerBase::IsVpnMacAddress(unknown));
   EXPECT_FALSE(NetworkManagerBase::IsVpnMacAddress(nullptr));

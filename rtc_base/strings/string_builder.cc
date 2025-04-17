@@ -21,7 +21,7 @@
 
 namespace webrtc {
 
-SimpleStringBuilder::SimpleStringBuilder(rtc::ArrayView<char> buffer)
+SimpleStringBuilder::SimpleStringBuilder(ArrayView<char> buffer)
     : buffer_(buffer) {
   buffer_[0] = '\0';
   RTC_DCHECK(IsConsistent());

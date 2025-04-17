@@ -41,7 +41,7 @@ TestClient::TestClient(std::unique_ptr<AsyncPacketSocket> socket,
                        ThreadProcessingFakeClock* fake_clock)
     : fake_clock_(fake_clock), socket_(std::move(socket)) {
   socket_->RegisterReceivedPacketCallback(
-      [&](rtc::AsyncPacketSocket* socket, const rtc::ReceivedPacket& packet) {
+      [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
         OnPacket(socket, packet);
       });
   socket_->SignalReadyToSend.connect(this, &TestClient::OnReadyToSend);
@@ -59,14 +59,14 @@ bool TestClient::CheckConnState(AsyncPacketSocket::State state) {
 }
 
 int TestClient::Send(const char* buf, size_t size) {
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   return socket_->Send(buf, size, options);
 }
 
 int TestClient::SendTo(const char* buf,
                        size_t size,
                        const SocketAddress& dest) {
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   return socket_->SendTo(buf, size, dest, options);
 }
 
@@ -158,7 +158,7 @@ int TestClient::SetOption(Socket::Option opt, int value) {
 }
 
 void TestClient::OnPacket(AsyncPacketSocket* socket,
-                          const rtc::ReceivedPacket& received_packet) {
+                          const ReceivedIpPacket& received_packet) {
   MutexLock lock(&mutex_);
   packets_.push_back(std::make_unique<Packet>(received_packet));
 }
@@ -167,7 +167,7 @@ void TestClient::OnReadyToSend(AsyncPacketSocket* socket) {
   ++ready_to_send_count_;
 }
 
-TestClient::Packet::Packet(const rtc::ReceivedPacket& received_packet)
+TestClient::Packet::Packet(const ReceivedIpPacket& received_packet)
     : addr(received_packet.source_address()),
       // Copy received_packet payload to a buffer owned by Packet.
       buf(received_packet.payload().data(), received_packet.payload().size()),

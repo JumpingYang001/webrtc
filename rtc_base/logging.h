@@ -120,7 +120,7 @@ class LogLineRef {
   absl::string_view message() const { return message_; }
   absl::string_view filename() const { return filename_; }
   int line() const { return line_; }
-  std::optional<rtc::PlatformThreadId> thread_id() const { return thread_id_; }
+  std::optional<PlatformThreadId> thread_id() const { return thread_id_; }
   Timestamp timestamp() const { return timestamp_; }
   absl::string_view tag() const { return tag_; }
   LoggingSeverity severity() const { return severity_; }
@@ -136,7 +136,7 @@ class LogLineRef {
   void set_message(std::string message) { message_ = std::move(message); }
   void set_filename(absl::string_view filename) { filename_ = filename; }
   void set_line(int line) { line_ = line; }
-  void set_thread_id(std::optional<rtc::PlatformThreadId> thread_id) {
+  void set_thread_id(std::optional<PlatformThreadId> thread_id) {
     thread_id_ = thread_id;
   }
   void set_timestamp(Timestamp timestamp) { timestamp_ = timestamp; }
@@ -146,7 +146,7 @@ class LogLineRef {
   std::string message_;
   absl::string_view filename_;
   int line_ = 0;
-  std::optional<rtc::PlatformThreadId> thread_id_;
+  std::optional<PlatformThreadId> thread_id_;
   Timestamp timestamp_ = Timestamp::MinusInfinity();
   // The default Android debug output tag.
   absl::string_view tag_ = "libjingle";

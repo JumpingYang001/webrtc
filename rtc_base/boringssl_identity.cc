@@ -150,7 +150,7 @@ std::unique_ptr<SSLIdentity> BoringSSLIdentity::CreateFromPEMChainStrings(
       return nullptr;
     }
     bssl::UniquePtr<CRYPTO_BUFFER> crypto_buffer(
-        CRYPTO_BUFFER_new(data, len, rtc::openssl::GetBufferPool()));
+        CRYPTO_BUFFER_new(data, len, openssl::GetBufferPool()));
     if (!crypto_buffer) {
       return nullptr;
     }
@@ -196,7 +196,7 @@ bool BoringSSLIdentity::ConfigureIdentity(SSL_CTX* ctx) {
   // 1 is the documented success return code.
   if (1 != SSL_CTX_set_chain_and_key(ctx, &cert_buffers[0], cert_buffers.size(),
                                      key_pair_->pkey(), nullptr)) {
-    rtc::openssl::LogSSLErrors("Configuring key and certificate");
+    openssl::LogSSLErrors("Configuring key and certificate");
     return false;
   }
   return true;

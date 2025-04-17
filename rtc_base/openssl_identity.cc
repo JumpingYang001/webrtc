@@ -115,8 +115,9 @@ std::unique_ptr<SSLIdentity> OpenSSLIdentity::CreateFromPEMStrings(
 std::unique_ptr<SSLIdentity> OpenSSLIdentity::CreateFromPEMChainStrings(
     absl::string_view private_key,
     absl::string_view certificate_chain) {
-  BIO* bio = BIO_new_mem_buf(certificate_chain.data(),
-                             rtc::dchecked_cast<int>(certificate_chain.size()));
+  BIO* bio =
+      BIO_new_mem_buf(certificate_chain.data(),
+                      webrtc::dchecked_cast<int>(certificate_chain.size()));
   if (!bio)
     return nullptr;
   BIO_set_mem_eof_return(bio, 0);

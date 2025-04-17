@@ -134,7 +134,7 @@ std::unique_ptr<SSLCertificate> SSLCertificate::FromPEMString(
 #ifdef OPENSSL_IS_BORINGSSL
   return BoringSSLCertificate::FromPEMString(pem_string);
 #else
-  return rtc::OpenSSLCertificate::FromPEMString(pem_string);
+  return webrtc::OpenSSLCertificate::FromPEMString(pem_string);
 #endif
 }
 

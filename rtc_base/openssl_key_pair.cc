@@ -98,7 +98,7 @@ std::unique_ptr<OpenSSLKeyPair> OpenSSLKeyPair::Generate(
     const KeyParams& key_params) {
   EVP_PKEY* pkey = MakeKey(key_params);
   if (!pkey) {
-    rtc::openssl::LogSSLErrors("Generating key pair");
+    openssl::LogSSLErrors("Generating key pair");
     return nullptr;
   }
   return std::make_unique<OpenSSLKeyPair>(pkey);

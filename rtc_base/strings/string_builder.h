@@ -29,7 +29,7 @@ namespace webrtc {
 // read via `str()`.
 class SimpleStringBuilder {
  public:
-  explicit SimpleStringBuilder(rtc::ArrayView<char> buffer);
+  explicit SimpleStringBuilder(ArrayView<char> buffer);
   SimpleStringBuilder(const SimpleStringBuilder&) = delete;
   SimpleStringBuilder& operator=(const SimpleStringBuilder&) = delete;
 
@@ -70,7 +70,7 @@ class SimpleStringBuilder {
   // size allows the buffer to be stack allocated, which helps performance.
   // Having a fixed size is furthermore useful to avoid unnecessary resizing
   // while building it.
-  const rtc::ArrayView<char> buffer_;
+  const ArrayView<char> buffer_;
 
   // Represents the number of characters written to the buffer.
   // This does not include the terminating '\0'.

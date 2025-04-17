@@ -49,7 +49,7 @@ class RTCCertificatePEM {
 // SSLCertificate and WebRTC usage. Takes ownership of some lower level objects,
 // reference counting protects these from premature destruction.
 class RTC_EXPORT RTCCertificate final
-    : public rtc::RefCountedNonVirtual<RTCCertificate> {
+    : public RefCountedNonVirtual<RTCCertificate> {
  public:
   // Takes ownership of `identity`.
   static scoped_refptr<RTCCertificate> Create(
@@ -61,8 +61,8 @@ class RTC_EXPORT RTCCertificate final
   // relative to epoch, 1970-01-01T00:00:00Z.
   bool HasExpired(uint64_t now) const;
 
-  const rtc::SSLCertificate& GetSSLCertificate() const;
-  const rtc::SSLCertChain& GetSSLCertificateChain() const;
+  const SSLCertificate& GetSSLCertificate() const;
+  const SSLCertChain& GetSSLCertificateChain() const;
 
   // TODO(hbos): If possible, remove once RTCCertificate and its
   // GetSSLCertificate() is used in all relevant places. Should not pass around

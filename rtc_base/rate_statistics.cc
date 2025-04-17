@@ -116,7 +116,7 @@ std::optional<int64_t> RateStatistics::Rate(int64_t now_ms) const {
   // overflowed, treat this as rate unavailable.
   if (num_samples_ == 0 || active_window_size <= 1 ||
       (num_samples_ <= 1 &&
-       rtc::SafeLt(active_window_size, current_window_size_ms_)) ||
+       SafeLt(active_window_size, current_window_size_ms_)) ||
       overflow_) {
     return std::nullopt;
   }

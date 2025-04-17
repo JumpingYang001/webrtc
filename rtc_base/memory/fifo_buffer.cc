@@ -56,7 +56,7 @@ StreamState FifoBuffer::GetState() const {
   return state_;
 }
 
-StreamResult FifoBuffer::Read(rtc::ArrayView<uint8_t> buffer,
+StreamResult FifoBuffer::Read(ArrayView<uint8_t> buffer,
                               size_t& bytes_read,
                               int& error) {
   RTC_DCHECK_RUN_ON(&callback_sequence_);
@@ -79,7 +79,7 @@ StreamResult FifoBuffer::Read(rtc::ArrayView<uint8_t> buffer,
   return result;
 }
 
-StreamResult FifoBuffer::Write(rtc::ArrayView<const uint8_t> buffer,
+StreamResult FifoBuffer::Write(ArrayView<const uint8_t> buffer,
                                size_t& bytes_written,
                                int& error) {
   RTC_DCHECK_RUN_ON(&callback_sequence_);

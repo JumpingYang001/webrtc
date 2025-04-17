@@ -132,12 +132,12 @@ class RTC_EXPORT AsyncPacketSocket : public sigslot::has_slots<> {
 
   void RegisterReceivedPacketCallback(
       absl::AnyInvocable<void(webrtc::AsyncPacketSocket*,
-                              const rtc::ReceivedPacket&)>
+                              const webrtc::ReceivedIpPacket&)>
           received_packet_callback);
   void DeregisterReceivedPacketCallback();
 
   // Emitted each time a packet is sent.
-  sigslot::signal2<AsyncPacketSocket*, const rtc::SentPacket&> SignalSentPacket;
+  sigslot::signal2<AsyncPacketSocket*, const SentPacketInfo&> SignalSentPacket;
 
   // Emitted when the socket is currently able to send.
   sigslot::signal1<AsyncPacketSocket*> SignalReadyToSend;
@@ -165,7 +165,7 @@ class RTC_EXPORT AsyncPacketSocket : public sigslot::has_slots<> {
     on_close_.Send(this, err);
   }
 
-  void NotifyPacketReceived(const rtc::ReceivedPacket& packet);
+  void NotifyPacketReceived(const ReceivedIpPacket& packet);
 
   RTC_NO_UNIQUE_ADDRESS SequenceChecker network_checker_{
       SequenceChecker::kDetached};
@@ -174,7 +174,7 @@ class RTC_EXPORT AsyncPacketSocket : public sigslot::has_slots<> {
   CallbackList<AsyncPacketSocket*, int> on_close_
       RTC_GUARDED_BY(&network_checker_);
   absl::AnyInvocable<void(webrtc::AsyncPacketSocket*,
-                          const rtc::ReceivedPacket&)>
+                          const webrtc::ReceivedIpPacket&)>
       received_packet_callback_ RTC_GUARDED_BY(&network_checker_);
 };
 

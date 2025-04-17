@@ -51,7 +51,7 @@ namespace {
 void CALLBACK InitializeQueueThread(ULONG_PTR param) {
   MSG msg;
   ::PeekMessage(&msg, nullptr, WM_USER, WM_USER, PM_NOREMOVE);
-  rtc::Event* data = reinterpret_cast<rtc::Event*>(param);
+  webrtc::Event* data = reinterpret_cast<webrtc::Event*>(param);
   data->Set();
 }
 
@@ -198,9 +198,9 @@ TaskQueueWin::TaskQueueWin(absl::string_view queue_name,
                            ThreadPriority priority)
     : in_queue_(::CreateEvent(nullptr, true, false, nullptr)) {
   RTC_DCHECK(in_queue_);
-  thread_ = rtc::PlatformThread::SpawnJoinable(
+  thread_ = webrtc::PlatformThread::SpawnJoinable(
       [this] { RunThreadMain(); }, queue_name,
-      rtc::ThreadAttributes().SetPriority(priority));
+      webrtc::ThreadAttributes().SetPriority(priority));
 
   Event event(false, false);
   RTC_CHECK(thread_.QueueAPC(&InitializeQueueThread,

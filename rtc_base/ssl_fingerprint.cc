@@ -69,13 +69,13 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUniqueFromRfc4572(
 
   char value[MessageDigest::kMaxSize];
   size_t value_len =
-      hex_decode_with_delimiter(rtc::ArrayView<char>(value), fingerprint, ':');
+      hex_decode_with_delimiter(ArrayView<char>(value), fingerprint, ':');
   if (!value_len)
     return nullptr;
 
   return std::make_unique<SSLFingerprint>(
-      algorithm, rtc::ArrayView<const uint8_t>(
-                     reinterpret_cast<uint8_t*>(value), value_len));
+      algorithm,
+      ArrayView<const uint8_t>(reinterpret_cast<uint8_t*>(value), value_len));
 }
 
 std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateFromCertificate(
@@ -97,7 +97,7 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateFromCertificate(
 }
 
 SSLFingerprint::SSLFingerprint(absl::string_view algorithm,
-                               rtc::ArrayView<const uint8_t> digest_view)
+                               ArrayView<const uint8_t> digest_view)
     : algorithm(algorithm), digest(digest_view.data(), digest_view.size()) {}
 
 SSLFingerprint::SSLFingerprint(absl::string_view algorithm,

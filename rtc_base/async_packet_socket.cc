@@ -53,7 +53,7 @@ void AsyncPacketSocket::UnsubscribeCloseEvent(const void* removal_tag) {
 
 void AsyncPacketSocket::RegisterReceivedPacketCallback(
     absl::AnyInvocable<void(webrtc::AsyncPacketSocket*,
-                            const rtc::ReceivedPacket&)>
+                            const webrtc::ReceivedIpPacket&)>
         received_packet_callback) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   RTC_CHECK(!received_packet_callback_);
@@ -65,8 +65,7 @@ void AsyncPacketSocket::DeregisterReceivedPacketCallback() {
   received_packet_callback_ = nullptr;
 }
 
-void AsyncPacketSocket::NotifyPacketReceived(
-    const rtc::ReceivedPacket& packet) {
+void AsyncPacketSocket::NotifyPacketReceived(const ReceivedIpPacket& packet) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   if (received_packet_callback_) {
     received_packet_callback_(this, packet);

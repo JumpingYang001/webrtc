@@ -30,8 +30,8 @@
 namespace webrtc {
 namespace {
 
-using ::rtc::Event;
-using ::rtc::Thread;
+using ::webrtc::Event;
+using ::webrtc::Thread;
 
 constexpr int kNumThreads = 16;
 

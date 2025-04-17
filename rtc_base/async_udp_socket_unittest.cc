@@ -35,7 +35,7 @@ TEST(AsyncUDPSocketTest, SetSocketOptionIfEctChange) {
   ASSERT_EQ(ect, 0);
 
   uint8_t buffer[] = "hello";
-  rtc::PacketOptions packet_options;
+  AsyncSocketPacketOptions packet_options;
   packet_options.ecn_1 = false;
   udp__socket->SendTo(buffer, 5, kAddr, packet_options);
   socket->GetOption(Socket::OPT_SEND_ECN, &ect);

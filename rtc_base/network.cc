@@ -545,8 +545,7 @@ Network* NetworkManagerBase::GetNetworkFromAddress(const IPAddress& ip) const {
   return nullptr;
 }
 
-bool NetworkManagerBase::IsVpnMacAddress(
-    rtc::ArrayView<const uint8_t> address) {
+bool NetworkManagerBase::IsVpnMacAddress(ArrayView<const uint8_t> address) {
   if (address.data() == nullptr && address.size() == 0) {
     return false;
   }
@@ -562,7 +561,7 @@ bool NetworkManagerBase::IsVpnMacAddress(
 BasicNetworkManager::BasicNetworkManager(
     const Environment& env,
     SocketFactory* absl_nonnull socket_factory,
-    rtc::NetworkMonitorFactory* absl_nullable network_monitor_factory)
+    NetworkMonitorFactory* absl_nullable network_monitor_factory)
     : env_(env),
       network_monitor_factory_(network_monitor_factory),
       socket_factory_(socket_factory),
@@ -617,7 +616,7 @@ NetworkMonitorInterface::InterfaceInfo BasicNetworkManager::GetInterfaceInfo(
 
 void BasicNetworkManager::ConvertIfAddrs(
     struct ifaddrs* interfaces,
-    rtc::IfAddrsConverter* ifaddrs_converter,
+    IfAddrsConverter* ifaddrs_converter,
     bool include_ignored,
     std::vector<std::unique_ptr<Network>>* networks) const {
   std::map<std::string, Network*> current_networks;
@@ -639,7 +638,7 @@ void BasicNetworkManager::ConvertIfAddrs(
       continue;
     }
     // Convert to InterfaceAddress.
-    // TODO(webrtc:13114): Convert ConvertIfAddrs to use rtc::Netmask.
+    // TODO(webrtc:13114): Convert ConvertIfAddrs to use webrtc::Netmask.
     if (!ifaddrs_converter->ConvertIfAddrsToIPAddress(cursor, &ip, &mask)) {
       continue;
     }
@@ -898,7 +897,7 @@ bool BasicNetworkManager::CreateNetworks(
             adapter_type = ADAPTER_TYPE_VPN;
           }
           if (adapter_type != ADAPTER_TYPE_VPN &&
-              IsVpnMacAddress(rtc::ArrayView<const uint8_t>(
+              IsVpnMacAddress(webrtc::ArrayView<const uint8_t>(
                   reinterpret_cast<const uint8_t*>(
                       adapter_addrs->PhysicalAddress),
                   adapter_addrs->PhysicalAddressLength))) {

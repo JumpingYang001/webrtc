@@ -39,8 +39,8 @@ class FakeNetworkManager : public NetworkManagerBase {
 
   struct Iface {
     SocketAddress socket_address;
-    rtc::AdapterType adapter_type;
-    std::optional<rtc::AdapterType> underlying_vpn_adapter_type;
+    AdapterType adapter_type;
+    std::optional<AdapterType> underlying_vpn_adapter_type;
   };
   typedef std::vector<Iface> IfaceList;
 
@@ -50,14 +50,14 @@ class FakeNetworkManager : public NetworkManagerBase {
   }
 
   void AddInterface(const SocketAddress& iface, absl::string_view if_name) {
-    AddInterface(iface, if_name, rtc::ADAPTER_TYPE_UNKNOWN);
+    AddInterface(iface, if_name, ADAPTER_TYPE_UNKNOWN);
   }
 
-  void AddInterface(const SocketAddress& iface,
-                    absl::string_view if_name,
-                    rtc::AdapterType type,
-                    std::optional<rtc::AdapterType>
-                        underlying_vpn_adapter_type = std::nullopt) {
+  void AddInterface(
+      const SocketAddress& iface,
+      absl::string_view if_name,
+      AdapterType type,
+      std::optional<AdapterType> underlying_vpn_adapter_type = std::nullopt) {
     SocketAddress address(if_name, 0);
     address.SetResolvedIP(iface.ipaddr());
     ifaces_.push_back({address, type, underlying_vpn_adapter_type});
@@ -89,7 +89,7 @@ class FakeNetworkManager : public NetworkManagerBase {
   using NetworkManagerBase::set_default_local_addresses;
   using NetworkManagerBase::set_enumeration_permission;
 
-  // rtc::NetworkManager override.
+  // webrtc::NetworkManager override.
   MdnsResponderInterface* GetMdnsResponder() const override {
     return mdns_responder_.get();
   }

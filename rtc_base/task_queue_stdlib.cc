@@ -80,7 +80,7 @@ class TaskQueueStdlib final : public TaskQueueBase {
   struct NextTask {
     bool final_task = false;
     absl::AnyInvocable<void() &&> run_task;
-    TimeDelta sleep_time = rtc::Event::kForever;
+    TimeDelta sleep_time = Event::kForever;
   };
 
   static PlatformThread InitializeThread(TaskQueueStdlib* me,

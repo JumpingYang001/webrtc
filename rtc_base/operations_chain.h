@@ -111,8 +111,7 @@ class OperationWithFunctor final : public Operation {
 // The OperationsChain is kept-alive through reference counting if there are
 // operations pending. This, together with the contract, guarantees that all
 // operations that are chained get executed.
-class OperationsChain final
-    : public rtc::RefCountedNonVirtual<OperationsChain> {
+class OperationsChain final : public RefCountedNonVirtual<OperationsChain> {
  public:
   static scoped_refptr<OperationsChain> Create();
   ~OperationsChain();

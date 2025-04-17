@@ -47,20 +47,19 @@ class TestEchoServer : public sigslot::has_slots<> {
     if (raw_socket) {
       AsyncTCPSocket* packet_socket = new AsyncTCPSocket(raw_socket);
       packet_socket->RegisterReceivedPacketCallback(
-          [&](rtc::AsyncPacketSocket* socket,
-              const rtc::ReceivedPacket& packet) { OnPacket(socket, packet); });
+          [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
+            OnPacket(socket, packet);
+          });
       packet_socket->SubscribeCloseEvent(
-          this,
-          [this](rtc::AsyncPacketSocket* s, int err) { OnClose(s, err); });
+          this, [this](AsyncPacketSocket* s, int err) { OnClose(s, err); });
       client_sockets_.push_back(packet_socket);
     }
   }
-  void OnPacket(rtc::AsyncPacketSocket* socket,
-                const rtc::ReceivedPacket& packet) {
-    rtc::PacketOptions options;
+  void OnPacket(AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
+    AsyncSocketPacketOptions options;
     socket->Send(packet.payload().data(), packet.payload().size(), options);
   }
-  void OnClose(rtc::AsyncPacketSocket* socket, int err) {
+  void OnClose(AsyncPacketSocket* socket, int err) {
     ClientList::iterator it = absl::c_find(client_sockets_, socket);
     client_sockets_.erase(it);
     // `OnClose` is triggered by socket Close callback, deleting `socket` while

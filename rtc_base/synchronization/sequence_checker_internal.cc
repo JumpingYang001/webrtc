@@ -27,12 +27,12 @@ SequenceCheckerImpl::SequenceCheckerImpl(bool attach_to_current_thread)
 
 SequenceCheckerImpl::SequenceCheckerImpl(TaskQueueBase* attached_queue)
     : attached_(attached_queue != nullptr),
-      valid_thread_(rtc::PlatformThreadRef()),
+      valid_thread_(PlatformThreadRef()),
       valid_queue_(attached_queue) {}
 
 bool SequenceCheckerImpl::IsCurrent() const {
   const TaskQueueBase* const current_queue = TaskQueueBase::Current();
-  const rtc::PlatformThreadRef current_thread = CurrentThreadRef();
+  const PlatformThreadRef current_thread = CurrentThreadRef();
   MutexLock scoped_lock(&lock_);
   if (!attached_) {  // Previously detached.
     attached_ = true;
@@ -56,7 +56,7 @@ void SequenceCheckerImpl::Detach() {
 #if RTC_DCHECK_IS_ON
 std::string SequenceCheckerImpl::ExpectationToString() const {
   const TaskQueueBase* const current_queue = TaskQueueBase::Current();
-  const rtc::PlatformThreadRef current_thread = rtc::CurrentThreadRef();
+  const webrtc::PlatformThreadRef current_thread = webrtc::CurrentThreadRef();
   MutexLock scoped_lock(&lock_);
   if (!attached_)
     return "Checker currently not attached.";
@@ -68,7 +68,7 @@ std::string SequenceCheckerImpl::ExpectationToString() const {
   // # Actual:   TQ: 0x7fa8f0604190 SysQ: 0x7fa8f0604a30 Thread: 0x700006f1a000
   // TaskQueue doesn't match
 
-  rtc::StringBuilder message;
+  webrtc::StringBuilder message;
   message.AppendFormat(
       "# Expected: TQ: %p Thread: %p\n"
       "# Actual:   TQ: %p Thread: %p\n",
@@ -77,7 +77,7 @@ std::string SequenceCheckerImpl::ExpectationToString() const {
 
   if ((valid_queue_ || current_queue) && valid_queue_ != current_queue) {
     message << "TaskQueue doesn't match\n";
-  } else if (!rtc::IsThreadRefEqual(valid_thread_, current_thread)) {
+  } else if (!webrtc::IsThreadRefEqual(valid_thread_, current_thread)) {
     message << "Threads don't match\n";
   }
 

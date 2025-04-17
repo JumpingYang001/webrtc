@@ -213,7 +213,7 @@ class RTC_EXPORT Network {
   ~Network();
 
   // This signal is fired whenever type() or underlying_type_for_vpn() changes.
-  // Mutable, to support connecting on the const Network passed to cricket::Port
+  // Mutable, to support connecting on the const Network passed to webrtc::Port
   // constructor.
   mutable sigslot::signal1<const Network*> SignalTypeChanged;
 
@@ -421,7 +421,7 @@ class RTC_EXPORT NetworkManagerBase : public NetworkManager {
 
   // Check if MAC address in |bytes| is one of the pre-defined
   // MAC addresses for know VPNs.
-  static bool IsVpnMacAddress(rtc::ArrayView<const uint8_t> address);
+  static bool IsVpnMacAddress(ArrayView<const uint8_t> address);
 
  protected:
   // Updates `networks_` with the networks listed in `list`. If

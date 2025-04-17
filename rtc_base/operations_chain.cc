@@ -70,7 +70,7 @@ bool OperationsChain::IsEmpty() const {
 }
 
 std::function<void()> OperationsChain::CreateOperationsChainCallback() {
-  return [handle = rtc::make_ref_counted<CallbackHandle>(
+  return [handle = make_ref_counted<CallbackHandle>(
               scoped_refptr<OperationsChain>(this))]() {
     handle->OnOperationComplete();
   };

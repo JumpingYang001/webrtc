@@ -36,13 +36,13 @@ std::string hex_encode(absl::string_view str);
 std::string hex_encode_with_delimiter(absl::string_view source, char delimiter);
 
 // hex_decode converts ascii hex to binary.
-size_t hex_decode(rtc::ArrayView<char> buffer, absl::string_view source);
+size_t hex_decode(ArrayView<char> buffer, absl::string_view source);
 
 // hex_decode, assuming that there is a delimiter between every byte
 // pair.
 // `delimiter` == 0 means no delimiter
 // If the buffer is too short or the data is invalid, we return 0.
-size_t hex_decode_with_delimiter(rtc::ArrayView<char> buffer,
+size_t hex_decode_with_delimiter(ArrayView<char> buffer,
                                  absl::string_view source,
                                  char delimiter);
 

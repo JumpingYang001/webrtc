@@ -75,10 +75,10 @@ class RTC_EXPORT StreamInterface {
   //  SR_EOS: the end-of-stream has been reached, or the stream is in the
   //    SS_CLOSED state.
 
-  virtual StreamResult Read(rtc::ArrayView<uint8_t> buffer,
+  virtual StreamResult Read(ArrayView<uint8_t> buffer,
                             size_t& read,
                             int& error) = 0;
-  virtual StreamResult Write(rtc::ArrayView<const uint8_t> data,
+  virtual StreamResult Write(ArrayView<const uint8_t> data,
                              size_t& written,
                              int& error) = 0;
 

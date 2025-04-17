@@ -121,7 +121,7 @@ void AsyncTCPSocketBase::SetError(int error) {
 int AsyncTCPSocketBase::SendTo(const void* pv,
                                size_t cb,
                                const SocketAddress& addr,
-                               const rtc::PacketOptions& options) {
+                               const AsyncSocketPacketOptions& options) {
   const SocketAddress& remote_address = GetRemoteAddress();
   if (addr == remote_address)
     return Send(pv, cb, options);
@@ -133,7 +133,7 @@ int AsyncTCPSocketBase::SendTo(const void* pv,
 
 int AsyncTCPSocketBase::FlushOutBuffer() {
   RTC_DCHECK_GT(outbuf_.size(), 0);
-  rtc::ArrayView<uint8_t> view = outbuf_;
+  ArrayView<uint8_t> view = outbuf_;
   int res;
   while (view.size() > 0) {
     res = socket_->Send(view.data(), view.size());
@@ -256,7 +256,7 @@ AsyncTCPSocket::AsyncTCPSocket(Socket* socket)
 
 int AsyncTCPSocket::Send(const void* pv,
                          size_t cb,
-                         const rtc::PacketOptions& options) {
+                         const AsyncSocketPacketOptions& options) {
   if (cb > kBufSize) {
     SetError(EMSGSIZE);
     return -1;
@@ -277,8 +277,8 @@ int AsyncTCPSocket::Send(const void* pv,
     return res;
   }
 
-  rtc::SentPacket sent_packet(options.packet_id, TimeMillis(),
-                              options.info_signaled_after_sent);
+  SentPacketInfo sent_packet(options.packet_id, TimeMillis(),
+                             options.info_signaled_after_sent);
   CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
   SignalSentPacket(this, sent_packet);
 
@@ -286,7 +286,7 @@ int AsyncTCPSocket::Send(const void* pv,
   return static_cast<int>(cb);
 }
 
-size_t AsyncTCPSocket::ProcessInput(rtc::ArrayView<const uint8_t> data) {
+size_t AsyncTCPSocket::ProcessInput(ArrayView<const uint8_t> data) {
   SocketAddress remote_addr(GetRemoteAddress());
 
   size_t processed_bytes = 0;
@@ -299,7 +299,7 @@ size_t AsyncTCPSocket::ProcessInput(rtc::ArrayView<const uint8_t> data) {
     if (bytes_left < kPacketLenSize + pkt_len)
       return processed_bytes;
 
-    rtc::ReceivedPacket received_packet(
+    ReceivedIpPacket received_packet(
         data.subview(processed_bytes + kPacketLenSize, pkt_len), remote_addr,
         Timestamp::Micros(TimeMicros()));
     NotifyPacketReceived(received_packet);

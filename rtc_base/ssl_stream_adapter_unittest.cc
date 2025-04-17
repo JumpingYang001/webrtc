@@ -229,13 +229,13 @@ class StreamWrapper : public webrtc::StreamInterface {
 
   void Close() override { stream_->Close(); }
 
-  webrtc::StreamResult Read(rtc::ArrayView<uint8_t> buffer,
+  webrtc::StreamResult Read(webrtc::ArrayView<uint8_t> buffer,
                             size_t& read,
                             int& error) override {
     return stream_->Read(buffer, read, error);
   }
 
-  webrtc::StreamResult Write(rtc::ArrayView<const uint8_t> data,
+  webrtc::StreamResult Write(webrtc::ArrayView<const uint8_t> data,
                              size_t& written,
                              int& error) override {
     return stream_->Write(data, written, error);
@@ -268,7 +268,7 @@ class SSLDummyStream final : public webrtc::StreamInterface {
 
   webrtc::StreamState GetState() const override { return webrtc::SS_OPEN; }
 
-  webrtc::StreamResult Read(rtc::ArrayView<uint8_t> buffer,
+  webrtc::StreamResult Read(webrtc::ArrayView<uint8_t> buffer,
                             size_t& read,
                             int& error) override {
     webrtc::StreamResult r;
@@ -309,13 +309,13 @@ class SSLDummyStream final : public webrtc::StreamInterface {
   }
 
   // Write to the outgoing FifoBuffer
-  webrtc::StreamResult WriteData(rtc::ArrayView<const uint8_t> data,
+  webrtc::StreamResult WriteData(webrtc::ArrayView<const uint8_t> data,
                                  size_t& written,
                                  int& error) {
     return out_->Write(data, written, error);
   }
 
-  webrtc::StreamResult Write(rtc::ArrayView<const uint8_t> data,
+  webrtc::StreamResult Write(webrtc::ArrayView<const uint8_t> data,
                              size_t& written,
                              int& error) override;
 
@@ -352,7 +352,7 @@ class BufferQueueStream : public webrtc::StreamInterface {
   webrtc::StreamState GetState() const override { return webrtc::SS_OPEN; }
 
   // Reading a buffer queue stream will either succeed or block.
-  webrtc::StreamResult Read(rtc::ArrayView<uint8_t> buffer,
+  webrtc::StreamResult Read(webrtc::ArrayView<uint8_t> buffer,
                             size_t& read,
                             int& error) override {
     const bool was_writable = buffer_.is_writable();
@@ -366,7 +366,7 @@ class BufferQueueStream : public webrtc::StreamInterface {
   }
 
   // Writing to a buffer queue stream will either succeed or block.
-  webrtc::StreamResult Write(rtc::ArrayView<const uint8_t> data,
+  webrtc::StreamResult Write(webrtc::ArrayView<const uint8_t> data,
                              size_t& written,
                              int& error) override {
     const bool was_readable = buffer_.is_readable();
@@ -763,12 +763,12 @@ class SSLStreamAdapterTestBase : public ::testing::Test,
       RTC_LOG(LS_VERBOSE) << "Damaging packet";
       memcpy(&buf[0], data, data_len);
       buf[data_len - 1]++;
-      return from->WriteData(rtc::MakeArrayView(&buf[0], data_len), written,
+      return from->WriteData(webrtc::MakeArrayView(&buf[0], data_len), written,
                              error);
     }
 
     return from->WriteData(
-        rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), data_len),
+        webrtc::MakeArrayView(reinterpret_cast<const uint8_t*>(data), data_len),
         written, error);
   }
 
@@ -930,7 +930,7 @@ class SSLStreamAdapterTestDTLSBase : public SSLStreamAdapterTestBase {
       size_t sent;
       int error;
       webrtc::StreamResult rv = client_ssl_->Write(
-          rtc::MakeArrayView(packet, packet_size_), sent, error);
+          webrtc::MakeArrayView(packet, packet_size_), sent, error);
       if (rv == webrtc::SR_SUCCESS) {
         RTC_LOG(LS_VERBOSE) << "Sent: " << sent_;
         sent_++;
@@ -1020,9 +1020,10 @@ class SSLStreamAdapterTestDTLSBase : public SSLStreamAdapterTestBase {
   std::set<int> received_;
 };
 
-webrtc::StreamResult SSLDummyStream::Write(rtc::ArrayView<const uint8_t> data,
-                                           size_t& written,
-                                           int& error) {
+webrtc::StreamResult SSLDummyStream::Write(
+    webrtc::ArrayView<const uint8_t> data,
+    size_t& written,
+    int& error) {
   RTC_LOG(LS_VERBOSE) << "Writing to loopback " << data.size();
 
   if (first_packet_) {
@@ -1438,8 +1439,8 @@ TEST_F(SSLStreamAdapterTestDTLS, TestDTLSSrtpExporter) {
   int salt_len;
   ASSERT_TRUE(webrtc::GetSrtpKeyAndSaltLengths(selected_crypto_suite, &key_len,
                                                &salt_len));
-  rtc::ZeroOnFreeBuffer<uint8_t> client_out(2 * (key_len + salt_len));
-  rtc::ZeroOnFreeBuffer<uint8_t> server_out(2 * (key_len + salt_len));
+  webrtc::ZeroOnFreeBuffer<uint8_t> client_out(2 * (key_len + salt_len));
+  webrtc::ZeroOnFreeBuffer<uint8_t> server_out(2 * (key_len + salt_len));
 
   EXPECT_TRUE(client_ssl_->ExportSrtpKeyingMaterial(client_out));
   EXPECT_TRUE(server_ssl_->ExportSrtpKeyingMaterial(server_out));
@@ -1598,8 +1599,10 @@ class SSLStreamAdapterTestDTLSPqc : public SSLStreamAdapterTestDTLSBase {
 
     InitializeClientAndServerStreams(pqc_trial, pqc_trial);
 
-    auto client_identity = rtc::SSLIdentity::Create("client", client_key_type_);
-    auto server_identity = rtc::SSLIdentity::Create("server", server_key_type_);
+    auto client_identity =
+        webrtc::SSLIdentity::Create("client", client_key_type_);
+    auto server_identity =
+        webrtc::SSLIdentity::Create("server", server_key_type_);
 
     client_ssl_->SetIdentity(std::move(client_identity));
     server_ssl_->SetIdentity(std::move(server_identity));

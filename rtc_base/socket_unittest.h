@@ -25,7 +25,7 @@ namespace webrtc {
 // socketserver, and call the SocketTest test methods.
 class SocketTest : public ::testing::Test {
  protected:
-  explicit SocketTest(rtc::SocketFactory* socket_factory)
+  explicit SocketTest(SocketFactory* socket_factory)
       : kIPv4Loopback(INADDR_LOOPBACK),
         kIPv6Loopback(in6addr_loopback),
         socket_factory_(socket_factory) {}
@@ -101,7 +101,7 @@ class SocketTest : public ::testing::Test {
   void UdpSocketRecvTimestampUseRtcEpoch(const IPAddress& loopback);
   void SocketSendRecvWithEcn(const IPAddress& loopback);
 
-  rtc::SocketFactory* socket_factory_;
+  SocketFactory* socket_factory_;
 };
 
 // For unbound sockets, GetLocalAddress / GetRemoteAddress return AF_UNSPEC

@@ -64,9 +64,9 @@ SocketAddress AsyncUDPSocket::GetRemoteAddress() const {
 
 int AsyncUDPSocket::Send(const void* pv,
                          size_t cb,
-                         const rtc::PacketOptions& options) {
-  rtc::SentPacket sent_packet(options.packet_id, TimeMillis(),
-                              options.info_signaled_after_sent);
+                         const AsyncSocketPacketOptions& options) {
+  SentPacketInfo sent_packet(options.packet_id, TimeMillis(),
+                             options.info_signaled_after_sent);
   webrtc::CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
   int ret = socket_->Send(pv, cb);
   SignalSentPacket(this, sent_packet);
@@ -76,9 +76,9 @@ int AsyncUDPSocket::Send(const void* pv,
 int AsyncUDPSocket::SendTo(const void* pv,
                            size_t cb,
                            const SocketAddress& addr,
-                           const rtc::PacketOptions& options) {
-  rtc::SentPacket sent_packet(options.packet_id, TimeMillis(),
-                              options.info_signaled_after_sent);
+                           const AsyncSocketPacketOptions& options) {
+  SentPacketInfo sent_packet(options.packet_id, TimeMillis(),
+                             options.info_signaled_after_sent);
   webrtc::CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
   if (has_set_ect1_options_ != options.ecn_1) {
     // It is unclear what is most efficient, setting options on every sent
@@ -151,8 +151,8 @@ void AsyncUDPSocket::OnReadEvent(Socket* socket) {
     *receive_buffer.arrival_time += *socket_time_offset_;
   }
   NotifyPacketReceived(
-      rtc::ReceivedPacket(receive_buffer.payload, receive_buffer.source_address,
-                          receive_buffer.arrival_time, receive_buffer.ecn));
+      ReceivedIpPacket(receive_buffer.payload, receive_buffer.source_address,
+                       receive_buffer.arrival_time, receive_buffer.ecn));
 }
 
 void AsyncUDPSocket::OnWriteEvent(Socket* socket) {

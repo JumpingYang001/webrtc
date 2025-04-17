@@ -125,7 +125,7 @@ timespec GetTimespec(TimeDelta duration_from_now) {
   timeval tv;
   gettimeofday(&tv, nullptr);
   ts.tv_sec = tv.tv_sec;
-  ts.tv_nsec = tv.tv_usec * rtc::kNumNanosecsPerMicrosec;
+  ts.tv_nsec = tv.tv_usec * webrtc::kNumNanosecsPerMicrosec;
 #endif
 
   // Add the specified number of milliseconds to it.

@@ -218,7 +218,7 @@ static int stream_read(BIO* b, char* out, int outl) {
   size_t read;
   int error;
   StreamResult result = stream->Read(
-      rtc::MakeArrayView(reinterpret_cast<uint8_t*>(out), outl), read, error);
+      MakeArrayView(reinterpret_cast<uint8_t*>(out), outl), read, error);
   if (result == webrtc::SR_SUCCESS) {
     return webrtc::checked_cast<int>(read);
   } else if (result == webrtc::SR_BLOCK) {
@@ -236,8 +236,7 @@ static int stream_write(BIO* b, const char* in, int inl) {
   size_t written;
   int error;
   StreamResult result = stream->Write(
-      rtc::MakeArrayView(reinterpret_cast<const uint8_t*>(in), inl), written,
-      error);
+      MakeArrayView(reinterpret_cast<const uint8_t*>(in), inl), written, error);
   if (result == webrtc::SR_SUCCESS) {
     return webrtc::checked_cast<int>(written);
   } else if (result == webrtc::SR_BLOCK) {
@@ -320,7 +319,7 @@ void OpenSSLStreamAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
 #ifdef OPENSSL_IS_BORINGSSL
   identity_.reset(static_cast<BoringSSLIdentity*>(identity.release()));
 #else
-  identity_.reset(static_cast<rtc::OpenSSLIdentity*>(identity.release()));
+  identity_.reset(static_cast<webrtc::OpenSSLIdentity*>(identity.release()));
 #endif
 }
 
@@ -334,7 +333,7 @@ void OpenSSLStreamAdapter::SetServerRole(SSLRole role) {
 
 SSLPeerCertificateDigestError OpenSSLStreamAdapter::SetPeerCertificateDigest(
     absl::string_view digest_alg,
-    rtc::ArrayView<const uint8_t> digest_val) {
+    ArrayView<const uint8_t> digest_val) {
   RTC_DCHECK(!peer_certificate_verified_);
   RTC_DCHECK(!HasPeerCertificateDigest());
   size_t expected_len;
@@ -449,7 +448,7 @@ uint16_t OpenSSLStreamAdapter::GetSslGroupIdForTesting() const {
 }
 
 bool OpenSSLStreamAdapter::ExportSrtpKeyingMaterial(
-    rtc::ZeroOnFreeBuffer<uint8_t>& keying_material) {
+    ZeroOnFreeBuffer<uint8_t>& keying_material) {
   // Arguments are:
   // keying material/len -- a buffer to hold the keying material.
   // label               -- the exporter label.
@@ -584,7 +583,7 @@ void OpenSSLStreamAdapter::SetMTU(int mtu) {
 //
 // StreamInterface Implementation
 //
-StreamResult OpenSSLStreamAdapter::Write(rtc::ArrayView<const uint8_t> data,
+StreamResult OpenSSLStreamAdapter::Write(ArrayView<const uint8_t> data,
                                          size_t& written,
                                          int& error) {
   RTC_DLOG(LS_VERBOSE) << "OpenSSLStreamAdapter::Write(" << data.size() << ")";
@@ -642,7 +641,7 @@ StreamResult OpenSSLStreamAdapter::Write(rtc::ArrayView<const uint8_t> data,
   // not reached
 }
 
-StreamResult OpenSSLStreamAdapter::Read(rtc::ArrayView<uint8_t> data,
+StreamResult OpenSSLStreamAdapter::Read(ArrayView<uint8_t> data,
                                         size_t& read,
                                         int& error) {
   RTC_DLOG(LS_VERBOSE) << "OpenSSLStreamAdapter::Read(" << data.size() << ")";
@@ -1079,7 +1078,7 @@ SSL_CTX* OpenSSLStreamAdapter::SetupSSLContext() {
   if (g_use_time_callback_for_testing) {
     SSL_CTX_set_current_time_cb(ctx, &TimeCallbackForTesting);
   }
-  SSL_CTX_set0_buffer_pool(ctx, rtc::openssl::GetBufferPool());
+  SSL_CTX_set0_buffer_pool(ctx, openssl::GetBufferPool());
 #endif
 
   if (identity_ && !identity_->ConfigureIdentity(ctx)) {
@@ -1211,7 +1210,7 @@ int OpenSSLStreamAdapter::SSLVerifyCallback(X509_STORE_CTX* store, void* arg) {
   // Record the peer's certificate.
   X509* cert = X509_STORE_CTX_get0_cert(store);
   stream->peer_cert_chain_.reset(
-      new SSLCertChain(std::make_unique<rtc::OpenSSLCertificate>(cert)));
+      new SSLCertChain(std::make_unique<webrtc::OpenSSLCertificate>(cert)));
 
   // If the peer certificate digest isn't known yet, we'll wait to verify
   // until it's known, and for now just return a success status.

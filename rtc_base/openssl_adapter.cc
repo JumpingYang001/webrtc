@@ -259,8 +259,8 @@ void OpenSSLAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
   identity_ =
       absl::WrapUnique(static_cast<BoringSSLIdentity*>(identity.release()));
 #else
-  identity_ =
-      absl::WrapUnique(static_cast<rtc::OpenSSLIdentity*>(identity.release()));
+  identity_ = absl::WrapUnique(
+      static_cast<webrtc::OpenSSLIdentity*>(identity.release()));
 #endif
 }
 
@@ -763,7 +763,7 @@ void OpenSSLAdapter::OnCloseEvent(Socket* socket, int err) {
 
 bool OpenSSLAdapter::SSLPostConnectionCheck(SSL* ssl, absl::string_view host) {
   bool is_valid_cert_name =
-      rtc::openssl::VerifyPeerCertMatchesHost(ssl, host) &&
+      openssl::VerifyPeerCertMatchesHost(ssl, host) &&
       (SSL_get_verify_result(ssl) == X509_V_OK || custom_cert_verifier_status_);
 
   if (!is_valid_cert_name && ignore_bad_cert_) {
@@ -907,14 +907,14 @@ int OpenSSLAdapter::SSLVerifyInternal(int previous_status,
   }
   bssl::UniquePtr<uint8_t> owned_data(data);
   bssl::UniquePtr<CRYPTO_BUFFER> crypto_buffer(
-      CRYPTO_BUFFER_new(data, length, rtc::openssl::GetBufferPool()));
+      CRYPTO_BUFFER_new(data, length, openssl::GetBufferPool()));
   if (!crypto_buffer) {
     RTC_LOG(LS_ERROR) << "Failed to allocate CRYPTO_BUFFER.";
     return previous_status;
   }
   const BoringSSLCertificate cert(std::move(crypto_buffer));
 #else
-  const rtc::OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
+  const webrtc::OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
 #endif
   if (!ssl_cert_verifier_->Verify(cert)) {
     RTC_LOG(LS_INFO) << "Failed to verify certificate using custom callback";
@@ -957,7 +957,7 @@ SSL_CTX* OpenSSLAdapter::CreateContext(SSLMode mode, bool enable_cache) {
   }
 
 #ifndef WEBRTC_EXCLUDE_BUILT_IN_SSL_ROOT_CERTS
-  if (!rtc::openssl::LoadBuiltinSSLRootCertificates(ctx)) {
+  if (!openssl::LoadBuiltinSSLRootCertificates(ctx)) {
     RTC_LOG(LS_ERROR) << "SSL_CTX creation failed: Failed to load any trusted "
                          "ssl root certificates.";
     SSL_CTX_free(ctx);
@@ -970,7 +970,7 @@ SSL_CTX* OpenSSLAdapter::CreateContext(SSLMode mode, bool enable_cache) {
 #endif
 
 #ifdef OPENSSL_IS_BORINGSSL
-  SSL_CTX_set0_buffer_pool(ctx, rtc::openssl::GetBufferPool());
+  SSL_CTX_set0_buffer_pool(ctx, openssl::GetBufferPool());
 #endif
 
 #ifdef WEBRTC_USE_CRYPTO_BUFFER_CALLBACK

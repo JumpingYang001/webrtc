@@ -402,7 +402,7 @@ rtc_library("rtc_event") {
     deps = [
       ":checks",
       "../api/units:time_delta",
-      "system:rtc_export",  # Only Chromium's rtc::Event use RTC_EXPORT.
+      "system:rtc_export",  # Only Chromium's webrtc::Event use RTC_EXPORT.
       "//base",  # Dependency on chromium's waitable_event.
     ]
   } else {

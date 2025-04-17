@@ -165,7 +165,7 @@ TEST(BitBufferWriterTest, SymmetricReadWrite) {
   // That should be all that fits in the buffer.
   EXPECT_FALSE(buffer.WriteBits(1, 1));
 
-  BitstreamReader reader(rtc::MakeArrayView(bytes, 4));
+  BitstreamReader reader(MakeArrayView(bytes, 4));
   EXPECT_EQ(reader.ReadBits(3), 0x2u);
   EXPECT_EQ(reader.ReadBits(2), 0x1u);
   EXPECT_EQ(reader.ReadBits(7), 0x53u);

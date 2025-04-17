@@ -270,7 +270,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::Generate(
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
       MakeCertificate(key_pair->pkey(), actual_params);
   if (!cert_buffer) {
-    rtc::openssl::LogSSLErrors("Generating certificate");
+    openssl::LogSSLErrors("Generating certificate");
     return nullptr;
   }
   auto ret = std::make_unique<BoringSSLCertificate>(std::move(cert_buffer));
@@ -288,7 +288,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::FromPEMString(
   }
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer(
       CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(der.c_str()),
-                        der.length(), rtc::openssl::GetBufferPool()));
+                        der.length(), openssl::GetBufferPool()));
   if (!cert_buffer) {
     return nullptr;
   }
@@ -302,7 +302,7 @@ std::unique_ptr<BoringSSLCertificate> BoringSSLCertificate::FromPEMString(
 bool BoringSSLCertificate::GetSignatureDigestAlgorithm(
     std::string* algorithm) const {
   CBS oid;
-  if (!rtc::openssl::ParseCertificate(cert_buffer_.get(), &oid, nullptr)) {
+  if (!openssl::ParseCertificate(cert_buffer_.get(), &oid, nullptr)) {
     RTC_LOG(LS_ERROR) << "Failed to parse certificate.";
     return false;
   }
@@ -399,7 +399,7 @@ bool BoringSSLCertificate::operator!=(const BoringSSLCertificate& other) const {
 
 int64_t BoringSSLCertificate::CertificateExpirationTime() const {
   int64_t ret;
-  if (!rtc::openssl::ParseCertificate(cert_buffer_.get(), nullptr, &ret)) {
+  if (!openssl::ParseCertificate(cert_buffer_.get(), nullptr, &ret)) {
     RTC_LOG(LS_ERROR) << "Failed to parse certificate.";
     return -1;
   }

@@ -27,7 +27,7 @@ StreamResult StreamInterface::WriteAll(ArrayView<const uint8_t> data,
   StreamResult result = SR_SUCCESS;
   size_t total_written = 0, current_written;
   while (total_written < data.size()) {
-    rtc::ArrayView<const uint8_t> this_slice =
+    ArrayView<const uint8_t> this_slice =
         data.subview(total_written, data.size() - total_written);
     result = Write(this_slice, current_written, error);
     if (result != SR_SUCCESS)

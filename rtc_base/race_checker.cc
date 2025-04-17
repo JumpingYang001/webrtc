@@ -25,7 +25,7 @@ RaceChecker::RaceChecker() {}
 // is also a chance that an actual race is missed, however the probability of
 // that has been considered small enough to be an acceptable trade off.
 bool RaceChecker::Acquire() const {
-  const rtc::PlatformThreadRef current_thread = CurrentThreadRef();
+  const PlatformThreadRef current_thread = CurrentThreadRef();
   // Set new accessing thread if this is a new use.
   const int current_access_count = access_count_;
   access_count_ = access_count_ + 1;
@@ -34,7 +34,7 @@ bool RaceChecker::Acquire() const {
   // If this is being used concurrently this check will fail for the second
   // thread entering since it won't set the thread. Recursive use of checked
   // methods are OK since the accessing thread remains the same.
-  const rtc::PlatformThreadRef accessing_thread = accessing_thread_;
+  const PlatformThreadRef accessing_thread = accessing_thread_;
   return IsThreadRefEqual(accessing_thread, current_thread);
 }
 

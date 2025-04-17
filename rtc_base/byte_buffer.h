@@ -41,8 +41,8 @@ class ByteBufferWriterT {
   const value_type* Data() const { return buffer_.data(); }
   size_t Length() const { return buffer_.size(); }
   size_t Capacity() const { return buffer_.capacity(); }
-  rtc::ArrayView<const value_type> DataView() const {
-    return rtc::MakeArrayView(Data(), Length());
+  ArrayView<const value_type> DataView() const {
+    return MakeArrayView(Data(), Length());
   }
   // Accessor that returns a string_view, independent of underlying type.
   // Intended to provide access for existing users that expect char*
@@ -102,7 +102,7 @@ class ByteBufferWriterT {
     WriteBytesInternal(reinterpret_cast<const value_type*>(val), len);
   }
 
-  void Write(rtc::ArrayView<const value_type> data) {
+  void Write(ArrayView<const value_type> data) {
     WriteBytesInternal(data.data(), data.size());
   }
 
@@ -143,7 +143,7 @@ class ByteBufferWriterT {
   // base.
 };
 
-class ByteBufferWriter : public ByteBufferWriterT<rtc::BufferT<uint8_t>> {
+class ByteBufferWriter : public ByteBufferWriterT<BufferT<uint8_t>> {
  public:
   ByteBufferWriter();
   ByteBufferWriter(const uint8_t* bytes, size_t len);
@@ -157,7 +157,7 @@ class ByteBufferWriter : public ByteBufferWriterT<rtc::BufferT<uint8_t>> {
 class ByteBufferReader {
  public:
   explicit ByteBufferReader(
-      rtc::ArrayView<const uint8_t> bytes ABSL_ATTRIBUTE_LIFETIME_BOUND);
+      ArrayView<const uint8_t> bytes ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
   explicit ByteBufferReader(const ByteBufferWriter& buf);
 
@@ -168,8 +168,8 @@ class ByteBufferReader {
   // Returns number of unprocessed bytes.
   size_t Length() const { return end_ - start_; }
   // Returns a view of the unprocessed data. Does not move current position.
-  rtc::ArrayView<const uint8_t> DataView() const {
-    return rtc::ArrayView<const uint8_t>(bytes_ + start_, end_ - start_);
+  ArrayView<const uint8_t> DataView() const {
+    return ArrayView<const uint8_t>(bytes_ + start_, end_ - start_);
   }
 
   // Read a next value from the buffer. Return false if there isn't
@@ -181,7 +181,7 @@ class ByteBufferReader {
   bool ReadUInt64(uint64_t* val);
   bool ReadUVarint(uint64_t* val);
   // Copies the val.size() next bytes into val.data().
-  bool ReadBytes(rtc::ArrayView<uint8_t> val);
+  bool ReadBytes(ArrayView<uint8_t> val);
   // Appends next `len` bytes from the buffer to `val`. Returns false
   // if there is less than `len` bytes left.
   bool ReadString(std::string* val, size_t len);

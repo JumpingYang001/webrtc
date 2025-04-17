@@ -48,11 +48,11 @@ class AsyncUDPSocket : public AsyncPacketSocket {
   SocketAddress GetRemoteAddress() const override;
   int Send(const void* pv,
            size_t cb,
-           const rtc::PacketOptions& options) override;
+           const AsyncSocketPacketOptions& options) override;
   int SendTo(const void* pv,
              size_t cb,
              const SocketAddress& addr,
-             const rtc::PacketOptions& options) override;
+             const AsyncSocketPacketOptions& options) override;
   int Close() override;
 
   State GetState() const override;

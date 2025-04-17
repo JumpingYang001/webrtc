@@ -108,7 +108,7 @@ bool SSLStreamAdapter::SetPeerCertificateDigest(
     SSLPeerCertificateDigestError* error) {
   unsigned char* nonconst_val = const_cast<unsigned char*>(digest_val);
   SSLPeerCertificateDigestError ret = SetPeerCertificateDigest(
-      digest_alg, rtc::ArrayView<uint8_t>(nonconst_val, digest_len));
+      digest_alg, ArrayView<uint8_t>(nonconst_val, digest_len));
   if (error)
     *error = ret;
   return ret == SSLPeerCertificateDigestError::NONE;

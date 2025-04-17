@@ -79,7 +79,7 @@ struct Sender {
 
   webrtc::Thread* thread;
   std::unique_ptr<webrtc::AsyncUDPSocket> socket;
-  rtc::PacketOptions options;
+  AsyncSocketPacketOptions options;
   RepeatingTaskHandle periodic;
   uint32_t rate;  // bytes per second
   uint32_t count;
@@ -98,7 +98,7 @@ struct Receiver : public sigslot::has_slots<> {
         sum_sq(0),
         samples(0) {
     socket->RegisterReceivedPacketCallback(
-        [&](rtc::AsyncPacketSocket* s, const rtc::ReceivedPacket& packet) {
+        [&](AsyncPacketSocket* s, const ReceivedIpPacket& packet) {
           OnReadPacket(s, packet);
         });
     periodic = RepeatingTaskHandle::DelayedStart(
@@ -116,7 +116,7 @@ struct Receiver : public sigslot::has_slots<> {
   ~Receiver() override { periodic.Stop(); }
 
   void OnReadPacket(webrtc::AsyncPacketSocket* s,
-                    const rtc::ReceivedPacket& packet) {
+                    const ReceivedIpPacket& packet) {
     ASSERT_EQ(socket.get(), s);
     ASSERT_GE(packet.payload().size(), 4U);
 
