@@ -58,9 +58,10 @@ TEST_F(NetEqDecodingTest, DISABLED_TestBitExactness) {
                    absl::GetFlag(FLAGS_gen_ref));
 }
 
+// TODO: https://issues.webrtc.org/411157363 - reenable test after update.
 #if defined(WEBRTC_LINUX) && defined(WEBRTC_ARCH_X86_64) && \
     defined(WEBRTC_NETEQ_UNITTEST_BITEXACT) && defined(WEBRTC_CODEC_OPUS)
-#define MAYBE_TestOpusBitExactness TestOpusBitExactness
+#define MAYBE_TestOpusBitExactness DISABLED_TestOpusBitExactness
 #else
 #define MAYBE_TestOpusBitExactness DISABLED_TestOpusBitExactness
 #endif
@@ -81,9 +82,10 @@ TEST_F(NetEqDecodingTest, MAYBE_TestOpusBitExactness) {
                    absl::GetFlag(FLAGS_gen_ref));
 }
 
+// TODO: https://issues.webrtc.org/411157363 - reenable test after update.
 #if defined(WEBRTC_LINUX) && defined(WEBRTC_ARCH_X86_64) && \
     defined(WEBRTC_NETEQ_UNITTEST_BITEXACT) && defined(WEBRTC_CODEC_OPUS)
-#define MAYBE_TestOpusDtxBitExactness TestOpusDtxBitExactness
+#define MAYBE_TestOpusDtxBitExactness DISABLED_TestOpusDtxBitExactness
 #else
 #define MAYBE_TestOpusDtxBitExactness DISABLED_TestOpusDtxBitExactness
 #endif
