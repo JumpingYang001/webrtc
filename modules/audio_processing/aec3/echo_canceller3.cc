@@ -10,16 +10,33 @@
 #include "modules/audio_processing/aec3/echo_canceller3.h"
 
 #include <algorithm>
+#include <atomic>
+#include <cstddef>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio/echo_canceller3_config.h"
+#include "api/audio/echo_control.h"
 #include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "modules/audio_processing/aec3/aec3_common.h"
+#include "modules/audio_processing/aec3/block.h"
+#include "modules/audio_processing/aec3/block_delay_buffer.h"
+#include "modules/audio_processing/aec3/block_framer.h"
+#include "modules/audio_processing/aec3/block_processor.h"
+#include "modules/audio_processing/aec3/frame_blocker.h"
 #include "modules/audio_processing/high_pass_filter.h"
 #include "modules/audio_processing/logging/apm_data_dumper.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/race_checker.h"
+#include "rtc_base/swap_queue.h"
 
 namespace webrtc {
 
@@ -940,21 +957,6 @@ void EchoCanceller3::SetCaptureOutputUsage(bool capture_output_used) {
 
 bool EchoCanceller3::ActiveProcessing() const {
   return true;
-}
-
-EchoCanceller3Config EchoCanceller3::CreateDefaultMultichannelConfig() {
-  EchoCanceller3Config cfg;
-  // Use shorter and more rapidly adapting coarse filter to compensate for
-  // thge increased number of total filter parameters to adapt.
-  cfg.filter.coarse.length_blocks = 11;
-  cfg.filter.coarse.rate = 0.95f;
-  cfg.filter.coarse_initial.length_blocks = 11;
-  cfg.filter.coarse_initial.rate = 0.95f;
-
-  // Use more concervative suppressor behavior for non-nearend speech.
-  cfg.suppressor.normal_tuning.max_dec_factor_lf = 0.35f;
-  cfg.suppressor.normal_tuning.max_inc_factor = 1.5f;
-  return cfg;
 }
 
 void EchoCanceller3::SetBlockProcessorForTesting(

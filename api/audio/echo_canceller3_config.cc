@@ -276,4 +276,20 @@ bool EchoCanceller3Config::Validate(EchoCanceller3Config* config) {
 
   return res;
 }
+
+EchoCanceller3Config EchoCanceller3Config::CreateDefaultMultichannelConfig() {
+  EchoCanceller3Config cfg;
+  // Use shorter and more rapidly adapting coarse filter to compensate for
+  // the increased number of total filter parameters to adapt.
+  cfg.filter.coarse.length_blocks = 11;
+  cfg.filter.coarse.rate = 0.95f;
+  cfg.filter.coarse_initial.length_blocks = 11;
+  cfg.filter.coarse_initial.rate = 0.95f;
+
+  // Use more conservative suppressor behavior for non-nearend speech.
+  cfg.suppressor.normal_tuning.max_dec_factor_lf = 0.35f;
+  cfg.suppressor.normal_tuning.max_inc_factor = 1.5f;
+  return cfg;
+}
+
 }  // namespace webrtc

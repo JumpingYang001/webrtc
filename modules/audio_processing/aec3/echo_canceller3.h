@@ -139,9 +139,6 @@ class EchoCanceller3 : public EchoControl {
     block_processor_->UpdateEchoLeakageStatus(leakage_detected);
   }
 
-  // Produces a default configuration for multichannel.
-  static EchoCanceller3Config CreateDefaultMultichannelConfig();
-
  private:
   friend class EchoCanceller3Tester;
   FRIEND_TEST_ALL_PREFIXES(EchoCanceller3, DetectionOfProperStereo);

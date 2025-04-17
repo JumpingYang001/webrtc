@@ -22,17 +22,22 @@ namespace webrtc {
 
 EchoCanceller3Factory::EchoCanceller3Factory() {}
 
-EchoCanceller3Factory::EchoCanceller3Factory(const EchoCanceller3Config& config)
-    : config_(config) {}
+EchoCanceller3Factory::EchoCanceller3Factory(const EchoCanceller3Config config)
+    : config_(config), multichannel_config_(std::nullopt) {}
+
+EchoCanceller3Factory::EchoCanceller3Factory(
+    const EchoCanceller3Config config,
+    std::optional<EchoCanceller3Config> multichannel_config)
+    : config_(config), multichannel_config_(multichannel_config) {}
 
 absl_nonnull std::unique_ptr<EchoControl> EchoCanceller3Factory::Create(
     const Environment& env,
     int sample_rate_hz,
     int num_render_channels,
     int num_capture_channels) {
-  return std::make_unique<EchoCanceller3>(
-      env, config_, /*multichannel_config=*/std::nullopt, sample_rate_hz,
-      num_render_channels, num_capture_channels);
+  return std::make_unique<EchoCanceller3>(env, config_, multichannel_config_,
+                                          sample_rate_hz, num_render_channels,
+                                          num_capture_channels);
 }
 
 }  // namespace webrtc
