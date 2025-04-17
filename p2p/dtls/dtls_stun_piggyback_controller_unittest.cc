@@ -84,10 +84,10 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
       : client_([](ArrayView<const uint8_t> data) {}),
         server_([](ArrayView<const uint8_t> data) {}) {}
 
-  void SendClientToServer(const std::vector<uint8_t> data,
+  void SendClientToServer(const std::vector<uint8_t> packet,
                           StunMessageType type) {
-    if (!data.empty()) {
-      client_.CapturePacket(data);
+    if (!packet.empty()) {
+      client_.CapturePacket(packet);
       client_.Flush();
     } else {
       client_.ClearCachedPacketForTesting();
@@ -97,15 +97,15 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
       attr_data = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN, *data);
     }
     std::unique_ptr<StunByteStringAttribute> attr_ack;
-    if (auto data = client_.GetAckToPiggyback(type)) {
-      attr_ack = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK, *data);
+    if (auto ack = client_.GetAckToPiggyback(type)) {
+      attr_ack = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK, *ack);
     }
     server_.ReportDataPiggybacked(attr_data.get(), attr_ack.get());
   }
-  void SendServerToClient(const std::vector<uint8_t> data,
+  void SendServerToClient(const std::vector<uint8_t> packet,
                           StunMessageType type) {
-    if (!data.empty()) {
-      server_.CapturePacket(data);
+    if (!packet.empty()) {
+      server_.CapturePacket(packet);
       server_.Flush();
     } else {
       server_.ClearCachedPacketForTesting();
@@ -115,11 +115,11 @@ class DtlsStunPiggybackControllerTest : public ::testing::Test {
       attr_data = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN, *data);
     }
     std::unique_ptr<StunByteStringAttribute> attr_ack;
-    if (auto data = server_.GetAckToPiggyback(type)) {
-      attr_ack = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK, *data);
+    if (auto ack = server_.GetAckToPiggyback(type)) {
+      attr_ack = WrapInStun(STUN_ATTR_META_DTLS_IN_STUN_ACK, *ack);
     }
     client_.ReportDataPiggybacked(attr_data.get(), attr_ack.get());
-    if (data == dtls_flight4) {
+    if (packet == dtls_flight4) {
       // After sending flight 4, the server handshake is complete.
       server_.SetDtlsHandshakeComplete(/*is_client=*/false,
                                        /*is_dtls13=*/false);

@@ -255,7 +255,7 @@ std::optional<SSLRole> JsepTransportController::GetDtlsRole(
   return t->GetDtlsRole();
 }
 
-RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
+RTCErrorOr<PayloadType> JsepTransportController::SuggestPayloadType(
     const std::string& mid,
     Codec codec) {
   // Because SDP processing runs on the signal thread and Call processing
@@ -270,15 +270,15 @@ RTCErrorOr<webrtc::PayloadType> JsepTransportController::SuggestPayloadType(
   RTC_DCHECK_RUN_ON(network_thread_);
   const JsepTransport* transport = GetJsepTransportForMid(mid);
   if (transport) {
-    auto local_result =
+    RTCErrorOr<PayloadType> local_result =
         transport->local_payload_types().LookupPayloadType(codec);
     if (local_result.ok()) {
       return local_result;
     }
-    auto remote_result =
+    RTCErrorOr<PayloadType> remote_result =
         transport->remote_payload_types().LookupPayloadType(codec);
     if (remote_result.ok()) {
-      RTCErrorOr<Codec> local_result =
+      RTCErrorOr<Codec> local_codec =
           transport->local_payload_types().LookupCodec(remote_result.value());
       if (local_result.ok()) {
         // Already in use, possibly for something else.

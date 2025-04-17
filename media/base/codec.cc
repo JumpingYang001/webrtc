@@ -19,6 +19,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "api/audio_codecs/audio_format.h"
 #include "api/media_types.h"
 #include "api/rtp_parameters.h"
@@ -177,8 +178,8 @@ void Codec::SetParam(const std::string& key, int value) {
   params[key] = absl::StrCat(value);
 }
 
-bool Codec::RemoveParam(const std::string& name) {
-  return params.erase(name) == 1;
+bool Codec::RemoveParam(const std::string& key) {
+  return params.erase(key) == 1;
 }
 
 void Codec::AddFeedbackParam(const FeedbackParam& param) {

@@ -148,7 +148,7 @@ struct RTC_EXPORT Codec {
 
   // It is safe to input a non-existent parameter.
   // Returns true if the parameter existed, false if it did not exist.
-  bool RemoveParam(const std::string& name);
+  bool RemoveParam(const std::string& key);
 
   bool HasFeedbackParam(const FeedbackParam& param) const;
   void AddFeedbackParam(const FeedbackParam& param);

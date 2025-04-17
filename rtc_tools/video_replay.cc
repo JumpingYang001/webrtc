@@ -387,13 +387,12 @@ std::unique_ptr<StreamState> ConfigureFromFlags(
   auto stream_state = std::make_unique<StreamState>();
   // Create the video renderers. We must add both to the stream state to keep
   // them from deallocating.
-  std::stringstream window_title;
-  window_title << "Playback Video (" << rtp_dump_path << ")";
   std::unique_ptr<VideoSinkInterface<VideoFrame>> playback_video;
   if (absl::GetFlag(FLAGS_disable_preview)) {
     playback_video = std::make_unique<NullRenderer>();
   } else {
-    std::string window_title = "Playback Video (" + rtp_dump_path + ")";
+    std::string window_title;
+    absl::Format(&window_title, "Playback Video (%s)", rtp_dump_path);
     playback_video.reset(test::VideoRenderer::Create(
         window_title.c_str(), absl::GetFlag(FLAGS_render_width),
         absl::GetFlag(FLAGS_render_height)));
