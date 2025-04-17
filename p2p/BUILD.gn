@@ -287,6 +287,7 @@ rtc_library("dtls_transport") {
     "../api/crypto:options",
     "../api/rtc_event_log",
     "../api/task_queue:pending_task_safety_flag",
+    "../api/transport:ecn_marking",
     "../api/transport:stun_types",
     "../api/units:time_delta",
     "../api/units:timestamp",
@@ -705,9 +706,11 @@ rtc_library("dtls_utils") {
   ]
   deps = [
     "../api:array_view",
+    "../rtc_base:buffer",
     "../rtc_base:byte_buffer",
     "../rtc_base:checks",
     "../rtc_base:crc32",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
   ]
 }
 
@@ -1284,6 +1287,7 @@ if (rtc_include_tests) {
       "../test:test_support",
       "../test:wait_until",
       "//third_party/abseil-cpp/absl/algorithm:container",
+      "//third_party/abseil-cpp/absl/container:flat_hash_set",
       "//third_party/abseil-cpp/absl/functional:any_invocable",
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/strings",

@@ -108,6 +108,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
   void SetupMaxProtocolVersion(SSLProtocolVersion version) {
     ssl_max_version_ = version;
   }
+  void SetPqc(bool value) { pqc_ = value; }
   void set_async_delay(int async_delay_ms) { async_delay_ms_ = async_delay_ms; }
 
   // Set up fake ICE transport and real DTLS transport under test.
@@ -116,6 +117,10 @@ class DtlsTestClient : public sigslot::has_slots<> {
                        absl::string_view field_trials_string = "") {
     dtls_transport_ = nullptr;
     fake_ice_transport_ = nullptr;
+
+    if (field_trials_string.empty() && pqc_) {
+      field_trials_string = "WebRTC-EnableDtlsPqc/Enabled/";
+    }
 
     fake_ice_transport_.reset(new FakeIceTransport(
         absl::StrCat("fake-", name_), 0,
@@ -390,6 +395,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
   SentPacketInfo sent_packet_;
   absl::AnyInvocable<void()> writable_func_;
   int async_delay_ms_ = 100;
+  bool pqc_ = false;
 };
 
 // Base class for DtlsTransportInternalImplTest and DtlsEventOrderingTest, which
@@ -404,10 +410,16 @@ class DtlsTransportInternalImplTestBase {
     start_time_ns_ = fake_clock_.TimeNanos();
   }
 
+  void SetPqc(bool value) {
+    client1_.SetPqc(value);
+    client2_.SetPqc(value);
+  }
+
   void SetMaxProtocolVersions(SSLProtocolVersion c1, SSLProtocolVersion c2) {
     client1_.SetupMaxProtocolVersion(c1);
     client2_.SetupMaxProtocolVersion(c2);
   }
+
   // If not called, DtlsTransportInternalImpl will be used in SRTP bypass mode.
   void PrepareDtls(KeyType key_type) {
     client1_.CreateCertificate(key_type);
@@ -555,6 +567,7 @@ class DtlsTransportInternalImplTestBase {
   DtlsTestClient client1_;
   DtlsTestClient client2_;
   bool use_dtls_;
+  bool pqc_ = false;
   uint64_t start_time_ns_;
   SSLProtocolVersion ssl_expected_version_;
 };
@@ -1362,13 +1375,25 @@ enum DtlsTransportInternalImplEvent {
 class DtlsEventOrderingTest
     : public DtlsTransportInternalImplTestBase,
       public ::testing::TestWithParam<
-          ::testing::tuple<std::vector<DtlsTransportInternalImplEvent>, bool>> {
+          ::testing::tuple<std::vector<DtlsTransportInternalImplEvent>,
+                           bool /* valid_fingerprint */,
+                           SSLProtocolVersion,
+                           bool /* pqc */>> {
  protected:
   // If `valid_fingerprint` is false, the caller will receive a fingerprint
   // that doesn't match the callee's certificate, so the handshake should fail.
   void TestEventOrdering(
       const std::vector<DtlsTransportInternalImplEvent>& events,
       bool valid_fingerprint) {
+    bool pqc = ::testing::get<3>(GetParam());
+    if (pqc && ::testing::get<2>(GetParam()) != SSL_PROTOCOL_DTLS_13) {
+      GTEST_SKIP() << "PQC requires DTLS1.3";
+    }
+
+    SetPqc(::testing::get<3>(GetParam()));
+    SetMaxProtocolVersions(::testing::get<2>(GetParam()),
+                           ::testing::get<2>(GetParam()));
+
     // Pre-setup: Set local certificate on both caller and callee, and
     // remote fingerprint on callee, but neither is writable and the caller
     // doesn't have the callee's fingerprint.
@@ -1406,7 +1431,7 @@ class DtlsEventOrderingTest
           EXPECT_TRUE(WaitUntil(
               [&] { return client2_.fake_ice_transport()->writable(); }));
           EXPECT_TRUE(WaitUntil(
-              [&] { return client1_.received_dtls_client_hellos() == 1; }));
+              [&] { return client1_.received_dtls_client_hellos() >= 1; }));
           break;
         case HANDSHAKE_FINISHES:
           // Sanity check that the handshake hasn't already finished.
@@ -1442,8 +1467,9 @@ class DtlsEventOrderingTest
     EXPECT_EQ(valid_fingerprint, client1_.dtls_transport()->writable());
     EXPECT_EQ(valid_fingerprint, client2_.dtls_transport()->writable());
 
+    int count = pqc ? 2 : 1;
     // Check that no hello needed to be retransmitted.
-    EXPECT_EQ(1, client1_.received_dtls_client_hellos());
+    EXPECT_EQ(count, client1_.received_dtls_client_hellos());
     EXPECT_EQ(1, client2_.received_dtls_server_hellos());
 
     if (valid_fingerprint) {
@@ -1486,6 +1512,8 @@ INSTANTIATE_TEST_SUITE_P(
             std::vector<DtlsTransportInternalImplEvent>{
                 CALLER_RECEIVES_CLIENTHELLO, CALLER_WRITABLE,
                 HANDSHAKE_FINISHES, CALLER_RECEIVES_FINGERPRINT}),
+        ::testing::Bool(),
+        ::testing::Values(SSL_PROTOCOL_DTLS_12, SSL_PROTOCOL_DTLS_13),
         ::testing::Bool()));
 
 class DtlsTransportInternalImplDtlsInStunTest

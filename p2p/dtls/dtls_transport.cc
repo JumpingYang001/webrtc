@@ -28,6 +28,7 @@
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
+#include "api/transport/ecn_marking.h"
 #include "api/transport/stun.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
@@ -39,11 +40,12 @@
 #include "p2p/dtls/dtls_stun_piggyback_controller.h"
 #include "p2p/dtls/dtls_transport_internal.h"
 #include "p2p/dtls/dtls_utils.h"
+#include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/network/ecn_marking.h"
 #include "rtc_base/network/received_packet.h"
+#include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
 #include "rtc_base/rtc_certificate.h"
 #include "rtc_base/socket.h"
@@ -96,6 +98,8 @@ constexpr int kMinDtlsHandshakeTimeoutMs = 50;
 constexpr int kMaxDtlsHandshakeTimeoutMs = 3000;
 // This effectively disables the handshake timeout.
 constexpr int kDisabledHandshakeTimeoutMs = 3600 * 1000 * 24;
+
+constexpr uint32_t kMaxCachedClientHello = 4;
 
 static bool IsRtpPacket(ArrayView<const uint8_t> payload) {
   const uint8_t* u = payload.data();
@@ -773,7 +777,8 @@ void DtlsTransportInternalImpl::OnReadPacket(
         RTC_LOG(LS_INFO) << ToString()
                          << ": Caching DTLS ClientHello packet until DTLS is "
                             "started.";
-        cached_client_hello_.SetData(packet.payload());
+        cached_client_hello_.AddIfUnique(packet.payload());
+        cached_client_hello_.Prune(kMaxCachedClientHello);
         // If we haven't started setting up DTLS yet (because we don't have a
         // remote fingerprint/role), we can use the client hello as a clue that
         // the peer has chosen the client role, and proceed with the handshake.
@@ -946,19 +951,24 @@ void DtlsTransportInternalImpl::MaybeStartDtls() {
     set_dtls_state(webrtc::DtlsTransportState::kConnecting);
     // Now that the handshake has started, we can process a cached ClientHello
     // (if one exists).
-    if (cached_client_hello_.size()) {
+    if (!cached_client_hello_.empty()) {
       if (*dtls_role_ == webrtc::SSL_SERVER) {
-        RTC_LOG(LS_INFO) << ToString()
-                         << ": Handling cached DTLS ClientHello packet.";
-        if (!HandleDtlsPacket(cached_client_hello_)) {
-          RTC_LOG(LS_ERROR) << ToString() << ": Failed to handle DTLS packet.";
+        int size = cached_client_hello_.size();
+        RTC_LOG(LS_INFO) << ToString() << ": Handling #" << size
+                         << " cached DTLS ClientHello packet(s).";
+        for (int i = 0; i < size; i++) {
+          if (!HandleDtlsPacket(cached_client_hello_.GetNext())) {
+            RTC_LOG(LS_ERROR)
+                << ToString() << ": Failed to handle DTLS packet.";
+            break;
+          }
         }
       } else {
         RTC_LOG(LS_WARNING) << ToString()
                             << ": Discarding cached DTLS ClientHello packet "
                                "because we don't have the server role.";
       }
-      cached_client_hello_.Clear();
+      cached_client_hello_.clear();
     }
   }
 }

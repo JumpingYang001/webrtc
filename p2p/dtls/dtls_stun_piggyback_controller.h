@@ -12,9 +12,7 @@
 #define P2P_DTLS_DTLS_STUN_PIGGYBACK_CONTROLLER_H_
 
 #include <cstdint>
-#include <memory>
 #include <optional>
-#include <utility>
 #include <vector>
 
 #include "absl/functional/any_invocable.h"
@@ -22,7 +20,7 @@
 #include "api/array_view.h"
 #include "api/sequence_checker.h"
 #include "api/transport/stun.h"
-#include "rtc_base/buffer.h"
+#include "p2p/dtls/dtls_utils.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
@@ -91,11 +89,8 @@ class DtlsStunPiggybackController {
  private:
   State state_ RTC_GUARDED_BY(sequence_checker_) = State::TENTATIVE;
   bool writing_packets_ RTC_GUARDED_BY(sequence_checker_) = false;
-  uint32_t pending_packet_pos_ RTC_GUARDED_BY(sequence_checker_) = 0;
-  std::vector<std::pair<uint32_t, std::unique_ptr<Buffer>>> pending_packets_
-      RTC_GUARDED_BY(sequence_checker_);
-  absl::AnyInvocable<void(webrtc::ArrayView<const uint8_t>)>
-      dtls_data_callback_;
+  PacketStash pending_packets_ RTC_GUARDED_BY(sequence_checker_);
+  absl::AnyInvocable<void(ArrayView<const uint8_t>)> dtls_data_callback_;
   absl::AnyInvocable<void()> disable_piggybacking_callback_;
 
   std::vector<uint32_t> handshake_messages_received_

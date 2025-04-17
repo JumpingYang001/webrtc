@@ -10,11 +10,15 @@
 
 #include "p2p/dtls/dtls_utils.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <vector>
 
+#include "absl/container/flat_hash_set.h"
 #include "api/array_view.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/crc32.h"
@@ -144,6 +148,64 @@ std::optional<std::vector<uint16_t>> GetDtlsHandshakeAcks(
 
 uint32_t ComputeDtlsPacketHash(ArrayView<const uint8_t> dtls_packet) {
   return webrtc::ComputeCrc32(dtls_packet.data(), dtls_packet.size());
+}
+
+bool PacketStash::AddIfUnique(rtc::ArrayView<const uint8_t> packet) {
+  uint32_t h = ComputeDtlsPacketHash(packet);
+  for (const auto& [hash, p] : packets_) {
+    if (h == hash) {
+      return false;
+    }
+  }
+  packets_.push_back({.hash = h,
+                      .buffer = std::make_unique<webrtc::Buffer>(
+                          packet.data(), packet.size())});
+  return true;
+}
+
+void PacketStash::Add(rtc::ArrayView<const uint8_t> packet) {
+  packets_.push_back({.hash = ComputeDtlsPacketHash(packet),
+                      .buffer = std::make_unique<webrtc::Buffer>(
+                          packet.data(), packet.size())});
+}
+
+void PacketStash::Prune(const absl::flat_hash_set<uint32_t>& hashes) {
+  if (hashes.empty()) {
+    return;
+  }
+  uint32_t before = packets_.size();
+  packets_.erase(std::remove_if(packets_.begin(), packets_.end(),
+                                [&](const auto& val) {
+                                  return hashes.contains(val.hash);
+                                }),
+                 packets_.end());
+  uint32_t after = packets_.size();
+  uint32_t removed = before - after;
+  if (pos_ >= removed) {
+    pos_ -= removed;
+  }
+}
+
+void PacketStash::Prune(uint32_t max_size) {
+  auto size = packets_.size();
+  if (size <= max_size) {
+    return;
+  }
+  auto removed = size - max_size;
+  packets_.erase(packets_.begin(), packets_.begin() + removed);
+  if (pos_ <= removed) {
+    pos_ = 0;
+  } else {
+    pos_ -= removed;
+  }
+}
+
+rtc::ArrayView<const uint8_t> PacketStash::GetNext() {
+  RTC_DCHECK(!packets_.empty());
+  auto pos = pos_;
+  pos_ = (pos + 1) % packets_.size();
+  const auto& buffer = packets_[pos].buffer;
+  return rtc::ArrayView<const uint8_t>(buffer->data(), buffer->size());
 }
 
 }  // namespace webrtc

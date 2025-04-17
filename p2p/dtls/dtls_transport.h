@@ -32,6 +32,7 @@
 #include "p2p/base/packet_transport_internal.h"
 #include "p2p/dtls/dtls_stun_piggyback_controller.h"
 #include "p2p/dtls/dtls_transport_internal.h"
+#include "p2p/dtls/dtls_utils.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/buffer_queue.h"
@@ -289,7 +290,7 @@ class DtlsTransportInternalImpl : public webrtc::DtlsTransportInternal {
   // Cached DTLS ClientHello packet that was received before we started the
   // DTLS handshake. This could happen if the hello was received before the
   // ice transport became writable, or before a remote fingerprint was received.
-  Buffer cached_client_hello_;
+  PacketStash cached_client_hello_;
 
   bool receiving_ = false;
   bool writable_ = false;
