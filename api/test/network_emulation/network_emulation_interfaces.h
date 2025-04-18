@@ -12,11 +12,11 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <map>
 #include <optional>
 #include <vector>
 
+#include "absl/functional/any_invocable.h"
 #include "api/numerics/samples_stats_counter.h"
 #include "api/test/network_emulation/ecn_marking_counter.h"
 #include "api/transport/ecn_marking.h"
@@ -310,7 +310,8 @@ class TcpMessageRoute {
   // Sends a TCP message of the given `size` over the route, `on_received` is
   // called when the message has been delivered. Note that the connection
   // parameters are reset iff there's no currently pending message on the route.
-  virtual void SendMessage(size_t size, std::function<void()> on_received) = 0;
+  virtual void SendMessage(size_t size,
+                           absl::AnyInvocable<void()> on_received) = 0;
 
  protected:
   ~TcpMessageRoute() = default;

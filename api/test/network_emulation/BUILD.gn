@@ -57,6 +57,7 @@ rtc_library("network_emulation") {
     "../../units:data_size",
     "../../units:time_delta",
     "../../units:timestamp",
+    "//third_party/abseil-cpp/absl/functional:any_invocable",
   ]
 }
 
