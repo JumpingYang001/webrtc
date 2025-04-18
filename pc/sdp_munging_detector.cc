@@ -444,6 +444,12 @@ SdpMungingType DetermineSdpMungingType(
       }
     }
 
+    if (last_created_media_description->direction() !=
+        media_description_to_set->direction()) {
+      RTC_LOG(LS_WARNING) << "SDP munging: transceiver direction modified.";
+      return SdpMungingType::kDirection;
+    }
+
     // Validate media streams.
     if (last_created_media_description->streams().size() !=
         media_description_to_set->streams().size()) {

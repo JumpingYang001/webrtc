@@ -2111,6 +2111,28 @@ TEST_F(SdpOfferAnswerMungingTest, RemoveContent) {
       ElementsAre(Pair(SdpMungingType::kNumberOfContents, 1)));
 }
 
+TEST_F(SdpOfferAnswerMungingTest, TransceiverDirection) {
+  auto pc = CreatePeerConnection();
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& contents = offer->description()->contents();
+  ASSERT_EQ(contents.size(), 1u);
+  auto* media_description = contents[0].media_description();
+  ASSERT_TRUE(media_description);
+  auto direction = media_description->direction();
+  if (direction == RtpTransceiverDirection::kInactive) {
+    media_description->set_direction(RtpTransceiverDirection::kSendRecv);
+  } else {
+    media_description->set_direction(RtpTransceiverDirection::kInactive);
+  }
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kDirection, 1)));
+}
+
 TEST_F(SdpOfferAnswerMungingTest, Mid) {
   auto pc = CreatePeerConnection();
   pc->AddAudioTrack("audio_track", {});
