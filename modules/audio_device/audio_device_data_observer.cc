@@ -10,8 +10,16 @@
 
 #include "modules/audio_device/include/audio_device_data_observer.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "api/audio/audio_device.h"
 #include "api/audio/audio_device_defines.h"
 #include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {
@@ -23,27 +31,10 @@ namespace {
 class ADMWrapper : public AudioDeviceModule, public AudioTransport {
  public:
   ADMWrapper(scoped_refptr<AudioDeviceModule> impl,
-             AudioDeviceDataObserver* legacy_observer,
              std::unique_ptr<AudioDeviceDataObserver> observer)
-      : impl_(impl),
-        legacy_observer_(legacy_observer),
-        observer_(std::move(observer)) {
-    is_valid_ = impl_.get() != nullptr;
-  }
-  ADMWrapper(AudioLayer audio_layer,
-             TaskQueueFactory* task_queue_factory,
-             AudioDeviceDataObserver* legacy_observer,
-             std::unique_ptr<AudioDeviceDataObserver> observer)
-      : ADMWrapper(AudioDeviceModule::Create(audio_layer, task_queue_factory),
-                   legacy_observer,
-                   std::move(observer)) {}
-  ~ADMWrapper() override {
-    audio_transport_ = nullptr;
-    observer_ = nullptr;
-  }
+      : impl_(std::move(impl)), observer_(std::move(observer)) {}
 
-  // Make sure we have a valid ADM before returning it to user.
-  bool IsValid() { return is_valid_; }
+  ~ADMWrapper() override = default;
 
   int32_t RecordedDataIsAvailable(const void* audioSamples,
                                   size_t nSamples,
@@ -309,10 +300,8 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
 
  protected:
   scoped_refptr<AudioDeviceModule> impl_;
-  AudioDeviceDataObserver* legacy_observer_ = nullptr;
   std::unique_ptr<AudioDeviceDataObserver> observer_;
   AudioTransport* audio_transport_ = nullptr;
-  bool is_valid_ = false;
 };
 
 }  // namespace
@@ -320,54 +309,11 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
 scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
     scoped_refptr<AudioDeviceModule> impl,
     std::unique_ptr<AudioDeviceDataObserver> observer) {
-  auto audio_device =
-      make_ref_counted<ADMWrapper>(impl, observer.get(), std::move(observer));
-
-  if (!audio_device->IsValid()) {
+  if (impl == nullptr) {
     return nullptr;
   }
-
-  return audio_device;
+  return make_ref_counted<ADMWrapper>(std::move(impl), std::move(observer));
 }
 
-scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
-    scoped_refptr<AudioDeviceModule> impl,
-    AudioDeviceDataObserver* legacy_observer) {
-  auto audio_device =
-      make_ref_counted<ADMWrapper>(impl, legacy_observer, nullptr);
 
-  if (!audio_device->IsValid()) {
-    return nullptr;
-  }
-
-  return audio_device;
-}
-
-scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
-    AudioDeviceModule::AudioLayer audio_layer,
-    TaskQueueFactory* task_queue_factory,
-    std::unique_ptr<AudioDeviceDataObserver> observer) {
-  auto audio_device = make_ref_counted<ADMWrapper>(
-      audio_layer, task_queue_factory, observer.get(), std::move(observer));
-
-  if (!audio_device->IsValid()) {
-    return nullptr;
-  }
-
-  return audio_device;
-}
-
-scoped_refptr<AudioDeviceModule> CreateAudioDeviceWithDataObserver(
-    AudioDeviceModule::AudioLayer audio_layer,
-    TaskQueueFactory* task_queue_factory,
-    AudioDeviceDataObserver* legacy_observer) {
-  auto audio_device = make_ref_counted<ADMWrapper>(
-      audio_layer, task_queue_factory, legacy_observer, nullptr);
-
-  if (!audio_device->IsValid()) {
-    return nullptr;
-  }
-
-  return audio_device;
-}
 }  // namespace webrtc
