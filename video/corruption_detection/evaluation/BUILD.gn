@@ -8,6 +8,21 @@
 
 import("../../../webrtc.gni")
 
+rtc_library("test_clip") {
+  testonly = true
+  sources = [
+    "test_clip.cc",
+    "test_clip.h",
+  ]
+  deps = [
+    ":utils",
+    "../../../api/video_codecs:video_codecs_api",
+    "../../../rtc_base:checks",
+    "../../../test:fileutils",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
+}
+
 rtc_library("utils") {
   testonly = true
   sources = [
@@ -25,6 +40,20 @@ rtc_library("utils") {
 }
 
 if (rtc_include_tests) {
+  rtc_library("test_clip_unittest") {
+    testonly = true
+    sources = [ "test_clip_unittest.cc" ]
+    deps = [
+      ":test_clip",
+      ":utils",
+      "../../../api/video_codecs:video_codecs_api",
+      "../../../test:fileutils",
+      "../../../test:test_support",
+      "//third_party/abseil-cpp/absl/strings:string_view",
+    ]
+    data = [ "../../../resources/ConferenceMotion_1280_720_50.yuv" ]
+  }
+
   rtc_library("utils_unittest") {
     testonly = true
     sources = [ "utils_unittest.cc" ]
@@ -42,6 +71,9 @@ if (rtc_include_tests) {
   rtc_library("corruption_detection_eval_tests") {
     testonly = true
     sources = []
-    deps = [ ":utils_unittest" ]
+    deps = [
+      ":test_clip_unittest",
+      ":utils_unittest",
+    ]
   }
 }
