@@ -1786,10 +1786,5 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/google-truth:google_truth_java",
     ]
-
-    additional_jar_files = [ [
-          "tests/resources/robolectric.properties",
-          "robolectric.properties",
-        ] ]
   }
 }
