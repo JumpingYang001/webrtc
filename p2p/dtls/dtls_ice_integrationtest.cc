@@ -136,13 +136,6 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
     networkBehavior.queue_delay_ms = 50;
     networkBehavior.queue_length_packets = 30;
     networkBehavior.loss_percent = 50;
-    if ((client_.pqc || server_.pqc) &&
-        !(client_.dtls_stun_piggyback && server_.dtls_stun_piggyback)) {
-      // TODO(webrtc:404763475): This is a BUG!!
-      // If PQC is enabled, the handshake does not work with 50% packet loss
-      // unless piggybacking is enabled.
-      networkBehavior.loss_percent = 15;
-    }
 
     auto pair = network_emulation_manager_->CreateEndpointPairWithTwoWayRoutes(
         networkBehavior);
@@ -439,12 +432,10 @@ TEST_P(DtlsIceIntegrationTest, ClientLateCertificate) {
   }
 }
 
-#if defined(OPENSSL_IS_BORINGSSL)
-#define MAYBE_TestWithPacketLoss TestWithPacketLoss
-#else
-#define MAYBE_TestWithPacketLoss DISABLED_TestWithPacketLoss
-#endif
-TEST_P(DtlsIceIntegrationTest, MAYBE_TestWithPacketLoss) {
+TEST_P(DtlsIceIntegrationTest, TestWithPacketLoss) {
+  if (!SSLStreamAdapter::IsBoringSsl()) {
+    GTEST_SKIP() << "Needs boringssl.";
+  }
   ConfigureEmulatedNetwork();
   Prepare();
 
