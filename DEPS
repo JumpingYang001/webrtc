@@ -52,6 +52,8 @@ vars = {
   'rbe_instance': 'projects/rbe-webrtc-developer/instances/default_instance',
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.177.1.e58c0145-gomaip',
+  # siso CIPD package version.
+  'siso_version': 'git_revision:3236848f55721ee59d3cf7c5d3d33c75aaeec4f2',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
@@ -350,6 +352,17 @@ deps = {
       {
         'package': Var('ninja_package') + '${{platform}}',
         'version': Var('ninja_version'),
+      }
+    ],
+    'condition': 'non_git_source',
+    'dep_type': 'cipd',
+  },
+
+  'src/third_party/siso/cipd': {
+    'packages': [
+      {
+        'package': 'infra/build/siso/${{platform}}',
+        'version': Var('siso_version'),
       }
     ],
     'condition': 'non_git_source',
@@ -2328,7 +2341,16 @@ hooks = [
                '--quiet',
                ],
   },
-
+  # Configure Siso for developer builds.
+  {
+    'name': 'configure_siso',
+    'pattern': '.',
+    'action': ['python3',
+               'src/build/config/siso/configure_siso.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               ],
+  },
   {
     # Ensure we remove any file from disk that is no longer needed (e.g. after
     # hooks to native GCS deps migration).
