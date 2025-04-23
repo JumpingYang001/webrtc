@@ -99,6 +99,10 @@ class FullScreenPowerPointHandler : public FullScreenApplicationHandler {
   DesktopCapturer::SourceId FindFullScreenWindow(
       const DesktopCapturer::SourceList& window_list,
       int64_t timestamp) const override {
+    if (!UseHeuristicFullscreenPowerPointWindows()) {
+      return 0;
+    }
+
     if (window_list.empty())
       return 0;
 
