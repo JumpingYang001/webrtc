@@ -198,6 +198,7 @@ int CountIPMaskBits(const IPAddress& mask);
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::CountIPMaskBits;
 using ::webrtc::GetAnyIP;
@@ -229,5 +230,6 @@ using ::webrtc::IPV6_ADDRESS_FLAG_TEMPORARY;
 using ::webrtc::IPv6AddressFlag;
 using ::webrtc::TruncateIP;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_IP_ADDRESS_H_

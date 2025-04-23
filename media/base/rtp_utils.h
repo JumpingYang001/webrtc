@@ -78,6 +78,7 @@ ApplyPacketOptions(uint8_t* data,
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::ApplyPacketOptions;
 using ::webrtc::GetRtcpSsrc;
@@ -101,5 +102,6 @@ using ::webrtc::RtpPacketTypeToString;
 using ::webrtc::UpdateRtpAbsSendTimeExtension;
 using ::webrtc::ValidateRtpHeader;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // MEDIA_BASE_RTP_UTILS_H_

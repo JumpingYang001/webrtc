@@ -504,6 +504,7 @@ class RTC_EXPORT Port : public PortInterface, public sigslot::has_slots<> {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::CandidatePairChangeEvent;
 using ::webrtc::CandidateStats;
@@ -521,5 +522,6 @@ using ::webrtc::TCPTYPE_ACTIVE_STR;
 using ::webrtc::TCPTYPE_PASSIVE_STR;
 using ::webrtc::TCPTYPE_SIMOPEN_STR;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // P2P_BASE_PORT_H_

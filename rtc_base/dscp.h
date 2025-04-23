@@ -44,6 +44,7 @@ enum DiffServCodePoint {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::DiffServCodePoint;
 using ::webrtc::DSCP_AF11;
@@ -70,5 +71,6 @@ using ::webrtc::DSCP_DEFAULT;
 using ::webrtc::DSCP_EF;
 using ::webrtc::DSCP_NO_CHANGE;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_DSCP_H_

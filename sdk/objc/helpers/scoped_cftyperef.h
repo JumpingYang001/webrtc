@@ -116,11 +116,13 @@ static ScopedCFTypeRef<T> ScopedCF(T cftype) {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::AdoptCF;
 using ::webrtc::RetainPolicy;
 using ::webrtc::ScopedCF;
 using ::webrtc::ScopedCFTypeRef;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // SDK_OBJC_HELPERS_SCOPED_CFTYPEREF_H_

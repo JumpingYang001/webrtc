@@ -59,6 +59,7 @@ CRYPTO_BUFFER_POOL* GetBufferPool();
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 namespace openssl {
 
@@ -76,5 +77,6 @@ using ::webrtc::openssl::ParseCertificate;
 
 }  // namespace openssl
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_OPENSSL_UTILITY_H_

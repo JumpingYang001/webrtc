@@ -167,6 +167,7 @@ extern const char kPemTypeEcPrivateKey[];
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::ASN1TimeToSec;
 using ::webrtc::EC_LAST;
@@ -191,5 +192,6 @@ using ::webrtc::RSAParams;
 using ::webrtc::SSLIdentity;
 using ::webrtc::SSLIdentityParams;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_SSL_IDENTITY_H_

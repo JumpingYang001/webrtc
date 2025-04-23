@@ -88,10 +88,12 @@ typedef std::vector<ConnectionInfo> ConnectionInfos;
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::ConnectionInfo;
 using ::webrtc::ConnectionInfos;
 using ::webrtc::IceCandidatePairState;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // P2P_BASE_CONNECTION_INFO_H_

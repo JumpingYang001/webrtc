@@ -224,6 +224,7 @@ ABSL_DEPRECATE_AND_INLINE() int LeastCommonMultiple(int a, int b);
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::CanonicalFourCC;
 using ::webrtc::FourCC;
@@ -279,5 +280,6 @@ using ::webrtc::LeastCommonMultiple;
 using ::webrtc::VideoFormat;
 using ::webrtc::VideoFormatPod;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // MEDIA_BASE_VIDEO_COMMON_H_

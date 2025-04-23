@@ -270,6 +270,11 @@ declare_args() {
 
   # When true, include the Perfetto library.
   rtc_use_perfetto = false
+
+  # When true allows exports from deprecated namespaces.
+  # This will be set to false on Jun 23 2025. See bugs.webrtc.org/42232595
+  # for details.
+  rtc_allow_deprecated_namespaces = true
 }
 
 if (!build_with_mozilla) {

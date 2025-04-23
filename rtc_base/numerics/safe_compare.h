@@ -174,6 +174,7 @@ RTC_SAFECMP_MAKE_FUN(Ge)
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::SafeEq;
 using ::webrtc::SafeGe;
@@ -182,5 +183,6 @@ using ::webrtc::SafeLe;
 using ::webrtc::SafeLt;
 using ::webrtc::SafeNe;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_NUMERICS_SAFE_COMPARE_H_

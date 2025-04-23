@@ -71,6 +71,7 @@ constexpr AdapterType kAllAdapterTypes[] = {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::ADAPTER_TYPE_ANY;
 using ::webrtc::ADAPTER_TYPE_CELLULAR;
@@ -98,5 +99,6 @@ using ::webrtc::kNetworkCostMin;
 using ::webrtc::kNetworkCostUnknown;
 using ::webrtc::kNetworkCostVpn;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_NETWORK_CONSTANTS_H_

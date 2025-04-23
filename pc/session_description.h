@@ -604,6 +604,7 @@ enum ContentSource { CS_LOCAL, CS_REMOTE };
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::AudioContentDescription;
 using ::webrtc::ContentGroup;
@@ -629,5 +630,6 @@ using ::webrtc::SessionDescription;
 using ::webrtc::UnsupportedContentDescription;
 using ::webrtc::VideoContentDescription;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // PC_SESSION_DESCRIPTION_H_

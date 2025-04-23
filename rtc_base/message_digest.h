@@ -132,6 +132,7 @@ bool ComputeHmac(absl::string_view alg,
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::ComputeDigest;
 using ::webrtc::ComputeHmac;
@@ -146,5 +147,6 @@ using ::webrtc::MD5;
 using ::webrtc::MessageDigest;
 using ::webrtc::MessageDigestFactory;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_MESSAGE_DIGEST_H_

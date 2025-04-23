@@ -761,6 +761,7 @@ class IceMessage : public StunMessage {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::ComputeStunCredentialHash;
 using ::webrtc::CopyStunAttribute;
@@ -901,5 +902,6 @@ using ::webrtc::TurnErrorType;
 using ::webrtc::TurnMessage;
 using ::webrtc::TurnMessageType;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // API_TRANSPORT_STUN_H_

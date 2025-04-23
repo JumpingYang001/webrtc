@@ -20,6 +20,7 @@
 #include "rtc_base/third_party/base64/test_base64.h"
 #include "test/gtest.h"
 
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 namespace {
 
@@ -1455,3 +1456,4 @@ TEST(Base64, GetNextBase64Char) {
 
 }  // namespace
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES

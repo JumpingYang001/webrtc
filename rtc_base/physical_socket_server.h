@@ -311,6 +311,7 @@ class SocketDispatcher : public Dispatcher, public PhysicalSocket {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::DE_ACCEPT;
 using ::webrtc::DE_CLOSE;
@@ -323,5 +324,6 @@ using ::webrtc::PhysicalSocket;
 using ::webrtc::PhysicalSocketServer;
 using ::webrtc::SocketDispatcher;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_PHYSICAL_SOCKET_SERVER_H_

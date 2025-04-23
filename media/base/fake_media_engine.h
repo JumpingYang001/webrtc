@@ -958,6 +958,7 @@ class FakeMediaEngine : public CompositeMediaEngine {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::CompareDtmfInfo;
 using ::webrtc::FakeMediaEngine;
@@ -970,5 +971,6 @@ using ::webrtc::FakeVoiceMediaSendChannel;
 using ::webrtc::RtpReceiveChannelHelper;
 using ::webrtc::RtpSendChannelHelper;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // MEDIA_BASE_FAKE_MEDIA_ENGINE_H_

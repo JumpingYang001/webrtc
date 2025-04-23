@@ -82,11 +82,13 @@ class ScopedFakeClock : public ThreadProcessingFakeClock {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::FakeClock;
 using ::webrtc::ScopedBaseFakeClock;
 using ::webrtc::ScopedFakeClock;
 using ::webrtc::ThreadProcessingFakeClock;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_FAKE_CLOCK_H_

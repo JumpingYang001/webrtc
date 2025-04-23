@@ -112,9 +112,11 @@ bool IsUnspecOrEmptyIP(const IPAddress& address);
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace rtc {
 using ::webrtc::IsUnspecOrEmptyIP;
 using ::webrtc::SocketTest;
 }  // namespace rtc
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_SOCKET_UNITTEST_H_

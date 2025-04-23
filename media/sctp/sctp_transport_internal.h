@@ -152,6 +152,7 @@ class SctpTransportInternal {
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::kMaxSctpSid;
 using ::webrtc::kMaxSctpStreams;
@@ -161,5 +162,6 @@ using ::webrtc::kSpecMaxSctpSid;
 using ::webrtc::SctpErrorCauseCode;
 using ::webrtc::SctpTransportInternal;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // MEDIA_SCTP_SCTP_TRANSPORT_INTERNAL_H_

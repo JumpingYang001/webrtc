@@ -33,6 +33,7 @@ int GetProtocolOverhead(absl::string_view protocol);
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.
 // TODO(bugs.webrtc.org/4222596): Remove once all references are updated.
+#ifdef WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 namespace cricket {
 using ::webrtc::GetProtocolOverhead;
 using ::webrtc::kTcpHeaderSize;
@@ -42,5 +43,6 @@ using ::webrtc::TCP_PROTOCOL_NAME;
 using ::webrtc::TLS_PROTOCOL_NAME;
 using ::webrtc::UDP_PROTOCOL_NAME;
 }  // namespace cricket
+#endif  // WEBRTC_ALLOW_DEPRECATED_NAMESPACES
 
 #endif  // RTC_BASE_NET_HELPER_H_
