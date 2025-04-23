@@ -381,6 +381,7 @@ if (is_mac || is_ios) {
 
 if (build_with_chromium) {
   rtc_use_perfetto = true
+  rtc_allow_deprecated_namespaces = false
 }
 
 # Global public configuration that should be applied to all WebRTC targets. You
