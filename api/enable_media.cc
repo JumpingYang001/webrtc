@@ -50,11 +50,9 @@ class MediaFactoryImpl : public MediaFactory {
 #pragma clang diagnostic pop
 
     auto audio_engine = std::make_unique<WebRtcVoiceEngine>(
-        &env.task_queue_factory(), deps.adm.get(),
-        std::move(deps.audio_encoder_factory),
+        env, std::move(deps.adm), std::move(deps.audio_encoder_factory),
         std::move(deps.audio_decoder_factory), std::move(deps.audio_mixer),
-        std::move(audio_processing), std::move(deps.audio_frame_processor),
-        env.field_trials());
+        std::move(audio_processing), std::move(deps.audio_frame_processor));
     auto video_engine = std::make_unique<WebRtcVideoEngine>(
         std::move(deps.video_encoder_factory),
         std::move(deps.video_decoder_factory), env.field_trials());

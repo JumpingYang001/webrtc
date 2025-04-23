@@ -37,7 +37,7 @@
 #include "api/crypto/crypto_options.h"
 #include "api/crypto/frame_decryptor_interface.h"
 #include "api/crypto/frame_encryptor_interface.h"
-#include "api/field_trials_view.h"
+#include "api/environment/environment.h"
 #include "api/frame_transformer_interface.h"
 #include "api/media_types.h"
 #include "api/rtc_error.h"
@@ -48,7 +48,6 @@
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/task_queue/task_queue_base.h"
-#include "api/task_queue/task_queue_factory.h"
 #include "api/transport/rtp/rtp_source.h"
 #include "call/audio_send_stream.h"
 #include "call/audio_state.h"
@@ -60,7 +59,6 @@
 #include "media/base/media_config.h"
 #include "media/base/media_engine.h"
 #include "media/base/stream_params.h"
-#include "modules/async_audio_processing/async_audio_processing.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "rtc_base/checks.h"
@@ -79,15 +77,13 @@ class WebRtcVoiceEngine final : public VoiceEngineInterface {
   friend class WebRtcVoiceReceiveChannel;
 
  public:
-  WebRtcVoiceEngine(
-      TaskQueueFactory* task_queue_factory,
-      AudioDeviceModule* adm,
-      const scoped_refptr<AudioEncoderFactory>& encoder_factory,
-      const scoped_refptr<AudioDecoderFactory>& decoder_factory,
-      scoped_refptr<AudioMixer> audio_mixer,
-      scoped_refptr<AudioProcessing> audio_processing,
-      std::unique_ptr<AudioFrameProcessor> owned_audio_frame_processor,
-      const FieldTrialsView& trials);
+  WebRtcVoiceEngine(const Environment& env,
+                    scoped_refptr<AudioDeviceModule> adm,
+                    scoped_refptr<AudioEncoderFactory> encoder_factory,
+                    scoped_refptr<AudioDecoderFactory> decoder_factory,
+                    scoped_refptr<AudioMixer> audio_mixer,
+                    scoped_refptr<AudioProcessing> audio_processing,
+                    std::unique_ptr<AudioFrameProcessor> audio_frame_processor);
 
   WebRtcVoiceEngine() = delete;
   WebRtcVoiceEngine(const WebRtcVoiceEngine&) = delete;
@@ -142,7 +138,7 @@ class WebRtcVoiceEngine final : public VoiceEngineInterface {
   // easily at any time.
   void ApplyOptions(const AudioOptions& options);
 
-  TaskQueueFactory* const task_queue_factory_;
+  const Environment env_;
   std::unique_ptr<TaskQueueBase, TaskQueueDeleter> low_priority_worker_queue_;
 
   AudioDeviceModule* adm();

@@ -46,6 +46,7 @@
 #include "api/call/audio_sink.h"
 #include "api/crypto/crypto_options.h"
 #include "api/crypto/frame_decryptor_interface.h"
+#include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "api/frame_transformer_interface.h"
 #include "api/make_ref_counted.h"
@@ -90,6 +91,7 @@
 #include "rtc_base/dscp.h"
 #include "rtc_base/experiments/struct_parameters_parser.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
 #include "rtc_base/race_checker.h"
 #include "rtc_base/string_encode.h"
@@ -450,28 +452,28 @@ std::vector<Codec> LegacyCollectCodecs(const std::vector<AudioCodecSpec>& specs,
 }  // namespace
 
 WebRtcVoiceEngine::WebRtcVoiceEngine(
-    TaskQueueFactory* task_queue_factory,
-    AudioDeviceModule* adm,
-    const scoped_refptr<AudioEncoderFactory>& encoder_factory,
-    const scoped_refptr<AudioDecoderFactory>& decoder_factory,
+    const Environment& env,
+    scoped_refptr<AudioDeviceModule> adm,
+    scoped_refptr<AudioEncoderFactory> encoder_factory,
+    scoped_refptr<AudioDecoderFactory> decoder_factory,
     scoped_refptr<AudioMixer> audio_mixer,
     scoped_refptr<AudioProcessing> audio_processing,
-    std::unique_ptr<AudioFrameProcessor> audio_frame_processor,
-    const FieldTrialsView& trials)
-    : task_queue_factory_(task_queue_factory),
-      adm_(adm),
-      encoder_factory_(encoder_factory),
-      decoder_factory_(decoder_factory),
-      audio_mixer_(audio_mixer),
-      apm_(audio_processing),
+    std::unique_ptr<AudioFrameProcessor> audio_frame_processor)
+    : env_(env),
+      adm_(std::move(adm)),
+      encoder_factory_(std::move(encoder_factory)),
+      decoder_factory_(std::move(decoder_factory)),
+      audio_mixer_(std::move(audio_mixer)),
+      apm_(std::move(audio_processing)),
       audio_frame_processor_(std::move(audio_frame_processor)),
       minimized_remsampling_on_mobile_trial_enabled_(
-          trials.IsEnabled("WebRTC-Audio-MinimizeResamplingOnMobile")),
+          env_.field_trials().IsEnabled(
+              "WebRTC-Audio-MinimizeResamplingOnMobile")),
       payload_types_in_transport_trial_enabled_(
-          trials.IsEnabled("WebRTC-PayloadTypesInTransport")) {
+          env_.field_trials().IsEnabled("WebRTC-PayloadTypesInTransport")) {
   RTC_LOG(LS_INFO) << "WebRtcVoiceEngine::WebRtcVoiceEngine";
-  RTC_DCHECK(decoder_factory);
-  RTC_DCHECK(encoder_factory);
+  RTC_DCHECK(decoder_factory_);
+  RTC_DCHECK(encoder_factory_);
   // The rest of our initialization will happen in Init.
 }
 
@@ -495,7 +497,7 @@ void WebRtcVoiceEngine::Init() {
 
   // TaskQueue expects to be created/destroyed on the same thread.
   RTC_DCHECK(!low_priority_worker_queue_);
-  low_priority_worker_queue_ = task_queue_factory_->CreateTaskQueue(
+  low_priority_worker_queue_ = env_.task_queue_factory().CreateTaskQueue(
       "rtc-low-prio", TaskQueueFactory::Priority::LOW);
 
   // Load our audio codec lists.
@@ -519,7 +521,7 @@ void WebRtcVoiceEngine::Init() {
   // No ADM supplied? Create a default one.
   if (!adm_) {
     adm_ = AudioDeviceModule::Create(AudioDeviceModule::kPlatformDefaultAudio,
-                                     task_queue_factory_);
+                                     &env_.task_queue_factory());
   }
 #endif  // WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE
   RTC_CHECK(adm());
@@ -538,7 +540,7 @@ void WebRtcVoiceEngine::Init() {
     if (audio_frame_processor_) {
       config.async_audio_processing_factory =
           make_ref_counted<AsyncAudioProcessing::Factory>(
-              std::move(audio_frame_processor_), *task_queue_factory_);
+              std::move(audio_frame_processor_), env_.task_queue_factory());
     }
     audio_state_ = AudioState::Create(config);
   }
