@@ -18,12 +18,13 @@ DEFAULT_CPU = "x86-64"
 
 # Helpers:
 
-def make_reclient_properties(instance, jobs = None):
-    """Makes a default reclient property with the specified argument.
+def make_rbe_properties(instance, jobs = None, use_siso = None):
+    """Makes a default RBE property with the specified argument.
 
     Args:
       instance: RBE insatnce name.
       jobs: Number of jobs to be used by the builder.
+      use_siso: Add $build/siso properties to switch from Ninja to Siso.
     Returns:
       A dictonary with the reclient properties.
     """
@@ -31,9 +32,22 @@ def make_reclient_properties(instance, jobs = None):
         "instance": instance,
         "metrics_project": "chromium-reclient-metrics",
     }
+    siso_props = {
+        "project": instance,
+        "configs": ["builder"],
+        "enable_cloud_profiler": True,
+        "enable_cloud_trace": True,
+        "enable_monitoring": True,
+    }
     if jobs:
         reclient_props["jobs"] = jobs
-    return {"$build/reclient": reclient_props}
+        siso_props["remote_jobs"] = jobs
+    props = {
+        "$build/reclient": reclient_props,
+    }
+    if use_siso:
+        props["$build/siso"] = siso_props
+    return props
 
 def os_from_name(name):
     """Returns the 'os' dimension based on a builder name.
@@ -557,6 +571,7 @@ def ci_builder(
         perf_cat = None,
         prioritized = False,
         enabled = True,
+        use_siso = None,
         **kwargs):
     """Add a post-submit builder.
 
@@ -567,6 +582,7 @@ def ci_builder(
       perf_cat: the category + name for the /perf/ console, or None to omit from the console.
       prioritized: True to make this builder have a higher priority and never batch builds.
       enabled: False to exclude this builder from consoles and failure notifications.
+      use_siso: True to switch build system from Ninja to Siso.
       **kwargs: Pass on to webrtc_builder / luci.builder.
     Returns:
       A luci.builder.
@@ -588,7 +604,7 @@ def ci_builder(
     dimensions["builderless"] = "1"
     properties = properties or {}
     properties["builder_group"] = "client.webrtc"
-    properties.update(make_reclient_properties("rbe-webrtc-trusted"))
+    properties.update(make_rbe_properties("rbe-webrtc-trusted", use_siso = use_siso))
 
     notifies = ["post_submit_failure_notifier", "infra_failure_notifier"]
     notifies += ["webrtc_tree_closer"] if name not in skipped_lkgr_bots else []
@@ -611,6 +627,7 @@ def try_builder(
         cq = {},
         branch_cq = True,
         builder = None,
+        use_siso = None,
         **kwargs):
     """Add a pre-submit builder.
 
@@ -621,6 +638,7 @@ def try_builder(
       cq: None to exclude this from all commit queues, or a dict of kwargs for cq_tryjob_verifier.
       branch_cq: False to exclude this builder just from the release-branch CQ.
       builder: builder to set in the dimensions, if None, builderless:1 is used.
+      use_siso: True to switch build system from Ninja to Siso.
       **kwargs: Pass on to webrtc_builder / luci.builder.
     Returns:
       A luci.builder.
@@ -633,7 +651,7 @@ def try_builder(
         dimensions["builderless"] = "1"
     properties = properties or {}
     properties["builder_group"] = "tryserver.webrtc"
-    properties.update(make_reclient_properties("rbe-webrtc-untrusted"))
+    properties.update(make_rbe_properties("rbe-webrtc-untrusted", use_siso = use_siso))
     if cq != None:
         luci.cq_tryjob_verifier(name, cq_group = "cq", **cq)
         if branch_cq:
@@ -662,7 +680,7 @@ def perf_builder(name, perf_cat, **kwargs):
     Notifications are also disabled.
     """
     add_milo(name, {"perf": perf_cat})
-    properties = make_reclient_properties("rbe-webrtc-trusted")
+    properties = make_rbe_properties("rbe-webrtc-trusted")
     properties["builder_group"] = "client.webrtc.perf"
     dimensions = {"pool": "luci.webrtc.perf", "os": "Linux"}
     return webrtc_builder(
@@ -702,6 +720,7 @@ def chromium_try_builder(name, **kwargs):
         recipe = "chromium_trybot",
         branch_cq = False,
         execution_timeout = 3 * time.hour,
+        use_siso = True,
         **kwargs
     )
 
