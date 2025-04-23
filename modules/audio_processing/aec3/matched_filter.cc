@@ -13,7 +13,7 @@
 #include <vector>
 
 // Defines WEBRTC_ARCH_X86_FAMILY, used below.
-#include "rtc_base/system/arch.h"
+#include "rtc_base/system/arch.h"  // IWYU pragma: keep
 
 #if defined(WEBRTC_HAS_NEON)
 #include <arm_neon.h>
@@ -118,7 +118,7 @@ void MatchedFilterCoreWithAccumulatedError_NEON(
     }
     const float* x_p =
         chunk1 != h_size ? scratch_memory.data() : &x[x_start_index];
-    const float* h_p = &h[0];
+    const float* h_cp = &h[0];
     float* accumulated_error_p = &accumulated_error[0];
     // Initialize values for the accumulation.
     float32x4_t x2_sum_128 = vdupq_n_f32(0);
@@ -127,10 +127,10 @@ void MatchedFilterCoreWithAccumulatedError_NEON(
     // Perform 128 bit vector operations.
     const int limit_by_4 = h_size >> 2;
     for (int k = limit_by_4; k > 0;
-         --k, h_p += 4, x_p += 4, accumulated_error_p++) {
+         --k, h_cp += 4, x_p += 4, accumulated_error_p++) {
       // Load the data into 128 bit vectors.
       const float32x4_t x_k = vld1q_f32(x_p);
-      const float32x4_t h_k = vld1q_f32(h_p);
+      const float32x4_t h_k = vld1q_f32(h_cp);
       // Compute and accumulate x * x.
       x2_sum_128 = vmlaq_f32(x2_sum_128, x_k, x_k);
       // Compute x * h
@@ -154,7 +154,6 @@ void MatchedFilterCoreWithAccumulatedError_NEON(
       float* h_p = &h[0];
       x_p = chunk1 != h_size ? scratch_memory.data() : &x[x_start_index];
       // Perform 128 bit vector operations.
-      const int limit_by_4 = h_size >> 2;
       for (int k = limit_by_4; k > 0; --k, h_p += 4, x_p += 4) {
         // Load the data into 128 bit vectors.
         float32x4_t h_k = vld1q_f32(h_p);
@@ -197,7 +196,7 @@ void MatchedFilterCore_NEON(size_t x_start_index,
 
     RTC_DCHECK_GT(x_size, x_start_index);
     const float* x_p = &x[x_start_index];
-    const float* h_p = &h[0];
+    const float* h_cp = &h[0];
 
     // Initialize values for the accumulation.
     float32x4_t s_128 = vdupq_n_f32(0);
@@ -215,20 +214,20 @@ void MatchedFilterCore_NEON(size_t x_start_index,
     for (int limit : {chunk1, chunk2}) {
       // Perform 128 bit vector operations.
       const int limit_by_4 = limit >> 2;
-      for (int k = limit_by_4; k > 0; --k, h_p += 4, x_p += 4) {
+      for (int k = limit_by_4; k > 0; --k, h_cp += 4, x_p += 4) {
         // Load the data into 128 bit vectors.
         const float32x4_t x_k = vld1q_f32(x_p);
-        const float32x4_t h_k = vld1q_f32(h_p);
+        const float32x4_t h_k = vld1q_f32(h_cp);
         // Compute and accumulate x * x and h * x.
         x2_sum_128 = vmlaq_f32(x2_sum_128, x_k, x_k);
         s_128 = vmlaq_f32(s_128, h_k, x_k);
       }
 
       // Perform non-vector operations for any remaining items.
-      for (int k = limit - limit_by_4 * 4; k > 0; --k, ++h_p, ++x_p) {
+      for (int k = limit - limit_by_4 * 4; k > 0; --k, ++h_cp, ++x_p) {
         const float x_k = *x_p;
         x2_sum += x_k * x_k;
-        s += *h_p * x_k;
+        s += *h_cp * x_k;
       }
 
       x_p = &x[0];
