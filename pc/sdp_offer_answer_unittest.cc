@@ -2391,6 +2391,50 @@ TEST_F(SdpOfferAnswerMungingTest, VideoCodecsAdded) {
       ElementsAre(Pair(SdpMungingType::kVideoCodecsAdded, 1)));
 }
 
+TEST_F(SdpOfferAnswerMungingTest, VideoCodecsAddedWithRawPacketization) {
+  auto pc = CreatePeerConnection();
+  pc->AddVideoTrack("video_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& contents = offer->description()->contents();
+  ASSERT_EQ(contents.size(), 1u);
+  auto* media_description = contents[0].media_description();
+  ASSERT_TRUE(media_description);
+  std::vector<Codec> codecs = media_description->codecs();
+  auto codec = CreateVideoCodec(SdpVideoFormat("VP8", {}));
+  codec.id = 19;  // IANA reserved payload type, should not conflict.
+  codec.packetization = "raw";
+  codecs.push_back(codec);
+  media_description->set_codecs(codecs);
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(
+          Pair(SdpMungingType::kVideoCodecsAddedWithRawPacketization, 1)));
+}
+
+TEST_F(SdpOfferAnswerMungingTest, VideoCodecsModifiedWithRawPacketization) {
+  auto pc = CreatePeerConnection();
+  pc->AddVideoTrack("video_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& contents = offer->description()->contents();
+  ASSERT_EQ(contents.size(), 1u);
+  auto* media_description = contents[0].media_description();
+  ASSERT_TRUE(media_description);
+  std::vector<Codec> codecs = media_description->codecs();
+  ASSERT_TRUE(!codecs.empty());
+  codecs[0].packetization = "raw";
+  media_description->set_codecs(codecs);
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(
+          Pair(SdpMungingType::kVideoCodecsModifiedWithRawPacketization, 1)));
+}
+
 TEST_F(SdpOfferAnswerMungingTest, MultiOpus) {
   auto pc = CreatePeerConnection();
   pc->AddAudioTrack("audio_track", {});

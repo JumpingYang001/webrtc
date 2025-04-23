@@ -222,6 +222,8 @@ enum SdpMungingType {
   kVideoCodecsFmtpH264SpsPpsIdrInKeyframe = 84,
   kVideoCodecsFmtp = 85,
   kVideoCodecsRtcpFb = 86,
+  kVideoCodecsAddedWithRawPacketization = 87,
+  kVideoCodecsModifiedWithRawPacketization = 88,
   kMaxValue,
 };
 
