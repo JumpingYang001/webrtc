@@ -46,6 +46,7 @@
 #include "pc/test/mock_rtp_sender_internal.h"
 #include "pc/transport_stats.h"
 #include "pc/video_track.h"
+#include "rtc_base/base64.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/fake_ssl_identity.h"
 #include "rtc_base/message_digest.h"
@@ -56,13 +57,13 @@
 #include "rtc_base/socket_address.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/third_party/base64/base64.h"
 #include "rtc_base/thread.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
 using ::testing::_;
 using ::testing::AtMost;
+using ::testing::Eq;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using ::webrtc::ConnectionInfo;
@@ -298,8 +299,7 @@ void CheckCertChainReports(const StatsReports& reports,
 
     std::string der_base64;
     EXPECT_TRUE(GetValue(report, StatsReport::kStatsValueNameDer, &der_base64));
-    std::string der = Base64::Decode(der_base64, Base64::DO_STRICT);
-    EXPECT_EQ(ders[i], der);
+    EXPECT_THAT(ders[i], Eq(Base64Decode(der_base64)));
 
     std::string fingerprint_algorithm;
     EXPECT_TRUE(GetValue(report,

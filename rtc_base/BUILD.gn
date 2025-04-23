@@ -1524,6 +1524,7 @@ rtc_library("ssl") {
   ]
 
   deps = [
+    ":base64",
     ":buffer",
     ":checks",
     ":copy_on_write_buffer",
@@ -1538,7 +1539,6 @@ rtc_library("ssl") {
     "../api:refcountedbase",
     "../api:scoped_refptr",
     "system:rtc_export",
-    "third_party/base64",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
@@ -2022,7 +2022,6 @@ if (rtc_include_tests) {
         "network:received_packet",
         "synchronization:mutex",
         "task_utils:repeating_task",
-        "third_party/base64:base64_unittest",
         "third_party/sigslot",
         "//third_party/abseil-cpp/absl/base:core_headers",
         "//third_party/abseil-cpp/absl/memory",
