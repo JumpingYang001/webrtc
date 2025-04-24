@@ -39,11 +39,11 @@ class PacketStash {
  public:
   PacketStash() {}
 
-  void Add(rtc::ArrayView<const uint8_t> packet);
-  bool AddIfUnique(rtc::ArrayView<const uint8_t> packet);
+  void Add(ArrayView<const uint8_t> packet);
+  bool AddIfUnique(ArrayView<const uint8_t> packet);
   void Prune(const absl::flat_hash_set<uint32_t>& packet_hashes);
   void Prune(uint32_t max_size);
-  rtc::ArrayView<const uint8_t> GetNext();
+  ArrayView<const uint8_t> GetNext();
 
   void clear() {
     packets_.clear();
@@ -52,14 +52,14 @@ class PacketStash {
   bool empty() const { return packets_.empty(); }
   int size() const { return packets_.size(); }
 
-  static uint32_t Hash(rtc::ArrayView<const uint8_t> packet) {
+  static uint32_t Hash(ArrayView<const uint8_t> packet) {
     return ComputeDtlsPacketHash(packet);
   }
 
  private:
   struct StashedPacket {
     uint32_t hash;
-    std::unique_ptr<rtc::Buffer> buffer;
+    std::unique_ptr<Buffer> buffer;
   };
 
   // This vector will only contain very few items,

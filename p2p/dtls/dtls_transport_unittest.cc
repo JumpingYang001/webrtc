@@ -1432,7 +1432,7 @@ class DtlsEventOrderingTest
       return client2_.dtls_transport()->dtls_state() == expected_final_state ||
              // Unlike BoringSSL, OpenSSL can not send a fatal alert to the peer
              // so the peer will be stuck in kConnecting.
-             (!rtc::SSLStreamAdapter::IsBoringSsl() &&
+             (!SSLStreamAdapter::IsBoringSsl() &&
               expected_final_state == DtlsTransportState::kFailed &&
               client2_.dtls_transport()->dtls_state() ==
                   DtlsTransportState::kConnecting);

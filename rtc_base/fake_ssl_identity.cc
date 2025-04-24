@@ -70,9 +70,9 @@ bool FakeSSLCertificate::GetSignatureDigestAlgorithm(
 
 bool FakeSSLCertificate::ComputeDigest(absl::string_view algorithm,
                                        Buffer& digest) const {
-  size_t length =
-      rtc::ComputeDigest(algorithm, pem_string_.c_str(), pem_string_.size(),
-                         digest.data(), digest.capacity());
+  size_t length = ::webrtc::ComputeDigest(algorithm, pem_string_.c_str(),
+                                          pem_string_.size(), digest.data(),
+                                          digest.capacity());
   digest.SetSize(length);
   return length != 0;
 }

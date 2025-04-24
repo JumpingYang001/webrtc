@@ -200,7 +200,7 @@ TEST(DtlsUtils, GetDtls13HandshakeAcks) {
   EXPECT_EQ(acks->size(), 0u);
 }
 
-std::vector<uint8_t> ToVector(rtc::ArrayView<const uint8_t> array) {
+std::vector<uint8_t> ToVector(ArrayView<const uint8_t> array) {
   return std::vector<uint8_t>(array.begin(), array.end());
 }
 

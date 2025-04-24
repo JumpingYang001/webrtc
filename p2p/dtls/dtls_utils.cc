@@ -150,7 +150,7 @@ uint32_t ComputeDtlsPacketHash(ArrayView<const uint8_t> dtls_packet) {
   return webrtc::ComputeCrc32(dtls_packet.data(), dtls_packet.size());
 }
 
-bool PacketStash::AddIfUnique(rtc::ArrayView<const uint8_t> packet) {
+bool PacketStash::AddIfUnique(ArrayView<const uint8_t> packet) {
   uint32_t h = ComputeDtlsPacketHash(packet);
   for (const auto& [hash, p] : packets_) {
     if (h == hash) {
@@ -163,7 +163,7 @@ bool PacketStash::AddIfUnique(rtc::ArrayView<const uint8_t> packet) {
   return true;
 }
 
-void PacketStash::Add(rtc::ArrayView<const uint8_t> packet) {
+void PacketStash::Add(ArrayView<const uint8_t> packet) {
   packets_.push_back({.hash = ComputeDtlsPacketHash(packet),
                       .buffer = std::make_unique<webrtc::Buffer>(
                           packet.data(), packet.size())});
@@ -200,12 +200,12 @@ void PacketStash::Prune(uint32_t max_size) {
   }
 }
 
-rtc::ArrayView<const uint8_t> PacketStash::GetNext() {
+ArrayView<const uint8_t> PacketStash::GetNext() {
   RTC_DCHECK(!packets_.empty());
   auto pos = pos_;
   pos_ = (pos + 1) % packets_.size();
   const auto& buffer = packets_[pos].buffer;
-  return rtc::ArrayView<const uint8_t>(buffer->data(), buffer->size());
+  return ArrayView<const uint8_t>(buffer->data(), buffer->size());
 }
 
 }  // namespace webrtc

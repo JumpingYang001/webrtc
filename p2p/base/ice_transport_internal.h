@@ -286,12 +286,12 @@ class RTC_EXPORT IceTransportInternal : public PacketTransportInternal {
   // TODO: bugs.webrtc.org/367395350 - Make virtual when all downstream
   // overrides are gone.
   // Returns the current local ICE parameters.
-  virtual const cricket::IceParameters* local_ice_parameters() const {
+  virtual const IceParameters* local_ice_parameters() const {
     RTC_CHECK_NOTREACHED();
   }
   // Returns the latest remote ICE parameters or nullptr if there are no remote
   // ICE parameters yet.
-  virtual const cricket::IceParameters* remote_ice_parameters() const {
+  virtual const IceParameters* remote_ice_parameters() const {
     RTC_CHECK_NOTREACHED();
   }
 

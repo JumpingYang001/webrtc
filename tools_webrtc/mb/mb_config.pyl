@@ -522,7 +522,12 @@
       'gn_args': 'is_debug=true',
     },
     'debug_bot': {
-      'mixins': ['debug', 'reclient', 'strict_field_trials'],
+      'mixins': [
+        'debug',
+        'reclient',
+        'strict_field_trials',
+        'disallow_deprecated_namespaces'
+      ],
     },
     'debug_static_bot': {
       'mixins': [
@@ -530,10 +535,15 @@
         'minimal_symbols',
         'reclient',
         'strict_field_trials',
+        'disallow_deprecated_namespaces',
       ],
     },
     'disable_trace_events': {
       'gn_args': 'rtc_disable_trace_events=true',
+    },
+    # TODO(b/42232595): Remove once the GN flag is removed.
+    'disallow_deprecated_namespaces': {
+      'gn_args': 'rtc_allow_deprecated_namespaces=false'
     },
     'dummy_audio_file_devices': {
       'gn_args': 'rtc_use_dummy_audio_file_devices=true',
@@ -623,6 +633,7 @@
         'pure_release_bot',
         'dcheck_always_on',
         'strict_field_trials',
+        'disallow_deprecated_namespaces',
       ],
     },
     'rtc_objc_test_prefix': {

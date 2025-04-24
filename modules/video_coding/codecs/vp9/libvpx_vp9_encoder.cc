@@ -1160,7 +1160,7 @@ int LibvpxVp9Encoder::Encode(const VideoFrame& input_image,
   // doing this.
   input_image_ = &input_image;
 
-  rtc::scoped_refptr<VideoFrameBuffer> scaled_image;
+  scoped_refptr<VideoFrameBuffer> scaled_image;
   if (!is_svc_ || num_active_spatial_layers_ == num_spatial_layers_) {
     scaled_image = input_image.video_frame_buffer();
   } else {
