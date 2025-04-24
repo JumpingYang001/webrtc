@@ -22,11 +22,11 @@ namespace webrtc {
 
 EchoCanceller3Factory::EchoCanceller3Factory() {}
 
-EchoCanceller3Factory::EchoCanceller3Factory(const EchoCanceller3Config config)
+EchoCanceller3Factory::EchoCanceller3Factory(const EchoCanceller3Config& config)
     : config_(config), multichannel_config_(std::nullopt) {}
 
 EchoCanceller3Factory::EchoCanceller3Factory(
-    const EchoCanceller3Config config,
+    const EchoCanceller3Config& config,
     std::optional<EchoCanceller3Config> multichannel_config)
     : config_(config), multichannel_config_(multichannel_config) {}
 
