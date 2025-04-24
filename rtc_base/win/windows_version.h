@@ -50,6 +50,9 @@ enum Version {
   VERSION_WIN10_21H2 = 19,   // 21H2: Build 19044.
   VERSION_SERVER_2022 = 20,  // Server 2022: Build 20348.
   VERSION_WIN11 = 21,        // Windows 11: Build 22000.
+  VERSION_WIN11_22H2 = 22,   // Windows 11 22H2: Build 22621.
+  VERSION_WIN11_23H2 = 23,   // Windows 11 23H2: Build 22631.
+  VERSION_WIN11_24H2 = 24,   // Windows 11 24H2: Build 26100.
   VERSION_WIN_LAST,          // Indicates error condition.
 };
 

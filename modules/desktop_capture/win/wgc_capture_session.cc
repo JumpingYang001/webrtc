@@ -29,6 +29,7 @@
 #include "rtc_base/time_utils.h"
 #include "rtc_base/win/create_direct3d_device.h"
 #include "rtc_base/win/get_activation_factory.h"
+#include "rtc_base/win/windows_version.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/sleep.h"
 
@@ -96,6 +97,11 @@ bool SizeHasChanged(ABI::Windows::Graphics::SizeInt32 size_new,
                     ABI::Windows::Graphics::SizeInt32 size_old) {
   return (size_new.Height != size_old.Height ||
           size_new.Width != size_old.Width);
+}
+
+bool DoesWgcSkipStaticFrames() {
+  return (webrtc::rtc_win::GetVersion() >=
+          webrtc::rtc_win::Version::VERSION_WIN11_24H2);
 }
 
 }  // namespace
@@ -473,6 +479,7 @@ HRESULT WgcCaptureSession::ProcessFrame() {
   } else {
     if (!GetHmonitorFromDeviceIndex(source_id_, &monitor)) {
       RTC_LOG(LS_ERROR) << "Failed to get HMONITOR from device index.";
+      d3d_context->Unmap(mapped_texture_.Get(), 0);
       return E_FAIL;
     }
   }
@@ -496,7 +503,11 @@ HRESULT WgcCaptureSession::ProcessFrame() {
   // previous. The idea is to get a low-complexity indication of if the content
   // is static or not without performing a full/deep memory comparison when
   // updating the damaged region.
-  bool frame_content_has_changed = false;
+  // `DoesWgcSkipStaticFrames()`: `TryGetNextFrame()` returns a frame
+  // successfully only if there is a region that has changed. This means that
+  // we can skip the full memory comparison if the running OS is Windows 11
+  // 24H2 or later.
+  bool frame_content_has_changed = DoesWgcSkipStaticFrames();
 
   // Check if the queue contains two frames whose content can be compared.
   const bool frame_content_can_be_compared = FrameContentCanBeCompared();
