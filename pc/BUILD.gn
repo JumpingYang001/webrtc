@@ -1483,6 +1483,7 @@ rtc_library("ice_server_parsing") {
     "../api:candidate",
     "../api:libjingle_peerconnection_api",
     "../api:rtc_error",
+    "../p2p:p2p_constants",
     "../p2p:port",
     "../p2p:port_allocator",
     "../p2p:port_interface",

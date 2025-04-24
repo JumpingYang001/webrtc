@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "api/peer_connection_interface.h"
+#include "api/rtc_error.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
@@ -237,6 +238,35 @@ TEST_F(IceServerParsingTest, ParseMultipleUrls) {
       ParseIceServersOrError(servers, &stun_servers_, &turn_servers_).ok());
   EXPECT_EQ(1U, stun_servers_.size());
   EXPECT_EQ(1U, turn_servers_.size());
+}
+
+TEST_F(IceServerParsingTest, TooLongUsername) {
+  // 509 characters is the maximum length of the username field in RFC 8489.
+  std::string k509Characters =
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaa";
+  ASSERT_EQ(k509Characters.size(), 509u);
+  // 509 characters is supported.
+  EXPECT_TRUE(ParseUrl("turn:hostname", k509Characters, "password"));
+
+  // 510 is not supported.
+  PeerConnectionInterface::IceServers servers;
+  PeerConnectionInterface::IceServer server;
+  server.urls.push_back("turn:hostname");
+  server.username = k509Characters + "b";
+  server.password = "password";
+  servers.push_back(server);
+  stun_servers_.clear();
+  turn_servers_.clear();
+  auto error = ParseIceServersOrError(servers, &stun_servers_, &turn_servers_);
+  EXPECT_FALSE(error.ok());
+  EXPECT_EQ(error.type(), RTCErrorType::INVALID_PARAMETER);
 }
 
 }  // namespace webrtc

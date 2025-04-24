@@ -22,6 +22,7 @@
 #include "api/candidate.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_error.h"
+#include "p2p/base/p2p_constants.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
@@ -275,6 +276,12 @@ RTCError ParseIceServerUrl(const PeerConnectionInterface::IceServer& server,
             RTCErrorType::INVALID_PARAMETER,
             "ICE server parsing failed: TURN server with empty "
             "username or password");
+      }
+      // RFC 8489 limits the size of the STUN username field to 509 characters.
+      if (server.username.size() > kMaxTurnUsernameLength) {
+        LOG_AND_RETURN_ERROR(
+            RTCErrorType::INVALID_PARAMETER,
+            "ICE server parsing failed: TURN server username is too long");
       }
       // If the hostname field is not empty, then the server address must be
       // the resolved IP for that host, the hostname is needed later for TLS

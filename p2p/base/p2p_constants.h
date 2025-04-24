@@ -124,6 +124,8 @@ enum IcePriorityValue : uint8_t {
   ICE_TYPE_PREFERENCE_HOST = 126
 };
 
+const int kMaxTurnUsernameLength = 509;  // RFC 8489 section 14.3
+
 }  //  namespace webrtc
 
 // Re-export symbols from the webrtc namespace for backwards compatibility.

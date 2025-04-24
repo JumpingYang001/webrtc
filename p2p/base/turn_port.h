@@ -27,6 +27,7 @@
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/transport/stun.h"
 #include "p2p/base/connection.h"
+#include "p2p/base/p2p_constants.h"
 #include "p2p/base/port.h"
 #include "p2p/base/port_allocator.h"
 #include "p2p/base/port_interface.h"
@@ -45,8 +46,6 @@
 namespace webrtc {
 
 class TurnCustomizer;
-
-const int kMaxTurnUsernameLength = 509;  // RFC 8489 section 14.3
 
 extern const int STUN_ATTR_TURN_LOGGING_ID;
 extern const char TURN_PORT_TYPE[];
