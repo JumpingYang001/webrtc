@@ -616,14 +616,6 @@ if (current_os == "linux" || is_android) {
     ]
   }
 
-  # TODO: bugs.webrtc.org/369904700 - Delete when downstream dependencies stop
-  # depending on this now empty target.
-  rtc_source_set("audio_jni") {
-    visibility = [ "*" ]
-    sources = []
-    deps = []
-  }
-
   rtc_library("builtin_audio_codecs_jni") {
     visibility = [ "*" ]
     allow_poison = [ "audio_codecs" ]
