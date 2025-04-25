@@ -1,5 +1,5 @@
 <!-- go/cmark -->
-<!--* freshness: {owner: 'danilchap' reviewed: '2024-10-22'} *-->
+<!--* freshness: {owner: 'danilchap' reviewed: '2025-04-25'} *-->
 
 # WebRTC coding style guide
 
@@ -123,18 +123,12 @@ In other words, rename the existing function, and provide an inline wrapper
 using the original name that calls it. That way, callers who are willing to
 call it using the `DEPRECATED_`-prefixed name don't get the warning.
 
-NOTE 3: Occasionally, with long descriptions, `git cl format` will do the wrong
-thing with the attribute. In that case, you can use the
-[`ABSL_DEPRECATED` macro][ABSL_DEPRECATED], which is formatted in a more
-readable way.
-
 [DEPRECATED]: https://en.cppreference.com/w/cpp/language/attributes/deprecated
-[ABSL_DEPRECATED]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/attributes.h?q=ABSL_DEPRECATED
 [ABSL_DEPRECATE_AND_INLINE]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/macros.h?q=ABSL_DEPRECATE_AND_INLINE
 
 ### ArrayView
 
-When passing an array of values to a function, use `webrtc::ArrayView`
+When passing an array of values to a function, use `ArrayView`
 whenever possible—that is, whenever you're not passing ownership of
 the array, and don't allow the callee to change the array size.
 
@@ -146,7 +140,7 @@ For example,
 | `const T* ptr, size_t num_elements` | `ArrayView<const T>` |
 | `T* ptr, size_t num_elements`       | `ArrayView<T>`       |
 
-See the [source code for `webrtc::ArrayView`](api/array_view.h) for more detailed
+See the [source code for `ArrayView`](api/array_view.h) for more detailed
 docs.
 
 ### Strings
