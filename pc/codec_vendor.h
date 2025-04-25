@@ -11,7 +11,7 @@
 #ifndef PC_CODEC_VENDOR_H_
 #define PC_CODEC_VENDOR_H_
 
-#include <string>
+#include <utility>
 #include <vector>
 
 #include "api/field_trials_view.h"
@@ -62,6 +62,12 @@ class CodecVendor {
       std::vector<Codec> codecs_from_offer,
       PayloadTypeSuggester& pt_suggester);
 
+  // Function exposed for issues.webrtc.org/412904801
+  // Modify the video codecs to return on subsequent GetNegotiated* calls.
+  // The input is a vector of pairs of codecs.
+  // For each pair, the first element is the codec to be replaced,
+  // and the second element is the codec to replace it with.
+  void ModifyVideoCodecs(std::vector<std::pair<Codec, Codec>> changes);
   // Functions exposed for testing
   void set_audio_codecs(const CodecList& send_codecs,
                         const CodecList& recv_codecs);
@@ -114,7 +120,10 @@ class CodecLookupHelper {
  public:
   virtual ~CodecLookupHelper() = default;
   virtual PayloadTypeSuggester* PayloadTypeSuggester() = 0;
-  virtual CodecVendor* CodecVendor(const std::string& mid) = 0;
+  // Look up the codec vendor to use, depending on context.
+  // This call may get additional arguments in the future, to aid
+  // in selection of the correct context.
+  virtual CodecVendor* GetCodecVendor() = 0;
 };
 
 }  //  namespace webrtc

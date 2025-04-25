@@ -1160,7 +1160,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
   std::vector<Codec> codecs_to_include;
   std::string mid = media_description_options.mid;
   RTCErrorOr<std::vector<Codec>> error_or_filtered_codecs =
-      codec_lookup_helper_->CodecVendor(mid)->GetNegotiatedCodecsForOffer(
+      codec_lookup_helper_->GetCodecVendor()->GetNegotiatedCodecsForOffer(
           media_description_options, session_options, current_content,
           *codec_lookup_helper_->PayloadTypeSuggester());
   if (!error_or_filtered_codecs.ok()) {
@@ -1318,11 +1318,10 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
 
   std::vector<Codec> codecs_to_include;
   RTCErrorOr<std::vector<Codec>> error_or_filtered_codecs =
-      codec_lookup_helper_->CodecVendor(media_description_options.mid)
-          ->GetNegotiatedCodecsForAnswer(
-              media_description_options, session_options, offer_rtd, answer_rtd,
-              current_content, offer_content_description->codecs(),
-              *codec_lookup_helper_->PayloadTypeSuggester());
+      codec_lookup_helper_->GetCodecVendor()->GetNegotiatedCodecsForAnswer(
+          media_description_options, session_options, offer_rtd, answer_rtd,
+          current_content, offer_content_description->codecs(),
+          *codec_lookup_helper_->PayloadTypeSuggester());
   if (!error_or_filtered_codecs.ok()) {
     return error_or_filtered_codecs.MoveError();
   }

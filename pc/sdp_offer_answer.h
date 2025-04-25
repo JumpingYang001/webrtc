@@ -689,7 +689,7 @@ class SdpOfferAnswerHandler : public SdpStateProvider {
   // Some tests will be detected as SDP munging, so offer the option
   // to disable.
   bool disable_sdp_munging_checks_ = false;
-
+  CodecLookupHelper* codec_lookup_helper_ = nullptr;
   WeakPtrFactory<SdpOfferAnswerHandler> weak_ptr_factory_
       RTC_GUARDED_BY(signaling_thread());
 };

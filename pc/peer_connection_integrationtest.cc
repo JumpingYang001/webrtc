@@ -4856,6 +4856,59 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   }
 }
 
+// This test documents the behavior expected in
+// https://issues.webrtc.org/412904801. It does not constitute a promise
+// that this mechanism will go on working.
+TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
+       MungeRawPacketizationChangesSubsequentSections) {
+  ASSERT_TRUE(CreatePeerConnectionWrappers());
+  // Add first video track.
+  caller()->AddVideoTrack();
+  auto offer = caller()->CreateOfferAndWait();
+  EXPECT_EQ(offer->description()->contents().size(), 1U);
+  // Observe that packetization is NOT raw.
+  for (const auto& content : offer->description()->contents()) {
+    for (const auto& codec : content.media_description()->codecs()) {
+      ASSERT_THAT(codec.packetization, Eq(std::nullopt));
+    }
+  }
+  // Mangle packetization to be raw.
+  for (auto& content : offer->description()->contents()) {
+    std::vector<Codec> codecs = content.media_description()->codecs();
+    bool mangled_raw = false;
+    for (auto& codec : codecs) {
+      if (codec.name == "VP8" && codec.type == Codec::Type::kVideo) {
+        codec.packetization = kPacketizationParamRaw;
+        mangled_raw = true;
+      }
+    }
+    ASSERT_TRUE(mangled_raw);
+    content.media_description()->set_codecs(codecs);
+  }
+  // Set local description.
+  auto observer = make_ref_counted<MockSetSessionDescriptionObserver>();
+  caller()->pc()->SetLocalDescription(observer.get(), offer.release());
+  // Wait for SLD to complete.
+  EXPECT_THAT(
+      WaitUntil([&] { return observer->called(); }, ::testing::IsTrue()),
+      IsRtcOk());
+  // Add a second video track.
+  caller()->AddVideoTrack();
+  auto offer2 = caller()->CreateOfferAndWait();
+  // Observe that packetization is raw on BOTH media sections.
+  ASSERT_THAT(offer2, NotNull());
+  EXPECT_EQ(offer2->description()->contents().size(), 2U);
+  for (const auto& content : offer2->description()->contents()) {
+    for (const auto& codec : content.media_description()->codecs()) {
+      if (codec.type == Codec::Type::kVideo && codec.name == "VP8") {
+        EXPECT_EQ(codec.packetization, kPacketizationParamRaw);
+      } else {
+        EXPECT_THAT(codec.packetization, Eq(std::nullopt));
+      }
+    }
+  }
+}
+
 }  // namespace
 
 }  // namespace webrtc

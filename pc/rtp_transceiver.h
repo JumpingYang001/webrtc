@@ -302,11 +302,7 @@ class RtpTransceiver : public RtpTransceiverInterface {
   }
   ConnectionContext* context() const { return context_; }
   CodecVendor& codec_vendor() {
-    if (mid_) {
-      return *codec_lookup_helper_->CodecVendor(*mid_);
-    } else {
-      return *codec_lookup_helper_->CodecVendor("");
-    }
+    return *codec_lookup_helper_->GetCodecVendor();
   }
   void OnFirstPacketReceived();
   void OnFirstPacketSent();

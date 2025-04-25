@@ -54,6 +54,7 @@
 #include "call/payload_type.h"
 #include "media/base/codec.h"
 #include "media/base/codec_comparators.h"
+#include "media/base/media_constants.h"
 #include "media/base/media_engine.h"
 #include "media/base/rid_description.h"
 #include "media/base/stream_params.h"
@@ -1490,6 +1491,7 @@ void SdpOfferAnswerHandler::Initialize(
     video_bitrate_allocator_factory_ =
         CreateBuiltinVideoBitrateAllocatorFactory();
   }
+  codec_lookup_helper_ = codec_lookup_helper;
 }
 
 // ==================================================================
@@ -2466,6 +2468,39 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
     }
   }
 
+  // Workaround for isses.webrtc.org/412904801 - detect if packetization:raw
+  // was added in SDP munging, and if so, push it back into the codec vendor.
+  std::vector<std::pair<Codec, Codec>> codecs_mangled_to_raw;
+  auto last_created_desc = desc->GetType() == SdpType::kOffer
+                               ? last_created_offer_.get()
+                               : last_created_answer_.get();
+  // Ignore if other mungings have been applied.
+  if (last_created_desc &&
+      last_created_desc->description()->contents().size() ==
+          desc->description()->contents().size()) {
+    for (size_t i = 0; i < desc->description()->contents().size(); ++i) {
+      auto last_created_codecs = last_created_desc->description()
+                                     ->contents()[i]
+                                     .media_description()
+                                     ->codecs();
+      auto new_codecs =
+          desc->description()->contents()[i].media_description()->codecs();
+      if (last_created_codecs.size() != new_codecs.size()) {
+        continue;  // Ignore added codecs
+      }
+      for (size_t j = 0; j < new_codecs.size(); ++j) {
+        if (new_codecs[j].type == Codec::Type::kVideo &&
+            new_codecs[j].name == last_created_codecs[j].name &&
+            new_codecs[j].id == last_created_codecs[j].id &&
+            !last_created_codecs[j].packetization &&
+            new_codecs[j].packetization == kPacketizationParamRaw) {
+          codecs_mangled_to_raw.push_back(
+              std::pair(last_created_codecs[j], new_codecs[j]));
+        }
+      }
+    }
+  }
+
   // Grab the description type before moving ownership to
   // ApplyLocalDescription, which may destroy it before returning.
   const SdpType type = desc->GetType();
@@ -2486,6 +2521,13 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
     return;
   }
   RTC_DCHECK(local_description());
+
+  // Workaround for issues.webrtc.org/412904801 part 2.
+  // If application was successful, we change the codec vendor's codec
+  // tables according to the mangle.
+  // Note that this depends on there being a single codec vendor for all MIDs.
+  codec_lookup_helper_->GetCodecVendor()->ModifyVideoCodecs(
+      codecs_mangled_to_raw);
 
   if (local_description()->GetType() == SdpType::kAnswer) {
     RemoveStoppedTransceivers();

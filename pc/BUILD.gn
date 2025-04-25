@@ -1123,6 +1123,7 @@ rtc_source_set("sdp_offer_answer") {
     "../call:payload_type",
     "../media:codec",
     "../media:media_channel",
+    "../media:media_constants",
     "../media:media_engine",
     "../media:rid_description",
     "../media:stream_params",

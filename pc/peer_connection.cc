@@ -69,8 +69,6 @@
 #include "media/base/codec.h"
 #include "media/base/media_config.h"
 #include "media/base/media_engine.h"
-#include "media/base/rid_description.h"
-#include "media/base/stream_params.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "p2p/base/connection_info.h"
@@ -102,7 +100,6 @@
 #include "pc/sctp_transport.h"
 #include "pc/sdp_offer_answer.h"
 #include "pc/session_description.h"
-#include "pc/simulcast_description.h"
 #include "pc/transceiver_list.h"
 #include "pc/transport_stats.h"
 #include "pc/usage_pattern.h"
@@ -132,25 +129,20 @@ static const int REPORT_USAGE_PATTERN_DELAY_MS = 60000;
 class CodecLookupHelperForPeerConnection : public CodecLookupHelper {
  public:
   explicit CodecLookupHelperForPeerConnection(PeerConnection* self)
-      : self_(self) {}
+      : self_(self),
+        codec_vendor_(self_->context()->media_engine(),
+                      self_->context()->use_rtx(),
+                      self_->context()->env().field_trials()) {}
 
   webrtc::PayloadTypeSuggester* PayloadTypeSuggester() override {
     return self_->transport_controller_s();
   }
 
-  ::webrtc::CodecVendor* CodecVendor(const std::string& mid) override {
-    if (codec_vendors_.count(mid) == 0) {
-      codec_vendors_.emplace(
-          mid, ::webrtc::CodecVendor{self_->context()->media_engine(),
-                                     self_->context()->use_rtx(),
-                                     self_->context()->env().field_trials()});
-    }
-    return &codec_vendors_.at(mid);
-  }
+  CodecVendor* GetCodecVendor() override { return &codec_vendor_; }
 
  private:
   PeerConnection* self_;
-  std::map<std::string, ::webrtc::CodecVendor> codec_vendors_;
+  CodecVendor codec_vendor_;
 };
 
 uint32_t ConvertIceTransportTypeToCandidateFilter(

@@ -12,7 +12,6 @@
 #define PC_TEST_FAKE_CODEC_LOOKUP_HELPER_H_
 
 #include <memory>
-#include <string>
 
 #include "call/payload_type.h"
 #include "pc/codec_vendor.h"
@@ -35,9 +34,7 @@ class FakeCodecLookupHelper : public CodecLookupHelper {
     return nullptr;
   }
 
-  ::webrtc::CodecVendor* CodecVendor(const std::string& mid) override {
-    return codec_vendor_.get();
-  }
+  CodecVendor* GetCodecVendor() override { return codec_vendor_.get(); }
   // Recreate the codec vendor.
   // Used by tests that manipulate the factory's codecs and expect the
   // result to show up in the codec vendor's output.

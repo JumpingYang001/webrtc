@@ -1026,4 +1026,38 @@ CodecList CodecVendor::video_sendrecv_codecs() const {
   return video_sendrecv_codecs;
 }
 
+void CodecVendor::ModifyVideoCodecs(
+    std::vector<std::pair<Codec, Codec>> changes) {
+  // For each codec in the first element that occurs in our supported codecs,
+  // replace it with the codec in the second element. Exact matches only.
+  // Note: This needs further work to work with PT late assignment.
+  for (const std::pair<Codec, Codec>& change : changes) {
+    {
+      CodecList send_codecs = video_send_codecs_.codecs();
+      bool changed = false;
+      for (Codec& codec : send_codecs.writable_codecs()) {
+        if (codec == change.first) {
+          changed = true;
+        }
+      }
+      if (changed) {
+        video_send_codecs_.set_codecs(send_codecs);
+      }
+    }
+    {
+      bool changed = false;
+      CodecList recv_codecs = video_recv_codecs_.codecs();
+      for (Codec& codec : recv_codecs.writable_codecs()) {
+        if (codec == change.first) {
+          codec = change.second;
+          changed = true;
+        }
+      }
+      if (changed) {
+        video_recv_codecs_.set_codecs(recv_codecs);
+      }
+    }
+  }
+}
+
 }  // namespace webrtc
