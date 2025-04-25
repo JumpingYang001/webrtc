@@ -1203,14 +1203,6 @@ TEST_F(SSLStreamAdapterTestDTLS,
   TestHandshake();
 }
 
-// Test a handshake with small MTU
-// Disabled due to https://code.google.com/p/webrtc/issues/detail?id=3910
-TEST_F(SSLStreamAdapterTestDTLS, DISABLED_TestDTLSConnectWithSmallMtu) {
-  SetMtu(700);
-  SetHandshakeWait(20000);
-  TestHandshake();
-}
-
 // Test a handshake with total loss and timing out.
 // Only works in BoringSSL.
 #ifdef OPENSSL_IS_BORINGSSL
