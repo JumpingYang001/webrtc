@@ -8,6 +8,17 @@
 
 import("../../../webrtc.gni")
 
+rtc_library("picture_pair_provider") {
+  testonly = true
+  sources = [ "picture_pair_provider.h" ]
+  deps = [
+    ":test_clip",
+    "../../../api/units:data_rate",
+    "../../../api/video:video_frame",
+    "../../../test:fileutils",
+  ]
+}
+
 rtc_library("test_clip") {
   testonly = true
   sources = [
