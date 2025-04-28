@@ -23,6 +23,7 @@
 #include "api/media_types.h"
 #include "api/rtc_error.h"
 #include "api/rtp_transceiver_direction.h"
+#include "api/test/rtc_error_matchers.h"
 #include "call/fake_payload_type_suggester.h"
 #include "media/base/codec.h"
 #include "media/base/codec_list.h"
@@ -31,14 +32,13 @@
 #include "media/base/test_utils.h"
 #include "pc/media_options.h"
 #include "pc/rtp_parameters_conversion.h"
+#include "pc/session_description.h"
 #include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
 namespace webrtc {
 namespace {
-
-using webrtc::FakeMediaEngine;
 
 using testing::Contains;
 using testing::Eq;
@@ -170,7 +170,7 @@ TEST(CodecVendorTest, PreferencesAffectCodecChoice) {
       CreateVideoCodec(97, "vp8"),
       CreateVideoRtxCodec(98, 97),
       CreateVideoCodec(99, "vp9"),
-      CreateVideoRtxCodec(99, 100),
+      CreateVideoRtxCodec(100, 99),
   });
   media_engine.SetVideoSendCodecs(video_codecs);
   CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ false,
@@ -191,6 +191,57 @@ TEST(CodecVendorTest, PreferencesAffectCodecChoice) {
   EXPECT_THAT(offered_codecs.value(),
               Not(Contains(Field("name", &Codec::name, "vp8"))));
   EXPECT_THAT(offered_codecs.value().size(), Eq(1));
+}
+
+TEST(CodecVendorTest, GetNegotiatedCodecsForAnswerSimple) {
+  Environment env = CreateEnvironment();
+  FakeMediaEngine media_engine;
+  std::vector<Codec> video_codecs({
+      CreateVideoCodec(97, "vp8"),
+      CreateVideoRtxCodec(98, 97),
+      CreateVideoCodec(99, "vp9"),
+      CreateVideoRtxCodec(100, 99),
+  });
+  media_engine.SetVideoSendCodecs(video_codecs);
+  CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ true,
+                           env.field_trials());
+  MediaDescriptionOptions options(MediaType::VIDEO, "mid",
+                                  RtpTransceiverDirection::kSendOnly, false);
+  FakePayloadTypeSuggester pt_suggester;
+  ContentInfo* current_content = nullptr;
+  RTCErrorOr<std::vector<Codec>> answered_codecs =
+      codec_vendor.GetNegotiatedCodecsForAnswer(
+          options, MediaSessionOptions(), RtpTransceiverDirection::kSendOnly,
+          RtpTransceiverDirection::kSendOnly, current_content, video_codecs,
+          pt_suggester);
+  EXPECT_THAT(answered_codecs, IsRtcOkAndHolds(video_codecs));
+}
+
+TEST(CodecVendorTest, GetNegotiatedCodecsForAnswerWithCollision) {
+  Environment env = CreateEnvironment();
+  FakeMediaEngine media_engine;
+  std::vector<Codec> video_codecs({
+      CreateVideoCodec(97, "vp8"),
+      CreateVideoCodec(99, "vp9"),
+      CreateVideoCodec(101, "av1"),
+  });
+  std::vector<Codec> remote_codecs({
+      CreateVideoCodec(97, "av1"),
+      CreateVideoCodec(99, "vp9"),
+  });
+  media_engine.SetVideoSendCodecs(video_codecs);
+  CodecVendor codec_vendor(&media_engine, /* rtx_enabled= */ false,
+                           env.field_trials());
+  MediaDescriptionOptions options(MediaType::VIDEO, "mid",
+                                  RtpTransceiverDirection::kSendOnly, false);
+  FakePayloadTypeSuggester pt_suggester;
+  ContentInfo* current_content = nullptr;
+  RTCErrorOr<std::vector<Codec>> answered_codecs =
+      codec_vendor.GetNegotiatedCodecsForAnswer(
+          options, MediaSessionOptions(), RtpTransceiverDirection::kSendOnly,
+          RtpTransceiverDirection::kSendOnly, current_content, remote_codecs,
+          pt_suggester);
+  EXPECT_THAT(answered_codecs, IsRtcOkAndHolds(remote_codecs));
 }
 
 }  // namespace
