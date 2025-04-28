@@ -794,9 +794,9 @@ RTCErrorOr<Codecs> CodecVendor::GetNegotiatedCodecsForAnswer(
         const MediaContentDescription* mcd =
             current_content->media_description();
         for (const Codec& codec : mcd->codecs()) {
-          if (webrtc::FindMatchingCodec(mcd->codecs(), codecs.codecs(),
-                                        codec)) {
-            filtered_codecs.push_back(codec);
+          if (std::optional<Codec> found_codec = webrtc::FindMatchingCodec(
+                  mcd->codecs(), codecs.codecs(), codec)) {
+            filtered_codecs.push_back(*found_codec);
           }
         }
       }
