@@ -10,6 +10,7 @@
 
 #include "pc/sdp_munging_detector.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 
@@ -499,6 +500,39 @@ SdpMungingType DetermineSdpMungingType(
     return SdpMungingType::kNoModification;
   }
   return SdpMungingType::kUnknownModification;
+}
+
+// Similar to DetermineSdpMungingType, but only checks whether the ICE ufrag or
+// pwd of the SDP has been modified between createOffer and setLocalDescription.
+bool HasUfragSdpMunging(const SessionDescriptionInterface* sdesc,
+                        const SessionDescriptionInterface* last_created_desc) {
+  if (!sdesc || !sdesc->description()) {
+    RTC_LOG(LS_WARNING) << "SDP munging: Failed to parse session description.";
+    return false;
+  }
+
+  if (!last_created_desc || !last_created_desc->description()) {
+    RTC_LOG(LS_WARNING) << "SDP munging: SetLocalDescription called without "
+                           "CreateOffer or CreateAnswer.";
+    return false;
+  }
+  TransportInfos last_created_transport_infos =
+      last_created_desc->description()->transport_infos();
+  TransportInfos transport_infos_to_set =
+      sdesc->description()->transport_infos();
+  for (size_t i = 0; i < std::min(last_created_transport_infos.size(),
+                                  transport_infos_to_set.size());
+       i++) {
+    if (last_created_transport_infos[i].description.ice_ufrag !=
+        transport_infos_to_set[i].description.ice_ufrag) {
+      return true;
+    }
+    if (last_created_transport_infos[i].description.ice_pwd !=
+        transport_infos_to_set[i].description.ice_pwd) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace webrtc

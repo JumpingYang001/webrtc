@@ -52,11 +52,11 @@
 #include "media/base/stream_params.h"
 #include "p2p/base/transport_description.h"
 #include "pc/peer_connection_wrapper.h"
-#include "pc/session_description.h"
 #include "pc/test/fake_audio_capture_module.h"
 #include "pc/test/fake_rtc_certificate_generator.h"
 #include "pc/test/integration_test_helpers.h"
 #include "pc/test/mock_peer_connection_observers.h"
+#include "rtc_base/strings/string_format.h"
 #include "rtc_base/thread.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
@@ -1949,6 +1949,82 @@ TEST_F(SdpOfferAnswerMungingTest, IcePwd) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+}
+
+TEST_F(SdpOfferAnswerMungingTest, IceUfragRestrictedAddresses) {
+  RTCConfiguration config;
+  config.certificates.push_back(
+      FakeRTCCertificateGenerator::GenerateCertificate());
+  auto caller = CreatePeerConnection(
+      config,
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfragRestrictedAddresses/"
+                                  "127.0.0.1:12345|127.0.0.*:23456|*:34567/"));
+  auto callee = CreatePeerConnection();
+  caller->AddAudioTrack("audio_track", {});
+  auto offer = caller->CreateOffer();
+  auto& transport_infos = offer->description()->transport_infos();
+  ASSERT_EQ(transport_infos.size(), 1u);
+  transport_infos[0].description.ice_ufrag = "amungediceufrag";
+
+  EXPECT_TRUE(caller->SetLocalDescription(offer->Clone()));
+  EXPECT_TRUE(callee->SetRemoteDescription(std::move(offer)));
+
+  auto answer = callee->CreateAnswer();
+  EXPECT_TRUE(callee->SetLocalDescription(answer->Clone()));
+  EXPECT_TRUE(caller->SetRemoteDescription(std::move(answer)));
+
+  static constexpr const char tmpl[] =
+      "candidate:a0+B/1 1 udp 2130706432 %s typ host";
+
+  // Addresses to test. First field is the address in string format,
+  // second field is the expected outcome (success or failure).
+  const std::vector<std::pair<const char*, bool>> address_tests = {
+      {"127.0.0.1:12345", false}, {"127.0.0.2:23456", false},
+      {"8.8.8.8:34567", false},   {"127.0.0.2:12345", true},
+      {"127.0.1.1:23456", true},  {"8.8.8.8:3456", true},
+  };
+
+  for (const auto& address_test : address_tests) {
+    std::optional<RTCError> result;
+    const std::string candidate = StringFormat(
+        tmpl, absl::StrReplaceAll(address_test.first, {{":", " "}}).c_str());
+    caller->pc()->AddIceCandidate(
+        std::unique_ptr<IceCandidateInterface>(
+            CreateIceCandidate("", 0, candidate, nullptr)),
+        [&result](RTCError error) { result = error; });
+
+    ASSERT_THAT(
+        WaitUntil([&] { return result.has_value(); }, ::testing::IsTrue()),
+        IsRtcOk());
+    if (address_test.second == true) {
+      EXPECT_TRUE(result.value().ok());
+    } else {
+      EXPECT_FALSE(result.value().ok());
+      EXPECT_EQ(result.value().type(), RTCErrorType::UNSUPPORTED_OPERATION);
+    }
+  }
+}
+
+TEST_F(SdpOfferAnswerMungingTest, IceUfragSdpRejectedAndRestrictedAddresses) {
+  RTCConfiguration config;
+  config.certificates.push_back(
+      FakeRTCCertificateGenerator::GenerateCertificate());
+  auto caller = CreatePeerConnection(
+      config,
+      FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleUfragRestrictedAddresses/"
+                                  "127.0.0.1:12345|127.0.0.*:23456|*:34567/"
+                                  "WebRTC-NoSdpMangleUfrag/Enabled/"));
+  auto callee = CreatePeerConnection();
+  caller->AddAudioTrack("audio_track", {});
+  auto offer = caller->CreateOffer();
+  auto& transport_infos = offer->description()->transport_infos();
+  ASSERT_EQ(transport_infos.size(), 1u);
+  transport_infos[0].description.ice_ufrag = "amungediceufrag";
+
+  EXPECT_FALSE(caller->SetLocalDescription(offer->Clone()));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
 }
 
 TEST_F(SdpOfferAnswerMungingTest, IceMode) {

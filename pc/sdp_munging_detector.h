@@ -20,6 +20,10 @@ SdpMungingType DetermineSdpMungingType(
     const SessionDescriptionInterface* sdesc,
     const SessionDescriptionInterface* last_created_desc);
 
+// Determines if the ICE ufrag or pwd of the SDP were modified.
+bool HasUfragSdpMunging(const SessionDescriptionInterface* sdesc,
+                        const SessionDescriptionInterface* last_created_desc);
+
 }  // namespace webrtc
 
 #endif  // PC_SDP_MUNGING_DETECTOR_H_

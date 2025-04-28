@@ -14,7 +14,7 @@ include_rules = [
   "+net/dcsctp",
   "+p2p",
   "+system_wrappers",
-  "+absl/strings/str_cat.h",
+  "+absl/strings",
 ]
 
 specific_include_rules = {
