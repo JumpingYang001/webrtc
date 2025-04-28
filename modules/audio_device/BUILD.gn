@@ -200,6 +200,7 @@ if (!build_with_chromium) {
       "../../rtc_base:safe_conversions",
       "../../rtc_base:timeutils",
       "../../rtc_base/synchronization:mutex",
+      "../../rtc_base/system:file_wrapper",
       "../../rtc_base/task_utils:repeating_task",
       "//third_party/abseil-cpp/absl/strings:string_view",
     ]

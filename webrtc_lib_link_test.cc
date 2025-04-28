@@ -8,8 +8,11 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstdio>
+#include <memory>
+#include <utility>
+
 #include "api/audio/audio_device.h"
-#include "api/audio/audio_processing.h"
 #include "api/audio/builtin_audio_processing_builder.h"
 #include "api/audio_codecs/audio_decoder_factory_template.h"
 #include "api/audio_codecs/audio_encoder_factory_template.h"
@@ -19,7 +22,6 @@
 #include "api/enable_media.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
-#include "api/stats/rtcstats_objects.h"
 #include "api/task_queue/default_task_queue_factory.h"
 #include "api/video_codecs/video_decoder_factory_template.h"
 #include "api/video_codecs/video_decoder_factory_template_dav1d_adapter.h"
@@ -31,11 +33,12 @@
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp8_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp9_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_open_h264_adapter.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 
 void CreateSomeMediaDeps(PeerConnectionFactoryDependencies& media_deps) {
-  media_deps.adm = AudioDeviceModule::CreateForTest(
+  media_deps.adm = AudioDeviceModule::Create(
       AudioDeviceModule::kDummyAudio, media_deps.task_queue_factory.get());
   media_deps.audio_encoder_factory =
       webrtc::CreateAudioEncoderFactory<webrtc::AudioEncoderOpus>();

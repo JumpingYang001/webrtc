@@ -63,10 +63,6 @@ class AudioDeviceModule : public webrtc::RefCountInterface {
   // Creates a default ADM for usage in production code.
   static scoped_refptr<AudioDeviceModule> Create(
       AudioLayer audio_layer, TaskQueueFactory* task_queue_factory);
-  // Creates an ADM with support for extra test methods. Don't use this factory
-  // in production code.
-  static scoped_refptr<AudioDeviceModuleForTest> CreateForTest(
-      AudioLayer audio_layer, TaskQueueFactory* task_queue_factory);
 
   // Retrieve the currently utilized audio layer
   virtual int32_t ActiveAudioLayer(AudioLayer* audioLayer) const = 0;

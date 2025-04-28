@@ -12,8 +12,15 @@
 
 #include <stddef.h>
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#include "api/audio/audio_device.h"
+#include "api/audio/audio_device_defines.h"
 #include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"
+#include "api/task_queue/task_queue_factory.h"
 #include "modules/audio_device/audio_device_config.h"  // IWYU pragma: keep
 #include "modules/audio_device/audio_device_generic.h"
 #include "rtc_base/checks.h"
@@ -66,11 +73,11 @@ scoped_refptr<AudioDeviceModule> AudioDeviceModule::Create(
     AudioLayer audio_layer,
     TaskQueueFactory* task_queue_factory) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
-  return AudioDeviceModule::CreateForTest(audio_layer, task_queue_factory);
+  return AudioDeviceModuleImpl::Create(audio_layer, task_queue_factory);
 }
 
 // static
-scoped_refptr<AudioDeviceModuleForTest> AudioDeviceModule::CreateForTest(
+scoped_refptr<AudioDeviceModuleImpl> AudioDeviceModuleImpl::Create(
     AudioLayer audio_layer,
     TaskQueueFactory* task_queue_factory) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;

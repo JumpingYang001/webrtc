@@ -12,29 +12,27 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/audio/audio_device.h"
 #include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"
 #include "common_audio/wav_file.h"
 #include "modules/audio_device/audio_device_impl.h"
-#include "modules/audio_device/include/audio_device_default.h"
 #include "modules/audio_device/test_audio_device_impl.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/event.h"
-#include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "rtc_base/platform_thread.h"
 #include "rtc_base/random.h"
 #include "rtc_base/synchronization/mutex.h"
-#include "rtc_base/task_utils/repeating_task.h"
+#include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
 
@@ -44,25 +42,6 @@ namespace {
 
 constexpr int kFrameLengthUs = 10000;
 constexpr int kFramesPerSecond = kNumMicrosecsPerSec / kFrameLengthUs;
-
-class TestAudioDeviceModuleImpl : public AudioDeviceModuleImpl {
- public:
-  TestAudioDeviceModuleImpl(
-      TaskQueueFactory* task_queue_factory,
-      std::unique_ptr<TestAudioDeviceModule::Capturer> capturer,
-      std::unique_ptr<TestAudioDeviceModule::Renderer> renderer,
-      float speed = 1)
-      : AudioDeviceModuleImpl(
-            AudioLayer::kDummyAudio,
-            std::make_unique<TestAudioDevice>(task_queue_factory,
-                                              std::move(capturer),
-                                              std::move(renderer),
-                                              speed),
-            task_queue_factory,
-            /*create_detached=*/true) {}
-
-  ~TestAudioDeviceModuleImpl() override = default;
-};
 
 // A fake capturer that generates pulses with random samples between
 // -max_amplitude and +max_amplitude.
@@ -449,8 +428,12 @@ scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
     std::unique_ptr<TestAudioDeviceModule::Capturer> capturer,
     std::unique_ptr<TestAudioDeviceModule::Renderer> renderer,
     float speed) {
-  auto audio_device = make_ref_counted<TestAudioDeviceModuleImpl>(
-      task_queue_factory, std::move(capturer), std::move(renderer), speed);
+  auto audio_device = make_ref_counted<AudioDeviceModuleImpl>(
+      AudioDeviceModule::AudioLayer::kDummyAudio,
+      std::make_unique<TestAudioDevice>(task_queue_factory, std::move(capturer),
+                                        std::move(renderer), speed),
+      task_queue_factory,
+      /*create_detached=*/true);
 
   // Ensure that the current platform is supported.
   if (audio_device->CheckPlatform() == -1) {
