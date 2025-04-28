@@ -27,6 +27,7 @@
 #include "api/call/audio_sink.h"
 #include "api/call/transport.h"
 #include "api/crypto/crypto_options.h"
+#include "api/crypto/frame_decryptor_interface.h"
 #include "api/environment/environment.h"
 #include "api/frame_transformer_interface.h"
 #include "api/neteq/neteq_factory.h"
@@ -42,7 +43,6 @@
 namespace webrtc {
 
 class AudioDeviceModule;
-class FrameDecryptorInterface;
 class PacketRouter;
 class RateLimiter;
 class ReceiveStatistics;

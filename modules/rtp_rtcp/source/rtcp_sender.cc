@@ -22,6 +22,7 @@
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/call/transport.h"
 #include "api/environment/environment.h"
 #include "api/rtc_event_log/rtc_event_log.h"
 #include "api/rtp_headers.h"
@@ -238,7 +239,7 @@ int32_t RTCPSender::SendLossNotification(const FeedbackState& feedback_state,
                                          bool buffering_allowed) {
   int32_t error_code = -1;
   auto callback = [&](ArrayView<const uint8_t> packet) {
-    transport_->SendRtcp(packet);
+    transport_->SendRtcp(packet, /*packet_options=*/{});
     error_code = 0;
     env_.event_log().Log(std::make_unique<RtcEventRtcpPacketOutgoing>(packet));
   };
@@ -596,7 +597,7 @@ int32_t RTCPSender::SendRTCP(const FeedbackState& feedback_state,
                              const uint16_t* nack_list) {
   int32_t error_code = -1;
   auto callback = [&](ArrayView<const uint8_t> packet) {
-    if (transport_->SendRtcp(packet)) {
+    if (transport_->SendRtcp(packet, /*packet_options=*/{})) {
       error_code = 0;
       env_.event_log().Log(
           std::make_unique<RtcEventRtcpPacketOutgoing>(packet));
@@ -894,7 +895,7 @@ void RTCPSender::SendCombinedRtcpPacket(
   }
   RTC_DCHECK_LE(max_packet_size, IP_PACKET_SIZE);
   auto callback = [&](ArrayView<const uint8_t> packet) {
-    if (transport_->SendRtcp(packet)) {
+    if (transport_->SendRtcp(packet, /*packet_options=*/{})) {
       env_.event_log().Log(
           std::make_unique<RtcEventRtcpPacketOutgoing>(packet));
     }

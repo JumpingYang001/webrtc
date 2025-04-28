@@ -1031,7 +1031,10 @@ rtc_library("null_transport") {
     "null_transport.cc",
     "null_transport.h",
   ]
-  deps = [ "../api:transport_api" ]
+  deps = [
+    "../api:array_view",
+    "../api:transport_api",
+  ]
 }
 
 rtc_library("encoder_settings") {
@@ -1086,6 +1089,7 @@ rtc_library("mock_transport") {
   ]
   deps = [
     ":test_support",
+    "../api:array_view",
     "../api:transport_api",
   ]
 }

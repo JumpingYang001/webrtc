@@ -120,7 +120,8 @@ bool DirectTransport::SendRtp(ArrayView<const uint8_t> data,
   return true;
 }
 
-bool DirectTransport::SendRtcp(ArrayView<const uint8_t> data) {
+bool DirectTransport::SendRtcp(ArrayView<const uint8_t> data,
+                               const PacketOptions& /* options */) {
   fake_network_->DeliverRtcpPacket(CopyOnWriteBuffer(data));
   MutexLock lock(&process_lock_);
   if (!next_process_task_.Running())

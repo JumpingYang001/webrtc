@@ -115,7 +115,8 @@ class RtxLoopBackTransport : public webrtc::Transport {
     return true;
   }
 
-  bool SendRtcp(ArrayView<const uint8_t> data) override {
+  bool SendRtcp(ArrayView<const uint8_t> data,
+                const PacketOptions& /* options */) override {
     module_->IncomingRtcpPacket(data);
     return true;
   }

@@ -5788,7 +5788,8 @@ TEST_F(WebRtcVideoChannelTest, TestSetDscpOptions) {
 
   // Packets should also self-identify their dscp in PacketOptions.
   const uint8_t kData[10] = {0};
-  EXPECT_TRUE(ChannelImplAsTransport(send_channel.get())->SendRtcp(kData));
+  EXPECT_TRUE(ChannelImplAsTransport(send_channel.get())
+                  ->SendRtcp(kData, /*packet_options=*/{}));
   EXPECT_EQ(DSCP_CS1, network_interface->options().dscp);
   send_channel->SetInterface(nullptr);
 

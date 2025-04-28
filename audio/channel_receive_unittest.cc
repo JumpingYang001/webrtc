@@ -10,25 +10,38 @@
 
 #include "audio/channel_receive.h"
 
-#include "absl/strings/escaping.h"
-#include "api/audio/audio_device.h"
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <optional>
+#include <vector>
+
+#include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio/audio_frame.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
-#include "api/crypto/frame_decryptor_interface.h"
+#include "api/call/transport.h"
+#include "api/crypto/crypto_options.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
 #include "api/test/mock_frame_transformer.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "modules/audio_device/include/mock_audio_device.h"
-#include "modules/rtp_rtcp/source/byte_io.h"
 #include "modules/rtp_rtcp/source/ntp_time_util.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/receiver_report.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/report_block.h"
-#include "modules/rtp_rtcp/source/rtcp_packet/sdes.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/sender_report.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/thread.h"
+#include "rtc_base/string_encode.h"
+#include "rtc_base/time_utils.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
-#include "test/mock_audio_decoder_factory.h"
 #include "test/mock_transport.h"
 #include "test/time_controller/simulated_time_controller.h"
 
@@ -171,7 +184,8 @@ TEST_F(ChannelReceiveTest, ReceiveReportGeneratedOnTime) {
 
   bool receiver_report_sent = false;
   EXPECT_CALL(transport_, SendRtcp)
-      .WillRepeatedly([&](ArrayView<const uint8_t> packet) {
+      .WillRepeatedly([&](ArrayView<const uint8_t> packet,
+                          const PacketOptions& options) {
         if (packet.size() >= 2 &&
             packet[1] == rtcp::ReceiverReport::kPacketType) {
           receiver_report_sent = true;
@@ -189,10 +203,11 @@ TEST_F(ChannelReceiveTest, CaptureStartTimeBecomesValid) {
   auto channel = CreateTestChannelReceive();
 
   EXPECT_CALL(transport_, SendRtcp)
-      .WillRepeatedly([&](ArrayView<const uint8_t> packet) {
-        HandleGeneratedRtcp(*channel, packet);
-        return true;
-      });
+      .WillRepeatedly(
+          [&](ArrayView<const uint8_t> packet, const PacketOptions& options) {
+            HandleGeneratedRtcp(*channel, packet);
+            return true;
+          });
   // Before any packets are sent, CaptureStartTime is invalid.
   EXPECT_EQ(ProbeCaptureStartNtpTime(*channel), -1);
 

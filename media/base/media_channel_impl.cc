@@ -19,9 +19,6 @@
 #include "api/array_view.h"
 #include "api/audio_options.h"
 #include "api/call/transport.h"
-#include "api/crypto/frame_decryptor_interface.h"
-#include "api/crypto/frame_encryptor_interface.h"
-#include "api/frame_transformer_interface.h"
 #include "api/media_stream_interface.h"
 #include "api/rtc_error.h"
 #include "api/rtp_sender_interface.h"
@@ -173,15 +170,32 @@ MediaChannelUtil::TransportForMediaChannels::~TransportForMediaChannels() {
   RTC_DCHECK(!network_interface_);
 }
 
+AsyncSocketPacketOptions
+MediaChannelUtil::TransportForMediaChannels::TranslatePacketOptions(
+    const PacketOptions& options) {
+  AsyncSocketPacketOptions rtc_options;
+  rtc_options.packet_id = options.packet_id;
+  if (DscpEnabled()) {
+    rtc_options.dscp = PreferredDscp();
+  }
+  rtc_options.info_signaled_after_sent.included_in_feedback =
+      options.included_in_feedback;
+  rtc_options.info_signaled_after_sent.included_in_allocation =
+      options.included_in_allocation;
+  rtc_options.info_signaled_after_sent.is_media = options.is_media;
+  rtc_options.ecn_1 = options.send_as_ect1;
+  rtc_options.batchable = options.batchable;
+  rtc_options.last_packet_in_batch = options.last_packet_in_batch;
+  return rtc_options;
+}
+
 bool MediaChannelUtil::TransportForMediaChannels::SendRtcp(
-    ArrayView<const uint8_t> packet) {
-  auto send = [this, packet = CopyOnWriteBuffer(
-                         packet, webrtc::kMaxRtpPacketLen)]() mutable {
-    AsyncSocketPacketOptions rtc_options;
-    if (DscpEnabled()) {
-      rtc_options.dscp = PreferredDscp();
-    }
-    DoSendPacket(&packet, true, rtc_options);
+    ArrayView<const uint8_t> packet,
+    const PacketOptions& options) {
+  auto send = [this,
+               packet = CopyOnWriteBuffer(packet, webrtc::kMaxRtpPacketLen),
+               options]() mutable {
+    DoSendPacket(&packet, true, TranslatePacketOptions(options));
   };
 
   if (network_thread_->IsCurrent()) {
@@ -195,28 +209,10 @@ bool MediaChannelUtil::TransportForMediaChannels::SendRtcp(
 bool MediaChannelUtil::TransportForMediaChannels::SendRtp(
     ArrayView<const uint8_t> packet,
     const webrtc::PacketOptions& options) {
-  auto send = [this, packet_id = options.packet_id,
-               included_in_feedback = options.included_in_feedback,
-               included_in_allocation = options.included_in_allocation,
-               batchable = options.batchable,
-               last_packet_in_batch = options.last_packet_in_batch,
-               is_media = options.is_media, ect_1 = options.send_as_ect1,
-               packet = CopyOnWriteBuffer(packet,
-                                          webrtc::kMaxRtpPacketLen)]() mutable {
-    AsyncSocketPacketOptions rtc_options;
-    rtc_options.packet_id = packet_id;
-    if (DscpEnabled()) {
-      rtc_options.dscp = PreferredDscp();
-    }
-    rtc_options.info_signaled_after_sent.included_in_feedback =
-        included_in_feedback;
-    rtc_options.info_signaled_after_sent.included_in_allocation =
-        included_in_allocation;
-    rtc_options.info_signaled_after_sent.is_media = is_media;
-    rtc_options.ecn_1 = ect_1;
-    rtc_options.batchable = batchable;
-    rtc_options.last_packet_in_batch = last_packet_in_batch;
-    DoSendPacket(&packet, false, rtc_options);
+  auto send = [this,
+               packet = CopyOnWriteBuffer(packet, webrtc::kMaxRtpPacketLen),
+               options]() mutable {
+    DoSendPacket(&packet, false, TranslatePacketOptions(options));
   };
 
   // TODO(bugs.webrtc.org/11993): ModuleRtpRtcpImpl2 and related classes (e.g.

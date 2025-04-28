@@ -122,7 +122,8 @@ bool NetworkNodeTransport::SendRtp(ArrayView<const uint8_t> packet,
   return true;
 }
 
-bool NetworkNodeTransport::SendRtcp(ArrayView<const uint8_t> packet) {
+bool NetworkNodeTransport::SendRtcp(ArrayView<const uint8_t> packet,
+                                    const PacketOptions& options) {
   CopyOnWriteBuffer buffer(packet);
   MutexLock lock(&mutex_);
   if (!endpoint_)

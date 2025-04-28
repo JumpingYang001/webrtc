@@ -337,8 +337,9 @@ bool VideoAnalyzer::SendRtp(ArrayView<const uint8_t> packet,
   return result;
 }
 
-bool VideoAnalyzer::SendRtcp(ArrayView<const uint8_t> packet) {
-  return transport_->SendRtcp(packet);
+bool VideoAnalyzer::SendRtcp(ArrayView<const uint8_t> packet,
+                             const PacketOptions& options) {
+  return transport_->SendRtcp(packet, options);
 }
 
 void VideoAnalyzer::OnFrame(const VideoFrame& video_frame) {

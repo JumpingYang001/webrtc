@@ -207,7 +207,9 @@ class RtpVideoStreamReceiver2Test : public ::testing::Test,
                                                 /*raw_payload=*/false);
     ON_CALL(mock_transport_, SendRtcp)
         .WillByDefault(
-            Invoke(&rtcp_packet_parser_, &test::RtcpPacketParser::Parse));
+            Invoke([this](ArrayView<const uint8_t> packet, ::testing::Unused) {
+              return rtcp_packet_parser_.Parse(packet);
+            }));
   }
 
   RTPVideoHeader GetDefaultH264VideoHeader() {

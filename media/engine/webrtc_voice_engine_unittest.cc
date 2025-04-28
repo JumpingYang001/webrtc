@@ -30,6 +30,7 @@
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/audio_options.h"
 #include "api/call/audio_sink.h"
+#include "api/call/transport.h"
 #include "api/crypto/crypto_options.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
@@ -3427,7 +3428,9 @@ TEST_P(WebRtcVoiceEngineTestFake, TestSetDscpOptions) {
 
   // Packets should also self-identify their dscp in PacketOptions.
   const uint8_t kData[10] = {0};
-  EXPECT_TRUE(SendImplFromPointer(channel.get())->transport()->SendRtcp(kData));
+  EXPECT_TRUE(SendImplFromPointer(channel.get())
+                  ->transport()
+                  ->SendRtcp(kData, /*packet_options=*/{}));
   EXPECT_EQ(webrtc::DSCP_CS1, network_interface.options().dscp);
   channel->SetInterface(nullptr);
 

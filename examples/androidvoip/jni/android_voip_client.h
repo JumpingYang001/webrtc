@@ -120,7 +120,8 @@ class AndroidVoipClient : public webrtc::Transport {
   // Implementation for Transport.
   bool SendRtp(webrtc::ArrayView<const uint8_t> packet,
                const webrtc::PacketOptions& options) override;
-  bool SendRtcp(webrtc::ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(webrtc::ArrayView<const uint8_t> packet,
+                const webrtc::PacketOptions& options) override;
 
   void OnSignalReadRTPPacket(webrtc::AsyncPacketSocket* socket,
                              const webrtc::ReceivedIpPacket& packet);

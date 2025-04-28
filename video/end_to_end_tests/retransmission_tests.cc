@@ -8,25 +8,45 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <memory>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <set>
+#include <string>
+#include <vector>
 
-#include "absl/algorithm/container.h"
+#include "api/array_view.h"
+#include "api/call/transport.h"
+#include "api/environment/environment.h"
+#include "api/rtp_parameters.h"
 #include "api/task_queue/task_queue_base.h"
-#include "api/test/simulated_network.h"
 #include "api/test/video/function_video_encoder_factory.h"
 #include "api/units/time_delta.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_rotation.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "call/audio_receive_stream.h"
+#include "call/audio_send_stream.h"
 #include "call/fake_network_pipe.h"
+#include "call/video_receive_stream.h"
+#include "call/video_send_stream.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/nack.h"
 #include "modules/rtp_rtcp/source/rtp_packet.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/event.h"
 #include "rtc_base/synchronization/mutex.h"
-#include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread_annotations.h"
 #include "test/call_test.h"
-#include "test/field_trial.h"
+#include "test/frame_generator_capturer.h"
 #include "test/gtest.h"
-#include "test/network/simulated_network.h"
 #include "test/rtcp_packet_parser.h"
+#include "test/rtp_rtcp_observer.h"
 #include "test/video_test_constants.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {
@@ -166,7 +186,8 @@ TEST_F(RetransmissionEndToEndTest, ReceivesNackAndRetransmitsAudio) {
         nack.SetPacketIds(nack_list, 1);
         Buffer buffer = nack.Build();
 
-        EXPECT_TRUE(receive_transport_->SendRtcp(buffer));
+        EXPECT_TRUE(
+            receive_transport_->SendRtcp(buffer, /*packet_options=*/{}));
       }
 
       return SEND_PACKET;

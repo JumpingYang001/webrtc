@@ -10,20 +10,23 @@
 #ifndef TEST_RTP_RTCP_OBSERVER_H_
 #define TEST_RTP_RTCP_OBSERVER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "absl/flags/flag.h"
 #include "api/array_view.h"
-#include "api/test/simulated_network.h"
+#include "api/call/transport.h"
+#include "api/media_types.h"
+#include "api/rtp_parameters.h"
+#include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
+#include "call/call.h"
 #include "call/simulated_packet_receiver.h"
-#include "call/video_send_stream.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/event.h"
-#include "system_wrappers/include/field_trial.h"
 #include "test/direct_transport.h"
 #include "test/gtest.h"
 #include "test/test_flags.h"
@@ -116,10 +119,12 @@ class PacketTransport : public test::DirectTransport {
       case RtpRtcpObserver::SEND_PACKET:
         return test::DirectTransport::SendRtp(packet, options);
     }
-    return true;  // Will never happen, makes compiler happy.
+    RTC_DCHECK_NOTREACHED();
+    return true;
   }
 
-  bool SendRtcp(ArrayView<const uint8_t> packet) override {
+  bool SendRtcp(ArrayView<const uint8_t> packet,
+                const PacketOptions& options) override {
     EXPECT_TRUE(IsRtcpPacket(packet));
     RtpRtcpObserver::Action action = RtpRtcpObserver::SEND_PACKET;
     if (observer_) {
@@ -134,9 +139,10 @@ class PacketTransport : public test::DirectTransport {
         // Drop packet silently.
         return true;
       case RtpRtcpObserver::SEND_PACKET:
-        return test::DirectTransport::SendRtcp(packet);
+        return test::DirectTransport::SendRtcp(packet, options);
     }
-    return true;  // Will never happen, makes compiler happy.
+    RTC_DCHECK_NOTREACHED();
+    return true;
   }
 
   RtpRtcpObserver* const observer_;

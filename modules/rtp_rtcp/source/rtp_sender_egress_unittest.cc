@@ -115,7 +115,10 @@ class TestTransport : public Transport {
     return true;
   }
 
-  bool SendRtcp(ArrayView<const uint8_t>) override { RTC_CHECK_NOTREACHED(); }
+  bool SendRtcp(ArrayView<const uint8_t> /* packet */,
+                const PacketOptions& /* options */) override {
+    RTC_CHECK_NOTREACHED();
+  }
 
   std::optional<TransmittedPacket> last_packet() { return last_packet_; }
 

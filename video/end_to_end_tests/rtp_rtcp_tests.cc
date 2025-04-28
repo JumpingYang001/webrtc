@@ -8,21 +8,47 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <list>
+#include <map>
 #include <memory>
+#include <optional>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/call/transport.h"
+#include "api/environment/environment.h"
+#include "api/field_trials_view.h"
+#include "api/make_ref_counted.h"
+#include "api/rtp_headers.h"
 #include "api/test/simulated_network.h"
+#include "api/test/video/function_video_encoder_factory.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/sdp_video_format.h"
 #include "call/fake_network_pipe.h"
+#include "call/flexfec_receive_stream.h"
+#include "call/video_receive_stream.h"
+#include "call/video_send_stream.h"
 #include "modules/include/module_common_types_public.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/rapid_resync_request.h"
 #include "modules/rtp_rtcp/source/rtp_packet.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/numerics/sequence_number_unwrapper.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread_annotations.h"
 #include "test/call_test.h"
+#include "test/encoder_settings.h"
 #include "test/gtest.h"
-#include "test/network/simulated_network.h"
 #include "test/rtcp_packet_parser.h"
+#include "test/rtp_rtcp_observer.h"
 #include "test/video_test_constants.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {
@@ -337,7 +363,7 @@ void RtpRtcpEndToEndTest::TestRtpStatePreservation(
         rtcp::RapidResyncRequest force_send_sr_back_request;
         Buffer packet = force_send_sr_back_request.Build();
         static_cast<webrtc::Transport*>(receive_transport_.get())
-            ->SendRtcp(packet);
+            ->SendRtcp(packet, /*packet_options=*/{});
       }
       CreateFrameGeneratorCapturer(30, 1280, 720);
       StartVideoSources();

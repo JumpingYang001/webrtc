@@ -11,27 +11,47 @@
 #include "rtc_tools/rtp_generator/rtp_generator.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/call/transport.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
+#include "api/media_types.h"
+#include "api/rtp_headers.h"
+#include "api/rtp_parameters.h"
 #include "api/test/create_frame_generator.h"
+#include "api/video/builtin_video_bitrate_allocator_factory.h"
+#include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_decoder_factory_template.h"
 #include "api/video_codecs/video_decoder_factory_template_dav1d_adapter.h"
 #include "api/video_codecs/video_decoder_factory_template_libvpx_vp8_adapter.h"
 #include "api/video_codecs/video_decoder_factory_template_libvpx_vp9_adapter.h"
 #include "api/video_codecs/video_encoder.h"
-#include "api/video_codecs/video_encoder_factory.h"
 #include "api/video_codecs/video_encoder_factory_template.h"
 #include "api/video_codecs/video_encoder_factory_template_libaom_av1_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp8_adapter.h"
 #include "api/video_codecs/video_encoder_factory_template_libvpx_vp9_adapter.h"
+#include "call/call.h"
+#include "call/call_config.h"
+#include "call/video_send_stream.h"
 #include "media/base/media_constants.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/strings/json.h"
 #include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/thread.h"
+#include "system_wrappers/include/clock.h"
+#include "test/frame_generator_capturer.h"
+#include "test/rtp_file_reader.h"
+#include "test/rtp_file_writer.h"
 #include "test/testsupport/file_utils.h"
-#include "video/config/encoder_stream_factory.h"
 #include "video/config/video_encoder_config.h"
 
 namespace webrtc {
@@ -281,13 +301,14 @@ void RtpGenerator::GenerateRtpDump(const std::string& rtp_dump_path) {
 }
 
 bool RtpGenerator::SendRtp(ArrayView<const uint8_t> packet,
-                           const webrtc::PacketOptions& options) {
+                           const PacketOptions& /* options */) {
   test::RtpPacket rtp_packet = DataToRtpPacket(packet.data(), packet.size());
   rtp_dump_writer_->WritePacket(&rtp_packet);
   return true;
 }
 
-bool RtpGenerator::SendRtcp(ArrayView<const uint8_t> packet) {
+bool RtpGenerator::SendRtcp(ArrayView<const uint8_t> packet,
+                            const PacketOptions& /* options */) {
   test::RtpPacket rtcp_packet = DataToRtpPacket(packet.data(), packet.size());
   rtp_dump_writer_->WritePacket(&rtcp_packet);
   return true;

@@ -10,19 +10,32 @@
 
 #include "audio/voip/audio_channel.h"
 
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "absl/functional/any_invocable.h"
+#include "api/array_view.h"
+#include "api/audio/audio_frame.h"
+#include "api/audio/audio_mixer.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_encoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
-#include "api/call/transport.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
-#include "api/task_queue/task_queue_base.h"
-#include "api/task_queue/task_queue_factory.h"
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+#include "api/voip/voip_statistics.h"
 #include "audio/voip/test/mock_task_queue.h"
 #include "modules/audio_mixer/audio_mixer_impl.h"
 #include "modules/audio_mixer/sine_wave_generator.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
-#include "rtc_base/logging.h"
+#include "system_wrappers/include/clock.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_transport.h"
@@ -229,7 +242,7 @@ TEST_F(AudioChannelTest, TestChannelStatistics) {
     audio_channel_->ReceivedRTPPacket(packet);
     return true;
   };
-  auto loop_rtcp = [&](ArrayView<const uint8_t> packet) {
+  auto loop_rtcp = [&](ArrayView<const uint8_t> packet, Unused) {
     audio_channel_->ReceivedRTCPPacket(packet);
     return true;
   };
@@ -316,7 +329,7 @@ TEST_F(AudioChannelTest, RttIsAvailableAfterChangeOfRemoteSsrc) {
   auto send_recv_rtcp = [&](scoped_refptr<AudioChannel> rtcp_sender,
                             scoped_refptr<AudioChannel> rtcp_receiver) {
     // Setup routing logic via transport_.
-    auto route_rtcp = [&](ArrayView<const uint8_t> packet) {
+    auto route_rtcp = [&](ArrayView<const uint8_t> packet, Unused) {
       rtcp_receiver->ReceivedRTCPPacket(packet);
       return true;
     };

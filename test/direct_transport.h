@@ -10,14 +10,19 @@
 #ifndef TEST_DIRECT_TRANSPORT_H_
 #define TEST_DIRECT_TRANSPORT_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <map>
 #include <memory>
 
+#include "api/array_view.h"
 #include "api/call/transport.h"
-#include "api/sequence_checker.h"
+#include "api/media_types.h"
+#include "api/rtp_parameters.h"
 #include "api/task_queue/task_queue_base.h"
-#include "api/test/simulated_network.h"
 #include "call/call.h"
 #include "call/simulated_packet_receiver.h"
+#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/thread_annotations.h"
@@ -63,7 +68,8 @@ class DirectTransport : public Transport {
 
   bool SendRtp(ArrayView<const uint8_t> data,
                const PacketOptions& options) override;
-  bool SendRtcp(ArrayView<const uint8_t> data) override;
+  bool SendRtcp(ArrayView<const uint8_t> data,
+                const PacketOptions& options) override;
 
   int GetAverageDelayMs();
 

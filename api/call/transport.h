@@ -28,7 +28,8 @@ struct PacketOptions {
   // as packet_id not being set.
   int64_t packet_id = -1;
   // Whether this is an audio or video packet, excluding retransmissions.
-  bool is_media = true;
+  // Defaults to `false` which is the more common case.
+  bool is_media = false;
   bool included_in_feedback = false;
   bool included_in_allocation = false;
   bool send_as_ect1 = false;
@@ -42,7 +43,19 @@ class Transport {
  public:
   virtual bool SendRtp(ArrayView<const uint8_t> packet,
                        const PacketOptions& options) = 0;
-  virtual bool SendRtcp(ArrayView<const uint8_t> packet) = 0;
+  // TODO: bugs.webrtc.org/42225697 - Make virtual when downstream is updated.
+  virtual bool SendRtcp(ArrayView<const uint8_t> packet,
+                        const PacketOptions& /*options*/) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    return SendRtcp(packet);
+#pragma clang diagnostic pop
+  }
+  [[deprecated("Pass PacketOptions")]]
+  // TODO: bugs.webrtc.org/42225697 - Remove when downstream is updated.
+  virtual bool SendRtcp(ArrayView<const uint8_t> packet) {
+    return SendRtcp(packet, /*packet_options=*/{});
+  }
 
  protected:
   virtual ~Transport() {}

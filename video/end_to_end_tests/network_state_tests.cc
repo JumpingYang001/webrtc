@@ -8,24 +8,40 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/call/transport.h"
+#include "api/environment/environment.h"
 #include "api/media_types.h"
-#include "api/task_queue/default_task_queue_factory.h"
+#include "api/rtp_headers.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/task_queue/task_queue_factory.h"
 #include "api/test/simulated_network.h"
+#include "api/units/time_delta.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
+#include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
+#include "call/call.h"
 #include "call/fake_network_pipe.h"
+#include "call/video_receive_stream.h"
+#include "call/video_send_stream.h"
 #include "modules/rtp_rtcp/source/rtp_packet.h"
+#include "rtc_base/event.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
 #include "test/fake_encoder.h"
 #include "test/gtest.h"
-#include "test/network/simulated_network.h"
+#include "test/rtp_rtcp_observer.h"
 #include "test/video_encoder_proxy_factory.h"
+#include "test/video_test_constants.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {
@@ -42,7 +58,8 @@ class NetworkStateEndToEndTest : public test::CallTest {
       return false;
     }
 
-    bool SendRtcp(ArrayView<const uint8_t> packet) override {
+    bool SendRtcp(ArrayView<const uint8_t> packet,
+                  const PacketOptions& /* options */) override {
       ADD_FAILURE() << "Unexpected RTCP sent.";
       return false;
     }
@@ -68,7 +85,8 @@ class NetworkStateEndToEndTest : public test::CallTest {
       return true;
     }
 
-    bool SendRtcp(ArrayView<const uint8_t> packet) override {
+    bool SendRtcp(ArrayView<const uint8_t> packet,
+                  const PacketOptions& /* options */) override {
       MutexLock lock(&mutex_);
       need_rtcp_ = false;
       return true;

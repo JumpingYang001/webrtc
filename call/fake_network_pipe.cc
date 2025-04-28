@@ -323,7 +323,8 @@ void FakeNetworkPipe::DeliverNetworkPacket(NetworkPacket* packet) {
       return;
     }
     if (packet->is_rtcp()) {
-      transport->SendRtcp(MakeArrayView(packet->data(), packet->data_length()));
+      transport->SendRtcp(MakeArrayView(packet->data(), packet->data_length()),
+                          packet->packet_options());
     } else {
       transport->SendRtp(MakeArrayView(packet->data(), packet->data_length()),
                          packet->packet_options());

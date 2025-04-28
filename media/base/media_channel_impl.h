@@ -91,7 +91,8 @@ class MediaChannelUtil {
     // Implementation of webrtc::Transport
     bool SendRtp(ArrayView<const uint8_t> packet,
                  const PacketOptions& options) override;
-    bool SendRtcp(ArrayView<const uint8_t> packet) override;
+    bool SendRtcp(ArrayView<const uint8_t> packet,
+                  const PacketOptions& options) override;
 
     // Not implementation of webrtc::Transport
     void SetInterface(MediaChannelNetworkInterface* iface);
@@ -99,6 +100,8 @@ class MediaChannelUtil {
     int SetOption(MediaChannelNetworkInterface::SocketType type,
                   Socket::Option opt,
                   int option);
+    AsyncSocketPacketOptions TranslatePacketOptions(
+        const PacketOptions& options);
 
     bool DoSendPacket(CopyOnWriteBuffer* packet,
                       bool rtcp,

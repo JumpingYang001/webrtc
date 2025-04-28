@@ -62,7 +62,8 @@ class NetworkNodeTransport : public Transport {
 
   bool SendRtp(ArrayView<const uint8_t> packet,
                const PacketOptions& options) override;
-  bool SendRtcp(ArrayView<const uint8_t> packet) override;
+  bool SendRtcp(ArrayView<const uint8_t> packet,
+                const PacketOptions& options) override;
 
   void Connect(EmulatedEndpoint* endpoint,
                const SocketAddress& receiver_address,

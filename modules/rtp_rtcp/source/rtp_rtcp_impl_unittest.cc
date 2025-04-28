@@ -103,7 +103,8 @@ class SendTransport : public Transport {
     last_rtp_sequence_number_ = packet.SequenceNumber();
     return true;
   }
-  bool SendRtcp(ArrayView<const uint8_t> data) override {
+  bool SendRtcp(ArrayView<const uint8_t> data,
+                const PacketOptions& /* options */) override {
     test::RtcpPacketParser parser;
     parser.Parse(data);
     last_nack_list_ = parser.nack()->packet_ids();
