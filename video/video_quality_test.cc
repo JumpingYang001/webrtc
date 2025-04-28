@@ -19,6 +19,7 @@
 #include "absl/flags/flag.h"
 #include "api/call/transport.h"
 #include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/field_trials_view.h"
 #include "api/make_ref_counted.h"
 #include "api/rtc_event_log/rtc_event_log.h"
@@ -70,7 +71,6 @@
 #include "api/audio/builtin_audio_processing_builder.h"
 #include "api/fec_controller_override.h"
 #include "api/rtc_event_log_output_file.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/test/create_frame_generator.h"
 #include "api/video/builtin_video_bitrate_allocator_factory.h"
@@ -408,8 +408,7 @@ std::unique_ptr<VideoEncoder> VideoQualityTest::CreateVideoEncoder(
 
 VideoQualityTest::VideoQualityTest(
     std::unique_ptr<InjectionComponents> injection_components)
-    : clock_(Clock::GetRealTimeClock()),
-      task_queue_factory_(CreateDefaultTaskQueueFactory()),
+    : env_(CreateEnvironment()),
       video_decoder_factory_(
           [this](const Environment& env, const SdpVideoFormat& format) {
             return this->CreateVideoDecoder(env, format);
@@ -1058,11 +1057,11 @@ void VideoQualityTest::SetupThumbnailCapturers(size_t num_thumbnail_streams) {
   for (size_t i = 0; i < num_thumbnail_streams; ++i) {
     auto frame_generator_capturer =
         std::make_unique<test::FrameGeneratorCapturer>(
-            clock_,
+            &env_.clock(),
             test::CreateSquareFrameGenerator(static_cast<int>(thumbnail.width),
                                              static_cast<int>(thumbnail.height),
                                              std::nullopt, std::nullopt),
-            thumbnail.max_framerate, *task_queue_factory_);
+            thumbnail.max_framerate, env_.task_queue_factory());
     EXPECT_TRUE(frame_generator_capturer->Init());
     thumbnail_capturers_.push_back(std::move(frame_generator_capturer));
   }
@@ -1109,8 +1108,8 @@ VideoQualityTest::CreateFrameGenerator(size_t video_idx) {
                    params_.screenshare[video_idx].slide_change_interval);
 
       frame_generator = test::CreateScrollingInputFromYuvFilesFrameGenerator(
-          clock_, slides, kWidth, kHeight, params_.video[video_idx].width,
-          params_.video[video_idx].height,
+          &env_.clock(), slides, kWidth, kHeight,
+          params_.video[video_idx].width, params_.video[video_idx].height,
           params_.screenshare[video_idx].scroll_duration * 1000,
           kPauseDurationMs);
     }
@@ -1170,8 +1169,8 @@ void VideoQualityTest::CreateCapturers() {
     ASSERT_TRUE(frame_generator);
     auto frame_generator_capturer =
         std::make_unique<test::FrameGeneratorCapturer>(
-            clock_, std::move(frame_generator), params_.video[video_idx].fps,
-            *task_queue_factory_);
+            &env_.clock(), std::move(frame_generator),
+            params_.video[video_idx].fps, env_.task_queue_factory());
     EXPECT_TRUE(frame_generator_capturer->Init());
     video_sources_[video_idx] = std::move(frame_generator_capturer);
   }
@@ -1207,7 +1206,8 @@ VideoQualityTest::CreateSendTransport() {
   }
   return std::make_unique<test::LayerFilteringTransport>(
       task_queue(),
-      std::make_unique<FakeNetworkPipe>(clock_, std::move(network_behavior)),
+      std::make_unique<FakeNetworkPipe>(&env_.clock(),
+                                        std::move(network_behavior)),
       sender_call_.get(), test::VideoTestConstants::kPayloadTypeVP8,
       test::VideoTestConstants::kPayloadTypeVP9, params_.video[0].selected_tl,
       params_.ss[0].selected_sl, payload_type_map_,
@@ -1227,7 +1227,8 @@ VideoQualityTest::CreateReceiveTransport() {
   }
   return std::make_unique<test::DirectTransport>(
       task_queue(),
-      std::make_unique<FakeNetworkPipe>(clock_, std::move(network_behavior)),
+      std::make_unique<FakeNetworkPipe>(&env_.clock(),
+                                        std::move(network_behavior)),
       receiver_call_.get(), payload_type_map_, GetRegisteredExtensions(),
       GetRegisteredExtensions());
 }
@@ -1306,7 +1307,7 @@ void VideoQualityTest::RunWithAnalyzer(const Params& params) {
       test::VideoTestConstants::kSendRtxSsrcs[params_.ss[0].selected_stream],
       static_cast<size_t>(params_.ss[0].selected_stream),
       params.ss[0].selected_sl, params_.video[0].selected_tl,
-      is_quick_test_enabled, clock_, params_.logging.rtp_dump_name,
+      is_quick_test_enabled, &env_.clock(), params_.logging.rtp_dump_name,
       task_queue());
 
   SendTask(task_queue(), [&]() {
@@ -1386,11 +1387,11 @@ scoped_refptr<AudioDeviceModule> VideoQualityTest::CreateAudioDevice() {
   RTC_CHECK(com_initializer_->Succeeded());
   RTC_CHECK(webrtc_win::core_audio_utility::IsSupported());
   RTC_CHECK(webrtc_win::core_audio_utility::IsMMCSSSupported());
-  return CreateWindowsCoreAudioAudioDeviceModule(task_queue_factory_.get());
+  return CreateWindowsCoreAudioAudioDeviceModule(&env_.task_queue_factory());
 #else
   // Use legacy factory method on all platforms except Windows.
   return AudioDeviceModule::Create(AudioDeviceModule::kPlatformDefaultAudio,
-                                   task_queue_factory_.get());
+                                   &env_.task_queue_factory());
 #endif
 }
 
@@ -1405,7 +1406,7 @@ void VideoQualityTest::InitializeAudioDevice(CallConfig* send_call_config,
   } else {
     // By default, create a test ADM which fakes audio.
     audio_device = TestAudioDeviceModule::Create(
-        task_queue_factory_.get(),
+        &env_.task_queue_factory(),
         TestAudioDeviceModule::CreatePulsedNoiseCapturer(32000, 48000),
         TestAudioDeviceModule::CreateDiscardRenderer(48000), 1.f);
   }
