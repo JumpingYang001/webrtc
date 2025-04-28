@@ -86,9 +86,9 @@ void AudioState::AddReceivingStream(
     if (!adm->Playing()) {
       if (adm->InitPlayout() == 0) {
         adm->StartPlayout();
+      } else {
+        RTC_DLOG_F(LS_ERROR) << "Failed to initialize playout.";
       }
-    } else {
-      RTC_DLOG_F(LS_ERROR) << "Failed to initialize playout.";
     }
   }
   UpdateNullAudioPollerState();
@@ -140,9 +140,9 @@ void AudioState::AddSendingStream(webrtc::AudioSendStream* stream,
     if (!adm->Recording()) {
       if (adm->InitRecording() == 0) {
         adm->StartRecording();
+      } else {
+        RTC_DLOG_F(LS_ERROR) << "Failed to initialize recording.";
       }
-    } else {
-      RTC_DLOG_F(LS_ERROR) << "Failed to initialize recording.";
     }
   }
 }
