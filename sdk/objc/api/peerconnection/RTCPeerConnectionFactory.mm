@@ -81,7 +81,7 @@
   dependencies.video_decoder_factory = webrtc::ObjCToNativeVideoDecoderFactory(
       [[RTC_OBJC_TYPE(RTCVideoDecoderFactoryH264) alloc] init]);
   dependencies.adm = [self audioDeviceModule];
-  return [self initWithMediaAndDependencies:std::move(dependencies)];
+  return [self initWithMediaAndDependencies:dependencies];
 }
 
 - (instancetype)
@@ -122,12 +122,12 @@
   } else {
     dependencies.adm = [self audioDeviceModule];
   }
-  return [self initWithMediaAndDependencies:std::move(dependencies)];
+  return [self initWithMediaAndDependencies:dependencies];
 #endif
 }
 
 - (instancetype)initWithNativeDependencies:
-    (webrtc::PeerConnectionFactoryDependencies)dependencies {
+    (webrtc::PeerConnectionFactoryDependencies &)dependencies {
   self = [super init];
   if (self) {
     _networkThread = webrtc::Thread::CreateWithSocketServer();
@@ -167,8 +167,8 @@
 }
 
 - (instancetype)initWithNoMedia {
-  return [self
-      initWithNativeDependencies:webrtc::PeerConnectionFactoryDependencies()];
+  webrtc::PeerConnectionFactoryDependencies default_deps;
+  return [self initWithNativeDependencies:default_deps];
 }
 
 - (instancetype)
@@ -198,7 +198,7 @@
     dependencies.audio_processing_builder =
         CustomAudioProcessing(std::move(audioProcessingModule));
   }
-  return [self initWithMediaAndDependencies:std::move(dependencies)];
+  return [self initWithMediaAndDependencies:dependencies];
 }
 
 - (instancetype)
@@ -232,11 +232,11 @@
         CustomAudioProcessing(std::move(audioProcessingModule));
   }
   dependencies.network_controller_factory = std::move(networkControllerFactory);
-  return [self initWithMediaAndDependencies:std::move(dependencies)];
+  return [self initWithMediaAndDependencies:dependencies];
 }
 
 - (instancetype)initWithMediaAndDependencies:
-    (webrtc::PeerConnectionFactoryDependencies)dependencies {
+    (webrtc::PeerConnectionFactoryDependencies &)dependencies {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   // audio_processing_builder should be used instead in new code.
@@ -254,7 +254,7 @@
         std::make_unique<webrtc::RtcEventLogFactory>();
   }
   webrtc::EnableMedia(dependencies);
-  return [self initWithNativeDependencies:std::move(dependencies)];
+  return [self initWithNativeDependencies:dependencies];
 }
 
 - (RTC_OBJC_TYPE(RTCRtpCapabilities) *)rtpSenderCapabilitiesForKind:

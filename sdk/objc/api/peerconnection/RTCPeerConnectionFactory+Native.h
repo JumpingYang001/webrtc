@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /* Initialize object with provided dependencies and with media support. */
 - (instancetype)initWithMediaAndDependencies:
-    (webrtc::PeerConnectionFactoryDependencies)dependencies;
+    (webrtc::PeerConnectionFactoryDependencies &)dependencies;
 
 /* Initialize object with injectable native audio/video encoder/decoder
  * factories */

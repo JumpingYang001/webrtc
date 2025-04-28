@@ -25,6 +25,8 @@
 #include "api/enable_media.h"
 #include "api/enable_media_with_defaults.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
+#include "api/field_trials_view.h"
 #include "api/jsep.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
@@ -32,7 +34,6 @@
 #include "api/peer_connection_interface.h"
 #include "api/rtp_parameters.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "api/test/mock_packet_socket_factory.h"
 #include "api/units/time_delta.h"
 #include "api/video_codecs/scalability_mode.h"
@@ -80,6 +81,7 @@ using ::testing::A;
 using ::testing::AtLeast;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
+using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using ::webrtc::test::MockAudioProcessing;
@@ -275,7 +277,6 @@ CreatePeerConnectionFactoryWithRtxDisabled() {
   pcf_dependencies.signaling_thread = Thread::Current();
   pcf_dependencies.worker_thread = Thread::Current();
   pcf_dependencies.network_thread = Thread::Current();
-  pcf_dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
 
   pcf_dependencies.adm = FakeAudioCaptureModule::Create();
   pcf_dependencies.audio_encoder_factory = CreateBuiltinAudioEncoderFactory();
@@ -660,6 +661,43 @@ TEST_F(PeerConnectionFactoryTest, LocalRendering) {
   source->InjectFrame(frame_source.GetFrame());
   EXPECT_EQ(3, local_renderer.num_rendered_frames());
   EXPECT_FALSE(local_renderer.black_frame());
+}
+
+TEST(PeerConnectionFactoryDependenciesTest,
+     CanInjectFieldTrialsWithEnvironment) {
+  std::unique_ptr<FieldTrialsView> field_trials =
+      FieldTrials::CreateNoGlobal("");
+  ASSERT_THAT(field_trials, NotNull());
+  FieldTrialsView* raw_field_trials = field_trials.get();
+
+  PeerConnectionFactoryDependencies pcf_dependencies;
+  pcf_dependencies.env = CreateEnvironment(std::move(field_trials));
+  pcf_dependencies.adm = FakeAudioCaptureModule::Create();
+  EnableMediaWithDefaults(pcf_dependencies);
+
+  scoped_refptr<PeerConnectionFactory> pcf =
+      PeerConnectionFactory::Create(std::move(pcf_dependencies));
+  EXPECT_EQ(&pcf->field_trials(), raw_field_trials);
+}
+
+TEST(PeerConnectionFactoryDependenciesTest,
+     PreferFieldTrialsInjectedExplicetly) {
+  std::unique_ptr<FieldTrialsView> env_field_trials =
+      FieldTrials::CreateNoGlobal("");
+  std::unique_ptr<FieldTrialsView> explicit_field_trials =
+      FieldTrials::CreateNoGlobal("");
+  ASSERT_FALSE(env_field_trials.get() == explicit_field_trials.get());
+  FieldTrialsView* raw_explicit_field_trials = explicit_field_trials.get();
+
+  PeerConnectionFactoryDependencies pcf_dependencies;
+  pcf_dependencies.env = CreateEnvironment(std::move(env_field_trials));
+  pcf_dependencies.trials = std::move(explicit_field_trials);
+  pcf_dependencies.adm = FakeAudioCaptureModule::Create();
+  EnableMediaWithDefaults(pcf_dependencies);
+
+  scoped_refptr<PeerConnectionFactory> pcf =
+      PeerConnectionFactory::Create(std::move(pcf_dependencies));
+  EXPECT_EQ(&pcf->field_trials(), raw_explicit_field_trials);
 }
 
 TEST(PeerConnectionFactoryDependenciesTest, UsesNetworkManager) {

@@ -40,9 +40,9 @@ extern "C" {
   id factoryMock =
       OCMStrictClassMock([RTC_OBJC_TYPE(RTCPeerConnectionFactory) class]);
   OCMExpect([factoryMock alloc]).andReturn(factoryMock);
+  webrtc::PeerConnectionFactoryDependencies default_deps;
   RTC_UNUSED([[[[factoryMock expect] andReturn:factoryMock]
-      ignoringNonObjectArgs] initWithMediaAndDependencies:
-                                 webrtc::PeerConnectionFactoryDependencies()]);
+      ignoringNonObjectArgs] initWithMediaAndDependencies:default_deps]);
   RTCPeerConnectionFactoryBuilder* builder =
       [[RTCPeerConnectionFactoryBuilder alloc] init];
   RTC_OBJC_TYPE(RTCPeerConnectionFactory)* peerConnectionFactory =
@@ -55,9 +55,9 @@ extern "C" {
   id factoryMock =
       OCMStrictClassMock([RTC_OBJC_TYPE(RTCPeerConnectionFactory) class]);
   OCMExpect([factoryMock alloc]).andReturn(factoryMock);
+  webrtc::PeerConnectionFactoryDependencies default_deps;
   RTC_UNUSED([[[[factoryMock expect] andReturn:factoryMock]
-      ignoringNonObjectArgs] initWithMediaAndDependencies:
-                                 webrtc::PeerConnectionFactoryDependencies()]);
+      ignoringNonObjectArgs] initWithMediaAndDependencies:default_deps]);
   RTCPeerConnectionFactoryBuilder* builder =
       [RTCPeerConnectionFactoryBuilder defaultBuilder];
   RTC_OBJC_TYPE(RTCPeerConnectionFactory)* peerConnectionFactory =

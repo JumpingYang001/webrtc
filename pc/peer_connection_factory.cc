@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -67,6 +68,25 @@
 #include "rtc_base/system/file_wrapper.h"
 
 namespace webrtc {
+namespace {
+
+Environment AssembleEnvironment(PeerConnectionFactoryDependencies& deps) {
+  // Assemble Environment here rather than in ConnectionContext::Create
+  // to avoid dependency on EnvironmentFactory by ConnectionContext and thus its
+  // users.
+  EnvironmentFactory env_factory = deps.env.has_value()
+                                       ? EnvironmentFactory(*deps.env)
+                                       : EnvironmentFactory();
+  env_factory.Set(std::move(deps.trials));
+  env_factory.Set(std::move(deps.task_queue_factory));
+
+  // Clear Environment from `deps` to avoid accidental usage of the wrong
+  // Environment.
+  deps.env = std::nullopt;
+  return env_factory.Create();
+}
+
+}  // namespace
 
 scoped_refptr<PeerConnectionFactoryInterface>
 CreateModularPeerConnectionFactory(
@@ -93,10 +113,8 @@ CreateModularPeerConnectionFactory(
 // Static
 scoped_refptr<PeerConnectionFactory> PeerConnectionFactory::Create(
     PeerConnectionFactoryDependencies dependencies) {
-  auto context = ConnectionContext::Create(
-      CreateEnvironment(std::move(dependencies.trials),
-                        std::move(dependencies.task_queue_factory)),
-      &dependencies);
+  auto context = ConnectionContext::Create(AssembleEnvironment(dependencies),
+                                           &dependencies);
   if (!context) {
     return nullptr;
   }
@@ -128,10 +146,8 @@ PeerConnectionFactory::PeerConnectionFactory(
 PeerConnectionFactory::PeerConnectionFactory(
     PeerConnectionFactoryDependencies dependencies)
     : PeerConnectionFactory(
-          ConnectionContext::Create(
-              CreateEnvironment(std::move(dependencies.trials),
-                                std::move(dependencies.task_queue_factory)),
-              &dependencies),
+          ConnectionContext::Create(AssembleEnvironment(dependencies),
+                                    &dependencies),
           &dependencies) {}
 
 PeerConnectionFactory::~PeerConnectionFactory() {

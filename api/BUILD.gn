@@ -366,6 +366,7 @@ rtc_library("libjingle_peerconnection_api") {
     "crypto:frame_decryptor_interface",
     "crypto:frame_encryptor_interface",
     "crypto:options",
+    "environment",
     "metronome",
     "neteq:neteq_api",
     "rtc_event_log:rtc_event_log_factory_interface",
