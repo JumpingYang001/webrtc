@@ -329,16 +329,9 @@ rtc_library("field_trial") {
 }
 
 rtc_library("explicit_key_value_config") {
-  sources = [
-    "explicit_key_value_config.cc",
-    "explicit_key_value_config.h",
-  ]
+  sources = [ "explicit_key_value_config.h" ]
 
-  deps = [
-    "../api:field_trials_registry",
-    "../rtc_base:checks",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
+  deps = [ "../api:field_trials" ]
 }
 
 rtc_library("scoped_key_value_config") {
