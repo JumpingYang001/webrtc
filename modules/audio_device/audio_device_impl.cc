@@ -16,8 +16,10 @@
 #include <memory>
 #include <utility>
 
+#include "absl/base/nullability.h"
 #include "api/audio/audio_device.h"
 #include "api/audio/audio_device_defines.h"
+#include "api/environment/environment.h"
 #include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"
@@ -69,6 +71,11 @@
 
 namespace webrtc {
 
+absl_nullable scoped_refptr<AudioDeviceModuleImpl>
+AudioDeviceModuleImpl::Create(const Environment& env, AudioLayer audio_layer) {
+  return Create(audio_layer, &env.task_queue_factory());
+}
+
 scoped_refptr<AudioDeviceModule> AudioDeviceModule::Create(
     AudioLayer audio_layer,
     TaskQueueFactory* task_queue_factory) {
@@ -77,9 +84,9 @@ scoped_refptr<AudioDeviceModule> AudioDeviceModule::Create(
 }
 
 // static
-scoped_refptr<AudioDeviceModuleImpl> AudioDeviceModuleImpl::Create(
-    AudioLayer audio_layer,
-    TaskQueueFactory* task_queue_factory) {
+absl_nullable scoped_refptr<AudioDeviceModuleImpl>
+AudioDeviceModuleImpl::Create(AudioLayer audio_layer,
+                              TaskQueueFactory* task_queue_factory) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
 
   // The "AudioDeviceModule::kWindowsCoreAudio2" audio layer has its own

@@ -264,6 +264,7 @@ rtc_library("audio_device_impl") {
     "../../api:scoped_refptr",
     "../../api:sequence_checker",
     "../../api/audio:audio_device",
+    "../../api/environment",
     "../../api/task_queue",
     "../../api/units:time_delta",
     "../../common_audio",
@@ -287,6 +288,7 @@ rtc_library("audio_device_impl") {
     "../../system_wrappers:metrics",
     "../utility",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
   if (rtc_include_internal_audio_device && is_ios) {
@@ -458,6 +460,9 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../api:scoped_refptr",
       "../../api:sequence_checker",
       "../../api/audio:audio_device",
+      "../../api/audio:create_audio_device_module",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "../../api/task_queue",
       "../../api/task_queue:default_task_queue_factory",
       "../../api/units:time_delta",

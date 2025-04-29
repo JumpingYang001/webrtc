@@ -681,6 +681,11 @@ rtc_library("rtc_audio_video") {
     public_configs += [ ":rtc_media_defines_config" ]
     deps += [ "../modules/video_capture:video_capture_internal_impl" ]
   }
+
+  if (rtc_include_internal_audio_device) {
+    deps += [ "../api/audio:create_audio_device_module" ]
+  }
+
   if (rtc_enable_protobuf) {
     deps += [
       "../modules/audio_coding:ana_config_proto",

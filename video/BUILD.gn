@@ -543,6 +543,7 @@ if (rtc_include_tests) {
         "../api:video_quality_test_fixture_api",
         "../api/audio:audio_device",
         "../api/audio:builtin_audio_processing_builder",
+        "../api/audio:create_audio_device_module",
         "../api/environment",
         "../api/environment:environment_factory",
         "../api/numerics",

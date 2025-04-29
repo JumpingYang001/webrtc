@@ -17,8 +17,10 @@
 
 #include <memory>
 
+#include "absl/base/nullability.h"
 #include "api/audio/audio_device.h"
 #include "api/audio/audio_device_defines.h"
+#include "api/environment/environment.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"
 #include "modules/audio_device/audio_device_buffer.h"
@@ -44,7 +46,13 @@ class AudioDeviceModuleImpl : public AudioDeviceModuleForTest {
     kPlatformFuchsia = 7,
   };
 
-  static scoped_refptr<AudioDeviceModuleImpl> Create(
+  static absl_nullable scoped_refptr<AudioDeviceModuleImpl> Create(
+      const Environment& env,
+      AudioLayer audio_layer);
+
+  // TODO: bugs.webrtc.org/413413572 - Remove this variant when top level
+  // `AudioDeviceModule::Create` is no longer used.
+  static absl_nullable scoped_refptr<AudioDeviceModuleImpl> Create(
       AudioLayer audio_layer,
       TaskQueueFactory* task_queue_factory);
 

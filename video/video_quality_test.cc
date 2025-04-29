@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "absl/flags/flag.h"
+#include "api/audio/create_audio_device_module.h"
 #include "api/call/transport.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
@@ -1390,8 +1391,8 @@ scoped_refptr<AudioDeviceModule> VideoQualityTest::CreateAudioDevice() {
   return CreateWindowsCoreAudioAudioDeviceModule(&env_.task_queue_factory());
 #else
   // Use legacy factory method on all platforms except Windows.
-  return AudioDeviceModule::Create(AudioDeviceModule::kPlatformDefaultAudio,
-                                   &env_.task_queue_factory());
+  return CreateAudioDeviceModule(env_,
+                                 AudioDeviceModule::kPlatformDefaultAudio);
 #endif
 }
 

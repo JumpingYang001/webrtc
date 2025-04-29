@@ -23,6 +23,23 @@ rtc_source_set("audio_device") {
   ]
 }
 
+if (rtc_include_internal_audio_device) {
+  rtc_library("create_audio_device_module") {
+    visibility = [ "*" ]
+    sources = [
+      "create_audio_device_module.cc",
+      "create_audio_device_module.h",
+    ]
+    deps = [
+      ":audio_device",
+      "..:scoped_refptr",
+      "../../modules/audio_device:audio_device_impl",
+      "../environment",
+      "//third_party/abseil-cpp/absl/base:nullability",
+    ]
+  }
+}
+
 rtc_library("audio_frame_api") {
   visibility = [ "*" ]
   sources = [

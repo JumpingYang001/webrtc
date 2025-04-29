@@ -112,6 +112,10 @@
 
 #endif
 
+#if defined(WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE)
+#include "api/audio/create_audio_device_module.h"
+#endif
+
 namespace webrtc {
 namespace {
 
@@ -520,8 +524,8 @@ void WebRtcVoiceEngine::Init() {
 #if defined(WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE)
   // No ADM supplied? Create a default one.
   if (!adm_) {
-    adm_ = AudioDeviceModule::Create(AudioDeviceModule::kPlatformDefaultAudio,
-                                     &env_.task_queue_factory());
+    adm_ =
+        CreateAudioDeviceModule(env_, AudioDeviceModule::kPlatformDefaultAudio);
   }
 #endif  // WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE
   RTC_CHECK(adm());
