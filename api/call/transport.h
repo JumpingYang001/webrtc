@@ -43,22 +43,11 @@ class Transport {
  public:
   virtual bool SendRtp(ArrayView<const uint8_t> packet,
                        const PacketOptions& options) = 0;
-  // TODO: bugs.webrtc.org/42225697 - Make virtual when downstream is updated.
   virtual bool SendRtcp(ArrayView<const uint8_t> packet,
-                        const PacketOptions& /*options*/) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    return SendRtcp(packet);
-#pragma clang diagnostic pop
-  }
-  [[deprecated("Pass PacketOptions")]]
-  // TODO: bugs.webrtc.org/42225697 - Remove when downstream is updated.
-  virtual bool SendRtcp(ArrayView<const uint8_t> packet) {
-    return SendRtcp(packet, /*packet_options=*/{});
-  }
+                        const PacketOptions& options) = 0;
 
  protected:
-  virtual ~Transport() {}
+  virtual ~Transport() = default;
 };
 
 }  // namespace webrtc
