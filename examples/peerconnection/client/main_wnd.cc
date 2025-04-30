@@ -279,15 +279,15 @@ void MainWnd::OnPaint() {
                     &bmi, DIB_RGB_COLORS, SRCCOPY);
 
       if ((rc.right - rc.left) > 200 && (rc.bottom - rc.top) > 200) {
-        const BITMAPINFO& bmi = local_renderer->bmi();
+        const BITMAPINFO& local_bmi = local_renderer->bmi();
         image = local_renderer->image();
-        int thumb_width = bmi.bmiHeader.biWidth / 4;
-        int thumb_height = abs(bmi.bmiHeader.biHeight) / 4;
+        int thumb_width = local_bmi.bmiHeader.biWidth / 4;
+        int thumb_height = abs(local_bmi.bmiHeader.biHeight) / 4;
         StretchDIBits(dc_mem, logical_area.x - thumb_width - 10,
                       logical_area.y - thumb_height - 10, thumb_width,
-                      thumb_height, 0, 0, bmi.bmiHeader.biWidth,
-                      -bmi.bmiHeader.biHeight, image, &bmi, DIB_RGB_COLORS,
-                      SRCCOPY);
+                      thumb_height, 0, 0, local_bmi.bmiHeader.biWidth,
+                      -local_bmi.bmiHeader.biHeight, image, &local_bmi,
+                      DIB_RGB_COLORS, SRCCOPY);
       }
 
       BitBlt(ps.hdc, 0, 0, logical_area.x, logical_area.y, dc_mem, 0, 0,

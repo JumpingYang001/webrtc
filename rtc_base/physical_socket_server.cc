@@ -1901,7 +1901,7 @@ bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
                                 bool process_io) {
   // We don't support reentrant waiting.
   RTC_DCHECK(!waiting_);
-  ScopedSetTrue s(&waiting_);
+  ScopedSetTrue set(&waiting_);
 
   int cmsWait = ToCmsWait(max_wait_duration);
   int64_t cmsTotal = cmsWait;

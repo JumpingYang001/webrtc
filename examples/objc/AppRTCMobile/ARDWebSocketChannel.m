@@ -80,14 +80,10 @@ static NSString const *kARDWSSMessagePayloadKey = @"msg";
   if (_state == kARDSignalingChannelStateRegistered) {
     NSString *payload = [[NSString alloc] initWithData:data
                                               encoding:NSUTF8StringEncoding];
-    NSDictionary *message = @{
-      @"cmd" : @"send",
-      @"msg" : payload,
-    };
-    NSData *messageJSONObject =
-        [NSJSONSerialization dataWithJSONObject:message
-                                        options:NSJSONWritingPrettyPrinted
-                                          error:nil];
+    NSData *messageJSONObject = [NSJSONSerialization
+        dataWithJSONObject:@{@"cmd" : @"send", @"msg" : payload}
+                   options:NSJSONWritingPrettyPrinted
+                     error:nil];
     NSString *messageString =
         [[NSString alloc] initWithData:messageJSONObject
                               encoding:NSUTF8StringEncoding];

@@ -370,11 +370,11 @@
 
                __weak RTC_OBJC_TYPE(RTCPeerConnection) *weakPC1 = pc1;
                [pc1 setLocalDescription:offer
-                      completionHandler:^(NSError *error) {
-                        XCTAssertNil(error);
+                      completionHandler:^(NSError *sldError) {
+                        XCTAssertNil(sldError);
                         [weakPC1 setLocalDescription:rollback
-                                   completionHandler:^(NSError *error) {
-                                     XCTAssertNil(error);
+                                   completionHandler:^(NSError *rollbackError) {
+                                     XCTAssertNil(rollbackError);
                                    }];
                       }];
                NSTimeInterval negotiationTimeout = 15;
@@ -522,8 +522,8 @@
           offerForConstraints:constraints
             completionHandler:^(
                 RTC_OBJC_TYPE(RTCSessionDescription) *_Nullable sdp,
-                NSError *_Nullable error) {
-              XCTAssertNil(error);
+                NSError *_Nullable createOfferError) {
+              XCTAssertNil(createOfferError);
               XCTAssertNotNil(sdp);
 
               NSArray<NSString *> *rtpMaps = [self rtpMapsFromSDP:sdp.sdp];
@@ -611,8 +611,8 @@
           offerForConstraints:constraints
             completionHandler:^(
                 RTC_OBJC_TYPE(RTCSessionDescription) *_Nullable sdp,
-                NSError *_Nullable error) {
-              XCTAssertNil(error);
+                NSError *_Nullable createOfferError) {
+              XCTAssertNil(createOfferError);
               XCTAssertNotNil(sdp);
 
               NSArray<NSString *> *extMaps = [self extMapsFromSDP:sdp.sdp];
@@ -712,34 +712,37 @@
   [weakPC1
       offerForConstraints:sdpConstraints
         completionHandler:^(RTC_OBJC_TYPE(RTCSessionDescription) * offer,
-                            NSError * error) {
-          XCTAssertNil(error);
+                            NSError * createOfferError) {
+          XCTAssertNil(createOfferError);
           XCTAssertNotNil(offer);
           [weakPC1
               setLocalDescription:offer
-                completionHandler:^(NSError *error) {
-                  XCTAssertNil(error);
+                completionHandler:^(NSError *sldError) {
+                  XCTAssertNil(sldError);
                   [weakPC2
                       setRemoteDescription:offer
-                         completionHandler:^(NSError *error) {
-                           XCTAssertNil(error);
+                         completionHandler:^(NSError *srdError) {
+                           XCTAssertNil(srdError);
                            [weakPC2
                                answerForConstraints:sdpConstraints
                                   completionHandler:^(
                                       RTC_OBJC_TYPE(RTCSessionDescription) *
                                           answer,
-                                      NSError * error) {
-                                    XCTAssertNil(error);
+                                      NSError * createAnswerError) {
+                                    XCTAssertNil(createAnswerError);
                                     XCTAssertNotNil(answer);
                                     [weakPC2
                                         setLocalDescription:answer
-                                          completionHandler:^(NSError *error) {
-                                            XCTAssertNil(error);
+                                          completionHandler:^(
+                                              NSError *sldAnswerError) {
+                                            XCTAssertNil(sldAnswerError);
                                             [weakPC1
                                                 setRemoteDescription:answer
                                                    completionHandler:^(
-                                                       NSError *error) {
-                                                     XCTAssertNil(error);
+                                                       NSError
+                                                           *srdAnswerError) {
+                                                     XCTAssertNil(
+                                                         srdAnswerError);
                                                      dispatch_semaphore_signal(
                                                          negotiatedSem);
                                                    }];

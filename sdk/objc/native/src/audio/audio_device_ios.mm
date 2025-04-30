@@ -688,9 +688,9 @@ void AudioDeviceIOS::HandleSampleRateChange() {
   if (restart_audio_unit) {
     OSStatus result = audio_unit_->Start();
     if (result != noErr) {
-      RTC_OBJC_TYPE(RTCAudioSession)* session =
+      RTC_OBJC_TYPE(RTCAudioSession)* new_session =
           [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-      [session notifyAudioUnitStartFailedWithError:result];
+      [new_session notifyAudioUnitStartFailedWithError:result];
       RTCLogError(@"Failed to start audio unit with sample rate: %d, reason %d",
                   playout_parameters_.sample_rate(),
                   result);

@@ -478,11 +478,11 @@ std::optional<NetworkHandle> AndroidNetworkMonitor::FindNetworkHandleFromIfname(
   }
 
   if (bind_using_ifname_) {
-    for (auto const& iter : network_handle_by_if_name_) {
+    for (auto const& c_iter : network_handle_by_if_name_) {
       // Use substring match so that e.g if_name="v4-wlan0" is matched
       // agains iter="wlan0"
-      if (if_name.find(iter.first) != absl::string_view::npos) {
-        return std::make_optional(iter.second);
+      if (if_name.find(c_iter.first) != absl::string_view::npos) {
+        return std::make_optional(c_iter.second);
       }
     }
   }

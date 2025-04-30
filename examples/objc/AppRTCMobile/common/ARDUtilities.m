@@ -70,28 +70,28 @@
   [[self class]
        sendAsyncRequest:request
       completionHandler:^(
-          NSURLResponse *response, NSData *data, NSError *error) {
+          NSURLResponse *response, NSData *responseData, NSError *error) {
         if (error) {
           RTCLogError(@"Error posting data: %@", error.localizedDescription);
           if (completionHandler) {
-            completionHandler(NO, data);
+            completionHandler(NO, responseData);
           }
           return;
         }
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         if (httpResponse.statusCode != 200) {
-          NSString *serverResponse = data.length > 0 ?
-              [[NSString alloc] initWithData:data
+          NSString *serverResponse = responseData.length > 0 ?
+              [[NSString alloc] initWithData:responseData
                                     encoding:NSUTF8StringEncoding] :
               nil;
           RTCLogError(@"Received bad response: %@", serverResponse);
           if (completionHandler) {
-            completionHandler(NO, data);
+            completionHandler(NO, responseData);
           }
           return;
         }
         if (completionHandler) {
-          completionHandler(YES, data);
+          completionHandler(YES, responseData);
         }
       }];
 }

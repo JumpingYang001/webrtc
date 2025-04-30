@@ -66,8 +66,8 @@ static NSInteger const kARDAppEngineClientErrorBadResponse = -1;
             [ARDJoinResponse responseFromJSONData:data];
         if (!joinResponse) {
           if (completionHandler) {
-            NSError *error = [[self class] badResponseError];
-            completionHandler(nil, error);
+            NSError *err = [[self class] badResponseError];
+            completionHandler(nil, err);
           }
           return;
         }
@@ -86,37 +86,37 @@ static NSInteger const kARDAppEngineClientErrorBadResponse = -1;
   NSParameterAssert(roomId.length);
   NSParameterAssert(clientId.length);
 
-  NSData *data = [message JSONData];
+  NSData *messageData = [message JSONData];
   NSString *urlString =
       [NSString stringWithFormat:kARDRoomServerMessageFormat, roomId, clientId];
   NSURL *url = [NSURL URLWithString:urlString];
   RTCLog(@"C->RS POST: %@", message);
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   request.HTTPMethod = @"POST";
-  request.HTTPBody = data;
-  [NSURLConnection
-       sendAsyncRequest:request
-      completionHandler:^(
-          NSURLResponse *response __unused, NSData *data, NSError *error) {
-        if (error) {
-          if (completionHandler) {
-            completionHandler(nil, error);
-          }
-          return;
-        }
-        ARDMessageResponse *messageResponse =
-            [ARDMessageResponse responseFromJSONData:data];
-        if (!messageResponse) {
-          if (completionHandler) {
-            NSError *error = [[self class] badResponseError];
-            completionHandler(nil, error);
-          }
-          return;
-        }
-        if (completionHandler) {
-          completionHandler(messageResponse, nil);
-        }
-      }];
+  request.HTTPBody = messageData;
+  [NSURLConnection sendAsyncRequest:request
+                  completionHandler:^(NSURLResponse *response __unused,
+                                      NSData *data,
+                                      NSError *responseError) {
+                    if (responseError) {
+                      if (completionHandler) {
+                        completionHandler(nil, responseError);
+                      }
+                      return;
+                    }
+                    ARDMessageResponse *messageResponse =
+                        [ARDMessageResponse responseFromJSONData:data];
+                    if (!messageResponse) {
+                      if (completionHandler) {
+                        NSError *err = [[self class] badResponseError];
+                        completionHandler(nil, err);
+                      }
+                      return;
+                    }
+                    if (completionHandler) {
+                      completionHandler(messageResponse, nil);
+                    }
+                  }];
 }
 
 - (void)leaveRoomWithRoomId:(NSString *)roomId

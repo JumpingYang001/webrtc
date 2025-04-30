@@ -442,17 +442,18 @@ int32_t DeviceInfoDS::CreateCapabilityMap(const char* deviceUniqueIdUTF8)
         LONGLONG* frameDurationList = NULL;
         LONGLONG maxFPS = 0;
         long listSize = 0;
-        SIZE size;
-        size.cx = capability.width;
-        size.cy = capability.height;
+        SIZE requested_size;
+        requested_size.cx = capability.width;
+        requested_size.cy = capability.height;
 
         // GetMaxAvailableFrameRate doesn't return max frame rate always
         // eg: Logitech Notebook. This may be due to a bug in that API
         // because GetFrameRateList array is reversed in the above camera. So
         // a util method written. Can't assume the first value will return
         // the max fps.
-        hrVC = videoControlConfig->GetFrameRateList(
-            outputCapturePin, tmp, size, &listSize, &frameDurationList);
+        hrVC = videoControlConfig->GetFrameRateList(outputCapturePin, tmp,
+                                                    requested_size, &listSize,
+                                                    &frameDurationList);
 
         if (hrVC == S_OK) {
           maxFPS = GetMaxOfFrameArray(frameDurationList, listSize);

@@ -907,18 +907,18 @@ bool BasicNetworkManager::CreateNetworks(
             adapter_type = ADAPTER_TYPE_VPN;
           }
 
-          auto network = CreateNetwork(name, description, prefix, prefix_length,
-                                       adapter_type);
-          network->set_underlying_type_for_vpn(underlying_type_for_vpn);
-          network->set_default_local_address_provider(this);
-          network->set_mdns_responder_provider(this);
-          network->set_scope_id(scope_id);
-          network->AddIP(ip);
-          bool ignored = IsIgnoredNetwork(*network);
-          network->set_ignored(ignored);
-          if (include_ignored || !network->ignored()) {
-            current_networks[key] = network.get();
-            networks->push_back(std::move(network));
+          auto new_network = CreateNetwork(name, description, prefix,
+                                           prefix_length, adapter_type);
+          new_network->set_underlying_type_for_vpn(underlying_type_for_vpn);
+          new_network->set_default_local_address_provider(this);
+          new_network->set_mdns_responder_provider(this);
+          new_network->set_scope_id(scope_id);
+          new_network->AddIP(ip);
+          bool ignored = IsIgnoredNetwork(*new_network);
+          new_network->set_ignored(ignored);
+          if (include_ignored || !new_network->ignored()) {
+            current_networks[key] = new_network.get();
+            networks->push_back(std::move(new_network));
           }
         } else {
           (*existing_network).second->AddIP(ip);

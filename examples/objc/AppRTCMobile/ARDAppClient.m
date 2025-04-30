@@ -200,9 +200,9 @@ static int const kKbpsMultiplier = 1000;
                   statisticsWithCompletionHandler:^(
                       RTC_OBJC_TYPE(RTCStatisticsReport) * stats) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                      ARDAppClient *strongSelf = weakSelf;
-                      [strongSelf.delegate appClient:strongSelf
-                                         didGetStats:stats];
+                      ARDAppClient *strongerSelf = weakSelf;
+                      [strongerSelf.delegate appClient:strongerSelf
+                                           didGetStats:stats];
                     });
                   }];
             }];
@@ -497,10 +497,10 @@ static int const kKbpsMultiplier = 1000;
     __weak ARDAppClient *weakSelf = self;
     [self.peerConnection
         setLocalDescription:sdp
-          completionHandler:^(NSError *error) {
+          completionHandler:^(NSError *sldError) {
             ARDAppClient *strongSelf = weakSelf;
             [strongSelf peerConnection:strongSelf.peerConnection
-                didSetSessionDescriptionWithError:error];
+                didSetSessionDescriptionWithError:sldError];
           }];
     ARDSessionDescriptionMessage *message =
         [[ARDSessionDescriptionMessage alloc] initWithDescription:sdp];
@@ -534,11 +534,11 @@ static int const kKbpsMultiplier = 1000;
       [self.peerConnection
           answerForConstraints:constraints
              completionHandler:^(RTC_OBJC_TYPE(RTCSessionDescription) * sdp,
-                                 NSError * error) {
+                                 NSError * answerError) {
                ARDAppClient *strongSelf = weakSelf;
                [strongSelf peerConnection:strongSelf.peerConnection
                    didCreateSessionDescription:sdp
-                                         error:error];
+                                         error:answerError];
              }];
     }
   });
@@ -768,9 +768,9 @@ static int const kKbpsMultiplier = 1000;
       [self defaultMediaAudioConstraints];
   RTC_OBJC_TYPE(RTCAudioSource) *source =
       [_factory audioSourceWithConstraints:constraints];
-  RTC_OBJC_TYPE(RTCAudioTrack) *track =
+  RTC_OBJC_TYPE(RTCAudioTrack) *audioTrack =
       [_factory audioTrackWithSource:source trackId:kARDAudioTrackId];
-  [_peerConnection addTrack:track streamIds:@[ kARDMediaStreamId ]];
+  [_peerConnection addTrack:audioTrack streamIds:@[ kARDMediaStreamId ]];
   _localVideoTrack = [self createLocalVideoTrack];
   if (_localVideoTrack) {
     [_peerConnection addTrack:_localVideoTrack
@@ -780,9 +780,9 @@ static int const kKbpsMultiplier = 1000;
     // transceiver already has an RTC_OBJC_TYPE(RTCRtpReceiver) with a track.
     // The track will automatically get unmuted and produce frames once RTP is
     // received.
-    RTC_OBJC_TYPE(RTCVideoTrack) *track = (RTC_OBJC_TYPE(RTCVideoTrack) *)(
+    RTC_OBJC_TYPE(RTCVideoTrack) *videoTrack = (RTC_OBJC_TYPE(RTCVideoTrack) *)(
         [self videoTransceiver].receiver.track);
-    [_delegate appClient:self didReceiveRemoteVideoTrack:track];
+    [_delegate appClient:self didReceiveRemoteVideoTrack:videoTrack];
   }
 }
 

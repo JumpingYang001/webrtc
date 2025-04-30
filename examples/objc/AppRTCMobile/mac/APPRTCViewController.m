@@ -149,11 +149,11 @@ static NSUInteger const kBottomViewHeight = 200;
 
 #pragma mark - Constraints helper
 
-+ (void)addConstraints:(NSArray*)constraints
++ (void)addConstraints:(NSArray*)constraintFormats
                 toView:(NSView*)view
        viewsDictionary:(NSDictionary*)viewsDictionary
                metrics:(NSDictionary*)metrics {
-  for (NSString* constraintFormat in constraints) {
+  for (NSString* constraintFormat in constraintFormats) {
     NSArray* constraints =
         [NSLayoutConstraint constraintsWithVisualFormat:constraintFormat
                                                 options:0

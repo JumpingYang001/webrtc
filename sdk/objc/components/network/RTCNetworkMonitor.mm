@@ -95,9 +95,10 @@ webrtc::AdapterType AdapterTypeFromInterfaceType(
           return true;
         });
         @synchronized(strongSelf) {
-          webrtc::NetworkMonitorObserver *observer = strongSelf->_observer;
-          if (observer) {
-            observer->OnPathUpdate(std::move(owned_map));
+          webrtc::NetworkMonitorObserver *strongObserver =
+              strongSelf->_observer;
+          if (strongObserver) {
+            strongObserver->OnPathUpdate(std::move(owned_map));
           }
         }
       });
