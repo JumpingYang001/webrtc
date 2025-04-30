@@ -18,16 +18,17 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/audio/audio_device.h"
+#include "api/enable_media_with_defaults.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"
-#include "api/test/create_time_controller.h"
 #include "api/test/pclf/media_configuration.h"
 #include "api/test/pclf/media_quality_test_params.h"
 #include "api/test/pclf/peer_configurer.h"
 #include "api/test/time_controller.h"
-#include "api/transport/field_trial_based_config.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
 #include "api/video_codecs/video_decoder_factory.h"
@@ -65,10 +66,6 @@ void SetMandatoryEntities(InjectableComponents* components) {
   if (components->pcf_dependencies->event_log_factory == nullptr) {
     components->pcf_dependencies->event_log_factory =
         std::make_unique<RtcEventLogFactory>();
-  }
-  if (!components->pcf_dependencies->trials) {
-    components->pcf_dependencies->trials =
-        std::make_unique<FieldTrialBasedConfig>();
   }
 }
 
@@ -193,8 +190,8 @@ void WrapVideoDecoderFactory(
 // Creates PeerConnectionFactoryDependencies objects, providing entities
 // from InjectableComponents::PeerConnectionFactoryComponents.
 PeerConnectionFactoryDependencies CreatePCFDependencies(
+    const Environment& env,
     std::unique_ptr<PeerConnectionFactoryComponents> pcf_dependencies,
-    TimeController& time_controller,
     scoped_refptr<AudioDeviceModule> audio_device_module,
     Thread* signaling_thread,
     Thread* worker_thread,
@@ -207,7 +204,7 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
   pcf_deps.network_manager = std::move(pcf_dependencies->network_manager);
 
   pcf_deps.event_log_factory = std::move(pcf_dependencies->event_log_factory);
-  pcf_deps.task_queue_factory = time_controller.CreateTaskQueueFactory();
+  pcf_deps.env = env;
 
   if (pcf_dependencies->fec_controller_factory != nullptr) {
     pcf_deps.fec_controller_factory =
@@ -219,9 +216,6 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
   }
   if (pcf_dependencies->neteq_factory != nullptr) {
     pcf_deps.neteq_factory = std::move(pcf_dependencies->neteq_factory);
-  }
-  if (pcf_dependencies->trials != nullptr) {
-    pcf_deps.trials = std::move(pcf_dependencies->trials);
   }
 
   // Media dependencies
@@ -235,7 +229,7 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
       std::move(pcf_dependencies->video_decoder_factory);
   pcf_deps.audio_encoder_factory = pcf_dependencies->audio_encoder_factory;
   pcf_deps.audio_decoder_factory = pcf_dependencies->audio_decoder_factory;
-  EnableMediaWithDefaultsAndTimeController(time_controller, pcf_deps);
+  EnableMediaWithDefaults(pcf_deps);
 
   return pcf_deps;
 }
@@ -296,11 +290,14 @@ std::unique_ptr<TestPeer> TestPeerFactory::CreateTestPeer(
   SetMandatoryEntities(components.get());
   params->rtc_configuration.sdp_semantics = SdpSemantics::kUnifiedPlan;
 
+  const Environment env = CreateEnvironment(
+      std::move(components->pcf_dependencies->trials),
+      time_controller_.GetClock(), time_controller_.GetTaskQueueFactory());
+
   // Create peer connection factory.
   scoped_refptr<AudioDeviceModule> audio_device_module =
       CreateAudioDeviceModule(params->audio_config, remote_audio_config,
-                              echo_emulation_config,
-                              time_controller_.GetTaskQueueFactory());
+                              echo_emulation_config, &env.task_queue_factory());
   WrapVideoEncoderFactory(
       params->name.value(), params->video_encoder_bitrate_multiplier,
       CalculateRequiredSpatialIndexPerStream(
@@ -319,7 +316,7 @@ std::unique_ptr<TestPeer> TestPeerFactory::CreateTestPeer(
   }
 
   PeerConnectionFactoryDependencies pcf_deps = CreatePCFDependencies(
-      std::move(components->pcf_dependencies), time_controller_,
+      env, std::move(components->pcf_dependencies),
       std::move(audio_device_module), signaling_thread_,
       components->worker_thread, components->network_thread);
   scoped_refptr<PeerConnectionFactoryInterface> peer_connection_factory =

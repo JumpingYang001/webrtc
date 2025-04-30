@@ -23,7 +23,9 @@
 #include "api/audio_options.h"
 #include "api/candidate.h"
 #include "api/data_channel_interface.h"
+#include "api/enable_media_with_defaults.h"
 #include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/jsep.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
@@ -36,10 +38,8 @@
 #include "api/sequence_checker.h"
 #include "api/set_local_description_observer_interface.h"
 #include "api/set_remote_description_observer_interface.h"
-#include "api/test/create_time_controller.h"
 #include "api/test/network_emulation/network_emulation_interfaces.h"
 #include "api/test/network_emulation_manager.h"
-#include "api/transport/field_trial_based_config.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
 #include "api/video/video_source_interface.h"
@@ -241,8 +241,9 @@ PeerScenarioClient::PeerScenarioClient(
     Thread* signaling_thread,
     std::unique_ptr<LogWriterFactoryInterface> log_writer_factory,
     PeerScenarioClient::Config config)
-    : endpoints_(CreateEndpoints(net, config.endpoints)),
-      task_queue_factory_(net->time_controller()->GetTaskQueueFactory()),
+    : env_(CreateEnvironment(net->time_controller()->GetClock(),
+                             net->time_controller()->GetTaskQueueFactory())),
+      endpoints_(CreateEndpoints(net, config.endpoints)),
       signaling_thread_(signaling_thread),
       log_writer_factory_(std::move(log_writer_factory)),
       worker_thread_(net->time_controller()->CreateThread("worker")),
@@ -282,13 +283,11 @@ PeerScenarioClient::PeerScenarioClient(
   pcf_deps.worker_thread = worker_thread_.get();
   pcf_deps.socket_factory = manager->socket_factory();
   pcf_deps.network_manager = manager->ReleaseNetworkManager();
-  pcf_deps.task_queue_factory =
-      net->time_controller()->CreateTaskQueueFactory();
   pcf_deps.event_log_factory = std::make_unique<RtcEventLogFactory>();
-  pcf_deps.trials = std::make_unique<FieldTrialBasedConfig>();
+  pcf_deps.env = env_;
 
   pcf_deps.adm = TestAudioDeviceModule::Create(
-      task_queue_factory_,
+      &env_.task_queue_factory(),
       TestAudioDeviceModule::CreatePulsedNoiseCapturer(
           config.audio.pulsed_noise->amplitude *
               std::numeric_limits<int16_t>::max(),
@@ -311,7 +310,7 @@ PeerScenarioClient::PeerScenarioClient(
             OpenH264DecoderTemplateAdapter, Dav1dDecoderTemplateAdapter>>();
   }
 
-  EnableMediaWithDefaultsAndTimeController(*net->time_controller(), pcf_deps);
+  EnableMediaWithDefaults(pcf_deps);
 
   pcf_deps.fec_controller_factory = nullptr;
   pcf_deps.network_controller_factory = nullptr;
@@ -356,8 +355,8 @@ PeerScenarioClient::VideoSendTrack PeerScenarioClient::CreateVideo(
     VideoSendTrackConfig config) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   VideoSendTrack res;
-  auto capturer = CreateFrameGeneratorCapturer(clock(), *task_queue_factory_,
-                                               config.generator);
+  auto capturer = CreateFrameGeneratorCapturer(
+      clock(), env_.task_queue_factory(), config.generator);
   res.capturer = capturer.get();
   capturer->Init();
   res.source = make_ref_counted<FrameGeneratorCapturerVideoTrackSource>(

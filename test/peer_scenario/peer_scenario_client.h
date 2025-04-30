@@ -14,15 +14,32 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "absl/memory/memory.h"
+#include "api/audio_options.h"
+#include "api/candidate.h"
+#include "api/data_channel_interface.h"
+#include "api/environment/environment.h"
+#include "api/jsep.h"
+#include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
+#include "api/rtp_receiver_interface.h"
+#include "api/rtp_sender_interface.h"
+#include "api/rtp_transceiver_interface.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/test/network_emulation/network_emulation_interfaces.h"
 #include "api/test/network_emulation_manager.h"
-#include "api/test/time_controller.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
 #include "pc/test/frame_generator_capturer_video_track_source.h"
+#include "rtc_base/thread.h"
+#include "rtc_base/thread_annotations.h"
+#include "system_wrappers/include/clock.h"
 #include "test/create_frame_generator_capturer.h"
+#include "test/frame_generator_capturer.h"
 #include "test/logging/log_writer.h"
 
 namespace webrtc {
@@ -159,8 +176,8 @@ class PeerScenarioClient {
   void AddIceCandidate(std::unique_ptr<IceCandidateInterface> candidate);
 
  private:
+  const Environment env_;
   const std::map<int, EmulatedEndpoint*> endpoints_;
-  TaskQueueFactory* const task_queue_factory_;
   Thread* const signaling_thread_;
   const std::unique_ptr<LogWriterFactoryInterface> log_writer_factory_;
   const std::unique_ptr<Thread> worker_thread_;
