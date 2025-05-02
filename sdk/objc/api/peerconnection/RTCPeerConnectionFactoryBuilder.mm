@@ -15,6 +15,7 @@
 #include "api/audio/audio_processing.h"
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/audio_codecs/audio_encoder_factory.h"
+#include "api/environment/environment_factory.h"
 #include "api/video_codecs/video_decoder_factory.h"
 #include "api/video_codecs/video_encoder_factory.h"
 
@@ -32,7 +33,7 @@
 }
 
 - (void)setFieldTrials:(std::unique_ptr<webrtc::FieldTrialsView>)fieldTrials {
-  _dependencies.trials = std::move(fieldTrials);
+  _dependencies.env = webrtc::CreateEnvironment(std::move(fieldTrials));
 }
 
 - (void)setVideoEncoderFactory:

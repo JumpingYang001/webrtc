@@ -36,9 +36,9 @@
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/enable_media.h"
+#include "api/environment/environment_factory.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/task_queue/default_task_queue_factory.h"
-#include "api/transport/field_trial_based_config.h"
 #import "components/video_codec/RTCVideoDecoderFactoryH264.h"
 #import "components/video_codec/RTCVideoEncoderFactoryH264.h"
 #include "media/base/media_constants.h"
@@ -150,11 +150,12 @@
     dependencies.network_thread = _networkThread.get();
     dependencies.worker_thread = _workerThread.get();
     dependencies.signaling_thread = _signalingThread.get();
-    if (dependencies.trials == nullptr) {
-      dependencies.trials = std::make_unique<webrtc::FieldTrialBasedConfig>();
+    if (!dependencies.env.has_value()) {
+      dependencies.env = webrtc::CreateEnvironment();
     }
     if (dependencies.network_monitor_factory == nullptr &&
-        dependencies.trials->IsEnabled("WebRTC-Network-UseNWPathMonitor")) {
+        dependencies.env->field_trials().IsEnabled(
+            "WebRTC-Network-UseNWPathMonitor")) {
       dependencies.network_monitor_factory =
           webrtc::CreateNetworkMonitorFactory();
     }

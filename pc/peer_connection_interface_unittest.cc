@@ -42,11 +42,9 @@
 #include "api/rtp_sender_interface.h"
 #include "api/rtp_transceiver_direction.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/transport/bitrate_settings.h"
 #include "api/transport/enums.h"
-#include "api/transport/field_trial_based_config.h"
 #include "api/units/time_delta.h"
 #include "api/video_codecs/video_decoder_factory_template.h"
 #include "api/video_codecs/video_decoder_factory_template_dav1d_adapter.h"
@@ -612,8 +610,6 @@ class PeerConnectionFactoryForTest : public PeerConnectionFactory {
     dependencies.worker_thread = Thread::Current();
     dependencies.network_thread = Thread::Current();
     dependencies.signaling_thread = Thread::Current();
-    dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
-    dependencies.trials = std::make_unique<FieldTrialBasedConfig>();
     // Use fake audio device module since we're only testing the interface
     // level, and using a real one could make tests flaky when run in parallel.
     dependencies.adm = FakeAudioCaptureModule::Create();

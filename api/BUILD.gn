@@ -83,10 +83,7 @@ if (!build_with_chromium) {
       ":field_trials_view",
       ":libjingle_peerconnection_api",
       ":scoped_refptr",
-      "../api/rtc_event_log:rtc_event_log_factory",
       "../pc:peer_connection_factory",
-      "../pc:webrtc_sdp",
-      "../rtc_base:socket_server",
       "../rtc_base:threading",
       "../rtc_base/system:rtc_export",
       "../stats:rtc_stats",
@@ -95,6 +92,8 @@ if (!build_with_chromium) {
       "audio:audio_processing",
       "audio:builtin_audio_processing_builder",
       "audio_codecs:audio_codecs_api",
+      "environment:environment_factory",
+      "rtc_event_log:rtc_event_log_factory",
       "video_codecs:video_codecs_api",
     ]
   }

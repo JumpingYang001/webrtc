@@ -77,8 +77,11 @@ Environment AssembleEnvironment(PeerConnectionFactoryDependencies& deps) {
   EnvironmentFactory env_factory = deps.env.has_value()
                                        ? EnvironmentFactory(*deps.env)
                                        : EnvironmentFactory();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   env_factory.Set(std::move(deps.trials));
   env_factory.Set(std::move(deps.task_queue_factory));
+#pragma clang diagnostic pop
 
   // Clear Environment from `deps` to avoid accidental usage of the wrong
   // Environment.

@@ -26,7 +26,6 @@
 #include "api/rtp_transceiver_direction.h"
 #include "api/rtp_transceiver_interface.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "media/base/fake_media_engine.h"
 #include "p2p/test/fake_port_allocator.h"
 #include "pc/peer_connection_wrapper.h"
@@ -82,7 +81,6 @@ class PeerConnectionHeaderExtensionTest
     factory_dependencies.network_thread = Thread::Current();
     factory_dependencies.worker_thread = Thread::Current();
     factory_dependencies.signaling_thread = Thread::Current();
-    factory_dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
     EnableFakeMedia(factory_dependencies, std::move(media_engine));
 
     factory_dependencies.event_log_factory =

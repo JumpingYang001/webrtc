@@ -17,13 +17,13 @@
 #include <vector>
 
 #include "api/data_channel_interface.h"
+#include "api/environment/environment.h"
 #include "api/jsep.h"
 #include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_error.h"
 #include "api/rtp_receiver_interface.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/task_queue_factory.h"
 #include "examples/peerconnection/client/main_wnd.h"
 #include "examples/peerconnection/client/peer_connection_client.h"
 #include "rtc_base/thread.h"
@@ -124,8 +124,8 @@ class Conductor : public webrtc::PeerConnectionObserver,
 
   int peer_id_;
   bool loopback_;
+  webrtc::Environment env_;
   std::unique_ptr<webrtc::Thread> signaling_thread_;
-  webrtc::TaskQueueFactory* task_queue_factory_ = nullptr;
   webrtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;

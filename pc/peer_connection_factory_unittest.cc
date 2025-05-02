@@ -691,7 +691,10 @@ TEST(PeerConnectionFactoryDependenciesTest,
 
   PeerConnectionFactoryDependencies pcf_dependencies;
   pcf_dependencies.env = CreateEnvironment(std::move(env_field_trials));
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   pcf_dependencies.trials = std::move(explicit_field_trials);
+#pragma clang diagnostic pop
   pcf_dependencies.adm = FakeAudioCaptureModule::Create();
   EnableMediaWithDefaults(pcf_dependencies);
 

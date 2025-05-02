@@ -17,13 +17,13 @@
 
 #include "absl/algorithm/container.h"
 #include "api/enable_media_with_defaults.h"
+#include "api/environment/environment_factory.h"
 #include "api/field_trials.h"
 #include "api/field_trials_view.h"
 #include "api/media_types.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtp_parameters.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "pc/peer_connection_wrapper.h"
 #include "pc/session_description.h"
 #include "pc/test/fake_audio_capture_module.h"
@@ -65,8 +65,7 @@ class PeerConnectionFieldTrialTest : public ::testing::Test {
   void CreatePCFactory(std::unique_ptr<FieldTrialsView> field_trials) {
     PeerConnectionFactoryDependencies pcf_deps;
     pcf_deps.signaling_thread = Thread::Current();
-    pcf_deps.trials = std::move(field_trials);
-    pcf_deps.task_queue_factory = CreateDefaultTaskQueueFactory();
+    pcf_deps.env = CreateEnvironment(std::move(field_trials));
     pcf_deps.adm = FakeAudioCaptureModule::Create();
     EnableMediaWithDefaults(pcf_deps);
     pc_factory_ = CreateModularPeerConnectionFactory(std::move(pcf_deps));

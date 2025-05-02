@@ -10,35 +10,60 @@
 
 #include "sdk/android/src/jni/pc/peer_connection_factory.h"
 
+#include <jni.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#include <cstddef>
+#include <cstdio>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "absl/memory/memory.h"
 #include "api/audio/audio_device.h"
 #include "api/audio/audio_processing.h"
 #include "api/audio/builtin_audio_processing_builder.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_encoder_factory.h"
+#include "api/audio_options.h"
 #include "api/enable_media.h"
+#include "api/fec_controller.h"
+#include "api/media_stream_interface.h"
+#include "api/neteq/neteq_factory.h"
+#include "api/network_state_predictor.h"
+#include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
-#include "api/task_queue/default_task_queue_factory.h"
-#include "api/video_codecs/video_decoder_factory.h"
-#include "api/video_codecs/video_encoder_factory.h"
+#include "api/scoped_refptr.h"
+#include "api/transport/network_control.h"
 #include "modules/utility/include/jvm_android.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/event_tracer.h"
+#include "rtc_base/logging.h"
 #include "rtc_base/physical_socket_server.h"
+#include "rtc_base/rtc_certificate.h"
+#include "rtc_base/rtc_certificate_generator.h"
+#include "rtc_base/socket_factory.h"
+#include "rtc_base/ssl_identity.h"
 #include "rtc_base/thread.h"
 #include "sdk/android/generated_peerconnection_jni/PeerConnectionFactory_jni.h"
 #include "sdk/android/native_api/jni/java_types.h"
+#include "sdk/android/native_api/jni/scoped_java_ref.h"
 #include "sdk/android/native_api/stacktrace/stacktrace.h"
+#include "sdk/android/src/jni/android_network_monitor.h"
 #include "sdk/android/src/jni/jni_helpers.h"
+#include "sdk/android/src/jni/jvm.h"
 #include "sdk/android/src/jni/logging/log_sink.h"
 #include "sdk/android/src/jni/pc/android_network_monitor.h"
-#include "sdk/android/src/jni/pc/ice_candidate.h"
+#include "sdk/android/src/jni/pc/media_constraints.h"
 #include "sdk/android/src/jni/pc/media_stream_track.h"
 #include "sdk/android/src/jni/pc/owned_factory_and_threads.h"
 #include "sdk/android/src/jni/pc/peer_connection.h"
 #include "sdk/android/src/jni/pc/rtp_capabilities.h"
 #include "sdk/android/src/jni/pc/ssl_certificate_verifier_wrapper.h"
 #include "sdk/android/src/jni/pc/video.h"
+#include "sdk/media_constraints.h"
 #include "system_wrappers/include/field_trial.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -272,7 +297,6 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
   dependencies.network_thread = network_thread.get();
   dependencies.worker_thread = worker_thread.get();
   dependencies.signaling_thread = signaling_thread.get();
-  dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
   dependencies.event_log_factory = std::make_unique<RtcEventLogFactory>();
   dependencies.fec_controller_factory = std::move(fec_controller_factory);
   dependencies.network_controller_factory =

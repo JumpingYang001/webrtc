@@ -8,7 +8,7 @@
     "modules/desktop_capture/",
     "modules/desktop_capture/win/",
     "rtc_base/win",
-    "sdk/android/src/jni/",
+    "sdk/android/",
     "sdk/objc/",
     "test/ios/",
     "test/mac/"

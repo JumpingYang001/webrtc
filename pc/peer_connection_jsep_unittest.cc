@@ -32,9 +32,7 @@
 #include "api/rtp_transceiver_direction.h"
 #include "api/rtp_transceiver_interface.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "api/test/rtc_error_matchers.h"
-#include "api/transport/field_trial_based_config.h"
 #include "media/base/stream_params.h"
 #include "p2p/base/p2p_constants.h"
 #include "p2p/base/transport_info.h"
@@ -73,8 +71,6 @@ PeerConnectionFactoryDependencies CreatePeerConnectionFactoryDependencies() {
   dependencies.worker_thread = Thread::Current();
   dependencies.network_thread = Thread::Current();
   dependencies.signaling_thread = Thread::Current();
-  dependencies.task_queue_factory = CreateDefaultTaskQueueFactory();
-  dependencies.trials = std::make_unique<FieldTrialBasedConfig>();
   dependencies.adm = FakeAudioCaptureModule::Create();
   EnableMediaWithDefaults(dependencies);
   dependencies.sctp_factory = std::make_unique<FakeSctpTransportFactory>();

@@ -25,7 +25,6 @@
 #include "api/enable_media.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "sdk/objc/native/api/video_capturer.h"
 #include "sdk/objc/native/api/video_decoder_factory.h"
 #include "sdk/objc/native/api/video_encoder_factory.h"
@@ -121,7 +120,6 @@ void ObjCCallClient::CreatePeerConnectionFactory() {
   dependencies.network_thread = network_thread_.get();
   dependencies.worker_thread = worker_thread_.get();
   dependencies.signaling_thread = signaling_thread_.get();
-  dependencies.task_queue_factory = webrtc::CreateDefaultTaskQueueFactory();
   dependencies.audio_encoder_factory =
       webrtc::CreateBuiltinAudioEncoderFactory();
   dependencies.audio_decoder_factory =

@@ -1440,9 +1440,7 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   // The `packet_socket_factory` will only be used if CreatePeerConnection is
   // called without a `port_allocator`.
   std::unique_ptr<PacketSocketFactory> packet_socket_factory;
-  // Deprecated. Instead provide custom task queue factory through the `env`.
-  // TODO: bugs.webrtc.org/42220378 - Mark [[deprecated]] once unused in WebRTC
-  // and chromium
+  [[deprecated("Pass custom task queue factory through the 'env'")]]
   std::unique_ptr<TaskQueueFactory> task_queue_factory;
   std::unique_ptr<RtcEventLogFactoryInterface> event_log_factory;
   std::unique_ptr<FecControllerFactoryInterface> fec_controller_factory;
@@ -1458,9 +1456,7 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   std::unique_ptr<NetworkMonitorFactory> network_monitor_factory;
   std::unique_ptr<NetEqFactory> neteq_factory;
   std::unique_ptr<SctpTransportFactoryInterface> sctp_factory;
-  // Deprecated. Instead provide custom field trials through the `env`.
-  // TODO: bugs.webrtc.org/42220378 - Mark [[deprecated]] once unused in WebRTC
-  // and chromium
+  [[deprecated("Pass custom field trials through the 'env'")]]
   std::unique_ptr<FieldTrialsView> trials;
   std::unique_ptr<RtpTransportControllerSendFactoryInterface>
       transport_controller_send_factory;

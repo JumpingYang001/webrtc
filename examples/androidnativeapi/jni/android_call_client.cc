@@ -10,18 +10,35 @@
 
 #include "examples/androidnativeapi/jni/android_call_client.h"
 
+#include <jni.h>
+
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "api/data_channel_interface.h"
 #include "api/enable_media_with_defaults.h"
+#include "api/jsep.h"
+#include "api/make_ref_counted.h"
+#include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
+#include "api/rtc_error.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
-#include "api/task_queue/default_task_queue_factory.h"
+#include "api/rtp_transceiver_interface.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/set_remote_description_observer_interface.h"
+#include "api/video/video_source_interface.h"
 #include "examples/androidnativeapi/generated_jni/CallClient_jni.h"
 #include "media/engine/internal_decoder_factory.h"
 #include "media/engine/internal_encoder_factory.h"
-#include "media/engine/webrtc_media_engine.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/logging.h"
+#include "rtc_base/synchronization/mutex.h"
+#include "rtc_base/thread.h"
 #include "sdk/android/native_api/jni/java_types.h"
+#include "sdk/android/native_api/jni/scoped_java_ref.h"
+#include "sdk/android/native_api/video/video_source.h"
 #include "sdk/android/native_api/video/wrapper.h"
 
 namespace webrtc_examples {
@@ -153,7 +170,6 @@ void AndroidCallClient::CreatePeerConnectionFactory() {
   pcf_deps.network_thread = network_thread_.get();
   pcf_deps.worker_thread = worker_thread_.get();
   pcf_deps.signaling_thread = signaling_thread_.get();
-  pcf_deps.task_queue_factory = webrtc::CreateDefaultTaskQueueFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
 
   pcf_deps.video_encoder_factory =

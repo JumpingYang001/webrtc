@@ -20,6 +20,7 @@
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/audio_codecs/audio_encoder_factory.h"
 #include "api/enable_media.h"
+#include "api/environment/environment_factory.h"
 #include "api/field_trials_view.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
@@ -48,7 +49,7 @@ scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
   dependencies.worker_thread = worker_thread;
   dependencies.signaling_thread = signaling_thread;
   dependencies.event_log_factory = std::make_unique<RtcEventLogFactory>();
-  dependencies.trials = std::move(field_trials);
+  dependencies.env = webrtc::CreateEnvironment(std::move(field_trials));
 
   if (network_thread) {
     // TODO(bugs.webrtc.org/13145): Add an webrtc::SocketFactory* argument.

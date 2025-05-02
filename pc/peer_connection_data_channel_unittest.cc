@@ -19,7 +19,6 @@
 #include "api/peer_connection_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/sctp_transport_interface.h"
-#include "api/task_queue/default_task_queue_factory.h"
 #include "p2p/base/p2p_constants.h"
 #include "pc/media_session.h"
 #include "pc/peer_connection.h"
@@ -56,7 +55,6 @@ PeerConnectionFactoryDependencies CreatePeerConnectionFactoryDependencies() {
   deps.network_thread = Thread::Current();
   deps.worker_thread = Thread::Current();
   deps.signaling_thread = Thread::Current();
-  deps.task_queue_factory = CreateDefaultTaskQueueFactory();
   EnableFakeMedia(deps);
   deps.sctp_factory = std::make_unique<FakeSctpTransportFactory>();
   return deps;
