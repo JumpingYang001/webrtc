@@ -112,6 +112,8 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../api:rtc_error_matchers",
       "../../api:scoped_refptr",
       "../../api:simulated_network_api",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "../../api/rtc_event_log:rtc_event_log_factory",
       "../../api/task_queue:default_task_queue_factory",
       "../../api/test/network_emulation",
@@ -122,6 +124,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../pc:peerconnection_wrapper",
       "../../rtc_base:network",
       "../../rtc_base:task_queue_for_test",
+      "../../rtc_base:threading",
     ]
   }
 }

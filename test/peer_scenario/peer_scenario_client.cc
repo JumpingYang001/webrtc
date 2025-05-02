@@ -287,7 +287,7 @@ PeerScenarioClient::PeerScenarioClient(
   pcf_deps.env = env_;
 
   pcf_deps.adm = TestAudioDeviceModule::Create(
-      &env_.task_queue_factory(),
+      env_,
       TestAudioDeviceModule::CreatePulsedNoiseCapturer(
           config.audio.pulsed_noise->amplitude *
               std::numeric_limits<int16_t>::max(),

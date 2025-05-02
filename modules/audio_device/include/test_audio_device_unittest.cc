@@ -10,22 +10,32 @@
 
 #include "modules/audio_device/include/test_audio_device.h"
 
+#include <stdio.h>
+
 #include <algorithm>
-#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
+#include "api/audio/audio_device.h"
 #include "api/audio/audio_device_defines.h"
-#include "api/task_queue/task_queue_factory.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
+#include "api/scoped_refptr.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "common_audio/wav_file.h"
-#include "common_audio/wav_header.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
 #include "rtc_base/synchronization/mutex.h"
+#include "rtc_base/thread_annotations.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
@@ -463,15 +473,17 @@ class TestAudioTransport : public AudioTransport {
 
 TEST(TestAudioDeviceModuleTest, CreatedADMCanRecord) {
   GlobalSimulatedTimeController time_controller(kStartTime);
+  const Environment env = CreateEnvironment(
+      time_controller.GetClock(), time_controller.GetTaskQueueFactory());
   TestAudioTransport audio_transport(TestAudioTransport::Mode::kRecording);
   std::unique_ptr<TestAudioDeviceModule::PulsedNoiseCapturer> capturer =
       TestAudioDeviceModule::CreatePulsedNoiseCapturer(
           /*max_amplitude=*/1000,
           /*sampling_frequency_in_hz=*/48000, /*num_channels=*/2);
 
-  scoped_refptr<AudioDeviceModule> adm = TestAudioDeviceModule::Create(
-      time_controller.GetTaskQueueFactory(), std::move(capturer),
-      /*renderer=*/nullptr);
+  scoped_refptr<AudioDeviceModule> adm =
+      TestAudioDeviceModule::Create(env, std::move(capturer),
+                                    /*renderer=*/nullptr);
 
   ASSERT_EQ(adm->RegisterAudioCallback(&audio_transport), 0);
   ASSERT_EQ(adm->Init(), 0);
@@ -495,13 +507,15 @@ TEST(TestAudioDeviceModuleTest, CreatedADMCanRecord) {
 
 TEST(TestAudioDeviceModuleTest, CreatedADMCanPlay) {
   GlobalSimulatedTimeController time_controller(kStartTime);
+  const Environment env = CreateEnvironment(
+      time_controller.GetClock(), time_controller.GetTaskQueueFactory());
   TestAudioTransport audio_transport(TestAudioTransport::Mode::kPlaying);
   std::unique_ptr<TestAudioDeviceModule::Renderer> renderer =
       TestAudioDeviceModule::CreateDiscardRenderer(
           /*sampling_frequency_in_hz=*/48000, /*num_channels=*/2);
 
   scoped_refptr<AudioDeviceModule> adm =
-      TestAudioDeviceModule::Create(time_controller.GetTaskQueueFactory(),
+      TestAudioDeviceModule::Create(env,
                                     /*capturer=*/nullptr, std::move(renderer));
 
   ASSERT_EQ(adm->RegisterAudioCallback(&audio_transport), 0);

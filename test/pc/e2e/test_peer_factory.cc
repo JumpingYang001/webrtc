@@ -24,7 +24,6 @@
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/scoped_refptr.h"
-#include "api/task_queue/task_queue_factory.h"
 #include "api/test/pclf/media_configuration.h"
 #include "api/test/pclf/media_quality_test_params.h"
 #include "api/test/pclf/peer_configurer.h"
@@ -124,10 +123,10 @@ std::unique_ptr<TestAudioDeviceModule::Capturer> CreateAudioCapturer(
 }
 
 scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+    const Environment& env,
     std::optional<AudioConfig> audio_config,
     std::optional<RemotePeerAudioConfig> remote_audio_config,
-    std::optional<EchoEmulationConfig> echo_emulation_config,
-    TaskQueueFactory* task_queue_factory) {
+    std::optional<EchoEmulationConfig> echo_emulation_config) {
   std::unique_ptr<TestAudioDeviceModule::Renderer> renderer =
       CreateAudioRenderer(remote_audio_config);
   std::unique_ptr<TestAudioDeviceModule::Capturer> capturer =
@@ -150,7 +149,7 @@ scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
         std::move(capturer), audio_config->input_dump_file_name.value());
   }
 
-  return TestAudioDeviceModule::Create(task_queue_factory, std::move(capturer),
+  return TestAudioDeviceModule::Create(env, std::move(capturer),
                                        std::move(renderer), /*speed=*/1.f);
 }
 
@@ -296,8 +295,8 @@ std::unique_ptr<TestPeer> TestPeerFactory::CreateTestPeer(
 
   // Create peer connection factory.
   scoped_refptr<AudioDeviceModule> audio_device_module =
-      CreateAudioDeviceModule(params->audio_config, remote_audio_config,
-                              echo_emulation_config, &env.task_queue_factory());
+      CreateAudioDeviceModule(env, params->audio_config, remote_audio_config,
+                              echo_emulation_config);
   WrapVideoEncoderFactory(
       params->name.value(), params->video_encoder_bitrate_multiplier,
       CalculateRequiredSpatialIndexPerStream(

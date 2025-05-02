@@ -237,8 +237,7 @@ void CallPerfTest::TestAudioVideoSync(FecMode fec,
     metrics::Reset();
     scoped_refptr<AudioDeviceModule> fake_audio_device =
         TestAudioDeviceModule::Create(
-            &env().task_queue_factory(),
-            TestAudioDeviceModule::CreatePulsedNoiseCapturer(256, 48000),
+            env(), TestAudioDeviceModule::CreatePulsedNoiseCapturer(256, 48000),
             TestAudioDeviceModule::CreateDiscardRenderer(48000),
             audio_rtp_speed);
     EXPECT_EQ(0, fake_audio_device->Init());

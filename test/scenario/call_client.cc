@@ -9,24 +9,48 @@
  */
 #include "test/scenario/call_client.h"
 
-#include <iostream>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "api/array_view.h"
 #include "api/audio/builtin_audio_processing_builder.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/media_types.h"
 #include "api/rtc_event_log/rtc_event_log.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
+#include "api/rtc_event_log_output.h"
+#include "api/rtp_parameters.h"
+#include "api/scoped_refptr.h"
+#include "api/task_queue/task_queue_factory.h"
+#include "api/test/network_emulation/network_emulation_interfaces.h"
+#include "api/test/time_controller.h"
+#include "api/transport/bitrate_settings.h"
+#include "api/transport/network_control.h"
 #include "api/transport/network_types.h"
+#include "api/units/data_rate.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "call/audio_state.h"
 #include "call/call.h"
-#include "call/rtp_transport_controller_send_factory.h"
+#include "call/call_config.h"
 #include "modules/audio_device/include/test_audio_device.h"
 #include "modules/audio_mixer/audio_mixer_impl.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/rtp_rtcp/source/rtp_util.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/event.h"
+#include "rtc_base/logging.h"
+#include "rtc_base/strings/string_builder.h"
+#include "test/logging/log_writer.h"
+#include "test/scenario/column_printer.h"
+#include "test/scenario/network_node.h"
+#include "test/scenario/scenario_config.h"
 
 namespace webrtc {
 namespace test {
@@ -48,7 +72,7 @@ CallClientFakeAudio InitAudio(const Environment& env) {
   auto capturer = TestAudioDeviceModule::CreatePulsedNoiseCapturer(256, 48000);
   auto renderer = TestAudioDeviceModule::CreateDiscardRenderer(48000);
   setup.fake_audio_device = TestAudioDeviceModule::Create(
-      &env.task_queue_factory(), std::move(capturer), std::move(renderer), 1.f);
+      env, std::move(capturer), std::move(renderer), 1.f);
   setup.apm = BuiltinAudioProcessingBuilder().Build(env);
   setup.fake_audio_device->Init();
   AudioState::Config audio_state_config;

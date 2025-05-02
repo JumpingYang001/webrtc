@@ -21,6 +21,8 @@
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
 #include "api/audio/audio_device.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/make_ref_counted.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_factory.h"
@@ -428,11 +430,21 @@ scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
     std::unique_ptr<TestAudioDeviceModule::Capturer> capturer,
     std::unique_ptr<TestAudioDeviceModule::Renderer> renderer,
     float speed) {
+  return Create(CreateEnvironment(task_queue_factory), std::move(capturer),
+                std::move(renderer), speed);
+}
+
+scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
+    const Environment& env,
+    std::unique_ptr<TestAudioDeviceModule::Capturer> capturer,
+    std::unique_ptr<TestAudioDeviceModule::Renderer> renderer,
+    float speed) {
   auto audio_device = make_ref_counted<AudioDeviceModuleImpl>(
       AudioDeviceModule::AudioLayer::kDummyAudio,
-      std::make_unique<TestAudioDevice>(task_queue_factory, std::move(capturer),
+      std::make_unique<TestAudioDevice>(&env.task_queue_factory(),
+                                        std::move(capturer),
                                         std::move(renderer), speed),
-      task_queue_factory,
+      &env.task_queue_factory(),
       /*create_detached=*/true);
 
   // Ensure that the current platform is supported.
