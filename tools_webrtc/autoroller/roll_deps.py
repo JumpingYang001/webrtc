@@ -88,6 +88,10 @@ ANDROID_DEPS_PATH = 'src/third_party/android_deps/'
 
 NOTIFY_EMAIL = 'webrtc-trooper@grotations.appspotmail.com'
 
+GCS_OBJECTS_ERROR = (
+    'The number of objects in %s is different between '
+    'Chromium\'s DEPS and WebRTC\'s DEPS. They must be the same.')
+
 sys.path.append(os.path.join(CHECKOUT_ROOT_DIR, 'build'))
 import find_depot_tools
 
@@ -107,6 +111,8 @@ ChangedCipdPackage = collections.namedtuple(
     'ChangedCipdPackage', 'path package current_version new_version')
 ChangedVersionEntry = collections.namedtuple(
     'ChangedVersionEntry', 'path current_version new_version')
+ChangedGcsPackage = collections.namedtuple(
+    'ChangedGcsPackage', 'path setdep_arg current_version new_version')
 
 ChromiumRevisionUpdate = collections.namedtuple('ChromiumRevisionUpdate',
                                                 ('current_chromium_rev '
@@ -323,6 +329,24 @@ def BuildDepsentryDict(deps_dict):
     return result
 
 
+def _FindChangedGcsPackage(path, old_pkg, new_pkg):
+    assert len(old_pkg.objects) == len(new_pkg.objects), (GCS_OBJECTS_ERROR %
+                                                          path)
+    current_version_str = ','.join(x['object_name'] for x in old_pkg.objects)
+    new_version_str = ','.join(x['object_name'] for x in new_pkg.objects)
+    if current_version_str != new_version_str:
+        objects = [
+            ','.join([
+                o['object_name'], o['sha256sum'],
+                str(o['size_bytes']),
+                str(o['generation'])
+            ]) for o in new_pkg.objects
+        ]
+        setdep_arg = '%s@%s' % (path, '?'.join(objects))
+        yield ChangedGcsPackage(path, setdep_arg, current_version_str,
+                                new_version_str)
+
+
 def _FindChangedCipdPackages(path, old_pkgs, new_pkgs):
     old_pkgs_names = {p['package'] for p in old_pkgs}
     new_pkgs_names = {p['package'] for p in new_pkgs}
@@ -464,11 +488,8 @@ def CalculateChangedDeps(webrtc_deps, new_cr_deps):
 
             if isinstance(cr_deps_entry, GcsDepsEntry):
                 result.extend(
-                    _FindChangedVars(
-                        path, ','.join(x['object_name']
-                                       for x in webrtc_deps_entry.objects),
-                        ','.join(x['object_name']
-                                 for x in cr_deps_entry.objects)))
+                    _FindChangedGcsPackage(path, webrtc_deps_entry,
+                                           cr_deps_entry))
                 continue
 
             if isinstance(cr_deps_entry, VersionEntry):
@@ -552,6 +573,9 @@ def GenerateCommitMessage(
 
         for c in changed_deps_list:
             if isinstance(c, ChangedCipdPackage):
+                commit_msg.append('* %s: %s..%s' %
+                                  (c.path, c.current_version, c.new_version))
+            elif isinstance(c, ChangedGcsPackage):
                 commit_msg.append('* %s: %s..%s' %
                                   (c.path, c.current_version, c.new_version))
             elif isinstance(c, ChangedVersionEntry):
@@ -638,6 +662,8 @@ def UpdateDepsFile(deps_filename, rev_update, changed_deps, new_cr_content):
         if isinstance(dep, ChangedCipdPackage):
             package = dep.package.format()  # Eliminate double curly brackets
             update = '%s:%s@%s' % (dep.path, package, dep.new_version)
+        elif isinstance(dep, ChangedGcsPackage):
+            update = dep.setdep_arg
         else:
             update = '%s@%s' % (dep.path, dep.new_rev)
         _RunCommand(['gclient', 'setdep', '--revision', update],
