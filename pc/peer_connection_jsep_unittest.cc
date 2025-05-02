@@ -33,6 +33,7 @@
 #include "api/rtp_transceiver_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/default_task_queue_factory.h"
+#include "api/test/rtc_error_matchers.h"
 #include "api/transport/field_trial_based_config.h"
 #include "media/base/stream_params.h"
 #include "p2p/base/p2p_constants.h"
@@ -2398,6 +2399,19 @@ TEST_F(PeerConnectionJsepTest, BundleOnlySectionDoesNotNeedRtcpMux) {
   offer->description()->contents()[1].bundle_only = true;
 
   EXPECT_TRUE(callee->SetRemoteDescription(std::move(offer)));
+}
+
+// This test is a regression test for crbug.com/410960672
+TEST_F(PeerConnectionJsepTest, OfferRollbackRemoveReoffer) {
+  auto caller = CreatePeerConnection();
+  // Add first video track.
+  auto sender = caller->AddVideoTrack("foo");
+  caller->SetLocalDescription(caller->CreateOffer());
+  caller->SetRemoteDescription(caller->CreateRollback());
+  RTCError error = caller->pc()->RemoveTrackOrError(sender);
+  EXPECT_THAT(error, IsRtcOk());
+  auto offer = caller->CreateOffer();
+  caller->SetLocalDescription(std::move(offer));
 }
 
 }  // namespace webrtc
