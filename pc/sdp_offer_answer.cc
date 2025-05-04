@@ -2473,11 +2473,20 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
   SdpMungingType sdp_munging_type =
       DetermineSdpMungingType(desc.get(), last_created_desc);
 
-  if (!disable_sdp_munging_checks_ &&
-      HasUfragSdpMunging(desc.get(), last_created_desc)) {
-    has_sdp_munged_ufrag_ = true;
-    if (pc_->trials().IsEnabled("WebRTC-NoSdpMangleUfrag")) {
-      RTC_LOG(LS_ERROR) << "Rejecting SDP because of ufrag modification";
+  if (!disable_sdp_munging_checks_) {
+    bool reject_error = false;
+    if (HasUfragSdpMunging(desc.get(), last_created_desc)) {
+      has_sdp_munged_ufrag_ = true;
+      if (pc_->trials().IsEnabled("WebRTC-NoSdpMangleUfrag")) {
+        RTC_LOG(LS_ERROR) << "Rejecting SDP because of ufrag modification";
+        reject_error = true;
+      }
+    } else if (sdp_munging_type == kNumberOfContents &&
+               !pc_->trials().IsDisabled(
+                   "WebRTC-NoSdpMangleNumberOfContents")) {
+      reject_error = true;
+    }
+    if (reject_error) {
       observer->OnSetLocalDescriptionComplete(
           RTCError(RTCErrorType::INVALID_MODIFICATION,
                    "SDP is modified in a non-acceptable way"));
