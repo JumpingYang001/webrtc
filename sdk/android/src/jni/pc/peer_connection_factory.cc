@@ -219,14 +219,6 @@ static void JNI_PeerConnectionFactory_InitializeInternalTracer(JNIEnv* jni) {
   tracing::SetupInternalTracer();
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring>
-JNI_PeerConnectionFactory_FindFieldTrialsFullName(
-    JNIEnv* jni,
-    const jni_zero::JavaParamRef<jstring>& j_name) {
-  return NativeToJavaString(
-      jni, field_trial::FindFullName(JavaToStdString(jni, j_name)));
-}
-
 static jboolean JNI_PeerConnectionFactory_StartInternalTracingCapture(
     JNIEnv* jni,
     const jni_zero::JavaParamRef<jstring>& j_event_tracing_filename) {
