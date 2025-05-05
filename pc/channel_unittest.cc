@@ -45,11 +45,11 @@
 #include "p2p/dtls/fake_dtls_transport.h"
 #include "p2p/test/fake_packet_transport.h"
 #include "pc/dtls_srtp_transport.h"
-#include "pc/jsep_transport.h"
 #include "pc/rtp_transport.h"
 #include "pc/rtp_transport_internal.h"
 #include "pc/session_description.h"
 #include "rtc_base/arraysize.h"
+#include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/checks.h"
@@ -103,14 +103,14 @@ template <class ChannelT,
           class OptionsT>
 class Traits {
  public:
-  typedef ChannelT Channel;
-  typedef MediaSendChannelT MediaSendChannel;
-  typedef MediaReceiveChannelT MediaReceiveChannel;
-  typedef MediaSendChannelInterfaceT MediaSendChannelInterface;
-  typedef MediaReceiveChannelInterfaceT MediaReceiveChannelInterface;
-  typedef ContentT Content;
-  typedef MediaInfoT MediaInfo;
-  typedef OptionsT Options;
+  using Channel = ChannelT;
+  using MediaSendChannel = MediaSendChannelT;
+  using MediaReceiveChannel = MediaReceiveChannelT;
+  using MediaSendChannelInterface = MediaSendChannelInterfaceT;
+  using MediaReceiveChannelInterface = MediaReceiveChannelInterfaceT;
+  using Content = ContentT;
+  using MediaInfo = MediaInfoT;
+  using Options = OptionsT;
 };
 
 class VoiceTraits : public Traits<webrtc::VoiceChannel,
@@ -1644,14 +1644,14 @@ void ChannelTest<VoiceTraits>::AddLegacyStreamInContent(
 
 class VoiceChannelSingleThreadTest : public ChannelTest<VoiceTraits> {
  public:
-  typedef ChannelTest<VoiceTraits> Base;
+  using Base = ChannelTest<VoiceTraits>;
   VoiceChannelSingleThreadTest()
       : Base(true, kPcmuFrame, kRtcpReport, NetworkIsWorker::Yes) {}
 };
 
 class VoiceChannelDoubleThreadTest : public ChannelTest<VoiceTraits> {
  public:
-  typedef ChannelTest<VoiceTraits> Base;
+  using Base = ChannelTest<VoiceTraits>;
   VoiceChannelDoubleThreadTest()
       : Base(true, kPcmuFrame, kRtcpReport, NetworkIsWorker::No) {}
 };
@@ -1659,7 +1659,7 @@ class VoiceChannelDoubleThreadTest : public ChannelTest<VoiceTraits> {
 class VoiceChannelWithEncryptedRtpHeaderExtensionsSingleThreadTest
     : public ChannelTest<VoiceTraits> {
  public:
-  typedef ChannelTest<VoiceTraits> Base;
+  using Base = ChannelTest<VoiceTraits>;
   VoiceChannelWithEncryptedRtpHeaderExtensionsSingleThreadTest()
       : Base(true,
              kPcmuFrameWithExtensions,
@@ -1670,7 +1670,7 @@ class VoiceChannelWithEncryptedRtpHeaderExtensionsSingleThreadTest
 class VoiceChannelWithEncryptedRtpHeaderExtensionsDoubleThreadTest
     : public ChannelTest<VoiceTraits> {
  public:
-  typedef ChannelTest<VoiceTraits> Base;
+  using Base = ChannelTest<VoiceTraits>;
   VoiceChannelWithEncryptedRtpHeaderExtensionsDoubleThreadTest()
       : Base(true, kPcmuFrameWithExtensions, kRtcpReport, NetworkIsWorker::No) {
   }
@@ -1724,14 +1724,14 @@ void ChannelTest<VideoTraits>::AddLegacyStreamInContent(
 
 class VideoChannelSingleThreadTest : public ChannelTest<VideoTraits> {
  public:
-  typedef ChannelTest<VideoTraits> Base;
+  using Base = ChannelTest<VideoTraits>;
   VideoChannelSingleThreadTest()
       : Base(false, kH264Packet, kRtcpReport, NetworkIsWorker::Yes) {}
 };
 
 class VideoChannelDoubleThreadTest : public ChannelTest<VideoTraits> {
  public:
-  typedef ChannelTest<VideoTraits> Base;
+  using Base = ChannelTest<VideoTraits>;
   VideoChannelDoubleThreadTest()
       : Base(false, kH264Packet, kRtcpReport, NetworkIsWorker::No) {}
 };

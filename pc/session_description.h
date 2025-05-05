@@ -14,21 +14,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "absl/algorithm/container.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/media_types.h"
 #include "api/rtp_parameters.h"
 #include "api/rtp_transceiver_direction.h"
-#include "api/rtp_transceiver_interface.h"
 #include "media/base/codec.h"
-#include "media/base/media_channel.h"
 #include "media/base/media_constants.h"
 #include "media/base/rid_description.h"
 #include "media/base/stream_params.h"
@@ -438,7 +435,7 @@ class RTC_EXPORT ContentInfo {
   std::unique_ptr<MediaContentDescription> description_;
 };
 
-typedef std::vector<std::string> ContentNames;
+using ContentNames = std::vector<std::string>;
 
 // This class provides a mechanism to aggregate different media contents into a
 // group. This group can also be shared with the peers in a pre-defined format.
@@ -468,8 +465,8 @@ class ContentGroup {
   ContentNames content_names_;
 };
 
-typedef std::vector<ContentInfo> ContentInfos;
-typedef std::vector<ContentGroup> ContentGroups;
+using ContentInfos = std::vector<ContentInfo>;
+using ContentGroups = std::vector<ContentGroup>;
 
 // Determines how the MSID will be signaled in the SDP.
 // These can be used as bit flags to indicate both or the special value none.

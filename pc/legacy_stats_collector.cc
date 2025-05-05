@@ -97,10 +97,10 @@ struct TypeForAdd {
   const ValueType& value;
 };
 
-typedef TypeForAdd<bool> BoolForAdd;
-typedef TypeForAdd<float> FloatForAdd;
-typedef TypeForAdd<int64_t> Int64ForAdd;
-typedef TypeForAdd<int> IntForAdd;
+using BoolForAdd = TypeForAdd<bool>;
+using FloatForAdd = TypeForAdd<float>;
+using Int64ForAdd = TypeForAdd<int64_t>;
+using IntForAdd = TypeForAdd<int>;
 
 StatsReport* AddTrackReport(StatsCollection* reports,
                             const std::string& track_id) {
