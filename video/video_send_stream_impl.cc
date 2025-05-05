@@ -53,7 +53,6 @@
 #include "call/rtp_config.h"
 #include "call/rtp_transport_controller_send_interface.h"
 #include "call/video_send_stream.h"
-#include "media/base/media_constants.h"
 #include "media/base/sdp_video_format_utils.h"
 #include "modules/pacing/pacing_controller.h"
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
@@ -68,7 +67,6 @@
 #include "rtc_base/experiments/rate_control_settings.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "rtc_base/strings/string_builder.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/clock.h"
@@ -250,8 +248,12 @@ uint32_t GetInitialEncoderMaxBitrate(int initial_encoder_max_bitrate) {
   // reasonable use cases as it allows adding the max of multiple streams
   // without wrappping around.
   const int kFallbackMaxBitrateBps = 10000000;
-  RTC_DLOG(LS_ERROR) << "ERROR: Initial encoder max bitrate = "
-                     << initial_encoder_max_bitrate << " which is <= 0!";
+  // Don't log an error for -1 since this is the default value that is used to
+  // signal that the max bitrate is unset.
+  if (initial_encoder_max_bitrate != -1) {
+    RTC_DLOG(LS_ERROR) << "ERROR: Initial encoder max bitrate = "
+                       << initial_encoder_max_bitrate << " which is <= 0!";
+  }
   RTC_DLOG(LS_INFO) << "Using default encoder max bitrate = 10 Mbps";
   return kFallbackMaxBitrateBps;
 }
