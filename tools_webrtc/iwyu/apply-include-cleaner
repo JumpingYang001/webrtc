@@ -64,6 +64,7 @@ usage() {
   echo " -d <n> : Set debug level to <n>"
   echo " -w : Specify the workdir (out/Default if not specified)"
   echo " -h : Print this help message"
+  echo ""
 }
 
 COMMAND=" --edit"
@@ -93,11 +94,16 @@ if [[ -z "$COMPILE_COMMANDS" ]]; then
     fi
     COMPILE_COMMANDS="$WORKDIR/compile_commands.json"
   else
-    error "Could not generate $WORKDIR/compile_commands.json."
+    usage
+    error "Could not generate $WORKDIR/compile_commands.json. Specify the workdir with -w if other than out/Default."
   fi
 fi
 
-# To get a list of files in a commit: git diff-tree --no-commit-id --name-only -r HEAD
+if [ $# -eq 0 ]; then
+  usage
+  error "No files provided as arguments. To get a list of files in a commit: git diff-tree --no-commit-id --name-only -r HEAD"
+fi
+
 for FILE in "$@"
 do
   if [ -z $FILE ] || [ ! -f $FILE ]; then
