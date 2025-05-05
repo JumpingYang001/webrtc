@@ -270,6 +270,8 @@ SimulcastEncoderAdapter::SimulcastEncoderAdapter(
       prefer_temporal_support_on_base_layer_(env_.field_trials().IsEnabled(
           "WebRTC-Video-PreferTemporalSupportOnBaseLayer")),
       per_layer_pli_(SupportsPerLayerPictureLossIndication(format.parameters)),
+      drop_unaligned_resolution_(!env_.field_trials().IsDisabled(
+          "WebRTC-SimulcastEncoderAdapter-DropUnalignedResolution")),
       encoder_info_override_(env.field_trials()) {
   RTC_DCHECK(primary_factory);
 
@@ -476,7 +478,8 @@ int SimulcastEncoderAdapter::Encode(
       RTC_LOG(LS_WARNING) << "Frame " << input_image.width() << "x"
                           << input_image.height() << " not divisible by "
                           << alignment;
-      return WEBRTC_VIDEO_CODEC_ERROR;
+      return drop_unaligned_resolution_ ? WEBRTC_VIDEO_CODEC_NO_OUTPUT
+                                        : WEBRTC_VIDEO_CODEC_ERROR;
     }
     if (encoder_info_override_.apply_alignment_to_all_simulcast_layers()) {
       for (const auto& layer : stream_contexts_) {
@@ -484,7 +487,8 @@ int SimulcastEncoderAdapter::Encode(
           RTC_LOG(LS_WARNING)
               << "Codec " << layer.width() << "x" << layer.height()
               << " not divisible by " << alignment;
-          return WEBRTC_VIDEO_CODEC_ERROR;
+          return drop_unaligned_resolution_ ? WEBRTC_VIDEO_CODEC_NO_OUTPUT
+                                            : WEBRTC_VIDEO_CODEC_ERROR;
         }
       }
     }

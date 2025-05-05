@@ -196,6 +196,7 @@ class RTC_EXPORT SimulcastEncoderAdapter : public VideoEncoder {
   const bool boost_base_layer_quality_;
   const bool prefer_temporal_support_on_base_layer_;
   const bool per_layer_pli_;
+  const bool drop_unaligned_resolution_;
 
   const SimulcastEncoderAdapterEncoderInfoSettings encoder_info_override_;
 };

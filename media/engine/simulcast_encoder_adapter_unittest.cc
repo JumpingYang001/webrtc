@@ -2126,5 +2126,58 @@ TEST_F(TestSimulcastEncoderAdapterFake, PopulatesScalabilityModeOfSubcodecs) {
             ScalabilityMode::kL1T3);
 }
 
+TEST_F(TestSimulcastEncoderAdapterFake,
+       EncodeDropsFrameIfResolutionIsNotAlignedByDefault) {
+  test::ScopedKeyValueConfig field_trials(
+      field_trials_,
+      "WebRTC-SimulcastEncoderAdapter-GetEncoderInfoOverride/"
+      "requested_resolution_alignment:8,"
+      "apply_alignment_to_all_simulcast_layers/");
+  SetUp();
+  SimulcastTestFixtureImpl::DefaultSettings(
+      &codec_, static_cast<const int*>(kTestTemporalLayerProfile),
+      kVideoCodecVP8);
+  SetupCodec();
+  EXPECT_EQ(0, adapter_->InitEncode(&codec_, kSettings));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  VideoFrame input_frame = VideoFrame::Builder()
+                               .set_video_frame_buffer(buffer)
+                               .set_rtp_timestamp(0)
+                               .set_timestamp_ms(0)
+                               .build();
+  std::vector<VideoFrameType> frame_types;
+  frame_types.resize(codec_.numberOfSimulcastStreams,
+                     VideoFrameType::kVideoFrameKey);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_NO_OUTPUT,
+            adapter_->Encode(input_frame, &frame_types));
+}
+
+TEST_F(TestSimulcastEncoderAdapterFake,
+       EncodeReturnsErrorIfResolutionIsNotAlignedAndDroppingIsDisabled) {
+  test::ScopedKeyValueConfig field_trials(
+      field_trials_,
+      "WebRTC-SimulcastEncoderAdapter-DropUnalignedResolution/Disabled/"
+      "WebRTC-SimulcastEncoderAdapter-GetEncoderInfoOverride/"
+      "requested_resolution_alignment:8,"
+      "apply_alignment_to_all_simulcast_layers/");
+  SetUp();
+  SimulcastTestFixtureImpl::DefaultSettings(
+      &codec_, static_cast<const int*>(kTestTemporalLayerProfile),
+      kVideoCodecVP8);
+  SetupCodec();
+  EXPECT_EQ(0, adapter_->InitEncode(&codec_, kSettings));
+  scoped_refptr<VideoFrameBuffer> buffer(I420Buffer::Create(1280, 720));
+  VideoFrame input_frame = VideoFrame::Builder()
+                               .set_video_frame_buffer(buffer)
+                               .set_rtp_timestamp(0)
+                               .set_timestamp_ms(0)
+                               .build();
+  std::vector<VideoFrameType> frame_types;
+  frame_types.resize(codec_.numberOfSimulcastStreams,
+                     VideoFrameType::kVideoFrameKey);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_ERROR,
+            adapter_->Encode(input_frame, &frame_types));
+}
+
 }  // namespace test
 }  // namespace webrtc
