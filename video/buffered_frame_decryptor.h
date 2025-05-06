@@ -11,12 +11,13 @@
 #ifndef VIDEO_BUFFERED_FRAME_DECRYPTOR_H_
 #define VIDEO_BUFFERED_FRAME_DECRYPTOR_H_
 
+#include <cstddef>
 #include <deque>
 #include <memory>
 
-#include "api/crypto/crypto_options.h"
 #include "api/crypto/frame_decryptor_interface.h"
 #include "api/field_trials_view.h"
+#include "api/scoped_refptr.h"
 #include "modules/rtp_rtcp/source/frame_object.h"
 
 namespace webrtc {

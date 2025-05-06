@@ -10,14 +10,24 @@
 
 #include "video/buffered_frame_decryptor.h"
 
-#include <map>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "api/crypto/frame_decryptor_interface.h"
+#include "api/make_ref_counted.h"
+#include "api/rtp_packet_infos.h"
+#include "api/scoped_refptr.h"
 #include "api/test/mock_frame_decryptor.h"
-#include "modules/video_coding/packet_buffer.h"
-#include "system_wrappers/include/clock.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_content_type.h"
+#include "api/video/video_rotation.h"
+#include "api/video/video_timing.h"
+#include "modules/rtp_rtcp/source/frame_object.h"
+#include "modules/rtp_rtcp/source/rtp_video_header.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/scoped_key_value_config.h"

@@ -10,10 +10,18 @@
 
 #include "video/adaptation/pixel_limit_resource.h"
 
+#include <optional>
+
+#include "api/adaptation/resource.h"
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
+#include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
 #include "call/adaptation/video_stream_adapter.h"
+#include "call/adaptation/video_stream_input_state_provider.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/task_utils/repeating_task.h"
 
 namespace webrtc {
 

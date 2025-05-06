@@ -10,23 +10,34 @@
 #include "video/config/encoder_stream_factory.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <limits>
-#include <set>
-#include <string>
-#include <utility>
+#include <numeric>
+#include <optional>
+#include <vector>
 
 #include "absl/algorithm/container.h"
-#include "absl/strings/match.h"
 #include "api/field_trials_view.h"
-#include "api/video/video_codec_constants.h"
+#include "api/units/data_rate.h"
+#include "api/video/resolution.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_source_interface.h"
+#include "api/video_codecs/spatial_layer.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_encoder.h"
+#include "call/adaptation/video_source_restrictions.h"
 #include "media/base/media_constants.h"
 #include "media/base/video_adapter.h"
 #include "modules/video_coding/codecs/vp9/svc_config.h"
 #include "modules/video_coding/utility/simulcast_utility.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/experiments/min_video_bitrate_experiment.h"
 #include "rtc_base/experiments/normalize_simulcast_size_experiment.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/numerics/safe_conversions.h"
 #include "video/config/simulcast.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {

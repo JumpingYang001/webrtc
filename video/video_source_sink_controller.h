@@ -11,8 +11,8 @@
 #ifndef VIDEO_VIDEO_SOURCE_SINK_CONTROLLER_H_
 #define VIDEO_VIDEO_SOURCE_SINK_CONTROLLER_H_
 
+#include <cstddef>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "api/sequence_checker.h"
@@ -21,6 +21,7 @@
 #include "api/video/video_source_interface.h"
 #include "call/adaptation/video_source_restrictions.h"
 #include "rtc_base/system/no_unique_address.h"
+#include "rtc_base/thread_annotations.h"
 
 namespace webrtc {
 

@@ -11,8 +11,10 @@
 #include "video/stats_counter.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <map>
+#include <string>
 
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"

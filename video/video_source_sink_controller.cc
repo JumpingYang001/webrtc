@@ -11,12 +11,19 @@
 #include "video/video_source_sink_controller.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
+#include <optional>
 #include <utility>
+#include <vector>
 
-#include "rtc_base/logging.h"
+#include "api/sequence_checker.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video/video_source_interface.h"
+#include "call/adaptation/video_source_restrictions.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "rtc_base/strings/string_builder.h"
 
 namespace webrtc {
 

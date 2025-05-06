@@ -10,26 +10,39 @@
 
 #include "video/receive_statistics_proxy.h"
 
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
-#include <utility>
+#include <vector>
 
+#include "api/rtp_packet_info.h"
+#include "api/rtp_packet_infos.h"
 #include "api/scoped_refptr.h"
 #include "api/units/frequency.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/i420_buffer.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_content_type.h"
 #include "api/video/video_frame.h"
-#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame_type.h"
 #include "api/video/video_rotation.h"
-#include "rtc_base/thread.h"
+#include "api/video/video_timing.h"
+#include "api/video_codecs/video_decoder.h"
+#include "call/video_receive_stream.h"
+#include "modules/rtp_rtcp/include/rtcp_statistics.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/scoped_key_value_config.h"
 #include "test/time_controller/simulated_time_controller.h"
+#include "video/video_quality_observer2.h"
 #include "video/video_receive_stream2.h"
 
 namespace webrtc {

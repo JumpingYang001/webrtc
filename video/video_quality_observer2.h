@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "api/video/video_codec_type.h"
-#include "api/video/video_content_type.h"
 #include "rtc_base/numerics/moving_average.h"
 #include "rtc_base/numerics/sample_counter.h"
 

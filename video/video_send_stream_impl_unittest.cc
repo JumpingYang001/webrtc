@@ -22,7 +22,6 @@
 
 #include "api/array_view.h"
 #include "api/call/bitrate_allocation.h"
-#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/rtc_event_log/rtc_event_log.h"
 #include "api/rtp_parameters.h"
@@ -56,7 +55,6 @@
 #include "video/send_delay_stats.h"
 #include "video/send_statistics_proxy.h"
 #include "video/test/mock_video_stream_encoder.h"
-#include "video/video_stream_encoder.h"
 #include "video/video_stream_encoder_interface.h"
 
 namespace webrtc {

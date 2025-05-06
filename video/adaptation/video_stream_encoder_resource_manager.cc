@@ -13,28 +13,55 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <cmath>
-#include <limits>
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
-#include "absl/algorithm/container.h"
-#include "absl/base/macros.h"
 #include "api/adaptation/resource.h"
 #include "api/field_trials_view.h"
+#include "api/rtp_parameters.h"
+#include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/task_queue_base.h"
+#include "api/units/data_rate.h"
+#include "api/units/data_size.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_adaptation_counters.h"
 #include "api/video/video_adaptation_reason.h"
-#include "api/video/video_source_interface.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_frame.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_encoder.h"
+#include "call/adaptation/adaptation_constraint.h"
+#include "call/adaptation/degradation_preference_provider.h"
+#include "call/adaptation/encoder_settings.h"
+#include "call/adaptation/resource_adaptation_processor_interface.h"
 #include "call/adaptation/video_source_restrictions.h"
+#include "call/adaptation/video_stream_adapter.h"
+#include "call/adaptation/video_stream_input_state_provider.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/experiments/quality_scaler_settings.h"
+#include "rtc_base/experiments/quality_scaling_experiment.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
+#include "system_wrappers/include/clock.h"
+#include "video/adaptation/balanced_constraint.h"
+#include "video/adaptation/bandwidth_quality_scaler_resource.h"
+#include "video/adaptation/bitrate_constraint.h"
+#include "video/adaptation/encode_usage_resource.h"
+#include "video/adaptation/overuse_frame_detector.h"
+#include "video/adaptation/pixel_limit_resource.h"
 #include "video/adaptation/quality_scaler_resource.h"
+#include "video/config/video_encoder_config.h"
+#include "video/video_stream_encoder_observer.h"
 
 namespace webrtc {
 

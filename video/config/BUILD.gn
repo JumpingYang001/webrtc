@@ -32,6 +32,7 @@ rtc_library("streams_config") {
     "../../modules/video_coding:webrtc_vp9_helpers",
     "../../rtc_base:checks",
     "../../rtc_base:logging",
+    "../../rtc_base:safe_conversions",
     "../../rtc_base/experiments:field_trial_parser",
     "../../rtc_base/experiments:min_video_bitrate_experiment",
     "../../rtc_base/experiments:normalize_simulcast_size_experiment",
@@ -49,8 +50,10 @@ rtc_library("encoder_config") {
 
   deps = [
     "../../api:field_trials_view",
+    "../../api:ref_count",
     "../../api:scoped_refptr",
     "../../api/video:resolution",
+    "../../api/video:video_frame",
     "../../api/video_codecs:scalability_mode",
     "../../api/video_codecs:video_codecs_api",
     "../../rtc_base:checks",

@@ -16,6 +16,7 @@
 
 #include "api/adaptation/resource.h"
 #include "api/scoped_refptr.h"
+#include "api/task_queue/task_queue_base.h"
 #include "call/adaptation/video_stream_input_state_provider.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/thread_annotations.h"

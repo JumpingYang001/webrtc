@@ -10,12 +10,16 @@
 
 #include "video/frame_cadence_adapter.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <memory>
+#include <optional>
 #include <utility>
-#include <vector>
 
 #include "absl/functional/any_invocable.h"
+#include "api/field_trials_view.h"
+#include "api/make_ref_counted.h"
 #include "api/metronome/test/fake_metronome.h"
 #include "api/task_queue/default_task_queue_factory.h"
 #include "api/task_queue/task_queue_base.h"
@@ -24,11 +28,13 @@
 #include "api/units/timestamp.h"
 #include "api/video/nv12_buffer.h"
 #include "api/video/video_frame.h"
+#include "api/video_track_source_constraints.h"
 #include "rtc_base/event.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/rate_statistics.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/time_utils.h"
+#include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/ntp_time.h"
 #include "system_wrappers/include/sleep.h"

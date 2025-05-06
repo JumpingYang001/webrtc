@@ -74,6 +74,7 @@ rtc_library("frame_pair_corruption_score") {
     ":halton_frame_sampler",
     ":utils",
     "../../api:scoped_refptr",
+    "../../api/video:corruption_detection_filter_settings",
     "../../api/video:video_frame",
     "../../rtc_base:checks",
     "//third_party/abseil-cpp/absl/strings:string_view",
@@ -124,6 +125,7 @@ rtc_library("utils") {
   deps = [
     "../../api:scoped_refptr",
     "../../api/video:video_frame",
+    "../../rtc_base:checks",
     "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/strings:strings",
   ]

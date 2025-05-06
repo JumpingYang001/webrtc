@@ -9,8 +9,12 @@
  */
 #include "video/config/video_encoder_config.h"
 
+#include <cstddef>
+#include <optional>
 #include <string>
 
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_codec.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 

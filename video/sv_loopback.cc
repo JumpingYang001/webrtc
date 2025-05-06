@@ -26,7 +26,6 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/string_encode.h"
 #include "system_wrappers/include/field_trial.h"
-#include "test/field_trial.h"
 #include "test/gtest.h"
 #include "test/run_test.h"
 #include "test/test_flags.h"

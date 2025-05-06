@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include "api/units/time_delta.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
 #include "call/rtp_config.h"

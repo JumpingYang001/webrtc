@@ -18,12 +18,14 @@
 #include <vector>
 
 #include "api/field_trials_view.h"
+#include "api/ref_count.h"
 #include "api/scoped_refptr.h"
 #include "api/video/resolution.h"
+#include "api/video/video_codec_type.h"
 #include "api/video_codecs/scalability_mode.h"
 #include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/spatial_layer.h"
 #include "api/video_codecs/video_codec.h"
-#include "rtc_base/ref_count.h"
 
 namespace webrtc {
 

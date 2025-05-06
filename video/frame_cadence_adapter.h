@@ -11,17 +11,18 @@
 #ifndef VIDEO_FRAME_CADENCE_ADAPTER_H_
 #define VIDEO_FRAME_CADENCE_ADAPTER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
 
-#include "absl/base/attributes.h"
 #include "api/field_trials_view.h"
 #include "api/metronome/metronome.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
-#include "rtc_base/synchronization/mutex.h"
-#include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/clock.h"
 
 namespace webrtc {

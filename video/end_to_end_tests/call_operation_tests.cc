@@ -9,18 +9,21 @@
  */
 
 #include <memory>
+#include <optional>
 
+#include "api/rtp_parameters.h"
 #include "api/test/create_frame_generator.h"
 #include "api/test/frame_generator_interface.h"
 #include "api/test/simulated_network.h"
-#include "call/fake_network_pipe.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
+#include "rtc_base/event.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
-#include "test/field_trial.h"
+#include "test/direct_transport.h"
 #include "test/frame_forwarder.h"
 #include "test/gtest.h"
-#include "test/network/simulated_network.h"
 #include "test/null_transport.h"
 #include "test/video_test_constants.h"
 

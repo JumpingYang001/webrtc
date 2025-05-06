@@ -10,11 +10,12 @@
 #ifndef VIDEO_CONFIG_ENCODER_STREAM_FACTORY_H_
 #define VIDEO_CONFIG_ENCODER_STREAM_FACTORY_H_
 
-#include <string>
+#include <optional>
 #include <vector>
 
 #include "api/field_trials_view.h"
 #include "api/units/data_rate.h"
+#include "api/video/resolution.h"
 #include "api/video_codecs/video_encoder.h"
 #include "call/adaptation/video_source_restrictions.h"
 #include "video/config/video_encoder_config.h"

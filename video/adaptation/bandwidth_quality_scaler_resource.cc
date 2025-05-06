@@ -10,12 +10,20 @@
 
 #include "video/adaptation/bandwidth_quality_scaler_resource.h"
 
-#include <utility>
+#include <cstdint>
+#include <memory>
+#include <vector>
 
+#include "api/adaptation/resource.h"
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_encoder.h"
+#include "modules/video_coding/utility/bandwidth_quality_scaler.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/experiments/balanced_degradation_settings.h"
-#include "rtc_base/logging.h"
-#include "rtc_base/time_utils.h"
+#include "video/adaptation/video_stream_encoder_resource.h"
 
 namespace webrtc {
 

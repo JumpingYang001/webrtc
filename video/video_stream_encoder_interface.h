@@ -11,18 +11,20 @@
 #ifndef VIDEO_VIDEO_STREAM_ENCODER_INTERFACE_H_
 #define VIDEO_VIDEO_STREAM_ENCODER_INTERFACE_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "api/adaptation/resource.h"
 #include "api/fec_controller_override.h"
-#include "api/rtc_error.h"
 #include "api/rtp_parameters.h"  // For DegradationPreference.
 #include "api/rtp_sender_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/units/data_rate.h"
-#include "api/video/video_bitrate_allocator.h"
+#include "api/video/video_bitrate_allocation.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
 #include "api/video/video_layers_allocation.h"
-#include "api/video/video_sink_interface.h"
 #include "api/video/video_source_interface.h"
 #include "api/video_codecs/video_encoder.h"
 #include "video/config/video_encoder_config.h"

@@ -12,18 +12,11 @@
 #define VIDEO_VIDEO_STREAM_DECODER2_H_
 
 #include <cstdint>
-#include <list>
-#include <map>
-#include <memory>
-#include <vector>
 
-#include "api/scoped_refptr.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
 #include "api/video_codecs/video_decoder.h"
-#include "modules/remote_bitrate_estimator/include/remote_bitrate_estimator.h"
 #include "modules/video_coding/include/video_coding_defines.h"
-#include "rtc_base/platform_thread.h"
 
 namespace webrtc {
 

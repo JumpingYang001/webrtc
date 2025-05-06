@@ -11,19 +11,35 @@
 #include "video/send_statistics_proxy.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "api/units/data_rate.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
+#include "api/video/video_adaptation_counters.h"
 #include "api/video/video_adaptation_reason.h"
 #include "api/video/video_bitrate_allocation.h"
 #include "api/video/video_codec_type.h"
 #include "api/video_codecs/scalability_mode.h"
 #include "api/video_codecs/video_codec.h"
+#include "call/video_send_stream.h"
+#include "common_video/frame_counts.h"
+#include "common_video/include/quality_limitation_reason.h"
+#include "modules/rtp_rtcp/include/report_block_data.h"
+#include "modules/rtp_rtcp/include/rtcp_statistics.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/rtp_rtcp/source/rtcp_packet/report_block.h"
+#include "modules/video_coding/codecs/interface/common_constants.h"
+#include "modules/video_coding/include/video_codec_interface.h"
 #include "rtc_base/fake_clock.h"
+#include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

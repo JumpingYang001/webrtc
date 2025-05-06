@@ -12,10 +12,28 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "modules/video_coding/include/video_codec_interface.h"
+#include "absl/strings/string_view.h"
+#include "api/rtp_packet_info.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/pending_task_safety_flag.h"
+#include "api/task_queue/task_queue_base.h"
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "api/video/video_codec_type.h"
+#include "api/video/video_content_type.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_type.h"
+#include "api/video/video_timing.h"
+#include "api/video_codecs/video_decoder.h"
+#include "call/video_receive_stream.h"
+#include "modules/rtp_rtcp/include/rtcp_statistics.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
@@ -23,6 +41,8 @@
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"
+#include "video/stats_counter.h"
+#include "video/video_quality_observer2.h"
 #include "video/video_receive_stream2.h"
 
 namespace webrtc {

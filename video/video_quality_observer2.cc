@@ -13,8 +13,12 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <iterator>
+#include <optional>
 #include <string>
 
+#include "api/video/video_codec_type.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
 #include "system_wrappers/include/metrics.h"

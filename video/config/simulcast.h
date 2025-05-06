@@ -19,6 +19,7 @@
 #include "api/field_trials_view.h"
 #include "api/units/data_rate.h"
 #include "api/video/resolution.h"
+#include "api/video/video_codec_type.h"
 #include "video/config/video_encoder_config.h"
 
 namespace webrtc {

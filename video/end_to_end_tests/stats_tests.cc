@@ -8,27 +8,54 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "absl/algorithm/container.h"
+#include "api/array_view.h"
+#include "api/environment/environment.h"
+#include "api/rtp_headers.h"
+#include "api/rtp_parameters.h"
+#include "api/scoped_refptr.h"
+#include "api/task_queue/pending_task_safety_flag.h"
 #include "api/task_queue/task_queue_base.h"
 #include "api/test/simulated_network.h"
 #include "api/test/video/function_video_encoder_factory.h"
+#include "api/transport/bitrate_settings.h"
+#include "api/units/time_delta.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_sink_interface.h"
+#include "api/video_codecs/sdp_video_format.h"
+#include "call/call.h"
+#include "call/call_config.h"
 #include "call/fake_network_pipe.h"
+#include "call/video_receive_stream.h"
+#include "call/video_send_stream.h"
 #include "modules/rtp_rtcp/source/rtp_packet.h"
 #include "modules/video_coding/include/video_coding_defines.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/event.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
+#include "test/fake_decoder.h"
 #include "test/fake_encoder.h"
 #include "test/gtest.h"
-#include "test/network/simulated_network.h"
 #include "test/rtcp_packet_parser.h"
+#include "test/rtp_rtcp_observer.h"
 #include "test/video_test_constants.h"
+#include "video/config/video_encoder_config.h"
 
 namespace webrtc {
 namespace {

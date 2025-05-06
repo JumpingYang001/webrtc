@@ -11,12 +11,14 @@
 #ifndef VIDEO_RTP_STREAMS_SYNCHRONIZER2_H_
 #define VIDEO_RTP_STREAMS_SYNCHRONIZER2_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "api/sequence_checker.h"
 #include "api/task_queue/task_queue_base.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/task_utils/repeating_task.h"
+#include "rtc_base/thread_annotations.h"
 #include "video/stream_synchronization.h"
 
 namespace webrtc {

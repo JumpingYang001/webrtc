@@ -11,18 +11,16 @@
 #ifndef VIDEO_ADAPTATION_BANDWIDTH_QUALITY_SCALER_RESOURCE_H_
 #define VIDEO_ADAPTATION_BANDWIDTH_QUALITY_SCALER_RESOURCE_H_
 
+#include <cstdint>
 #include <memory>
-#include <optional>
-#include <queue>
-#include <string>
 #include <vector>
 
 #include "api/scoped_refptr.h"
-#include "api/video/video_adaptation_reason.h"
+#include "api/video/encoded_image.h"
+#include "api/video/video_codec_type.h"
 #include "api/video_codecs/video_encoder.h"
-#include "call/adaptation/degradation_preference_provider.h"
-#include "call/adaptation/resource_adaptation_processor_interface.h"
 #include "modules/video_coding/utility/bandwidth_quality_scaler.h"
+#include "rtc_base/thread_annotations.h"
 #include "video/adaptation/video_stream_encoder_resource.h"
 
 namespace webrtc {

@@ -10,10 +10,21 @@
 
 #include "video/adaptation/encode_usage_resource.h"
 
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <optional>
 #include <utility>
 
+#include "api/adaptation/resource.h"
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/task_queue_base.h"
+#include "api/video/video_frame.h"
 #include "rtc_base/checks.h"
+#include "video/adaptation/overuse_frame_detector.h"
+#include "video/adaptation/video_stream_encoder_resource.h"
 
 namespace webrtc {
 

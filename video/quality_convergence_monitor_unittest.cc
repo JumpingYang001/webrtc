@@ -10,8 +10,10 @@
  */
 #include "video/quality_convergence_monitor.h"
 
-#include <vector>
+#include <cstddef>
+#include <memory>
 
+#include "api/video/video_codec_type.h"
 #include "test/gtest.h"
 #include "test/scoped_key_value_config.h"
 

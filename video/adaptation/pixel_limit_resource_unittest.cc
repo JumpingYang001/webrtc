@@ -14,11 +14,15 @@
 #include <utility>
 
 #include "absl/functional/any_invocable.h"
+#include "api/adaptation/resource.h"
+#include "api/scoped_refptr.h"
+#include "api/task_queue/task_queue_base.h"
+#include "api/task_queue/task_queue_factory.h"
+#include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "call/adaptation/test/fake_video_stream_input_state_provider.h"
 #include "call/adaptation/test/mock_resource_listener.h"
 #include "call/adaptation/video_stream_adapter.h"
-#include "rtc_base/task_queue_for_test.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/time_controller/simulated_time_controller.h"

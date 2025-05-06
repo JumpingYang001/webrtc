@@ -10,20 +10,25 @@
 
 #include "video/adaptation/overuse_frame_detector.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
 
+#include "api/array_view.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
-#include "api/video/encoded_image.h"
+#include "api/units/time_delta.h"
 #include "api/video/i420_buffer.h"
-#include "api/video/video_adaptation_reason.h"
-#include "modules/video_coding/utility/quality_scaler.h"
+#include "api/video/video_rotation.h"
 #include "rtc_base/event.h"
 #include "rtc_base/fake_clock.h"
 #include "rtc_base/random.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/time_utils.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
+#include "video/video_stream_encoder_observer.h"
 
 namespace webrtc {
 

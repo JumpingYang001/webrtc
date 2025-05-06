@@ -12,12 +12,16 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
 #include "absl/functional/any_invocable.h"
+#include "api/metronome/metronome.h"
 #include "api/metronome/test/fake_metronome.h"
 #include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
+#include "system_wrappers/include/clock.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/time_controller/simulated_time_controller.h"

@@ -14,12 +14,13 @@
 #include <vector>
 
 #include "absl/flags/flag.h"
-#include "absl/flags/parse.h"
+#include "api/rtp_parameters.h"
 #include "api/test/simulated_network.h"
 #include "api/test/test_dependency_factory.h"
 #include "api/test/video_quality_test_fixture.h"
 #include "api/units/data_rate.h"
 #include "api/video_codecs/sdp_video_format.h"
+#include "api/video_codecs/spatial_layer.h"
 #include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/vp9_profile.h"
 #include "modules/video_coding/codecs/vp9/include/vp9.h"

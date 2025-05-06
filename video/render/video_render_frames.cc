@@ -10,10 +10,12 @@
 
 #include "video/render/video_render_frames.h"
 
-#include <type_traits>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <utility>
 
-#include "rtc_base/checks.h"
+#include "api/video/video_frame.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/metrics.h"
