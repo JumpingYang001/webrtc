@@ -73,20 +73,6 @@ namespace webrtc {
 
 absl_nullable scoped_refptr<AudioDeviceModuleImpl>
 AudioDeviceModuleImpl::Create(const Environment& env, AudioLayer audio_layer) {
-  return Create(audio_layer, &env.task_queue_factory());
-}
-
-scoped_refptr<AudioDeviceModule> AudioDeviceModule::Create(
-    AudioLayer audio_layer,
-    TaskQueueFactory* task_queue_factory) {
-  RTC_DLOG(LS_INFO) << __FUNCTION__;
-  return AudioDeviceModuleImpl::Create(audio_layer, task_queue_factory);
-}
-
-// static
-absl_nullable scoped_refptr<AudioDeviceModuleImpl>
-AudioDeviceModuleImpl::Create(AudioLayer audio_layer,
-                              TaskQueueFactory* task_queue_factory) {
   RTC_DLOG(LS_INFO) << __FUNCTION__;
 
   // The "AudioDeviceModule::kWindowsCoreAudio2" audio layer has its own
@@ -107,8 +93,8 @@ AudioDeviceModuleImpl::Create(AudioLayer audio_layer,
   }
 
   // Create the generic reference counted (platform independent) implementation.
-  auto audio_device =
-      make_ref_counted<AudioDeviceModuleImpl>(audio_layer, task_queue_factory);
+  auto audio_device = make_ref_counted<AudioDeviceModuleImpl>(
+      audio_layer, &env.task_queue_factory());
 
   // Ensure that the current platform is supported.
   if (audio_device->CheckPlatform() == -1) {

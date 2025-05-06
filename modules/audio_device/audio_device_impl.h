@@ -50,12 +50,6 @@ class AudioDeviceModuleImpl : public AudioDeviceModuleForTest {
       const Environment& env,
       AudioLayer audio_layer);
 
-  // TODO: bugs.webrtc.org/413413572 - Remove this variant when top level
-  // `AudioDeviceModule::Create` is no longer used.
-  static absl_nullable scoped_refptr<AudioDeviceModuleImpl> Create(
-      AudioLayer audio_layer,
-      TaskQueueFactory* task_queue_factory);
-
   AudioDeviceModuleImpl(AudioLayer audio_layer,
                         TaskQueueFactory* task_queue_factory);
   // If `create_detached` is true, created ADM can be used on another thread
