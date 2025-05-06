@@ -36,8 +36,11 @@ RTCError CheckInputConsistency(const std::vector<Codec>& codecs) {
   for (size_t i = 0; i < codecs.size(); i++) {
     const Codec& codec = codecs[i];
     if (codec.id != Codec::kIdNotSet) {
-      bool inserted = pt_to_index.insert({codec.id, i}).second;
-      if (!inserted) {
+      auto [it, success] = pt_to_index.insert({codec.id, i});
+      if (!success) {
+        RTC_LOG(LS_ERROR) << "Duplicate payload type in codec list, " << codec
+                          << " and " << codecs[it->second]
+                          << " have the same ID";
         LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,
                              "Duplicate payload type in codec list");
       }
