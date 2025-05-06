@@ -90,4 +90,7 @@ default_args = {
   enable_rust = true
   enable_rust_cxx = true
   enable_chromium_prelude = true
+
+  # See context on https://issues.chromium.org/issues/415076048.
+  enable_js_protobuf = false
 }
