@@ -117,7 +117,6 @@ if (is_android) {
       ":base_jni",
       ":builtin_audio_codecs_jni",
       ":default_video_codec_factory_jni",
-      ":environment_jni",
       ":java_audio_device_module_jni",
       ":peerconnection_jni",
       ":video_jni",
@@ -179,15 +178,6 @@ if (is_android) {
       ":generated_native_api_jni_java",
       ":generated_rtcerror_jni_java",
       "../../rtc_base:base_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
-  }
-
-  rtc_android_library("environment_java") {
-    visibility = [ "*" ]
-    sources = [ "api/org/webrtc/Environment.java" ]
-    deps = [
-      ":generated_environment_jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
@@ -340,7 +330,6 @@ if (is_android) {
       ":base_java",
       ":builtin_audio_codecs_java",
       ":default_video_codec_factory_java",
-      ":environment_java",
       ":generated_base_jni_java",
       ":generated_peerconnection_jni_java",
 
@@ -627,18 +616,6 @@ if (current_os == "linux" || is_android) {
     ]
   }
 
-  rtc_library("environment_jni") {
-    sources = [ "src/jni/environment.cc" ]
-    deps = [
-      ":generated_environment_jni",
-      ":native_api_jni",
-      "../../api:field_trials",
-      "../../api/environment",
-      "../../api/environment:environment_factory",
-      "//third_party/jni_zero",
-    ]
-  }
-
   rtc_library("builtin_audio_codecs_jni") {
     visibility = [ "*" ]
     allow_poison = [ "audio_codecs" ]
@@ -828,7 +805,6 @@ if (current_os == "linux" || is_android) {
       "../../api/audio:builtin_audio_processing_builder",
       "../../api/audio_codecs:audio_codecs_api",
       "../../api/crypto:options",
-      "../../api/environment",
       "../../api/neteq:neteq_api",
       "../../api/rtc_event_log:rtc_event_log_factory",
       "../../api/task_queue:default_task_queue_factory",
@@ -1340,12 +1316,6 @@ if (current_os == "linux" || is_android) {
       "java/util/ArrayList.class",
       "java/lang/Enum.class",
     ]
-    jni_generator_include = "//sdk/android/src/jni/jni_generator_helper.h"
-  }
-
-  generate_jni("generated_environment_jni") {
-    sources = [ "api/org/webrtc/Environment.java" ]
-    namespace = "webrtc::jni"
     jni_generator_include = "//sdk/android/src/jni/jni_generator_helper.h"
   }
 

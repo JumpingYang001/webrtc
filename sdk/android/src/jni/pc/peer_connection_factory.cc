@@ -29,7 +29,6 @@
 #include "api/audio_codecs/audio_encoder_factory.h"
 #include "api/audio_options.h"
 #include "api/enable_media.h"
-#include "api/environment/environment.h"
 #include "api/fec_controller.h"
 #include "api/media_stream_interface.h"
 #include "api/neteq/neteq_factory.h"
@@ -257,7 +256,6 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
     JNIEnv* jni,
     const jni_zero::JavaParamRef<jobject>& jcontext,
     const jni_zero::JavaParamRef<jobject>& joptions,
-    const Environment& env,
     scoped_refptr<AudioDeviceModule> audio_device_module,
     scoped_refptr<AudioEncoderFactory> audio_encoder_factory,
     scoped_refptr<AudioDecoderFactory> audio_decoder_factory,
@@ -294,8 +292,8 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
       JavaToNativePeerConnectionFactoryOptions(jni, joptions);
 
   PeerConnectionFactoryDependencies dependencies;
-  dependencies.env = env;
-  dependencies.socket_factory = socket_server.get();
+  // TODO(bugs.webrtc.org/13145): Also add socket_server.get() to the
+  // dependencies.
   dependencies.network_thread = network_thread.get();
   dependencies.worker_thread = worker_thread.get();
   dependencies.signaling_thread = signaling_thread.get();
@@ -349,7 +347,6 @@ JNI_PeerConnectionFactory_CreatePeerConnectionFactory(
     JNIEnv* jni,
     const jni_zero::JavaParamRef<jobject>& jcontext,
     const jni_zero::JavaParamRef<jobject>& joptions,
-    jlong webrtc_env_ref,
     jlong native_audio_device_module,
     jlong native_audio_encoder_factory,
     jlong native_audio_decoder_factory,
@@ -360,12 +357,10 @@ JNI_PeerConnectionFactory_CreatePeerConnectionFactory(
     jlong native_network_controller_factory,
     jlong native_network_state_predictor_factory,
     jlong native_neteq_factory) {
-  const Environment* env = reinterpret_cast<Environment*>(webrtc_env_ref);
-  RTC_CHECK(env != nullptr);
   scoped_refptr<AudioProcessing> audio_processor(
       reinterpret_cast<AudioProcessing*>(native_audio_processor));
   return CreatePeerConnectionFactoryForJava(
-      jni, jcontext, joptions, *env,
+      jni, jcontext, joptions,
       scoped_refptr<AudioDeviceModule>(
           reinterpret_cast<AudioDeviceModule*>(native_audio_device_module)),
       TakeOwnershipOfRefPtr<AudioEncoderFactory>(native_audio_encoder_factory),
