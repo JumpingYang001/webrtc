@@ -11,7 +11,12 @@
 #ifndef MODULES_AUDIO_CODING_CODECS_G722_AUDIO_DECODER_G722_H_
 #define MODULES_AUDIO_CODING_CODECS_G722_AUDIO_DECODER_G722_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 #include "api/audio_codecs/audio_decoder.h"
+#include "rtc_base/buffer.h"
 
 typedef struct WebRtcG722DecInst G722DecInst;
 

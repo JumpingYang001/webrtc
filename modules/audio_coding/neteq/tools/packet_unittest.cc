@@ -12,6 +12,13 @@
 
 #include "modules/audio_coding/neteq/tools/packet.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <utility>
+
+#include "api/rtp_headers.h"
+#include "rtc_base/copy_on_write_buffer.h"
 #include "test/gtest.h"
 
 namespace webrtc {

@@ -8,10 +8,19 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "opus.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <map>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <vector>
 
-#include "modules/audio_coding/codecs/opus/opus_inst.h"
+#include "api/array_view.h"
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "modules/audio_coding/neteq/tools/audio_loop.h"
 #include "rtc_base/checks.h"

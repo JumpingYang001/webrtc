@@ -10,6 +10,7 @@
 
 #include "modules/audio_coding/neteq/comfort_noise.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 
@@ -20,7 +21,6 @@
 #include "modules/audio_coding/neteq/decoder_database.h"
 #include "modules/audio_coding/neteq/dsp_helper.h"
 #include "modules/audio_coding/neteq/sync_buffer.h"
-#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 

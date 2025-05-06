@@ -8,14 +8,27 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <complex>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "api/audio_codecs/audio_decoder.h"
+#include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/opus/audio_decoder_opus.h"
 #include "api/audio_codecs/opus/audio_encoder_opus.h"
+#include "api/audio_codecs/opus/audio_encoder_opus_config.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "common_audio/include/audio_util.h"
 #include "common_audio/window_generator.h"
 #include "modules/audio_coding/codecs/opus/test/lapped_transform.h"
 #include "modules/audio_coding/neteq/tools/audio_loop.h"
+#include "rtc_base/buffer.h"
 #include "test/explicit_key_value_config.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

@@ -10,11 +10,21 @@
 
 #include "modules/audio_coding/codecs/cng/audio_encoder_cng.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
-#include <vector>
+#include <optional>
+#include <utility>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/units/time_delta.h"
+#include "common_audio/vad/include/vad.h"
 #include "common_audio/vad/mock/mock_vad.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/numerics/safe_conversions.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_audio_encoder.h"
 #include "test/testsupport/rtc_expect_death.h"

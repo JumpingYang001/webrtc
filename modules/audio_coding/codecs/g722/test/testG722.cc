@@ -21,6 +21,8 @@
 
 /* Runtime statistics */
 #include <time.h>
+
+#include <cstdint>
 #define CLOCKS_PER_SEC_G722 100000
 
 // Forward declaration

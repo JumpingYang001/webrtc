@@ -12,20 +12,39 @@
 
 #include <stdio.h>
 
+#include <algorithm>
+#include <climits>
 #include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <fstream>
+#include <iterator>
+#include <memory>
+#include <ostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "absl/flags/flag.h"
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
+#include "api/scoped_refptr.h"
 #include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/tools/neteq_quality_test.h"
 #include "modules/audio_coding/neteq/tools/output_audio_file.h"
 #include "modules/audio_coding/neteq/tools/output_wav_file.h"
 #include "modules/audio_coding/neteq/tools/resample_input_audio_file.h"
+#include "modules/audio_coding/neteq/tools/rtp_generator.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/string_encode.h"
-#include "system_wrappers/include/clock.h"
+#include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 
 ABSL_FLAG(std::string,

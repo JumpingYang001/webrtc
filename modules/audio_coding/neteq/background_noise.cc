@@ -13,10 +13,15 @@
 #include <string.h>  // memcpy
 
 #include <algorithm>  // min, max
+#include <cstdint>
 
+#include "api/array_view.h"
+#include "common_audio/signal_processing/dot_product_with_scale.h"
 #include "common_audio/signal_processing/include/signal_processing_library.h"
+#include "common_audio/signal_processing/include/spl_inl.h"
 #include "modules/audio_coding/neteq/audio_multi_vector.h"
 #include "modules/audio_coding/neteq/cross_correlation.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 namespace {

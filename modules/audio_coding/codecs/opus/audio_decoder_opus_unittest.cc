@@ -10,7 +10,10 @@
 
 #include "modules/audio_coding/codecs/opus/audio_decoder_opus.h"
 
+#include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -19,6 +22,7 @@
 #include "api/array_view.h"
 #include "api/audio/audio_frame.h"
 #include "api/audio_codecs/audio_decoder.h"
+#include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/opus/audio_encoder_opus_config.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
@@ -26,6 +30,7 @@
 #include "modules/audio_coding/test/PCMFile.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/random.h"
 #include "test/explicit_key_value_config.h"
 #include "test/gmock.h"

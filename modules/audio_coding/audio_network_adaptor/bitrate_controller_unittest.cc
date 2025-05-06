@@ -10,8 +10,12 @@
 
 #include "modules/audio_coding/audio_network_adaptor/bitrate_controller.h"
 
+#include <cstddef>
+#include <optional>
+
+#include "modules/audio_coding/audio_network_adaptor/controller.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "test/field_trial.h"
 #include "test/gtest.h"
 
 namespace webrtc {

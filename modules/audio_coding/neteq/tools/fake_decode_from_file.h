@@ -11,12 +11,17 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_FAKE_DECODE_FROM_FILE_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_FAKE_DECODE_FROM_FILE_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "api/array_view.h"
 #include "api/audio_codecs/audio_decoder.h"
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
+#include "rtc_base/buffer.h"
 
 namespace webrtc {
 namespace test {

@@ -11,8 +11,9 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_AUDIO_LOOP_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_AUDIO_LOOP_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <string>
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"

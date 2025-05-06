@@ -8,11 +8,19 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
+#include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/opus/audio_encoder_opus.h"
+#include "api/audio_codecs/opus/audio_encoder_opus_config.h"
+#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
 #include "api/test/metrics/metric.h"
 #include "modules/audio_coding/neteq/tools/audio_loop.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/time_utils.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

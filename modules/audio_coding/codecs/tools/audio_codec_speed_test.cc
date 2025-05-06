@@ -10,6 +10,12 @@
 
 #include "modules/audio_coding/codecs/tools/audio_codec_speed_test.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <string>
+
 #include "rtc_base/checks.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

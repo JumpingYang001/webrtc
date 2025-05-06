@@ -10,10 +10,14 @@
 
 #include "modules/audio_coding/neteq/tools/initial_packet_inserter_neteq_input.h"
 
-#include <limits>
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "api/rtp_headers.h"
+#include "modules/audio_coding/neteq/tools/neteq_input.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

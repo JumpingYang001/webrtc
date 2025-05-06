@@ -10,7 +10,18 @@
 
 #include "modules/audio_coding/neteq/tools/fake_decode_from_file.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <vector>
+
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_decoder.h"
+#include "modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 

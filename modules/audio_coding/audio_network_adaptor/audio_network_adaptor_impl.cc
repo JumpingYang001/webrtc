@@ -12,15 +12,20 @@
 
 #include <stdint.h>
 
+#include <cstddef>
+#include <cstdio>
+#include <memory>
+#include <optional>
 #include <utility>
-#include <vector>
 
+#include "api/audio_codecs/audio_encoder.h"
+#include "modules/audio_coding/audio_network_adaptor/controller.h"
 #include "modules/audio_coding/audio_network_adaptor/controller_manager.h"
 #include "modules/audio_coding/audio_network_adaptor/debug_dump_writer.h"
 #include "modules/audio_coding/audio_network_adaptor/event_log_writer.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/field_trial.h"
 
 namespace webrtc {
 

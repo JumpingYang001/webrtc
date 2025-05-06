@@ -13,9 +13,11 @@
 #include <string.h>  // memset
 
 #include <algorithm>
+#include <cstdint>
 
 #include "absl/strings/string_view.h"
-#include "modules/audio_coding/neteq/delay_manager.h"
+#include "api/neteq/neteq.h"
+#include "api/neteq/tick_timer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "system_wrappers/include/metrics.h"

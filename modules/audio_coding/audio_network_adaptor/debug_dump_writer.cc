@@ -10,17 +10,24 @@
 
 #include "modules/audio_coding/audio_network_adaptor/debug_dump_writer.h"
 
+#include <cstdint>
+#include <cstdio>
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "modules/audio_coding/audio_network_adaptor/controller.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/system/file_wrapper.h"
 
 #if WEBRTC_ENABLE_PROTOBUF
 #ifdef WEBRTC_ANDROID_PLATFORM_BUILD
+#include "external/webrtc/webrtc/modules/audio_coding/audio_network_adaptor/config.pb.h"
 #include "external/webrtc/webrtc/modules/audio_coding/audio_network_adaptor/debug_dump.pb.h"
 #else
+#include "modules/audio_coding/audio_network_adaptor/config.pb.h"
 #include "modules/audio_coding/audio_network_adaptor/debug_dump.pb.h"
 #endif
 #endif

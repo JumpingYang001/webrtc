@@ -13,6 +13,7 @@
 
 #include <string.h>  // size_t
 
+#include <cstdint>
 #include <memory>
 
 #include "api/array_view.h"

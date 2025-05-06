@@ -10,14 +10,26 @@
 
 #include "modules/audio_coding/neteq/test/neteq_decoding_test.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <set>
+#include <string>
+
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio/audio_frame.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
 #include "api/rtp_headers.h"
 #include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/test/result_sink.h"
+#include "modules/audio_coding/neteq/tools/rtp_file_source.h"
 #include "rtc_base/strings/string_builder.h"
+#include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 
 #ifdef WEBRTC_NETEQ_UNITTEST_BITEXACT
@@ -25,7 +37,7 @@
 #ifdef WEBRTC_ANDROID_PLATFORM_BUILD
 #include "external/webrtc/webrtc/modules/audio_coding/neteq/neteq_unittest.pb.h"
 #else
-#include "modules/audio_coding/neteq/neteq_unittest.pb.h"
+#include "modules/audio_coding/neteq/neteq_unittest.pb.h"  // IWYU pragma: keep
 #endif
 
 #endif

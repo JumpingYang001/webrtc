@@ -13,18 +13,23 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "api/audio_codecs/audio_encoder.h"
-#include "api/audio_codecs/builtin_audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/environment/environment_factory.h"
 #include "modules/audio_coding/include/audio_coding_module.h"
+#include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "modules/audio_coding/neteq/tools/packet.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/string_encode.h"
-#include "test/gtest.h"
+#include "rtc_base/copy_on_write_buffer.h"
 
 namespace webrtc {
 namespace test {

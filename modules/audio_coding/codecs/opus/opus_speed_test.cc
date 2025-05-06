@@ -8,8 +8,16 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <ctime>
+#include <string>
+#include <tuple>
+
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "modules/audio_coding/codecs/tools/audio_codec_speed_test.h"
+#include "test/gtest.h"
 
 using ::std::string;
 

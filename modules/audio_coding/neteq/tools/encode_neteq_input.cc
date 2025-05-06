@@ -10,8 +10,15 @@
 
 #include "modules/audio_coding/neteq/tools/encode_neteq_input.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <utility>
 
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/rtp_headers.h"
+#include "modules/audio_coding/neteq/tools/neteq_input.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 

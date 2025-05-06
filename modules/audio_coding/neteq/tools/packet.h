@@ -11,6 +11,8 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_PACKET_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_PACKET_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <list>
 
 #include "api/array_view.h"

@@ -10,8 +10,17 @@
 
 #include "modules/audio_coding/test/Channel.h"
 
-#include <iostream>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 
+#include "api/array_view.h"
+#include "api/neteq/neteq.h"
+#include "api/rtp_headers.h"
+#include "api/units/timestamp.h"
+#include "modules/audio_coding/include/audio_coding_module_typedefs.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/time_utils.h"
 

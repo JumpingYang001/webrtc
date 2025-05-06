@@ -12,9 +12,11 @@
 
 #include <stdlib.h>
 
-#include <string>
+#include <cstdint>
+#include <cstring>
 #include <vector>
 
+#include "modules/audio_coding/neteq/audio_vector.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"
 

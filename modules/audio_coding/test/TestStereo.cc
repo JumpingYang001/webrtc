@@ -10,15 +10,30 @@
 
 #include "modules/audio_coding/test/TestStereo.h"
 
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <string>
+#include <utility>
 
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
+#include "api/array_view.h"
+#include "api/audio/audio_frame.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
+#include "api/rtp_headers.h"
+#include "api/rtp_parameters.h"
+#include "api/units/timestamp.h"
+#include "modules/audio_coding/include/audio_coding_module.h"
 #include "modules/audio_coding/include/audio_coding_module_typedefs.h"
-#include "modules/include/module_common_types.h"
+#include "modules/audio_coding/test/PCMFile.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

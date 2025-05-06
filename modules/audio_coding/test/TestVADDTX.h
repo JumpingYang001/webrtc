@@ -11,13 +11,18 @@
 #ifndef MODULES_AUDIO_CODING_TEST_TESTVADDTX_H_
 #define MODULES_AUDIO_CODING_TEST_TESTVADDTX_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "absl/strings/string_view.h"
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/audio_codecs/audio_encoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment.h"
 #include "api/neteq/neteq.h"
+#include "api/scoped_refptr.h"
 #include "common_audio/vad/include/vad.h"
 #include "modules/audio_coding/acm2/acm_resampler.h"
 #include "modules/audio_coding/include/audio_coding_module.h"

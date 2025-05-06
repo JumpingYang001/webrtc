@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <vector>
 
 namespace webrtc {

@@ -11,15 +11,22 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_NETEQ_QUALITY_TEST_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_NETEQ_QUALITY_TEST_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <memory>
+#include <set>
 
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/neteq/neteq.h"
+#include "api/rtp_headers.h"
+#include "api/scoped_refptr.h"
 #include "modules/audio_coding/neteq/tools/audio_sink.h"
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "modules/audio_coding/neteq/tools/rtp_generator.h"
-#include "system_wrappers/include/clock.h"
+#include "rtc_base/buffer.h"
 #include "test/gtest.h"
 
 namespace webrtc {

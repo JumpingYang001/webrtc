@@ -20,14 +20,25 @@
 #include "modules/audio_coding/codecs/opus/audio_encoder_multi_channel_opus_impl.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/strings/match.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/audio_format.h"
+#include "api/audio_codecs/opus/audio_encoder_multi_channel_opus_config.h"
 #include "api/audio_codecs/opus/audio_encoder_opus_config.h"
+#include "api/units/time_delta.h"
 #include "modules/audio_coding/codecs/opus/audio_coder_opus_common.h"
+#include "modules/audio_coding/codecs/opus/opus_interface.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"

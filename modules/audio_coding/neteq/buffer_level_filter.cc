@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstddef>
 
 #include "rtc_base/numerics/safe_conversions.h"
 

@@ -11,13 +11,17 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "api/array_view.h"
 #include "modules/rtp_rtcp/source/byte_io.h"
 #include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 namespace test {

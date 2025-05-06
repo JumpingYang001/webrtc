@@ -11,6 +11,8 @@
 #ifndef MODULES_AUDIO_CODING_ACM2_ACM_REMIXING_H_
 #define MODULES_AUDIO_CODING_ACM2_ACM_REMIXING_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "api/array_view.h"

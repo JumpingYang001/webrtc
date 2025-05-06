@@ -10,11 +10,18 @@
 
 #include "modules/audio_coding/codecs/g722/audio_encoder_g722.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <optional>
+#include <utility>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/g722/audio_encoder_g722_config.h"
+#include "api/units/time_delta.h"
 #include "modules/audio_coding/codecs/g722/g722_interface.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {
 

@@ -11,20 +11,27 @@
 #ifndef MODULES_AUDIO_CODING_CODECS_OPUS_AUDIO_ENCODER_OPUS_H_
 #define MODULES_AUDIO_CODING_CODECS_OPUS_AUDIO_ENCODER_OPUS_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/opus/audio_encoder_opus_config.h"
+#include "api/call/bitrate_allocation.h"
 #include "api/environment/environment.h"
+#include "api/units/time_delta.h"
 #include "common_audio/smoothing_filter.h"
 #include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor.h"
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
+#include "rtc_base/buffer.h"
 
 namespace webrtc {
 

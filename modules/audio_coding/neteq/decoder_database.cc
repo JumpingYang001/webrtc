@@ -14,13 +14,22 @@
 
 #include <cstdint>
 #include <list>
-#include <type_traits>
+#include <map>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "api/audio_codecs/audio_codec_pair_id.h"
 #include "api/audio_codecs/audio_decoder.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment.h"
+#include "api/scoped_refptr.h"
+#include "modules/audio_coding/codecs/cng/webrtc_cng.h"
+#include "modules/audio_coding/neteq/packet.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 

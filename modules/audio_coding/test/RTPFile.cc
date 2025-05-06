@@ -11,15 +11,22 @@
 #include "RTPFile.h"
 
 #include <stdlib.h>
+#include <sys/types.h>
 
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <limits>
+#include <string>
 
 #include "absl/strings/string_view.h"
+#include "api/rtp_headers.h"
+#include "rtc_base/ip_address.h"
+#include "rtc_base/synchronization/mutex.h"
 
 #ifdef WIN32
 #include <Winsock2.h>
 #else
-#include <arpa/inet.h>
 #endif
 
 // TODO(tlegrand): Consider removing usage of gtest.

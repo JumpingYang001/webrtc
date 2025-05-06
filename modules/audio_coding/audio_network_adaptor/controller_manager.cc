@@ -10,21 +10,30 @@
 
 #include "modules/audio_coding/audio_network_adaptor/controller_manager.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
 #include "modules/audio_coding/audio_network_adaptor/bitrate_controller.h"
 #include "modules/audio_coding/audio_network_adaptor/channel_controller.h"
+#include "modules/audio_coding/audio_network_adaptor/controller.h"
 #include "modules/audio_coding/audio_network_adaptor/debug_dump_writer.h"
 #include "modules/audio_coding/audio_network_adaptor/dtx_controller.h"
 #include "modules/audio_coding/audio_network_adaptor/fec_controller_plr_based.h"
 #include "modules/audio_coding/audio_network_adaptor/frame_length_controller.h"
 #include "modules/audio_coding/audio_network_adaptor/frame_length_controller_v2.h"
 #include "modules/audio_coding/audio_network_adaptor/util/threshold_curve.h"
-#include "rtc_base/logging.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/time_utils.h"
 
 #if WEBRTC_ENABLE_PROTOBUF

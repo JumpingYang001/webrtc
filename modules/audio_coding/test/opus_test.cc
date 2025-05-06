@@ -10,11 +10,18 @@
 
 #include "modules/audio_coding/test/opus_test.h"
 
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <sstream>
 #include <string>
 
+#include "api/audio/audio_frame.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/audio_coding/test/TestStereo.h"

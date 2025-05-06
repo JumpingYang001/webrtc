@@ -12,6 +12,9 @@
 
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
 
+#include <cstddef>
+#include <cstdint>
+
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"
 

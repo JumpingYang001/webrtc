@@ -15,6 +15,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "api/audio_codecs/audio_decoder.h"
 #include "api/neteq/tick_timer.h"

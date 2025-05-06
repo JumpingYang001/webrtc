@@ -11,9 +11,15 @@
 #include "modules/audio_coding/neteq/tools/neteq_stats_getter.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <memory>
 #include <numeric>
+#include <string>
 #include <utility>
 
+#include "api/audio/audio_frame.h"
+#include "api/neteq/neteq.h"
+#include "modules/audio_coding/neteq/tools/neteq_delay_analyzer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/time_utils.h"

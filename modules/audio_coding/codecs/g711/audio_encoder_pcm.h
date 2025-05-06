@@ -11,12 +11,16 @@
 #ifndef MODULES_AUDIO_CODING_CODECS_G711_AUDIO_ENCODER_PCM_H_
 #define MODULES_AUDIO_CODING_CODECS_G711_AUDIO_ENCODER_PCM_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "api/array_view.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/units/time_delta.h"
+#include "rtc_base/buffer.h"
 
 namespace webrtc {
 

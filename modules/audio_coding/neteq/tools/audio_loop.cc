@@ -13,7 +13,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <cstdint>
+#include <string>
+
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
 
 namespace webrtc {
 namespace test {

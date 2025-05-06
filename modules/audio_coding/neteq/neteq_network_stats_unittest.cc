@@ -8,18 +8,31 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "api/array_view.h"
 #include "api/audio/audio_frame.h"
 #include "api/audio_codecs/audio_decoder.h"
-#include "api/audio_codecs/builtin_audio_decoder_factory.h"
+#include "api/audio_codecs/audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
 #include "api/neteq/default_neteq_factory.h"
 #include "api/neteq/neteq.h"
+#include "api/rtp_headers.h"
+#include "api/scoped_refptr.h"
+#include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/tools/rtp_generator.h"
+#include "rtc_base/buffer.h"
 #include "test/audio_decoder_proxy_factory.h"
 #include "test/gmock.h"
+#include "test/gtest.h"
 
 namespace webrtc {
 namespace test {

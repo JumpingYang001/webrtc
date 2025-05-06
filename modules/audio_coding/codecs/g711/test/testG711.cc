@@ -21,6 +21,8 @@
 
 /* Runtime statistics */
 #include <time.h>
+
+#include <cstdint>
 #define CLOCKS_PER_SEC_G711 1000
 
 /* function for reading audio data from PCM file */

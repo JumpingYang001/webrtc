@@ -10,6 +10,13 @@
 
 #include "modules/audio_coding/neteq/tools/neteq_input.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "api/rtp_headers.h"
 #include "rtc_base/strings/string_builder.h"
 
 namespace webrtc {

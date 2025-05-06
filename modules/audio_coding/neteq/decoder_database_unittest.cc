@@ -12,11 +12,19 @@
 
 #include <stdlib.h>
 
+#include <cstdint>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "absl/memory/memory.h"
+#include "api/audio_codecs/audio_decoder.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
+#include "modules/audio_coding/codecs/cng/webrtc_cng.h"
+#include "modules/audio_coding/neteq/packet.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_audio_decoder.h"

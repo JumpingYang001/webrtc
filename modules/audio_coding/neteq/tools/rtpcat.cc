@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 
+#include <cstdlib>
 #include <memory>
 
 #include "rtc_base/checks.h"

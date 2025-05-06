@@ -11,20 +11,34 @@
 #include "modules/audio_coding/codecs/opus/audio_encoder_opus.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "absl/memory/memory.h"
 #include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/audio_format.h"
+#include "api/audio_codecs/opus/audio_encoder_opus_config.h"
+#include "api/call/bitrate_allocation.h"
+#include "api/environment/environment.h"
 #include "api/field_trials_view.h"
+#include "api/units/time_delta.h"
+#include "common_audio/smoothing_filter.h"
 #include "modules/audio_coding/audio_network_adaptor/audio_network_adaptor_impl.h"
 #include "modules/audio_coding/audio_network_adaptor/controller_manager.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor.h"
 #include "modules/audio_coding/codecs/opus/audio_coder_opus_common.h"
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "rtc_base/arraysize.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/exp_filter.h"

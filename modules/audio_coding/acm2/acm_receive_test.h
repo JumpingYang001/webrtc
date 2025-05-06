@@ -13,8 +13,8 @@
 
 #include <stddef.h>  // for size_t
 
+#include <cstdint>
 #include <memory>
-#include <string>
 
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/neteq/neteq.h"

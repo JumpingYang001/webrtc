@@ -10,6 +10,11 @@
 
 #include "modules/audio_coding/neteq/sync_buffer.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "api/audio/audio_frame.h"
+#include "modules/audio_coding/neteq/audio_multi_vector.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"
 

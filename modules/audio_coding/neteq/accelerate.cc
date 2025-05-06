@@ -10,8 +10,13 @@
 
 #include "modules/audio_coding/neteq/accelerate.h"
 
+#include <cstddef>
+#include <cstdint>
+
 #include "api/array_view.h"
 #include "modules/audio_coding/neteq/audio_multi_vector.h"
+#include "modules/audio_coding/neteq/time_stretch.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 

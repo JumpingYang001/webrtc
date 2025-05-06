@@ -11,20 +11,28 @@
 // Test to verify correct stereo and multi-channel operation.
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <list>
 #include <memory>
+#include <ostream>
 #include <string>
 
+#include "api/array_view.h"
 #include "api/audio/audio_frame.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
 #include "api/neteq/neteq.h"
+#include "api/rtp_headers.h"
 #include "api/units/timestamp.h"
 #include "modules/audio_coding/codecs/pcm16b/pcm16b.h"
 #include "modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "modules/audio_coding/neteq/tools/rtp_generator.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "system_wrappers/include/clock.h"
 #include "test/gtest.h"

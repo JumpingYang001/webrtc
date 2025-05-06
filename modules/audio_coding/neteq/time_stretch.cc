@@ -11,12 +11,17 @@
 #include "modules/audio_coding/neteq/time_stretch.h"
 
 #include <algorithm>  // min, max
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 
+#include "common_audio/signal_processing/dot_product_with_scale.h"
 #include "common_audio/signal_processing/include/signal_processing_library.h"
+#include "common_audio/signal_processing/include/spl_inl.h"
 #include "modules/audio_coding/neteq/background_noise.h"
 #include "modules/audio_coding/neteq/cross_correlation.h"
 #include "modules/audio_coding/neteq/dsp_helper.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {

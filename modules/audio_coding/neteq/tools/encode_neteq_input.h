@@ -11,9 +11,14 @@
 #ifndef MODULES_AUDIO_CODING_NETEQ_TOOLS_ENCODE_NETEQ_INPUT_H_
 #define MODULES_AUDIO_CODING_NETEQ_TOOLS_ENCODE_NETEQ_INPUT_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
 
+#include "api/array_view.h"
 #include "api/audio_codecs/audio_encoder.h"
+#include "api/rtp_headers.h"
 #include "modules/audio_coding/neteq/tools/neteq_input.h"
 
 namespace webrtc {

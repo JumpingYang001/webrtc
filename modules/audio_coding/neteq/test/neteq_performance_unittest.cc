@@ -8,6 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstdint>
+
 #include "absl/flags/flag.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
 #include "api/test/metrics/metric.h"

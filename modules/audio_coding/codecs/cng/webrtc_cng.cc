@@ -11,8 +11,12 @@
 #include "modules/audio_coding/codecs/cng/webrtc_cng.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
+#include "api/array_view.h"
 #include "common_audio/signal_processing/include/signal_processing_library.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 

@@ -10,13 +10,19 @@
 
 #include "modules/audio_coding/codecs/cng/audio_encoder_cng.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
 #include "api/units/time_delta.h"
+#include "common_audio/vad/include/vad.h"
 #include "modules/audio_coding/codecs/cng/webrtc_cng.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

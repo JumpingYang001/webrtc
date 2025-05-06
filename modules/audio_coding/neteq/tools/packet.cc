@@ -10,7 +10,14 @@
 
 #include "modules/audio_coding/neteq/tools/packet.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <utility>
+
 #include "api/array_view.h"
+#include "api/rtp_headers.h"
+#include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"

@@ -12,13 +12,24 @@
 
 #include <string.h>
 
+#include <cstdint>
+#include <cstdio>
+#include <iterator>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/call/bitrate_allocation.h"
+#include "api/field_trials_view.h"
+#include "api/units/time_delta.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/logging.h"
 
 namespace webrtc {
 static constexpr const int kRedMaxPacketSize =

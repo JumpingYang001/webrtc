@@ -10,14 +10,22 @@
 
 #include "modules/audio_coding/test/TestRedFec.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "absl/strings/match.h"
+#include "api/audio/audio_frame.h"
 #include "api/audio_codecs/L16/audio_decoder_L16.h"
 #include "api/audio_codecs/L16/audio_encoder_L16.h"
 #include "api/audio_codecs/audio_decoder_factory_template.h"
+#include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/audio_encoder_factory_template.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/g711/audio_decoder_g711.h"
 #include "api/audio_codecs/g711/audio_encoder_g711.h"
 #include "api/audio_codecs/g722/audio_decoder_g722.h"
@@ -26,9 +34,12 @@
 #include "api/audio_codecs/opus/audio_encoder_opus.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
+#include "common_audio/vad/include/vad.h"
 #include "modules/audio_coding/codecs/cng/audio_encoder_cng.h"
 #include "modules/audio_coding/codecs/red/audio_encoder_copy_red.h"
-#include "modules/audio_coding/include/audio_coding_module_typedefs.h"
+#include "modules/audio_coding/include/audio_coding_module.h"
+#include "modules/audio_coding/test/Channel.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

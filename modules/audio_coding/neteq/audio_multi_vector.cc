@@ -11,7 +11,12 @@
 #include "modules/audio_coding/neteq/audio_multi_vector.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
+#include "api/array_view.h"
+#include "modules/audio_coding/neteq/audio_vector.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

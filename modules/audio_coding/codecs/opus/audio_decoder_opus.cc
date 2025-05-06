@@ -10,13 +10,18 @@
 
 #include "modules/audio_coding/codecs/opus/audio_decoder_opus.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <optional>
 #include <utility>
+#include <vector>
 
 #include "api/array_view.h"
+#include "api/audio_codecs/audio_decoder.h"
 #include "api/field_trials_view.h"
 #include "modules/audio_coding/codecs/opus/audio_coder_opus_common.h"
+#include "modules/audio_coding/codecs/opus/opus_interface.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

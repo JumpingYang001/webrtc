@@ -10,14 +10,23 @@
 
 #include "modules/audio_coding/test/PacketLossTest.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/neteq/default_neteq_factory.h"
+#include "api/neteq/neteq.h"
 #include "api/units/timestamp.h"
+#include "modules/audio_coding/include/audio_coding_module.h"
+#include "modules/audio_coding/test/EncodeDecodeTest.h"
+#include "modules/audio_coding/test/RTPFile.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

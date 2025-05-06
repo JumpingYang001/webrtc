@@ -10,9 +10,9 @@
 
 #include "modules/audio_coding/audio_network_adaptor/frame_length_controller_v2.h"
 
-#include <algorithm>
-
 #include "absl/algorithm/container.h"
+#include "api/array_view.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

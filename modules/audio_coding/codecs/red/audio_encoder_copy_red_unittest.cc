@@ -10,12 +10,20 @@
 
 #include "modules/audio_coding/codecs/red/audio_encoder_copy_red.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
-#include "rtc_base/checks.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/units/time_delta.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/numerics/safe_conversions.h"
-#include "test/field_trial.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_audio_encoder.h"
 #include "test/scoped_key_value_config.h"

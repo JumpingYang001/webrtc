@@ -14,8 +14,9 @@
 #include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "modules/audio_coding/audio_network_adaptor/controller.h"
-#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor.h"
+#include "modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor_config.h"
 
 namespace webrtc {
 

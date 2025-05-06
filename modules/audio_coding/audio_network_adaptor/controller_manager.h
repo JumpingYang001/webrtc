@@ -11,12 +11,16 @@
 #ifndef MODULES_AUDIO_CODING_AUDIO_NETWORK_ADAPTOR_CONTROLLER_MANAGER_H_
 #define MODULES_AUDIO_CODING_AUDIO_NETWORK_ADAPTOR_CONTROLLER_MANAGER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <string>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
 #include "modules/audio_coding/audio_network_adaptor/controller.h"
 
 namespace webrtc {

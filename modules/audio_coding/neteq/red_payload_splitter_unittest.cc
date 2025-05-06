@@ -12,14 +12,19 @@
 
 #include "modules/audio_coding/neteq/red_payload_splitter.h"
 
-#include <memory>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <optional>
 #include <utility>  // pair
 
-#include "api/audio_codecs/builtin_audio_decoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/make_ref_counted.h"
 #include "modules/audio_coding/neteq/decoder_database.h"
 #include "modules/audio_coding/neteq/packet.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"
 #include "test/mock_audio_decoder_factory.h"

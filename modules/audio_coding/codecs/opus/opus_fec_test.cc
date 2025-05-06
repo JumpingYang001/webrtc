@@ -8,7 +8,14 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
+#include <string>
+#include <tuple>
 
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "test/gtest.h"

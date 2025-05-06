@@ -13,7 +13,9 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "api/audio_codecs/audio_decoder.h"

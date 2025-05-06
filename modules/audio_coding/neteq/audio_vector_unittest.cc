@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-#include <string>
+#include <cstdint>
 
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gtest.h"

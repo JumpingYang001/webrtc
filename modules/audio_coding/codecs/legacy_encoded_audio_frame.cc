@@ -11,9 +11,16 @@
 #include "modules/audio_coding/codecs/legacy_encoded_audio_frame.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_decoder.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

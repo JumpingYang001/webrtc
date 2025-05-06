@@ -15,17 +15,19 @@
 #include "modules/audio_coding/neteq/packet_buffer.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <list>
 #include <memory>
-#include <type_traits>
+#include <optional>
 #include <utility>
 
 #include "api/audio_codecs/audio_decoder.h"
 #include "api/neteq/tick_timer.h"
 #include "modules/audio_coding/neteq/decoder_database.h"
+#include "modules/audio_coding/neteq/packet.h"
 #include "modules/audio_coding/neteq/statistics_calculator.h"
 #include "rtc_base/checks.h"
-#include "rtc_base/experiments/struct_parameters_parser.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
 

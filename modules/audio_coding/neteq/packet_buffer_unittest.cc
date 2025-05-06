@@ -12,14 +12,21 @@
 
 #include "modules/audio_coding/neteq/packet_buffer.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
-#include "api/audio_codecs/builtin_audio_decoder_factory.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_decoder.h"
 #include "api/neteq/tick_timer.h"
 #include "modules/audio_coding/neteq/mock/mock_decoder_database.h"
 #include "modules/audio_coding/neteq/mock/mock_statistics_calculator.h"
 #include "modules/audio_coding/neteq/packet.h"
-#include "test/field_trial.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

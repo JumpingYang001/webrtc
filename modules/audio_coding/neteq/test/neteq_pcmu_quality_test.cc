@@ -8,13 +8,20 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 
 #include "absl/flags/flag.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/audio_format.h"
 #include "modules/audio_coding/codecs/g711/audio_encoder_pcm.h"
 #include "modules/audio_coding/neteq/tools/neteq_quality_test.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
+#include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 
 ABSL_FLAG(int, frame_size_ms, 20, "Codec frame size (milliseconds).");

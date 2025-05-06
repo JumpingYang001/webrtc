@@ -12,10 +12,14 @@
 
 #include <string.h>
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
+#include "api/audio_codecs/audio_decoder.h"
 #include "modules/audio_coding/codecs/g722/g722_interface.h"
 #include "modules/audio_coding/codecs/legacy_encoded_audio_frame.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

@@ -17,10 +17,12 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "api/array_view.h"
 #include "api/audio_codecs/audio_encoder.h"
+#include "api/call/bitrate_allocation.h"
 #include "api/field_trials_view.h"
 #include "api/units/time_delta.h"
 #include "rtc_base/buffer.h"

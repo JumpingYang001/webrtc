@@ -10,6 +10,12 @@
 
 #include "modules/audio_coding/neteq/timestamp_scaler.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <utility>
+
+#include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"

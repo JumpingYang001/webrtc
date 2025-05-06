@@ -12,7 +12,11 @@
 
 #include "modules/audio_coding/neteq/expand.h"
 
-#include "common_audio/signal_processing/include/signal_processing_library.h"
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+
+#include "api/neteq/tick_timer.h"
 #include "modules/audio_coding/neteq/background_noise.h"
 #include "modules/audio_coding/neteq/random_vector.h"
 #include "modules/audio_coding/neteq/statistics_calculator.h"

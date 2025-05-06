@@ -10,12 +10,21 @@
 
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/audio_encoder_factory.h"
+#include "api/audio_codecs/audio_format.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/scoped_refptr.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

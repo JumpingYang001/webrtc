@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "api/audio/audio_frame.h"
 #include "common_audio/resampler/include/push_resampler.h"
 

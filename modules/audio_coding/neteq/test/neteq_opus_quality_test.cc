@@ -8,10 +8,20 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstddef>
+#include <cstdint>
+#include <ostream>
+
 #include "absl/flags/flag.h"
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_format.h"
+#include "api/rtp_parameters.h"
 #include "modules/audio_coding/codecs/opus/opus_inst.h"
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 #include "modules/audio_coding/neteq/tools/neteq_quality_test.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
+#include "test/gtest.h"
 
 ABSL_FLAG(int, bit_rate_kbps, 32, "Target bit rate (kbps).");
 

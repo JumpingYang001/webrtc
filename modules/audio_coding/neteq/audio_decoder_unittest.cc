@@ -8,14 +8,23 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "api/audio_codecs/audio_decoder.h"
+
 #include <stdlib.h>
 
 #include <array>
+#include <cstdint>
 #include <memory>
-#include <string>
+#include <optional>
+#include <tuple>
+#include <utility>
 #include <vector>
 
+#include "api/array_view.h"
+#include "api/audio_codecs/audio_encoder.h"
+#include "api/audio_codecs/g722/audio_encoder_g722_config.h"
 #include "api/audio_codecs/opus/audio_encoder_opus.h"
+#include "api/audio_codecs/opus/audio_encoder_opus_config.h"
 #include "api/environment/environment_factory.h"
 #include "modules/audio_coding/codecs/g711/audio_decoder_pcm.h"
 #include "modules/audio_coding/codecs/g711/audio_encoder_pcm.h"
@@ -24,8 +33,10 @@
 #include "modules/audio_coding/codecs/opus/audio_decoder_opus.h"
 #include "modules/audio_coding/codecs/pcm16b/audio_decoder_pcm16b.h"
 #include "modules/audio_coding/codecs/pcm16b/audio_encoder_pcm16b.h"
+#include "modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "modules/audio_coding/neteq/tools/resample_input_audio_file.h"
-#include "rtc_base/system/arch.h"
+#include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/explicit_key_value_config.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"

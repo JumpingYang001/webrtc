@@ -10,10 +10,9 @@
 
 #include "modules/audio_coding/codecs/opus/opus_interface.h"
 
+#include <cstdint>
 #include <cstdlib>
-#include <numeric>
 
-#include "api/array_view.h"
 #include "rtc_base/checks.h"
 
 enum {

@@ -12,10 +12,12 @@
 #define MODULES_AUDIO_CODING_CODECS_OPUS_TEST_LAPPED_TRANSFORM_H_
 
 #include <complex>
+#include <cstddef>
 #include <memory>
 
 #include "common_audio/real_fourier.h"
 #include "modules/audio_coding/codecs/opus/test/blocker.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/memory/aligned_malloc.h"
 
 namespace webrtc {

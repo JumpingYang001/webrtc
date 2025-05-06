@@ -31,6 +31,7 @@
 #include "api/rtp_headers.h"
 #include "api/rtp_packet_info.h"
 #include "api/scoped_refptr.h"
+#include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/audio_multi_vector.h"
 #include "modules/audio_coding/neteq/packet.h"
 #include "modules/audio_coding/neteq/packet_buffer.h"

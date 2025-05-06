@@ -12,8 +12,13 @@
 
 #include <string.h>
 
+#include <cstdint>
+
 #include "api/audio/audio_frame.h"
+#include "api/audio/audio_view.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {
 namespace acm2 {
