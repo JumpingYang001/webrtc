@@ -37,6 +37,7 @@
 #include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
+#include "modules/video_coding/codecs/av1/av1_svc_config.h"
 #include "modules/video_coding/codecs/test/encoded_video_frame_producer.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "rtc_base/checks.h"
@@ -64,6 +65,18 @@ VideoCodec DefaultCodecSettings() {
   codec_settings.height = 180;
   codec_settings.maxFramerate = 30;
   codec_settings.startBitrate = 1000;
+  codec_settings.qpMax = 63;
+  return codec_settings;
+}
+
+VideoCodec HDCodecSettings() {
+  VideoCodec codec_settings;
+  codec_settings.codecType = kVideoCodecAV1;
+  codec_settings.width = 1280;
+  codec_settings.height = 720;
+  codec_settings.maxFramerate = 30;
+  codec_settings.startBitrate = 2048;
+  codec_settings.maxBitrate = 2048;
   codec_settings.qpMax = 63;
   return codec_settings;
 }
@@ -590,6 +603,88 @@ TEST(LibaomAv1EncoderTest, PostEncodeFrameDrop) {
   RTC_CHECK_EQ(encoder->Encode(input_frame, /*frame_types=*/nullptr),
                WEBRTC_VIDEO_CODEC_OK);
   RTC_CHECK_EQ(callback.frames_encoded(), 1);
+}
+
+TEST(LibaomAv1EncoderTest, EnableDisableSpatialLayersWithSvcController) {
+  constexpr int kNumSpatialLayers = 3;
+  constexpr int kNumTemporalLayers = 1;
+  constexpr size_t kWidth = 1280;
+  constexpr size_t kHeight = 720;
+
+  // Configure encoder to produce 3 spatial layers. Encode frames of layer 0
+  // then enable layer 1 and encode more frames and so on.
+  // Then disable layers one by one in the same way.
+  // Note: bit rate allocation is high to avoid frame dropping due to rate
+  // control, the encoder should always produce a frame. A dropped
+  // frame indicates a problem and the test will fail.
+  std::unique_ptr<VideoEncoder> encoder =
+      CreateLibaomAv1Encoder(CreateEnvironment());
+  VideoCodec codec_settings = HDCodecSettings();
+  SetAv1SvcConfig(codec_settings, kNumTemporalLayers, kNumSpatialLayers);
+  codec_settings.SetFrameDropEnabled(true);
+  EXPECT_EQ(encoder->InitEncode(&codec_settings, DefaultEncoderSettings()),
+            WEBRTC_VIDEO_CODEC_OK);
+
+  EncodedVideoFrameProducer producer(*encoder);
+  producer.SetResolution({kWidth, kHeight});
+
+  VideoBitrateAllocation bitrate_allocation;
+
+  // Set all layers active for initial allocation.
+  for (size_t sl_idx = 0; sl_idx < kNumSpatialLayers; ++sl_idx) {
+    // Allocate high bit rate to avoid frame dropping due to rate control.
+    bitrate_allocation.SetBitrate(
+        sl_idx, 0,
+        codec_settings.spatialLayers[sl_idx].targetBitrate * 1000 * 2);
+  }
+
+  encoder->SetRates(VideoEncoder::RateControlParameters(
+      bitrate_allocation, codec_settings.maxFramerate));
+
+  // Encode a key frame to validate all other frames are delta frames.
+  std::vector<EncodedVideoFrameProducer::EncodedFrame> frames =
+      producer.SetNumInputFrames(1).Encode();
+  ASSERT_THAT(frames, Not(IsEmpty()));
+  EXPECT_TRUE(frames[0].codec_specific_info.template_structure);
+
+  constexpr size_t kNumFramesToEncode = 5;
+
+  // Disable layers one by one.
+  for (int sl_idx = kNumSpatialLayers - 1; sl_idx > 0; --sl_idx) {
+    bitrate_allocation.SetBitrate(sl_idx, 0, 0);
+    encoder->SetRates(VideoEncoder::RateControlParameters(
+        bitrate_allocation, codec_settings.maxFramerate));
+
+    frames = producer.SetNumInputFrames(kNumFramesToEncode).Encode();
+    // With `sl_idx` spatial layer disabled, there are `sl_idx` spatial layers
+    // left.
+    ASSERT_THAT(frames, SizeIs(kNumFramesToEncode * sl_idx));
+    for (size_t i = 0; i < frames.size(); ++i) {
+      EXPECT_TRUE(frames[i].codec_specific_info.generic_frame_info);
+      EXPECT_FALSE(frames[i].codec_specific_info.template_structure);
+    }
+  }
+
+  // Enable layers back one by one.
+  for (size_t sl_idx = 1; sl_idx < kNumSpatialLayers; ++sl_idx) {
+    // Allocate high bit rate to avoid frame dropping due to rate control.
+    bitrate_allocation.SetBitrate(
+        sl_idx, 0,
+        codec_settings.spatialLayers[sl_idx].targetBitrate * 1000 * 2);
+    encoder->SetRates(VideoEncoder::RateControlParameters(
+        bitrate_allocation, codec_settings.maxFramerate));
+
+    frames = producer.SetNumInputFrames(kNumFramesToEncode).Encode();
+    // With (sl_idx+1) spatial layers expect (sl_idx+1) frames per input frame.
+    ASSERT_THAT(frames, SizeIs(kNumFramesToEncode * (sl_idx + 1)));
+    // Only the first frame after enabling the layer must be a keyframe.
+    EXPECT_TRUE(frames[0].codec_specific_info.generic_frame_info);
+    EXPECT_TRUE(frames[0].codec_specific_info.template_structure);
+    for (size_t i = 1; i < frames.size(); ++i) {
+      EXPECT_TRUE(frames[i].codec_specific_info.generic_frame_info);
+      EXPECT_FALSE(frames[i].codec_specific_info.template_structure);
+    }
+  }
 }
 
 }  // namespace
