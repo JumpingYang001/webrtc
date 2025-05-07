@@ -136,9 +136,13 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   // Used for testing (and maybe put into stats?).
   int GetRetransmissionCount() const override { return retransmission_count_; }
 
+  // Set cipher group ids to use during DTLS handshake to establish ephemeral
+  // key, see CryptoOptions::EphemeralKeyExchangeCipherGroups.
+  bool SetSslGroupIds(const std::vector<uint16_t>& group_ids) override;
+
   // Return the the ID of the group used by the adapters most recently
   // completed handshake, or 0 if not applicable (e.g. before the handshake).
-  uint16_t GetSslGroupIdForTesting() const override;
+  uint16_t GetSslGroupId() const override;
 
  private:
   enum SSLState {
@@ -241,6 +245,9 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
   // The DtlsSrtp ciphers
   std::string srtp_ciphers_;
 
+  // The ssl cipher groups to be used for DTLS handshake.
+  std::vector<uint16_t> ssl_cipher_groups_;
+
   // Do DTLS or not
   SSLMode ssl_mode_;
 
@@ -261,8 +268,9 @@ class OpenSSLStreamAdapter final : public SSLStreamAdapter {
 
   int retransmission_count_ = 0;
 
-  // Experimental flag to enable Post-Quantum Cryptography TLS.
-  const bool enable_dtls_pqc_ = false;
+  // Kill switch (from field-trial) flag to disable the use of
+  // SSL_set_group_ids.
+  const bool disable_ssl_group_ids_ = false;
 };
 
 /////////////////////////////////////////////////////////////////////////////

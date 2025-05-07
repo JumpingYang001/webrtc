@@ -303,8 +303,8 @@ OpenSSLStreamAdapter::OpenSSLStreamAdapter(
       ssl_mode_(webrtc::SSL_MODE_DTLS),
       ssl_max_version_(webrtc::SSL_PROTOCOL_DTLS_12),
       force_dtls_13_(GetForceDtls13(field_trials)),
-      enable_dtls_pqc_(field_trials &&
-                       field_trials->IsEnabled("WebRTC-EnableDtlsPqc")) {
+      disable_ssl_group_ids_(field_trials && field_trials->IsEnabled(
+                                                 "WebRTC-DisableSslGroupIds")) {
   stream_->SetEventCallback(
       [this](int events, int err) { OnEvent(events, err); });
 }
@@ -436,7 +436,7 @@ bool OpenSSLStreamAdapter::GetSslVersionBytes(int* version) const {
   return true;
 }
 
-uint16_t OpenSSLStreamAdapter::GetSslGroupIdForTesting() const {
+uint16_t OpenSSLStreamAdapter::GetSslGroupId() const {
   if (state_ != SSL_CONNECTED) {
     return 0;
   }
@@ -903,11 +903,9 @@ int OpenSSLStreamAdapter::BeginSSL() {
     DTLSv1_set_initial_timeout_duration(ssl_, dtls_handshake_timeout_ms_);
   }
 
-  // Experimental code guarded by WebRTC-EnableDtlsPqc.
-  if (enable_dtls_pqc_) {
-    const uint16_t kGroups[] = {SSL_GROUP_X25519_MLKEM768, SSL_GROUP_X25519,
-                                SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1};
-    if (!SSL_set1_group_ids(ssl_, kGroups, std::size(kGroups))) {
+  if (!disable_ssl_group_ids_) {
+    if (!SSL_set1_group_ids(ssl_, ssl_cipher_groups_.data(),
+                            ssl_cipher_groups_.size())) {
       RTC_LOG(LS_WARNING) << "Failed to call SSL_set1_group_ids.";
       return -1;
     }
@@ -1354,6 +1352,14 @@ SSLProtocolVersion OpenSSLStreamAdapter::GetMaxSupportedDTLSProtocolVersion() {
 #else
   return SSL_PROTOCOL_DTLS_12;
 #endif
+}
+
+bool OpenSSLStreamAdapter::SetSslGroupIds(const std::vector<uint16_t>& groups) {
+  if (state_ != SSL_NONE) {
+    return false;
+  }
+  ssl_cipher_groups_ = groups;
+  return true;
 }
 
 }  // namespace webrtc

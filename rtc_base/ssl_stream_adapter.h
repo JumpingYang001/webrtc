@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -244,6 +245,12 @@ class SSLStreamAdapter : public StreamInterface {
   static bool IsAcceptableCipher(int cipher, KeyType key_type);
   static bool IsAcceptableCipher(absl::string_view cipher, KeyType key_type);
 
+  static std::set<uint16_t> GetSupportedEphemeralKeyExchangeCipherGroups();
+  static std::optional<std::string> GetEphemeralKeyExchangeCipherGroupName(
+      uint16_t);
+  static std::vector<uint16_t> GetDefaultEphemeralKeyExchangeCipherGroups(
+      const FieldTrialsView* field_trials);
+
   ////////////////////////////////////////////////////////////////////////////
   // Testing only member functions
   ////////////////////////////////////////////////////////////////////////////
@@ -270,9 +277,13 @@ class SSLStreamAdapter : public StreamInterface {
   // Used for testing (and maybe put into stats?).
   virtual int GetRetransmissionCount() const = 0;
 
+  // Set cipher group ids to use during DTLS handshake to establish ephemeral
+  // key, see CryptoOptions::EphemeralKeyExchangeCipherGroups.
+  virtual bool SetSslGroupIds(const std::vector<uint16_t>& group_ids) = 0;
+
   // Return the the ID of the group used by the adapters most recently
   // completed handshake, or 0 if not applicable (e.g. before the handshake).
-  virtual uint16_t GetSslGroupIdForTesting() const = 0;
+  virtual uint16_t GetSslGroupId() const = 0;
 
  private:
   // If true (default), the client is required to provide a certificate during

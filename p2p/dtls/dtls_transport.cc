@@ -198,6 +198,8 @@ DtlsTransportInternalImpl::DtlsTransportInternalImpl(
       ice_transport_(ice_transport),
       downward_(nullptr),
       srtp_ciphers_(crypto_options.GetSupportedDtlsSrtpCryptoSuites()),
+      ephemeral_key_exchange_cipher_groups_(
+          crypto_options.ephemeral_key_exchange_cipher_groups.GetEnabled()),
       ssl_max_version_(max_version),
       event_log_(event_log),
       dtls_stun_piggyback_controller_(
@@ -485,6 +487,11 @@ bool DtlsTransportInternalImpl::SetupDtls() {
     }
   } else {
     RTC_LOG(LS_INFO) << ToString() << ": Not using DTLS-SRTP.";
+  }
+
+  if (!dtls_->SetSslGroupIds(ephemeral_key_exchange_cipher_groups_)) {
+    RTC_LOG(LS_ERROR) << ToString() << ": Couldn't set DTLS SSL Group Ids.";
+    return false;
   }
 
   RTC_LOG(LS_INFO) << ToString()

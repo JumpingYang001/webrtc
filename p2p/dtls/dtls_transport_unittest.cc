@@ -28,6 +28,7 @@
 #include "api/array_view.h"
 #include "api/crypto/crypto_options.h"
 #include "api/dtls_transport_interface.h"
+#include "api/field_trials.h"
 #include "api/scoped_refptr.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/transport/stun.h"
@@ -107,19 +108,19 @@ class DtlsTestClient : public sigslot::has_slots<> {
   void set_async_delay(int async_delay_ms) { async_delay_ms_ = async_delay_ms; }
 
   // Set up fake ICE transport and real DTLS transport under test.
-  void SetupTransports(IceRole role,
-                       bool rtt_estimate = true,
-                       absl::string_view field_trials_string = "") {
+  void SetupTransports(IceRole role, bool rtt_estimate = true) {
     dtls_transport_ = nullptr;
     fake_ice_transport_ = nullptr;
 
-    if (field_trials_string.empty() && pqc_) {
-      field_trials_string = "WebRTC-EnableDtlsPqc/Enabled/";
+    webrtc::CryptoOptions crypto_options;
+    if (pqc_) {
+      FieldTrials field_trials("WebRTC-EnableDtlsPqc/Enabled/");
+      crypto_options.ephemeral_key_exchange_cipher_groups.Update(&field_trials);
     }
 
     fake_ice_transport_.reset(new FakeIceTransport(
         absl::StrCat("fake-", name_), 0,
-        /* network_thread= */ nullptr, field_trials_string));
+        /* network_thread= */ nullptr, /* field_trials_string= */ ""));
     if (rtt_estimate) {
       fake_ice_transport_->set_rtt_estimate(
           async_delay_ms_ ? std::optional<int>(async_delay_ms_) : std::nullopt,
@@ -137,7 +138,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
         });
 
     dtls_transport_ = std::make_unique<DtlsTransportInternalImpl>(
-        fake_ice_transport_.get(), CryptoOptions(),
+        fake_ice_transport_.get(), crypto_options,
         /*event_log=*/nullptr, ssl_max_version_);
     // Note: Certificate may be null here if testing passthrough.
     dtls_transport_->SetLocalCertificate(certificate_);
@@ -789,12 +790,13 @@ class DtlsTransportInternalImplVersionTest
     client1_.set_async_delay(50);
     client2_.set_async_delay(50);
 
-    client1_.SetupTransports(
-        config1.ice_role.value_or(ICEROLE_CONTROLLING), rtt_estimate,
-        config1.pqc ? "WebRTC-EnableDtlsPqc/Enabled/" : "");
-    client2_.SetupTransports(
-        config2.ice_role.value_or(ICEROLE_CONTROLLED), rtt_estimate,
-        config2.pqc ? "WebRTC-EnableDtlsPqc/Enabled/" : "");
+    client1_.SetPqc(config1.pqc);
+    client2_.SetPqc(config2.pqc);
+
+    client1_.SetupTransports(config1.ice_role.value_or(ICEROLE_CONTROLLING),
+                             rtt_estimate);
+    client2_.SetupTransports(config2.ice_role.value_or(ICEROLE_CONTROLLED),
+                             rtt_estimate);
     client1_.dtls_transport()->SetDtlsRole(
         config1.ssl_role.value_or(SSL_CLIENT));
     client2_.dtls_transport()->SetDtlsRole(

@@ -15,7 +15,6 @@
 #include <string>
 #include <tuple>
 
-#include "absl/strings/str_cat.h"
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
 #include "api/environment/environment.h"
@@ -82,9 +81,8 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
  private:
   struct Endpoint {
     explicit Endpoint(bool dtls_in_stun, bool pqc_)
-        : env(CreateEnvironment(FieldTrials::CreateNoGlobal(absl::StrCat(
-              (dtls_in_stun ? "WebRTC-IceHandshakeDtls/Enabled/" : ""),
-              (pqc_ ? "WebRTC-EnableDtlsPqc/Enabled/" : ""))))),
+        : env(CreateEnvironment(FieldTrials::CreateNoGlobal(
+              dtls_in_stun ? "WebRTC-IceHandshakeDtls/Enabled/" : ""))),
           dtls_stun_piggyback(dtls_in_stun),
           pqc(pqc_) {}
 
@@ -167,8 +165,14 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
       ep.ice = std::make_unique<webrtc::P2PTransportChannel>(
           client ? "client_transport" : "server_transport", 0,
           ep.allocator.get(), &ep.env.field_trials());
+      CryptoOptions crypto_options;
+      if (ep.pqc) {
+        FieldTrials field_trials("WebRTC-EnableDtlsPqc/Enabled/");
+        crypto_options.ephemeral_key_exchange_cipher_groups.Update(
+            &field_trials);
+      }
       ep.dtls = std::make_unique<DtlsTransportInternalImpl>(
-          ep.ice.get(), webrtc::CryptoOptions(),
+          ep.ice.get(), crypto_options,
           /*event_log=*/nullptr, std::get<2>(GetParam()));
 
       // Enable(or disable) the dtls_in_stun parameter before

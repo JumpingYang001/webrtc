@@ -11,8 +11,13 @@
 #ifndef API_CRYPTO_CRYPTO_OPTIONS_H_
 #define API_CRYPTO_CRYPTO_OPTIONS_H_
 
+#include <cstdint>
+#include <optional>
+#include <set>
+#include <string>
 #include <vector>
 
+#include "api/field_trials_view.h"
 #include "rtc_base/system/rtc_export.h"
 
 namespace webrtc {
@@ -66,6 +71,42 @@ struct RTC_EXPORT CryptoOptions {
     // FrameDecryptor attached to them before they are able to receive packets.
     bool require_frame_encryption = false;
   } sframe;
+
+  // Cipher groups used by DTLS when establishing an ephemeral key during
+  // handshake.
+  class EphemeralKeyExchangeCipherGroups {
+   public:
+    // Which cipher groups are supported by this binary,
+    // - ssl.h: SSL_GROUP_{}
+    // - https://www.rfc-editor.org/rfc/rfc8422#section-5.1.1
+    // - https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem
+    static constexpr uint16_t kSECP224R1 = 21;
+    static constexpr uint16_t kSECP256R1 = 23;
+    static constexpr uint16_t kSECP384R1 = 24;
+    static constexpr uint16_t kSECP521R1 = 25;
+    static constexpr uint16_t kX25519 = 29;
+    static constexpr uint16_t kX25519_MLKEM768 = 0x11ec;
+
+    static std::set<uint16_t> GetSupported();
+    static std::optional<std::string> GetName(uint16_t);
+
+    EphemeralKeyExchangeCipherGroups();
+
+    // Which cipher groups are enabled in this crypto options.
+    std::vector<uint16_t> GetEnabled() const { return enabled_; }
+    void SetEnabled(const std::vector<uint16_t>& groups);
+    void AddFirst(uint16_t group);
+
+    // Update list of enabled groups based on field_trials,
+    // optionally providing list of groups that should NOT be added.
+    void Update(const FieldTrialsView* field_trials,
+                const std::vector<uint16_t>* disabled_groups = nullptr);
+
+    bool operator==(const EphemeralKeyExchangeCipherGroups& other) const;
+
+   private:
+    std::vector<uint16_t> enabled_;
+  } ephemeral_key_exchange_cipher_groups;
 };
 
 }  // namespace webrtc

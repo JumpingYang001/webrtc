@@ -33,6 +33,7 @@
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/crypto/crypto_options.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/test/rtc_error_matchers.h"
@@ -1589,35 +1590,44 @@ TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslCipherSuite) {
 }
 
 #ifdef OPENSSL_IS_BORINGSSL
-class SSLStreamAdapterTestDTLSPqc : public SSLStreamAdapterTestDTLSBase {
- public:
-  SSLStreamAdapterTestDTLSPqc() : SSLStreamAdapterTestDTLSBase("", "") {}
+TEST_P(SSLStreamAdapterTestDTLSHandshakeVersion, TestGetSslGroupIdWithPqc) {
+  auto client_version = ::testing::get<0>(GetParam());
+  auto server_version = ::testing::get<1>(GetParam());
+  SetupProtocolVersions(client_version, server_version);
 
- protected:
-  void SetUp() override {
-    std::string pqc_trial = "WebRTC-EnableDtlsPqc/Enabled/";
-
-    InitializeClientAndServerStreams(pqc_trial, pqc_trial);
-
-    auto client_identity =
-        webrtc::SSLIdentity::Create("client", client_key_type_);
-    auto server_identity =
-        webrtc::SSLIdentity::Create("server", server_key_type_);
-
-    client_ssl_->SetIdentity(std::move(client_identity));
-    server_ssl_->SetIdentity(std::move(server_identity));
+  webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups groups;
+  std::vector<uint16_t> enabled = groups.GetEnabled();
+  std::vector<uint16_t> groups_with_pqc;
+  if (std::find(enabled.begin(), enabled.end(),
+                webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+                    kX25519_MLKEM768) == enabled.end()) {
+    groups_with_pqc.push_back(
+        webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+            kX25519_MLKEM768);
   }
-};
+  for (auto val : enabled) {
+    groups_with_pqc.push_back(val);
+  }
+  RTC_CHECK(client_ssl_->SetSslGroupIds(groups_with_pqc));
+  RTC_CHECK(server_ssl_->SetSslGroupIds(groups_with_pqc));
 
-TEST_F(SSLStreamAdapterTestDTLSPqc, TestGetSslGroupId) {
-  EXPECT_EQ(client_ssl_->GetSslGroupIdForTesting(), 0);
-  EXPECT_EQ(server_ssl_->GetSslGroupIdForTesting(), 0);
-
-  SetupProtocolVersions(webrtc::SSL_PROTOCOL_DTLS_13,
-                        webrtc::SSL_PROTOCOL_DTLS_13);
+  EXPECT_EQ(client_ssl_->GetSslGroupId(), 0);
+  EXPECT_EQ(server_ssl_->GetSslGroupId(), 0);
 
   TestHandshake();
-  EXPECT_EQ(client_ssl_->GetSslGroupIdForTesting(), SSL_GROUP_X25519_MLKEM768);
-  EXPECT_EQ(server_ssl_->GetSslGroupIdForTesting(), SSL_GROUP_X25519_MLKEM768);
+  if (client_version == webrtc::SSL_PROTOCOL_DTLS_13 &&
+      server_version == webrtc::SSL_PROTOCOL_DTLS_13) {
+    EXPECT_EQ(client_ssl_->GetSslGroupId(),
+              webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+                  kX25519_MLKEM768);
+    EXPECT_EQ(server_ssl_->GetSslGroupId(),
+              webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+                  kX25519_MLKEM768);
+  } else {
+    EXPECT_EQ(client_ssl_->GetSslGroupId(),
+              webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519);
+    EXPECT_EQ(server_ssl_->GetSslGroupId(),
+              webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519);
+  }
 }
 #endif

@@ -10,8 +10,12 @@
 
 #include "api/crypto/crypto_options.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <set>
 #include <vector>
 
+#include "api/field_trials_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/ssl_stream_adapter.h"
 
@@ -69,6 +73,7 @@ bool CryptoOptions::operator==(const CryptoOptions& other) const {
     struct SFrame {
       bool require_frame_encryption;
     } sframe;
+    EphemeralKeyExchangeCipherGroups ephemeral_key_exchange_cipher_groups;
   };
   static_assert(sizeof(data_being_tested_for_equality) == sizeof(*this),
                 "Did you add something to CryptoOptions and forget to "
@@ -82,11 +87,59 @@ bool CryptoOptions::operator==(const CryptoOptions& other) const {
          srtp.enable_encrypted_rtp_header_extensions ==
              other.srtp.enable_encrypted_rtp_header_extensions &&
          sframe.require_frame_encryption ==
-             other.sframe.require_frame_encryption;
+             other.sframe.require_frame_encryption &&
+         ephemeral_key_exchange_cipher_groups ==
+             other.ephemeral_key_exchange_cipher_groups;
 }
 
 bool CryptoOptions::operator!=(const CryptoOptions& other) const {
   return !(*this == other);
+}
+
+CryptoOptions::EphemeralKeyExchangeCipherGroups::
+    EphemeralKeyExchangeCipherGroups()
+    : enabled_(SSLStreamAdapter::GetDefaultEphemeralKeyExchangeCipherGroups(
+          /* field_trials= */ nullptr)) {}
+
+bool CryptoOptions::EphemeralKeyExchangeCipherGroups::operator==(
+    const CryptoOptions::EphemeralKeyExchangeCipherGroups& other) const {
+  return enabled_ == other.enabled_;
+}
+
+std::set<uint16_t>
+CryptoOptions::EphemeralKeyExchangeCipherGroups::GetSupported() {
+  return SSLStreamAdapter::GetSupportedEphemeralKeyExchangeCipherGroups();
+}
+
+void CryptoOptions::EphemeralKeyExchangeCipherGroups::AddFirst(uint16_t group) {
+  enabled_.erase(std::remove(enabled_.begin(), enabled_.end(), group));
+  enabled_.insert(enabled_.begin(), group);
+}
+
+void CryptoOptions::EphemeralKeyExchangeCipherGroups::Update(
+    const FieldTrialsView* field_trials,
+    const std::vector<uint16_t>* disabled_groups) {
+  // Note: assumption is that these lists contains few elements...so converting
+  // to set<> is not worth it.
+  std::vector<uint16_t> current;
+  enabled_ = SSLStreamAdapter::GetDefaultEphemeralKeyExchangeCipherGroups(
+      field_trials);
+  // Remove all disabled.
+  if (disabled_groups) {
+    enabled_.erase(
+        std::remove_if(enabled_.begin(), enabled_.end(), [&](uint16_t val) {
+          return std::find(disabled_groups->begin(), disabled_groups->end(),
+                           val) != disabled_groups->end();
+        }));
+  }
+
+  // Add all current not already present to end of list.
+  auto end = enabled_.end();
+  for (auto val : current) {
+    if (std::find(enabled_.begin(), end, val) == end) {
+      enabled_.push_back(val);
+    }
+  }
 }
 
 }  // namespace webrtc

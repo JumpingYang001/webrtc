@@ -691,6 +691,10 @@ JsepTransportController* PeerConnection::InitializeTransportController_n(
   config.crypto_options = configuration.crypto_options.has_value()
                               ? *configuration.crypto_options
                               : options_.crypto_options;
+
+  // Maybe enable PQC from FieldTrials
+  config.crypto_options.ephemeral_key_exchange_cipher_groups.Update(
+      &context_->env().field_trials());
   config.transport_observer = this;
   config.rtcp_handler = InitializeRtcpCallback();
   config.un_demuxable_packet_handler = InitializeUnDemuxablePacketHandler();
