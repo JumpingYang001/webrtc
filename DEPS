@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': '413ccd12abe49ad79521af08e38c1208cc19f44a',
+  'chromium_revision': '34c4b0e9ebd7a0681413aef552217ca88701afc5',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -73,24 +73,24 @@ vars = {
 deps = {
   # TODO(kjellander): Move this to be Android-only.
   'src/base':
-    'https://chromium.googlesource.com/chromium/src/base@db833313b460c52046dd0fbcba586e3b9a4a1e9f',
+    'https://chromium.googlesource.com/chromium/src/base@1fad05b2cd652ec7d039b3fd3e7abd19fb89982a',
   'src/build':
     'https://chromium.googlesource.com/chromium/src/build@56e78d9e6e7ca1f7320ad2c6467d364061c789d7',
   'src/buildtools':
-    'https://chromium.googlesource.com/chromium/src/buildtools@4347ca8fd6c0c6081dbd9bd05c200c6b170f18bc',
+    'https://chromium.googlesource.com/chromium/src/buildtools@077a66f30fcf281b066fafb6dfc60818c238efb6',
   # Gradle 6.6.1. Used for testing Android Studio project generation for WebRTC.
   'src/examples/androidtests/third_party/gradle': {
     'url': 'https://chromium.googlesource.com/external/github.com/gradle/gradle.git@f2d1fb54a951d8b11d25748e4711bec8d128d7e3',
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@7a7904b73f694988f7bad1c6fd5a8e4424467e3a',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@8e6ebc5db04cc19908e9a5ea5ca64da2103212e8',
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@c4492b50040791ac4dc9cc2125ea550d37c2b3ed',
+    'https://chromium.googlesource.com/chromium/src/testing@5a4686c3d8285395cb649995f98488a587c136f6',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@957f2c1a89321e825753b9efddf3ea3ee6633ef8',
+    'https://chromium.googlesource.com/chromium/src/third_party@a3660c81d479913c74e510255744ca0d12cd1355',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -323,9 +323,9 @@ deps = {
   'src/third_party/clang-format/script':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@37f6e68a107df43b7d7e044fd36a13cbae3413f2',
   'src/third_party/compiler-rt/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt.git@cff6ae8a80960ceca4d83cf6efa271222d2e7d85',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt.git@16c0e42913a45357f0e557dcc0b7055129c78af6',
   'src/third_party/libc++/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@a9cc573e7c591795d11b72d8323ba0e573b55bd6',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@a01c02c9d4acbdae3b7e8a2f3ee58579a9c29f96',
   'src/third_party/libc++abi/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@7ff13dd8c66d5047a3ee1e1ba26ddeb70d3d8740',
   'src/third_party/llvm-libc/src':
@@ -497,13 +497,13 @@ deps = {
   'src/third_party/crc32c/src':
     'https://chromium.googlesource.com/external/github.com/google/crc32c.git@d3d60ac6e0f16780bcfcc825385e1d338801a558',
   'src/third_party/depot_tools':
-    'https://chromium.googlesource.com/chromium/tools/depot_tools.git@18580cf9c407a3c23aa072b9d745832516de699e',
+    'https://chromium.googlesource.com/chromium/tools/depot_tools.git@fab0a4296b8830c569a4dc82285bfb58a5c2fca8',
   'src/third_party/ffmpeg':
     'https://chromium.googlesource.com/chromium/third_party/ffmpeg.git@dcdd0fa51b65a0b1688ff6b8f0cc81908f09ded2',
   'src/third_party/flatbuffers/src':
     'https://chromium.googlesource.com/external/github.com/google/flatbuffers.git@8db59321d9f02cdffa30126654059c7d02f70c32',
   'src/third_party/grpc/src': {
-    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@0affb1396d17e4473ded5b221e66c31d9e4c222f',
+    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@6b4da08cefe089b9283931c6ca9acf08df12859d',
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -632,7 +632,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'sxgLKZyJNZMVi8cot5yvRzqCFQxX_HbbR0psaeto5RcC',
+              'version': 'Is-oa6b7OQ1cVHjvG42iz-Lha-F3MBxBBIyC_eTMTg4C',
           },
       ],
       'condition': 'checkout_android',
@@ -656,7 +656,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@ab8639c6e8bef8b09642856b1b526e1e4edfcbad',
+    'https://chromium.googlesource.com/chromium/src/tools@025e0e69feeef14e5eda7ba71f7b4c380eed4b05',
 
   'src/third_party/espresso': {
       'packages': [
