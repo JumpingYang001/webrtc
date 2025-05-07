@@ -62,6 +62,47 @@ TEST(EphemeralKeyExchangeCipherGroupsTest, GetEnabled) {
   EXPECT_EQ(groups.GetEnabled(), expected);
 }
 
+TEST(EphemeralKeyExchangeCipherGroupsTest, SetEnabled) {
+  std::vector<uint16_t> expected = {
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519,
+  };
+  webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups groups;
+  groups.SetEnabled(expected);
+  EXPECT_EQ(groups.GetEnabled(), expected);
+}
+
+TEST(EphemeralKeyExchangeCipherGroupsTest, AddFirst) {
+  std::vector<uint16_t> initial = {
+#ifdef SSL_GROUP_X25519
+      SSL_GROUP_X25519,
+#endif
+#ifdef SSL_GROUP_SECP256R1
+      SSL_GROUP_SECP256R1,
+#endif
+#ifdef SSL_GROUP_SECP384R1
+      SSL_GROUP_SECP384R1,
+#endif
+  };
+  webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups groups;
+  EXPECT_EQ(groups.GetEnabled(), initial);
+  groups.AddFirst(webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+                      kX25519_MLKEM768);
+
+  std::vector<uint16_t> expected = {
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519_MLKEM768,
+#ifdef SSL_GROUP_X25519
+      SSL_GROUP_X25519,
+#endif
+#ifdef SSL_GROUP_SECP256R1
+      SSL_GROUP_SECP256R1,
+#endif
+#ifdef SSL_GROUP_SECP384R1
+      SSL_GROUP_SECP384R1,
+#endif
+  };
+  EXPECT_EQ(groups.GetEnabled(), expected);
+}
+
 TEST(EphemeralKeyExchangeCipherGroupsTest, Update) {
   std::vector<uint16_t> expected = {
 #ifdef SSL_GROUP_X25519_MLKEM768

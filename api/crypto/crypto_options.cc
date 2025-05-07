@@ -112,7 +112,7 @@ CryptoOptions::EphemeralKeyExchangeCipherGroups::GetSupported() {
 }
 
 void CryptoOptions::EphemeralKeyExchangeCipherGroups::AddFirst(uint16_t group) {
-  enabled_.erase(std::remove(enabled_.begin(), enabled_.end(), group));
+  std::erase(enabled_, group);
   enabled_.insert(enabled_.begin(), group);
 }
 
