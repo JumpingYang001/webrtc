@@ -21,27 +21,19 @@
 #error "See: bugs.webrtc.org/9213#c13."
 #endif
 
-#include <cstddef>
-#include <cstdint>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "absl/container/inlined_vector.h"
-#include "api/environment/environment.h"
-#include "api/scoped_refptr.h"
-#include "api/video/encoded_image.h"
+#include "api/transport/rtp/dependency_descriptor.h"
 #include "api/video/i420_buffer.h"
 #include "api/video/video_codec_constants.h"
-#include "api/video/video_frame.h"
-#include "api/video/video_frame_type.h"
 #include "api/video_codecs/scalability_mode.h"
-#include "api/video_codecs/video_codec.h"
 #include "api/video_codecs/video_encoder.h"
 #include "common_video/h264/h264_bitstream_parser.h"
 #include "modules/video_coding/codecs/h264/include/h264.h"
-#include "modules/video_coding/codecs/h264/include/h264_globals.h"
 #include "modules/video_coding/svc/scalable_video_controller.h"
+#include "modules/video_coding/utility/quality_scaler.h"
 #include "third_party/openh264/src/codec/api/wels/codec_app_def.h"
 
 class ISVCEncoder;
