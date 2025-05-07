@@ -138,6 +138,8 @@ if (rtc_include_tests) {
     deps = [
       ":network_control",
       "..:simulated_network_api",
+      "../../api:network_emulation_manager_api",
+      "../../api/rtc_event_log:rtc_event_log",
       "../units:data_rate",
       "../units:data_size",
       "../units:time_delta",
@@ -154,6 +156,8 @@ if (rtc_include_tests) {
     deps = [
       ":network_control",
       ":test_feedback_generator_interface",
+      "../../api:network_emulation_manager_api",
+      "../../api/rtc_event_log:rtc_event_log",
       "../../test/network:feedback_generator",
     ]
   }

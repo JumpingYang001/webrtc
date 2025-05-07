@@ -194,29 +194,44 @@ if (rtc_include_tests) {
     deps = [
       ":emulated_network",
       ":simulated_network",
+      "../../api:create_network_emulation_manager",
       "../../api:network_emulation_manager_api",
+      "../../api:rtp_parameters",
       "../../api:simulated_network_api",
+      "../../api/environment:environment",
+      "../../api/environment:environment_factory",
+      "../../api/rtc_event_log:rtc_event_log",
+      "../../api/rtc_event_log:rtc_event_log_factory",
       "../../api/transport:network_control",
       "../../api/transport:test_feedback_generator_interface",
       "../../api/units:data_rate",
       "../../api/units:data_size",
       "../../api/units:time_delta",
       "../../api/units:timestamp",
+      "../../logging:rtc_event_rtp_rtcp",
+      "../../modules/rtp_rtcp:rtp_rtcp_format",
       "../../rtc_base:checks",
       "//third_party/abseil-cpp/absl/memory",
     ]
   }
 
-  rtc_library("feedback_generator_unittest") {
-    testonly = true
-    sources = [ "feedback_generator_unittest.cc" ]
-    deps = [
-      "..:test_support",
-      "../../api:simulated_network_api",
-      "../../api/transport:test_feedback_generator",
-      "../../api/transport:test_feedback_generator_interface",
-      "../../api/units:time_delta",
-    ]
+  if (rtc_enable_protobuf) {
+    rtc_library("feedback_generator_unittest") {
+      testonly = true
+      sources = [ "feedback_generator_unittest.cc" ]
+      deps = [
+        "..:test_support",
+        "../../api:create_network_emulation_manager",
+        "../../api:network_emulation_manager_api",
+        "../../api:simulated_network_api",
+        "../../api/rtc_event_log:rtc_event_log",
+        "../../api/transport:test_feedback_generator",
+        "../../api/transport:test_feedback_generator_interface",
+        "../../api/units:time_delta",
+        "../../logging:rtc_event_log_parser",
+        "../logging:log_writer",
+      ]
+    }
   }
 
   if (!build_with_chromium) {
@@ -224,13 +239,15 @@ if (rtc_include_tests) {
       testonly = true
       deps = [
         ":cross_traffic_unittest",
-        ":feedback_generator_unittest",
         ":network_emulation_pc_unittest",
         ":network_emulation_unittest",
         ":simulated_network_unittest",
       ]
       if (rtc_enable_protobuf) {
-        deps += [ ":schedulable_network_behavior_test" ]
+        deps += [
+          ":feedback_generator_unittest",
+          ":schedulable_network_behavior_test",
+        ]
       }
     }
   }
