@@ -597,6 +597,12 @@ template("rtc_source_set") {
       visibility = webrtc_default_visibility
     }
 
+    if (defined(invoker.sources)) {
+      nonheader_sources = filter_include(invoker.sources, [ "*.cc" ])
+      assert(nonheader_sources == [],
+             "rtc_source_set shall not contain cc files")
+    }
+
     # What's your poison?
     if (defined(testonly) && testonly) {
       assert(!defined(poisonous))

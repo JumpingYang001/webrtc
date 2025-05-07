@@ -21,7 +21,7 @@ rtc_source_set("protobuf_utils") {
   }
 }
 
-rtc_source_set("bitstream_reader") {
+rtc_library("bitstream_reader") {
   sources = [
     "bitstream_reader.cc",
     "bitstream_reader.h",
@@ -49,7 +49,7 @@ rtc_source_set("untyped_function") {
   deps = [ "system:assume" ]
 }
 
-rtc_source_set("callback_list") {
+rtc_library("callback_list") {
   sources = [
     "callback_list.cc",
     "callback_list.h",
@@ -607,7 +607,7 @@ rtc_source_set("type_traits") {
   sources = [ "type_traits.h" ]
 }
 
-rtc_source_set("rtc_operations_chain") {
+rtc_library("rtc_operations_chain") {
   visibility = [ "*" ]
   sources = [
     "operations_chain.cc",
@@ -1050,7 +1050,7 @@ rtc_library("socket") {
   }
 }
 
-rtc_source_set("network_constants") {
+rtc_library("network_constants") {
   visibility = [ "*" ]
   sources = [
     "network_constants.cc",
@@ -1461,7 +1461,7 @@ rtc_source_set("ssl_header") {
   }
 }
 
-rtc_source_set("digest") {
+rtc_library("digest") {
   visibility = [ "*" ]
   sources = [
     "message_digest.cc",

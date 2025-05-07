@@ -82,7 +82,7 @@ rtc_library("high_pass_filter") {
   ]
 }
 
-rtc_source_set("aec_dump_interface") {
+rtc_library("aec_dump_interface") {
   visibility = [ "*" ]
   sources = [
     "include/aec_dump.cc",
@@ -229,7 +229,7 @@ rtc_library("residual_echo_detector") {
   ]
 }
 
-rtc_source_set("rms_level") {
+rtc_library("rms_level") {
   visibility = [ "*" ]
   sources = [
     "rms_level.cc",

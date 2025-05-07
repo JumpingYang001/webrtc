@@ -361,7 +361,7 @@ rtc_library("rtp_rtcp") {
   ]
 }
 
-rtc_source_set("rtp_rtcp_legacy") {
+rtc_library("rtp_rtcp_legacy") {
   sources = [
     "include/rtp_rtcp.h",
     "source/deprecated/deprecated_rtp_sender_egress.cc",
@@ -473,7 +473,7 @@ rtc_library("rtp_video_header") {
   ]
 }
 
-rtc_source_set("rtp_video_header_unittest") {
+rtc_library("rtp_video_header_unittest") {
   testonly = true
   sources = [ "source/rtp_video_header_unittest.cc" ]
   deps = [
@@ -770,7 +770,7 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_source_set("frame_transformer_factory_unittest") {
+  rtc_library("frame_transformer_factory_unittest") {
     testonly = true
     sources = [ "source/frame_transformer_factory_unittest.cc" ]
     deps = [

@@ -26,7 +26,7 @@ rtc_source_set("call_api") {
   sources = [ "call/audio_sink.h" ]
 }
 
-rtc_source_set("enable_media") {
+rtc_library("enable_media") {
   visibility = [ "*" ]
   sources = [
     "enable_media.cc",
@@ -46,7 +46,7 @@ rtc_source_set("enable_media") {
   ]
 }
 
-rtc_source_set("enable_media_with_defaults") {
+rtc_library("enable_media_with_defaults") {
   visibility = [ "*" ]
   allow_poison = [
     "audio_codecs",
@@ -402,7 +402,7 @@ rtc_library("libjingle_peerconnection_api") {
   ]
 }
 
-rtc_source_set("frame_transformer_interface") {
+rtc_library("frame_transformer_interface") {
   visibility = [ "*" ]
   sources = [
     "frame_transformer_interface.cc",
@@ -654,7 +654,7 @@ rtc_source_set("peer_connection_quality_test_fixture_api") {
   ]
 }
 
-rtc_source_set("frame_generator_api") {
+rtc_library("frame_generator_api") {
   visibility = [ "*" ]
   sources = [
     "test/frame_generator_interface.cc",
@@ -898,7 +898,7 @@ rtc_source_set("simulated_network_api") {
 }
 
 # TODO(srte): Move to network_emulation sub directory.
-rtc_source_set("network_emulation_manager_api") {
+rtc_library("network_emulation_manager_api") {
   visibility = [ "*" ]
   sources = [
     "test/network_emulation_manager.cc",
@@ -924,7 +924,7 @@ rtc_source_set("network_emulation_manager_api") {
   ]
 }
 
-rtc_source_set("time_controller") {
+rtc_library("time_controller") {
   visibility = [ "*" ]
   sources = [
     "test/time_controller.cc",
@@ -1683,7 +1683,7 @@ if (rtc_include_tests) {
   }
 }
 
-rtc_source_set("field_trials_registry") {
+rtc_library("field_trials_registry") {
   visibility = [ "*" ]
   sources = [
     "field_trials_registry.cc",

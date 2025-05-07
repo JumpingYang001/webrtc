@@ -60,7 +60,7 @@ rtc_source_set("proxy") {
   ]
 }
 
-rtc_source_set("channel") {
+rtc_library("channel") {
   visibility = [
     ":*",
     "../test/peer_scenario",
@@ -126,7 +126,7 @@ rtc_source_set("channel_interface") {
   ]
 }
 
-rtc_source_set("dtls_srtp_transport") {
+rtc_library("dtls_srtp_transport") {
   visibility = [ ":*" ]
   sources = [
     "dtls_srtp_transport.cc",
@@ -145,7 +145,7 @@ rtc_source_set("dtls_srtp_transport") {
   ]
 }
 
-rtc_source_set("dtls_transport") {
+rtc_library("dtls_transport") {
   visibility = [
     ":*",
     "../test/*",
@@ -171,7 +171,7 @@ rtc_source_set("dtls_transport") {
   ]
 }
 
-rtc_source_set("external_hmac") {
+rtc_library("external_hmac") {
   visibility = [ ":*" ]
   sources = [
     "external_hmac.cc",
@@ -186,7 +186,7 @@ rtc_source_set("external_hmac") {
   }
 }
 
-rtc_source_set("ice_transport") {
+rtc_library("ice_transport") {
   visibility = [ ":*" ]
   sources = [
     "ice_transport.cc",
@@ -201,7 +201,7 @@ rtc_source_set("ice_transport") {
   ]
 }
 
-rtc_source_set("jsep_transport") {
+rtc_library("jsep_transport") {
   visibility = [ ":*" ]
   sources = [
     "jsep_transport.cc",
@@ -245,7 +245,7 @@ rtc_source_set("jsep_transport") {
   ]
 }
 
-rtc_source_set("jsep_transport_collection") {
+rtc_library("jsep_transport_collection") {
   visibility = [ ":*" ]
   sources = [
     "jsep_transport_collection.cc",
@@ -265,7 +265,7 @@ rtc_source_set("jsep_transport_collection") {
   ]
 }
 
-rtc_source_set("jsep_transport_controller") {
+rtc_library("jsep_transport_controller") {
   visibility = [
     ":*",
     "../test/peer_scenario:*",
@@ -342,7 +342,7 @@ rtc_source_set("media_factory") {
   ]
 }
 
-rtc_source_set("media_session") {
+rtc_library("media_session") {
   visibility = [ "*" ]  # Used by Chrome
   sources = [
     "media_session.cc",
@@ -511,7 +511,7 @@ rtc_source_set("peer_connection_proxy") {
   ]
 }
 
-rtc_source_set("rtcp_mux_filter") {
+rtc_library("rtcp_mux_filter") {
   visibility = [ ":*" ]
   sources = [
     "rtcp_mux_filter.cc",
@@ -523,7 +523,7 @@ rtc_source_set("rtcp_mux_filter") {
   ]
 }
 
-rtc_source_set("rtp_media_utils") {
+rtc_library("rtp_media_utils") {
   visibility = [ ":*" ]
   sources = [
     "rtp_media_utils.cc",
@@ -560,7 +560,7 @@ rtc_source_set("rtp_sender_proxy") {
   ]
 }
 
-rtc_source_set("rtp_transport") {
+rtc_library("rtp_transport") {
   visibility = [ ":*" ]
   sources = [
     "rtp_transport.cc",
@@ -614,7 +614,7 @@ rtc_source_set("rtp_transport_internal") {
   ]
 }
 
-rtc_source_set("sctp_transport") {
+rtc_library("sctp_transport") {
   visibility = [ ":*" ]
   sources = [
     "sctp_transport.cc",
@@ -639,7 +639,7 @@ rtc_source_set("sctp_transport") {
   ]
 }
 
-rtc_source_set("sctp_utils") {
+rtc_library("sctp_utils") {
   visibility = [
     ":*",
     "../test/fuzzers:*",
@@ -661,7 +661,7 @@ rtc_source_set("sctp_utils") {
     "../rtc_base:ssl_adapter",
   ]
 }
-rtc_source_set("srtp_session") {
+rtc_library("srtp_session") {
   visibility = [ ":*" ]
   sources = [
     "srtp_session.cc",
@@ -691,7 +691,7 @@ rtc_source_set("srtp_session") {
     deps += [ "//third_party/libsrtp" ]
   }
 }
-rtc_source_set("srtp_transport") {
+rtc_library("srtp_transport") {
   visibility = [ ":*" ]
   sources = [
     "srtp_transport.cc",
@@ -717,7 +717,7 @@ rtc_source_set("srtp_transport") {
   ]
 }
 
-rtc_source_set("transport_stats") {
+rtc_library("transport_stats") {
   visibility = [ ":*" ]
   sources = [
     "transport_stats.cc",
@@ -742,7 +742,7 @@ rtc_source_set("used_ids") {
   ]
 }
 
-rtc_source_set("video_track_source_proxy") {
+rtc_library("video_track_source_proxy") {
   visibility = [ "*" ]  # Used by Chrome
   sources = [
     "video_track_source_proxy.cc",
@@ -760,7 +760,7 @@ rtc_source_set("video_track_source_proxy") {
   ]
 }
 
-rtc_source_set("session_description") {
+rtc_library("session_description") {
   # TODO(bugs.webrtc.org/13661): Reduce visibility if possible
   visibility = [ "*" ]  # Used by Chrome and others
 
@@ -791,7 +791,7 @@ rtc_source_set("session_description") {
   ]
 }
 
-rtc_source_set("simulcast_description") {
+rtc_library("simulcast_description") {
   sources = [
     "simulcast_description.cc",
     "simulcast_description.h",
@@ -897,7 +897,7 @@ rtc_library("connection_context") {
   ]
 }
 
-rtc_source_set("data_channel_controller") {
+rtc_library("data_channel_controller") {
   visibility = [ ":*" ]
   sources = [
     "data_channel_controller.cc",
@@ -962,7 +962,7 @@ rtc_source_set("peer_connection_internal") {
   ]
 }
 
-rtc_source_set("rtc_stats_collector") {
+rtc_library("rtc_stats_collector") {
   visibility = [
     ":*",
     "../api:*",
@@ -1037,7 +1037,7 @@ rtc_source_set("rtc_stats_collector") {
   ]
 }
 
-rtc_source_set("rtc_stats_traversal") {
+rtc_library("rtc_stats_traversal") {
   visibility = [ ":*" ]
   sources = [
     "rtc_stats_traversal.cc",
@@ -1050,7 +1050,7 @@ rtc_source_set("rtc_stats_traversal") {
   ]
 }
 
-rtc_source_set("sdp_munging_detector") {
+rtc_library("sdp_munging_detector") {
   visibility = [ ":*" ]
   sources = [
     "sdp_munging_detector.cc",
@@ -1070,7 +1070,7 @@ rtc_source_set("sdp_munging_detector") {
     "//third_party/abseil-cpp/absl/algorithm:container",
   ]
 }
-rtc_source_set("sdp_offer_answer") {
+rtc_library("sdp_offer_answer") {
   visibility = [ ":*" ]
   sources = [
     "sdp_offer_answer.cc",
@@ -1160,7 +1160,7 @@ rtc_source_set("jsep_ice_candidate") {
 rtc_source_set("jsep_session_description") {
   visibility = [ ":*" ]
 }
-rtc_source_set("local_audio_source") {
+rtc_library("local_audio_source") {
   visibility = [ ":*" ]
   sources = [
     "local_audio_source.cc",
@@ -1173,7 +1173,7 @@ rtc_source_set("local_audio_source") {
     "../api:scoped_refptr",
   ]
 }
-rtc_source_set("peer_connection") {
+rtc_library("peer_connection") {
   visibility = [ ":*" ]
   sources = [
     "peer_connection.cc",
@@ -1279,7 +1279,7 @@ rtc_source_set("peer_connection") {
   ]
 }
 
-rtc_source_set("simulcast_sdp_serializer") {
+rtc_library("simulcast_sdp_serializer") {
   visibility = [ ":*" ]
   sources = [
     "simulcast_sdp_serializer.cc",
@@ -1300,7 +1300,7 @@ rtc_source_set("simulcast_sdp_serializer") {
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
-rtc_source_set("sdp_utils") {
+rtc_library("sdp_utils") {
   sources = [
     "sdp_utils.cc",
     "sdp_utils.h",
@@ -1313,7 +1313,7 @@ rtc_source_set("sdp_utils") {
     "../rtc_base/system:rtc_export",
   ]
 }
-rtc_source_set("legacy_stats_collector") {
+rtc_library("legacy_stats_collector") {
   visibility = [ ":*" ]
   sources = [
     "legacy_stats_collector.cc",
@@ -1367,7 +1367,7 @@ rtc_source_set("stream_collection") {
   sources = [ "stream_collection.h" ]
   deps = [ "../api:libjingle_peerconnection_api" ]
 }
-rtc_source_set("track_media_info_map") {
+rtc_library("track_media_info_map") {
   visibility = [ ":*" ]
   sources = [
     "track_media_info_map.cc",
@@ -1387,7 +1387,7 @@ rtc_source_set("track_media_info_map") {
     "../rtc_base:threading",
   ]
 }
-rtc_source_set("webrtc_sdp") {
+rtc_library("webrtc_sdp") {
   # TODO(bugs.webrtc.org/13661): Reduce visibility if possible
   visibility = [ "*" ]  # Used by Chrome and more
 
@@ -1437,7 +1437,7 @@ rtc_source_set("webrtc_sdp") {
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
-rtc_source_set("webrtc_session_description_factory") {
+rtc_library("webrtc_session_description_factory") {
   visibility = [ ":*" ]
   sources = [
     "webrtc_session_description_factory.cc",
@@ -1508,7 +1508,7 @@ rtc_library("media_stream_observer") {
     "//third_party/abseil-cpp/absl/algorithm:container",
   ]
 }
-rtc_source_set("peer_connection_factory") {
+rtc_library("peer_connection_factory") {
   # TODO(bugs.webrtc.org/13661): Reduce visibility if possible
   visibility = [ "*" ]  # Known to be used externally
   allow_poison = [ "environment_construction" ]

@@ -67,7 +67,7 @@ rtc_static_library("ns") {
 }
 
 if (rtc_include_tests) {
-  rtc_source_set("ns_unittests") {
+  rtc_library("ns_unittests") {
     testonly = true
 
     configs += [ "..:apm_debug_dump" ]

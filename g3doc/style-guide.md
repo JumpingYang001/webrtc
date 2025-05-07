@@ -278,8 +278,8 @@ configuration, only use the following [GN templates][gn-templ].
 |------------------|-----------------------------------------------------------------------------------------|
 | `executable`     | `rtc_executable`                                                                        |
 | `shared_library` | `rtc_shared_library`                                                                    |
-| `source_set`     | `rtc_source_set` (only for header only libraries, for everything else use `rtc_library` |
-| `static_library` | `rtc_static_library` (use `rtc_library` unless you really need `rtc_static_library`     |
+| `source_set`     | `rtc_source_set` (only for header only libraries, for everything else use `rtc_library`)|
+| `static_library` | `rtc_static_library` (use `rtc_library` unless you really need `rtc_static_library`)    |
 | `test`           | `rtc_test`                                                                              |
 
 

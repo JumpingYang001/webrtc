@@ -619,7 +619,7 @@ rtc_library("webrtc_vp8") {
   }
 }
 
-rtc_source_set("webrtc_vp8_scalability") {
+rtc_library("webrtc_vp8_scalability") {
   sources = [
     "codecs/vp8/vp8_scalability.cc",
     "codecs/vp8/vp8_scalability.h",

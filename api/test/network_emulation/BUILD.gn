@@ -16,7 +16,7 @@ if (rtc_enable_protobuf) {
     proto_out_dir = "api/test/network_emulation/"
   }
 
-  rtc_source_set("schedulable_network_node_builder") {
+  rtc_library("schedulable_network_node_builder") {
     visibility = [ "*" ]
     sources = [
       "schedulable_network_node_builder.cc",

@@ -8,7 +8,7 @@
 
 import("../../../webrtc.gni")
 
-rtc_source_set("media_configuration") {
+rtc_library("media_configuration") {
   visibility = [ "*" ]
   testonly = true
   sources = [

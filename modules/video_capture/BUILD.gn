@@ -51,7 +51,7 @@ rtc_library("video_capture_module") {
 }
 
 if (!build_with_chromium || is_linux || is_chromeos) {
-  rtc_source_set("video_capture_internal_impl") {
+  rtc_library("video_capture_internal_impl") {
     visibility = [ "*" ]
     deps = [
       ":video_capture_module",

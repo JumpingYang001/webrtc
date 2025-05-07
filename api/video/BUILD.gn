@@ -350,7 +350,7 @@ rtc_source_set("video_stream_encoder") {
   ]
 }
 
-rtc_source_set("video_frame_metadata") {
+rtc_library("video_frame_metadata") {
   visibility = [ "*" ]
   sources = [
     "video_frame_metadata.cc",

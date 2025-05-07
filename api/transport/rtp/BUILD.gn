@@ -19,7 +19,7 @@ rtc_source_set("rtp_source") {
   ]
 }
 
-rtc_source_set("dependency_descriptor") {
+rtc_library("dependency_descriptor") {
   visibility = [ "*" ]
   sources = [
     "dependency_descriptor.cc",
