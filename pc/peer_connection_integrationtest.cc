@@ -18,6 +18,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -4794,6 +4795,99 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
 }
 
 TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
+       MungeOfferCodecAndReOfferWorksWithSetCodecPreferencesIsAFootgun) {
+  ASSERT_TRUE(CreatePeerConnectionWrappers());
+  ConnectFakeSignaling();
+  caller()->AddVideoTrack();
+  auto munger = [](std::unique_ptr<SessionDescriptionInterface>& sdp) {
+    auto video = GetFirstVideoContentDescription(sdp->description());
+    auto codecs = video->codecs();
+    std::optional<Codec> replacement_codec;
+    for (auto&& codec : codecs) {
+      if (codec.name == "AV1") {
+        replacement_codec = codec;
+        break;
+      }
+    }
+    if (replacement_codec) {
+      for (auto&& codec : codecs) {
+        if (codec.name == "VP8") {
+          RTC_LOG(LS_INFO) << "Remapping VP8 codec " << codec << " to AV1";
+          codec.name = replacement_codec->name;
+          codec.params = replacement_codec->params;
+          break;
+        }
+      }
+      video->set_codecs(codecs);
+    } else {
+      RTC_LOG(LS_INFO) << "Skipping munge, no AV1 codec found";
+    }
+  };
+  caller()->SetGeneratedSdpMunger(munger);
+  caller()->CreateAndSetAndSignalOffer();
+  ASSERT_THAT(
+      WaitUntil([&] { return SignalingStateStable(); }, ::testing::IsTrue()),
+      IsRtcOk());
+  caller()->SetGeneratedSdpMunger(nullptr);
+
+  // Note currently negotiated codecs and count VP9 and AV1.
+  auto codecs_after_munge = caller()
+                                ->pc()
+                                ->local_description()
+                                ->description()
+                                ->contents()[0]
+                                .media_description()
+                                ->codecs();
+  size_t av1_munge = 0;
+  size_t vp8_munge = 0;
+  for (const auto& codec : codecs_after_munge) {
+    if (codec.name == "AV1")
+      av1_munge++;
+    else if (codec.name == "VP8")
+      vp8_munge++;
+  }
+  // We should have replaced VP8 with AV1.
+  EXPECT_EQ(av1_munge, 2u);
+  EXPECT_EQ(vp8_munge, 0u);
+
+  // Call setCodecPreferences.
+  std::vector<RtpCodecCapability> codecs =
+      caller()
+          ->pc_factory()
+          ->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO)
+          .codecs;
+  auto transceivers = caller()->pc()->GetTransceivers();
+  ASSERT_EQ(transceivers.size(), 1u);
+  transceivers[0]->SetCodecPreferences(codecs);
+
+  auto offer = caller()->CreateOfferAndWait();
+  ASSERT_NE(offer, nullptr);
+  // The offer should be acceptable.
+  EXPECT_TRUE(caller()->SetLocalDescriptionAndSendSdpMessage(std::move(offer)));
+
+  auto codecs_after_scp = caller()
+                              ->pc()
+                              ->local_description()
+                              ->description()
+                              ->contents()[0]
+                              .media_description()
+                              ->codecs();
+  size_t av1_scp = 0;
+  size_t vp8_scp = 0;
+  for (const auto& codec : codecs_after_scp) {
+    if (codec.name == "AV1")
+      av1_scp++;
+    else if (codec.name == "VP8")
+      vp8_scp++;
+  }
+  // The SDP munging modification was reverted by sCP.
+  // This is a footgun but please do not mix such munging with
+  // setCodecPreferences, munging is on the way out.
+  EXPECT_EQ(av1_scp, 1u);
+  EXPECT_EQ(vp8_scp, 1u);
+}
+
+TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
        SensibleRtxWithDuplicateCodecs) {
   ASSERT_TRUE(CreatePeerConnectionWrappers());
   caller()->AddVideoTrack();
@@ -4837,7 +4931,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   // associated RTX codec.
   std::unique_ptr<SessionDescriptionInterface> answer =
       caller()->CreateAnswerForTest();
-  ASSERT_THAT(answer, NotNull());
+  ASSERT_NE(answer, nullptr);
   RTC_LOG(LS_ERROR) << "Answer is " << *answer;
   ASSERT_THAT(answer->description()->contents().size(), Eq(1));
   auto codecs =
@@ -4896,7 +4990,7 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   caller()->AddVideoTrack();
   auto offer2 = caller()->CreateOfferAndWait();
   // Observe that packetization is raw on BOTH media sections.
-  ASSERT_THAT(offer2, NotNull());
+  ASSERT_NE(offer2, nullptr);
   EXPECT_EQ(offer2->description()->contents().size(), 2U);
   for (const auto& content : offer2->description()->contents()) {
     for (const auto& codec : content.media_description()->codecs()) {
