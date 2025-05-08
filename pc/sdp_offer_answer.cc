@@ -5357,6 +5357,18 @@ bool SdpOfferAnswerHandler::ReadyToUseRemoteCandidate(
         RTC_LOG(LS_ERROR) << "ReadyToUseRemoteCandidate: Candidate not valid "
                              "because of SDP munging.";
         *valid = false;
+        // There might be other types of SDP munging, but here we're only
+        // interested in IceUfrag and IcePwd.
+        SdpMungingType sdp_munging_type =
+            last_sdp_munging_type_ == SdpMungingType::kIcePwd
+                ? SdpMungingType::kIcePwd
+                : SdpMungingType::kIceUfrag;
+        RTC_HISTOGRAM_ENUMERATION_SPARSE(
+            "WebRTC.PeerConnection.RestrictedCandidates.SdpMungingType",
+            sdp_munging_type, SdpMungingType::kMaxValue);
+        RTC_HISTOGRAM_ENUMERATION_SPARSE(
+            "WebRTC.PeerConnection.RestrictedCandidates.Port",
+            candidate->candidate().address().port(), 65536);
         return false;
       }
     }
