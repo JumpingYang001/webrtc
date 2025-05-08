@@ -22,14 +22,6 @@
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 #include "third_party/catapult/tracing/tracing/value/histogram.h"
-// Files generated at build-time by the protobuf compiler.
-#ifdef WEBRTC_ENABLE_PROTOBUF
-#ifdef WEBRTC_ANDROID_PLATFORM_BUILD
-#include "external/webrtc/webrtc/tracing/tracing/proto/histogram.pb.h"
-#else
-#include "tracing/tracing/proto/histogram.pb.h"
-#endif
-#endif
 
 namespace webrtc {
 namespace test {
