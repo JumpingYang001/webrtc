@@ -29,7 +29,6 @@
 #include "api/transport/rtp/rtp_source.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
-#include "api/video/video_source_interface.h"
 #include "media/base/media_channel.h"
 #include "pc/jitter_buffer_delay.h"
 #include "pc/media_stream_track_proxy.h"
@@ -67,9 +66,7 @@ class VideoRtpReceiver : public RtpReceiverInternal {
   scoped_refptr<DtlsTransportInterface> dtls_transport() const override;
   std::vector<std::string> stream_ids() const override;
   std::vector<scoped_refptr<MediaStreamInterface>> streams() const override;
-  webrtc::MediaType media_type() const override {
-    return webrtc::MediaType::VIDEO;
-  }
+  MediaType media_type() const override { return MediaType::VIDEO; }
 
   std::string id() const override { return id_; }
 

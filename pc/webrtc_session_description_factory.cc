@@ -43,10 +43,6 @@
 #include "rtc_base/rtc_certificate_generator.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
-#include "rtc_base/unique_id_generator.h"
-
-using ::webrtc::MediaSessionOptions;
-using webrtc::UniqueRandomIdGenerator;
 
 namespace webrtc {
 namespace {
@@ -116,7 +112,7 @@ WebRtcSessionDescriptionFactory::WebRtcSessionDescriptionFactory(
     bool dtls_enabled,
     std::unique_ptr<RTCCertificateGeneratorInterface> cert_generator,
     scoped_refptr<RTCCertificate> certificate,
-    std::function<void(const webrtc::scoped_refptr<webrtc::RTCCertificate>&)>
+    std::function<void(const scoped_refptr<RTCCertificate>&)>
         on_certificate_ready,
     CodecLookupHelper* codec_lookup_helper,
     const FieldTrialsView& field_trials)

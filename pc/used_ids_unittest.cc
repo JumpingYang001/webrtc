@@ -15,15 +15,15 @@
 #include "rtc_base/checks.h"
 #include "test/gtest.h"
 
-using ::webrtc::UsedIds;
-using ::webrtc::UsedRtpHeaderExtensionIds;
+namespace webrtc {
+namespace {
 
 struct Foo {
   int id;
 };
 
 TEST(UsedIdsTest, UniqueIdsAreUnchanged) {
-  webrtc::UsedIds<Foo> used_ids(1, 5);
+  UsedIds<Foo> used_ids(1, 5);
   for (int i = 1; i <= 5; ++i) {
     Foo id = {i};
     used_ids.FindAndSetIdUsed(&id);
@@ -32,7 +32,7 @@ TEST(UsedIdsTest, UniqueIdsAreUnchanged) {
 }
 
 TEST(UsedIdsTest, IdsOutsideRangeAreUnchanged) {
-  webrtc::UsedIds<Foo> used_ids(1, 5);
+  UsedIds<Foo> used_ids(1, 5);
 
   Foo id_11 = {11};
   Foo id_12 = {12};
@@ -53,7 +53,7 @@ TEST(UsedIdsTest, IdsOutsideRangeAreUnchanged) {
 }
 
 TEST(UsedIdsTest, CollisionsAreReassignedIdsInReverseOrder) {
-  webrtc::UsedIds<Foo> used_ids(1, 10);
+  UsedIds<Foo> used_ids(1, 10);
   Foo id_1 = {1};
   Foo id_2 = {2};
   Foo id_2_collision = {2};
@@ -92,7 +92,7 @@ TEST_P(UsedRtpHeaderExtensionIdsTest, UniqueIdsAreUnchanged) {
 
   // Fill all IDs.
   for (int j = 1; j <= GetParam().max_id; ++j) {
-    webrtc::RtpExtension extension("", j);
+    RtpExtension extension("", j);
     used_ids.FindAndSetIdUsed(&extension);
     EXPECT_EQ(extension.id, j);
   }
@@ -100,11 +100,11 @@ TEST_P(UsedRtpHeaderExtensionIdsTest, UniqueIdsAreUnchanged) {
 
 TEST_P(UsedRtpHeaderExtensionIdsTest, PrioritizeReassignmentToOneByteIds) {
   UsedRtpHeaderExtensionIds used_ids(GetParam().id_domain);
-  webrtc::RtpExtension id_1("", 1);
-  webrtc::RtpExtension id_2("", 2);
-  webrtc::RtpExtension id_2_collision("", 2);
-  webrtc::RtpExtension id_3("", 3);
-  webrtc::RtpExtension id_3_collision("", 3);
+  RtpExtension id_1("", 1);
+  RtpExtension id_2("", 2);
+  RtpExtension id_2_collision("", 2);
+  RtpExtension id_3("", 3);
+  RtpExtension id_3_collision("", 3);
 
   // Expect that colliding IDs are reassigned to one-byte IDs.
   used_ids.FindAndSetIdUsed(&id_1);
@@ -121,16 +121,15 @@ TEST_F(UsedRtpHeaderExtensionIdsTest, TwoByteIdsAllowed) {
       UsedRtpHeaderExtensionIds::IdDomain::kTwoByteAllowed);
 
   // Fill all one byte IDs.
-  for (int i = 1; i <= webrtc::RtpExtension::kOneByteHeaderExtensionMaxId;
-       ++i) {
-    webrtc::RtpExtension id("", i);
+  for (int i = 1; i <= RtpExtension::kOneByteHeaderExtensionMaxId; ++i) {
+    RtpExtension id("", i);
     used_ids.FindAndSetIdUsed(&id);
   }
 
   // Add new extensions with colliding IDs.
-  webrtc::RtpExtension id1_collision("", 1);
-  webrtc::RtpExtension id2_collision("", 2);
-  webrtc::RtpExtension id3_collision("", 3);
+  RtpExtension id1_collision("", 1);
+  RtpExtension id2_collision("", 2);
+  RtpExtension id3_collision("", 3);
 
   // Expect to reassign to two-byte header extension IDs.
   used_ids.FindAndSetIdUsed(&id1_collision);
@@ -166,16 +165,19 @@ TEST_P(UsedRtpHeaderExtensionIdsDeathTest, DieWhenAllIdsAreOccupied) {
 
   // Fill all IDs.
   for (int j = 1; j <= GetParam().max_id; ++j) {
-    webrtc::RtpExtension id("", j);
+    RtpExtension id("", j);
     used_ids.FindAndSetIdUsed(&id);
   }
 
-  webrtc::RtpExtension id1_collision("", 1);
-  webrtc::RtpExtension id2_collision("", 2);
-  webrtc::RtpExtension id3_collision("", GetParam().max_id);
+  RtpExtension id1_collision("", 1);
+  RtpExtension id2_collision("", 2);
+  RtpExtension id3_collision("", GetParam().max_id);
 
   EXPECT_DEATH(used_ids.FindAndSetIdUsed(&id1_collision), "");
   EXPECT_DEATH(used_ids.FindAndSetIdUsed(&id2_collision), "");
   EXPECT_DEATH(used_ids.FindAndSetIdUsed(&id3_collision), "");
 }
 #endif  // RTC_DCHECK_IS_ON && GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)
+
+}  // namespace
+}  // namespace webrtc

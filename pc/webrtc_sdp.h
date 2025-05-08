@@ -27,7 +27,7 @@
 #include "api/jsep.h"
 #include "api/jsep_ice_candidate.h"
 #include "api/jsep_session_description.h"
-#include "media/base/codec.h"
+#include "api/rtp_parameters.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/system/rtc_export.h"
 
@@ -100,12 +100,12 @@ RTC_EXPORT bool ParseCandidate(absl::string_view message,
 // parameters are not considered to be part of the FMTP line, see the function
 // IsFmtpParam(). Returns true if the set of FMTP parameters is nonempty, false
 // otherwise.
-bool WriteFmtpParameters(const webrtc::CodecParameterMap& parameters,
+bool WriteFmtpParameters(const CodecParameterMap& parameters,
                          StringBuilder* os);
 
 // Parses a string into an FMTP parameter set, in key-value format.
 bool ParseFmtpParameterSet(absl::string_view line_params,
-                           webrtc::CodecParameterMap& codec_params,
+                           CodecParameterMap& codec_params,
                            SdpParseError* error);
 
 }  // namespace webrtc
