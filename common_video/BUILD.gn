@@ -144,6 +144,7 @@ if (rtc_include_tests && !build_with_chromium) {
       ":corruption_detection_converters",
       ":frame_instrumentation_data",
       "../api/transport/rtp:corruption_detection_message",
+      "../rtc_base:checks",
       "../test:test_support",
     ]
   }
@@ -176,8 +177,10 @@ if (rtc_include_tests && !build_with_chromium) {
     deps = [
       ":common_video",
       ":corruption_detection_converters_unittest",
+      "../api:array_view",
       "../api:scoped_refptr",
       "../api/units:time_delta",
+      "../api/units:timestamp",
       "../api/video:video_frame",
       "../api/video:video_frame_i010",
       "../api/video:video_rtp_headers",

@@ -10,6 +10,10 @@
 
 #include "common_video/frame_rate_estimator.h"
 
+#include <optional>
+
+#include "api/units/time_delta.h"
+#include "api/units/timestamp.h"
 #include "rtc_base/time_utils.h"
 
 namespace webrtc {

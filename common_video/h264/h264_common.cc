@@ -10,7 +10,12 @@
 
 #include "common_video/h264/h264_common.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <vector>
+
+#include "api/array_view.h"
+#include "rtc_base/buffer.h"
 
 namespace webrtc {
 namespace H264 {

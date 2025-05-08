@@ -15,13 +15,16 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "api/video/color_space.h"
 #include "common_video/h264/h264_common.h"
 #include "common_video/h264/sps_parser.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/bitstream_reader.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "system_wrappers/include/metrics.h"

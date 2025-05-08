@@ -12,9 +12,13 @@
 #include <stdlib.h>
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
+#include "common_video/h264/pps_parser.h"
+#include "common_video/h264/sps_parser.h"
 #include "rtc_base/bitstream_reader.h"
 #include "rtc_base/logging.h"
 

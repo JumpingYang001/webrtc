@@ -10,8 +10,12 @@
 
 #include "common_video/h264/sps_parser.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/buffer.h"
 #include "test/gtest.h"

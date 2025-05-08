@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 #include <optional>
-#include <vector>
 
+#include "api/array_view.h"
 #include "api/video_codecs/bitstream_parser.h"
 #include "common_video/h265/h265_pps_parser.h"
 #include "common_video/h265/h265_sps_parser.h"

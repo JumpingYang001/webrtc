@@ -15,6 +15,7 @@
 
 #include "api/transport/rtp/corruption_detection_message.h"
 #include "common_video/frame_instrumentation_data.h"
+#include "rtc_base/checks.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 

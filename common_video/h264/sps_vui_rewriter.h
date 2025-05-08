@@ -17,6 +17,7 @@
 
 #include <optional>
 
+#include "api/array_view.h"
 #include "api/video/color_space.h"
 #include "common_video/h264/sps_parser.h"
 #include "rtc_base/buffer.h"

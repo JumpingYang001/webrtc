@@ -23,6 +23,7 @@
 #include "api/video/i422_buffer.h"
 #include "api/video/i444_buffer.h"
 #include "api/video/nv12_buffer.h"
+#include "api/video/video_frame_buffer.h"
 #include "rtc_base/race_checker.h"
 
 namespace webrtc {

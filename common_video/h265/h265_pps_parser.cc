@@ -10,13 +10,15 @@
 
 #include "common_video/h265/h265_pps_parser.h"
 
-#include <memory>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "common_video/h265/h265_common.h"
-#include "rtc_base/bit_buffer.h"
+#include "common_video/h265/h265_sps_parser.h"
 #include "rtc_base/bitstream_reader.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
 #define IN_RANGE_OR_RETURN_NULL(val, min, max)                                \

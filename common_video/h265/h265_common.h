@@ -11,10 +11,11 @@
 #ifndef COMMON_VIDEO_H265_H265_COMMON_H_
 #define COMMON_VIDEO_H265_H265_COMMON_H_
 
-#include <memory>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
-#include "common_video/h265/h265_inline.h"
+#include "api/array_view.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/system/rtc_export.h"
 

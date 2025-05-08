@@ -11,12 +11,15 @@
 #include "common_video/h265/h265_pps_parser.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 
+#include "api/array_view.h"
 #include "common_video/h265/h265_common.h"
-#include "rtc_base/arraysize.h"
+#include "common_video/h265/h265_sps_parser.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/buffer.h"
-#include "rtc_base/checks.h"
 #include "test/gtest.h"
 
 namespace webrtc {

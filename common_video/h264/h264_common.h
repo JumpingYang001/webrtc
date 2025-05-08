@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "api/array_view.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/system/rtc_export.h"
 

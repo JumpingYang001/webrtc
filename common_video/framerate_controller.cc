@@ -10,7 +10,10 @@
 
 #include "common_video/framerate_controller.h"
 
+#include <cstdint>
+#include <cstdlib>
 #include <limits>
+#include <optional>
 
 #include "rtc_base/time_utils.h"
 

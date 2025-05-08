@@ -10,12 +10,21 @@
 
 #include "common_video/libyuv/include/webrtc_libyuv.h"
 
+#include <cstddef>
 #include <cstdint>
 
+#include "api/scoped_refptr.h"
 #include "api/video/i420_buffer.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
 #include "common_video/include/video_frame_buffer.h"
 #include "rtc_base/checks.h"
-#include "third_party/libyuv/include/libyuv.h"
+#include "third_party/libyuv/include/libyuv/compare.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/convert_from.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
+#include "third_party/libyuv/include/libyuv/scale.h"
+#include "third_party/libyuv/include/libyuv/video_common.h"
 
 namespace webrtc {
 

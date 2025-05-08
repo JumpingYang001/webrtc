@@ -13,6 +13,12 @@
 #include <math.h>
 #include <string.h>
 
+#include <algorithm>
+#include <cstdint>
+#include <utility>
+#include <vector>
+
+#include "api/scoped_refptr.h"
 #include "api/video/i010_buffer.h"
 #include "api/video/i210_buffer.h"
 #include "api/video/i410_buffer.h"
@@ -20,7 +26,8 @@
 #include "api/video/i422_buffer.h"
 #include "api/video/i444_buffer.h"
 #include "api/video/nv12_buffer.h"
-#include "rtc_base/time_utils.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_rotation.h"
 #include "test/fake_texture_frame.h"
 #include "test/frame_utils.h"
 #include "test/gtest.h"

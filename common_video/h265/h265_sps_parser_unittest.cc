@@ -10,8 +10,13 @@
 
 #include "common_video/h265/h265_sps_parser.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <vector>
+
+#include "api/array_view.h"
 #include "common_video/h265/h265_common.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/buffer.h"
 #include "test/gtest.h"

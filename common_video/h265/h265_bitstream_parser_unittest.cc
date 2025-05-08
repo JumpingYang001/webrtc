@@ -10,6 +10,10 @@
 
 #include "common_video/h265/h265_bitstream_parser.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "api/array_view.h"
 #include "common_video/h265/h265_common.h"
 #include "test/gmock.h"
 #include "test/gtest.h"

@@ -11,6 +11,8 @@
 #ifndef COMMON_VIDEO_H265_H265_VPS_PARSER_H_
 #define COMMON_VIDEO_H265_H265_VPS_PARSER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 
 #include "api/array_view.h"

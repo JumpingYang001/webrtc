@@ -10,10 +10,22 @@
 
 #include "common_video/include/video_frame_buffer_pool.h"
 
+#include <cstddef>
 #include <limits>
 
 #include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+#include "api/video/i010_buffer.h"
+#include "api/video/i210_buffer.h"
+#include "api/video/i410_buffer.h"
+#include "api/video/i420_buffer.h"
+#include "api/video/i422_buffer.h"
+#include "api/video/i444_buffer.h"
+#include "api/video/nv12_buffer.h"
+#include "api/video/video_frame_buffer.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/race_checker.h"
+#include "rtc_base/ref_counted_object.h"
 
 namespace webrtc {
 

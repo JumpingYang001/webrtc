@@ -10,8 +10,12 @@
 
 #include "common_video/h264/pps_parser.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <vector>
 
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
 #include "rtc_base/bit_buffer.h"
 #include "rtc_base/buffer.h"

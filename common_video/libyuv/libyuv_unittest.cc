@@ -8,13 +8,17 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "third_party/libyuv/include/libyuv.h"
-
 #include <math.h>
 #include <string.h>
 
+#include <cstdint>
+#include <cstdio>
+#include <limits>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "api/scoped_refptr.h"
 #include "api/video/i010_buffer.h"
 #include "api/video/i210_buffer.h"
 #include "api/video/i410_buffer.h"
@@ -23,12 +27,15 @@
 #include "api/video/i444_buffer.h"
 #include "api/video/nv12_buffer.h"
 #include "api/video/video_frame.h"
+#include "api/video/video_frame_buffer.h"
+#include "api/video/video_rotation.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
-#include "rtc_base/logging.h"
 #include "test/frame_utils.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/rotate.h"
 
 namespace webrtc {
 

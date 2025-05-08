@@ -11,8 +11,10 @@
 #ifndef COMMON_VIDEO_H264_SPS_PARSER_H_
 #define COMMON_VIDEO_H264_SPS_PARSER_H_
 
+#include <cstdint>
 #include <optional>
 
+#include "api/array_view.h"
 #include "rtc_base/bitstream_reader.h"
 #include "rtc_base/system/rtc_export.h"
 

@@ -12,9 +12,11 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "absl/numeric/bits.h"
+#include "api/array_view.h"
 #include "common_video/h264/h264_common.h"
 #include "rtc_base/bitstream_reader.h"
 #include "rtc_base/checks.h"
