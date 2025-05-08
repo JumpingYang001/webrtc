@@ -15,9 +15,6 @@ import android.os.Process;
 import androidx.annotation.Nullable;
 import java.util.List;
 import org.webrtc.Logging.Severity;
-import org.webrtc.MediaStreamTrack;
-import org.webrtc.PeerConnection;
-import org.webrtc.RtpCapabilities;
 import org.webrtc.audio.AudioDeviceModule;
 import org.webrtc.audio.JavaAudioDeviceModule;
 
@@ -166,6 +163,7 @@ public class PeerConnectionFactory {
 
   public static class Builder {
     @Nullable private Options options;
+    private Environment.Builder envBuilder = Environment.builder();
     @Nullable private AudioDeviceModule audioDeviceModule;
     private AudioEncoderFactoryFactory audioEncoderFactoryFactory =
         new BuiltinAudioEncoderFactoryFactory();
@@ -183,6 +181,11 @@ public class PeerConnectionFactory {
 
     public Builder setOptions(Options options) {
       this.options = options;
+      return this;
+    }
+
+    public Builder setFieldTrials(String fieldTrials) {
+      envBuilder.setFieldTrials(fieldTrials);
       return this;
     }
 
@@ -261,24 +264,30 @@ public class PeerConnectionFactory {
 
     public PeerConnectionFactory createPeerConnectionFactory() {
       checkInitializeHasBeenCalled();
-      if (audioDeviceModule == null) {
-        audioDeviceModule = JavaAudioDeviceModule.builder(ContextUtils.getApplicationContext())
-                                .createAudioDeviceModule();
+      try (Environment env = envBuilder.build()) {
+        if (audioDeviceModule == null) {
+          audioDeviceModule = JavaAudioDeviceModule.builder(ContextUtils.getApplicationContext())
+                                  .createAudioDeviceModule();
+        }
+        return nativeCreatePeerConnectionFactory(
+            ContextUtils.getApplicationContext(),
+            options,
+            env.ref(),
+            audioDeviceModule.getNative(env.ref()),
+            audioEncoderFactoryFactory.createNativeAudioEncoderFactory(),
+            audioDecoderFactoryFactory.createNativeAudioDecoderFactory(),
+            videoEncoderFactory,
+            videoDecoderFactory,
+            audioProcessingFactory == null ? 0 : audioProcessingFactory.createNative(env.ref()),
+            fecControllerFactoryFactory == null ? 0 : fecControllerFactoryFactory.createNative(),
+            networkControllerFactoryFactory == null
+                ? 0
+                : networkControllerFactoryFactory.createNativeNetworkControllerFactory(),
+            networkStatePredictorFactoryFactory == null
+                ? 0
+                : networkStatePredictorFactoryFactory.createNativeNetworkStatePredictorFactory(),
+            neteqFactoryFactory == null ? 0 : neteqFactoryFactory.createNativeNetEqFactory());
       }
-      return nativeCreatePeerConnectionFactory(ContextUtils.getApplicationContext(), options,
-          audioDeviceModule.getNativeAudioDeviceModulePointer(),
-          audioEncoderFactoryFactory.createNativeAudioEncoderFactory(),
-          audioDecoderFactoryFactory.createNativeAudioDecoderFactory(), videoEncoderFactory,
-          videoDecoderFactory,
-          audioProcessingFactory == null ? 0 : audioProcessingFactory.createNative(),
-          fecControllerFactoryFactory == null ? 0 : fecControllerFactoryFactory.createNative(),
-          networkControllerFactoryFactory == null
-              ? 0
-              : networkControllerFactoryFactory.createNativeNetworkControllerFactory(),
-          networkStatePredictorFactoryFactory == null
-              ? 0
-              : networkStatePredictorFactoryFactory.createNativeNetworkStatePredictorFactory(),
-          neteqFactoryFactory == null ? 0 : neteqFactoryFactory.createNativeNetEqFactory());
     }
   }
 
@@ -604,7 +613,7 @@ public class PeerConnectionFactory {
   private static native void nativeStopInternalTracingCapture();
 
   private static native PeerConnectionFactory nativeCreatePeerConnectionFactory(Context context,
-      Options options, long nativeAudioDeviceModule, long audioEncoderFactory,
+      Options options, long webrtcEnvRef, long nativeAudioDeviceModule, long audioEncoderFactory,
       long audioDecoderFactory, VideoEncoderFactory encoderFactory,
       VideoDecoderFactory decoderFactory, long nativeAudioProcessor,
       long nativeFecControllerFactory, long nativeNetworkControllerFactory,
