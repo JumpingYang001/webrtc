@@ -43,7 +43,7 @@ def make_rbe_properties(instance, jobs = None):
         siso_props["remote_jobs"] = jobs
     props = {
         "$build/reclient": reclient_props,
-        "$biuld/siso": siso_props,
+        "$build/siso": siso_props,
     }
     return props
 
