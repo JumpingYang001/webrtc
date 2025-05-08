@@ -273,6 +273,12 @@ TEST_F(SdpMungingTest, IceUfrag) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Rejected"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kRejected), 1)));
 }
 
 TEST_F(SdpMungingTest, IceUfragCheckDisabledByFieldTrial) {
@@ -291,6 +297,12 @@ TEST_F(SdpMungingTest, IceUfragCheckDisabledByFieldTrial) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Accepted"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kAccepted), 1)));
 }
 
 TEST_F(SdpMungingTest, IceUfragWithCheckDisabledForTesting) {
@@ -324,6 +336,12 @@ TEST_F(SdpMungingTest, IcePwdCheckDisabledByFieldTrial) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Accepted"),
+      ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kAccepted), 1)));
 }
 
 TEST_F(SdpMungingTest, IcePwd) {
@@ -340,6 +358,12 @@ TEST_F(SdpMungingTest, IcePwd) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Rejected"),
+      ElementsAre(Pair(SdpMungingType::kIcePwd, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kRejected), 1)));
 }
 
 TEST_F(SdpMungingTest, IceUfragRestrictedAddresses) {
@@ -416,6 +440,12 @@ TEST_F(SdpMungingTest, IceUfragSdpRejectedAndRestrictedAddresses) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Rejected"),
+      ElementsAre(Pair(SdpMungingType::kIceUfrag, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kRejected), 1)));
 }
 
 TEST_F(SdpMungingTest, IceMode) {
@@ -500,6 +530,12 @@ TEST_F(SdpMungingTest, RemoveContentDefault) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kNumberOfContents, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Rejected"),
+      ElementsAre(Pair(SdpMungingType::kNumberOfContents, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kRejected), 1)));
 }
 
 TEST_F(SdpMungingTest, RemoveContentKillswitch) {
@@ -523,6 +559,12 @@ TEST_F(SdpMungingTest, RemoveContentKillswitch) {
   EXPECT_THAT(
       metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
       ElementsAre(Pair(SdpMungingType::kNumberOfContents, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.SdpOutcome.Accepted"),
+      ElementsAre(Pair(SdpMungingType::kNumberOfContents, 1)));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Outcome"),
+      ElementsAre(Pair(static_cast<int>(SdpMungingOutcome::kAccepted), 1)));
 }
 
 TEST_F(SdpMungingTest, TransceiverDirection) {

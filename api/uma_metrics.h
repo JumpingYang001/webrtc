@@ -227,6 +227,16 @@ enum SdpMungingType {
   kMaxValue,
 };
 
+// The outcome of setting the local description, whether SDP munging is detected
+// and if the should be accepted or rejected. Keep in sync with
+// SdpMungingOutcome from tools/metrics/histograms/metadata/web_rtc/enums.xml
+enum class SdpMungingOutcome {
+  kNoMunge = 0,
+  kAccepted = 1,
+  kRejected = 2,
+  kMaxValue = kRejected,
+};
+
 // When adding new metrics please consider using the style described in
 // https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#usage
 // instead of the legacy enums used above.

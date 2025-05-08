@@ -2486,13 +2486,26 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
                    "WebRTC-NoSdpMangleNumberOfContents")) {
       reject_error = true;
     }
+    SdpMungingOutcome outcome = reject_error ? SdpMungingOutcome::kRejected
+                                             : SdpMungingOutcome::kAccepted;
+    RTC_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.SdpMunging.Outcome",
+                              static_cast<int>(outcome),
+                              static_cast<int>(SdpMungingOutcome::kMaxValue));
     if (reject_error) {
       observer->OnSetLocalDescriptionComplete(
           RTCError(RTCErrorType::INVALID_MODIFICATION,
                    "SDP is modified in a non-acceptable way"));
       last_sdp_munging_type_ = sdp_munging_type;
       ReportInitialSdpMunging(had_local_description, desc->GetType());
+      RTC_HISTOGRAM_ENUMERATION_SPARSE(
+          "WebRTC.PeerConnection.SdpMunging.SdpOutcome.Rejected",
+          sdp_munging_type, SdpMungingType::kMaxValue);
       return;
+    }
+    if (sdp_munging_type != kNoModification) {
+      RTC_HISTOGRAM_ENUMERATION_SPARSE(
+          "WebRTC.PeerConnection.SdpMunging.SdpOutcome.Accepted",
+          sdp_munging_type, SdpMungingType::kMaxValue);
     }
   }
 
