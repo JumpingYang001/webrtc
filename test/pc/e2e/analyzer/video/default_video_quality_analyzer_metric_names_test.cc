@@ -43,10 +43,10 @@ using ::testing::Contains;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
-using ::webrtc::test::DefaultMetricsLogger;
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Metric;
-using ::webrtc::test::Unit;
+using test::DefaultMetricsLogger;
+using test::ImprovementDirection;
+using test::Metric;
+using test::Unit;
 
 constexpr int kAnalyzerMaxThreadsCount = 1;
 constexpr int kFrameWidth = 320;

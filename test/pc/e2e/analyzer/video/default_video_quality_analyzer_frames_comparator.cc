@@ -33,7 +33,7 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::webrtc_pc_e2e::SampleMetadataKey;
+using webrtc_pc_e2e::SampleMetadataKey;
 
 constexpr TimeDelta kFreezeThreshold = TimeDelta::Millis(150);
 constexpr int kMaxActiveComparisons = 10;

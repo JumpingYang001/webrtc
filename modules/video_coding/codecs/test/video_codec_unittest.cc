@@ -81,7 +81,7 @@ void VideoCodecUnitTest::FakeDecodeCompleteCallback::Decoded(
 }
 
 void VideoCodecUnitTest::SetUp() {
-  webrtc::test::CodecSettings(kVideoCodecVP8, &codec_settings_);
+  test::CodecSettings(kVideoCodecVP8, &codec_settings_);
   codec_settings_.startBitrate = kStartBitrate;
   codec_settings_.maxBitrate = kMaxBitrate;
   codec_settings_.maxFramerate = kMaxFramerate;

@@ -35,7 +35,7 @@ bool EqualPlane(const uint8_t* data1,
   return true;
 }
 
-bool FramesEqual(const webrtc::VideoFrame& f1, const webrtc::VideoFrame& f2) {
+bool FramesEqual(const VideoFrame& f1, const VideoFrame& f2) {
   if (f1.rtp_timestamp() != f2.rtp_timestamp() ||
       f1.ntp_time_ms() != f2.ntp_time_ms() ||
       f1.render_time_ms() != f2.render_time_ms()) {
@@ -44,8 +44,8 @@ bool FramesEqual(const webrtc::VideoFrame& f1, const webrtc::VideoFrame& f2) {
   return FrameBufsEqual(f1.video_frame_buffer(), f2.video_frame_buffer());
 }
 
-bool FrameBufsEqual(const scoped_refptr<webrtc::VideoFrameBuffer>& f1,
-                    const scoped_refptr<webrtc::VideoFrameBuffer>& f2) {
+bool FrameBufsEqual(const scoped_refptr<VideoFrameBuffer>& f1,
+                    const scoped_refptr<VideoFrameBuffer>& f2) {
   if (f1 == f2) {
     return true;
   }
@@ -59,8 +59,8 @@ bool FrameBufsEqual(const scoped_refptr<webrtc::VideoFrameBuffer>& f1,
     return false;
   }
 
-  scoped_refptr<webrtc::I420BufferInterface> f1_i420 = f1->ToI420();
-  scoped_refptr<webrtc::I420BufferInterface> f2_i420 = f2->ToI420();
+  scoped_refptr<I420BufferInterface> f1_i420 = f1->ToI420();
+  scoped_refptr<I420BufferInterface> f2_i420 = f2->ToI420();
   return EqualPlane(f1_i420->DataY(), f2_i420->DataY(), f1_i420->StrideY(),
                     f2_i420->StrideY(), f1_i420->width(), f1_i420->height()) &&
          EqualPlane(f1_i420->DataU(), f2_i420->DataU(), f1_i420->StrideU(),

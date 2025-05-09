@@ -45,11 +45,11 @@ std::unique_ptr<TimeController> CreateTimeController(TimeMode mode) {
   }
 }
 
-std::string ParamsToString(const TestParamInfo<webrtc::TimeMode>& param) {
+std::string ParamsToString(const TestParamInfo<TimeMode>& param) {
   switch (param.param) {
-    case webrtc::TimeMode::kRealTime:
+    case TimeMode::kRealTime:
       return "RealTime";
-    case webrtc::TimeMode::kSimulated:
+    case TimeMode::kSimulated:
       return "SimulatedTime";
     default:
       RTC_DCHECK_NOTREACHED() << "Time mode not supported";
@@ -76,7 +76,7 @@ class ExecutionOrderKeeper {
 
 // Tests conformance between real time and simulated time time controller.
 class SimulatedRealTimeControllerConformanceTest
-    : public TestWithParam<webrtc::TimeMode> {};
+    : public TestWithParam<TimeMode> {};
 
 TEST_P(SimulatedRealTimeControllerConformanceTest, ThreadPostOrderTest) {
   std::unique_ptr<TimeController> time_controller =
@@ -153,7 +153,7 @@ TEST_P(SimulatedRealTimeControllerConformanceTest,
   std::unique_ptr<TimeController> time_controller =
       CreateTimeController(GetParam());
   auto task_queue = time_controller->GetTaskQueueFactory()->CreateTaskQueue(
-      "task_queue", webrtc::TaskQueueFactory::Priority::NORMAL);
+      "task_queue", TaskQueueFactory::Priority::NORMAL);
 
   // Tasks on thread have to be executed in order in which they were
   // posted/invoked.

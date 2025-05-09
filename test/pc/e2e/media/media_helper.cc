@@ -39,7 +39,7 @@ void MediaHelper::MaybeAddAudio(TestPeer* peer) {
     return;
   }
   const AudioConfig& audio_config = peer->params().audio_config.value();
-  scoped_refptr<webrtc::AudioSourceInterface> source =
+  scoped_refptr<AudioSourceInterface> source =
       peer->pc_factory()->CreateAudioSource(audio_config.audio_options);
   scoped_refptr<AudioTrackInterface> track =
       peer->pc_factory()->CreateAudioTrack(*audio_config.stream_label,

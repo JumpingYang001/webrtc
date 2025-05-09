@@ -204,10 +204,9 @@ class TestMainImpl : public TestMain {
     if (absl::GetFlag(FLAGS_export_perf_results_new_api)) {
       exporters.push_back(std::make_unique<test::StdoutMetricsExporter>());
       if (!absl::GetFlag(FLAGS_webrtc_test_metrics_output_path).empty()) {
-        exporters.push_back(
-            std::make_unique<webrtc::test::MetricsSetProtoFileExporter>(
-                webrtc::test::MetricsSetProtoFileExporter::Options(
-                    absl::GetFlag(FLAGS_webrtc_test_metrics_output_path))));
+        exporters.push_back(std::make_unique<test::MetricsSetProtoFileExporter>(
+            test::MetricsSetProtoFileExporter::Options(
+                absl::GetFlag(FLAGS_webrtc_test_metrics_output_path))));
       }
       if (!absl::GetFlag(FLAGS_isolated_script_test_perf_output).empty()) {
         exporters.push_back(
@@ -224,12 +223,12 @@ class TestMainImpl : public TestMain {
       std::string perf_output_file =
           absl::GetFlag(FLAGS_isolated_script_test_perf_output);
       if (!perf_output_file.empty()) {
-        if (!webrtc::test::WritePerfResults(perf_output_file)) {
+        if (!test::WritePerfResults(perf_output_file)) {
           return 1;
         }
       }
       if (metrics_to_plot) {
-        webrtc::test::PrintPlottableResults(*metrics_to_plot);
+        test::PrintPlottableResults(*metrics_to_plot);
       }
     }
 

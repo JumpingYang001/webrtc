@@ -43,11 +43,11 @@ namespace {
 using ::testing::IsSupersetOf;
 using ::testing::UnorderedElementsAre;
 
-using ::webrtc::test::DefaultMetricsLogger;
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Metric;
-using ::webrtc::test::Unit;
-using ::webrtc::webrtc_pc_e2e::PeerConfigurer;
+using test::DefaultMetricsLogger;
+using test::ImprovementDirection;
+using test::Metric;
+using test::Unit;
+using webrtc_pc_e2e::PeerConfigurer;
 
 std::string GetExpectedTestCaseName(const std::string& stream_label) {
   if (!absl::GetFlag(FLAGS_isolated_script_test_perf_output).empty()) {

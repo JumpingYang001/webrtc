@@ -37,9 +37,9 @@ namespace webrtc {
 namespace webrtc_pc_e2e {
 namespace {
 
-using webrtc::webrtc_pc_e2e::VideoConfig;
+using webrtc_pc_e2e::VideoConfig;
 using EmulatedSFUConfigMap =
-    ::webrtc::webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
+    webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
 
 class AnalyzingFramePreprocessor
     : public test::TestVideoCapturer::FramePreprocessor {

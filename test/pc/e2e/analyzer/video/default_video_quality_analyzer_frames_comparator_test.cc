@@ -34,7 +34,7 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
 
-using StatsSample = ::webrtc::SamplesStatsCounter::StatsSample;
+using StatsSample = SamplesStatsCounter::StatsSample;
 
 DefaultVideoQualityAnalyzerOptions AnalyzerOptionsForTest() {
   DefaultVideoQualityAnalyzerOptions options;

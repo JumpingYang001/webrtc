@@ -56,8 +56,8 @@ scoped_refptr<I420Buffer> CreateI420Buffer(int width, int height) {
   return buffer;
 }
 
-void AssertI420BuffersEq(scoped_refptr<webrtc::I420BufferInterface> actual,
-                         scoped_refptr<webrtc::I420BufferInterface> expected) {
+void AssertI420BuffersEq(scoped_refptr<I420BufferInterface> actual,
+                         scoped_refptr<I420BufferInterface> expected) {
   ASSERT_TRUE(actual);
 
   ASSERT_EQ(actual->width(), expected->width());
@@ -93,8 +93,8 @@ class VideoFrameWriterTest : public ::testing::Test {
   ~VideoFrameWriterTest() override = default;
 
   void SetUp() override {
-    temp_filename_ = webrtc::test::TempFilename(webrtc::test::OutputPath(),
-                                                "video_frame_writer_unittest");
+    temp_filename_ =
+        test::TempFilename(test::OutputPath(), "video_frame_writer_unittest");
     frame_writer_ = CreateFrameWriter();
   }
 

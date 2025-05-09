@@ -48,7 +48,7 @@ namespace webrtc_pc_e2e {
 namespace {
 
 using EmulatedSFUConfigMap =
-    ::webrtc::webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
+    webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
 
 constexpr int16_t kGeneratedAudioMaxAmplitude = 32000;
 constexpr int kDefaultSamplingFrequencyInHz = 48000;

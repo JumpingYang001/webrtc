@@ -38,8 +38,8 @@ class YuvFrameReaderTest : public ::testing::Test {
   ~YuvFrameReaderTest() override = default;
 
   void SetUp() override {
-    filepath_ = webrtc::test::TempFilename(webrtc::test::OutputPath(),
-                                           "yuv_frame_reader_unittest");
+    filepath_ =
+        test::TempFilename(test::OutputPath(), "yuv_frame_reader_unittest");
     CreateYuvFileAndReader(/*num_frames=*/3, RepeatMode::kSingle);
   }
 

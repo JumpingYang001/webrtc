@@ -31,15 +31,14 @@ namespace test {
 
 namespace {
 
-std::string UnitWithDirection(
-    absl::string_view units,
-    webrtc::test::ImproveDirection improve_direction) {
+std::string UnitWithDirection(absl::string_view units,
+                              test::ImproveDirection improve_direction) {
   switch (improve_direction) {
-    case webrtc::test::ImproveDirection::kNone:
+    case test::ImproveDirection::kNone:
       return std::string(units);
-    case webrtc::test::ImproveDirection::kSmallerIsBetter:
+    case test::ImproveDirection::kSmallerIsBetter:
       return std::string(units) + "_smallerIsBetter";
-    case webrtc::test::ImproveDirection::kBiggerIsBetter:
+    case test::ImproveDirection::kBiggerIsBetter:
       return std::string(units) + "_biggerIsBetter";
   }
 }
@@ -69,7 +68,7 @@ void OutputListToStream(std::ostream* ostream, const Container& values) {
 struct PlottableCounter {
   std::string graph_name;
   std::string trace_name;
-  webrtc::SamplesStatsCounter counter;
+  SamplesStatsCounter counter;
   std::string units;
 };
 
@@ -84,7 +83,7 @@ class PlottableCounterPrinter {
 
   void AddCounter(absl::string_view graph_name,
                   absl::string_view trace_name,
-                  const webrtc::SamplesStatsCounter& counter,
+                  const SamplesStatsCounter& counter,
                   absl::string_view units) {
     MutexLock lock(&mutex_);
     plottable_counters_.push_back({std::string(graph_name),
@@ -181,7 +180,7 @@ class ResultsLinePrinter {
                        const ArrayView<const double> values,
                        absl::string_view units,
                        const bool important,
-                       webrtc::test::ImproveDirection improve_direction) {
+                       test::ImproveDirection improve_direction) {
     std::ostringstream value_stream;
     value_stream.precision(8);
     OutputListToStream(&value_stream, values);

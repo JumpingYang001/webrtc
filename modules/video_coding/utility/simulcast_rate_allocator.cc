@@ -330,7 +330,7 @@ SimulcastRateAllocator::ScreenshareTemporalLayerAllocation(
   return allocation;
 }
 
-const VideoCodec& webrtc::SimulcastRateAllocator::GetCodec() const {
+const VideoCodec& SimulcastRateAllocator::GetCodec() const {
   return codec_;
 }
 

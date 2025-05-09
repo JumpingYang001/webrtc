@@ -108,7 +108,7 @@ using PacingMode = PacingSettings::PacingMode;
 using VideoCodecStats = VideoCodecTester::VideoCodecStats;
 using DecodeCallback =
     absl::AnyInvocable<void(const VideoFrame& decoded_frame)>;
-using webrtc::test::ImprovementDirection;
+using test::ImprovementDirection;
 
 constexpr Frequency k90kHz = Frequency::Hertz(90000);
 
@@ -588,8 +588,8 @@ class VideoCodecAnalyzer : public VideoCodecTester::VideoCodecStats {
       }
 
       Frame superframe = subframes.back();
-      for (const Frame& frame : webrtc::ArrayView<Frame>(subframes).subview(
-               0, subframes.size() - 1)) {
+      for (const Frame& frame :
+           ArrayView<Frame>(subframes).subview(0, subframes.size() - 1)) {
         superframe.decoded |= frame.decoded;
         superframe.encoded |= frame.encoded;
         superframe.frame_size += frame.frame_size;

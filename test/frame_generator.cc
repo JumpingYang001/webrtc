@@ -139,7 +139,7 @@ void SquareGenerator::Square::Draw(
     return;
 
   // Optionally draw on alpha plane if given.
-  const webrtc::I420ABufferInterface* yuva_buffer = frame_buffer->GetI420A();
+  const I420ABufferInterface* yuva_buffer = frame_buffer->GetI420A();
   for (int y = y_; y < y_ + length; ++y) {
     uint8_t* pos_y = (const_cast<uint8_t*>(yuva_buffer->DataA()) + x_ +
                       y * yuva_buffer->StrideA());

@@ -42,20 +42,20 @@ TEST(Config, NumberOfCoresWithoutUseSingleCore) {
 
 TEST(Config, NumberOfTemporalLayersIsOne) {
   Config config;
-  webrtc::test::CodecSettings(kVideoCodecH264, &config.codec_settings);
+  test::CodecSettings(kVideoCodecH264, &config.codec_settings);
   EXPECT_EQ(1u, config.NumberOfTemporalLayers());
 }
 
 TEST(Config, NumberOfTemporalLayers_Vp8) {
   Config config;
-  webrtc::test::CodecSettings(kVideoCodecVP8, &config.codec_settings);
+  test::CodecSettings(kVideoCodecVP8, &config.codec_settings);
   config.codec_settings.VP8()->numberOfTemporalLayers = kNumTemporalLayers;
   EXPECT_EQ(kNumTemporalLayers, config.NumberOfTemporalLayers());
 }
 
 TEST(Config, NumberOfTemporalLayers_Vp9) {
   Config config;
-  webrtc::test::CodecSettings(kVideoCodecVP9, &config.codec_settings);
+  test::CodecSettings(kVideoCodecVP9, &config.codec_settings);
   config.codec_settings.VP9()->numberOfTemporalLayers = kNumTemporalLayers;
   EXPECT_EQ(kNumTemporalLayers, config.NumberOfTemporalLayers());
 }

@@ -107,8 +107,7 @@ void FrameGeneratorCapturer::InsertFrame() {
       // Skip frames that are identical to the previous one but still send at
       // least one frame every second.
       if (number_of_frames_skipped_ < target_capture_fps_ - 1 &&
-          webrtc::test::FrameBufsEqual(last_frame_captured_,
-                                       frame_data.buffer)) {
+          test::FrameBufsEqual(last_frame_captured_, frame_data.buffer)) {
         ++number_of_frames_skipped_;
         return;
       }

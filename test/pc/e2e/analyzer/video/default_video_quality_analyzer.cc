@@ -51,9 +51,9 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
-using ::webrtc::webrtc_pc_e2e::MetricMetadataKey;
+using test::ImprovementDirection;
+using test::Unit;
+using webrtc_pc_e2e::MetricMetadataKey;
 
 constexpr int kBitsInByte = 8;
 constexpr absl::string_view kSkipRenderedFrameReasonProcessed = "processed";
@@ -140,7 +140,7 @@ SamplesStatsCounter::StatsSample StatsSample(double value,
 }  // namespace
 
 DefaultVideoQualityAnalyzer::DefaultVideoQualityAnalyzer(
-    webrtc::Clock* clock,
+    Clock* clock,
     test::MetricsLogger* metrics_logger,
     DefaultVideoQualityAnalyzerOptions options)
     : options_(options),
@@ -175,7 +175,7 @@ void DefaultVideoQualityAnalyzer::Start(std::string test_case_name,
 uint16_t DefaultVideoQualityAnalyzer::OnFrameCaptured(
     absl::string_view peer_name,
     const std::string& stream_label,
-    const webrtc::VideoFrame& frame) {
+    const VideoFrame& frame) {
   // `next_frame_id` is atomic, so we needn't lock here.
   Timestamp captured_time = Now();
   Timestamp start_time = Timestamp::MinusInfinity();
@@ -288,9 +288,8 @@ uint16_t DefaultVideoQualityAnalyzer::OnFrameCaptured(
   return frame_id;
 }
 
-void DefaultVideoQualityAnalyzer::OnFramePreEncode(
-    absl::string_view peer_name,
-    const webrtc::VideoFrame& frame) {
+void DefaultVideoQualityAnalyzer::OnFramePreEncode(absl::string_view peer_name,
+                                                   const VideoFrame& frame) {
   Timestamp processing_started = Now();
   MutexLock lock(&mutex_);
   RTC_CHECK_EQ(state_, State::kActive)
@@ -323,7 +322,7 @@ void DefaultVideoQualityAnalyzer::OnFramePreEncode(
 void DefaultVideoQualityAnalyzer::OnFrameEncoded(
     absl::string_view peer_name,
     uint16_t frame_id,
-    const webrtc::EncodedImage& encoded_image,
+    const EncodedImage& encoded_image,
     const EncoderStats& stats,
     bool discarded) {
   if (discarded)
@@ -392,14 +391,14 @@ void DefaultVideoQualityAnalyzer::OnFrameEncoded(
 
 void DefaultVideoQualityAnalyzer::OnFrameDropped(
     absl::string_view peer_name,
-    webrtc::EncodedImageCallback::DropReason reason) {
+    EncodedImageCallback::DropReason reason) {
   // Here we do nothing, because we will see this drop on renderer side.
 }
 
 void DefaultVideoQualityAnalyzer::OnFramePreDecode(
     absl::string_view peer_name,
     uint16_t frame_id,
-    const webrtc::EncodedImage& input_image) {
+    const EncodedImage& input_image) {
   Timestamp processing_started = Now();
   MutexLock lock(&mutex_);
   RTC_CHECK_EQ(state_, State::kActive)
@@ -449,10 +448,9 @@ void DefaultVideoQualityAnalyzer::OnFramePreDecode(
   }
 }
 
-void DefaultVideoQualityAnalyzer::OnFrameDecoded(
-    absl::string_view peer_name,
-    const webrtc::VideoFrame& frame,
-    const DecoderStats& stats) {
+void DefaultVideoQualityAnalyzer::OnFrameDecoded(absl::string_view peer_name,
+                                                 const VideoFrame& frame,
+                                                 const DecoderStats& stats) {
   Timestamp processing_started = Now();
   MutexLock lock(&mutex_);
   RTC_CHECK_EQ(state_, State::kActive)
@@ -496,9 +494,8 @@ void DefaultVideoQualityAnalyzer::OnFrameDecoded(
   }
 }
 
-void DefaultVideoQualityAnalyzer::OnFrameRendered(
-    absl::string_view peer_name,
-    const webrtc::VideoFrame& frame) {
+void DefaultVideoQualityAnalyzer::OnFrameRendered(absl::string_view peer_name,
+                                                  const VideoFrame& frame) {
   Timestamp processing_started = Now();
   MutexLock lock(&mutex_);
   RTC_CHECK_EQ(state_, State::kActive)
@@ -599,10 +596,9 @@ void DefaultVideoQualityAnalyzer::OnFrameRendered(
   }
 }
 
-void DefaultVideoQualityAnalyzer::OnEncoderError(
-    absl::string_view peer_name,
-    const webrtc::VideoFrame& frame,
-    int32_t error_code) {
+void DefaultVideoQualityAnalyzer::OnEncoderError(absl::string_view peer_name,
+                                                 const VideoFrame& frame,
+                                                 int32_t error_code) {
   RTC_LOG(LS_ERROR) << "Encoder error for frame.id=" << frame.id()
                     << ", code=" << error_code;
 }

@@ -38,20 +38,20 @@ namespace webrtc_pc_e2e {
 namespace {
 
 class SetRemoteDescriptionCallback
-    : public webrtc::SetRemoteDescriptionObserverInterface {
+    : public SetRemoteDescriptionObserverInterface {
  public:
-  void OnSetRemoteDescriptionComplete(webrtc::RTCError error) override {
+  void OnSetRemoteDescriptionComplete(RTCError error) override {
     is_called_ = true;
     error_ = error;
   }
 
   bool is_called() const { return is_called_; }
 
-  webrtc::RTCError error() const { return error_; }
+  RTCError error() const { return error_; }
 
  private:
   bool is_called_ = false;
-  webrtc::RTCError error_;
+  RTCError error_;
 };
 
 }  // namespace

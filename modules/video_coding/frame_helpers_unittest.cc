@@ -33,11 +33,9 @@ using ::testing::ElementsAre;
 
 constexpr uint32_t kRtpTimestamp = 123456710;
 
-webrtc::scoped_refptr<EncodedImageBuffer> CreateEncodedImageBufferOfSizeN(
-    size_t n,
-    uint8_t x) {
-  webrtc::scoped_refptr<EncodedImageBuffer> buffer =
-      EncodedImageBuffer::Create(n);
+scoped_refptr<EncodedImageBuffer> CreateEncodedImageBufferOfSizeN(size_t n,
+                                                                  uint8_t x) {
+  scoped_refptr<EncodedImageBuffer> buffer = EncodedImageBuffer::Create(n);
   for (size_t i = 0; i < n; ++i) {
     buffer->data()[i] = static_cast<uint8_t>(x + i);
   }

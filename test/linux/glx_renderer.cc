@@ -141,7 +141,7 @@ void GlxRenderer::Resize(size_t width, size_t height) {
   XConfigureWindow(display_, window_, CWWidth | CWHeight, &wc);
 }
 
-void GlxRenderer::OnFrame(const webrtc::VideoFrame& frame) {
+void GlxRenderer::OnFrame(const VideoFrame& frame) {
   if (static_cast<size_t>(frame.width()) != width_ ||
       static_cast<size_t>(frame.height()) != height_) {
     Resize(static_cast<size_t>(frame.width()),

@@ -85,8 +85,8 @@ namespace webrtc {
 namespace webrtc_pc_e2e {
 namespace {
 
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
+using test::ImprovementDirection;
+using test::Unit;
 
 constexpr TimeDelta kDefaultTimeout = TimeDelta::Seconds(10);
 constexpr char kSignalThreadName[] = "signaling_thread";
@@ -116,7 +116,7 @@ class FixturePeerConnectionObserver : public MockPeerConnectionObserver {
   // of reconnect this callback can be called again, so it should be tolerant
   // to such behavior.
   FixturePeerConnectionObserver(
-      std::function<void(webrtc::scoped_refptr<RtpTransceiverInterface>)>
+      std::function<void(scoped_refptr<RtpTransceiverInterface>)>
           on_track_callback,
       std::function<void()> on_connected_callback)
       : on_track_callback_(std::move(on_track_callback)),
@@ -136,7 +136,7 @@ class FixturePeerConnectionObserver : public MockPeerConnectionObserver {
   }
 
  private:
-  std::function<void(webrtc::scoped_refptr<RtpTransceiverInterface>)>
+  std::function<void(scoped_refptr<RtpTransceiverInterface>)>
       on_track_callback_;
   std::function<void()> on_connected_callback_;
 };
@@ -235,7 +235,7 @@ PeerConnectionE2EQualityTest::PeerHandle* PeerConnectionE2EQualityTest::AddPeer(
 }
 
 void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
-  webrtc::webrtc_pc_e2e::PeerParamsPreprocessor params_preprocessor;
+  webrtc_pc_e2e::PeerParamsPreprocessor params_preprocessor;
   for (auto& peer_configuration : peer_configurations_) {
     params_preprocessor.SetDefaultValuesForMissingParams(*peer_configuration);
     params_preprocessor.ValidateParams(*peer_configuration);
@@ -280,9 +280,9 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
       time_controller_.GetClock());
 
   // Create a `task_queue_`.
-  task_queue_ = std::make_unique<webrtc::TaskQueueForTest>(
+  task_queue_ = std::make_unique<TaskQueueForTest>(
       time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
-          "pc_e2e_quality_test", webrtc::TaskQueueFactory::Priority::NORMAL));
+          "pc_e2e_quality_test", TaskQueueFactory::Priority::NORMAL));
 
   // Create call participants: Alice and Bob.
   // Audio streams are intercepted in AudioDeviceModule, so if it is required to
@@ -358,16 +358,16 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
 
   // Start RTCEventLog recording if requested.
   if (alice_->params().rtc_event_log_path) {
-    auto alice_rtc_event_log = std::make_unique<webrtc::RtcEventLogOutputFile>(
+    auto alice_rtc_event_log = std::make_unique<RtcEventLogOutputFile>(
         alice_->params().rtc_event_log_path.value());
     alice_->pc()->StartRtcEventLog(std::move(alice_rtc_event_log),
-                                   webrtc::RtcEventLog::kImmediateOutput);
+                                   RtcEventLog::kImmediateOutput);
   }
   if (bob_->params().rtc_event_log_path) {
-    auto bob_rtc_event_log = std::make_unique<webrtc::RtcEventLogOutputFile>(
+    auto bob_rtc_event_log = std::make_unique<RtcEventLogOutputFile>(
         bob_->params().rtc_event_log_path.value());
     bob_->pc()->StartRtcEventLog(std::move(bob_rtc_event_log),
-                                 webrtc::RtcEventLog::kImmediateOutput);
+                                 RtcEventLog::kImmediateOutput);
   }
 
   // Setup alive logging. It is done to prevent test infra to think that test is
@@ -521,8 +521,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
     // multiple audio streams, then we need transceiver for each Bob's audio
     // stream.
     RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
-        alice_->AddTransceiver(webrtc::MediaType::AUDIO,
-                               receive_only_transceiver_init);
+        alice_->AddTransceiver(MediaType::AUDIO, receive_only_transceiver_init);
     RTC_CHECK(result.ok());
     alice_transceivers_counter++;
   }
@@ -561,7 +560,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
       alice_video_transceivers_non_simulcast_counter++;
     }
     RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
-        alice_->AddTransceiver(webrtc::MediaType::VIDEO, transceiver_params);
+        alice_->AddTransceiver(MediaType::VIDEO, transceiver_params);
     RTC_CHECK(result.ok());
 
     alice_transceivers_counter++;
@@ -572,8 +571,7 @@ void PeerConnectionE2EQualityTest::SetupCallOnSignalingThread(
   for (size_t i = alice_video_transceivers_non_simulcast_counter;
        i < bob_->configurable_params().video_configs.size(); ++i) {
     RTCErrorOr<scoped_refptr<RtpTransceiverInterface>> result =
-        alice_->AddTransceiver(webrtc::MediaType::VIDEO,
-                               receive_only_transceiver_init);
+        alice_->AddTransceiver(MediaType::VIDEO, receive_only_transceiver_init);
     RTC_CHECK(result.ok());
     alice_transceivers_counter++;
   }
@@ -598,19 +596,19 @@ void PeerConnectionE2EQualityTest::SetPeerCodecPreferences(TestPeer* peer) {
           peer->params().video_codecs, true, peer->params().use_ulp_fec,
           peer->params().use_flex_fec,
           peer->pc_factory()
-              ->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO)
+              ->GetRtpReceiverCapabilities(MediaType::VIDEO)
               .codecs);
   std::vector<RtpCodecCapability> without_rtx_video_capabilities =
       FilterVideoCodecCapabilities(
           peer->params().video_codecs, false, peer->params().use_ulp_fec,
           peer->params().use_flex_fec,
           peer->pc_factory()
-              ->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO)
+              ->GetRtpReceiverCapabilities(MediaType::VIDEO)
               .codecs);
 
   // Set codecs for transceivers
   for (auto transceiver : peer->pc()->GetTransceivers()) {
-    if (transceiver->media_type() == webrtc::MediaType::VIDEO) {
+    if (transceiver->media_type() == MediaType::VIDEO) {
       if (transceiver->sender()->init_send_encodings().size() > 1) {
         // If transceiver's sender has more then 1 send encodings, it means it
         // has multiple simulcast streams, so we need disable RTX on it.

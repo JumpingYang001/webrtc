@@ -70,7 +70,7 @@ void GlRenderer::ResizeVideo(size_t width, size_t height) {
                GL_UNSIGNED_INT_8_8_8_8, static_cast<GLvoid*>(buffer_));
 }
 
-void GlRenderer::OnFrame(const webrtc::VideoFrame& frame) {
+void GlRenderer::OnFrame(const VideoFrame& frame) {
   RTC_DCHECK(is_init_);
 
   if (static_cast<size_t>(frame.width()) != width_ ||
@@ -78,7 +78,7 @@ void GlRenderer::OnFrame(const webrtc::VideoFrame& frame) {
     ResizeVideo(frame.width(), frame.height());
   }
 
-  webrtc::ConvertFromI420(frame, VideoType::kBGRA, 0, buffer_);
+  ConvertFromI420(frame, VideoType::kBGRA, 0, buffer_);
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, texture_);

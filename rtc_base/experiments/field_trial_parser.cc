@@ -193,7 +193,7 @@ bool FieldTrialFlag::Get() const {
   return value_;
 }
 
-webrtc::FieldTrialFlag::operator bool() const {
+FieldTrialFlag::operator bool() const {
   return value_;
 }
 

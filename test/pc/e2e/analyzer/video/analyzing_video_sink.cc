@@ -120,7 +120,7 @@ void AnalyzingVideoSink::OnFrame(const VideoFrame& frame) {
   }
 }
 
-void AnalyzingVideoSink::LogMetrics(webrtc::test::MetricsLogger& metrics_logger,
+void AnalyzingVideoSink::LogMetrics(test::MetricsLogger& metrics_logger,
                                     absl::string_view test_case_name) const {
   if (report_infra_stats_) {
     MutexLock lock(&mutex_);

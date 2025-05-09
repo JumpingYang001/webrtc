@@ -32,7 +32,7 @@ void InternalStatsObserver::OnStatsDelivered(
 StatsPoller::StatsPoller(std::vector<StatsObserverInterface*> observers,
                          std::map<std::string, StatsProvider*> peers)
     : observers_(std::move(observers)) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   for (auto& peer : peers) {
     pollers_.push_back(make_ref_counted<InternalStatsObserver>(
         peer.first, peer.second, observers_));
@@ -42,7 +42,7 @@ StatsPoller::StatsPoller(std::vector<StatsObserverInterface*> observers,
 StatsPoller::StatsPoller(std::vector<StatsObserverInterface*> observers,
                          std::map<std::string, TestPeer*> peers)
     : observers_(std::move(observers)) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   for (auto& peer : peers) {
     pollers_.push_back(make_ref_counted<InternalStatsObserver>(
         peer.first, peer.second, observers_));
@@ -50,7 +50,7 @@ StatsPoller::StatsPoller(std::vector<StatsObserverInterface*> observers,
 }
 
 void StatsPoller::PollStatsAndNotifyObservers() {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   for (auto& poller : pollers_) {
     poller->PollStats();
   }
@@ -58,13 +58,13 @@ void StatsPoller::PollStatsAndNotifyObservers() {
 
 void StatsPoller::RegisterParticipantInCall(absl::string_view peer_name,
                                             StatsProvider* peer) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   pollers_.push_back(
       make_ref_counted<InternalStatsObserver>(peer_name, peer, observers_));
 }
 
 bool StatsPoller::UnregisterParticipantInCall(absl::string_view peer_name) {
-  webrtc::MutexLock lock(&mutex_);
+  MutexLock lock(&mutex_);
   for (auto it = pollers_.begin(); it != pollers_.end(); ++it) {
     if ((*it)->pc_label() == peer_name) {
       pollers_.erase(it);

@@ -49,8 +49,8 @@ namespace webrtc {
 namespace webrtc_pc_e2e {
 namespace {
 
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
+using test::ImprovementDirection;
+using test::Unit;
 
 using NetworkLayerStats =
     StatsBasedNetworkQualityMetricsReporter::NetworkLayerStats;

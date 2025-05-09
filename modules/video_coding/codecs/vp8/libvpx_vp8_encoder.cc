@@ -778,7 +778,7 @@ int LibvpxVp8Encoder::InitEncode(const VideoCodec* inst,
           // to converge somewhat. Set a minim filter size of 1.25 since some
           // outlier pixels deviate a bit from truth even at very low QP,
           // seeminly by bleeding into neighbours.
-          webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{
+          CorruptionDetectionSettingsGenerator::TransientParameters{
               .max_qp = 127,
               .keyframe_threshold_offset = 1,
               .keyframe_stddev_offset = 2.0,

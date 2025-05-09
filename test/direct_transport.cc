@@ -96,10 +96,10 @@ bool DirectTransport::SendRtp(ArrayView<const uint8_t> data,
   const RtpHeaderExtensionMap* extensions = nullptr;
   MediaType media_type = demuxer_.GetMediaType(data.data(), data.size());
   switch (demuxer_.GetMediaType(data.data(), data.size())) {
-    case webrtc::MediaType::AUDIO:
+    case MediaType::AUDIO:
       extensions = &audio_extensions_;
       break;
-    case webrtc::MediaType::VIDEO:
+    case MediaType::VIDEO:
       extensions = &video_extensions_;
       break;
     default:

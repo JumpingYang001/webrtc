@@ -71,7 +71,7 @@ Y4mVideoFrameWriterImpl::Y4mVideoFrameWriterImpl(std::string output_file_name,
   RTC_CHECK(frame_writer_->Init());
 }
 
-bool Y4mVideoFrameWriterImpl::WriteFrame(const webrtc::VideoFrame& frame) {
+bool Y4mVideoFrameWriterImpl::WriteFrame(const VideoFrame& frame) {
   Buffer frame_buffer = ExtractI420BufferWithSize(frame, width_, height_);
   RTC_CHECK_EQ(frame_buffer.size(), frame_writer_->FrameLength());
   return frame_writer_->WriteFrame(frame_buffer.data());
@@ -97,7 +97,7 @@ YuvVideoFrameWriterImpl::YuvVideoFrameWriterImpl(std::string output_file_name,
   RTC_CHECK(frame_writer_->Init());
 }
 
-bool YuvVideoFrameWriterImpl::WriteFrame(const webrtc::VideoFrame& frame) {
+bool YuvVideoFrameWriterImpl::WriteFrame(const VideoFrame& frame) {
   Buffer frame_buffer = ExtractI420BufferWithSize(frame, width_, height_);
   RTC_CHECK_EQ(frame_buffer.size(), frame_writer_->FrameLength());
   return frame_writer_->WriteFrame(frame_buffer.data());

@@ -103,8 +103,8 @@ scoped_refptr<I420Buffer> CreateYuvBuffer(uint8_t y = 0,
 
 // TODO(ssilkin): Wrap this into a class that removes file in dtor.
 std::string CreateYuvFile(int width, int height, int num_frames) {
-  std::string path = webrtc::test::TempFilename(webrtc::test::OutputPath(),
-                                                "video_codec_tester_unittest");
+  std::string path =
+      test::TempFilename(test::OutputPath(), "video_codec_tester_unittest");
   FILE* file = fopen(path.c_str(), "wb");
   for (int frame_num = 0; frame_num < num_frames; ++frame_num) {
     // For purposes of testing quality estimation, we need Y, U, V values in

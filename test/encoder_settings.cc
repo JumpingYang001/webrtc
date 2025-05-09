@@ -29,7 +29,7 @@ const int DefaultVideoStreamFactory::kDefaultMinBitratePerStream[] = {
 std::vector<VideoStream> CreateVideoStreams(
     int width,
     int height,
-    const webrtc::VideoEncoderConfig& encoder_config) {
+    const VideoEncoderConfig& encoder_config) {
   RTC_DCHECK(encoder_config.number_of_streams <=
              DefaultVideoStreamFactory::kMaxNumberOfStreams);
 
@@ -109,7 +109,7 @@ std::vector<VideoStream> DefaultVideoStreamFactory::CreateEncoderStreams(
     const FieldTrialsView& /*field_trials*/,
     int frame_width,
     int frame_height,
-    const webrtc::VideoEncoderConfig& encoder_config) {
+    const VideoEncoderConfig& encoder_config) {
   return CreateVideoStreams(frame_width, frame_height, encoder_config);
 }
 

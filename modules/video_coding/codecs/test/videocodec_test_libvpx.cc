@@ -51,7 +51,7 @@ const size_t kNumFirstFramesToSkipAtRdPerfAnalysis = 60;
 
 class QpFrameChecker : public VideoCodecTestFixture::EncodedFrameChecker {
  public:
-  void CheckEncodedFrame(webrtc::VideoCodecType codec,
+  void CheckEncodedFrame(VideoCodecType codec,
                          const EncodedImage& encoded_frame) const override {
     int qp;
     if (codec == kVideoCodecVP8) {

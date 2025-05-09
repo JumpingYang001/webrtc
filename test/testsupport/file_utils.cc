@@ -94,18 +94,18 @@ bool DirExists(absl::string_view directory_name) {
 }
 
 std::string OutputPath() {
-  return webrtc::test::internal::OutputPath();
+  return test::internal::OutputPath();
 }
 
 std::string OutputPathWithRandomDirectory() {
-  std::string path = webrtc::test::internal::OutputPath();
+  std::string path = test::internal::OutputPath();
   std::string rand_dir = path + CreateRandomUuid();
   RTC_CHECK(CreateDir(rand_dir)) << "Failed to create dir: " << rand_dir;
   return rand_dir + std::string(kPathDelimiter);
 }
 
 std::string WorkingDir() {
-  return webrtc::test::internal::WorkingDir();
+  return test::internal::WorkingDir();
 }
 
 // Generate a temporary filename in a safe way.
@@ -254,7 +254,7 @@ bool RemoveFile(absl::string_view file_name) {
 }
 
 std::string ResourcePath(absl::string_view name, absl::string_view extension) {
-  return webrtc::test::internal::ResourcePath(name, extension);
+  return test::internal::ResourcePath(name, extension);
 }
 
 std::string JoinFilename(absl::string_view dir, absl::string_view name) {

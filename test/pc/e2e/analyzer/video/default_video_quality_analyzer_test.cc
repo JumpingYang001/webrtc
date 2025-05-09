@@ -44,7 +44,7 @@ using ::testing::Test;
 using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
-using StatsSample = ::webrtc::SamplesStatsCounter::StatsSample;
+using StatsSample = SamplesStatsCounter::StatsSample;
 
 constexpr int kAnalyzerMaxThreadsCount = 1;
 constexpr TimeDelta kMaxFramesInFlightStorageDuration = TimeDelta::Seconds(3);

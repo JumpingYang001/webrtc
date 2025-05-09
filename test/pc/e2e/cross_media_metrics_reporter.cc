@@ -31,8 +31,8 @@
 namespace webrtc {
 namespace webrtc_pc_e2e {
 
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
+using test::ImprovementDirection;
+using test::Unit;
 
 CrossMediaMetricsReporter::CrossMediaMetricsReporter(
     test::MetricsLogger* metrics_logger)
@@ -124,7 +124,7 @@ void CrossMediaMetricsReporter::StopAndReportResults() {
         "audio_ahead_ms",
         GetTestCaseName(pair.second.audio_stream_info.stream_label, sync_group),
         pair.second.audio_ahead_ms, Unit::kMilliseconds,
-        webrtc::test::ImprovementDirection::kSmallerIsBetter,
+        test::ImprovementDirection::kSmallerIsBetter,
         std::move(audio_metric_metadata));
 
     std::map<std::string, std::string> video_metric_metadata{
@@ -139,7 +139,7 @@ void CrossMediaMetricsReporter::StopAndReportResults() {
         "video_ahead_ms",
         GetTestCaseName(pair.second.video_stream_info.stream_label, sync_group),
         pair.second.video_ahead_ms, Unit::kMilliseconds,
-        webrtc::test::ImprovementDirection::kSmallerIsBetter,
+        test::ImprovementDirection::kSmallerIsBetter,
         std::move(video_metric_metadata));
   }
 }

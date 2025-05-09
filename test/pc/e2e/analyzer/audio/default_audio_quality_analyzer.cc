@@ -33,8 +33,8 @@
 namespace webrtc {
 namespace webrtc_pc_e2e {
 
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
+using test::ImprovementDirection;
+using test::Unit;
 
 DefaultAudioQualityAnalyzer::DefaultAudioQualityAnalyzer(
     test::MetricsLogger* const metrics_logger)

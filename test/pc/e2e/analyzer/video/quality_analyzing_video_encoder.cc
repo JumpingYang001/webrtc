@@ -27,7 +27,7 @@ namespace webrtc_pc_e2e {
 namespace {
 
 using EmulatedSFUConfigMap =
-    ::webrtc::webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
+    webrtc_pc_e2e::QualityAnalyzingVideoEncoder::EmulatedSFUConfigMap;
 
 constexpr size_t kMaxFrameInPipelineCount = 1000;
 constexpr double kNoMultiplier = 1.0;

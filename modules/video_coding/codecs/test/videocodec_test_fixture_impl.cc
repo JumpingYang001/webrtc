@@ -229,7 +229,7 @@ void VideoCodecTestFixtureImpl::Config::SetCodecSettings(
     size_t height) {
   codec_name = codec_name_to_set;
   VideoCodecType codec_type = PayloadStringToCodecType(codec_name);
-  webrtc::test::CodecSettings(codec_type, &codec_settings);
+  test::CodecSettings(codec_type, &codec_settings);
 
   // TODO(brandtr): Move the setting of `width` and `height` to the tests, and
   // DCHECK that they are set before initializing the codec instead.
@@ -390,22 +390,22 @@ std::string VideoCodecTestFixtureImpl::Config::CodecName() const {
 // TODO(kthelgason): Move this out of the test fixture impl and
 // make available as a shared utility class.
 void VideoCodecTestFixtureImpl::H264KeyframeChecker::CheckEncodedFrame(
-    webrtc::VideoCodecType codec,
+    VideoCodecType codec,
     const EncodedImage& encoded_frame) const {
   EXPECT_EQ(kVideoCodecH264, codec);
   bool contains_sps = false;
   bool contains_pps = false;
   bool contains_idr = false;
-  const std::vector<webrtc::H264::NaluIndex> nalu_indices =
-      webrtc::H264::FindNaluIndices(encoded_frame);
-  for (const webrtc::H264::NaluIndex& index : nalu_indices) {
-    webrtc::H264::NaluType nalu_type = webrtc::H264::ParseNaluType(
-        encoded_frame.data()[index.payload_start_offset]);
-    if (nalu_type == webrtc::H264::NaluType::kSps) {
+  const std::vector<H264::NaluIndex> nalu_indices =
+      H264::FindNaluIndices(encoded_frame);
+  for (const H264::NaluIndex& index : nalu_indices) {
+    H264::NaluType nalu_type =
+        H264::ParseNaluType(encoded_frame.data()[index.payload_start_offset]);
+    if (nalu_type == H264::NaluType::kSps) {
       contains_sps = true;
-    } else if (nalu_type == webrtc::H264::NaluType::kPps) {
+    } else if (nalu_type == H264::NaluType::kPps) {
       contains_pps = true;
-    } else if (nalu_type == webrtc::H264::NaluType::kIdr) {
+    } else if (nalu_type == H264::NaluType::kIdr) {
       contains_idr = true;
     }
   }
@@ -457,16 +457,18 @@ class VideoCodecTestFixtureImpl::CpuProcessTime final {
 };
 
 VideoCodecTestFixtureImpl::VideoCodecTestFixtureImpl(Config config)
-    : encoder_factory_(std::make_unique<webrtc::VideoEncoderFactoryTemplate<
-                           webrtc::LibvpxVp8EncoderTemplateAdapter,
-                           webrtc::LibvpxVp9EncoderTemplateAdapter,
-                           webrtc::OpenH264EncoderTemplateAdapter,
-                           webrtc::LibaomAv1EncoderTemplateAdapter>>()),
-      decoder_factory_(std::make_unique<webrtc::VideoDecoderFactoryTemplate<
-                           webrtc::LibvpxVp8DecoderTemplateAdapter,
-                           webrtc::LibvpxVp9DecoderTemplateAdapter,
-                           webrtc::OpenH264DecoderTemplateAdapter,
-                           webrtc::Dav1dDecoderTemplateAdapter>>()),
+    : encoder_factory_(
+          std::make_unique<
+              VideoEncoderFactoryTemplate<LibvpxVp8EncoderTemplateAdapter,
+                                          LibvpxVp9EncoderTemplateAdapter,
+                                          OpenH264EncoderTemplateAdapter,
+                                          LibaomAv1EncoderTemplateAdapter>>()),
+      decoder_factory_(
+          std::make_unique<
+              VideoDecoderFactoryTemplate<LibvpxVp8DecoderTemplateAdapter,
+                                          LibvpxVp9DecoderTemplateAdapter,
+                                          OpenH264DecoderTemplateAdapter,
+                                          Dav1dDecoderTemplateAdapter>>()),
       env_(CreateEnvironment()),
       config_(config) {}
 

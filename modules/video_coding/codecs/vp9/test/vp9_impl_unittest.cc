@@ -93,9 +93,8 @@ using ::testing::SizeIs;
 using ::testing::TypedEq;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArg;
-using EncoderInfo = webrtc::VideoEncoder::EncoderInfo;
-using FramerateFractions =
-    absl::InlinedVector<uint8_t, webrtc::kMaxTemporalStreams>;
+using EncoderInfo = VideoEncoder::EncoderInfo;
+using FramerateFractions = absl::InlinedVector<uint8_t, kMaxTemporalStreams>;
 
 constexpr size_t kWidth = 1280;
 constexpr size_t kHeight = 720;
@@ -108,7 +107,7 @@ const VideoEncoder::Settings kSettings(kCapabilities,
 
 VideoCodec DefaultCodecSettings() {
   VideoCodec codec_settings;
-  webrtc::test::CodecSettings(kVideoCodecVP9, &codec_settings);
+  test::CodecSettings(kVideoCodecVP9, &codec_settings);
   codec_settings.width = kWidth;
   codec_settings.height = kHeight;
   codec_settings.startBitrate = kBitrateKbps;
@@ -145,7 +144,7 @@ class TestVp9Impl : public VideoCodecUnitTest {
   }
 
   void ModifyCodecSettings(VideoCodec* codec_settings) override {
-    webrtc::test::CodecSettings(kVideoCodecVP9, codec_settings);
+    test::CodecSettings(kVideoCodecVP9, codec_settings);
     codec_settings->width = kWidth;
     codec_settings->height = kHeight;
     ConfigureSvc(*codec_settings);
@@ -2072,7 +2071,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class TestVp9ImplFrameDropping : public TestVp9Impl {
  protected:
   void ModifyCodecSettings(VideoCodec* codec_settings) override {
-    webrtc::test::CodecSettings(kVideoCodecVP9, codec_settings);
+    test::CodecSettings(kVideoCodecVP9, codec_settings);
     // We need to encode quite a lot of frames in this test. Use low resolution
     // to reduce execution time.
     codec_settings->width = 64;

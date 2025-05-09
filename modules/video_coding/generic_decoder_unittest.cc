@@ -115,7 +115,7 @@ class GenericDecoderTest : public ::testing::Test {
   Clock* const clock_;
   test::ScopedKeyValueConfig field_trials_;
   VCMTiming timing_;
-  webrtc::test::FakeDecoder decoder_;
+  test::FakeDecoder decoder_;
   VCMDecodedFrameCallback vcm_callback_;
   VCMGenericDecoder generic_decoder_;
   ReceiveCallback user_callback_;

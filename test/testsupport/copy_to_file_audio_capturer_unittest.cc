@@ -23,8 +23,8 @@ namespace test {
 class CopyToFileAudioCapturerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    temp_filename_ = webrtc::test::TempFilename(
-        webrtc::test::OutputPath(), "copy_to_file_audio_capturer_unittest");
+    temp_filename_ = test::TempFilename(test::OutputPath(),
+                                        "copy_to_file_audio_capturer_unittest");
     std::unique_ptr<TestAudioDeviceModule::Capturer> delegate =
         TestAudioDeviceModule::CreatePulsedNoiseCapturer(32000, 48000);
     capturer_ = std::make_unique<CopyToFileAudioCapturer>(std::move(delegate),

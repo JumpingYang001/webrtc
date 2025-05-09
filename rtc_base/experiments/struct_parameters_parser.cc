@@ -38,13 +38,13 @@ inline void StringEncode(std::string* target, unsigned val) {
   *target += absl::StrCat(val);
 }
 inline void StringEncode(std::string* target, DataRate val) {
-  *target += webrtc::ToString(val);
+  *target += ToString(val);
 }
 inline void StringEncode(std::string* target, DataSize val) {
-  *target += webrtc::ToString(val);
+  *target += ToString(val);
 }
 inline void StringEncode(std::string* target, TimeDelta val) {
-  *target += webrtc::ToString(val);
+  *target += ToString(val);
 }
 
 template <typename T>

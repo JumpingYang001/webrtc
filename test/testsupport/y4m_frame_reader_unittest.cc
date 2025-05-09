@@ -41,8 +41,8 @@ class Y4mFrameReaderTest : public ::testing::Test {
   ~Y4mFrameReaderTest() override = default;
 
   void SetUp() override {
-    filepath_ = webrtc::test::TempFilename(webrtc::test::OutputPath(),
-                                           "y4m_frame_reader_unittest");
+    filepath_ =
+        test::TempFilename(test::OutputPath(), "y4m_frame_reader_unittest");
     FILE* file = fopen(filepath_.c_str(), "wb");
     fwrite(kFileHeader, 1, sizeof(kFileHeader) - 1, file);
     for (int n = 0; n < kNumFrames; ++n) {

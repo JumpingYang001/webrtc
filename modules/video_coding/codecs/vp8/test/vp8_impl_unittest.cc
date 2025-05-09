@@ -70,9 +70,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 using ::testing::WithParamInterface;
-using EncoderInfo = webrtc::VideoEncoder::EncoderInfo;
-using FramerateFractions =
-    absl::InlinedVector<uint8_t, webrtc::kMaxTemporalStreams>;
+using EncoderInfo = VideoEncoder::EncoderInfo;
+using FramerateFractions = absl::InlinedVector<uint8_t, kMaxTemporalStreams>;
 
 namespace {
 constexpr uint32_t kLegacyScreenshareTl0BitrateKbps = 200;
@@ -103,7 +102,7 @@ class TestVp8Impl : public VideoCodecUnitTest {
   }
 
   void ModifyCodecSettings(VideoCodec* codec_settings) override {
-    webrtc::test::CodecSettings(kVideoCodecVP8, codec_settings);
+    test::CodecSettings(kVideoCodecVP8, codec_settings);
     codec_settings->width = kWidth;
     codec_settings->height = kHeight;
     codec_settings->SetVideoEncoderComplexity(

@@ -70,13 +70,13 @@ size_t GetMaxNaluSizeBytes(const EncodedImage& encoded_frame,
   if (config.codec_settings.codecType != kVideoCodecH264)
     return 0;
 
-  std::vector<webrtc::H264::NaluIndex> nalu_indices =
-      webrtc::H264::FindNaluIndices(encoded_frame);
+  std::vector<H264::NaluIndex> nalu_indices =
+      H264::FindNaluIndices(encoded_frame);
 
   RTC_CHECK(!nalu_indices.empty());
 
   size_t max_size = 0;
-  for (const webrtc::H264::NaluIndex& index : nalu_indices)
+  for (const H264::NaluIndex& index : nalu_indices)
     max_size = std::max(max_size, index.payload_size);
 
   return max_size;
@@ -155,7 +155,7 @@ void CalculateFrameQuality(const I420BufferInterface& ref_buffer,
 }  // namespace
 
 VideoProcessor::VideoProcessor(const Environment& env,
-                               webrtc::VideoEncoder* encoder,
+                               VideoEncoder* encoder,
                                VideoDecoderList* decoders,
                                FrameReader* input_frame_reader,
                                const VideoCodecTestFixture::Config& config,
@@ -275,7 +275,7 @@ void VideoProcessor::ProcessFrame() {
           .set_video_frame_buffer(buffer)
           .set_rtp_timestamp(static_cast<uint32_t>(timestamp))
           .set_timestamp_ms(static_cast<int64_t>(timestamp / kMsToRtpTimestamp))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .build();
   // Store input frame as a reference for quality calculations.
   if (config_.decode && !config_.measure_cpu) {
@@ -382,9 +382,8 @@ int32_t VideoProcessor::VideoProcessorDecodeCompleteCallback::Decoded(
   return 0;
 }
 
-void VideoProcessor::FrameEncoded(
-    const webrtc::EncodedImage& encoded_image,
-    const webrtc::CodecSpecificInfo& codec_specific) {
+void VideoProcessor::FrameEncoded(const EncodedImage& encoded_image,
+                                  const CodecSpecificInfo& codec_specific) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
   // For the highest measurement accuracy of the encode time, the start/stop
@@ -457,7 +456,7 @@ void VideoProcessor::FrameEncoded(
     frame_stat->non_ref_for_inter_layer_pred = true;
   }
 
-  const webrtc::EncodedImage* encoded_image_for_decode = &encoded_image;
+  const EncodedImage* encoded_image_for_decode = &encoded_image;
   if (config_.decode || !encoded_frame_writers_->empty()) {
     if (num_spatial_layers > 1) {
       encoded_image_for_decode = BuildAndStoreSuperframe(
@@ -660,7 +659,7 @@ void VideoProcessor::DecodeFrame(const EncodedImage& encoded_image,
       decoders_->at(spatial_idx)->Decode(encoded_image, 0);
 }
 
-const webrtc::EncodedImage* VideoProcessor::BuildAndStoreSuperframe(
+const EncodedImage* VideoProcessor::BuildAndStoreSuperframe(
     const EncodedImage& encoded_image,
     const VideoCodecType /* codec */,
     size_t /* frame_number */,

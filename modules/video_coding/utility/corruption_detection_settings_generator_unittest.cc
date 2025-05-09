@@ -29,7 +29,7 @@ TEST(CorruptionDetectionSettingsGenerator, ExponentialFunctionStdDev) {
           .exponent_factor = 0.01857465,
           .exponent_offset = -4.26470513},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{});
+      CorruptionDetectionSettingsGenerator::TransientParameters{});
 
   // 0.006 * e^(0.01857465 * 20 + 4.26470513) ~= 0.612
   CorruptionDetectionFilterSettings settings =
@@ -49,7 +49,7 @@ TEST(CorruptionDetectionSettingsGenerator, ExponentialFunctionThresholds) {
           .exponent_offset = -4.26470513},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{.luma = 5,
                                                             .chroma = 6},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{});
+      CorruptionDetectionSettingsGenerator::TransientParameters{});
 
   CorruptionDetectionFilterSettings settings =
       settings_generator.OnFrame(/*is_keyframe=*/true, /*qp=*/20);
@@ -62,7 +62,7 @@ TEST(CorruptionDetectionSettingsGenerator, RationalFunctionStdDev) {
       CorruptionDetectionSettingsGenerator::RationalFunctionParameters{
           .numerator_factor = -5.5, .denumerator_term = -97, .offset = -1},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{});
+      CorruptionDetectionSettingsGenerator::TransientParameters{});
 
   // (20 * -5.5) / (20 - 97) - 1 ~= 0.429
   CorruptionDetectionFilterSettings settings =
@@ -80,7 +80,7 @@ TEST(CorruptionDetectionSettingsGenerator, RationalFunctionThresholds) {
           .numerator_factor = -5.5, .denumerator_term = -97, .offset = -1},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{.luma = 5,
                                                             .chroma = 6},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{});
+      CorruptionDetectionSettingsGenerator::TransientParameters{});
 
   CorruptionDetectionFilterSettings settings =
       settings_generator.OnFrame(/*is_keyframe=*/true, /*qp=*/20);
@@ -96,7 +96,7 @@ TEST(CorruptionDetectionSettingsGenerator, TransientStdDevOffset) {
       CorruptionDetectionSettingsGenerator::ErrorThresholds{},
       // Two frames with adjusted settings, including the keyframe.
       // Adjust the keyframe std_dev by 2.
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{
+      CorruptionDetectionSettingsGenerator::TransientParameters{
           .keyframe_stddev_offset = 2.0,
           .keyframe_offset_duration_frames = 2,
       });
@@ -128,7 +128,7 @@ TEST(CorruptionDetectionSettingsGenerator, TransientThresholdOffsets) {
                                                             .chroma = 3},
       // Two frames with adjusted settings, including the keyframe.
       // Adjust the error thresholds by 2.
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{
+      CorruptionDetectionSettingsGenerator::TransientParameters{
           .keyframe_threshold_offset = 2,
           .keyframe_offset_duration_frames = 2,
       });
@@ -169,7 +169,7 @@ TEST(CorruptionDetectionSettingsGenerator, StdDevUpperBound) {
       CorruptionDetectionSettingsGenerator::RationalFunctionParameters{
           .numerator_factor = 1, .denumerator_term = 0, .offset = 41},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{});
+      CorruptionDetectionSettingsGenerator::TransientParameters{});
 
   // `std_dev` capped at max 40.0, which is the limit for the protocol.
   EXPECT_THAT(
@@ -183,7 +183,7 @@ TEST(CorruptionDetectionSettingsGenerator, StdDevLowerBound) {
       CorruptionDetectionSettingsGenerator::RationalFunctionParameters{
           .numerator_factor = 1, .denumerator_term = 0, .offset = 1},
       CorruptionDetectionSettingsGenerator::ErrorThresholds{},
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{
+      CorruptionDetectionSettingsGenerator::TransientParameters{
           .std_dev_lower_bound = 5.0});
 
   // `std_dev` capped at lower bound of 5.0.
@@ -200,7 +200,7 @@ TEST(CorruptionDetectionSettingsGenerator, TreatsLargeQpChangeAsKeyFrame) {
                                                             .chroma = 3},
       // Two frames with adjusted settings, including the keyframe.
       // Adjust the error thresholds by 2.
-      webrtc::CorruptionDetectionSettingsGenerator::TransientParameters{
+      CorruptionDetectionSettingsGenerator::TransientParameters{
           .max_qp = 100,
           .keyframe_threshold_offset = 2,
           .keyframe_offset_duration_frames = 1,
