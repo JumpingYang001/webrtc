@@ -55,14 +55,11 @@ class ChromePerfDashboardMetricsExporterTest : public Test {
   ~ChromePerfDashboardMetricsExporterTest() override = default;
 
   void SetUp() override {
-    temp_filename_ = webrtc::test::TempFilename(
-        webrtc::test::OutputPath(),
-        "chrome_perf_dashboard_metrics_exporter_test");
+    temp_filename_ = test::TempFilename(
+        test::OutputPath(), "chrome_perf_dashboard_metrics_exporter_test");
   }
 
-  void TearDown() override {
-    ASSERT_TRUE(webrtc::test::RemoveFile(temp_filename_));
-  }
+  void TearDown() override { ASSERT_TRUE(test::RemoveFile(temp_filename_)); }
 
   std::string temp_filename_;
 };
