@@ -150,37 +150,37 @@ static const VuiHeader kVuiLimitedRangeBt709Color = {
     /* transfer_characteristics= */ 1,
     /* matrix_coefficients= */ 1};
 
-static const webrtc::ColorSpace kColorSpaceH264Default(
+static const ColorSpace kColorSpaceH264Default(
     ColorSpace::PrimaryID::kUnspecified,
     ColorSpace::TransferID::kUnspecified,
     ColorSpace::MatrixID::kUnspecified,
     ColorSpace::RangeID::kLimited);
 
-static const webrtc::ColorSpace kColorSpacePrimariesBt709(
+static const ColorSpace kColorSpacePrimariesBt709(
     ColorSpace::PrimaryID::kBT709,
     ColorSpace::TransferID::kUnspecified,
     ColorSpace::MatrixID::kUnspecified,
     ColorSpace::RangeID::kLimited);
 
-static const webrtc::ColorSpace kColorSpaceTransferBt709(
+static const ColorSpace kColorSpaceTransferBt709(
     ColorSpace::PrimaryID::kUnspecified,
     ColorSpace::TransferID::kBT709,
     ColorSpace::MatrixID::kUnspecified,
     ColorSpace::RangeID::kLimited);
 
-static const webrtc::ColorSpace kColorSpaceMatrixBt709(
+static const ColorSpace kColorSpaceMatrixBt709(
     ColorSpace::PrimaryID::kUnspecified,
     ColorSpace::TransferID::kUnspecified,
     ColorSpace::MatrixID::kBT709,
     ColorSpace::RangeID::kLimited);
 
-static const webrtc::ColorSpace kColorSpaceFullRange(
+static const ColorSpace kColorSpaceFullRange(
     ColorSpace::PrimaryID::kBT709,
     ColorSpace::TransferID::kUnspecified,
     ColorSpace::MatrixID::kUnspecified,
     ColorSpace::RangeID::kFull);
 
-static const webrtc::ColorSpace kColorSpaceBt709LimitedRange(
+static const ColorSpace kColorSpaceBt709LimitedRange(
     ColorSpace::PrimaryID::kBT709,
     ColorSpace::TransferID::kBT709,
     ColorSpace::MatrixID::kBT709,
