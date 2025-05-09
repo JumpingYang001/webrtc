@@ -706,7 +706,7 @@ void DcSctpTransport::OnTransportWritableState(
 }
 
 void DcSctpTransport::OnDtlsTransportState(DtlsTransportInternal* transport,
-                                           webrtc::DtlsTransportState state) {
+                                           DtlsTransportState state) {
   if (state == DtlsTransportState::kNew && socket_) {
     // IF DTLS restart (DtlsTransportState::kNew)
     // THEN
