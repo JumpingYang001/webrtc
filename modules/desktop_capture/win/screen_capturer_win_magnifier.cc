@@ -135,7 +135,9 @@ bool ScreenCapturerWinMagnifier::GetSourceList(SourceList* sources) {
 }
 
 bool ScreenCapturerWinMagnifier::SelectSource(SourceId id) {
-  if (IsScreenValid(id, &current_device_key_)) {
+  std::wstring device_key;
+  if (IsScreenValid(id, &device_key)) {
+    current_device_key_ = device_key;
     current_screen_id_ = id;
     return true;
   }

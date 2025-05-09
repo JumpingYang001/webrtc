@@ -13,8 +13,6 @@
 #include <DispatcherQueue.h>
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directX.direct3d11.interop.h>
-#include <windows.graphics.h>
-#include <wrl/client.h>
 #include <wrl/event.h>
 
 #include <algorithm>
@@ -469,18 +467,21 @@ HRESULT WgcCaptureSession::ProcessFrame() {
   DesktopFrame* current_frame = queue_.current_frame();
   DesktopFrame* previous_frame = queue_.previous_frame();
 
-  HMONITOR monitor;
   if (is_window_source_) {
     // If the captured window moves to another screen, the HMONITOR associated
     // with the captured window will change. Therefore, we need to get the value
     // of HMONITOR per frame.
-    monitor = MonitorFromWindow(reinterpret_cast<HWND>(source_id_),
-                                /*dwFlags=*/MONITOR_DEFAULTTONEAREST);
+    monitor_ = ::MonitorFromWindow(reinterpret_cast<HWND>(source_id_),
+                                   /*dwFlags=*/MONITOR_DEFAULTTONEAREST);
   } else {
-    if (!GetHmonitorFromDeviceIndex(source_id_, &monitor)) {
-      RTC_LOG(LS_ERROR) << "Failed to get HMONITOR from device index.";
-      d3d_context->Unmap(mapped_texture_.Get(), 0);
-      return E_FAIL;
+    if (!monitor_.has_value()) {
+      HMONITOR monitor;
+      if (!GetHmonitorFromDeviceIndex(source_id_, &monitor)) {
+        RTC_LOG(LS_ERROR) << "Failed to get HMONITOR from device index.";
+        d3d_context->Unmap(mapped_texture_.Get(), 0);
+        return E_FAIL;
+      }
+      monitor_ = monitor;
     }
   }
 
@@ -490,7 +491,7 @@ HRESULT WgcCaptureSession::ProcessFrame() {
   // 1, 1.5, 2.5, etc.
   DEVICE_SCALE_FACTOR device_scale_factor = DEVICE_SCALE_FACTOR_INVALID;
   HRESULT scale_factor_hr =
-      GetScaleFactorForMonitor(monitor, &device_scale_factor);
+      GetScaleFactorForMonitor(monitor_.value(), &device_scale_factor);
   RTC_LOG_IF(LS_ERROR, FAILED(scale_factor_hr))
       << "Failed to get scale factor for monitor: " << scale_factor_hr;
   if (device_scale_factor != DEVICE_SCALE_FACTOR_INVALID) {

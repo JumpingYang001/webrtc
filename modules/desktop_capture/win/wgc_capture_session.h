@@ -155,6 +155,11 @@ class WgcCaptureSession final {
   // The unique id to represent a Source of current DesktopCapturer.
   intptr_t source_id_;
 
+  // The monitor that is being captured when the target source_id is a
+  // screen. For window sources, it can't be used because the window can move
+  // around around the different monitors.
+  std::optional<HMONITOR> monitor_;
+
   // The source type of the capture session. It can be either a window or a
   // screen.
   bool is_window_source_;
