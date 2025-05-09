@@ -112,11 +112,10 @@ static void JNI_RtpSender_SetFrameEncryptor(JNIEnv* jni,
 static jni_zero::ScopedJavaLocalRef<jstring> JNI_RtpSender_GetMediaType(
     JNIEnv* jni,
     jlong j_rtp_sender_pointer) {
-  webrtc::MediaType media_type =
+  MediaType media_type =
       reinterpret_cast<RtpSenderInterface*>(j_rtp_sender_pointer)->media_type();
-  return media_type == webrtc::MediaType::AUDIO
-             ? NativeToJavaString(jni, "audio")
-             : NativeToJavaString(jni, "video");
+  return media_type == MediaType::AUDIO ? NativeToJavaString(jni, "audio")
+                                        : NativeToJavaString(jni, "video");
 }
 
 }  // namespace jni

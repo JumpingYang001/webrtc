@@ -20,12 +20,12 @@ namespace webrtc {
 
 jobject NativeToJavaPeerConnectionFactory(
     JNIEnv* jni,
-    scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
+    scoped_refptr<PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
     std::unique_ptr<Thread> network_thread,
     std::unique_ptr<Thread> worker_thread,
     std::unique_ptr<Thread> signaling_thread) {
-  return webrtc::jni::NativeToJavaPeerConnectionFactory(
+  return jni::NativeToJavaPeerConnectionFactory(
       jni, pcf, std::move(socket_factory), std::move(network_thread),
       std::move(worker_thread), std::move(signaling_thread));
 }

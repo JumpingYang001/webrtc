@@ -28,7 +28,7 @@ extern "C" jint JNIEXPORT JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved) {
     return -1;
 
   RTC_CHECK(InitializeSSL()) << "Failed to InitializeSSL()";
-  webrtc::InitClassLoader(GetEnv());
+  InitClassLoader(GetEnv());
 
   return ret;
 }

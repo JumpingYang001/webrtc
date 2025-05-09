@@ -139,7 +139,7 @@ StaticObjectContainer& GetStaticObjects() {
 
 ScopedJavaLocalRef<jobject> NativeToScopedJavaPeerConnectionFactory(
     JNIEnv* env,
-    scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
+    scoped_refptr<PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
     std::unique_ptr<Thread> network_thread,
     std::unique_ptr<Thread> worker_thread,
@@ -179,7 +179,7 @@ static bool factory_static_initialized = false;
 
 jobject NativeToJavaPeerConnectionFactory(
     JNIEnv* jni,
-    scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf,
+    scoped_refptr<PeerConnectionFactoryInterface> pcf,
     std::unique_ptr<SocketFactory> socket_factory,
     std::unique_ptr<Thread> network_thread,
     std::unique_ptr<Thread> worker_thread,
@@ -318,7 +318,7 @@ ScopedJavaLocalRef<jobject> CreatePeerConnectionFactoryForJava(
 #ifndef WEBRTC_EXCLUDE_AUDIO_PROCESSING_MODULE
   } else {
     dependencies.audio_processing_builder =
-        std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
+        std::make_unique<BuiltinAudioProcessingBuilder>();
 #endif
   }
   dependencies.video_encoder_factory =

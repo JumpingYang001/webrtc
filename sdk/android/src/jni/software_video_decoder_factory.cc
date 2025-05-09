@@ -24,8 +24,7 @@ namespace webrtc {
 namespace jni {
 
 static jlong JNI_SoftwareVideoDecoderFactory_CreateFactory(JNIEnv* env) {
-  return webrtc::NativeToJavaPointer(
-      CreateBuiltinVideoDecoderFactory().release());
+  return NativeToJavaPointer(CreateBuiltinVideoDecoderFactory().release());
 }
 
 jboolean JNI_SoftwareVideoDecoderFactory_IsSupported(
@@ -53,10 +52,10 @@ static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_SoftwareVideoDecoderFactory_GetSupportedCodecs(JNIEnv* env,
                                                    jlong j_factory) {
   auto* const native_factory =
-      reinterpret_cast<webrtc::VideoDecoderFactory*>(j_factory);
+      reinterpret_cast<VideoDecoderFactory*>(j_factory);
 
-  return webrtc::NativeToJavaList(env, native_factory->GetSupportedFormats(),
-                                  &webrtc::jni::SdpVideoFormatToVideoCodecInfo);
+  return NativeToJavaList(env, native_factory->GetSupportedFormats(),
+                          &jni::SdpVideoFormatToVideoCodecInfo);
 }
 
 }  // namespace jni
