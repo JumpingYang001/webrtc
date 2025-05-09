@@ -228,10 +228,9 @@ int GetEncoderPriorityBitrate(std::string codec_name,
                               const FieldTrialsView& field_trials) {
   int priority_bitrate = 0;
   if (PayloadStringToCodecType(codec_name) == VideoCodecType::kVideoCodecAV1) {
-    webrtc::FieldTrialParameter<int> av1_priority_bitrate("bitrate", 0);
-    webrtc::ParseFieldTrial(
-        {&av1_priority_bitrate},
-        field_trials.Lookup("WebRTC-AV1-OverridePriorityBitrate"));
+    FieldTrialParameter<int> av1_priority_bitrate("bitrate", 0);
+    ParseFieldTrial({&av1_priority_bitrate},
+                    field_trials.Lookup("WebRTC-AV1-OverridePriorityBitrate"));
     priority_bitrate = av1_priority_bitrate;
   }
   return priority_bitrate;
@@ -299,9 +298,8 @@ size_t CalculateMaxHeaderSize(const RtpConfig& config) {
 VideoStreamEncoder::BitrateAllocationCallbackType
 GetBitrateAllocationCallbackType(const VideoSendStream::Config& config,
                                  const FieldTrialsView& field_trials) {
-  if (webrtc::RtpExtension::FindHeaderExtensionByUri(
-          config.rtp.extensions,
-          webrtc::RtpExtension::kVideoLayersAllocationUri,
+  if (RtpExtension::FindHeaderExtensionByUri(
+          config.rtp.extensions, RtpExtension::kVideoLayersAllocationUri,
           config.crypto_options.srtp.enable_encrypted_rtp_header_extensions
               ? RtpExtension::Filter::kPreferEncryptedExtension
               : RtpExtension::Filter::kDiscardEncryptedExtension)) {
@@ -349,7 +347,7 @@ std::unique_ptr<VideoStreamEncoderInterface> CreateVideoStreamEncoder(
     VideoStreamEncoder::BitrateAllocationCallbackType
         bitrate_allocation_callback_type,
     Metronome* metronome,
-    webrtc::VideoEncoderFactory::EncoderSelectorInterface* encoder_selector) {
+    VideoEncoderFactory::EncoderSelectorInterface* encoder_selector) {
   std::unique_ptr<TaskQueueBase, TaskQueueDeleter> encoder_queue =
       env.task_queue_factory().CreateTaskQueue(
           "EncoderQueue", TaskQueueFactory::Priority::NORMAL);
@@ -542,7 +540,7 @@ VideoSendStreamImpl::GetAdaptationResources() {
 }
 
 void VideoSendStreamImpl::SetSource(
-    VideoSourceInterface<webrtc::VideoFrame>* source,
+    VideoSourceInterface<VideoFrame>* source,
     const DegradationPreference& degradation_preference) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   video_stream_encoder_->SetSource(source, degradation_preference);

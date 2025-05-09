@@ -22,8 +22,7 @@
 
 namespace webrtc {
 
-FrameDecodeTiming::FrameDecodeTiming(Clock* clock,
-                                     webrtc::VCMTiming const* timing)
+FrameDecodeTiming::FrameDecodeTiming(Clock* clock, VCMTiming const* timing)
     : clock_(clock), timing_(timing) {
   RTC_DCHECK(clock_);
   RTC_DCHECK(timing_);

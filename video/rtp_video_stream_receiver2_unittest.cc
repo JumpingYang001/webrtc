@@ -348,7 +348,7 @@ TEST_F(RtpVideoStreamReceiver2Test, CacheColorSpaceFromLastPacketOfKeyframe) {
   received_packet_generator.SetColorSpace(kColorSpace);
 
   // Prepare the receiver for VP9.
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kVp9PayloadType, kVideoCodecVP9,
                                               codec_params,
                                               /*raw_payload=*/false);
@@ -476,7 +476,7 @@ TEST_F(RtpVideoStreamReceiver2Test,
   const std::vector<uint8_t> kDeltaFramePayload = {5, 6, 7, 8, 9};
 
   // Prepare the receiver for VP9.
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kVp9PayloadType, kVideoCodecVP9,
                                               codec_params,
                                               /*raw_payload=*/false);
@@ -553,7 +553,7 @@ TEST_F(RtpVideoStreamReceiver2Test,
   const std::vector<uint8_t> kDeltaFramePayload = {5, 6, 7, 8, 9};
 
   // Prepare the receiver for VP9.
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kVp9PayloadType, kVideoCodecVP9,
                                               codec_params,
                                               /*raw_payload=*/false);
@@ -799,7 +799,7 @@ INSTANTIATE_TEST_SUITE_P(SpsPpsIdrIsKeyframeAndH26xPacketBuffer,
 
 TEST_P(RtpVideoStreamReceiver2TestH264, InBandSpsPps) {
   constexpr int kH264PayloadType = 98;
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kH264PayloadType, kVideoCodecH264,
                                               codec_params,
                                               /*raw_payload=*/false);
@@ -856,7 +856,7 @@ TEST_P(RtpVideoStreamReceiver2TestH264, InBandSpsPps) {
 
 TEST_P(RtpVideoStreamReceiver2TestH264, OutOfBandFmtpSpsPps) {
   constexpr int kH264PayloadType = 99;
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   // Example parameter sets from https://tools.ietf.org/html/rfc3984#section-8.2
   // .
   codec_params.insert({kH264FmtpSpropParameterSets, "Z0IACpZTBYmI,aMljiA=="});
@@ -903,7 +903,7 @@ TEST_P(RtpVideoStreamReceiver2TestH264, OutOfBandFmtpSpsPps) {
 }
 
 TEST_P(RtpVideoStreamReceiver2TestH264, ForceSpsPpsIdrIsKeyframe) {
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   // Forcing can be done either with field trial or codec_params.
   if (!env_.field_trials().IsEnabled("WebRTC-SpsPpsIdrIsH264Keyframe")) {
     codec_params.insert({kH264FmtpSpsPpsIdrInKeyframe, ""});
@@ -1063,7 +1063,7 @@ TEST_P(RtpVideoStreamReceiver2TestPadding, EmptyPaddingInMediaStream) {
   rtp_packet_slice.Parse(raw_rtp_slice.data(), raw_rtp_slice.size());
 
   // Prepare the receiver for H264.
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kH264PayloadType, kVideoCodecH264,
                                               codec_params, false);
   rtp_video_stream_receiver_->StartReceive();
@@ -1770,7 +1770,7 @@ class RtpVideoStreamReceiver2TestH265 : public RtpVideoStreamReceiver2Test {
 
 TEST_F(RtpVideoStreamReceiver2TestH265, H265Bitstream) {
   constexpr int kH265PayloadType = 98;
-  webrtc::CodecParameterMap codec_params;
+  CodecParameterMap codec_params;
   rtp_video_stream_receiver_->AddReceiveCodec(kH265PayloadType, kVideoCodecH265,
                                               codec_params,
                                               /*raw_payload=*/false);

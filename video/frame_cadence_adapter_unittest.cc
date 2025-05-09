@@ -1295,7 +1295,7 @@ TEST_F(ZeroHertzQueueOverloadTest,
 
 TEST_F(ZeroHertzQueueOverloadTest,
        QueueOverloadIsDisabledForZeroHerzWhenKillSwitchIsEnabled) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-ZeroHertzQueueOverload/Disabled/");
   adapter_.reset();
   adapter_ = CreateAdapter(field_trials, time_controller_.GetClock());

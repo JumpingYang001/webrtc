@@ -327,7 +327,7 @@ TEST_F(BandwidthEndToEndTest, RembWithSendSideBwe) {
 TEST_F(BandwidthEndToEndTest, ReportsSetEncoderRates) {
   // If these fields trial are on, we get lower bitrates than expected by this
   // test, due to the packetization overhead and encoder pushback.
-  webrtc::test::ScopedFieldTrials field_trials(
+  test::ScopedFieldTrials field_trials(
       std::string(field_trial::GetFieldTrialString()) +
       "WebRTC-VideoRateControl/bitrate_adjuster:false/");
   class EncoderRateStatsTest : public test::EndToEndTest,

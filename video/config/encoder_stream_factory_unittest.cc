@@ -42,7 +42,6 @@ using ::testing::Not;
 using ::testing::SizeIs;
 using ::testing::TestWithParam;
 using ::testing::Values;
-using ::webrtc::EncoderStreamFactory;
 
 struct CreateVideoStreamParams {
   int width = 0;
@@ -482,7 +481,7 @@ INSTANTIATE_TEST_SUITE_P(
                           .scalability_mode = ScalabilityMode::kL1T2})}}),
             Values(
 #ifdef RTC_ENABLE_H265
-                webrtc::kVideoCodecH265,
+                kVideoCodecH265,
 #endif
                 VideoCodecType::kVideoCodecAV1,
                 VideoCodecType::kVideoCodecVP9)));

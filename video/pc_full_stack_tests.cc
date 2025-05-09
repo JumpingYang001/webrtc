@@ -39,14 +39,14 @@
 
 namespace webrtc {
 
-using ::webrtc::webrtc_pc_e2e::AudioConfig;
-using ::webrtc::webrtc_pc_e2e::EmulatedSFUConfig;
-using ::webrtc::webrtc_pc_e2e::PeerConfigurer;
-using ::webrtc::webrtc_pc_e2e::RunParams;
-using ::webrtc::webrtc_pc_e2e::ScreenShareConfig;
-using ::webrtc::webrtc_pc_e2e::VideoCodecConfig;
-using ::webrtc::webrtc_pc_e2e::VideoConfig;
-using ::webrtc::webrtc_pc_e2e::VideoSimulcastConfig;
+using webrtc_pc_e2e::AudioConfig;
+using webrtc_pc_e2e::EmulatedSFUConfig;
+using webrtc_pc_e2e::PeerConfigurer;
+using webrtc_pc_e2e::RunParams;
+using webrtc_pc_e2e::ScreenShareConfig;
+using webrtc_pc_e2e::VideoCodecConfig;
+using webrtc_pc_e2e::VideoConfig;
+using webrtc_pc_e2e::VideoSimulcastConfig;
 
 namespace {
 
@@ -1235,7 +1235,7 @@ ParamsWithLogging::Video SimulcastVp8VideoLow() {
 #if defined(RTC_ENABLE_VP9)
 
 TEST(PCFullStackTest, Pc_Screenshare_Slides_Vp9_3sl_High_Fps) {
-  webrtc::test::ScopedFieldTrials override_trials(
+  test::ScopedFieldTrials override_trials(
       AppendFieldTrials("WebRTC-Vp9InterLayerPred/"
                         "Enabled,inter_layer_pred_mode:on/"));
   std::unique_ptr<NetworkEmulationManager> network_emulation_manager =
@@ -1269,7 +1269,7 @@ TEST(PCFullStackTest, Pc_Screenshare_Slides_Vp9_3sl_High_Fps) {
 }
 
 TEST(PCFullStackTest, Pc_Vp9svc_3sl_High) {
-  webrtc::test::ScopedFieldTrials override_trials(
+  test::ScopedFieldTrials override_trials(
       AppendFieldTrials("WebRTC-Vp9InterLayerPred/"
                         "Enabled,inter_layer_pred_mode:on/"));
   std::unique_ptr<NetworkEmulationManager> network_emulation_manager =
@@ -1302,7 +1302,7 @@ TEST(PCFullStackTest, Pc_Vp9svc_3sl_High) {
 }
 
 TEST(PCFullStackTest, Pc_Vp9svc_3sl_Low) {
-  webrtc::test::ScopedFieldTrials override_trials(
+  test::ScopedFieldTrials override_trials(
       AppendFieldTrials("WebRTC-Vp9InterLayerPred/"
                         "Enabled,inter_layer_pred_mode:on/"));
   std::unique_ptr<NetworkEmulationManager> network_emulation_manager =
@@ -1434,7 +1434,7 @@ TEST(PCFullStackTest, VP9KSVC_3SL_Medium_Network_Restricted_Trusted_Rate) {
 #define MAYBE_Pc_Simulcast_HD_High Pc_Simulcast_HD_High
 #endif
 TEST(PCFullStackTest, MAYBE_Pc_Simulcast_HD_High) {
-  webrtc::test::ScopedFieldTrials override_trials(AppendFieldTrials(
+  test::ScopedFieldTrials override_trials(AppendFieldTrials(
       "WebRTC-ForceSimulatedOveruseIntervalMs/1000-50000-300/"));
   std::unique_ptr<NetworkEmulationManager> network_emulation_manager =
       CreateNetworkEmulationManager();

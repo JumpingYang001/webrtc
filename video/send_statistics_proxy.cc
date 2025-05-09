@@ -147,7 +147,7 @@ std::optional<int> GetFallbackMaxPixels(const std::string& group) {
 }
 
 std::optional<int> GetFallbackMaxPixelsIfFieldTrialEnabled(
-    const webrtc::FieldTrialsView& field_trials) {
+    const FieldTrialsView& field_trials) {
   std::string group = field_trials.Lookup(kVp8ForcedFallbackEncoderFieldTrial);
   return (absl::StartsWith(group, "Enabled"))
              ? GetFallbackMaxPixels(group.substr(7))
@@ -155,7 +155,7 @@ std::optional<int> GetFallbackMaxPixelsIfFieldTrialEnabled(
 }
 
 std::optional<int> GetFallbackMaxPixelsIfFieldTrialDisabled(
-    const webrtc::FieldTrialsView& field_trials) {
+    const FieldTrialsView& field_trials) {
   std::string group = field_trials.Lookup(kVp8ForcedFallbackEncoderFieldTrial);
   return (absl::StartsWith(group, "Disabled"))
              ? GetFallbackMaxPixels(group.substr(8))

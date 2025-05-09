@@ -257,12 +257,10 @@ class VideoReceiveStream2Test : public ::testing::TestWithParam<bool> {
       video_receive_stream_ = nullptr;
     }
     timing_ = new VCMTiming(&env_.clock(), env_.field_trials());
-    video_receive_stream_ =
-        std::make_unique<webrtc::internal::VideoReceiveStream2>(
-            env_, &fake_call_, kDefaultNumCpuCores, &packet_router_,
-            config_.Copy(), &call_stats_, absl::WrapUnique(timing_),
-            &nack_periodic_processor_,
-            UseMetronome() ? &decode_sync_ : nullptr);
+    video_receive_stream_ = std::make_unique<internal::VideoReceiveStream2>(
+        env_, &fake_call_, kDefaultNumCpuCores, &packet_router_, config_.Copy(),
+        &call_stats_, absl::WrapUnique(timing_), &nack_periodic_processor_,
+        UseMetronome() ? &decode_sync_ : nullptr);
     video_receive_stream_->RegisterWithTransport(
         &rtp_stream_receiver_controller_);
     if (state)
@@ -283,7 +281,7 @@ class VideoReceiveStream2Test : public ::testing::TestWithParam<bool> {
   test::RtcpPacketParser rtcp_packet_parser_;
   PacketRouter packet_router_;
   RtpStreamReceiverController rtp_stream_receiver_controller_;
-  std::unique_ptr<webrtc::internal::VideoReceiveStream2> video_receive_stream_;
+  std::unique_ptr<internal::VideoReceiveStream2> video_receive_stream_;
   VCMTiming* timing_;
   test::FakeMetronome fake_metronome_;
   DecodeSynchronizer decode_sync_;
@@ -595,7 +593,7 @@ TEST_P(VideoReceiveStream2Test, PassesNtpTime) {
 }
 
 TEST_P(VideoReceiveStream2Test, PassesRotation) {
-  const webrtc::VideoRotation kRotation = webrtc::kVideoRotation_180;
+  const VideoRotation kRotation = kVideoRotation_180;
   std::unique_ptr<test::FakeEncodedFrame> test_frame =
       test::FakeFrameBuilder()
           .Id(0)

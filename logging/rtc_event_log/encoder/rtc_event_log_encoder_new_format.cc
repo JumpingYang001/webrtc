@@ -170,19 +170,19 @@ bool ConvertToProtoFormat(const std::vector<RtpExtension>& extensions,
 }
 
 rtclog2::DtlsTransportStateEvent::DtlsTransportState ConvertToProtoFormat(
-    webrtc::DtlsTransportState state) {
+    DtlsTransportState state) {
   switch (state) {
-    case webrtc::DtlsTransportState::kNew:
+    case DtlsTransportState::kNew:
       return rtclog2::DtlsTransportStateEvent::DTLS_TRANSPORT_NEW;
-    case webrtc::DtlsTransportState::kConnecting:
+    case DtlsTransportState::kConnecting:
       return rtclog2::DtlsTransportStateEvent::DTLS_TRANSPORT_CONNECTING;
-    case webrtc::DtlsTransportState::kConnected:
+    case DtlsTransportState::kConnected:
       return rtclog2::DtlsTransportStateEvent::DTLS_TRANSPORT_CONNECTED;
-    case webrtc::DtlsTransportState::kClosed:
+    case DtlsTransportState::kClosed:
       return rtclog2::DtlsTransportStateEvent::DTLS_TRANSPORT_CLOSED;
-    case webrtc::DtlsTransportState::kFailed:
+    case DtlsTransportState::kFailed:
       return rtclog2::DtlsTransportStateEvent::DTLS_TRANSPORT_FAILED;
-    case webrtc::DtlsTransportState::kNumValues:
+    case DtlsTransportState::kNumValues:
       RTC_DCHECK_NOTREACHED();
   }
   RTC_DCHECK_NOTREACHED();

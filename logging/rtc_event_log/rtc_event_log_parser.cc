@@ -1123,8 +1123,7 @@ ParsedRtcEventLog::LoggedRtpStreamView::LoggedRtpStreamView(
 // is not stored in the event log.
 // TODO(ivoc): Remove this once this mapping is stored in the event log for
 //             audio streams. Tracking bug: webrtc:6399
-webrtc::RtpHeaderExtensionMap
-ParsedRtcEventLog::GetDefaultHeaderExtensionMap() {
+RtpHeaderExtensionMap ParsedRtcEventLog::GetDefaultHeaderExtensionMap() {
   // Values from before the default RTP header extension IDs were removed.
   constexpr int kAudioLevelDefaultId = 1;
   constexpr int kTimestampOffsetDefaultId = 2;
@@ -1136,7 +1135,7 @@ ParsedRtcEventLog::GetDefaultHeaderExtensionMap() {
   constexpr int kVideoTimingDefaultId = 8;
   constexpr int kDependencyDescriptorDefaultId = 9;
 
-  webrtc::RtpHeaderExtensionMap default_map(/*extmap_allow_mixed=*/true);
+  RtpHeaderExtensionMap default_map(/*extmap_allow_mixed=*/true);
   default_map.Register<AudioLevelExtension>(kAudioLevelDefaultId);
   default_map.Register<TransmissionOffset>(kTimestampOffsetDefaultId);
   default_map.Register<AbsoluteSendTime>(kAbsSendTimeDefaultId);

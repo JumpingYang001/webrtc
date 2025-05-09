@@ -146,7 +146,7 @@ void CheckCrop(const T& frame,
 template <class T>
 void CheckRotate(int width,
                  int height,
-                 webrtc::VideoRotation rotation,
+                 VideoRotation rotation,
                  const T& rotated) {
   int rotated_width = width;
   int rotated_height = height;
@@ -204,7 +204,7 @@ TEST(TestVideoFrame, WidthHeightValues) {
   VideoFrame frame =
       VideoFrame::Builder()
           .set_video_frame_buffer(I420Buffer::Create(10, 10, 10, 14, 90))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .set_timestamp_ms(789)
           .build();
   const int valid_value = 10;
@@ -251,10 +251,8 @@ TEST(TestVideoFrame, ShallowCopy) {
   VideoFrame frame2(frame1);
 
   EXPECT_EQ(frame1.video_frame_buffer(), frame2.video_frame_buffer());
-  const webrtc::I420BufferInterface* yuv1 =
-      frame1.video_frame_buffer()->GetI420();
-  const webrtc::I420BufferInterface* yuv2 =
-      frame2.video_frame_buffer()->GetI420();
+  const I420BufferInterface* yuv1 = frame1.video_frame_buffer()->GetI420();
+  const I420BufferInterface* yuv2 = frame2.video_frame_buffer()->GetI420();
   EXPECT_EQ(yuv1->DataY(), yuv2->DataY());
   EXPECT_EQ(yuv1->DataU(), yuv2->DataU());
   EXPECT_EQ(yuv1->DataV(), yuv2->DataV());
@@ -276,8 +274,8 @@ TEST(TestVideoFrame, ShallowCopy) {
 }
 
 TEST(TestVideoFrame, TextureInitialValues) {
-  VideoFrame frame = test::FakeNativeBuffer::CreateFrame(
-      640, 480, 100, 10, webrtc::kVideoRotation_0);
+  VideoFrame frame =
+      test::FakeNativeBuffer::CreateFrame(640, 480, 100, 10, kVideoRotation_0);
   EXPECT_EQ(640, frame.width());
   EXPECT_EQ(480, frame.height());
   EXPECT_EQ(100u, frame.rtp_timestamp());
@@ -425,7 +423,7 @@ class TestPlanarYuvBufferRotate : public ::testing::Test {
 TYPED_TEST_SUITE_P(TestPlanarYuvBufferRotate);
 
 TYPED_TEST_P(TestPlanarYuvBufferRotate, Rotates) {
-  for (const webrtc::VideoRotation& rotation : this->RotationParams) {
+  for (const VideoRotation& rotation : this->RotationParams) {
     scoped_refptr<TypeParam> buffer = CreateGradient<TypeParam>(640, 480);
     scoped_refptr<TypeParam> rotated_buffer =
         TypeParam::Rotate(*buffer, rotation);

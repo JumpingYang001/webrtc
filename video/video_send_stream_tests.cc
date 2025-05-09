@@ -126,7 +126,7 @@ namespace webrtc {
 namespace test {
 class VideoSendStreamPeer {
  public:
-  explicit VideoSendStreamPeer(webrtc::VideoSendStream* base_class_stream)
+  explicit VideoSendStreamPeer(VideoSendStream* base_class_stream)
       : internal_stream_(
             static_cast<internal::VideoSendStreamImpl*>(base_class_stream)) {}
   std::optional<float> GetPacingFactorOverride() const {
@@ -1754,8 +1754,8 @@ TEST_F(VideoSendStreamTest, ChangingNetworkRoute) {
     }
 
    private:
-    webrtc::SequenceChecker module_process_thread_;
-    webrtc::SequenceChecker task_queue_thread_;
+    SequenceChecker module_process_thread_;
+    SequenceChecker task_queue_thread_;
     TaskQueueBase* const task_queue_;
     RtpHeaderExtensionMap extensions_;
     Call* call_ RTC_GUARDED_BY(task_queue_thread_);
@@ -1771,7 +1771,7 @@ TEST_F(VideoSendStreamTest, DISABLED_RelayToDirectRoute) {
   static const int kStartBitrateBps = 300000;
   static const int kRelayBandwidthCapBps = 800000;
   static const int kMinPacketsToSend = 100;
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Bwe-NetworkRouteConstraints/relay_cap:" +
                          std::to_string(kRelayBandwidthCapBps) + "bps/");
 
@@ -1858,8 +1858,8 @@ TEST_F(VideoSendStreamTest, DISABLED_RelayToDirectRoute) {
     }
 
    private:
-    webrtc::SequenceChecker module_process_thread_;
-    webrtc::SequenceChecker task_queue_thread_;
+    SequenceChecker module_process_thread_;
+    SequenceChecker task_queue_thread_;
     TaskQueueBase* const task_queue_;
     Call* call_ RTC_GUARDED_BY(task_queue_thread_);
     int packets_sent_ RTC_GUARDED_BY(task_queue_thread_);
@@ -2049,11 +2049,11 @@ class MaxPaddingSetTest : public test::SendTest {
   }
 
  private:
-  webrtc::SequenceChecker task_queue_thread_;
+  SequenceChecker task_queue_thread_;
   Call* call_ RTC_GUARDED_BY(task_queue_thread_) = nullptr;
   VideoSendStream::Config send_stream_config_{nullptr};
   VideoEncoderConfig encoder_config_;
-  webrtc::SequenceChecker module_process_thread_;
+  SequenceChecker module_process_thread_;
   uint32_t packets_sent_ RTC_GUARDED_BY(task_queue_thread_) = 0;
   bool running_without_padding_ RTC_GUARDED_BY(task_queue_thread_);
   T* const stream_resetter_;
@@ -2729,7 +2729,7 @@ TEST_F(VideoSendStreamTest, ReconfigureBitratesSetsEncoderBitratesCorrectly) {
   // TODO(bugs.webrtc.org/12058): If these fields trial are on, we get lower
   // bitrates than expected by this test, due to encoder pushback and subtracted
   // overhead.
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-VideoRateControl/bitrate_adjuster:false/");
 
   class EncoderBitrateThresholdObserver : public test::SendTest,
@@ -2919,11 +2919,11 @@ TEST_F(VideoSendStreamTest, ReconfigureBitratesSetsEncoderBitratesCorrectly) {
 
     int num_rate_allocator_creations_;
     int num_encoder_initializations_;
-    webrtc::Call* call_;
-    webrtc::VideoSendStream* send_stream_;
+    Call* call_;
+    VideoSendStream* send_stream_;
     test::VideoEncoderProxyFactory encoder_factory_;
     std::unique_ptr<VideoBitrateAllocatorFactory> bitrate_allocator_factory_;
-    webrtc::VideoEncoderConfig encoder_config_;
+    VideoEncoderConfig encoder_config_;
   } test(env(), task_queue());
 
   RunBaseTest(&test);
@@ -3380,7 +3380,7 @@ class Vp9HeaderObserver : public test::SendTest {
   test::FunctionVideoEncoderFactory encoder_factory_;
   const Vp9TestParams params_;
   VideoCodecVP9 vp9_settings_;
-  webrtc::VideoEncoderConfig encoder_config_;
+  VideoEncoderConfig encoder_config_;
   bool last_packet_marker_ = false;
   std::optional<uint16_t> last_packet_sequence_number_;
   std::optional<uint32_t> last_packet_timestamp_;
@@ -3979,7 +3979,7 @@ class ContentSwitchTest : public test::SendTest {
           internal_send_peer.GetPacingFactorOverride().value_or(0.0f);
       float expected_pacing_factor = 1.1;  // Strict pacing factor.
       VideoSendStream::Stats stats = send_stream_->GetStats();
-      if (stats.content_type == webrtc::VideoContentType::SCREENSHARE) {
+      if (stats.content_type == VideoContentType::SCREENSHARE) {
         expected_pacing_factor = 1.0f;  // Currently used pacing factor in ALR.
       }
 
@@ -4123,7 +4123,7 @@ void VideoSendStreamTest::TestTemporalLayers(
         VideoSendStream::Config* send_config,
         std::vector<VideoReceiveStreamInterface::Config>* receive_configs,
         VideoEncoderConfig* encoder_config) override {
-      webrtc::VideoEncoder::EncoderInfo encoder_info;
+      VideoEncoder::EncoderInfo encoder_info;
       send_config->encoder_settings.encoder_factory = encoder_factory_;
       send_config->rtp.payload_name = payload_name_;
       send_config->rtp.payload_type =

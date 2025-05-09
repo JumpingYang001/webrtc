@@ -346,9 +346,9 @@ VideoLayersAllocation CreateVideoLayersAllocation(
         encoder_config.VP9().interLayerPred == InterLayerPredMode::kOn;
     layers_allocation.resolution_and_frame_rate_is_valid = true;
 
-    std::vector<DataRate> aggregated_spatial_bitrate(
-        webrtc::kMaxTemporalStreams, DataRate::Zero());
-    for (int si = 0; si < webrtc::kMaxSpatialLayers; ++si) {
+    std::vector<DataRate> aggregated_spatial_bitrate(kMaxTemporalStreams,
+                                                     DataRate::Zero());
+    for (int si = 0; si < kMaxSpatialLayers; ++si) {
       layers_allocation.resolution_and_frame_rate_is_valid = true;
       if (!target_bitrate.IsSpatialLayerUsed(si) ||
           target_bitrate.GetSpatialLayerSum(si) == 0) {
@@ -692,10 +692,9 @@ VideoStreamEncoder::VideoStreamEncoder(
     const VideoStreamEncoderSettings& settings,
     std::unique_ptr<OveruseFrameDetector> overuse_detector,
     std::unique_ptr<FrameCadenceAdapterInterface> frame_cadence_adapter,
-    std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
-        encoder_queue,
+    std::unique_ptr<TaskQueueBase, TaskQueueDeleter> encoder_queue,
     BitrateAllocationCallbackType allocation_cb_type,
-    webrtc::VideoEncoderFactory::EncoderSelectorInterface* encoder_selector)
+    VideoEncoderFactory::EncoderSelectorInterface* encoder_selector)
     : env_(env),
       worker_queue_(TaskQueueBase::Current()),
       number_of_cores_(number_of_cores),
@@ -1012,7 +1011,7 @@ void VideoStreamEncoder::ConfigureEncoder(VideoEncoderConfig config,
 
       ReconfigureEncoder();
     } else {
-      webrtc::InvokeSetParametersCallback(callback, webrtc::RTCError::OK());
+      InvokeSetParametersCallback(callback, RTCError::OK());
     }
   });
 }
@@ -1485,7 +1484,7 @@ void VideoStreamEncoder::ReconfigureEncoder() {
   stream_resource_manager_.ConfigureQualityScaler(info);
   stream_resource_manager_.ConfigureBandwidthQualityScaler(info);
 
-  webrtc::RTCError encoder_configuration_result = webrtc::RTCError::OK();
+  RTCError encoder_configuration_result = RTCError::OK();
 
   if (!encoder_initialized_) {
     RTC_LOG(LS_WARNING) << "Failed to initialize "
@@ -1497,14 +1496,13 @@ void VideoStreamEncoder::ReconfigureEncoder() {
       RequestEncoderSwitch();
     } else {
       encoder_configuration_result =
-          webrtc::RTCError(RTCErrorType::UNSUPPORTED_OPERATION);
+          RTCError(RTCErrorType::UNSUPPORTED_OPERATION);
     }
   }
 
   if (!encoder_configuration_callbacks_.empty()) {
     for (auto& callback : encoder_configuration_callbacks_) {
-      webrtc::InvokeSetParametersCallback(callback,
-                                          encoder_configuration_result);
+      InvokeSetParametersCallback(callback, encoder_configuration_result);
     }
     encoder_configuration_callbacks_.clear();
   }

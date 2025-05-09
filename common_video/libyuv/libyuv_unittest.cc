@@ -97,8 +97,7 @@ TestLibYuv::TestLibYuv()
       frame_length_(CalcBufferSize(VideoType::kI420, 352, 288)) {}
 
 void TestLibYuv::SetUp() {
-  const std::string input_file_name =
-      webrtc::test::ResourcePath("foreman_cif", "yuv");
+  const std::string input_file_name = test::ResourcePath("foreman_cif", "yuv");
   source_file_ = fopen(input_file_name.c_str(), "rb");
   ASSERT_TRUE(source_file_ != NULL)
       << "Cannot read file: " << input_file_name << "\n";
@@ -106,12 +105,11 @@ void TestLibYuv::SetUp() {
   scoped_refptr<I420BufferInterface> buffer(
       test::ReadI420Buffer(width_, height_, source_file_));
 
-  orig_frame_ =
-      std::make_unique<VideoFrame>(VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .set_timestamp_us(0)
-                                       .build());
+  orig_frame_ = std::make_unique<VideoFrame>(VideoFrame::Builder()
+                                                 .set_video_frame_buffer(buffer)
+                                                 .set_rotation(kVideoRotation_0)
+                                                 .set_timestamp_us(0)
+                                                 .build());
 }
 
 void TestLibYuv::TearDown() {
@@ -125,7 +123,7 @@ TEST_F(TestLibYuv, ConvertTest) {
   // Reading YUV frame - testing on the first frame of the foreman sequence
   int j = 0;
   std::string output_file_name =
-      webrtc::test::OutputPath() + "LibYuvTest_conversion.yuv";
+      test::OutputPath() + "LibYuvTest_conversion.yuv";
   FILE* output_file = fopen(output_file_name.c_str(), "wb");
   ASSERT_TRUE(output_file != NULL);
 
@@ -291,7 +289,7 @@ TEST_F(TestLibYuv, ConvertTest) {
 TEST_F(TestLibYuv, ConvertAlignedFrame) {
   // Reading YUV frame - testing on the first frame of the foreman sequence
   std::string output_file_name =
-      webrtc::test::OutputPath() + "LibYuvTest_conversion.yuv";
+      test::OutputPath() + "LibYuvTest_conversion.yuv";
   FILE* output_file = fopen(output_file_name.c_str(), "wb");
   ASSERT_TRUE(output_file != NULL);
 

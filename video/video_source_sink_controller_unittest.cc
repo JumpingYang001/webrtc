@@ -43,13 +43,9 @@ class MockVideoSourceWithVideoFrame : public VideoSourceInterface<VideoFrame> {
 
   MOCK_METHOD(void,
               AddOrUpdateSink,
-              (webrtc::VideoSinkInterface<VideoFrame>*,
-               const webrtc::VideoSinkWants&),
+              (VideoSinkInterface<VideoFrame>*, const VideoSinkWants&),
               (override));
-  MOCK_METHOD(void,
-              RemoveSink,
-              (webrtc::VideoSinkInterface<VideoFrame>*),
-              (override));
+  MOCK_METHOD(void, RemoveSink, (VideoSinkInterface<VideoFrame>*), (override));
   MOCK_METHOD(void, RequestRefreshFrame, (), (override));
 };
 

@@ -73,7 +73,7 @@ BufferedFrameDecryptor::FrameDecision BufferedFrameDecryptor::DecryptFrame(
   }
   // Retrieve the maximum possible size of the decrypted payload.
   const size_t max_plaintext_byte_size =
-      frame_decryptor_->GetMaxPlaintextByteSize(webrtc::MediaType::VIDEO,
+      frame_decryptor_->GetMaxPlaintextByteSize(MediaType::VIDEO,
                                                 frame->size());
   RTC_CHECK_LE(max_plaintext_byte_size, frame->size());
   // Place the decrypted frame inline into the existing frame.
@@ -88,9 +88,8 @@ BufferedFrameDecryptor::FrameDecision BufferedFrameDecryptor::DecryptFrame(
 
   // Attempt to decrypt the video frame.
   const FrameDecryptorInterface::Result decrypt_result =
-      frame_decryptor_->Decrypt(webrtc::MediaType::VIDEO, /*csrcs=*/{},
-                                additional_data, *frame,
-                                inline_decrypted_bitstream);
+      frame_decryptor_->Decrypt(MediaType::VIDEO, /*csrcs=*/{}, additional_data,
+                                *frame, inline_decrypted_bitstream);
   // Optionally call the callback if there was a change in status
   if (decrypt_result.status != last_status_) {
     last_status_ = decrypt_result.status;

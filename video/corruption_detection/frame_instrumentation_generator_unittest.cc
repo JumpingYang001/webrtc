@@ -685,7 +685,7 @@ TEST(FrameInstrumentationGeneratorTest, QueuesAtMostThreeInputFrames) {
       VideoCodecType::kVideoCodecVP8);
 
   bool frames_destroyed[4] = {};
-  class TestBuffer : public webrtc::I420Buffer {
+  class TestBuffer : public I420Buffer {
    public:
     TestBuffer(int width, int height, bool* frame_destroyed_indicator)
         : I420Buffer(width, height),

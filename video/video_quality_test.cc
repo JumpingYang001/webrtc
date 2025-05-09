@@ -340,7 +340,7 @@ std::unique_ptr<VideoDecoder> VideoQualityTest::CreateVideoDecoder(
     const SdpVideoFormat& format) {
   std::unique_ptr<VideoDecoder> decoder;
   if (format.name == "FakeCodec") {
-    decoder = webrtc::FakeVideoDecoderFactory::CreateVideoDecoder();
+    decoder = FakeVideoDecoderFactory::CreateVideoDecoder();
   } else {
     decoder = decoder_factory_->Create(env, format);
   }
@@ -644,14 +644,14 @@ void VideoQualityTest::FillScalabilitySettings(
     const std::vector<std::string>& sl_descriptors) {
   if (params->ss[video_idx].streams.empty() &&
       params->ss[video_idx].infer_streams) {
-    webrtc::VideoEncoder::EncoderInfo encoder_info;
-    webrtc::VideoEncoderConfig encoder_config;
+    VideoEncoder::EncoderInfo encoder_info;
+    VideoEncoderConfig encoder_config;
     encoder_config.codec_type =
         PayloadStringToCodecType(params->video[video_idx].codec);
     encoder_config.content_type =
         params->screenshare[video_idx].enabled
-            ? webrtc::VideoEncoderConfig::ContentType::kScreen
-            : webrtc::VideoEncoderConfig::ContentType::kRealtimeVideo;
+            ? VideoEncoderConfig::ContentType::kScreen
+            : VideoEncoderConfig::ContentType::kRealtimeVideo;
     encoder_config.max_bitrate_bps = params->video[video_idx].max_bitrate_bps;
     encoder_config.min_transmit_bitrate_bps =
         params->video[video_idx].min_transmit_bps;
@@ -737,7 +737,7 @@ void VideoQualityTest::SetupVideo(Transport* send_transport,
   RTC_CHECK(num_video_streams_ > 0);
   video_encoder_configs_.resize(num_video_streams_);
   std::string generic_codec_name;
-  webrtc::VideoEncoder::EncoderInfo encoder_info;
+  VideoEncoder::EncoderInfo encoder_info;
   for (size_t video_idx = 0; video_idx < num_video_streams_; ++video_idx) {
     VideoSendStream::Config config(send_transport);
     config.rtp.extmap_allow_mixed = true;
@@ -1423,7 +1423,7 @@ void VideoQualityTest::InitializeAudioDevice(CallConfig* send_call_config,
     // The real ADM requires extra initialization: setting default devices,
     // setting up number of channels etc. Helper class also calls
     // AudioDeviceModule::Init().
-    webrtc::adm_helpers::Init(audio_device.get());
+    adm_helpers::Init(audio_device.get());
   } else {
     audio_device->Init();
   }
@@ -1448,8 +1448,8 @@ void VideoQualityTest::SetupAudio(Transport* transport) {
 
   if (params_.call.send_side_bwe) {
     audio_send_config.rtp.extensions.push_back(
-        webrtc::RtpExtension(webrtc::RtpExtension::kTransportSequenceNumberUri,
-                             kTransportSequenceNumberExtensionId));
+        RtpExtension(RtpExtension::kTransportSequenceNumberUri,
+                     kTransportSequenceNumberExtensionId));
     audio_send_config.min_bitrate_bps = kOpusMinBitrateBps;
     audio_send_config.max_bitrate_bps = kOpusBitrateFbBps;
     // Only allow ANA when send-side BWE is enabled.

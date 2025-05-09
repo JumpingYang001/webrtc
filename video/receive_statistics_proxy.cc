@@ -614,7 +614,7 @@ void ReceiveStatisticsProxy::OnDecodedFrame(const VideoFrame& frame,
                                             VideoContentType content_type,
                                             VideoFrameType frame_type) {
   TimeDelta processing_delay = TimeDelta::Zero();
-  webrtc::Timestamp current_time = clock_->CurrentTime();
+  Timestamp current_time = clock_->CurrentTime();
   // TODO(bugs.webrtc.org/13984): some tests do not fill packet_infos().
   TimeDelta assembly_time = TimeDelta::Zero();
   if (frame.packet_infos().size() > 0) {

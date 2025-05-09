@@ -35,10 +35,10 @@ using ::testing::Optional;
 
 namespace {
 
-class FakeVCMTiming : public webrtc::VCMTiming {
+class FakeVCMTiming : public VCMTiming {
  public:
   explicit FakeVCMTiming(Clock* clock, const FieldTrialsView& field_trials)
-      : webrtc::VCMTiming(clock, field_trials) {}
+      : VCMTiming(clock, field_trials) {}
 
   Timestamp RenderTime(uint32_t frame_timestamp, Timestamp now) const override {
     RTC_DCHECK(render_time_map_.contains(frame_timestamp));

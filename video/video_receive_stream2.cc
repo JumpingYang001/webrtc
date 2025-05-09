@@ -132,11 +132,11 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
     return buffer_;
   }
 
-  std::optional<webrtc::ColorSpace> color_space() const override {
+  std::optional<ColorSpace> color_space() const override {
     return color_space_;
   }
 
-  std::optional<webrtc::VideoRotation> video_rotation() const override {
+  std::optional<VideoRotation> video_rotation() const override {
     return video_rotation_;
   }
 
@@ -156,8 +156,8 @@ class WebRtcRecordableEncodedFrame : public RecordableEncodedFrame {
   VideoCodecType codec_;
   bool is_key_frame_;
   EncodedResolution resolution_;
-  std::optional<webrtc::ColorSpace> color_space_;
-  std::optional<webrtc::VideoRotation> video_rotation_;
+  std::optional<ColorSpace> color_space_;
+  std::optional<VideoRotation> video_rotation_;
 };
 
 RenderResolution InitialDecoderResolution(const FieldTrialsView& field_trials) {
@@ -174,21 +174,21 @@ RenderResolution InitialDecoderResolution(const FieldTrialsView& field_trials) {
 
 // Video decoder class to be used for unknown codecs. Doesn't support decoding
 // but logs messages to LS_ERROR.
-class NullVideoDecoder : public webrtc::VideoDecoder {
+class NullVideoDecoder : public VideoDecoder {
  public:
   bool Configure(const Settings& settings) override {
     RTC_LOG(LS_ERROR) << "Can't initialize NullVideoDecoder.";
     return true;
   }
 
-  int32_t Decode(const webrtc::EncodedImage& input_image,
+  int32_t Decode(const EncodedImage& input_image,
                  int64_t render_time_ms) override {
     RTC_LOG(LS_ERROR) << "The NullVideoDecoder doesn't support decoding.";
     return WEBRTC_VIDEO_CODEC_OK;
   }
 
   int32_t RegisterDecodeCompleteCallback(
-      webrtc::DecodedImageCallback* callback) override {
+      DecodedImageCallback* callback) override {
     RTC_LOG(LS_ERROR)
         << "Can't register decode complete callback on NullVideoDecoder.";
     return WEBRTC_VIDEO_CODEC_OK;
@@ -710,7 +710,7 @@ void VideoReceiveStream2::OnFrame(const VideoFrame& video_frame) {
                                          frame_meta.decode_timestamp);
       }));
 
-  webrtc::MutexLock lock(&pending_resolution_mutex_);
+  MutexLock lock(&pending_resolution_mutex_);
   if (pending_resolution_.has_value()) {
     if (!pending_resolution_->empty() &&
         (video_frame.width() != static_cast<int>(pending_resolution_->width) ||
@@ -729,7 +729,7 @@ void VideoReceiveStream2::OnFrame(const VideoFrame& video_frame) {
 }
 
 void VideoReceiveStream2::SetFrameDecryptor(
-    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   rtp_video_stream_receiver_.SetFrameDecryptor(std::move(frame_decryptor));
 }
 
@@ -973,7 +973,7 @@ int VideoReceiveStream2::DecodeAndMaybeDispatchEncodedFrame(
       RTC_LOG(LS_ERROR) << "About to halt recordable encoded frame output due "
                            "to too many buffered frames.";
 
-    webrtc::MutexLock lock(&pending_resolution_mutex_);
+    MutexLock lock(&pending_resolution_mutex_);
     if (IsKeyFrameAndUnspecifiedResolution(*frame_ptr) &&
         !pending_resolution_.has_value())
       pending_resolution_.emplace();
@@ -1001,7 +1001,7 @@ int VideoReceiveStream2::DecodeAndMaybeDispatchEncodedFrame(
     {
       // Fish out `pending_resolution_` to avoid taking the mutex on every lap
       // or dispatching under the mutex in the flush loop.
-      webrtc::MutexLock lock(&pending_resolution_mutex_);
+      MutexLock lock(&pending_resolution_mutex_);
       if (pending_resolution_.has_value())
         pending_resolution = *pending_resolution_;
     }
@@ -1134,7 +1134,7 @@ void VideoReceiveStream2::UpdatePlayoutDelays() const {
   }
 }
 
-std::vector<webrtc::RtpSource> VideoReceiveStream2::GetSources() const {
+std::vector<RtpSource> VideoReceiveStream2::GetSources() const {
   RTC_DCHECK_RUN_ON(&worker_sequence_checker_);
   return source_tracker_.GetSources();
 }

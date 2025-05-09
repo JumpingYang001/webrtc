@@ -386,8 +386,7 @@ TEST(FrameEncodeMetadataWriterTest, CopiesColorSpace) {
   bitrate_allocation.SetBitrate(0, 0, 500000);
   encode_timer.OnSetRates(bitrate_allocation, 30);
 
-  webrtc::ColorSpace color_space =
-      CreateTestColorSpace(/*with_hdr_metadata=*/true);
+  ColorSpace color_space = CreateTestColorSpace(/*with_hdr_metadata=*/true);
   image.SetRtpTimestamp(static_cast<uint32_t>(kTimestampMs * 90));
   VideoFrame frame = VideoFrame::Builder()
                          .set_timestamp_ms(kTimestampMs)
