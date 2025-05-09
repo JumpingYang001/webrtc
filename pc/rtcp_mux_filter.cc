@@ -45,7 +45,7 @@ bool RtcpMuxFilter::SetOffer(bool offer_enable, ContentSource src) {
   }
 
   offer_enable_ = offer_enable;
-  state_ = (src == webrtc::CS_LOCAL) ? ST_SENTOFFER : ST_RECEIVEDOFFER;
+  state_ = (src == CS_LOCAL) ? ST_SENTOFFER : ST_RECEIVEDOFFER;
   return true;
 }
 
@@ -63,7 +63,7 @@ bool RtcpMuxFilter::SetProvisionalAnswer(bool answer_enable,
 
   if (offer_enable_) {
     if (answer_enable) {
-      if (src == webrtc::CS_REMOTE)
+      if (src == CS_REMOTE)
         state_ = ST_RECEIVEDPRANSWER;
       else  // CS_LOCAL
         state_ = ST_SENTPRANSWER;
@@ -71,7 +71,7 @@ bool RtcpMuxFilter::SetProvisionalAnswer(bool answer_enable,
       // The provisional answer doesn't want to use RTCP mux.
       // Go back to the original state after the offer was set and wait for next
       // provisional or final answer.
-      if (src == webrtc::CS_REMOTE)
+      if (src == CS_REMOTE)
         state_ = ST_SENTOFFER;
       else  // CS_LOCAL
         state_ = ST_RECEIVEDOFFER;
@@ -112,15 +112,15 @@ bool RtcpMuxFilter::SetAnswer(bool answer_enable, ContentSource src) {
 bool RtcpMuxFilter::ExpectOffer(bool offer_enable, ContentSource source) {
   return ((state_ == ST_INIT) ||
           (state_ == ST_ACTIVE && offer_enable == offer_enable_) ||
-          (state_ == ST_SENTOFFER && source == webrtc::CS_LOCAL) ||
-          (state_ == ST_RECEIVEDOFFER && source == webrtc::CS_REMOTE));
+          (state_ == ST_SENTOFFER && source == CS_LOCAL) ||
+          (state_ == ST_RECEIVEDOFFER && source == CS_REMOTE));
 }
 
 bool RtcpMuxFilter::ExpectAnswer(ContentSource source) {
-  return ((state_ == ST_SENTOFFER && source == webrtc::CS_REMOTE) ||
-          (state_ == ST_RECEIVEDOFFER && source == webrtc::CS_LOCAL) ||
-          (state_ == ST_SENTPRANSWER && source == webrtc::CS_LOCAL) ||
-          (state_ == ST_RECEIVEDPRANSWER && source == webrtc::CS_REMOTE));
+  return ((state_ == ST_SENTOFFER && source == CS_REMOTE) ||
+          (state_ == ST_RECEIVEDOFFER && source == CS_LOCAL) ||
+          (state_ == ST_SENTPRANSWER && source == CS_LOCAL) ||
+          (state_ == ST_RECEIVEDPRANSWER && source == CS_REMOTE));
 }
 
 }  // namespace webrtc

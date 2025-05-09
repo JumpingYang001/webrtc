@@ -830,7 +830,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
   }
 
   scoped_refptr<RtpReceiverInterface> GetFirstReceiverOfType(
-      webrtc::MediaType media_type) {
+      MediaType media_type) {
     for (auto receiver : pc_->GetReceivers()) {
       if (receiver->media_type() == media_type) {
         return receiver;
@@ -852,7 +852,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     }
     EXPECT_THAT(
         WaitUntil([&] { return observer->called(); }, ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                  {.timeout = TimeDelta::Millis(kTimeout)}),
         IsRtcOk());
     *desc = observer->MoveDescription();
     return observer->result();
@@ -880,7 +880,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     if (pc_->signaling_state() != PeerConnectionInterface::kClosed) {
       EXPECT_THAT(
           WaitUntil([&] { return observer->called(); }, ::testing::IsTrue(),
-                    {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                    {.timeout = TimeDelta::Millis(kTimeout)}),
           IsRtcOk());
     }
     return observer->result();
@@ -906,7 +906,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
       return false;
     EXPECT_THAT(
         WaitUntil([&] { return observer->called(); }, ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                  {.timeout = TimeDelta::Millis(kTimeout)}),
         IsRtcOk());
     return observer->called();
   }
@@ -917,7 +917,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     pc_->GetStats(callback.get());
     EXPECT_THAT(
         WaitUntil([&] { return callback->called(); }, ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                  {.timeout = TimeDelta::Millis(kTimeout)}),
         IsRtcOk());
     return callback->called();
   }
@@ -1025,7 +1025,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     // Wait for the ice_complete message, so that SDP will have candidates.
     EXPECT_THAT(WaitUntil([&] { return observer_.ice_gathering_complete_; },
                           ::testing::IsTrue(),
-                          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                          {.timeout = TimeDelta::Millis(kTimeout)}),
                 IsRtcOk());
   }
 
@@ -1058,13 +1058,13 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     // Verify that both OnAddStream and OnAddTrack are called.
     EXPECT_THAT(WaitUntil([&] { return observer_.GetLastAddedStreamId(); },
                           ::testing::Eq(stream_id),
-                          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                          {.timeout = TimeDelta::Millis(kTimeout)}),
                 IsRtcOk());
     EXPECT_THAT(
         WaitUntil(
             [&] { return observer_.CountAddTrackEventsForStream(stream_id); },
             ::testing::Eq(expected_num_tracks),
-            {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+            {.timeout = TimeDelta::Millis(kTimeout)}),
         IsRtcOk());
   }
 
@@ -1182,7 +1182,7 @@ class PeerConnectionInterfaceBaseTest : public ::testing::Test {
     pc_->CreateOffer(observer.get(), offer_answer_options);
     EXPECT_THAT(
         WaitUntil([&] { return observer->called(); }, ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                  {.timeout = TimeDelta::Millis(kTimeout)}),
         IsRtcOk());
     return observer->MoveDescription();
   }
@@ -1763,12 +1763,12 @@ TEST_P(PeerConnectionInterfaceTest, IceCandidates) {
 
   EXPECT_THAT(WaitUntil([&] { return observer_.last_candidate(); },
                         ::testing::Ne(nullptr),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
-  EXPECT_THAT(WaitUntil([&] { return observer_.ice_gathering_complete_; },
-                        ::testing::IsTrue(),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return observer_.ice_gathering_complete_; },
+                ::testing::IsTrue(), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
 
   EXPECT_TRUE(pc_->AddIceCandidate(observer_.last_candidate()));
 }
@@ -1911,7 +1911,7 @@ TEST_P(PeerConnectionInterfaceTest, GetStatsForSpecificTrack) {
 // Test that we can get stats on a video track.
 TEST_P(PeerConnectionInterfaceTest, GetStatsForVideoTrack) {
   InitiateCall();
-  auto video_receiver = GetFirstReceiverOfType(webrtc::MediaType::VIDEO);
+  auto video_receiver = GetFirstReceiverOfType(MediaType::VIDEO);
   ASSERT_TRUE(video_receiver);
   EXPECT_TRUE(DoGetStats(video_receiver->track().get()));
 }
@@ -2437,19 +2437,19 @@ TEST_P(PeerConnectionInterfaceTest, CloseAndTestStreamsAndStates) {
     EXPECT_EQ(2u, pc_->GetTransceivers().size());
   }
 
-  auto audio_receiver = GetFirstReceiverOfType(webrtc::MediaType::AUDIO);
-  auto video_receiver = GetFirstReceiverOfType(webrtc::MediaType::VIDEO);
+  auto audio_receiver = GetFirstReceiverOfType(MediaType::AUDIO);
+  auto video_receiver = GetFirstReceiverOfType(MediaType::VIDEO);
   if (sdp_semantics_ == SdpSemantics::kPlanB_DEPRECATED) {
     ASSERT_TRUE(audio_receiver);
     ASSERT_TRUE(video_receiver);
     // Track state may be updated asynchronously.
     EXPECT_THAT(WaitUntil([&] { return audio_receiver->track()->state(); },
                           ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                          {.timeout = TimeDelta::Millis(kTimeout)}),
                 IsRtcOk());
     EXPECT_THAT(WaitUntil([&] { return video_receiver->track()->state(); },
                           ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                          {.timeout = TimeDelta::Millis(kTimeout)}),
                 IsRtcOk());
   } else {
     ASSERT_FALSE(audio_receiver);
@@ -2571,11 +2571,11 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   // Track state may be updated asynchronously.
   EXPECT_THAT(WaitUntil([&] { return audio_track2->state(); },
                         ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_THAT(WaitUntil([&] { return video_track2->state(); },
                         ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
 }
 
@@ -2587,9 +2587,9 @@ TEST_P(PeerConnectionInterfaceTest, RejectMediaContent) {
   // First create and set a remote offer, then reject its video content in our
   // answer.
   CreateAndSetRemoteOffer(kSdpStringWithStream1PlanB);
-  auto audio_receiver = GetFirstReceiverOfType(webrtc::MediaType::AUDIO);
+  auto audio_receiver = GetFirstReceiverOfType(MediaType::AUDIO);
   ASSERT_TRUE(audio_receiver);
-  auto video_receiver = GetFirstReceiverOfType(webrtc::MediaType::VIDEO);
+  auto video_receiver = GetFirstReceiverOfType(MediaType::VIDEO);
   ASSERT_TRUE(video_receiver);
 
   scoped_refptr<MediaStreamTrackInterface> remote_audio =
@@ -2622,11 +2622,11 @@ TEST_P(PeerConnectionInterfaceTest, RejectMediaContent) {
   // Track state may be updated asynchronously.
   EXPECT_THAT(WaitUntil([&] { return remote_audio->state(); },
                         ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_THAT(WaitUntil([&] { return remote_video->state(); },
                         ::testing::Eq(MediaStreamTrackInterface::kEnded),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
 }
 
@@ -3613,34 +3613,34 @@ TEST_F(PeerConnectionInterfaceTestPlanB,
   scoped_refptr<VideoTrackInterface> video_track(
       CreateVideoTrack("video_track"));
   stream->AddTrack(audio_track);
-  EXPECT_THAT(WaitUntil([&] { return observer_.renegotiation_needed_; },
-                        ::testing::IsTrue(),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return observer_.renegotiation_needed_; },
+                ::testing::IsTrue(), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
   observer_.renegotiation_needed_ = false;
 
   CreateOfferReceiveAnswer();
   stream->AddTrack(video_track);
-  EXPECT_THAT(WaitUntil([&] { return observer_.renegotiation_needed_; },
-                        ::testing::IsTrue(),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return observer_.renegotiation_needed_; },
+                ::testing::IsTrue(), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
   observer_.renegotiation_needed_ = false;
 
   CreateOfferReceiveAnswer();
   stream->RemoveTrack(audio_track);
-  EXPECT_THAT(WaitUntil([&] { return observer_.renegotiation_needed_; },
-                        ::testing::IsTrue(),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return observer_.renegotiation_needed_; },
+                ::testing::IsTrue(), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
   observer_.renegotiation_needed_ = false;
 
   CreateOfferReceiveAnswer();
   stream->RemoveTrack(video_track);
-  EXPECT_THAT(WaitUntil([&] { return observer_.renegotiation_needed_; },
-                        ::testing::IsTrue(),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return observer_.renegotiation_needed_; },
+                ::testing::IsTrue(), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
   observer_.renegotiation_needed_ = false;
 }
 
@@ -3698,7 +3698,7 @@ TEST_P(PeerConnectionInterfaceTest,
   std::vector<scoped_refptr<RtpSenderInterface>> rtp_senders =
       pc_->GetSenders();
   ASSERT_EQ(rtp_senders.size(), 1u);
-  ASSERT_EQ(rtp_senders[0]->media_type(), webrtc::MediaType::VIDEO);
+  ASSERT_EQ(rtp_senders[0]->media_type(), MediaType::VIDEO);
   scoped_refptr<RtpSenderInterface> video_rtp_sender = rtp_senders[0];
   RtpParameters parameters = video_rtp_sender->GetParameters();
   ASSERT_NE(parameters.degradation_preference,

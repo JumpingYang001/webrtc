@@ -411,7 +411,7 @@ TEST(RtpTransportTest, RecursiveSetSendDoesNotCrash) {
   // After the wait, the ready-to-send false is observed.
   EXPECT_THAT(WaitUntil([&] { return observer.ready_to_send_signal_count(); },
                         ::testing::Eq(2),
-                        {.timeout = webrtc::TimeDelta::Millis(kShortTimeout)}),
+                        {.timeout = TimeDelta::Millis(kShortTimeout)}),
               IsRtcOk());
   EXPECT_FALSE(observer.ready_to_send());
 }
@@ -439,7 +439,7 @@ TEST(RtpTransportTest, RecursiveOnSentPacketDoesNotCrash) {
   EXPECT_EQ(observer.sent_packet_count(), 1);
   EXPECT_THAT(
       WaitUntil([&] { return observer.sent_packet_count(); }, ::testing::Eq(2),
-                {.timeout = webrtc::TimeDelta::Millis(kShortTimeout)}),
+                {.timeout = TimeDelta::Millis(kShortTimeout)}),
       IsRtcOk());
 }
 

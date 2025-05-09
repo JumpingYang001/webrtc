@@ -45,7 +45,7 @@ static const int kLastDynamicPayloadTypeUpperRange = 127;
 // is only a temporary measure.
 
 struct MapTableEntry {
-  webrtc::SdpAudioFormat format;
+  SdpAudioFormat format;
   int payload_type;
 };
 

@@ -59,7 +59,6 @@
 
 namespace webrtc {
 
-using webrtc::MediaContentDescription;
 using RTCConfiguration = PeerConnectionInterface::RTCConfiguration;
 using ::testing::Combine;
 using ::testing::ElementsAre;
@@ -129,24 +128,24 @@ TEST_F(PeerConnectionJsepTest, EmptyInitialOffer) {
 // section.
 TEST_F(PeerConnectionJsepTest, AudioOnlyInitialOffer) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
 
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
   ASSERT_EQ(1u, contents.size());
-  EXPECT_EQ(webrtc::MediaType::AUDIO, contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::AUDIO, contents[0].media_description()->type());
 }
 
 // Test than an initial offer with one video track generates one video media
 // section
 TEST_F(PeerConnectionJsepTest, VideoOnlyInitialOffer) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
 
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
   ASSERT_EQ(1u, contents.size());
-  EXPECT_EQ(webrtc::MediaType::VIDEO, contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::VIDEO, contents[0].media_description()->type());
 }
 
 // Test that an initial offer with one data channel generates one data media
@@ -158,7 +157,7 @@ TEST_F(PeerConnectionJsepTest, DataOnlyInitialOffer) {
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
   ASSERT_EQ(1u, contents.size());
-  EXPECT_EQ(webrtc::MediaType::DATA, contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::DATA, contents[0].media_description()->type());
 }
 
 // Test that creating multiple data channels only results in one data section
@@ -178,11 +177,11 @@ TEST_F(PeerConnectionJsepTest, MultipleDataChannelsCreateOnlyOneDataSection) {
 // JSEP section 5.2.1.
 TEST_F(PeerConnectionJsepTest, MediaSectionsInInitialOfferOrderedCorrectly) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::AUDIO);
   RtpTransceiverInit init;
   init.direction = RtpTransceiverDirection::kSendOnly;
-  caller->AddTransceiver(webrtc::MediaType::VIDEO, init);
+  caller->AddTransceiver(MediaType::VIDEO, init);
 
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
@@ -190,19 +189,19 @@ TEST_F(PeerConnectionJsepTest, MediaSectionsInInitialOfferOrderedCorrectly) {
 
   const MediaContentDescription* media_description1 =
       contents[0].media_description();
-  EXPECT_EQ(webrtc::MediaType::VIDEO, media_description1->type());
+  EXPECT_EQ(MediaType::VIDEO, media_description1->type());
   EXPECT_EQ(RtpTransceiverDirection::kSendRecv,
             media_description1->direction());
 
   const MediaContentDescription* media_description2 =
       contents[1].media_description();
-  EXPECT_EQ(webrtc::MediaType::AUDIO, media_description2->type());
+  EXPECT_EQ(MediaType::AUDIO, media_description2->type());
   EXPECT_EQ(RtpTransceiverDirection::kSendRecv,
             media_description2->direction());
 
   const MediaContentDescription* media_description3 =
       contents[2].media_description();
-  EXPECT_EQ(webrtc::MediaType::VIDEO, media_description3->type());
+  EXPECT_EQ(MediaType::VIDEO, media_description3->type());
   EXPECT_EQ(RtpTransceiverDirection::kSendOnly,
             media_description3->direction());
 }
@@ -210,8 +209,8 @@ TEST_F(PeerConnectionJsepTest, MediaSectionsInInitialOfferOrderedCorrectly) {
 // Test that media sections in the initial offer have different mids.
 TEST_F(PeerConnectionJsepTest, MediaSectionsInInitialOfferHaveDifferentMids) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
 
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
@@ -222,7 +221,7 @@ TEST_F(PeerConnectionJsepTest, MediaSectionsInInitialOfferHaveDifferentMids) {
 TEST_F(PeerConnectionJsepTest,
        StoppedTransceiverHasNoMediaSectionInInitialOffer) {
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   transceiver->StopInternal();
 
   auto offer = caller->CreateOffer();
@@ -243,8 +242,8 @@ TEST_F(PeerConnectionJsepTest, SetLocalEmptyOfferCreatesNoTransceivers) {
 
 TEST_F(PeerConnectionJsepTest, SetLocalOfferSetsTransceiverMid) {
   auto caller = CreatePeerConnection();
-  auto audio_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  auto video_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto audio_transceiver = caller->AddTransceiver(MediaType::AUDIO);
+  auto video_transceiver = caller->AddTransceiver(MediaType::VIDEO);
 
   auto offer = caller->CreateOffer();
   auto audio_mid = offer->description()->contents()[0].mid();
@@ -262,8 +261,8 @@ TEST_F(PeerConnectionJsepTest, SetLocalOfferSetsTransceiverMid) {
 // transceivers, one for receiving audio and one for receiving video.
 TEST_F(PeerConnectionJsepTest, SetRemoteOfferCreatesTransceivers) {
   auto caller = CreatePeerConnection();
-  auto caller_audio = caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  auto caller_video = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto caller_audio = caller->AddTransceiver(MediaType::AUDIO);
+  auto caller_video = caller->AddTransceiver(MediaType::VIDEO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -271,12 +270,12 @@ TEST_F(PeerConnectionJsepTest, SetRemoteOfferCreatesTransceivers) {
   auto transceivers = callee->pc()->GetTransceivers();
   ASSERT_EQ(2u, transceivers.size());
 
-  EXPECT_EQ(webrtc::MediaType::AUDIO, transceivers[0]->media_type());
+  EXPECT_EQ(MediaType::AUDIO, transceivers[0]->media_type());
   EXPECT_EQ(caller_audio->mid(), transceivers[0]->mid());
   EXPECT_EQ(RtpTransceiverDirection::kRecvOnly, transceivers[0]->direction());
   EXPECT_EQ(0u, transceivers[0]->sender()->stream_ids().size());
 
-  EXPECT_EQ(webrtc::MediaType::VIDEO, transceivers[1]->media_type());
+  EXPECT_EQ(MediaType::VIDEO, transceivers[1]->media_type());
   EXPECT_EQ(caller_video->mid(), transceivers[1]->mid());
   EXPECT_EQ(RtpTransceiverDirection::kRecvOnly, transceivers[1]->direction());
   EXPECT_EQ(0u, transceivers[1]->sender()->stream_ids().size());
@@ -331,7 +330,7 @@ TEST_F(PeerConnectionJsepTest,
   auto caller = CreatePeerConnection();
   caller->AddAudioTrack("a");
   auto callee = CreatePeerConnection();
-  auto transceiver = callee->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = callee->AddTransceiver(MediaType::AUDIO);
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
 
@@ -411,9 +410,9 @@ TEST_F(PeerConnectionJsepTest, SetRemoteOfferReusesTransceiversOfBothTypes) {
 // offered media in the same order and with the same mids.
 TEST_F(PeerConnectionJsepTest, CreateAnswerHasSameMidsAsOffer) {
   auto caller = CreatePeerConnection();
-  auto first_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
-  auto second_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  auto third_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto first_transceiver = caller->AddTransceiver(MediaType::VIDEO);
+  auto second_transceiver = caller->AddTransceiver(MediaType::AUDIO);
+  auto third_transceiver = caller->AddTransceiver(MediaType::VIDEO);
   caller->CreateDataChannel("dc");
   auto callee = CreatePeerConnection();
 
@@ -426,13 +425,13 @@ TEST_F(PeerConnectionJsepTest, CreateAnswerHasSameMidsAsOffer) {
   auto answer = callee->CreateAnswer();
   auto contents = answer->description()->contents();
   ASSERT_EQ(4u, contents.size());
-  EXPECT_EQ(webrtc::MediaType::VIDEO, contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::VIDEO, contents[0].media_description()->type());
   EXPECT_EQ(first_transceiver->mid(), contents[0].mid());
-  EXPECT_EQ(webrtc::MediaType::AUDIO, contents[1].media_description()->type());
+  EXPECT_EQ(MediaType::AUDIO, contents[1].media_description()->type());
   EXPECT_EQ(second_transceiver->mid(), contents[1].mid());
-  EXPECT_EQ(webrtc::MediaType::VIDEO, contents[2].media_description()->type());
+  EXPECT_EQ(MediaType::VIDEO, contents[2].media_description()->type());
   EXPECT_EQ(third_transceiver->mid(), contents[2].mid());
-  EXPECT_EQ(webrtc::MediaType::DATA, contents[3].media_description()->type());
+  EXPECT_EQ(MediaType::DATA, contents[3].media_description()->type());
   EXPECT_EQ(offer_data->mid(), contents[3].mid());
 }
 
@@ -460,7 +459,7 @@ TEST_F(PeerConnectionJsepTest, CreateAnswerNegotiatesDirection) {
   auto caller = CreatePeerConnection();
   RtpTransceiverInit init;
   init.direction = RtpTransceiverDirection::kSendOnly;
-  caller->AddTransceiver(webrtc::MediaType::AUDIO, init);
+  caller->AddTransceiver(MediaType::AUDIO, init);
   auto callee = CreatePeerConnection();
   callee->AddAudioTrack("a");
 
@@ -481,7 +480,7 @@ TEST_F(PeerConnectionJsepTest, CreateAnswerNegotiatesDirection) {
 // property of the transceivers mentioned in the session description.
 TEST_F(PeerConnectionJsepTest, SetLocalAnswerUpdatesCurrentDirection) {
   auto caller = CreatePeerConnection();
-  auto caller_audio = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto caller_audio = caller->AddTransceiver(MediaType::AUDIO);
   caller_audio->SetDirectionWithError(RtpTransceiverDirection::kRecvOnly);
   auto callee = CreatePeerConnection();
   callee->AddAudioTrack("a");
@@ -525,7 +524,7 @@ TEST_F(PeerConnectionJsepTest, SetRemoteAnswerUpdatesCurrentDirection) {
 TEST_F(PeerConnectionJsepTest,
        ChangeDirectionFromRecvOnlyToSendRecvDoesNotBreakVideoNegotiation) {
   auto caller = CreatePeerConnection();
-  auto caller_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto caller_transceiver = caller->AddTransceiver(MediaType::VIDEO);
   auto callee = CreatePeerConnection();
   caller_transceiver->SetDirectionWithError(RtpTransceiverDirection::kRecvOnly);
 
@@ -543,7 +542,7 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest,
        ChangeDirectionFromRecvOnlyToSendRecvDoesNotBreakAudioNegotiation) {
   auto caller = CreatePeerConnection();
-  auto caller_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto caller_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   caller_transceiver->SetDirectionWithError(RtpTransceiverDirection::kRecvOnly);
 
@@ -584,7 +583,7 @@ TEST_F(PeerConnectionJsepTest, SettingTransceiverInactiveDoesNotStopIt) {
 TEST_F(PeerConnectionJsepTest,
        ReOfferMediaSectionForAssociatedStoppedTransceiverIsRejected) {
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -606,7 +605,7 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest,
        StoppingTransceiverInOfferStopsTransceiverOnRemoteSide) {
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -629,14 +628,14 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest,
        CreateOfferDoesNotRecycleMediaSectionIfFirstStopped) {
   auto caller = CreatePeerConnection();
-  auto first_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto first_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
   ASSERT_TRUE(
       caller->SetRemoteDescription(callee->CreateAnswerAndSetAsLocal()));
 
-  auto second_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto second_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   first_transceiver->StopInternal();
 
   auto reoffer = caller->CreateOffer();
@@ -652,7 +651,7 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest,
        RecycleMediaSectionWhenStoppingTransceiverOnAnswerer) {
   auto caller = CreatePeerConnection();
-  auto first_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto first_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -714,7 +713,7 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest, CreateOfferRecyclesWhenOfferingTwice) {
   // Do a negotiation with a port 0 for the media section.
   auto caller = CreatePeerConnection();
-  auto first_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto first_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
   first_transceiver->StopInternal();
@@ -760,16 +759,15 @@ TEST_F(PeerConnectionJsepTest, CreateOfferRecyclesWhenOfferingTwice) {
 // - The new transceiver is associated with the new MID value.
 class RecycleMediaSectionTest
     : public PeerConnectionJsepTest,
-      public ::testing::WithParamInterface<
-          std::tuple<webrtc::MediaType, webrtc::MediaType>> {
+      public ::testing::WithParamInterface<std::tuple<MediaType, MediaType>> {
  protected:
   RecycleMediaSectionTest() {
     first_type_ = std::get<0>(GetParam());
     second_type_ = std::get<1>(GetParam());
   }
 
-  webrtc::MediaType first_type_;
-  webrtc::MediaType second_type_;
+  MediaType first_type_;
+  MediaType second_type_;
 };
 
 // Test that recycling works properly when a new transceiver recycles an m=
@@ -1111,18 +1109,17 @@ TEST_P(RecycleMediaSectionTest, PendingRemoteRejectedAndNotRejectedLocal) {
 // for the media section. This is needed for full test coverage because
 // MediaSession has separate functions for processing audio and video media
 // sections.
-INSTANTIATE_TEST_SUITE_P(
-    PeerConnectionJsepTest,
-    RecycleMediaSectionTest,
-    Combine(Values(webrtc::MediaType::AUDIO, webrtc::MediaType::VIDEO),
-            Values(webrtc::MediaType::AUDIO, webrtc::MediaType::VIDEO)));
+INSTANTIATE_TEST_SUITE_P(PeerConnectionJsepTest,
+                         RecycleMediaSectionTest,
+                         Combine(Values(MediaType::AUDIO, MediaType::VIDEO),
+                                 Values(MediaType::AUDIO, MediaType::VIDEO)));
 
 // Test that a new data channel section will not reuse a recycleable audio or
 // video media section. Additionally, tests that the new section is added to the
 // end of the session description.
 TEST_F(PeerConnectionJsepTest, DataChannelDoesNotRecycleMediaSection) {
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
@@ -1136,10 +1133,8 @@ TEST_F(PeerConnectionJsepTest, DataChannelDoesNotRecycleMediaSection) {
   auto offer = caller->CreateOffer();
   auto offer_contents = offer->description()->contents();
   ASSERT_EQ(2u, offer_contents.size());
-  EXPECT_EQ(webrtc::MediaType::AUDIO,
-            offer_contents[0].media_description()->type());
-  EXPECT_EQ(webrtc::MediaType::DATA,
-            offer_contents[1].media_description()->type());
+  EXPECT_EQ(MediaType::AUDIO, offer_contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::DATA, offer_contents[1].media_description()->type());
 
   ASSERT_TRUE(
       caller->SetLocalDescription(CloneSessionDescription(offer.get())));
@@ -1148,10 +1143,8 @@ TEST_F(PeerConnectionJsepTest, DataChannelDoesNotRecycleMediaSection) {
   auto answer = callee->CreateAnswer();
   auto answer_contents = answer->description()->contents();
   ASSERT_EQ(2u, answer_contents.size());
-  EXPECT_EQ(webrtc::MediaType::AUDIO,
-            answer_contents[0].media_description()->type());
-  EXPECT_EQ(webrtc::MediaType::DATA,
-            answer_contents[1].media_description()->type());
+  EXPECT_EQ(MediaType::AUDIO, answer_contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::DATA, answer_contents[1].media_description()->type());
 }
 
 // Test that if a new track is added to an existing session that has a data,
@@ -1169,8 +1162,8 @@ TEST_F(PeerConnectionJsepTest, AudioTrackAddedAfterDataSectionInReoffer) {
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
   ASSERT_EQ(2u, contents.size());
-  EXPECT_EQ(webrtc::MediaType::DATA, contents[0].media_description()->type());
-  EXPECT_EQ(webrtc::MediaType::AUDIO, contents[1].media_description()->type());
+  EXPECT_EQ(MediaType::DATA, contents[0].media_description()->type());
+  EXPECT_EQ(MediaType::AUDIO, contents[1].media_description()->type());
 }
 
 // Tests for MID properties.
@@ -1341,7 +1334,7 @@ TEST_F(PeerConnectionJsepTest,
   const std::string kTrackId = "audio_track";
 
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   transceiver->sender()->SetTrack(caller->CreateAudioTrack(kTrackId).get());
 
   auto offer = caller->CreateOffer();
@@ -1359,11 +1352,11 @@ TEST_F(PeerConnectionJsepTest, NoMsidInOfferIfTransceiverDirectionHasNoSend) {
 
   RtpTransceiverInit init_recvonly;
   init_recvonly.direction = RtpTransceiverDirection::kRecvOnly;
-  ASSERT_TRUE(caller->AddTransceiver(webrtc::MediaType::AUDIO, init_recvonly));
+  ASSERT_TRUE(caller->AddTransceiver(MediaType::AUDIO, init_recvonly));
 
   RtpTransceiverInit init_inactive;
   init_inactive.direction = RtpTransceiverDirection::kInactive;
-  ASSERT_TRUE(caller->AddTransceiver(webrtc::MediaType::VIDEO, init_inactive));
+  ASSERT_TRUE(caller->AddTransceiver(MediaType::VIDEO, init_inactive));
 
   auto offer = caller->CreateOffer();
   auto contents = offer->description()->contents();
@@ -1383,13 +1376,13 @@ TEST_F(PeerConnectionJsepTest, NoMsidInAnswerIfNoRespondingTracks) {
   // no tracks to send in response.
   RtpTransceiverInit init_recvonly;
   init_recvonly.direction = RtpTransceiverDirection::kRecvOnly;
-  caller->AddTransceiver(webrtc::MediaType::AUDIO, init_recvonly);
+  caller->AddTransceiver(MediaType::AUDIO, init_recvonly);
 
   // sendrecv transceiver will get negotiated to recvonly since the callee has
   // no tracks to send in response.
   RtpTransceiverInit init_sendrecv;
   init_sendrecv.direction = RtpTransceiverDirection::kSendRecv;
-  caller->AddTransceiver(webrtc::MediaType::VIDEO, init_sendrecv);
+  caller->AddTransceiver(MediaType::VIDEO, init_sendrecv);
 
   ASSERT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
 
@@ -1434,7 +1427,7 @@ TEST_F(PeerConnectionJsepTest, IncludeMsidEvenIfDirectionHasChanged) {
 // any MSID information for that section.
 TEST_F(PeerConnectionJsepTest, RemoveMsidIfTransceiverStopped) {
   auto caller = CreatePeerConnection();
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
 
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
@@ -1591,7 +1584,7 @@ TEST_F(PeerConnectionJsepTest, CurrentDirectionResetWhenRtpTransceiverStopped) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  auto transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto transceiver = caller->AddTransceiver(MediaType::AUDIO);
 
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
 
@@ -1903,7 +1896,7 @@ TEST_F(PeerConnectionJsepTest, AttemptToRollbackImplicitly) {
 
 TEST_F(PeerConnectionJsepTest, RollbackRemovesTransceiver) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   ASSERT_EQ(callee->pc()->GetTransceivers().size(), 1u);
@@ -1921,7 +1914,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRemovesTransceiver) {
 
 TEST_F(PeerConnectionJsepTest, RollbackKeepsTransceiverAndClearsMid) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   callee->AddAudioTrack("a");
@@ -1947,7 +1940,7 @@ TEST_F(PeerConnectionJsepTest, RollbackKeepsTransceiverAndClearsMid) {
 TEST_F(PeerConnectionJsepTest,
        RollbackKeepsTransceiverAfterAddTrackEvenWhenTrackIsNulled) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   callee->AddAudioTrack("a");
@@ -1967,7 +1960,7 @@ TEST_F(PeerConnectionJsepTest,
 
 TEST_F(PeerConnectionJsepTest, RollbackRestoresMid) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   callee->AddAudioTrack("a");
   auto offer = callee->CreateOffer();
@@ -1990,7 +1983,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRestoresInitSendEncodings) {
   init.send_encodings.push_back(encoding);
   encoding.rid = "lo";
   init.send_encodings.push_back(encoding);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO, init);
+  caller->AddTransceiver(MediaType::VIDEO, init);
   auto encodings =
       caller->pc()->GetTransceivers()[0]->sender()->init_send_encodings();
   EXPECT_TRUE(caller->SetLocalDescription(caller->CreateOffer()));
@@ -2013,8 +2006,8 @@ TEST_F(PeerConnectionJsepTest, RollbackDoesNotAffectSendEncodings) {
   init.send_encodings.push_back(encoding);
   encoding.rid = "lo";
   init.send_encodings.push_back(encoding);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO, init);
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO, init);
+  callee->AddTransceiver(MediaType::VIDEO);
   callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal());
   caller->SetRemoteDescription(callee->CreateAnswerAndSetAsLocal());
   auto params = caller->pc()->GetTransceivers()[0]->sender()->GetParameters();
@@ -2054,8 +2047,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRestoresMidAndRemovesTransceiver) {
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateRollback()));
   EXPECT_EQ(callee->pc()->GetTransceivers().size(), 1u);
   EXPECT_EQ(callee->pc()->GetTransceivers()[0]->mid(), mid);
-  EXPECT_EQ(callee->pc()->GetTransceivers()[0]->media_type(),
-            webrtc::MediaType::VIDEO);
+  EXPECT_EQ(callee->pc()->GetTransceivers()[0]->media_type(), MediaType::VIDEO);
   EXPECT_TRUE(callee->SetLocalDescription(std::move(offer)));
   EXPECT_EQ(callee->observer()->remove_track_events_.size(),
             callee->observer()->add_track_events_.size());
@@ -2091,9 +2083,9 @@ TEST_F(PeerConnectionJsepTest, ImplicitlyRollbackTransceiversWithSameMids) {
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
   config.enable_implicit_rollback = true;
   auto caller = CreatePeerConnection(config);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
   auto callee = CreatePeerConnection(config);
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  callee->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
   auto initial_mid = callee->pc()->GetTransceivers()[0]->mid();
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -2111,7 +2103,7 @@ TEST_F(PeerConnectionJsepTest, RollbackToNegotiatedStableState) {
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
   config.bundle_policy = PeerConnectionInterface::kBundlePolicyMaxBundle;
   auto caller = CreatePeerConnection(config);
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection(config);
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
   EXPECT_TRUE(callee->CreateAnswerAndSetAsLocal());
@@ -2162,7 +2154,7 @@ TEST_F(PeerConnectionJsepTest, RollbackHasToDestroyTransport) {
 
 TEST_F(PeerConnectionJsepTest, RollbackLocalDirectionChange) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
   EXPECT_TRUE(
@@ -2185,7 +2177,7 @@ TEST_F(PeerConnectionJsepTest, RollbackLocalDirectionChange) {
 
 TEST_F(PeerConnectionJsepTest, RollbackRemoteDirectionChange) {
   auto caller = CreatePeerConnection();
-  auto caller_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto caller_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   callee->AddAudioTrack("a");
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -2215,7 +2207,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRemoteDirectionChange) {
 TEST_F(PeerConnectionJsepTest,
        RollbackRestoresFiredDirectionAndOnTrackCanFireAgain) {
   auto caller = CreatePeerConnection();
-  auto caller_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto caller_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   callee->AddAudioTrack("a");
   ASSERT_EQ(callee->pc()->GetTransceivers().size(), 1u);
@@ -2245,7 +2237,7 @@ TEST_F(PeerConnectionJsepTest,
 TEST_F(PeerConnectionJsepTest,
        RollbackFromInactiveToReceivingMakesOnTrackFire) {
   auto caller = CreatePeerConnection();
-  auto caller_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto caller_transceiver = caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
   // Perform full O/A so that transceiver is associated. Ontrack fires.
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOfferAndSetAsLocal()));
@@ -2268,9 +2260,9 @@ TEST_F(PeerConnectionJsepTest,
 
 TEST_F(PeerConnectionJsepTest, RollbackAfterMultipleSLD) {
   auto callee = CreatePeerConnection();
-  callee->AddTransceiver(webrtc::MediaType::AUDIO);
+  callee->AddTransceiver(MediaType::AUDIO);
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  callee->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
   callee->observer()->clear_legacy_renegotiation_needed();
   callee->observer()->clear_latest_negotiation_needed_event();
@@ -2284,9 +2276,9 @@ TEST_F(PeerConnectionJsepTest, RollbackAfterMultipleSLD) {
 
 TEST_F(PeerConnectionJsepTest, NoRollbackNeeded) {
   auto caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::AUDIO);
   auto callee = CreatePeerConnection();
-  callee->AddTransceiver(webrtc::MediaType::AUDIO);
+  callee->AddTransceiver(MediaType::AUDIO);
   EXPECT_TRUE(caller->CreateOfferAndSetAsLocal());
   EXPECT_TRUE(caller->CreateOfferAndSetAsLocal());
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
@@ -2319,7 +2311,7 @@ TEST_F(PeerConnectionJsepTest, DataChannelImplicitRollback) {
   config.sdp_semantics = SdpSemantics::kUnifiedPlan;
   config.enable_implicit_rollback = true;
   auto caller = CreatePeerConnection(config);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
   auto callee = CreatePeerConnection(config);
   callee->CreateDataChannel("dummy");
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
@@ -2336,7 +2328,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRemoteDataChannelThenAddTransceiver) {
   caller->CreateDataChannel("dummy");
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   EXPECT_TRUE(callee->SetRemoteDescription(callee->CreateRollback()));
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  callee->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
 }
 
@@ -2347,7 +2339,7 @@ TEST_F(PeerConnectionJsepTest,
   caller->CreateDataChannel("dummy");
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   EXPECT_TRUE(callee->SetRemoteDescription(callee->CreateRollback()));
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  callee->AddTransceiver(MediaType::VIDEO);
   callee->CreateDataChannel("dummy");
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
 }
@@ -2365,7 +2357,7 @@ TEST_F(PeerConnectionJsepTest, RollbackRemoteDataChannelThenAddDataChannel) {
 TEST_F(PeerConnectionJsepTest, RollbackRemoteTransceiverThenAddDataChannel) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   EXPECT_TRUE(callee->SetRemoteDescription(callee->CreateRollback()));
   callee->CreateDataChannel("dummy");
@@ -2376,19 +2368,19 @@ TEST_F(PeerConnectionJsepTest,
        RollbackRemoteTransceiverThenAddDataChannelAndTransceiver) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->SetRemoteDescription(caller->CreateOffer()));
   EXPECT_TRUE(callee->SetRemoteDescription(callee->CreateRollback()));
   callee->CreateDataChannel("dummy");
-  callee->AddTransceiver(webrtc::MediaType::VIDEO);
+  callee->AddTransceiver(MediaType::VIDEO);
   EXPECT_TRUE(callee->CreateOfferAndSetAsLocal());
 }
 
 TEST_F(PeerConnectionJsepTest, BundleOnlySectionDoesNotNeedRtcpMux) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::VIDEO);
   auto offer = caller->CreateOffer();
   // Remove rtcp-mux and set bundle-only on the second content.
   offer->description()->contents()[1].media_description()->set_rtcp_mux(false);

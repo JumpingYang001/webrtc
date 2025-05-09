@@ -55,7 +55,7 @@ RtpParameters CreateRtpParametersWithSsrcs(
 }
 
 scoped_refptr<MockRtpSenderInternal> CreateMockRtpSender(
-    webrtc::MediaType media_type,
+    MediaType media_type,
     std::initializer_list<uint32_t> ssrcs,
     scoped_refptr<MediaStreamTrackInterface> track) {
   uint32_t first_ssrc;
@@ -77,7 +77,7 @@ scoped_refptr<MockRtpSenderInternal> CreateMockRtpSender(
 }
 
 scoped_refptr<MockRtpReceiverInternal> CreateMockRtpReceiver(
-    webrtc::MediaType media_type,
+    MediaType media_type,
     std::initializer_list<uint32_t> ssrcs,
     scoped_refptr<MediaStreamTrackInterface> track) {
   auto receiver = make_ref_counted<MockRtpReceiverInternal>();
@@ -121,8 +121,8 @@ class TrackMediaInfoMapTest : public ::testing::Test {
                              MediaStreamTrackInterface* local_track) {
     scoped_refptr<MockRtpSenderInternal> rtp_sender = CreateMockRtpSender(
         local_track->kind() == MediaStreamTrackInterface::kAudioKind
-            ? webrtc::MediaType::AUDIO
-            : webrtc::MediaType::VIDEO,
+            ? MediaType::AUDIO
+            : MediaType::VIDEO,
         ssrcs, scoped_refptr<MediaStreamTrackInterface>(local_track));
     rtp_senders_.push_back(rtp_sender);
 
@@ -150,8 +150,8 @@ class TrackMediaInfoMapTest : public ::testing::Test {
                                MediaStreamTrackInterface* remote_track) {
     auto rtp_receiver = CreateMockRtpReceiver(
         remote_track->kind() == MediaStreamTrackInterface::kAudioKind
-            ? webrtc::MediaType::AUDIO
-            : webrtc::MediaType::VIDEO,
+            ? MediaType::AUDIO
+            : MediaType::VIDEO,
         ssrcs, scoped_refptr<MediaStreamTrackInterface>(remote_track));
     rtp_receivers_.push_back(rtp_receiver);
 

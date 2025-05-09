@@ -145,9 +145,9 @@ RTCErrorOr<SimulcastLayerList> ParseSimulcastLayerList(const std::string& str) {
   return std::move(result);
 }
 
-webrtc::RTCError ParseRidPayloadList(const std::string& payload_list,
-                                     RidDescription* rid_description,
-                                     std::vector<int>* rid_payload_types) {
+RTCError ParseRidPayloadList(const std::string& payload_list,
+                             RidDescription* rid_description,
+                             std::vector<int>* rid_payload_types) {
   RTC_DCHECK(rid_description);
   RTC_DCHECK(rid_payload_types);
   // Check that the description doesn't have any payload types or restrictions.

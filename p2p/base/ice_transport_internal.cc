@@ -54,9 +54,6 @@ ContinualGatheringPolicy GetContinualGatheringPolicy(
 
 }  // namespace
 
-using webrtc::RTCError;
-using webrtc::RTCErrorType;
-
 RTCError VerifyCandidate(const Candidate& cand) {
   // No address zero.
   if (cand.address().IsNil() || cand.address().IsAnyIP()) {
@@ -245,7 +242,7 @@ void IceTransportInternal::SetRemoteIceCredentials(absl::string_view ice_ufrag,
 
 void IceTransportInternal::AddGatheringStateCallback(
     const void* removal_tag,
-    absl::AnyInvocable<void(webrtc::IceTransportInternal*)> callback) {
+    absl::AnyInvocable<void(IceTransportInternal*)> callback) {
   gathering_state_callback_list_.AddReceiver(removal_tag, std::move(callback));
 }
 void IceTransportInternal::RemoveGatheringStateCallback(

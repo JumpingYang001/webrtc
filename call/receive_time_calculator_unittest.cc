@@ -169,7 +169,7 @@ class EmulatedNonMonotoneousClock : public EmulatedClock {
 };
 
 TEST(ClockRepair, NoClockDrift) {
-  webrtc::test::ScopedKeyValueConfig field_trials;
+  test::ScopedKeyValueConfig field_trials;
   const int kSeeds = 10;
   const int kFirstSeed = 1;
   const int64_t kRuntimeUs = 10 * kNumMicrosecsPerSec;

@@ -103,8 +103,7 @@ class PeerConnectionWrapperForBundleTest : public PeerConnectionWrapper {
  public:
   using PeerConnectionWrapper::PeerConnectionWrapper;
 
-  bool AddIceCandidateToMedia(Candidate* candidate,
-                              webrtc::MediaType media_type) {
+  bool AddIceCandidateToMedia(Candidate* candidate, MediaType media_type) {
     auto* desc = pc()->remote_description()->description();
     for (size_t i = 0; i < desc->contents().size(); i++) {
       const auto& content = desc->contents()[i];
@@ -126,7 +125,7 @@ class PeerConnectionWrapperForBundleTest : public PeerConnectionWrapper {
   VoiceChannel* voice_channel() {
     auto transceivers = GetInternalPeerConnection()->GetTransceiversInternal();
     for (const auto& transceiver : transceivers) {
-      if (transceiver->media_type() == webrtc::MediaType::AUDIO) {
+      if (transceiver->media_type() == MediaType::AUDIO) {
         return static_cast<VoiceChannel*>(transceiver->internal()->channel());
       }
     }
@@ -140,7 +139,7 @@ class PeerConnectionWrapperForBundleTest : public PeerConnectionWrapper {
   VideoChannel* video_channel() {
     auto transceivers = GetInternalPeerConnection()->GetTransceiversInternal();
     for (const auto& transceiver : transceivers) {
-      if (transceiver->media_type() == webrtc::MediaType::VIDEO) {
+      if (transceiver->media_type() == MediaType::VIDEO) {
         return static_cast<VideoChannel*>(transceiver->internal()->channel());
       }
     }
@@ -658,16 +657,16 @@ TEST_P(PeerConnectionBundleTest,
   // that messages are executed in the order they were posted.
 
   Candidate audio_candidate1 = CreateLocalUdpCandidate(kAudioAddress1);
-  ASSERT_TRUE(caller->AddIceCandidateToMedia(&audio_candidate1,
-                                             webrtc::MediaType::AUDIO));
+  ASSERT_TRUE(
+      caller->AddIceCandidateToMedia(&audio_candidate1, MediaType::AUDIO));
 
   Candidate video_candidate = CreateLocalUdpCandidate(kVideoAddress);
-  ASSERT_TRUE(caller->AddIceCandidateToMedia(&video_candidate,
-                                             webrtc::MediaType::VIDEO));
+  ASSERT_TRUE(
+      caller->AddIceCandidateToMedia(&video_candidate, MediaType::VIDEO));
 
   Candidate audio_candidate2 = CreateLocalUdpCandidate(kAudioAddress2);
-  ASSERT_TRUE(caller->AddIceCandidateToMedia(&audio_candidate2,
-                                             webrtc::MediaType::AUDIO));
+  ASSERT_TRUE(
+      caller->AddIceCandidateToMedia(&audio_candidate2, MediaType::AUDIO));
 
   EXPECT_THAT(
       WaitUntil(

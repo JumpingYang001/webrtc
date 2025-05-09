@@ -83,7 +83,7 @@ class StunBindingRequest : public StunRequest {
     }
 
     // The keep-alive requests will be stopped after its lifetime has passed.
-    if (WithinLifetime(webrtc::TimeMillis())) {
+    if (WithinLifetime(TimeMillis())) {
       port_->request_manager_.SendDelayed(
           new StunBindingRequest(port_, server_addr_, start_time_),
           port_->stun_keepalive_delay());
@@ -106,9 +106,8 @@ class StunBindingRequest : public StunRequest {
         attr ? attr->reason()
              : "STUN binding response with no error code attribute.");
 
-    int64_t now = webrtc::TimeMillis();
-    if (WithinLifetime(now) &&
-        webrtc::TimeDiff(now, start_time_) < RETRY_TIMEOUT) {
+    int64_t now = TimeMillis();
+    if (WithinLifetime(now) && TimeDiff(now, start_time_) < RETRY_TIMEOUT) {
       port_->request_manager_.SendDelayed(
           new StunBindingRequest(port_, server_addr_, start_time_),
           port_->stun_keepalive_delay());
@@ -128,7 +127,7 @@ class StunBindingRequest : public StunRequest {
   // lifetime means infinite).
   bool WithinLifetime(int64_t now) const {
     int lifetime = port_->stun_keepalive_lifetime();
-    return lifetime < 0 || webrtc::TimeDiff(now, start_time_) <= lifetime;
+    return lifetime < 0 || TimeDiff(now, start_time_) <= lifetime;
   }
 
   UDPPort* port_;
@@ -188,7 +187,7 @@ UDPPort::UDPPort(const PortParametersRef& args,
       error_(0),
       ready_(false),
       stun_keepalive_delay_(STUN_KEEPALIVE_INTERVAL),
-      dscp_(webrtc::DSCP_NO_CHANGE),
+      dscp_(DSCP_NO_CHANGE),
       emit_local_for_anyaddress_(emit_local_for_anyaddress) {}
 
 UDPPort::UDPPort(const PortParametersRef& args,
@@ -206,7 +205,7 @@ UDPPort::UDPPort(const PortParametersRef& args,
       error_(0),
       ready_(false),
       stun_keepalive_delay_(STUN_KEEPALIVE_INTERVAL),
-      dscp_(webrtc::DSCP_NO_CHANGE),
+      dscp_(DSCP_NO_CHANGE),
       emit_local_for_anyaddress_(emit_local_for_anyaddress) {}
 
 bool UDPPort::Init() {
@@ -349,11 +348,11 @@ bool UDPPort::HandleIncomingPacket(AsyncPacketSocket* socket,
 }
 
 bool UDPPort::SupportsProtocol(absl::string_view protocol) const {
-  return protocol == webrtc::UDP_PROTOCOL_NAME;
+  return protocol == UDP_PROTOCOL_NAME;
 }
 
 ProtocolType UDPPort::GetProtocol() const {
-  return webrtc::PROTO_UDP;
+  return PROTO_UDP;
 }
 
 void UDPPort::GetStunStats(std::optional<StunStats>* stats) {
@@ -376,7 +375,7 @@ void UDPPort::OnLocalAddressReady(AsyncPacketSocket* /* socket */,
   // least the port is listening.
   MaybeSetDefaultLocalAddress(&addr);
 
-  AddAddress(addr, addr, SocketAddress(), webrtc::UDP_PROTOCOL_NAME, "", "",
+  AddAddress(addr, addr, SocketAddress(), UDP_PROTOCOL_NAME, "", "",
              IceCandidateType::kHost, ICE_TYPE_PREFERENCE_HOST, 0, "", false);
   MaybePrepareStunCandidate();
 }
@@ -405,7 +404,7 @@ void UDPPort::OnReadPacket(AsyncPacketSocket* socket,
   if (Connection* conn = GetConnection(packet.source_address())) {
     conn->OnReadPacket(packet);
   } else {
-    Port::OnReadPacket(packet, webrtc::PROTO_UDP);
+    Port::OnReadPacket(packet, PROTO_UDP);
   }
 }
 
@@ -477,7 +476,7 @@ void UDPPort::SendStunBindingRequest(const SocketAddress& stun_addr) {
     // Check if `server_addr_` is compatible with the port's ip.
     if (IsCompatibleAddress(stun_addr)) {
       request_manager_.Send(
-          new StunBindingRequest(this, stun_addr, webrtc::TimeMillis()));
+          new StunBindingRequest(this, stun_addr, TimeMillis()));
     } else {
       // Since we can't send stun messages to the server, we should mark this
       // port ready. This is not an error but similar to ignoring
@@ -532,15 +531,14 @@ void UDPPort::OnStunBindingRequestSucceeded(
     SocketAddress related_address = socket_->GetLocalAddress();
     // If we can't stamp the related address correctly, empty it to avoid leak.
     if (!MaybeSetDefaultLocalAddress(&related_address)) {
-      related_address =
-          webrtc::EmptySocketAddressWithFamily(related_address.family());
+      related_address = EmptySocketAddressWithFamily(related_address.family());
     }
 
     StringBuilder url;
     url << "stun:" << stun_server_addr.hostname() << ":"
         << stun_server_addr.port();
     AddAddress(stun_reflected_addr, socket_->GetLocalAddress(), related_address,
-               webrtc::UDP_PROTOCOL_NAME, "", "", IceCandidateType::kSrflx,
+               UDP_PROTOCOL_NAME, "", "", IceCandidateType::kSrflx,
                ICE_TYPE_PREFERENCE_SRFLX, 0, url.str(), false);
   }
   MaybeSetPortCompleteOrError();

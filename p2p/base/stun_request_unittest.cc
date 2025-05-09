@@ -156,15 +156,14 @@ TEST_F(StunRequestTest, TestBackoff) {
   std::unique_ptr<StunMessage> res =
       request->CreateResponseMessage(STUN_BINDING_RESPONSE);
 
-  int64_t start = webrtc::TimeMillis();
+  int64_t start = TimeMillis();
   manager_.Send(request);
   for (int i = 0; i < 9; ++i) {
-    EXPECT_THAT(
-        webrtc::WaitUntil([&] { return request_count_; }, Ne(i),
+    EXPECT_THAT(WaitUntil([&] { return request_count_; }, Ne(i),
                           {.timeout = TimeDelta::Millis(STUN_TOTAL_TIMEOUT),
                            .clock = &fake_clock}),
-        webrtc::IsRtcOk());
-    int64_t elapsed = webrtc::TimeMillis() - start;
+                IsRtcOk());
+    int64_t elapsed = TimeMillis() - start;
     RTC_DLOG(LS_INFO) << "STUN request #" << (i + 1) << " sent at " << elapsed
                       << " ms";
     EXPECT_EQ(TotalDelay(i), elapsed);

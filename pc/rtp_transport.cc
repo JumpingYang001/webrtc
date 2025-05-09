@@ -205,7 +205,7 @@ flat_set<uint32_t> RtpTransport::GetSsrcsForSink(RtpPacketSinkInterface* sink) {
 }
 
 void RtpTransport::DemuxPacket(CopyOnWriteBuffer packet,
-                               webrtc::Timestamp arrival_time,
+                               Timestamp arrival_time,
                                EcnMarking ecn) {
   RtpPacketReceived parsed_packet(&header_extension_map_);
   parsed_packet.set_arrival_time(arrival_time);

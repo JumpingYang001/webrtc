@@ -745,8 +745,8 @@ static scoped_refptr<MockRtpSenderInternal> CreateMockSender(
   EXPECT_CALL(*sender, media_type())
       .WillRepeatedly(
           Return(track->kind() == MediaStreamTrackInterface::kAudioKind
-                     ? webrtc::MediaType::AUDIO
-                     : webrtc::MediaType::VIDEO));
+                     ? MediaType::AUDIO
+                     : MediaType::VIDEO));
   EXPECT_CALL(*sender, SetMediaChannel(_)).Times(AtMost(2));
   EXPECT_CALL(*sender, SetTransceiverAsStopped()).Times(AtMost(1));
   EXPECT_CALL(*sender, Stop());
@@ -762,8 +762,8 @@ static scoped_refptr<MockRtpReceiverInternal> CreateMockReceiver(
   EXPECT_CALL(*receiver, media_type())
       .WillRepeatedly(
           Return(track->kind() == MediaStreamTrackInterface::kAudioKind
-                     ? webrtc::MediaType::AUDIO
-                     : webrtc::MediaType::VIDEO));
+                     ? MediaType::AUDIO
+                     : MediaType::VIDEO));
   EXPECT_CALL(*receiver, SetMediaChannel(_)).WillRepeatedly(Return());
   EXPECT_CALL(*receiver, Stop()).WillRepeatedly(Return());
   return receiver;

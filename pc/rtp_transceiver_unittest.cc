@@ -106,10 +106,9 @@ class RtpTransceiverTest : public testing::Test {
 TEST_F(RtpTransceiverTest, CannotSetChannelOnStoppedTransceiver) {
   const std::string content_name("my_mid");
   auto transceiver = make_ref_counted<RtpTransceiver>(
-      webrtc::MediaType::AUDIO, context(), codec_lookup_helper());
+      MediaType::AUDIO, context(), codec_lookup_helper());
   auto channel1 = std::make_unique<NiceMock<MockChannelInterface>>();
-  EXPECT_CALL(*channel1, media_type())
-      .WillRepeatedly(Return(webrtc::MediaType::AUDIO));
+  EXPECT_CALL(*channel1, media_type()).WillRepeatedly(Return(MediaType::AUDIO));
   EXPECT_CALL(*channel1, mid()).WillRepeatedly(ReturnRef(content_name));
   EXPECT_CALL(*channel1, SetFirstPacketReceivedCallback(_));
   EXPECT_CALL(*channel1, SetRtpTransport(_)).WillRepeatedly(Return(true));
@@ -125,8 +124,7 @@ TEST_F(RtpTransceiverTest, CannotSetChannelOnStoppedTransceiver) {
   EXPECT_EQ(channel1_ptr, transceiver->channel());
 
   auto channel2 = std::make_unique<NiceMock<MockChannelInterface>>();
-  EXPECT_CALL(*channel2, media_type())
-      .WillRepeatedly(Return(webrtc::MediaType::AUDIO));
+  EXPECT_CALL(*channel2, media_type()).WillRepeatedly(Return(MediaType::AUDIO));
 
   // Clear the current channel - required to allow SetChannel()
   EXPECT_CALL(*channel1_ptr, SetFirstPacketReceivedCallback(_));
@@ -142,10 +140,9 @@ TEST_F(RtpTransceiverTest, CannotSetChannelOnStoppedTransceiver) {
 TEST_F(RtpTransceiverTest, CanUnsetChannelOnStoppedTransceiver) {
   const std::string content_name("my_mid");
   auto transceiver = make_ref_counted<RtpTransceiver>(
-      webrtc::MediaType::VIDEO, context(), codec_lookup_helper());
+      MediaType::VIDEO, context(), codec_lookup_helper());
   auto channel = std::make_unique<NiceMock<MockChannelInterface>>();
-  EXPECT_CALL(*channel, media_type())
-      .WillRepeatedly(Return(webrtc::MediaType::VIDEO));
+  EXPECT_CALL(*channel, media_type()).WillRepeatedly(Return(MediaType::VIDEO));
   EXPECT_CALL(*channel, mid()).WillRepeatedly(ReturnRef(content_name));
   EXPECT_CALL(*channel, SetFirstPacketReceivedCallback(_))
       .WillRepeatedly(testing::Return());
@@ -170,15 +167,14 @@ TEST_F(RtpTransceiverTest, CanUnsetChannelOnStoppedTransceiver) {
 class RtpTransceiverUnifiedPlanTest : public RtpTransceiverTest {
  public:
   static scoped_refptr<MockRtpReceiverInternal> MockReceiver(
-      webrtc::MediaType media_type) {
+      MediaType media_type) {
     auto receiver = make_ref_counted<NiceMock<MockRtpReceiverInternal>>();
     EXPECT_CALL(*receiver.get(), media_type())
         .WillRepeatedly(Return(media_type));
     return receiver;
   }
 
-  static scoped_refptr<MockRtpSenderInternal> MockSender(
-      webrtc::MediaType media_type) {
+  static scoped_refptr<MockRtpSenderInternal> MockSender(MediaType media_type) {
     auto sender = make_ref_counted<NiceMock<MockRtpSenderInternal>>();
     EXPECT_CALL(*sender.get(), media_type()).WillRepeatedly(Return(media_type));
     return sender;
@@ -204,9 +200,8 @@ class RtpTransceiverUnifiedPlanTest : public RtpTransceiverTest {
 // Basic tests for Stop()
 TEST_F(RtpTransceiverUnifiedPlanTest, StopSetsDirection) {
   scoped_refptr<MockRtpReceiverInternal> receiver =
-      MockReceiver(webrtc::MediaType::AUDIO);
-  scoped_refptr<MockRtpSenderInternal> sender =
-      MockSender(webrtc::MediaType::AUDIO);
+      MockReceiver(MediaType::AUDIO);
+  scoped_refptr<MockRtpSenderInternal> sender = MockSender(MediaType::AUDIO);
   scoped_refptr<RtpTransceiver> transceiver =
       CreateTransceiver(sender, receiver);
 
@@ -231,9 +226,8 @@ class RtpTransceiverFilteredCodecPreferencesTest
     : public RtpTransceiverUnifiedPlanTest {
  public:
   RtpTransceiverFilteredCodecPreferencesTest()
-      : transceiver_(
-            CreateTransceiver(MockSender(webrtc::MediaType::VIDEO),
-                              MockReceiver(webrtc::MediaType::VIDEO))) {}
+      : transceiver_(CreateTransceiver(MockSender(MediaType::VIDEO),
+                                       MockReceiver(MediaType::VIDEO))) {}
 
   struct H264CodecCapabilities {
     Codec cricket_sendrecv_codec;
@@ -251,8 +245,8 @@ class RtpTransceiverFilteredCodecPreferencesTest
   // at transceiver create time.
   void RecreateTransceiver() {
     fake_codec_lookup_helper()->Reset();
-    transceiver_ = CreateTransceiver(MockSender(webrtc::MediaType::VIDEO),
-                                     MockReceiver(webrtc::MediaType::VIDEO));
+    transceiver_ = CreateTransceiver(MockSender(MediaType::VIDEO),
+                                     MockReceiver(MediaType::VIDEO));
   }
 
   // For H264, the profile and level IDs are entangled. This function uses
@@ -596,9 +590,8 @@ class RtpTransceiverTestForHeaderExtensions
   }
 
   scoped_refptr<MockRtpReceiverInternal> receiver_ =
-      MockReceiver(webrtc::MediaType::AUDIO);
-  scoped_refptr<MockRtpSenderInternal> sender_ =
-      MockSender(webrtc::MediaType::AUDIO);
+      MockReceiver(MediaType::AUDIO);
+  scoped_refptr<MockRtpSenderInternal> sender_ = MockSender(MediaType::AUDIO);
 
   std::vector<RtpHeaderExtensionCapability> extensions_;
   scoped_refptr<RtpTransceiver> transceiver_;
@@ -744,7 +737,7 @@ TEST_F(RtpTransceiverTestForHeaderExtensions,
   auto mock_channel_ptr = mock_channel.get();
   EXPECT_CALL(*mock_channel, SetFirstPacketReceivedCallback(_));
   EXPECT_CALL(*mock_channel, media_type())
-      .WillRepeatedly(Return(webrtc::MediaType::AUDIO));
+      .WillRepeatedly(Return(MediaType::AUDIO));
   EXPECT_CALL(*mock_channel, voice_media_send_channel())
       .WillRepeatedly(Return(nullptr));
   EXPECT_CALL(*mock_channel, mid()).WillRepeatedly(ReturnRef(content_name));
@@ -777,7 +770,7 @@ TEST_F(RtpTransceiverTestForHeaderExtensions, ReturnsNegotiatedHdrExts) {
   auto mock_channel_ptr = mock_channel.get();
   EXPECT_CALL(*mock_channel, SetFirstPacketReceivedCallback(_));
   EXPECT_CALL(*mock_channel, media_type())
-      .WillRepeatedly(Return(webrtc::MediaType::AUDIO));
+      .WillRepeatedly(Return(MediaType::AUDIO));
   EXPECT_CALL(*mock_channel, voice_media_send_channel())
       .WillRepeatedly(Return(nullptr));
   EXPECT_CALL(*mock_channel, mid()).WillRepeatedly(ReturnRef(content_name));
@@ -860,7 +853,7 @@ TEST_F(RtpTransceiverTestForHeaderExtensions,
           Thread::Current(), Thread::Current(), receiver_),
       context(), codec_lookup_helper(), extensions,
       /* on_negotiation_needed= */ [] {});
-  std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions =
+  std::vector<RtpHeaderExtensionCapability> header_extensions =
       transceiver->GetHeaderExtensionsToNegotiate();
   ASSERT_EQ(header_extensions.size(), 2u);
   EXPECT_EQ(header_extensions[0].uri, RtpExtension::kDependencyDescriptorUri);
@@ -894,7 +887,7 @@ TEST_F(RtpTransceiverTestForHeaderExtensions,
             RtpTransceiverDirection::kSendRecv);
 
   // SVC, a single encoding with a scalabilityMode other than L1T1.
-  webrtc::RtpParameters svc_parameters;
+  RtpParameters svc_parameters;
   svc_parameters.encodings.resize(1);
   svc_parameters.encodings[0].scalability_mode = "L3T3";
 
@@ -908,7 +901,7 @@ TEST_F(RtpTransceiverTestForHeaderExtensions,
           Thread::Current(), Thread::Current(), receiver_),
       context(), codec_lookup_helper(), extensions,
       /* on_negotiation_needed= */ [] {});
-  std::vector<webrtc::RtpHeaderExtensionCapability> svc_extensions =
+  std::vector<RtpHeaderExtensionCapability> svc_extensions =
       svc_transceiver->GetHeaderExtensionsToNegotiate();
   ASSERT_EQ(svc_extensions.size(), 2u);
   EXPECT_EQ(svc_extensions[0].uri, RtpExtension::kDependencyDescriptorUri);

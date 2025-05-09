@@ -148,8 +148,8 @@ TEST_F(SdpMungingTest, DISABLED_ReportUMAMetricsWithNoMunging) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::AUDIO);
+  caller->AddTransceiver(MediaType::VIDEO);
 
   // Negotiate, gather candidates, then exchange ICE candidates.
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));

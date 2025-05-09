@@ -325,10 +325,10 @@ TEST_P(DataChannelIntegrationTest,
   caller()->data_channel()->Close();
 
   EXPECT_THAT(WaitUntil([&] { return caller()->data_observer()->state(); },
-                        Eq(webrtc::DataChannelInterface::kClosed)),
+                        Eq(DataChannelInterface::kClosed)),
               IsRtcOk());
   EXPECT_THAT(WaitUntil([&] { return callee()->data_observer()->state(); },
-                        Eq(webrtc::DataChannelInterface::kClosed)),
+                        Eq(DataChannelInterface::kClosed)),
               IsRtcOk());
 }
 
@@ -359,7 +359,7 @@ TEST_P(DataChannelIntegrationTest, EndToEndCallWithSctpDataChannelFullBuffer) {
 
   std::string data(256 * 1024, 'a');
   for (size_t queued_size = 0;
-       queued_size < webrtc::DataChannelInterface::MaxSendQueueSize();
+       queued_size < DataChannelInterface::MaxSendQueueSize();
        queued_size += data.size()) {
     caller()->data_channel()->SendAsync(DataBuffer(data), nullptr);
   }

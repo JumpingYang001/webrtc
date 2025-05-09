@@ -406,7 +406,7 @@ class JsepTransportControllerTest : public JsepTransportController::Observer,
   // signaled correctly.
   std::map<std::string, RtpTransportInternal*> changed_rtp_transport_by_mid_;
   std::map<std::string, DtlsTransportInternal*> changed_dtls_transport_by_mid_;
-  webrtc::PayloadTypePicker payload_type_picker_;
+  PayloadTypePicker payload_type_picker_;
   // Transport controller needs to be destroyed first, because it may issue
   // callbacks that modify the changed_*_by_mid in the destructor.
   std::unique_ptr<JsepTransportController> transport_controller_;
@@ -563,7 +563,7 @@ TEST_F(JsepTransportControllerTest, MaybeStartGathering) {
   transport_controller_->MaybeStartGathering();
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 }
@@ -711,20 +711,20 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateFailed) {
   fake_ice->SetConnectionCount(0);
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionFailed; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, ice_connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::PeerConnectionState::kFailed; },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, combined_connection_state_signal_count_);
 }
@@ -756,20 +756,20 @@ TEST_F(JsepTransportControllerTest,
 
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionFailed; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, ice_connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::PeerConnectionState::kFailed; },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, combined_connection_state_signal_count_);
 
@@ -781,14 +781,14 @@ TEST_F(JsepTransportControllerTest,
   fake_video_dtls->SetWritable(true);
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionConnected; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::kIceConnectionConnected; },
           ::testing::Eq(ice_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, ice_connection_state_signal_count_);
   EXPECT_THAT(
@@ -797,7 +797,7 @@ TEST_F(JsepTransportControllerTest,
             return PeerConnectionInterface::PeerConnectionState::kConnected;
           },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, combined_connection_state_signal_count_);
 }
@@ -827,7 +827,7 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionChecking; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, ice_connection_state_signal_count_);
   EXPECT_THAT(
@@ -836,7 +836,7 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
             return PeerConnectionInterface::PeerConnectionState::kConnecting;
           },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, combined_connection_state_signal_count_);
 
@@ -846,20 +846,20 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
 
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionFailed; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionFailed; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, ice_connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::PeerConnectionState::kFailed; },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, combined_connection_state_signal_count_);
 
@@ -873,14 +873,14 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
   fake_video_dtls->SetWritable(true);
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(3, connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::kIceConnectionCompleted; },
           ::testing::Eq(ice_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, ice_connection_state_signal_count_);
   EXPECT_THAT(
@@ -889,7 +889,7 @@ TEST_F(JsepTransportControllerTest, SignalConnectionStateComplete) {
             return PeerConnectionInterface::PeerConnectionState::kConnected;
           },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, combined_connection_state_signal_count_);
 }
@@ -908,7 +908,7 @@ TEST_F(JsepTransportControllerTest, SignalIceGatheringStateGathering) {
   // Should be in the gathering state as soon as any transport starts gathering.
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 }
@@ -929,7 +929,7 @@ TEST_F(JsepTransportControllerTest, SignalIceGatheringStateComplete) {
   fake_audio_dtls->fake_ice_transport()->MaybeStartGathering();
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 
@@ -941,14 +941,14 @@ TEST_F(JsepTransportControllerTest, SignalIceGatheringStateComplete) {
   fake_video_dtls->fake_ice_transport()->MaybeStartGathering();
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 
   fake_video_dtls->fake_ice_transport()->SetCandidatesGatheringComplete();
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringComplete; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, gathering_state_signal_count_);
 }
@@ -973,9 +973,9 @@ TEST_F(JsepTransportControllerTest,
   EXPECT_NE(fake_audio_dtls, fake_video_dtls);
 
   fake_audio_dtls->fake_ice_transport()->MaybeStartGathering();
-  EXPECT_THAT(WaitUntil([&] { return webrtc::kIceGatheringGathering; },
+  EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 
@@ -998,7 +998,7 @@ TEST_F(JsepTransportControllerTest,
   EXPECT_EQ(fake_audio_dtls, fake_video_dtls);
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(PeerConnectionInterface::kIceConnectionCompleted,
             ice_connection_state_);
@@ -1006,7 +1006,7 @@ TEST_F(JsepTransportControllerTest,
             combined_connection_state_);
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringComplete; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, gathering_state_signal_count_);
 }
@@ -1039,7 +1039,7 @@ TEST_F(JsepTransportControllerTest,
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionChecking; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, ice_connection_state_signal_count_);
   EXPECT_THAT(
@@ -1048,12 +1048,12 @@ TEST_F(JsepTransportControllerTest,
             return PeerConnectionInterface::PeerConnectionState::kConnecting;
           },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1, combined_connection_state_signal_count_);
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(1, gathering_state_signal_count_);
 
@@ -1067,19 +1067,19 @@ TEST_F(JsepTransportControllerTest,
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionNew; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, ice_connection_state_signal_count_);
   EXPECT_THAT(
       WaitUntil(
           [&] { return PeerConnectionInterface::PeerConnectionState::kNew; },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(2, combined_connection_state_signal_count_);
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringNew; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, gathering_state_signal_count_);
 
@@ -1089,7 +1089,7 @@ TEST_F(JsepTransportControllerTest,
   EXPECT_THAT(
       WaitUntil([&] { return PeerConnectionInterface::kIceConnectionChecking; },
                 ::testing::Eq(ice_connection_state_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, ice_connection_state_signal_count_);
   EXPECT_THAT(
@@ -1098,12 +1098,12 @@ TEST_F(JsepTransportControllerTest,
             return PeerConnectionInterface::PeerConnectionState::kConnecting;
           },
           ::testing::Eq(combined_connection_state_),
-          {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+          {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(3, combined_connection_state_signal_count_);
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringGathering; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(3, gathering_state_signal_count_);
 }
@@ -1123,7 +1123,7 @@ TEST_F(JsepTransportControllerTest, SignalCandidatesGathered) {
       fake_audio_dtls->fake_ice_transport(), CreateCandidate(kAudioMid1, 1));
   EXPECT_THAT(
       WaitUntil([&] { return 1; }, ::testing::Eq(candidates_signal_count_),
-                {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                {.timeout = TimeDelta::Millis(kTimeout)}),
       IsRtcOk());
   EXPECT_EQ(1u, candidates_[kAudioMid1].size());
 }
@@ -1140,25 +1140,25 @@ TEST_F(JsepTransportControllerTest, IceSignalingOccursOnNetworkThread) {
   // connecting --> connected --> completed
   EXPECT_THAT(WaitUntil([&] { return kIceConnectionCompleted; },
                         ::testing::Eq(connection_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, connection_state_signal_count_);
 
   // new --> gathering --> complete
   EXPECT_THAT(WaitUntil([&] { return kIceGatheringComplete; },
                         ::testing::Eq(gathering_state_),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
+                        {.timeout = TimeDelta::Millis(kTimeout)}),
               IsRtcOk());
   EXPECT_EQ(2, gathering_state_signal_count_);
 
-  EXPECT_THAT(WaitUntil([&] { return candidates_[kAudioMid1].size(); },
-                        ::testing::Eq(1u),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
-  EXPECT_THAT(WaitUntil([&] { return candidates_[kVideoMid1].size(); },
-                        ::testing::Eq(1u),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeout)}),
-              IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return candidates_[kAudioMid1].size(); },
+                ::testing::Eq(1u), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return candidates_[kVideoMid1].size(); },
+                ::testing::Eq(1u), {.timeout = TimeDelta::Millis(kTimeout)}),
+      IsRtcOk());
   EXPECT_EQ(2, candidates_signal_count_);
 
   EXPECT_EQ(ice_signaled_on_thread_, network_thread_.get());

@@ -56,7 +56,7 @@ bool IsDtlsHandshakePacket(ArrayView<const uint8_t> payload) {
 }
 
 uint32_t ComputeDtlsPacketHash(ArrayView<const uint8_t> dtls_packet) {
-  return webrtc::ComputeCrc32(dtls_packet.data(), dtls_packet.size());
+  return ComputeCrc32(dtls_packet.data(), dtls_packet.size());
 }
 
 bool PacketStash::AddIfUnique(ArrayView<const uint8_t> packet) {
@@ -66,16 +66,16 @@ bool PacketStash::AddIfUnique(ArrayView<const uint8_t> packet) {
       return false;
     }
   }
-  packets_.push_back({.hash = h,
-                      .buffer = std::make_unique<webrtc::Buffer>(
-                          packet.data(), packet.size())});
+  packets_.push_back(
+      {.hash = h,
+       .buffer = std::make_unique<Buffer>(packet.data(), packet.size())});
   return true;
 }
 
 void PacketStash::Add(ArrayView<const uint8_t> packet) {
-  packets_.push_back({.hash = ComputeDtlsPacketHash(packet),
-                      .buffer = std::make_unique<webrtc::Buffer>(
-                          packet.data(), packet.size())});
+  packets_.push_back(
+      {.hash = ComputeDtlsPacketHash(packet),
+       .buffer = std::make_unique<Buffer>(packet.data(), packet.size())});
 }
 
 void PacketStash::Prune(const absl::flat_hash_set<uint32_t>& hashes) {

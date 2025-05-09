@@ -25,9 +25,8 @@ IceCredentialsIterator::IceCredentialsIterator(
 IceCredentialsIterator::~IceCredentialsIterator() = default;
 
 IceParameters IceCredentialsIterator::CreateRandomIceCredentials() {
-  return IceParameters(webrtc::CreateRandomString(webrtc::ICE_UFRAG_LENGTH),
-                       webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH),
-                       false);
+  return IceParameters(CreateRandomString(ICE_UFRAG_LENGTH),
+                       CreateRandomString(ICE_PWD_LENGTH), false);
 }
 
 IceParameters IceCredentialsIterator::GetIceCredentials() {

@@ -24,7 +24,7 @@
 
 namespace webrtc {
 
-std::unique_ptr<TestStunServer, std::function<void(webrtc::TestStunServer*)>>
+std::unique_ptr<TestStunServer, std::function<void(TestStunServer*)>>
 TestStunServer::Create(SocketServer* ss,
                        const SocketAddress& addr,
                        Thread& network_thread) {
@@ -35,8 +35,8 @@ TestStunServer::Create(SocketServer* ss,
   TestStunServer* server = nullptr;
   network_thread.BlockingCall(
       [&]() { server = new TestStunServer(udp_socket, network_thread); });
-  std::unique_ptr<TestStunServer, std::function<void(webrtc::TestStunServer*)>>
-      result(server, [&](TestStunServer* server) {
+  std::unique_ptr<TestStunServer, std::function<void(TestStunServer*)>> result(
+      server, [&](TestStunServer* server) {
         network_thread.BlockingCall([server]() { delete server; });
       });
   return result;

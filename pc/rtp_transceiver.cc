@@ -114,7 +114,7 @@ TaskQueueBase* GetCurrentTaskQueueOrThread() {
 
 }  // namespace
 
-RtpTransceiver::RtpTransceiver(webrtc::MediaType media_type,
+RtpTransceiver::RtpTransceiver(MediaType media_type,
                                ConnectionContext* context,
                                CodecLookupHelper* codec_lookup_helper)
     : thread_(GetCurrentTaskQueueOrThread()),
@@ -122,8 +122,7 @@ RtpTransceiver::RtpTransceiver(webrtc::MediaType media_type,
       media_type_(media_type),
       context_(context),
       codec_lookup_helper_(codec_lookup_helper) {
-  RTC_DCHECK(media_type == webrtc::MediaType::AUDIO ||
-             media_type == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(media_type == MediaType::AUDIO || media_type == MediaType::VIDEO);
   RTC_DCHECK(context_);
   RTC_DCHECK(codec_lookup_helper_);
 }
@@ -144,11 +143,11 @@ RtpTransceiver::RtpTransceiver(
           std::move(header_extensions_to_negotiate)),
       on_negotiation_needed_(std::move(on_negotiation_needed)) {
   RTC_DCHECK(context_);
-  RTC_DCHECK(media_type_ == webrtc::MediaType::AUDIO ||
-             media_type_ == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(media_type_ == MediaType::AUDIO ||
+             media_type_ == MediaType::VIDEO);
   RTC_DCHECK_EQ(sender->media_type(), receiver->media_type());
   sender->internal()->SetSendCodecs(
-      sender->media_type() == webrtc::MediaType::VIDEO
+      sender->media_type() == MediaType::VIDEO
           ? codec_vendor().video_send_codecs().codecs()
           : codec_vendor().audio_send_codecs().codecs());
   senders_.push_back(sender);
@@ -170,7 +169,7 @@ RtpTransceiver::RtpTransceiver(
             header_extensions_to_negotiate_,
             [](const RtpHeaderExtensionCapability& ext) {
               return ext.uri == RtpExtension::kGenericFrameDescriptorUri00 &&
-                     ext.direction != webrtc::RtpTransceiverDirection::kStopped;
+                     ext.direction != RtpTransceiverDirection::kStopped;
             }) != header_extensions_to_negotiate_.end();
     if (!uses_gfd) {
       for (RtpHeaderExtensionCapability& ext :
@@ -216,7 +215,7 @@ RTCError RtpTransceiver::CreateChannel(
   }
 
   std::unique_ptr<ChannelInterface> new_channel;
-  if (media_type() == webrtc::MediaType::AUDIO) {
+  if (media_type() == MediaType::AUDIO) {
     // TODO(bugs.webrtc.org/11992): CreateVideoChannel internally switches to
     // the worker thread. We shouldn't be using the `call_ptr_` hack here but
     // simply be on the worker thread and use `call_` (update upstream code).
@@ -252,7 +251,7 @@ RTCError RtpTransceiver::CreateChannel(
           context()->ssrc_generator());
     });
   } else {
-    RTC_DCHECK_EQ(webrtc::MediaType::VIDEO, media_type());
+    RTC_DCHECK_EQ(MediaType::VIDEO, media_type());
 
     // TODO(bugs.webrtc.org/11992): CreateVideoChannel internally switches to
     // the worker thread. We shouldn't be using the `call_ptr_` hack here but
@@ -403,7 +402,7 @@ void RtpTransceiver::AddSender(
   RTC_DCHECK(!absl::c_linear_search(senders_, sender));
 
   std::vector<Codec> send_codecs =
-      media_type() == webrtc::MediaType::VIDEO
+      media_type() == MediaType::VIDEO
           ? codec_vendor().video_send_codecs().codecs()
           : codec_vendor().audio_send_codecs().codecs();
   sender->internal()->SetSendCodecs(send_codecs);
@@ -468,7 +467,7 @@ scoped_refptr<RtpReceiverInternal> RtpTransceiver::receiver_internal() const {
   return scoped_refptr<RtpReceiverInternal>(receivers_[0]->internal());
 }
 
-webrtc::MediaType RtpTransceiver::media_type() const {
+MediaType RtpTransceiver::media_type() const {
   return media_type_;
 }
 
@@ -678,10 +677,10 @@ RTCError RtpTransceiver::UpdateCodecPreferencesCaches(
     const std::vector<RtpCodecCapability>& codecs) {
   // Get codec capabilities from media engine.
   std::vector<Codec> send_codecs, recv_codecs;
-  if (media_type_ == webrtc::MediaType::AUDIO) {
+  if (media_type_ == MediaType::AUDIO) {
     send_codecs = codec_vendor().audio_send_codecs().codecs();
     recv_codecs = codec_vendor().audio_recv_codecs().codecs();
-  } else if (media_type_ == webrtc::MediaType::VIDEO) {
+  } else if (media_type_ == MediaType::VIDEO) {
     send_codecs = codec_vendor().video_send_codecs().codecs();
     recv_codecs = codec_vendor().video_recv_codecs().codecs();
   }

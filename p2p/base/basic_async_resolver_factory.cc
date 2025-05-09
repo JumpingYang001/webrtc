@@ -20,26 +20,26 @@
 
 namespace webrtc {
 
-std::unique_ptr<webrtc::AsyncDnsResolverInterface>
+std::unique_ptr<AsyncDnsResolverInterface>
 BasicAsyncDnsResolverFactory::Create() {
   return std::make_unique<AsyncDnsResolver>();
 }
 
-std::unique_ptr<webrtc::AsyncDnsResolverInterface>
+std::unique_ptr<AsyncDnsResolverInterface>
 BasicAsyncDnsResolverFactory::CreateAndResolve(
     const SocketAddress& addr,
     absl::AnyInvocable<void()> callback) {
-  std::unique_ptr<webrtc::AsyncDnsResolverInterface> resolver = Create();
+  std::unique_ptr<AsyncDnsResolverInterface> resolver = Create();
   resolver->Start(addr, std::move(callback));
   return resolver;
 }
 
-std::unique_ptr<webrtc::AsyncDnsResolverInterface>
+std::unique_ptr<AsyncDnsResolverInterface>
 BasicAsyncDnsResolverFactory::CreateAndResolve(
     const SocketAddress& addr,
     int family,
     absl::AnyInvocable<void()> callback) {
-  std::unique_ptr<webrtc::AsyncDnsResolverInterface> resolver = Create();
+  std::unique_ptr<AsyncDnsResolverInterface> resolver = Create();
   resolver->Start(addr, family, std::move(callback));
   return resolver;
 }

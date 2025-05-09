@@ -221,7 +221,7 @@ bool SrtpSession::ProtectRtp(CopyOnWriteBuffer& buffer) {
 
   int out_len = buffer.size();
   int err = srtp_protect(session_, buffer.MutableData<char>(), &out_len);
-  int seq_num = webrtc::ParseRtpSequenceNumber(buffer);
+  int seq_num = ParseRtpSequenceNumber(buffer);
   if (err != srtp_err_status_ok) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTP packet, seqnum=" << seq_num
                         << ", err=" << err
@@ -256,7 +256,7 @@ bool SrtpSession::ProtectRtp(void* p, int in_len, int max_len, int* out_len) {
 
   *out_len = in_len;
   int err = srtp_protect(session_, p, out_len);
-  int seq_num = webrtc::ParseRtpSequenceNumber(
+  int seq_num = ParseRtpSequenceNumber(
       MakeArrayView(reinterpret_cast<const uint8_t*>(p), in_len));
   if (err != srtp_err_status_ok) {
     RTC_LOG(LS_WARNING) << "Failed to protect SRTP packet, seqnum=" << seq_num
@@ -508,18 +508,17 @@ bool SrtpSession::GetSendStreamPacketIndex(CopyOnWriteBuffer& buffer,
                                            int64_t* index) {
   RTC_DCHECK(thread_checker_.IsCurrent());
 
-  uint32_t ssrc = webrtc::ParseRtpSsrc(buffer);
+  uint32_t ssrc = ParseRtpSsrc(buffer);
   uint32_t roc;
   if (srtp_get_stream_roc(session_, ssrc, &roc) != srtp_err_status_ok) {
     return false;
   }
   // Calculate the extended sequence number.
-  uint16_t seq_num = webrtc::ParseRtpSequenceNumber(buffer);
+  uint16_t seq_num = ParseRtpSequenceNumber(buffer);
   int64_t extended_seq_num = (roc << 16) + seq_num;
 
   // Shift extended sequence number, put into network byte order
-  *index =
-      static_cast<int64_t>(webrtc::NetworkToHost64(extended_seq_num << 16));
+  *index = static_cast<int64_t>(NetworkToHost64(extended_seq_num << 16));
   return true;
 }
 
@@ -561,7 +560,7 @@ bool SrtpSession::DoSetKey(int type,
   // Enable external HMAC authentication only for outgoing streams and only
   // for cipher suites that support it (i.e. only non-GCM cipher suites).
   if (type == ssrc_any_outbound && IsExternalAuthEnabled() &&
-      !webrtc::IsGcmCryptoSuite(crypto_suite)) {
+      !IsGcmCryptoSuite(crypto_suite)) {
     policy.rtp.auth_type = EXTERNAL_HMAC_SHA1;
   }
   if (!extension_ids.empty()) {
@@ -672,7 +671,7 @@ void SrtpSession::HandleEventThunk(srtp_event_data_t* ev) {
 // The resulting file can be replayed using the WebRTC video_replay tool and
 // be inspected in Wireshark using the RTP, VP8 and H264 dissectors.
 void SrtpSession::DumpPacket(const CopyOnWriteBuffer& buffer, bool outbound) {
-  int64_t time_of_day = webrtc::TimeUTCMillis() % (24 * 3600 * 1000);
+  int64_t time_of_day = TimeUTCMillis() % (24 * 3600 * 1000);
   int64_t hours = time_of_day / (3600 * 1000);
   int64_t minutes = (time_of_day / (60 * 1000)) % 60;
   int64_t seconds = (time_of_day / 1000) % 60;
@@ -683,7 +682,7 @@ void SrtpSession::DumpPacket(const CopyOnWriteBuffer& buffer, bool outbound) {
       << hours << ":" << std::setfill('0') << std::setw(2) << minutes << ":"
       << std::setfill('0') << std::setw(2) << seconds << "."
       << std::setfill('0') << std::setw(3) << millis << " " << "000000 "
-      << webrtc::hex_encode_with_delimiter(
+      << hex_encode_with_delimiter(
              absl::string_view(buffer.data<char>(), buffer.size()), ' ')
       << " # RTP_DUMP";
 }

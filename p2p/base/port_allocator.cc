@@ -58,12 +58,11 @@ RelayServerConfig::RelayServerConfig(absl::string_view address,
                                      absl::string_view password,
                                      ProtocolType proto,
                                      bool secure)
-    : RelayServerConfig(
-          address,
-          port,
-          username,
-          password,
-          (proto == webrtc::PROTO_TCP && secure ? webrtc::PROTO_TLS : proto)) {}
+    : RelayServerConfig(address,
+                        port,
+                        username,
+                        password,
+                        (proto == PROTO_TCP && secure ? PROTO_TLS : proto)) {}
 
 RelayServerConfig::RelayServerConfig(const RelayServerConfig&) = default;
 
@@ -138,7 +137,7 @@ bool PortAllocator::SetConfiguration(
     TurnCustomizer* turn_customizer,
     const std::optional<int>& stun_candidate_keepalive_interval) {
   PortPrunePolicy turn_port_prune_policy =
-      prune_turn_ports ? webrtc::PRUNE_BASED_ON_PRIORITY : webrtc::NO_PRUNE;
+      prune_turn_ports ? PRUNE_BASED_ON_PRIORITY : NO_PRUNE;
   return SetConfiguration(stun_servers, turn_servers, candidate_pool_size,
                           turn_port_prune_policy, turn_customizer,
                           stun_candidate_keepalive_interval);

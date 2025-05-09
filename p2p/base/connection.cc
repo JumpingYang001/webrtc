@@ -64,8 +64,6 @@
 namespace webrtc {
 namespace {
 
-using webrtc::IceCandidateType;
-
 // Determines whether we have seen at least the given maximum number of
 // pings fail to have a response.
 inline bool TooManyFailures(
@@ -111,13 +109,13 @@ IceCandidateType GetRtcEventLogCandidateType(const Candidate& c) {
 }
 
 IceCandidatePairProtocol GetProtocolByString(absl::string_view protocol) {
-  if (protocol == webrtc::UDP_PROTOCOL_NAME) {
+  if (protocol == UDP_PROTOCOL_NAME) {
     return IceCandidatePairProtocol::kUdp;
-  } else if (protocol == webrtc::TCP_PROTOCOL_NAME) {
+  } else if (protocol == TCP_PROTOCOL_NAME) {
     return IceCandidatePairProtocol::kTcp;
-  } else if (protocol == webrtc::SSLTCP_PROTOCOL_NAME) {
+  } else if (protocol == SSLTCP_PROTOCOL_NAME) {
     return IceCandidatePairProtocol::kSsltcp;
-  } else if (protocol == webrtc::TLS_PROTOCOL_NAME) {
+  } else if (protocol == TLS_PROTOCOL_NAME) {
     return IceCandidatePairProtocol::kTls;
   }
   return IceCandidatePairProtocol::kUnknown;
@@ -134,19 +132,19 @@ IceCandidatePairAddressFamily GetAddressFamilyByInt(int address_family) {
 
 IceCandidateNetworkType ConvertNetworkType(AdapterType type) {
   switch (type) {
-    case webrtc::ADAPTER_TYPE_ETHERNET:
+    case ADAPTER_TYPE_ETHERNET:
       return IceCandidateNetworkType::kEthernet;
-    case webrtc::ADAPTER_TYPE_LOOPBACK:
+    case ADAPTER_TYPE_LOOPBACK:
       return IceCandidateNetworkType::kLoopback;
-    case webrtc::ADAPTER_TYPE_WIFI:
+    case ADAPTER_TYPE_WIFI:
       return IceCandidateNetworkType::kWifi;
-    case webrtc::ADAPTER_TYPE_VPN:
+    case ADAPTER_TYPE_VPN:
       return IceCandidateNetworkType::kVpn;
-    case webrtc::ADAPTER_TYPE_CELLULAR:
-    case webrtc::ADAPTER_TYPE_CELLULAR_2G:
-    case webrtc::ADAPTER_TYPE_CELLULAR_3G:
-    case webrtc::ADAPTER_TYPE_CELLULAR_4G:
-    case webrtc::ADAPTER_TYPE_CELLULAR_5G:
+    case ADAPTER_TYPE_CELLULAR:
+    case ADAPTER_TYPE_CELLULAR_2G:
+    case ADAPTER_TYPE_CELLULAR_3G:
+    case ADAPTER_TYPE_CELLULAR_4G:
+    case ADAPTER_TYPE_CELLULAR_5G:
       return IceCandidateNetworkType::kCellular;
     default:
       return IceCandidateNetworkType::kUnknown;
@@ -225,14 +223,14 @@ void Connection::ConnectionRequest::OnSent() {
 }
 
 int Connection::ConnectionRequest::resend_delay() {
-  return webrtc::CONNECTION_RESPONSE_TIMEOUT;
+  return CONNECTION_RESPONSE_TIMEOUT;
 }
 
 Connection::Connection(WeakPtr<PortInterface> port,
                        size_t index,
                        const Candidate& remote_candidate)
     : network_thread_(port->thread()),
-      id_(webrtc::CreateRandomId()),
+      id_(CreateRandomId()),
       port_(std::move(port)),
       local_candidate_(port_->Candidates()[index]),
       remote_candidate_(remote_candidate),
@@ -253,9 +251,8 @@ Connection::Connection(WeakPtr<PortInterface> port,
       last_data_received_(0),
       last_ping_response_received_(0),
       state_(IceCandidatePairState::WAITING),
-      time_created_ms_(webrtc::TimeMillis()),
-      delta_internal_unix_epoch_ms_(webrtc::TimeUTCMillis() -
-                                    webrtc::TimeMillis()),
+      time_created_ms_(TimeMillis()),
+      delta_internal_unix_epoch_ms_(TimeUTCMillis() - TimeMillis()),
       field_trials_(&kDefaultFieldTrials),
       rtt_estimate_(DEFAULT_RTT_ESTIMATE_HALF_TIME_MS) {
   RTC_DCHECK_RUN_ON(network_thread_);
@@ -304,10 +301,10 @@ uint64_t Connection::priority() const {
   // controlled agent.
   // pair priority = 2^32*MIN(G,D) + 2*MAX(G,D) + (G>D?1:0)
   IceRole role = port_->GetIceRole();
-  if (role != webrtc::ICEROLE_UNKNOWN) {
+  if (role != ICEROLE_UNKNOWN) {
     uint32_t g = 0;
     uint32_t d = 0;
-    if (role == webrtc::ICEROLE_CONTROLLING) {
+    if (role == ICEROLE_CONTROLLING) {
       g = local_candidate().priority();
       d = remote_candidate_.priority();
     } else {
@@ -404,7 +401,7 @@ bool Connection::nominated() const {
 
 int Connection::unwritable_timeout() const {
   RTC_DCHECK_RUN_ON(network_thread_);
-  return unwritable_timeout_.value_or(webrtc::CONNECTION_WRITE_CONNECT_TIMEOUT);
+  return unwritable_timeout_.value_or(CONNECTION_WRITE_CONNECT_TIMEOUT);
 }
 
 void Connection::set_unwritable_timeout(const std::optional<int>& value_ms) {
@@ -414,8 +411,7 @@ void Connection::set_unwritable_timeout(const std::optional<int>& value_ms) {
 
 int Connection::unwritable_min_checks() const {
   RTC_DCHECK_RUN_ON(network_thread_);
-  return unwritable_min_checks_.value_or(
-      webrtc::CONNECTION_WRITE_CONNECT_FAILURES);
+  return unwritable_min_checks_.value_or(CONNECTION_WRITE_CONNECT_FAILURES);
 }
 
 void Connection::set_unwritable_min_checks(const std::optional<int>& value) {
@@ -425,7 +421,7 @@ void Connection::set_unwritable_min_checks(const std::optional<int>& value) {
 
 int Connection::inactive_timeout() const {
   RTC_DCHECK_RUN_ON(network_thread_);
-  return inactive_timeout_.value_or(webrtc::CONNECTION_WRITE_TIMEOUT);
+  return inactive_timeout_.value_or(CONNECTION_WRITE_TIMEOUT);
 }
 
 void Connection::set_inactive_timeout(const std::optional<int>& value) {
@@ -435,7 +431,7 @@ void Connection::set_inactive_timeout(const std::optional<int>& value) {
 
 int Connection::receiving_timeout() const {
   RTC_DCHECK_RUN_ON(network_thread_);
-  return receiving_timeout_.value_or(webrtc::WEAK_CONNECTION_RECEIVE_TIMEOUT);
+  return receiving_timeout_.value_or(WEAK_CONNECTION_RECEIVE_TIMEOUT);
 }
 
 void Connection::set_receiving_timeout(
@@ -468,8 +464,7 @@ void Connection::OnSendStunPacket(const void* data,
 }
 
 void Connection::RegisterReceivedPacketCallback(
-    absl::AnyInvocable<void(webrtc::Connection*,
-                            const webrtc::ReceivedIpPacket&)>
+    absl::AnyInvocable<void(Connection*, const ReceivedIpPacket&)>
         received_packet_callback) {
   RTC_DCHECK_RUN_ON(network_thread_);
   RTC_CHECK(!received_packet_callback_);
@@ -496,7 +491,7 @@ void Connection::OnReadPacket(const ReceivedIpPacket& packet) {
           packet.payload().size(), addr, &msg, &remote_ufrag)) {
     // The packet did not parse as a valid STUN message
     // This is a data packet, pass it along.
-    last_data_received_ = webrtc::TimeMillis();
+    last_data_received_ = TimeMillis();
     UpdateReceiving(last_data_received_);
     recv_rate_tracker_.AddSamples(packet.payload().size());
     stats_.packets_received++;
@@ -642,7 +637,7 @@ void Connection::HandleStunBindingOrGoogPingRequest(IceMessage* msg) {
   if (field_trials_->extra_ice_ping && last_ping_response_received_ == 0) {
     if (local_candidate().is_relay() || local_candidate().is_prflx() ||
         remote_candidate().is_relay() || remote_candidate().is_prflx()) {
-      const int64_t now = webrtc::TimeMillis();
+      const int64_t now = TimeMillis();
       if (last_ping_sent_ + kMinExtraPingDelayMs <= now) {
         RTC_LOG(LS_INFO) << ToString()
                          << "WebRTC-ExtraICEPing/Sending extra ping"
@@ -696,7 +691,7 @@ void Connection::HandleStunBindingOrGoogPingRequest(IceMessage* msg) {
     set_write_state(STATE_WRITE_INIT);
   }
 
-  if (port_->GetIceRole() == webrtc::ICEROLE_CONTROLLED) {
+  if (port_->GetIceRole() == ICEROLE_CONTROLLED) {
     const StunUInt32Attribute* nomination_attr =
         msg->GetUInt32(STUN_ATTR_NOMINATION);
     uint32_t nomination = 0;
@@ -762,7 +757,7 @@ void Connection::SendStunBindingResponse(const StunMessage* message) {
     response.AddAttribute(std::make_unique<StunUInt32Attribute>(
         STUN_ATTR_RETRANSMIT_COUNT, retransmit_attr->value()));
 
-    if (retransmit_attr->value() > webrtc::CONNECTION_WRITE_CONNECT_FAILURES) {
+    if (retransmit_attr->value() > CONNECTION_WRITE_CONNECT_FAILURES) {
       RTC_LOG(LS_INFO)
           << ToString()
           << ": Received a remote ping with high retransmit count: "
@@ -977,7 +972,7 @@ void Connection::UpdateState(int64_t now) {
     return;
 
   // Computes our estimate of the RTT given the current estimate.
-  int rtt = webrtc::SafeClamp(2 * rtt_, MINIMUM_RTT, MAXIMUM_RTT);
+  int rtt = SafeClamp(2 * rtt_, MINIMUM_RTT, MAXIMUM_RTT);
 
   if (RTC_LOG_CHECK_LEVEL(LS_VERBOSE)) {
     std::string pings;
@@ -1104,14 +1099,13 @@ std::unique_ptr<IceMessage> Connection::BuildPingRequest(
 
   // Adding ICE_CONTROLLED or ICE_CONTROLLING attribute based on the role.
   IceRole ice_role = port_->GetIceRole();
-  RTC_DCHECK(ice_role == webrtc::ICEROLE_CONTROLLING ||
-             ice_role == webrtc::ICEROLE_CONTROLLED);
+  RTC_DCHECK(ice_role == ICEROLE_CONTROLLING || ice_role == ICEROLE_CONTROLLED);
   message->AddAttribute(std::make_unique<StunUInt64Attribute>(
-      ice_role == webrtc::ICEROLE_CONTROLLING ? STUN_ATTR_ICE_CONTROLLING
-                                              : STUN_ATTR_ICE_CONTROLLED,
+      ice_role == ICEROLE_CONTROLLING ? STUN_ATTR_ICE_CONTROLLING
+                                      : STUN_ATTR_ICE_CONTROLLED,
       port_->IceTiebreaker()));
 
-  if (ice_role == webrtc::ICEROLE_CONTROLLING) {
+  if (ice_role == ICEROLE_CONTROLLING) {
     // We should have either USE_CANDIDATE attribute or ICE_NOMINATION
     // attribute but not both. That was enforced in p2ptransportchannel.
     if (use_candidate_attr()) {
@@ -1181,7 +1175,7 @@ int64_t Connection::last_ping_received() const {
 
 void Connection::ReceivedPing(const std::optional<std::string>& request_id) {
   RTC_DCHECK_RUN_ON(network_thread_);
-  last_ping_received_ = webrtc::TimeMillis();
+  last_ping_received_ = TimeMillis();
   last_ping_id_received_ = request_id;
   UpdateReceiving(last_ping_received_);
 }
@@ -1203,7 +1197,7 @@ void Connection::HandlePiggybackCheckAcknowledgementIfAny(StunMessage* msg) {
       RTC_LOG_V(sev) << ToString()
                      << ": Received piggyback STUN ping response, id="
                      << hex_encode(request_id);
-      const int64_t rtt = webrtc::TimeMillis() - iter->sent_time;
+      const int64_t rtt = TimeMillis() - iter->sent_time;
       ReceivedPingResponse(rtt, request_id, iter->nomination);
     }
   }
@@ -1234,7 +1228,7 @@ void Connection::ReceivedPingResponse(
     acked_nomination_ = nomination.value();
   }
 
-  int64_t now = webrtc::TimeMillis();
+  int64_t now = TimeMillis();
   total_round_trip_time_ms_ += rtt;
   current_round_trip_time_ms_ = static_cast<uint32_t>(rtt);
   rtt_estimate_.AddSample(now, rtt);
@@ -1299,7 +1293,7 @@ bool Connection::dead(int64_t now) const {
     // locally inactive (pruned) connection. This also allows the local agent to
     // ping with longer interval than 30s as long as it shorter than
     // `dead_connection_timeout_ms`.
-    if (now <= (last_received() + webrtc::DEAD_CONNECTION_RECEIVE_TIMEOUT)) {
+    if (now <= (last_received() + DEAD_CONNECTION_RECEIVE_TIMEOUT)) {
       // Not dead since we have received the last 30s.
       return false;
     }
@@ -1307,7 +1301,7 @@ bool Connection::dead(int64_t now) const {
       // Outstanding pings: let it live until the ping is unreplied for
       // DEAD_CONNECTION_RECEIVE_TIMEOUT.
       return now > (pings_since_last_response_[0].sent_time +
-                    webrtc::DEAD_CONNECTION_RECEIVE_TIMEOUT);
+                    DEAD_CONNECTION_RECEIVE_TIMEOUT);
     }
 
     // No outstanding pings: let it live until
@@ -1327,7 +1321,7 @@ bool Connection::dead(int64_t now) const {
   // keep it around for at least MIN_CONNECTION_LIFETIME to prevent connections
   // from being pruned too quickly during a network change event when two
   // networks would be up simultaneously but only for a brief period.
-  return now > (time_created_ms_ + webrtc::MIN_CONNECTION_LIFETIME);
+  return now > (time_created_ms_ + MIN_CONNECTION_LIFETIME);
 }
 
 int Connection::rtt() const {
@@ -1344,7 +1338,7 @@ bool Connection::stable(int64_t now) const {
 }
 
 std::string Connection::ToDebugId() const {
-  return webrtc::ToHex(reinterpret_cast<uintptr_t>(this));
+  return ToHex(reinterpret_cast<uintptr_t>(this));
 }
 
 uint32_t Connection::ComputeNetworkCost() const {
@@ -1682,9 +1676,9 @@ uint32_t Connection::prflx_priority() const {
   //           (2^8)*(local preference) +
   //           (2^0)*(256 - component ID)
   IcePriorityValue type_preference =
-      (local_candidate_.protocol() == webrtc::TCP_PROTOCOL_NAME)
-          ? webrtc::ICE_TYPE_PREFERENCE_PRFLX_TCP
-          : webrtc::ICE_TYPE_PREFERENCE_PRFLX;
+      (local_candidate_.protocol() == TCP_PROTOCOL_NAME)
+          ? ICE_TYPE_PREFERENCE_PRFLX_TCP
+          : ICE_TYPE_PREFERENCE_PRFLX;
   return type_preference << 24 | (local_candidate_.priority() & 0x00FFFFFF);
 }
 
@@ -1872,7 +1866,7 @@ int ProxyConnection::Send(const void* data,
   stats_.sent_total_packets++;
   int sent =
       port_->SendTo(data, size, remote_candidate_.address(), options, true);
-  int64_t now = webrtc::TimeMillis();
+  int64_t now = TimeMillis();
   if (sent <= 0) {
     RTC_DCHECK(sent < 0);
     error_ = port_->GetError();

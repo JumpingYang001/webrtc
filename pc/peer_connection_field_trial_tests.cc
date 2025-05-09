@@ -103,7 +103,7 @@ TEST_F(PeerConnectionFieldTrialTest, EnableDependencyDescriptorAdvertised) {
       "WebRTC-DependencyDescriptorAdvertised/Enabled/"));
 
   WrapperPtr caller = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
 
   auto offer = caller->CreateOffer();
   auto contents1 = offer->description()->contents();
@@ -111,7 +111,7 @@ TEST_F(PeerConnectionFieldTrialTest, EnableDependencyDescriptorAdvertised) {
 
   const MediaContentDescription* media_description1 =
       contents1[0].media_description();
-  EXPECT_EQ(webrtc::MediaType::VIDEO, media_description1->type());
+  EXPECT_EQ(MediaType::VIDEO, media_description1->type());
   const RtpHeaderExtensions& rtp_header_extensions1 =
       media_description1->rtp_header_extensions();
 
@@ -137,7 +137,7 @@ TEST_F(PeerConnectionFieldTrialTest, MAYBE_InjectDependencyDescriptor) {
 
   WrapperPtr caller = CreatePeerConnection();
   WrapperPtr callee = CreatePeerConnection();
-  caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  caller->AddTransceiver(MediaType::VIDEO);
 
   auto offer = caller->CreateOffer();
   ContentInfos& contents1 = offer->description()->contents();
@@ -145,7 +145,7 @@ TEST_F(PeerConnectionFieldTrialTest, MAYBE_InjectDependencyDescriptor) {
 
   MediaContentDescription* media_description1 =
       contents1[0].media_description();
-  EXPECT_EQ(webrtc::MediaType::VIDEO, media_description1->type());
+  EXPECT_EQ(MediaType::VIDEO, media_description1->type());
   RtpHeaderExtensions rtp_header_extensions1 =
       media_description1->rtp_header_extensions();
 
@@ -189,7 +189,7 @@ TEST_F(PeerConnectionFieldTrialTest, MAYBE_InjectDependencyDescriptor) {
 
   MediaContentDescription* media_description2 =
       contents2[0].media_description();
-  EXPECT_EQ(webrtc::MediaType::VIDEO, media_description2->type());
+  EXPECT_EQ(MediaType::VIDEO, media_description2->type());
   RtpHeaderExtensions rtp_header_extensions2 =
       media_description2->rtp_header_extensions();
 

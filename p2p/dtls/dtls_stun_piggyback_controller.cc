@@ -31,8 +31,7 @@
 namespace webrtc {
 
 DtlsStunPiggybackController::DtlsStunPiggybackController(
-    absl::AnyInvocable<void(webrtc::ArrayView<const uint8_t>)>
-        dtls_data_callback)
+    absl::AnyInvocable<void(ArrayView<const uint8_t>)> dtls_data_callback)
     : dtls_data_callback_(std::move(dtls_data_callback)) {}
 
 DtlsStunPiggybackController::~DtlsStunPiggybackController() {}

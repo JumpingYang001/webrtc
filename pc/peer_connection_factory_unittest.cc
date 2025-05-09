@@ -76,6 +76,8 @@
 namespace webrtc {
 namespace {
 
+using test::MockAudioProcessing;
+using test::MockAudioProcessingBuilder;
 using ::testing::_;
 using ::testing::A;
 using ::testing::AtLeast;
@@ -84,8 +86,6 @@ using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
-using ::webrtc::test::MockAudioProcessing;
-using ::webrtc::test::MockAudioProcessingBuilder;
 
 static const char kStunIceServer[] = "stun:stun.l.google.com:19302";
 static const char kTurnIceServer[] = "turn:test.com:1234";
@@ -191,7 +191,7 @@ class PeerConnectionFactoryTest : public ::testing::Test {
   }
 
   void VerifyAudioCodecCapability(const RtpCodecCapability& codec) {
-    EXPECT_EQ(codec.kind, webrtc::MediaType::AUDIO);
+    EXPECT_EQ(codec.kind, MediaType::AUDIO);
     EXPECT_FALSE(codec.name.empty());
     EXPECT_GT(codec.clock_rate, 0);
     EXPECT_GT(codec.num_channels, 0);
@@ -199,7 +199,7 @@ class PeerConnectionFactoryTest : public ::testing::Test {
 
   void VerifyVideoCodecCapability(const RtpCodecCapability& codec,
                                   bool sender) {
-    EXPECT_EQ(codec.kind, webrtc::MediaType::VIDEO);
+    EXPECT_EQ(codec.kind, MediaType::VIDEO);
     EXPECT_FALSE(codec.name.empty());
     EXPECT_GT(codec.clock_rate, 0);
     if (sender) {
@@ -334,7 +334,7 @@ TEST(PeerConnectionFactoryTestInternal, DISABLED_CreatePCUsingInternalModules) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpSenderAudioCapabilities) {
   RtpCapabilities audio_capabilities =
-      factory_->GetRtpSenderCapabilities(webrtc::MediaType::AUDIO);
+      factory_->GetRtpSenderCapabilities(MediaType::AUDIO);
   EXPECT_FALSE(audio_capabilities.codecs.empty());
   for (const auto& codec : audio_capabilities.codecs) {
     VerifyAudioCodecCapability(codec);
@@ -347,7 +347,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpSenderAudioCapabilities) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpSenderVideoCapabilities) {
   RtpCapabilities video_capabilities =
-      factory_->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO);
+      factory_->GetRtpSenderCapabilities(MediaType::VIDEO);
   EXPECT_FALSE(video_capabilities.codecs.empty());
   for (const auto& codec : video_capabilities.codecs) {
     VerifyVideoCodecCapability(codec, true);
@@ -360,7 +360,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpSenderVideoCapabilities) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpSenderRtxEnabledCapabilities) {
   RtpCapabilities video_capabilities =
-      factory_->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO);
+      factory_->GetRtpSenderCapabilities(MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
       [](const auto& c) { return c.name == kRtxCodecName; });
@@ -370,7 +370,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpSenderRtxEnabledCapabilities) {
 TEST(PeerConnectionFactoryTestInternal, CheckRtpSenderRtxDisabledCapabilities) {
   auto factory = CreatePeerConnectionFactoryWithRtxDisabled();
   RtpCapabilities video_capabilities =
-      factory->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO);
+      factory->GetRtpSenderCapabilities(MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
       [](const auto& c) { return c.name == kRtxCodecName; });
@@ -379,14 +379,14 @@ TEST(PeerConnectionFactoryTestInternal, CheckRtpSenderRtxDisabledCapabilities) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpSenderDataCapabilities) {
   RtpCapabilities data_capabilities =
-      factory_->GetRtpSenderCapabilities(webrtc::MediaType::DATA);
+      factory_->GetRtpSenderCapabilities(MediaType::DATA);
   EXPECT_TRUE(data_capabilities.codecs.empty());
   EXPECT_TRUE(data_capabilities.header_extensions.empty());
 }
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverAudioCapabilities) {
   RtpCapabilities audio_capabilities =
-      factory_->GetRtpReceiverCapabilities(webrtc::MediaType::AUDIO);
+      factory_->GetRtpReceiverCapabilities(MediaType::AUDIO);
   EXPECT_FALSE(audio_capabilities.codecs.empty());
   for (const auto& codec : audio_capabilities.codecs) {
     VerifyAudioCodecCapability(codec);
@@ -399,7 +399,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverAudioCapabilities) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverVideoCapabilities) {
   RtpCapabilities video_capabilities =
-      factory_->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO);
+      factory_->GetRtpReceiverCapabilities(MediaType::VIDEO);
   EXPECT_FALSE(video_capabilities.codecs.empty());
   for (const auto& codec : video_capabilities.codecs) {
     VerifyVideoCodecCapability(codec, false);
@@ -412,7 +412,7 @@ TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverVideoCapabilities) {
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverRtxEnabledCapabilities) {
   RtpCapabilities video_capabilities =
-      factory_->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO);
+      factory_->GetRtpReceiverCapabilities(MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
       [](const auto& c) { return c.name == kRtxCodecName; });
@@ -423,7 +423,7 @@ TEST(PeerConnectionFactoryTestInternal,
      CheckRtpReceiverRtxDisabledCapabilities) {
   auto factory = CreatePeerConnectionFactoryWithRtxDisabled();
   RtpCapabilities video_capabilities =
-      factory->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO);
+      factory->GetRtpReceiverCapabilities(MediaType::VIDEO);
   const auto it = std::find_if(
       video_capabilities.codecs.begin(), video_capabilities.codecs.end(),
       [](const auto& c) { return c.name == kRtxCodecName; });
@@ -432,7 +432,7 @@ TEST(PeerConnectionFactoryTestInternal,
 
 TEST_F(PeerConnectionFactoryTest, CheckRtpReceiverDataCapabilities) {
   RtpCapabilities data_capabilities =
-      factory_->GetRtpReceiverCapabilities(webrtc::MediaType::DATA);
+      factory_->GetRtpReceiverCapabilities(MediaType::DATA);
   EXPECT_TRUE(data_capabilities.codecs.empty());
   EXPECT_TRUE(data_capabilities.header_extensions.empty());
 }

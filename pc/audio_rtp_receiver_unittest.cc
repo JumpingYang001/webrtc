@@ -83,7 +83,7 @@ TEST_F(AudioRtpReceiverTest, SetOutputVolumeIsCalled) {
 
   receiver_->OnSetVolume(kVolume);
   EXPECT_THAT(WaitUntil([&] { return set_volume_calls.load(); }, Eq(2),
-                        {.timeout = webrtc::TimeDelta::Millis(kTimeOut)}),
+                        {.timeout = TimeDelta::Millis(kTimeOut)}),
               IsRtcOk());
 }
 

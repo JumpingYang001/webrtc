@@ -45,8 +45,7 @@ class PeerConnectionSVCIntegrationTest
       scoped_refptr<RtpTransceiverInterface> transceiver,
       absl::string_view codec_name) {
     RtpCapabilities capabilities =
-        caller()->pc_factory()->GetRtpReceiverCapabilities(
-            webrtc::MediaType::VIDEO);
+        caller()->pc_factory()->GetRtpReceiverCapabilities(MediaType::VIDEO);
     std::vector<RtpCodecCapability> codecs;
     for (const RtpCodecCapability& codec_capability : capabilities.codecs) {
       if (codec_capability.name == codec_name)
@@ -100,8 +99,7 @@ TEST_F(PeerConnectionSVCIntegrationTest, SetParametersAcceptsL1T3WithVP8) {
   ConnectFakeSignaling();
 
   RtpCapabilities capabilities =
-      caller()->pc_factory()->GetRtpReceiverCapabilities(
-          webrtc::MediaType::VIDEO);
+      caller()->pc_factory()->GetRtpReceiverCapabilities(MediaType::VIDEO);
   std::vector<RtpCodecCapability> vp8_codec;
   for (const RtpCodecCapability& codec_capability : capabilities.codecs) {
     if (codec_capability.name == kVp8CodecName)
@@ -243,8 +241,7 @@ TEST_F(PeerConnectionSVCIntegrationTest, FallbackToL1Tx) {
   auto caller_transceiver = transceiver_or_error.MoveValue();
 
   RtpCapabilities capabilities =
-      caller()->pc_factory()->GetRtpReceiverCapabilities(
-          webrtc::MediaType::VIDEO);
+      caller()->pc_factory()->GetRtpReceiverCapabilities(MediaType::VIDEO);
   std::vector<RtpCodecCapability> send_codecs = capabilities.codecs;
   // Only keep VP9 in the caller
   send_codecs.erase(std::partition(send_codecs.begin(), send_codecs.end(),

@@ -625,9 +625,9 @@ RTCError JsepTransport::NegotiateDtlsRole(
             break;
         }
       } else {
-        if ((*current_dtls_role == webrtc::SSL_CLIENT &&
+        if ((*current_dtls_role == SSL_CLIENT &&
              remote_connection_role == CONNECTIONROLE_ACTIVE) ||
-            (*current_dtls_role == webrtc::SSL_SERVER &&
+            (*current_dtls_role == SSL_SERVER &&
              remote_connection_role == CONNECTIONROLE_PASSIVE)) {
           return RTCError(RTCErrorType::INVALID_PARAMETER,
                           "Offerer must use current negotiated role for "
@@ -648,8 +648,7 @@ RTCError JsepTransport::NegotiateDtlsRole(
     // If local is passive, local will act as server.
   }
 
-  *negotiated_dtls_role =
-      (is_remote_server ? webrtc::SSL_CLIENT : webrtc::SSL_SERVER);
+  *negotiated_dtls_role = (is_remote_server ? SSL_CLIENT : SSL_SERVER);
   return RTCError::OK();
 }
 

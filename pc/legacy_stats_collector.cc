@@ -934,7 +934,7 @@ LegacyStatsCollector::SessionStats LegacyStatsCollector::ExtractSessionInfo_n(
     transport_names.insert(entry.second);
   }
 
-  std::map<std::string, webrtc::TransportStats> transport_stats_by_name =
+  std::map<std::string, ::webrtc::TransportStats> transport_stats_by_name =
       pc_->GetTransportStatsByNames(transport_names);
 
   for (auto& entry : transport_stats_by_name) {
@@ -1067,7 +1067,7 @@ void LegacyStatsCollector::ExtractBweInfo() {
   auto transceivers = pc_->GetTransceiversInternal();
   std::vector<VideoMediaSendChannelInterface*> video_media_channels;
   for (const auto& transceiver : transceivers) {
-    if (transceiver->media_type() != webrtc::MediaType::VIDEO) {
+    if (transceiver->media_type() != MediaType::VIDEO) {
       continue;
     }
     auto* video_channel = transceiver->internal()->channel();
@@ -1200,11 +1200,11 @@ class VideoChannelStatsGatherer final : public ChannelStatsGatherer {
 std::unique_ptr<ChannelStatsGatherer> CreateChannelStatsGatherer(
     ChannelInterface* channel) {
   RTC_DCHECK(channel);
-  if (channel->media_type() == webrtc::MediaType::AUDIO) {
+  if (channel->media_type() == MediaType::AUDIO) {
     return std::make_unique<VoiceChannelStatsGatherer>(
         channel->AsVoiceChannel());
   } else {
-    RTC_DCHECK_EQ(channel->media_type(), webrtc::MediaType::VIDEO);
+    RTC_DCHECK_EQ(channel->media_type(), MediaType::VIDEO);
     return std::make_unique<VideoChannelStatsGatherer>(
         channel->AsVideoChannel());
   }

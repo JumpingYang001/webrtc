@@ -379,7 +379,7 @@ TEST_P(PeerConnectionCryptoDtlsCertGenTest, TestCertificateGeneration) {
                      fake_certificate_generator->generated_failures();
             },
             ::testing::Gt(0),
-            {.timeout = webrtc::TimeDelta::Millis(kGenerateCertTimeout)}),
+            {.timeout = TimeDelta::Millis(kGenerateCertTimeout)}),
         IsRtcOk());
   } else {
     ASSERT_EQ(fake_certificate_generator->generated_certificates(), 0);

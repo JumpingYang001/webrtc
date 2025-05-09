@@ -33,7 +33,6 @@
 #include "rtc_base/time_utils.h"  // For TimeMillis
 
 namespace webrtc {
-using ::webrtc::SafeTask;
 
 // RFC 5389 says SHOULD be 500ms.
 // For years, this was 100ms, but for networks that
@@ -54,7 +53,7 @@ const int STUN_MAX_RTO = 8000;  // milliseconds, or 5 doublings
 
 StunRequestManager::StunRequestManager(
     TaskQueueBase* thread,
-    std::function<void(const void*, size_t, webrtc::StunRequest*)> send_packet)
+    std::function<void(const void*, size_t, StunRequest*)> send_packet)
     : thread_(thread), send_packet_(std::move(send_packet)) {}
 
 StunRequestManager::~StunRequestManager() = default;
@@ -215,8 +214,7 @@ bool StunRequestManager::CheckResponse(const char* data, size_t size) {
       MakeArrayView(reinterpret_cast<const uint8_t*>(data), size));
   std::unique_ptr<StunMessage> response(iter->second->msg_->CreateNew());
   if (!response->Read(&buf)) {
-    RTC_LOG(LS_WARNING) << "Failed to read STUN response "
-                        << webrtc::hex_encode(id);
+    RTC_LOG(LS_WARNING) << "Failed to read STUN response " << hex_encode(id);
     return false;
   }
 
@@ -268,7 +266,7 @@ const StunMessage* StunRequest::msg() const {
 
 int StunRequest::Elapsed() const {
   RTC_DCHECK_RUN_ON(network_thread());
-  return static_cast<int>(webrtc::TimeMillis() - tstamp_);
+  return static_cast<int>(TimeMillis() - tstamp_);
 }
 
 void StunRequest::SendInternal() {
@@ -279,7 +277,7 @@ void StunRequest::SendInternal() {
     return;
   }
 
-  tstamp_ = webrtc::TimeMillis();
+  tstamp_ = TimeMillis();
 
   ByteBufferWriter buf;
   msg_->Write(&buf);

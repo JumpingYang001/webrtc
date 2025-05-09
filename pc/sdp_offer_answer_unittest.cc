@@ -132,7 +132,7 @@ class SdpOfferAnswerTest : public ::testing::Test {
   }
 
   std::optional<RtpCodecCapability> FindFirstSendCodecWithName(
-      webrtc::MediaType media_type,
+      MediaType media_type,
       const std::string& name) const {
     std::vector<RtpCodecCapability> codecs =
         pc_factory_->GetRtpSenderCapabilities(media_type).codecs;
@@ -156,7 +156,7 @@ TEST_F(SdpOfferAnswerTest, OnTrackReturnsProxiedObject) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  auto audio_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
+  auto audio_transceiver = caller->AddTransceiver(MediaType::AUDIO);
 
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
   // Verify that caller->observer->OnTrack() has been called with a
@@ -600,7 +600,7 @@ TEST_F(SdpOfferAnswerTest, SimulcastAnswerWithNoRidsIsRejected) {
   rid2.rid = "2";
   init.send_encodings.push_back(rid2);
 
-  auto transceiver = pc->AddTransceiver(webrtc::MediaType::VIDEO, init);
+  auto transceiver = pc->AddTransceiver(MediaType::VIDEO, init);
   EXPECT_TRUE(pc->CreateOfferAndSetAsLocal());
   auto mid = pc->pc()->local_description()->description()->contents()[0].mid();
 
@@ -652,10 +652,10 @@ TEST_F(SdpOfferAnswerTest, SimulcastOfferWithMixedCodec) {
       FieldTrials::CreateNoGlobal("WebRTC-MixedCodecSimulcast/Enabled/"));
 
   std::optional<RtpCodecCapability> vp8_codec_capability =
-      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO, kVp8CodecName);
+      FindFirstSendCodecWithName(MediaType::VIDEO, kVp8CodecName);
   ASSERT_TRUE(vp8_codec_capability);
   std::optional<RtpCodecCapability> vp9_codec_capability =
-      FindFirstSendCodecWithName(webrtc::MediaType::VIDEO, kVp9CodecName);
+      FindFirstSendCodecWithName(MediaType::VIDEO, kVp9CodecName);
   ASSERT_TRUE(vp9_codec_capability);
 
   RtpTransceiverInit init;
@@ -668,7 +668,7 @@ TEST_F(SdpOfferAnswerTest, SimulcastOfferWithMixedCodec) {
   rid2.codec = *vp9_codec_capability;
   init.send_encodings.push_back(rid2);
 
-  auto transceiver = pc->AddTransceiver(webrtc::MediaType::VIDEO, init);
+  auto transceiver = pc->AddTransceiver(MediaType::VIDEO, init);
   auto offer = pc->CreateOffer();
   auto& offer_contents = offer->description()->contents();
   auto send_codecs = offer_contents[0].media_description()->codecs();
@@ -1611,8 +1611,8 @@ TEST_F(SdpOfferAnswerTest, ReducedSizeNegotiated) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  auto audio_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  auto video_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto audio_transceiver = caller->AddTransceiver(MediaType::AUDIO);
+  auto video_transceiver = caller->AddTransceiver(MediaType::VIDEO);
 
   ASSERT_TRUE(caller->ExchangeOfferAnswerWith(callee.get()));
   auto receivers = callee->pc()->GetReceivers();
@@ -1634,8 +1634,8 @@ TEST_F(SdpOfferAnswerTest, ReducedSizeNotNegotiated) {
   auto caller = CreatePeerConnection();
   auto callee = CreatePeerConnection();
 
-  auto audio_transceiver = caller->AddTransceiver(webrtc::MediaType::AUDIO);
-  auto video_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto audio_transceiver = caller->AddTransceiver(MediaType::AUDIO);
+  auto video_transceiver = caller->AddTransceiver(MediaType::VIDEO);
 
   auto offer = caller->CreateOfferAndSetAsLocal();
   ASSERT_NE(offer, nullptr);
@@ -1669,9 +1669,9 @@ TEST_F(SdpOfferAnswerTest, PayloadTypeMatchingWithSubsequentOfferAnswer) {
 
   // 1. Restrict codecs and set a local description and remote description.
   //    with a different payload type.
-  auto video_transceiver = caller->AddTransceiver(webrtc::MediaType::VIDEO);
+  auto video_transceiver = caller->AddTransceiver(MediaType::VIDEO);
   std::vector<RtpCodecCapability> codec_caps =
-      pc_factory_->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO).codecs;
+      pc_factory_->GetRtpReceiverCapabilities(MediaType::VIDEO).codecs;
   codec_caps.erase(std::remove_if(codec_caps.begin(), codec_caps.end(),
                                   [](const RtpCodecCapability& codec) {
                                     return !absl::EqualsIgnoreCase(codec.name,
@@ -1700,8 +1700,7 @@ TEST_F(SdpOfferAnswerTest, PayloadTypeMatchingWithSubsequentOfferAnswer) {
   EXPECT_TRUE(caller->SetRemoteDescription(std::move(answer1)));
 
   // 3. sCP to reenable that codec. Payload type is not matched at this point.
-  codec_caps =
-      pc_factory_->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO).codecs;
+  codec_caps = pc_factory_->GetRtpReceiverCapabilities(MediaType::VIDEO).codecs;
   codec_caps.erase(
       std::remove_if(codec_caps.begin(), codec_caps.end(),
                      [](const RtpCodecCapability& codec) {

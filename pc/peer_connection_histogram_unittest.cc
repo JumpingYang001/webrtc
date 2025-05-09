@@ -51,8 +51,7 @@ using RTCOfferAnswerOptions = PeerConnectionInterface::RTCOfferAnswerOptions;
 using ::testing::NiceMock;
 
 static const char kUsagePatternMetric[] = "WebRTC.PeerConnection.UsagePattern";
-static constexpr webrtc::TimeDelta kDefaultTimeout =
-    webrtc::TimeDelta::Millis(10000);
+static constexpr TimeDelta kDefaultTimeout = TimeDelta::Millis(10000);
 static const SocketAddress kLocalAddrs[2] = {SocketAddress("1.1.1.1", 0),
                                              SocketAddress("2.2.2.2", 0)};
 static const SocketAddress kPrivateLocalAddress("10.1.1.1", 0);

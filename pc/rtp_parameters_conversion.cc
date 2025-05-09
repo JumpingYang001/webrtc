@@ -78,9 +78,8 @@ std::optional<RtcpFeedback> ToRtcpFeedback(
 RtpCodecCapability ToRtpCodecCapability(const Codec& cricket_codec) {
   RtpCodecCapability codec;
   codec.name = cricket_codec.name;
-  codec.kind = cricket_codec.type == Codec::Type::kAudio
-                   ? webrtc::MediaType::AUDIO
-                   : webrtc::MediaType::VIDEO;
+  codec.kind = cricket_codec.type == Codec::Type::kAudio ? MediaType::AUDIO
+                                                         : MediaType::VIDEO;
   codec.clock_rate.emplace(cricket_codec.clockrate);
   codec.preferred_payload_type.emplace(cricket_codec.id);
   for (const FeedbackParam& cricket_feedback :

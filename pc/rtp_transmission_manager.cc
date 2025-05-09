@@ -172,10 +172,9 @@ RtpTransmissionManager::AddTrackPlanB(
   if (adjusted_stream_ids.empty()) {
     adjusted_stream_ids.push_back(CreateRandomUuid());
   }
-  webrtc::MediaType media_type =
-      (track->kind() == MediaStreamTrackInterface::kAudioKind
-           ? webrtc::MediaType::AUDIO
-           : webrtc::MediaType::VIDEO);
+  MediaType media_type = (track->kind() == MediaStreamTrackInterface::kAudioKind
+                              ? MediaType::AUDIO
+                              : MediaType::VIDEO);
   auto new_sender = CreateSender(
       media_type, track->id(), track, adjusted_stream_ids,
       init_send_encodings
@@ -213,7 +212,7 @@ RtpTransmissionManager::AddTrackUnifiedPlan(
       FindFirstTransceiverForAddedTrack(track, init_send_encodings);
   if (transceiver) {
     RTC_LOG(LS_INFO) << "Reusing an existing "
-                     << webrtc::MediaTypeToString(transceiver->media_type())
+                     << MediaTypeToString(transceiver->media_type())
                      << " transceiver for AddTrack.";
     if (transceiver->stopping()) {
       LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_PARAMETER,
@@ -231,11 +230,11 @@ RtpTransmissionManager::AddTrackUnifiedPlan(
     transceiver->internal()->sender_internal()->set_stream_ids(stream_ids);
     transceiver->internal()->set_reused_for_addtrack(true);
   } else {
-    webrtc::MediaType media_type =
+    MediaType media_type =
         (track->kind() == MediaStreamTrackInterface::kAudioKind
-             ? webrtc::MediaType::AUDIO
-             : webrtc::MediaType::VIDEO);
-    RTC_LOG(LS_INFO) << "Adding " << webrtc::MediaTypeToString(media_type)
+             ? MediaType::AUDIO
+             : MediaType::VIDEO);
+    RTC_LOG(LS_INFO) << "Adding " << MediaTypeToString(media_type)
                      << " transceiver in response to a call to AddTrack.";
     std::string sender_id = track->id();
     // Avoid creating a sender with an existing ID by generating a random ID.
@@ -259,14 +258,14 @@ RtpTransmissionManager::AddTrackUnifiedPlan(
 
 scoped_refptr<RtpSenderProxyWithInternal<RtpSenderInternal>>
 RtpTransmissionManager::CreateSender(
-    webrtc::MediaType media_type,
+    MediaType media_type,
     const std::string& id,
     scoped_refptr<MediaStreamTrackInterface> track,
     const std::vector<std::string>& stream_ids,
     const std::vector<RtpEncodingParameters>& send_encodings) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   scoped_refptr<RtpSenderProxyWithInternal<RtpSenderInternal>> sender;
-  if (media_type == webrtc::MediaType::AUDIO) {
+  if (media_type == MediaType::AUDIO) {
     RTC_DCHECK(!track ||
                (track->kind() == MediaStreamTrackInterface::kAudioKind));
     sender = RtpSenderProxyWithInternal<RtpSenderInternal>::Create(
@@ -274,7 +273,7 @@ RtpTransmissionManager::CreateSender(
         AudioRtpSender::Create(env_, worker_thread(), id, legacy_stats_, this));
     NoteUsageEvent(UsageEvent::AUDIO_ADDED);
   } else {
-    RTC_DCHECK_EQ(media_type, webrtc::MediaType::VIDEO);
+    RTC_DCHECK_EQ(media_type, MediaType::VIDEO);
     RTC_DCHECK(!track ||
                (track->kind() == MediaStreamTrackInterface::kVideoKind));
     sender = RtpSenderProxyWithInternal<RtpSenderInternal>::Create(
@@ -290,11 +289,11 @@ RtpTransmissionManager::CreateSender(
 }
 
 scoped_refptr<RtpReceiverProxyWithInternal<RtpReceiverInternal>>
-RtpTransmissionManager::CreateReceiver(webrtc::MediaType media_type,
+RtpTransmissionManager::CreateReceiver(MediaType media_type,
                                        const std::string& receiver_id) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   scoped_refptr<RtpReceiverProxyWithInternal<RtpReceiverInternal>> receiver;
-  if (media_type == webrtc::MediaType::AUDIO) {
+  if (media_type == MediaType::AUDIO) {
     receiver = RtpReceiverProxyWithInternal<RtpReceiverInternal>::Create(
         signaling_thread(), worker_thread(),
         make_ref_counted<AudioRtpReceiver>(worker_thread(), receiver_id,
@@ -302,7 +301,7 @@ RtpTransmissionManager::CreateReceiver(webrtc::MediaType media_type,
                                            IsUnifiedPlan()));
     NoteUsageEvent(UsageEvent::AUDIO_ADDED);
   } else {
-    RTC_DCHECK_EQ(media_type, webrtc::MediaType::VIDEO);
+    RTC_DCHECK_EQ(media_type, MediaType::VIDEO);
     receiver = RtpReceiverProxyWithInternal<RtpReceiverInternal>::Create(
         signaling_thread(), worker_thread(),
         make_ref_counted<VideoRtpReceiver>(worker_thread(), receiver_id,
@@ -326,7 +325,7 @@ RtpTransmissionManager::CreateAndAddTransceiver(
       signaling_thread(),
       make_ref_counted<RtpTransceiver>(
           sender, receiver, context_, codec_lookup_helper_,
-          sender->media_type() == webrtc::MediaType::AUDIO
+          sender->media_type() == MediaType::AUDIO
               ? media_engine()->voice().GetRtpHeaderExtensions()
               : media_engine()->video().GetRtpHeaderExtensions(),
           [this_weak_ptr = weak_ptr_factory_.GetWeakPtr()]() {
@@ -349,7 +348,7 @@ RtpTransmissionManager::FindFirstTransceiverForAddedTrack(
   }
   for (auto transceiver : transceivers()->List()) {
     if (!transceiver->sender()->track() &&
-        webrtc::MediaTypeToString(transceiver->media_type()) == track->kind() &&
+        MediaTypeToString(transceiver->media_type()) == track->kind() &&
         !transceiver->internal()->has_ever_been_used_to_send() &&
         !transceiver->stopped()) {
       return transceiver;
@@ -396,7 +395,7 @@ RtpTransmissionManager::GetAudioTransceiver() const {
   // audio/video transceiver.
   RTC_DCHECK(!IsUnifiedPlan());
   for (auto transceiver : transceivers_.List()) {
-    if (transceiver->media_type() == webrtc::MediaType::AUDIO) {
+    if (transceiver->media_type() == MediaType::AUDIO) {
       return transceiver;
     }
   }
@@ -411,7 +410,7 @@ RtpTransmissionManager::GetVideoTransceiver() const {
   // audio/video transceiver.
   RTC_DCHECK(!IsUnifiedPlan());
   for (auto transceiver : transceivers_.List()) {
-    if (transceiver->media_type() == webrtc::MediaType::VIDEO) {
+    if (transceiver->media_type() == MediaType::VIDEO) {
       return transceiver;
     }
   }
@@ -433,7 +432,7 @@ void RtpTransmissionManager::AddAudioTrack(AudioTrackInterface* track,
   }
 
   // Normal case; we've never seen this track before.
-  auto new_sender = CreateSender(webrtc::MediaType::AUDIO, track->id(),
+  auto new_sender = CreateSender(MediaType::AUDIO, track->id(),
                                  scoped_refptr<AudioTrackInterface>(track),
                                  {stream->id()}, {{}});
   new_sender->internal()->SetMediaChannel(voice_media_send_channel());
@@ -480,7 +479,7 @@ void RtpTransmissionManager::AddVideoTrack(VideoTrackInterface* track,
   }
 
   // Normal case; we've never seen this track before.
-  auto new_sender = CreateSender(webrtc::MediaType::VIDEO, track->id(),
+  auto new_sender = CreateSender(MediaType::VIDEO, track->id(),
                                  scoped_refptr<VideoTrackInterface>(track),
                                  {stream->id()}, {{}});
   new_sender->internal()->SetMediaChannel(video_media_send_channel());
@@ -564,7 +563,7 @@ RtpTransmissionManager::RemoveAndStopReceiver(
                         << remote_sender_info.sender_id << " doesn't exist.";
     return nullptr;
   }
-  if (receiver->media_type() == webrtc::MediaType::AUDIO) {
+  if (receiver->media_type() == MediaType::AUDIO) {
     GetAudioTransceiver()->internal()->RemoveReceiver(receiver.get());
   } else {
     GetVideoTransceiver()->internal()->RemoveReceiver(receiver.get());
@@ -575,15 +574,15 @@ RtpTransmissionManager::RemoveAndStopReceiver(
 void RtpTransmissionManager::OnRemoteSenderAdded(
     const RtpSenderInfo& sender_info,
     MediaStreamInterface* stream,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  RTC_LOG(LS_INFO) << "Creating " << webrtc::MediaTypeToString(media_type)
+  RTC_LOG(LS_INFO) << "Creating " << MediaTypeToString(media_type)
                    << " receiver for track_id=" << sender_info.sender_id
                    << " and stream_id=" << sender_info.stream_id;
 
-  if (media_type == webrtc::MediaType::AUDIO) {
+  if (media_type == MediaType::AUDIO) {
     CreateAudioReceiver(stream, sender_info);
-  } else if (media_type == webrtc::MediaType::VIDEO) {
+  } else if (media_type == MediaType::VIDEO) {
     CreateVideoReceiver(stream, sender_info);
   } else {
     RTC_DCHECK_NOTREACHED() << "Invalid media type";
@@ -593,14 +592,14 @@ void RtpTransmissionManager::OnRemoteSenderAdded(
 void RtpTransmissionManager::OnRemoteSenderRemoved(
     const RtpSenderInfo& sender_info,
     MediaStreamInterface* stream,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   RTC_DCHECK_RUN_ON(signaling_thread());
-  RTC_LOG(LS_INFO) << "Removing " << webrtc::MediaTypeToString(media_type)
+  RTC_LOG(LS_INFO) << "Removing " << MediaTypeToString(media_type)
                    << " receiver for track_id=" << sender_info.sender_id
                    << " and stream_id=" << sender_info.stream_id;
 
   scoped_refptr<RtpReceiverInterface> receiver;
-  if (media_type == webrtc::MediaType::AUDIO) {
+  if (media_type == MediaType::AUDIO) {
     // When the MediaEngine audio channel is destroyed, the RemoteAudioSource
     // will be notified which will end the AudioRtpReceiver::track().
     receiver = RemoveAndStopReceiver(sender_info);
@@ -609,7 +608,7 @@ void RtpTransmissionManager::OnRemoteSenderRemoved(
     if (audio_track) {
       stream->RemoveTrack(audio_track);
     }
-  } else if (media_type == webrtc::MediaType::VIDEO) {
+  } else if (media_type == MediaType::VIDEO) {
     // Stopping or destroying a VideoRtpReceiver will end the
     // VideoRtpReceiver::track().
     receiver = RemoveAndStopReceiver(sender_info);
@@ -631,7 +630,7 @@ void RtpTransmissionManager::OnRemoteSenderRemoved(
 
 void RtpTransmissionManager::OnLocalSenderAdded(
     const RtpSenderInfo& sender_info,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   RTC_DCHECK(!IsUnifiedPlan());
   auto sender = FindSenderById(sender_info.sender_id);
@@ -654,7 +653,7 @@ void RtpTransmissionManager::OnLocalSenderAdded(
 
 void RtpTransmissionManager::OnLocalSenderRemoved(
     const RtpSenderInfo& sender_info,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   RTC_DCHECK_RUN_ON(signaling_thread());
   auto sender = FindSenderById(sender_info.sender_id);
   if (!sender) {
@@ -676,19 +675,17 @@ void RtpTransmissionManager::OnLocalSenderRemoved(
 }
 
 std::vector<RtpSenderInfo>* RtpTransmissionManager::GetRemoteSenderInfos(
-    webrtc::MediaType media_type) {
-  RTC_DCHECK(media_type == webrtc::MediaType::AUDIO ||
-             media_type == webrtc::MediaType::VIDEO);
-  return (media_type == webrtc::MediaType::AUDIO) ? &remote_audio_sender_infos_
-                                                  : &remote_video_sender_infos_;
+    MediaType media_type) {
+  RTC_DCHECK(media_type == MediaType::AUDIO || media_type == MediaType::VIDEO);
+  return (media_type == MediaType::AUDIO) ? &remote_audio_sender_infos_
+                                          : &remote_video_sender_infos_;
 }
 
 std::vector<RtpSenderInfo>* RtpTransmissionManager::GetLocalSenderInfos(
-    webrtc::MediaType media_type) {
-  RTC_DCHECK(media_type == webrtc::MediaType::AUDIO ||
-             media_type == webrtc::MediaType::VIDEO);
-  return (media_type == webrtc::MediaType::AUDIO) ? &local_audio_sender_infos_
-                                                  : &local_video_sender_infos_;
+    MediaType media_type) {
+  RTC_DCHECK(media_type == MediaType::AUDIO || media_type == MediaType::VIDEO);
+  return (media_type == MediaType::AUDIO) ? &local_audio_sender_infos_
+                                          : &local_video_sender_infos_;
 }
 
 const RtpSenderInfo* RtpTransmissionManager::FindSenderInfo(

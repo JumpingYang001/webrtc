@@ -125,11 +125,10 @@ class RTCStatsIntegrationTest : public ::testing::Test {
       PeerConnectionInterface* pc) {
     scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
     pc->GetStats(stats_obtainer.get());
-    EXPECT_THAT(
-        WaitUntil([&] { return stats_obtainer->report() != nullptr; },
-                  ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kGetStatsTimeoutMs)}),
-        IsRtcOk());
+    EXPECT_THAT(WaitUntil([&] { return stats_obtainer->report() != nullptr; },
+                          ::testing::IsTrue(),
+                          {.timeout = TimeDelta::Millis(kGetStatsTimeoutMs)}),
+                IsRtcOk());
     return stats_obtainer->report();
   }
 
@@ -139,11 +138,10 @@ class RTCStatsIntegrationTest : public ::testing::Test {
       scoped_refptr<T> selector) {
     scoped_refptr<RTCStatsObtainer> stats_obtainer = RTCStatsObtainer::Create();
     pc->GetStats(selector, stats_obtainer);
-    EXPECT_THAT(
-        WaitUntil([&] { return stats_obtainer->report() != nullptr; },
-                  ::testing::IsTrue(),
-                  {.timeout = webrtc::TimeDelta::Millis(kGetStatsTimeoutMs)}),
-        IsRtcOk());
+    EXPECT_THAT(WaitUntil([&] { return stats_obtainer->report() != nullptr; },
+                          ::testing::IsTrue(),
+                          {.timeout = TimeDelta::Millis(kGetStatsTimeoutMs)}),
+                IsRtcOk());
     return stats_obtainer->report();
   }
 
@@ -1040,7 +1038,7 @@ TEST_F(RTCStatsIntegrationTest, GetStatsFromCallee) {
   EXPECT_THAT(
       WaitUntil([&] { return GetStatsReportAndReturnTrueIfRttIsDefined(); },
                 ::testing::IsTrue(),
-                {.timeout = webrtc::TimeDelta::Millis(kMaxWaitMs)}),
+                {.timeout = TimeDelta::Millis(kMaxWaitMs)}),
       IsRtcOk());
   RTCStatsReportVerifier(report.get()).VerifyReport({});
 }

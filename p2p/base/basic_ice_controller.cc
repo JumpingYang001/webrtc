@@ -116,7 +116,7 @@ void BasicIceController::OnConnectionDestroyed(const Connection* connection) {
 }
 
 bool BasicIceController::HasPingableConnection() const {
-  int64_t now = webrtc::TimeMillis();
+  int64_t now = TimeMillis();
   return absl::c_any_of(connections_, [this, now](const Connection* c) {
     return IsPingable(c, now);
   });
@@ -130,14 +130,14 @@ IceControllerInterface::PingResult BasicIceController::SelectConnectionToPing(
   bool need_more_pings_at_weak_interval =
       absl::c_any_of(connections_, [](const webrtc::Connection* conn) {
         return conn->active() &&
-               conn->num_pings_sent() < webrtc::MIN_PINGS_AT_WEAK_PING_INTERVAL;
+               conn->num_pings_sent() < MIN_PINGS_AT_WEAK_PING_INTERVAL;
       });
   int ping_interval = (weak() || need_more_pings_at_weak_interval)
                           ? weak_ping_interval()
                           : strong_ping_interval();
 
   const Connection* conn = nullptr;
-  if (webrtc::TimeMillis() >= last_ping_sent_ms + ping_interval) {
+  if (TimeMillis() >= last_ping_sent_ms + ping_interval) {
     conn = FindNextPingableConnection();
   }
   PingResult res(conn, std::min(ping_interval, check_receiving_interval()));
@@ -152,7 +152,7 @@ void BasicIceController::MarkConnectionPinged(const Connection* conn) {
 
 // Returns the next pingable connection to ping.
 const Connection* BasicIceController::FindNextPingableConnection() {
-  int64_t now = webrtc::TimeMillis();
+  int64_t now = TimeMillis();
 
   // Rule 1: Selected connection takes priority over non-selected ones.
   if (selected_connection_ && selected_connection_->connected() &&
@@ -274,15 +274,14 @@ int BasicIceController::CalculateActiveWritablePingInterval(
     int64_t now) const {
   // Ping each connection at a higher rate at least
   // MIN_PINGS_AT_WEAK_PING_INTERVAL times.
-  if (conn->num_pings_sent() < webrtc::MIN_PINGS_AT_WEAK_PING_INTERVAL) {
+  if (conn->num_pings_sent() < MIN_PINGS_AT_WEAK_PING_INTERVAL) {
     return weak_ping_interval();
   }
 
   int stable_interval =
       config_.stable_writable_connection_ping_interval_or_default();
-  int weak_or_stablizing_interval =
-      std::min(stable_interval,
-               webrtc::WEAK_OR_STABILIZING_WRITABLE_CONNECTION_PING_INTERVAL);
+  int weak_or_stablizing_interval = std::min(
+      stable_interval, WEAK_OR_STABILIZING_WRITABLE_CONNECTION_PING_INTERVAL);
   // If the channel is weak or the connection is not stable yet, use the
   // weak_or_stablizing_interval.
   return (!weak() && conn->stable(now)) ? stable_interval
@@ -453,7 +452,7 @@ BasicIceController::HandleInitialSelectDampening(
     return {new_connection, std::nullopt};
   }
 
-  int64_t now = webrtc::TimeMillis();
+  int64_t now = TimeMillis();
   int64_t max_delay = 0;
   if (new_connection->last_ping_received() > 0 &&
       field_trials_->initial_select_dampening_ping_received.has_value()) {
@@ -521,7 +520,7 @@ IceControllerInterface::SwitchResult BasicIceController::ShouldSwitchConnection(
 
   bool missed_receiving_unchanged_threshold = false;
   std::optional<int64_t> receiving_unchanged_threshold(
-      webrtc::TimeMillis() - config_.receiving_switching_delay_or_default());
+      TimeMillis() - config_.receiving_switching_delay_or_default());
   int cmp = CompareConnections(selected_connection_, new_connection,
                                receiving_unchanged_threshold,
                                &missed_receiving_unchanged_threshold);
@@ -571,7 +570,7 @@ BasicIceController::SortAndSwitchConnection(IceSwitchReason reason) {
 
   RTC_LOG(LS_VERBOSE) << "Sorting " << connections_.size()
                       << " available connections due to: "
-                      << webrtc::IceSwitchReasonToString(reason);
+                      << IceSwitchReasonToString(reason);
   for (size_t i = 0; i < connections_.size(); ++i) {
     RTC_LOG(LS_VERBOSE) << connections_[i]->ToString();
   }
@@ -737,7 +736,7 @@ int BasicIceController::CompareConnections(
     return state_cmp;
   }
 
-  if (ice_role_func_() == webrtc::ICEROLE_CONTROLLED) {
+  if (ice_role_func_() == ICEROLE_CONTROLLED) {
     // Compare the connections based on the nomination states and the last data
     // received time if this is on the controlled side.
     if (a->remote_nomination() > b->remote_nomination()) {
@@ -827,7 +826,7 @@ std::vector<const Connection*> BasicIceController::PruneConnections() {
   auto best_connection_by_network = GetBestConnectionByNetwork();
   for (const Connection* conn : connections_) {
     const Connection* best_conn = selected_connection_;
-    if (!webrtc::IPIsAny(conn->network()->GetBestIP())) {
+    if (!IPIsAny(conn->network()->GetBestIP())) {
       // If the connection is bound to a specific network interface (not an
       // "any address" network), compare it against the best connection for
       // that network interface rather than the best connection overall. This
@@ -853,7 +852,7 @@ bool BasicIceController::GetUseCandidateAttr(const Connection* conn,
       // TODO(honghaiz): Implement regular nomination.
       return false;
     case NominationMode::AGGRESSIVE:
-      if (remote_ice_mode == webrtc::ICEMODE_LITE) {
+      if (remote_ice_mode == ICEMODE_LITE) {
         return GetUseCandidateAttr(conn, NominationMode::REGULAR,
                                    remote_ice_mode);
       }
@@ -869,7 +868,7 @@ bool BasicIceController::GetUseCandidateAttr(const Connection* conn,
       //    b.1) `conn` is the selected_connection AND
       //    b.2) `conn` is writable.
       bool selected = conn == selected_connection_;
-      if (remote_ice_mode == webrtc::ICEMODE_LITE) {
+      if (remote_ice_mode == ICEMODE_LITE) {
         return selected && conn->writable();
       }
       bool better_than_selected =

@@ -264,8 +264,8 @@ void RtpSenderBase::SetParametersInternal(const RtpParameters& parameters,
     RTCError error(
         RTCErrorType::UNSUPPORTED_PARAMETER,
         "Attempted to set an unimplemented parameter of RtpParameters.");
-    RTC_LOG(LS_ERROR) << error.message() << " ("
-                      << ::webrtc::ToString(error.type()) << ")";
+    RTC_LOG(LS_ERROR) << error.message() << " (" << ToString(error.type())
+                      << ")";
     InvokeSetParametersCallback(callback, error);
     return;
   }
@@ -678,7 +678,7 @@ void LocalAudioSinkAdapter::SetSink(AudioSource::Sink* sink) {
 }
 
 scoped_refptr<AudioRtpSender> AudioRtpSender::Create(
-    const webrtc::Environment& env,
+    const Environment& env,
     Thread* worker_thread,
     const std::string& id,
     LegacyStatsCollectorInterface* stats,
@@ -687,7 +687,7 @@ scoped_refptr<AudioRtpSender> AudioRtpSender::Create(
                                           set_streams_observer);
 }
 
-AudioRtpSender::AudioRtpSender(const webrtc::Environment& env,
+AudioRtpSender::AudioRtpSender(const Environment& env,
                                Thread* worker_thread,
                                const std::string& id,
                                LegacyStatsCollectorInterface* legacy_stats,

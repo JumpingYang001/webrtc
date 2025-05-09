@@ -64,7 +64,7 @@ class MockDataChannelTransport : public DataChannelTransportInterface {
               SendData,
               (int channel_id,
                const SendDataParams& params,
-               const webrtc::CopyOnWriteBuffer& buffer),
+               const CopyOnWriteBuffer& buffer),
               (override));
   MOCK_METHOD(RTCError, CloseChannel, (int channel_id), (override));
   MOCK_METHOD(void, SetDataSink, (DataChannelSink * sink), (override));

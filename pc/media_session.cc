@@ -134,16 +134,15 @@ bool IsComfortNoiseCodec(const Codec& codec) {
 RtpTransceiverDirection NegotiateRtpTransceiverDirection(
     RtpTransceiverDirection offer,
     RtpTransceiverDirection wants) {
-  bool offer_send = webrtc::RtpTransceiverDirectionHasSend(offer);
-  bool offer_recv = webrtc::RtpTransceiverDirectionHasRecv(offer);
-  bool wants_send = webrtc::RtpTransceiverDirectionHasSend(wants);
-  bool wants_recv = webrtc::RtpTransceiverDirectionHasRecv(wants);
-  return webrtc::RtpTransceiverDirectionFromSendRecv(offer_recv && wants_send,
-                                                     offer_send && wants_recv);
+  bool offer_send = RtpTransceiverDirectionHasSend(offer);
+  bool offer_recv = RtpTransceiverDirectionHasRecv(offer);
+  bool wants_send = RtpTransceiverDirectionHasSend(wants);
+  bool wants_recv = RtpTransceiverDirectionHasRecv(wants);
+  return RtpTransceiverDirectionFromSendRecv(offer_recv && wants_send,
+                                             offer_send && wants_recv);
 }
 
-bool IsMediaContentOfType(const ContentInfo* content,
-                          webrtc::MediaType media_type) {
+bool IsMediaContentOfType(const ContentInfo* content, MediaType media_type) {
   if (!content || !content->media_description()) {
     return false;
   }
@@ -242,8 +241,8 @@ void AddSimulcastToMediaDescription(
   RTC_DCHECK_EQ(1, description->streams().size())
       << "RIDs are only supported in Unified Plan semantics.";
   RTC_DCHECK_EQ(1, media_description_options.sender_options.size());
-  RTC_DCHECK(description->type() == webrtc::MediaType::AUDIO ||
-             description->type() == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(description->type() == MediaType::AUDIO ||
+             description->type() == MediaType::VIDEO);
 
   // One RID or less indicates that simulcast is not needed.
   if (description->streams()[0].rids().size() <= 1) {
@@ -494,7 +493,7 @@ void NegotiateRtpHeaderExtensions(const RtpHeaderExtensions& local_extensions,
   bool dependency_descriptor_in_local = false;
   bool abs_capture_time_in_local = false;
 
-  for (const webrtc::RtpExtension& ours : local_extensions) {
+  for (const RtpExtension& ours : local_extensions) {
     if (ours.uri == RtpExtension::kGenericFrameDescriptorUri00)
       frame_descriptor_in_local = true;
     else if (ours.uri == RtpExtension::kDependencyDescriptorUri)
@@ -546,8 +545,8 @@ bool SetCodecsInAnswer(const MediaContentDescription* offer,
                        StreamParamsVec* current_streams,
                        MediaContentDescription* answer,
                        const FieldTrialsView& field_trials) {
-  RTC_DCHECK(offer->type() == webrtc::MediaType::AUDIO ||
-             offer->type() == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(offer->type() == MediaType::AUDIO ||
+             offer->type() == MediaType::VIDEO);
   answer->AddCodecs(local_codecs);
   answer->set_protocol(offer->protocol());
   if (!AddStreamParams(media_description_options.sender_options,
@@ -615,7 +614,7 @@ bool CreateMediaContentAnswer(
   return true;
 }
 
-bool IsMediaProtocolSupported(webrtc::MediaType type,
+bool IsMediaProtocolSupported(MediaType type,
                               const std::string& protocol,
                               bool secure_transport) {
   // Since not all applications serialize and deserialize the media protocol,
@@ -624,7 +623,7 @@ bool IsMediaProtocolSupported(webrtc::MediaType type,
     return true;
   }
 
-  if (type == webrtc::MediaType::DATA) {
+  if (type == MediaType::DATA) {
     // Check for SCTP
     if (secure_transport) {
       // Most likely scenarios first.
@@ -744,23 +743,23 @@ MediaSessionDescriptionFactory::CreateOfferOrError(
     }
     RTCError error;
     switch (media_description_options.type) {
-      case webrtc::MediaType::AUDIO:
-      case webrtc::MediaType::VIDEO:
+      case MediaType::AUDIO:
+      case MediaType::VIDEO:
         error = AddRtpContentForOffer(
             media_description_options, session_options, current_content,
             current_description,
-            media_description_options.type == webrtc::MediaType::AUDIO
+            media_description_options.type == MediaType::AUDIO
                 ? extensions_with_ids.audio
                 : extensions_with_ids.video,
             &current_streams, offer.get(), &ice_credentials);
         break;
-      case webrtc::MediaType::DATA:
+      case MediaType::DATA:
         error = AddDataContentForOffer(media_description_options,
                                        session_options, current_content,
                                        current_description, &current_streams,
                                        offer.get(), &ice_credentials);
         break;
-      case webrtc::MediaType::UNSUPPORTED:
+      case MediaType::UNSUPPORTED:
         error = AddUnsupportedContentForOffer(
             media_description_options, session_options, current_content,
             current_description, offer.get(), &ice_credentials);
@@ -921,21 +920,21 @@ MediaSessionDescriptionFactory::CreateAnswerOrError(
         UnstoppedRtpHeaderExtensionCapabilities(header_extensions_in));
     RTCError error;
     switch (media_description_options.type) {
-      case webrtc::MediaType::AUDIO:
-      case webrtc::MediaType::VIDEO:
+      case MediaType::AUDIO:
+      case MediaType::VIDEO:
         error = AddRtpContentForAnswer(
             media_description_options, session_options, offer_content, offer,
             current_content, current_description, bundle_transport,
             header_extensions, &current_streams, answer.get(),
             &ice_credentials);
         break;
-      case webrtc::MediaType::DATA:
+      case MediaType::DATA:
         error = AddDataContentForAnswer(
             media_description_options, session_options, offer_content, offer,
             current_content, current_description, bundle_transport,
             &current_streams, answer.get(), &ice_credentials);
         break;
-      case webrtc::MediaType::UNSUPPORTED:
+      case MediaType::UNSUPPORTED:
         error = AddUnsupportedContentForAnswer(
             media_description_options, session_options, offer_content, offer,
             current_content, current_description, bundle_transport,
@@ -1052,12 +1051,12 @@ MediaSessionDescriptionFactory::GetOfferedRtpHeaderExtensionsWithIds(
   // Add them to `used_ids` so the local ids are not reused if a new media
   // type is added.
   for (const ContentInfo* content : current_active_contents) {
-    if (IsMediaContentOfType(content, webrtc::MediaType::AUDIO)) {
+    if (IsMediaContentOfType(content, MediaType::AUDIO)) {
       MergeRtpHdrExts(content->media_description()->rtp_header_extensions(),
                       enable_encrypted_rtp_header_extensions_,
                       &offered_extensions.audio, &all_encountered_extensions,
                       &used_ids);
-    } else if (IsMediaContentOfType(content, webrtc::MediaType::VIDEO)) {
+    } else if (IsMediaContentOfType(content, MediaType::VIDEO)) {
       MergeRtpHdrExts(content->media_description()->rtp_header_extensions(),
                       enable_encrypted_rtp_header_extensions_,
                       &offered_extensions.video, &all_encountered_extensions,
@@ -1072,11 +1071,11 @@ MediaSessionDescriptionFactory::GetOfferedRtpHeaderExtensionsWithIds(
     RtpHeaderExtensions filtered_extensions =
         filtered_rtp_header_extensions(UnstoppedOrPresentRtpHeaderExtensions(
             entry.header_extensions, all_encountered_extensions));
-    if (entry.type == webrtc::MediaType::AUDIO)
+    if (entry.type == MediaType::AUDIO)
       MergeRtpHdrExts(
           filtered_extensions, enable_encrypted_rtp_header_extensions_,
           &offered_extensions.audio, &all_encountered_extensions, &used_ids);
-    else if (entry.type == webrtc::MediaType::VIDEO)
+    else if (entry.type == MediaType::VIDEO)
       MergeRtpHdrExts(
           filtered_extensions, enable_encrypted_rtp_header_extensions_,
           &offered_extensions.video, &all_encountered_extensions, &used_ids);
@@ -1154,8 +1153,8 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
     StreamParamsVec* current_streams,
     SessionDescription* session_description,
     IceCredentialsIterator* ice_credentials) const {
-  RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
-             media_description_options.type == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(media_description_options.type == MediaType::AUDIO ||
+             media_description_options.type == MediaType::VIDEO);
 
   std::vector<Codec> codecs_to_include;
   std::string mid = media_description_options.mid;
@@ -1168,7 +1167,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForOffer(
   }
   codecs_to_include = error_or_filtered_codecs.MoveValue();
   std::unique_ptr<MediaContentDescription> content_description;
-  if (media_description_options.type == webrtc::MediaType::AUDIO) {
+  if (media_description_options.type == MediaType::AUDIO) {
     content_description = std::make_unique<AudioContentDescription>();
   } else {
     content_description = std::make_unique<VideoContentDescription>();
@@ -1222,7 +1221,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForOffer(
   data->set_protocol(secure_transport ? kMediaProtocolUdpDtlsSctp
                                       : kMediaProtocolSctp);
   data->set_use_sctpmap(session_options.use_obsolete_sctp_sdp);
-  data->set_max_message_size(webrtc::kSctpSendBufferSize);
+  data->set_max_message_size(kSctpSendBufferSize);
 
   auto error = CreateContentOffer(media_description_options, session_options,
                                   RtpHeaderExtensions(), ssrc_generator(),
@@ -1245,8 +1244,7 @@ RTCError MediaSessionDescriptionFactory::AddUnsupportedContentForOffer(
     const SessionDescription* current_description,
     SessionDescription* desc,
     IceCredentialsIterator* ice_credentials) const {
-  RTC_CHECK(
-      IsMediaContentOfType(current_content, webrtc::MediaType::UNSUPPORTED));
+  RTC_CHECK(IsMediaContentOfType(current_content, MediaType::UNSUPPORTED));
 
   const UnsupportedContentDescription* current_unsupported_description =
       current_content->media_description()->as_unsupported();
@@ -1285,12 +1283,12 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
     StreamParamsVec* current_streams,
     SessionDescription* answer,
     IceCredentialsIterator* ice_credentials) const {
-  RTC_DCHECK(media_description_options.type == webrtc::MediaType::AUDIO ||
-             media_description_options.type == webrtc::MediaType::VIDEO);
+  RTC_DCHECK(media_description_options.type == MediaType::AUDIO ||
+             media_description_options.type == MediaType::VIDEO);
   RTC_CHECK(
       IsMediaContentOfType(offer_content, media_description_options.type));
   const RtpMediaContentDescription* offer_content_description;
-  if (media_description_options.type == webrtc::MediaType::AUDIO) {
+  if (media_description_options.type == MediaType::AUDIO) {
     offer_content_description = offer_content->media_description()->as_audio();
   } else {
     offer_content_description = offer_content->media_description()->as_video();
@@ -1336,7 +1334,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
   bool bundle_enabled = offer_description->HasGroup(GROUP_TYPE_BUNDLE) &&
                         session_options.bundle_enabled;
   std::unique_ptr<MediaContentDescription> answer_content;
-  if (media_description_options.type == webrtc::MediaType::AUDIO) {
+  if (media_description_options.type == MediaType::AUDIO) {
     answer_content = std::make_unique<AudioContentDescription>();
   } else {
     answer_content = std::make_unique<VideoContentDescription>();
@@ -1372,7 +1370,7 @@ RTCError MediaSessionDescriptionFactory::AddRtpContentForAnswer(
                                  : transport->secure();
   bool rejected = media_description_options.stopped ||
                   offer_content->rejected || !has_usable_media_codecs ||
-                  !IsMediaProtocolSupported(webrtc::MediaType::AUDIO,
+                  !IsMediaProtocolSupported(MediaType::AUDIO,
                                             answer_content->protocol(), secure);
   if (rejected) {
     RTC_LOG(LS_INFO) << "m= section '" << media_description_options.mid
@@ -1413,7 +1411,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
 
   bool bundle_enabled = offer_description->HasGroup(GROUP_TYPE_BUNDLE) &&
                         session_options.bundle_enabled;
-  RTC_CHECK(IsMediaContentOfType(offer_content, webrtc::MediaType::DATA));
+  RTC_CHECK(IsMediaContentOfType(offer_content, MediaType::DATA));
   std::unique_ptr<MediaContentDescription> data_answer;
   if (offer_content->media_description()->as_sctp()) {
     // SCTP data content
@@ -1428,11 +1426,10 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
     // we do not implement infinite size messages, reply with
     // kSctpSendBufferSize.
     if (offer_data_description->max_message_size() <= 0) {
-      data_answer->as_sctp()->set_max_message_size(webrtc::kSctpSendBufferSize);
+      data_answer->as_sctp()->set_max_message_size(kSctpSendBufferSize);
     } else {
-      data_answer->as_sctp()->set_max_message_size(
-          std::min(offer_data_description->max_message_size(),
-                   webrtc::kSctpSendBufferSize));
+      data_answer->as_sctp()->set_max_message_size(std::min(
+          offer_data_description->max_message_size(), kSctpSendBufferSize));
     }
     if (!CreateMediaContentAnswer(
             offer_data_description, media_description_options, session_options,
@@ -1454,7 +1451,7 @@ RTCError MediaSessionDescriptionFactory::AddDataContentForAnswer(
 
   bool rejected = media_description_options.stopped ||
                   offer_content->rejected ||
-                  !IsMediaProtocolSupported(webrtc::MediaType::DATA,
+                  !IsMediaProtocolSupported(MediaType::DATA,
                                             data_answer->protocol(), secure);
   auto error = AddTransportAnswer(media_description_options.mid,
                                   *data_transport, answer);
@@ -1487,8 +1484,7 @@ RTCError MediaSessionDescriptionFactory::AddUnsupportedContentForAnswer(
         RTCErrorType::INTERNAL_ERROR,
         "Failed to create transport answer, unsupported transport is missing");
   }
-  RTC_CHECK(
-      IsMediaContentOfType(offer_content, webrtc::MediaType::UNSUPPORTED));
+  RTC_CHECK(IsMediaContentOfType(offer_content, MediaType::UNSUPPORTED));
 
   const UnsupportedContentDescription* offer_unsupported_description =
       offer_content->media_description()->as_unsupported();
@@ -1514,23 +1510,23 @@ bool IsMediaContent(const ContentInfo* content) {
 }
 
 bool IsAudioContent(const ContentInfo* content) {
-  return IsMediaContentOfType(content, webrtc::MediaType::AUDIO);
+  return IsMediaContentOfType(content, MediaType::AUDIO);
 }
 
 bool IsVideoContent(const ContentInfo* content) {
-  return IsMediaContentOfType(content, webrtc::MediaType::VIDEO);
+  return IsMediaContentOfType(content, MediaType::VIDEO);
 }
 
 bool IsDataContent(const ContentInfo* content) {
-  return IsMediaContentOfType(content, webrtc::MediaType::DATA);
+  return IsMediaContentOfType(content, MediaType::DATA);
 }
 
 bool IsUnsupportedContent(const ContentInfo* content) {
-  return IsMediaContentOfType(content, webrtc::MediaType::UNSUPPORTED);
+  return IsMediaContentOfType(content, MediaType::UNSUPPORTED);
 }
 
 const ContentInfo* GetFirstMediaContent(const ContentInfos& contents,
-                                        webrtc::MediaType media_type) {
+                                        MediaType media_type) {
   for (const ContentInfo& content : contents) {
     if (IsMediaContentOfType(&content, media_type)) {
       return &content;
@@ -1540,19 +1536,19 @@ const ContentInfo* GetFirstMediaContent(const ContentInfos& contents,
 }
 
 const ContentInfo* GetFirstAudioContent(const ContentInfos& contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::AUDIO);
+  return GetFirstMediaContent(contents, MediaType::AUDIO);
 }
 
 const ContentInfo* GetFirstVideoContent(const ContentInfos& contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::VIDEO);
+  return GetFirstMediaContent(contents, MediaType::VIDEO);
 }
 
 const ContentInfo* GetFirstDataContent(const ContentInfos& contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::DATA);
+  return GetFirstMediaContent(contents, MediaType::DATA);
 }
 
 const ContentInfo* GetFirstMediaContent(const SessionDescription* sdesc,
-                                        webrtc::MediaType media_type) {
+                                        MediaType media_type) {
   if (sdesc == nullptr) {
     return nullptr;
   }
@@ -1561,39 +1557,39 @@ const ContentInfo* GetFirstMediaContent(const SessionDescription* sdesc,
 }
 
 const ContentInfo* GetFirstAudioContent(const SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::AUDIO);
+  return GetFirstMediaContent(sdesc, MediaType::AUDIO);
 }
 
 const ContentInfo* GetFirstVideoContent(const SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::VIDEO);
+  return GetFirstMediaContent(sdesc, MediaType::VIDEO);
 }
 
 const ContentInfo* GetFirstDataContent(const SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::DATA);
+  return GetFirstMediaContent(sdesc, MediaType::DATA);
 }
 
 const MediaContentDescription* GetFirstMediaContentDescription(
     const SessionDescription* sdesc,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   const ContentInfo* content = GetFirstMediaContent(sdesc, media_type);
   return (content ? content->media_description() : nullptr);
 }
 
 const AudioContentDescription* GetFirstAudioContentDescription(
     const SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::AUDIO);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::AUDIO);
   return desc ? desc->as_audio() : nullptr;
 }
 
 const VideoContentDescription* GetFirstVideoContentDescription(
     const SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::VIDEO);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::VIDEO);
   return desc ? desc->as_video() : nullptr;
 }
 
 const SctpDataContentDescription* GetFirstSctpDataContentDescription(
     const SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::DATA);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::DATA);
   return desc ? desc->as_sctp() : nullptr;
 }
 
@@ -1602,7 +1598,7 @@ const SctpDataContentDescription* GetFirstSctpDataContentDescription(
 //
 
 ContentInfo* GetFirstMediaContent(ContentInfos* contents,
-                                  webrtc::MediaType media_type) {
+                                  MediaType media_type) {
   for (ContentInfo& content : *contents) {
     if (IsMediaContentOfType(&content, media_type)) {
       return &content;
@@ -1612,19 +1608,19 @@ ContentInfo* GetFirstMediaContent(ContentInfos* contents,
 }
 
 ContentInfo* GetFirstAudioContent(ContentInfos* contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::AUDIO);
+  return GetFirstMediaContent(contents, MediaType::AUDIO);
 }
 
 ContentInfo* GetFirstVideoContent(ContentInfos* contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::VIDEO);
+  return GetFirstMediaContent(contents, MediaType::VIDEO);
 }
 
 ContentInfo* GetFirstDataContent(ContentInfos* contents) {
-  return GetFirstMediaContent(contents, webrtc::MediaType::DATA);
+  return GetFirstMediaContent(contents, MediaType::DATA);
 }
 
 ContentInfo* GetFirstMediaContent(SessionDescription* sdesc,
-                                  webrtc::MediaType media_type) {
+                                  MediaType media_type) {
   if (sdesc == nullptr) {
     return nullptr;
   }
@@ -1633,39 +1629,39 @@ ContentInfo* GetFirstMediaContent(SessionDescription* sdesc,
 }
 
 ContentInfo* GetFirstAudioContent(SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::AUDIO);
+  return GetFirstMediaContent(sdesc, MediaType::AUDIO);
 }
 
 ContentInfo* GetFirstVideoContent(SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::VIDEO);
+  return GetFirstMediaContent(sdesc, MediaType::VIDEO);
 }
 
 ContentInfo* GetFirstDataContent(SessionDescription* sdesc) {
-  return GetFirstMediaContent(sdesc, webrtc::MediaType::DATA);
+  return GetFirstMediaContent(sdesc, MediaType::DATA);
 }
 
 MediaContentDescription* GetFirstMediaContentDescription(
     SessionDescription* sdesc,
-    webrtc::MediaType media_type) {
+    MediaType media_type) {
   ContentInfo* content = GetFirstMediaContent(sdesc, media_type);
   return (content ? content->media_description() : nullptr);
 }
 
 AudioContentDescription* GetFirstAudioContentDescription(
     SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::AUDIO);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::AUDIO);
   return desc ? desc->as_audio() : nullptr;
 }
 
 VideoContentDescription* GetFirstVideoContentDescription(
     SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::VIDEO);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::VIDEO);
   return desc ? desc->as_video() : nullptr;
 }
 
 SctpDataContentDescription* GetFirstSctpDataContentDescription(
     SessionDescription* sdesc) {
-  auto desc = GetFirstMediaContentDescription(sdesc, webrtc::MediaType::DATA);
+  auto desc = GetFirstMediaContentDescription(sdesc, MediaType::DATA);
   return desc ? desc->as_sctp() : nullptr;
 }
 

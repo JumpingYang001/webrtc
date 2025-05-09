@@ -17,7 +17,7 @@
 namespace webrtc {
 
 std::string IceRecheckEvent::ToString() const {
-  std::string str = webrtc::IceSwitchReasonToString(reason);
+  std::string str = IceSwitchReasonToString(reason);
   if (recheck_delay_ms) {
     str += " (after delay: " + std::to_string(recheck_delay_ms) + ")";
   }

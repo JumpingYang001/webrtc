@@ -76,20 +76,20 @@ PacketInfoProtocolType ConvertProtocolTypeToPacketInfoProtocolType(
 
 // The delay before we begin checking if this port is useless. We set
 // it to a little higher than a total STUN timeout.
-const int kPortTimeoutDelay = webrtc::STUN_TOTAL_TIMEOUT + 5000;
+const int kPortTimeoutDelay = STUN_TOTAL_TIMEOUT + 5000;
 
 }  // namespace
 
-static const char* const PROTO_NAMES[] = {
-    webrtc::UDP_PROTOCOL_NAME, webrtc::TCP_PROTOCOL_NAME,
-    webrtc::SSLTCP_PROTOCOL_NAME, webrtc::TLS_PROTOCOL_NAME};
+static const char* const PROTO_NAMES[] = {UDP_PROTOCOL_NAME, TCP_PROTOCOL_NAME,
+                                          SSLTCP_PROTOCOL_NAME,
+                                          TLS_PROTOCOL_NAME};
 
 const char* ProtoToString(ProtocolType proto) {
   return PROTO_NAMES[proto];
 }
 
 std::optional<ProtocolType> StringToProto(absl::string_view proto_name) {
-  for (size_t i = 0; i <= webrtc::PROTO_LAST; ++i) {
+  for (size_t i = 0; i <= PROTO_LAST; ++i) {
     if (absl::EqualsIgnoreCase(PROTO_NAMES[i], proto_name)) {
       return static_cast<ProtocolType>(i);
     }
@@ -125,7 +125,7 @@ Port::Port(const PortParametersRef& args,
       password_(args.ice_password),
       timeout_delay_(kPortTimeoutDelay),
       enable_port_packets_(false),
-      ice_role_(webrtc::ICEROLE_UNKNOWN),
+      ice_role_(ICEROLE_UNKNOWN),
       tiebreaker_(0),
       shared_socket_(shared_socket),
       network_cost_(args.network->GetCost(env_.field_trials())),
@@ -137,8 +137,8 @@ Port::Port(const PortParametersRef& args,
   // we should just create one.
   if (ice_username_fragment_.empty()) {
     RTC_DCHECK(password_.empty());
-    ice_username_fragment_ = webrtc::CreateRandomString(ICE_UFRAG_LENGTH);
-    password_ = webrtc::CreateRandomString(ICE_PWD_LENGTH);
+    ice_username_fragment_ = CreateRandomString(ICE_UFRAG_LENGTH);
+    password_ = CreateRandomString(ICE_PWD_LENGTH);
   }
   network_->SignalTypeChanged.connect(this, &Port::OnNetworkTypeChanged);
 
@@ -347,7 +347,7 @@ void Port::OnReadPacket(const ReceivedIpPacket& packet, ProtocolType proto) {
     // STUN message handled already
   } else if (msg->type() == STUN_BINDING_REQUEST) {
     RTC_LOG(LS_INFO) << "Received " << StunMethodToString(msg->type())
-                     << " id=" << webrtc::hex_encode(msg->transaction_id())
+                     << " id=" << hex_encode(msg->transaction_id())
                      << " from unknown address " << addr.ToSensitiveString();
     // We need to signal an unknown address before we handle any role conflict
     // below. Otherwise there would be no candidate pair and TURN entry created
@@ -569,7 +569,7 @@ bool Port::IsCompatibleAddress(const SocketAddress& addr) {
   }
   // Link-local IPv6 ports can only connect to other link-local IPv6 ports.
   if (ip.family() == AF_INET6 &&
-      (webrtc::IPIsLinkLocal(ip) != webrtc::IPIsLinkLocal(addr.ipaddr()))) {
+      (IPIsLinkLocal(ip) != IPIsLinkLocal(addr.ipaddr()))) {
     return false;
   }
   return true;
@@ -577,7 +577,7 @@ bool Port::IsCompatibleAddress(const SocketAddress& addr) {
 
 DiffServCodePoint Port::StunDscpValue() const {
   // By default, inherit from whatever the MediaChannel sends.
-  return webrtc::DSCP_NO_CHANGE;
+  return DSCP_NO_CHANGE;
 }
 
 void Port::DestroyAllConnections() {
@@ -630,12 +630,12 @@ bool Port::MaybeIceRoleConflict(const SocketAddress& addr,
   RTC_DCHECK_RUN_ON(thread_);
   // Validate ICE_CONTROLLING or ICE_CONTROLLED attributes.
   bool ret = true;
-  IceRole remote_ice_role = webrtc::ICEROLE_UNKNOWN;
+  IceRole remote_ice_role = ICEROLE_UNKNOWN;
   uint64_t remote_tiebreaker = 0;
   const StunUInt64Attribute* stun_attr =
       stun_msg->GetUInt64(STUN_ATTR_ICE_CONTROLLING);
   if (stun_attr) {
-    remote_ice_role = webrtc::ICEROLE_CONTROLLING;
+    remote_ice_role = ICEROLE_CONTROLLING;
     remote_tiebreaker = stun_attr->value();
   }
 
@@ -643,7 +643,7 @@ bool Port::MaybeIceRoleConflict(const SocketAddress& addr,
   // tie breaker value received in the ping message matches port
   // tiebreaker value this must be a loopback call.
   // We will treat this as valid scenario.
-  if (remote_ice_role == webrtc::ICEROLE_CONTROLLING &&
+  if (remote_ice_role == ICEROLE_CONTROLLING &&
       username_fragment() == remote_ufrag &&
       remote_tiebreaker == IceTiebreaker()) {
     return true;
@@ -651,13 +651,13 @@ bool Port::MaybeIceRoleConflict(const SocketAddress& addr,
 
   stun_attr = stun_msg->GetUInt64(STUN_ATTR_ICE_CONTROLLED);
   if (stun_attr) {
-    remote_ice_role = webrtc::ICEROLE_CONTROLLED;
+    remote_ice_role = ICEROLE_CONTROLLED;
     remote_tiebreaker = stun_attr->value();
   }
 
   switch (ice_role_) {
-    case webrtc::ICEROLE_CONTROLLING:
-      if (webrtc::ICEROLE_CONTROLLING == remote_ice_role) {
+    case ICEROLE_CONTROLLING:
+      if (ICEROLE_CONTROLLING == remote_ice_role) {
         if (remote_tiebreaker >= tiebreaker_) {
           SignalRoleConflict(this);
         } else {
@@ -668,8 +668,8 @@ bool Port::MaybeIceRoleConflict(const SocketAddress& addr,
         }
       }
       break;
-    case webrtc::ICEROLE_CONTROLLED:
-      if (webrtc::ICEROLE_CONTROLLED == remote_ice_role) {
+    case ICEROLE_CONTROLLED:
+      if (ICEROLE_CONTROLLED == remote_ice_role) {
         if (remote_tiebreaker < tiebreaker_) {
           SignalRoleConflict(this);
         } else {
@@ -824,10 +824,10 @@ void Port::PostDestroyIfDead(bool delayed) {
 
 void Port::DestroyIfDead() {
   RTC_DCHECK_RUN_ON(thread_);
-  bool dead = (state_ == State::INIT || state_ == State::PRUNED) &&
-              connections_.empty() &&
-              webrtc::TimeMillis() - last_time_all_connections_removed_ >=
-                  timeout_delay_;
+  bool dead =
+      (state_ == State::INIT || state_ == State::PRUNED) &&
+      connections_.empty() &&
+      TimeMillis() - last_time_all_connections_removed_ >= timeout_delay_;
   if (dead) {
     Destroy();
   }
@@ -849,10 +849,9 @@ void Port::OnNetworkTypeChanged(const ::webrtc::Network* network) {
 
 std::string Port::ToString() const {
   StringBuilder ss;
-  ss << "Port[" << webrtc::ToHex(reinterpret_cast<uintptr_t>(this)) << ":"
+  ss << "Port[" << ToHex(reinterpret_cast<uintptr_t>(this)) << ":"
      << content_name_ << ":" << component_ << ":" << generation_ << ":"
-     << webrtc::IceCandidateTypeToString(type_) << ":" << network_->ToString()
-     << "]";
+     << IceCandidateTypeToString(type_) << ":" << network_->ToString() << "]";
   return ss.Release();
 }
 
@@ -897,7 +896,7 @@ bool Port::OnConnectionDestroyed(Connection* conn) {
   // fails and is removed before kPortTimeoutDelay, then this message will
   // not cause the Port to be destroyed.
   if (connections_.empty()) {
-    last_time_all_connections_removed_ = webrtc::TimeMillis();
+    last_time_all_connections_removed_ = TimeMillis();
     PostDestroyIfDead(/*delayed=*/true);
   }
 
