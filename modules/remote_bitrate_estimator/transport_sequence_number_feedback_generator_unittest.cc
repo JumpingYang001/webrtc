@@ -107,8 +107,7 @@ class TransportSequenceNumberFeedbackGeneneratorTest : public ::testing::Test {
     map.Register<TransportSequenceNumberV2>(1);
     RtpPacketReceived packet(&map, arrival_time);
     packet.SetSsrc(kMediaSsrc);
-    packet.SetExtension<webrtc::TransportSequenceNumberV2>(seq,
-                                                           feedback_request);
+    packet.SetExtension<TransportSequenceNumberV2>(seq, feedback_request);
     feedback_generator_.OnReceivedPacket(packet);
   }
 

@@ -22,7 +22,7 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::test::ExplicitKeyValueConfig;
+using test::ExplicitKeyValueConfig;
 
 constexpr Timestamp kInitialTime = Timestamp::Millis(123'456);
 

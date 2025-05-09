@@ -32,7 +32,7 @@
 
 namespace webrtc {
 
-constexpr DataRate kMaxFeedbackRate = webrtc::DataRate::KilobitsPerSec(500);
+constexpr DataRate kMaxFeedbackRate = DataRate::KilobitsPerSec(500);
 
 CongestionControlFeedbackGenerator::CongestionControlFeedbackGenerator(
     const Environment& env,
