@@ -77,9 +77,9 @@ std::string AudioReceiveStreamInterface::Config::ToString() const {
 namespace {
 std::unique_ptr<voe::ChannelReceiveInterface> CreateChannelReceive(
     const Environment& env,
-    webrtc::AudioState* audio_state,
+    AudioState* audio_state,
     NetEqFactory* neteq_factory,
-    const webrtc::AudioReceiveStreamInterface::Config& config) {
+    const AudioReceiveStreamInterface::Config& config) {
   RTC_DCHECK(audio_state);
   internal::AudioState* internal_audio_state =
       static_cast<internal::AudioState*>(audio_state);
@@ -98,8 +98,8 @@ AudioReceiveStreamImpl::AudioReceiveStreamImpl(
     const Environment& env,
     PacketRouter* packet_router,
     NetEqFactory* neteq_factory,
-    const webrtc::AudioReceiveStreamInterface::Config& config,
-    const scoped_refptr<webrtc::AudioState>& audio_state)
+    const AudioReceiveStreamInterface::Config& config,
+    const scoped_refptr<AudioState>& audio_state)
     : AudioReceiveStreamImpl(
           env,
           packet_router,
@@ -111,8 +111,8 @@ AudioReceiveStreamImpl::AudioReceiveStreamImpl(
 AudioReceiveStreamImpl::AudioReceiveStreamImpl(
     const Environment& /* env */,
     PacketRouter* packet_router,
-    const webrtc::AudioReceiveStreamInterface::Config& config,
-    const scoped_refptr<webrtc::AudioState>& audio_state,
+    const AudioReceiveStreamInterface::Config& config,
+    const scoped_refptr<AudioState>& audio_state,
     std::unique_ptr<voe::ChannelReceiveInterface> channel_receive)
     : config_(config),
       audio_state_(audio_state),
@@ -159,7 +159,7 @@ void AudioReceiveStreamImpl::UnregisterFromTransport() {
 }
 
 void AudioReceiveStreamImpl::ReconfigureForTesting(
-    const webrtc::AudioReceiveStreamInterface::Config& config) {
+    const AudioReceiveStreamInterface::Config& config) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
 
   // SSRC can't be changed mid-stream.
@@ -212,7 +212,7 @@ bool AudioReceiveStreamImpl::IsRunning() const {
 }
 
 void AudioReceiveStreamImpl::SetDepacketizerToDecoderFrameTransformer(
-    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   channel_receive_->SetDepacketizerToDecoderFrameTransformer(
       std::move(frame_transformer));
@@ -238,7 +238,7 @@ void AudioReceiveStreamImpl::SetNackHistory(int history_ms) {
   channel_receive_->SetNACKStatus(history_ms != 0, history_ms / 20);
 }
 
-void AudioReceiveStreamImpl::SetRtcpMode(webrtc::RtcpMode mode) {
+void AudioReceiveStreamImpl::SetRtcpMode(RtcpMode mode) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
 
   if (config_.rtp.rtcp_mode == mode)
@@ -255,17 +255,17 @@ void AudioReceiveStreamImpl::SetNonSenderRttMeasurement(bool enabled) {
 }
 
 void AudioReceiveStreamImpl::SetFrameDecryptor(
-    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   // TODO(bugs.webrtc.org/11993): This is called via WebRtcAudioReceiveStream,
   // expect to be called on the network thread.
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   channel_receive_->SetFrameDecryptor(std::move(frame_decryptor));
 }
 
-webrtc::AudioReceiveStreamInterface::Stats AudioReceiveStreamImpl::GetStats(
+AudioReceiveStreamInterface::Stats AudioReceiveStreamImpl::GetStats(
     bool get_and_clear_legacy_stats) const {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
-  webrtc::AudioReceiveStreamInterface::Stats stats;
+  AudioReceiveStreamInterface::Stats stats;
   stats.remote_ssrc = remote_ssrc();
 
   auto receive_codec = channel_receive_->GetReceiveCodec();
@@ -274,8 +274,7 @@ webrtc::AudioReceiveStreamInterface::Stats AudioReceiveStreamImpl::GetStats(
     stats.codec_payload_type = receive_codec->first;
   }
 
-  webrtc::CallReceiveStatistics call_stats =
-      channel_receive_->GetRTCPStatistics();
+  CallReceiveStatistics call_stats = channel_receive_->GetRTCPStatistics();
   stats.payload_bytes_received = call_stats.payload_bytes_received;
   stats.header_and_padding_bytes_received =
       call_stats.header_and_padding_bytes_received;

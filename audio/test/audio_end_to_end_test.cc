@@ -63,8 +63,7 @@ void AudioEndToEndTest::ModifyAudioConfigs(
     AudioSendStream::Config* send_config,
     std::vector<AudioReceiveStreamInterface::Config>* /* receive_configs */) {
   // Large bitrate by default.
-  const webrtc::SdpAudioFormat kDefaultFormat("opus", 48000, 2,
-                                              {{"stereo", "1"}});
+  const SdpAudioFormat kDefaultFormat("opus", 48000, 2, {{"stereo", "1"}});
   send_config->send_codec_spec = AudioSendStream::Config::SendCodecSpec(
       test::VideoTestConstants::kAudioSendPayloadType, kDefaultFormat);
   send_config->min_bitrate_bps = 32000;

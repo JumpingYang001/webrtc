@@ -123,7 +123,7 @@ class ChannelSendTest : public ::testing::Test {
   void ProcessNextFrame() { ProcessNextFrame(CreateAudioFrame()); }
 
   GlobalSimulatedTimeController time_controller_;
-  webrtc::test::ScopedKeyValueConfig field_trials_;
+  test::ScopedKeyValueConfig field_trials_;
   Environment env_;
   NiceMock<MockTransport> transport_;
   CryptoOptions crypto_options_;

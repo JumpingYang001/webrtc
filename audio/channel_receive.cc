@@ -132,7 +132,7 @@ class ChannelReceive : public ChannelReceiveInterface,
                  scoped_refptr<AudioDecoderFactory> decoder_factory,
                  std::optional<AudioCodecPairId> codec_pair_id,
                  scoped_refptr<FrameDecryptorInterface> frame_decryptor,
-                 const webrtc::CryptoOptions& crypto_options,
+                 const CryptoOptions& crypto_options,
                  scoped_refptr<FrameTransformerInterface> frame_transformer);
   ~ChannelReceive() override;
 
@@ -190,7 +190,7 @@ class ChannelReceive : public ChannelReceiveInterface,
 
   CallReceiveStatistics GetRTCPStatistics() const override;
   void SetNACKStatus(bool enable, int max_packets) override;
-  void SetRtcpMode(webrtc::RtcpMode mode) override;
+  void SetRtcpMode(RtcpMode mode) override;
   void SetNonSenderRttMeasurement(bool enabled) override;
 
   AudioMixer::Source::AudioFrameInfo GetAudioFrameWithInfo(
@@ -204,11 +204,10 @@ class ChannelReceive : public ChannelReceiveInterface,
   // Sets a frame transformer between the depacketizer and the decoder, to
   // transform the received frames before decoding them.
   void SetDepacketizerToDecoderFrameTransformer(
-      scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer)
-      override;
+      scoped_refptr<FrameTransformerInterface> frame_transformer) override;
 
   void SetFrameDecryptor(
-      scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) override;
+      scoped_refptr<FrameDecryptorInterface> frame_decryptor) override;
 
   void OnLocalSsrcChange(uint32_t local_ssrc) override;
 
@@ -233,7 +232,7 @@ class ChannelReceive : public ChannelReceiveInterface,
       RTC_RUN_ON(worker_thread_checker_);
 
   void InitFrameTransformerDelegate(
-      scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer)
+      scoped_refptr<FrameTransformerInterface> frame_transformer)
       RTC_RUN_ON(worker_thread_checker_);
 
   // Thread checkers document and lock usage of some methods to specific threads
@@ -293,7 +292,7 @@ class ChannelReceive : public ChannelReceiveInterface,
 
   mutable Mutex ts_stats_lock_;
 
-  webrtc::RtpTimestampUnwrapper rtp_ts_wraparound_handler_;
+  RtpTimestampUnwrapper rtp_ts_wraparound_handler_;
   // The rtp timestamp of the first played out audio frame.
   int64_t capture_start_rtp_time_stamp_;
   // The capture ntp time (in local timebase) of the first played out audio
@@ -310,12 +309,12 @@ class ChannelReceive : public ChannelReceiveInterface,
   // E2EE Audio Frame Decryption
   scoped_refptr<FrameDecryptorInterface> frame_decryptor_
       RTC_GUARDED_BY(worker_thread_checker_);
-  webrtc::CryptoOptions crypto_options_;
+  CryptoOptions crypto_options_;
 
-  webrtc::AbsoluteCaptureTimeInterpolator absolute_capture_time_interpolator_
+  AbsoluteCaptureTimeInterpolator absolute_capture_time_interpolator_
       RTC_GUARDED_BY(worker_thread_checker_);
 
-  webrtc::CaptureClockOffsetUpdater capture_clock_offset_updater_
+  CaptureClockOffsetUpdater capture_clock_offset_updater_
       RTC_GUARDED_BY(ts_stats_lock_);
 
   scoped_refptr<ChannelReceiveFrameTransformerDelegate>
@@ -381,7 +380,7 @@ void ChannelReceive::OnReceivedPayloadData(ArrayView<const uint8_t> payload,
 }
 
 void ChannelReceive::InitFrameTransformerDelegate(
-    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK(frame_transformer);
   RTC_DCHECK(!frame_transformer_delegate_);
   RTC_DCHECK(worker_thread_->IsCurrent());
@@ -565,7 +564,7 @@ ChannelReceive::ChannelReceive(
     scoped_refptr<AudioDecoderFactory> decoder_factory,
     std::optional<AudioCodecPairId> codec_pair_id,
     scoped_refptr<FrameDecryptorInterface> frame_decryptor,
-    const webrtc::CryptoOptions& crypto_options,
+    const CryptoOptions& crypto_options,
     scoped_refptr<FrameTransformerInterface> frame_transformer)
     : env_(env),
       worker_thread_(TaskQueueBase::Current()),
@@ -713,14 +712,14 @@ void ChannelReceive::ReceivePacket(const uint8_t* packet,
   Buffer decrypted_audio_payload;
   if (frame_decryptor_ != nullptr) {
     const size_t max_plaintext_size = frame_decryptor_->GetMaxPlaintextByteSize(
-        webrtc::MediaType::AUDIO, payload_length);
+        MediaType::AUDIO, payload_length);
     decrypted_audio_payload.SetSize(max_plaintext_size);
 
     const std::vector<uint32_t> csrcs(header.arrOfCSRCs,
                                       header.arrOfCSRCs + header.numCSRCs);
     const FrameDecryptorInterface::Result decrypt_result =
         frame_decryptor_->Decrypt(
-            webrtc::MediaType::AUDIO, csrcs,
+            MediaType::AUDIO, csrcs,
             /*additional_data=*/
             nullptr, ArrayView<const uint8_t>(payload, payload_data_length),
             decrypted_audio_payload);
@@ -747,7 +746,7 @@ void ChannelReceive::ReceivePacket(const uint8_t* packet,
     char buf[1024];
     SimpleStringBuilder mime_type(buf);
     auto it = payload_type_map_.find(header.payloadType);
-    mime_type << webrtc::MediaTypeToString(webrtc::MediaType::AUDIO) << "/"
+    mime_type << MediaTypeToString(MediaType::AUDIO) << "/"
               << (it != payload_type_map_.end() ? it->second.name
                                                 : "x-unknown");
     frame_transformer_delegate_->Transform(payload_data, header, remote_ssrc_,
@@ -906,7 +905,7 @@ void ChannelReceive::SetNACKStatus(bool enable, int max_packets) {
   }
 }
 
-void ChannelReceive::SetRtcpMode(webrtc::RtcpMode mode) {
+void ChannelReceive::SetRtcpMode(RtcpMode mode) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   rtp_rtcp_->SetRTCPStatus(mode);
 }
@@ -933,7 +932,7 @@ void ChannelReceive::RtcpPacketTypesCounterUpdated(
 }
 
 void ChannelReceive::SetDepacketizerToDecoderFrameTransformer(
-    scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer) {
+    scoped_refptr<FrameTransformerInterface> frame_transformer) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   if (!frame_transformer) {
     RTC_DCHECK_NOTREACHED() << "Not setting the transformer?";
@@ -953,7 +952,7 @@ void ChannelReceive::SetDepacketizerToDecoderFrameTransformer(
 }
 
 void ChannelReceive::SetFrameDecryptor(
-    scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) {
+    scoped_refptr<FrameDecryptorInterface> frame_decryptor) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   frame_decryptor_ = std::move(frame_decryptor);
 }
@@ -1189,7 +1188,7 @@ std::unique_ptr<ChannelReceiveInterface> CreateChannelReceive(
     scoped_refptr<AudioDecoderFactory> decoder_factory,
     std::optional<AudioCodecPairId> codec_pair_id,
     scoped_refptr<FrameDecryptorInterface> frame_decryptor,
-    const webrtc::CryptoOptions& crypto_options,
+    const CryptoOptions& crypto_options,
     scoped_refptr<FrameTransformerInterface> frame_transformer) {
   return std::make_unique<ChannelReceive>(
       env, neteq_factory, audio_device_module, rtcp_send_transport, local_ssrc,

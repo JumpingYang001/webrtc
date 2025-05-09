@@ -51,9 +51,9 @@ class MockChannelSend {
               (AudioFrameType frameType,
                uint8_t payloadType,
                uint32_t rtp_timestamp,
-               webrtc::ArrayView<const uint8_t> payload,
+               ArrayView<const uint8_t> payload,
                int64_t absolute_capture_timestamp_ms,
-               webrtc::ArrayView<const uint32_t> csrcs,
+               ArrayView<const uint32_t> csrcs,
                std::optional<uint8_t> audio_level_dbov));
 
   ChannelSendFrameTransformerDelegate::SendFrameCallback callback() {
@@ -104,7 +104,7 @@ std::unique_ptr<TransformableAudioFrameInterface> CreateFrame() {
       AudioFrameType::kEmptyFrame, 0, 0, mock_data, sizeof(mock_data), 0,
       /*ssrc=*/0, /*mimeType=*/"audio/opus", /*audio_level_dbov=*/123);
   return absl::WrapUnique(
-      static_cast<webrtc::TransformableAudioFrameInterface*>(frame.release()));
+      static_cast<TransformableAudioFrameInterface*>(frame.release()));
 }
 
 // Test that the delegate registers itself with the frame transformer on Init().

@@ -42,7 +42,7 @@ class MockChannelReceive {
  public:
   MOCK_METHOD(void,
               ReceiveFrame,
-              (webrtc::ArrayView<const uint8_t> packet,
+              (ArrayView<const uint8_t> packet,
                const RTPHeader& header,
                Timestamp receive_time));
 
