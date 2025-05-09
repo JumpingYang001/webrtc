@@ -426,8 +426,7 @@ std::vector<ProbeClusterConfig> ProbeController::RequestProbe(
   return std::vector<ProbeClusterConfig>();
 }
 
-void ProbeController::SetNetworkStateEstimate(
-    webrtc::NetworkStateEstimate estimate) {
+void ProbeController::SetNetworkStateEstimate(NetworkStateEstimate estimate) {
   network_estimate_ = estimate;
 }
 

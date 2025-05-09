@@ -27,7 +27,7 @@ namespace webrtc {
 
 namespace {
 
-using ::webrtc::test::ExplicitKeyValueConfig;
+using test::ExplicitKeyValueConfig;
 
 constexpr TimeDelta kObservationDurationLowerBound = TimeDelta::Millis(250);
 constexpr TimeDelta kDelayedIncreaseWindow = TimeDelta::Millis(300);

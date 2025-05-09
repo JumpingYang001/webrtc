@@ -28,7 +28,7 @@ using PacketInfo = StreamFeedbackObserver::StreamPacketInfo;
 
 static constexpr uint32_t kSsrc = 8492;
 
-class MockStreamFeedbackObserver : public webrtc::StreamFeedbackObserver {
+class MockStreamFeedbackObserver : public StreamFeedbackObserver {
  public:
   MOCK_METHOD(void,
               OnPacketFeedbackVector,

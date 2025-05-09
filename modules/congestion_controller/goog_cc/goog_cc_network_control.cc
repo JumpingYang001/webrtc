@@ -77,7 +77,7 @@ BandwidthLimitedCause GetBandwidthLimitedCause(LossBasedState loss_based_state,
     case LossBasedState::kDecreasing:
       // Probes may not be sent in this state.
       return BandwidthLimitedCause::kLossLimitedBwe;
-    case webrtc::LossBasedState::kIncreaseUsingPadding:
+    case LossBasedState::kIncreaseUsingPadding:
       // Probes may not be sent in this state.
       return BandwidthLimitedCause::kLossLimitedBwe;
     case LossBasedState::kIncreasing:
