@@ -524,7 +524,7 @@
     'debug_bot': {
       'mixins': [
         'debug',
-        'reclient',
+        'remoteexec',
         'strict_field_trials',
         'disallow_deprecated_namespaces'
       ],
@@ -533,7 +533,7 @@
       'mixins': [
         'debug',
         'minimal_symbols',
-        'reclient',
+        'remoteexec',
         'strict_field_trials',
         'disallow_deprecated_namespaces',
       ],
@@ -620,10 +620,7 @@
     # 100% release build without DCHECKs while 'release_bot' is a partial
     # release configs since `dcheck_always_on` is set to true.
     'pure_release_bot': {
-      'mixins': ['release', 'reclient', 'dcheck_off'],
-    },
-    'reclient': {
-      'gn_args': 'use_remoteexec=true',
+      'mixins': ['release', 'remoteexec', 'dcheck_off'],
     },
     'release': {
       'gn_args': 'is_debug=false',
@@ -635,6 +632,9 @@
         'strict_field_trials',
         'disallow_deprecated_namespaces',
       ],
+    },
+    'remoteexec': {
+      'gn_args': 'use_remoteexec=true use_reclient=false use_siso=true',
     },
     'rtc_objc_test_prefix': {
       'gn_args': 'rtc_objc_prefix="RTC_TESTING"',
