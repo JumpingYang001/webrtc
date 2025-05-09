@@ -15,10 +15,9 @@ namespace test {
 ColumnPrinter::ColumnPrinter(const ColumnPrinter&) = default;
 ColumnPrinter::~ColumnPrinter() = default;
 
-ColumnPrinter::ColumnPrinter(
-    const char* headers,
-    std::function<void(webrtc::SimpleStringBuilder&)> printer,
-    size_t max_length)
+ColumnPrinter::ColumnPrinter(const char* headers,
+                             std::function<void(SimpleStringBuilder&)> printer,
+                             size_t max_length)
     : headers_(headers), printer_(printer), max_length_(max_length) {}
 
 ColumnPrinter ColumnPrinter::Fixed(const char* headers, std::string fields) {
@@ -29,7 +28,7 @@ ColumnPrinter ColumnPrinter::Fixed(const char* headers, std::string fields) {
 
 ColumnPrinter ColumnPrinter::Lambda(
     const char* headers,
-    std::function<void(webrtc::SimpleStringBuilder&)> printer,
+    std::function<void(SimpleStringBuilder&)> printer,
     size_t max_length) {
   return ColumnPrinter(headers, printer, max_length);
 }

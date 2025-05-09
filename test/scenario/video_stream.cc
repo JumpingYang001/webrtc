@@ -195,7 +195,7 @@ CreateEncoderSpecificSettings(VideoStreamConfig config) {
 }
 
 VideoEncoderConfig CreateVideoEncoderConfig(VideoStreamConfig config) {
-  webrtc::VideoEncoder::EncoderInfo encoder_info;
+  VideoEncoder::EncoderInfo encoder_info;
   VideoEncoderConfig encoder_config;
   encoder_config.codec_type = config.encoder.codec;
   encoder_config.content_type = ConvertContentType(config.encoder.content_type);
