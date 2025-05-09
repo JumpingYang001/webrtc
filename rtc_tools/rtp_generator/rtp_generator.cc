@@ -192,15 +192,15 @@ RtpGenerator::RtpGenerator(const RtpGeneratorOptions& options)
     : options_(options),
       env_(CreateEnvironment()),
       video_encoder_factory_(
-          std::make_unique<webrtc::VideoEncoderFactoryTemplate<
-              webrtc::LibvpxVp8EncoderTemplateAdapter,
-              webrtc::LibvpxVp9EncoderTemplateAdapter,
-              webrtc::LibaomAv1EncoderTemplateAdapter>>()),
+          std::make_unique<
+              VideoEncoderFactoryTemplate<LibvpxVp8EncoderTemplateAdapter,
+                                          LibvpxVp9EncoderTemplateAdapter,
+                                          LibaomAv1EncoderTemplateAdapter>>()),
       video_decoder_factory_(
-          std::make_unique<webrtc::VideoDecoderFactoryTemplate<
-              webrtc::LibvpxVp8DecoderTemplateAdapter,
-              webrtc::LibvpxVp9DecoderTemplateAdapter,
-              webrtc::Dav1dDecoderTemplateAdapter>>()),
+          std::make_unique<
+              VideoDecoderFactoryTemplate<LibvpxVp8DecoderTemplateAdapter,
+                                          LibvpxVp9DecoderTemplateAdapter,
+                                          Dav1dDecoderTemplateAdapter>>()),
       video_bitrate_allocator_factory_(
           CreateBuiltinVideoBitrateAllocatorFactory()),
       call_(Call::Create(CallConfig(env_))) {
@@ -208,9 +208,9 @@ RtpGenerator::RtpGenerator(const RtpGeneratorOptions& options)
   constexpr int kMaxBitrateBps = 2500000;  // 2.5 Mbps
 
   int stream_count = 0;
-  webrtc::VideoEncoder::EncoderInfo encoder_info;
+  VideoEncoder::EncoderInfo encoder_info;
   for (const auto& send_config : options.video_streams) {
-    webrtc::VideoSendStream::Config video_config(this);
+    VideoSendStream::Config video_config(this);
     video_config.encoder_settings.encoder_factory =
         video_encoder_factory_.get();
     video_config.encoder_settings.bitrate_allocator_factory =
@@ -268,9 +268,8 @@ RtpGenerator::RtpGenerator(const RtpGeneratorOptions& options)
 
     VideoSendStream* video_send_stream = call_->CreateVideoSendStream(
         std::move(video_config), std::move(encoder_config));
-    video_send_stream->SetSource(
-        frame_generator.get(),
-        webrtc::DegradationPreference::MAINTAIN_FRAMERATE);
+    video_send_stream->SetSource(frame_generator.get(),
+                                 DegradationPreference::MAINTAIN_FRAMERATE);
     // Store these objects so we can destropy them at the end.
     frame_generators_.push_back(std::move(frame_generator));
     video_send_streams_.push_back(video_send_stream);
@@ -287,8 +286,7 @@ void RtpGenerator::GenerateRtpDump(const std::string& rtp_dump_path) {
   rtp_dump_writer_.reset(test::RtpFileWriter::Create(
       test::RtpFileWriter::kRtpDump, rtp_dump_path));
 
-  call_->SignalChannelNetworkState(webrtc::MediaType::VIDEO,
-                                   webrtc::kNetworkUp);
+  call_->SignalChannelNetworkState(MediaType::VIDEO, kNetworkUp);
   for (VideoSendStream* send_stream : video_send_streams_) {
     send_stream->Start();
   }
@@ -296,8 +294,7 @@ void RtpGenerator::GenerateRtpDump(const std::string& rtp_dump_path) {
   // Spinlock until all the durations end.
   WaitUntilAllVideoStreamsFinish();
 
-  call_->SignalChannelNetworkState(webrtc::MediaType::VIDEO,
-                                   webrtc::kNetworkDown);
+  call_->SignalChannelNetworkState(MediaType::VIDEO, kNetworkDown);
 }
 
 bool RtpGenerator::SendRtp(ArrayView<const uint8_t> packet,
@@ -346,12 +343,12 @@ void RtpGenerator::WaitUntilAllVideoStreamsFinish() {
 
 test::RtpPacket RtpGenerator::DataToRtpPacket(const uint8_t* packet,
                                               size_t packet_len) {
-  webrtc::test::RtpPacket rtp_packet;
+  test::RtpPacket rtp_packet;
   memcpy(rtp_packet.data, packet, packet_len);
   rtp_packet.length = packet_len;
   rtp_packet.original_length = packet_len;
   rtp_packet.time_ms =
-      webrtc::Clock::GetRealTimeClock()->TimeInMilliseconds() - start_ms_;
+      Clock::GetRealTimeClock()->TimeInMilliseconds() - start_ms_;
   return rtp_packet;
 }
 

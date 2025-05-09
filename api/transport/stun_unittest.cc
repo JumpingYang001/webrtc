@@ -1194,15 +1194,15 @@ TEST_F(StunTest, ValidateMessageIntegrity) {
   // Again, but with the lengths matching what is claimed in the headers.
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrityForTesting(
       reinterpret_cast<const char*>(kStunMessageWithZeroLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithZeroLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithZeroLength[2]),
       kRfc5769SampleMsgPassword));
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrityForTesting(
       reinterpret_cast<const char*>(kStunMessageWithExcessLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithExcessLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithExcessLength[2]),
       kRfc5769SampleMsgPassword));
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrityForTesting(
       reinterpret_cast<const char*>(kStunMessageWithSmallLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithSmallLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithSmallLength[2]),
       kRfc5769SampleMsgPassword));
 
   // Check that a too-short HMAC doesn't cause buffer overflow.
@@ -1285,15 +1285,15 @@ TEST_F(StunTest, ValidateMessageIntegrity32) {
   // Again, but with the lengths matching what is claimed in the headers.
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(kStunMessageWithZeroLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithZeroLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithZeroLength[2]),
       kRfc5769SampleMsgPassword));
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(kStunMessageWithExcessLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithExcessLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithExcessLength[2]),
       kRfc5769SampleMsgPassword));
   EXPECT_FALSE(StunMessage::ValidateMessageIntegrity32ForTesting(
       reinterpret_cast<const char*>(kStunMessageWithSmallLength),
-      kStunHeaderSize + webrtc::GetBE16(&kStunMessageWithSmallLength[2]),
+      kStunHeaderSize + GetBE16(&kStunMessageWithSmallLength[2]),
       kRfc5769SampleMsgPassword));
 
   // Check that a too-short HMAC doesn't cause buffer overflow.
@@ -1706,24 +1706,24 @@ TEST_F(StunTest, SizeRestrictionOnAttributes) {
 }
 
 TEST_F(StunTest, ValidateMessageIntegrityWithParser) {
-  webrtc::metrics::Reset();  // Ensure counters start from zero.
+  metrics::Reset();  // Ensure counters start from zero.
   // Try the messages from RFC 5769.
   StunMessage message;
   ByteBufferReader reader(kRfc5769SampleRequest);
   EXPECT_TRUE(message.Read(&reader));
   EXPECT_EQ(message.ValidateMessageIntegrity(kRfc5769SampleMsgPassword),
             StunMessage::IntegrityStatus::kIntegrityOk);
-  EXPECT_EQ(webrtc::metrics::NumEvents(
+  EXPECT_EQ(metrics::NumEvents(
                 "WebRTC.Stun.Integrity.Request",
                 static_cast<int>(StunMessage::IntegrityStatus::kIntegrityOk)),
             1);
   EXPECT_EQ(message.RevalidateMessageIntegrity("Invalid password"),
             StunMessage::IntegrityStatus::kIntegrityBad);
-  EXPECT_EQ(webrtc::metrics::NumEvents(
+  EXPECT_EQ(metrics::NumEvents(
                 "WebRTC.Stun.Integrity.Request",
                 static_cast<int>(StunMessage::IntegrityStatus::kIntegrityBad)),
             1);
-  EXPECT_EQ(webrtc::metrics::NumSamples("WebRTC.Stun.Integrity.Request"), 2);
+  EXPECT_EQ(metrics::NumSamples("WebRTC.Stun.Integrity.Request"), 2);
 }
 
 }  // namespace webrtc

@@ -282,44 +282,43 @@ absl::string_view GetIceCandidateTypeAsString(IceCandidateType type) {
   }
 }
 
-std::string GetProtocolAsString(webrtc::IceCandidatePairProtocol protocol) {
+std::string GetProtocolAsString(IceCandidatePairProtocol protocol) {
   switch (protocol) {
-    case webrtc::IceCandidatePairProtocol::kUdp:
+    case IceCandidatePairProtocol::kUdp:
       return kProtocolUdp;
-    case webrtc::IceCandidatePairProtocol::kTcp:
+    case IceCandidatePairProtocol::kTcp:
       return kProtocolTcp;
-    case webrtc::IceCandidatePairProtocol::kSsltcp:
+    case IceCandidatePairProtocol::kSsltcp:
       return kProtocolSsltcp;
-    case webrtc::IceCandidatePairProtocol::kTls:
+    case IceCandidatePairProtocol::kTls:
       return kProtocolTls;
     default:
       return kUnknownEnumValue;
   }
 }
 
-std::string GetAddressFamilyAsString(
-    webrtc::IceCandidatePairAddressFamily family) {
+std::string GetAddressFamilyAsString(IceCandidatePairAddressFamily family) {
   switch (family) {
-    case webrtc::IceCandidatePairAddressFamily::kIpv4:
+    case IceCandidatePairAddressFamily::kIpv4:
       return kAddressFamilyIpv4;
-    case webrtc::IceCandidatePairAddressFamily::kIpv6:
+    case IceCandidatePairAddressFamily::kIpv6:
       return kAddressFamilyIpv6;
     default:
       return kUnknownEnumValue;
   }
 }
 
-std::string GetNetworkTypeAsString(webrtc::IceCandidateNetworkType type) {
+std::string GetNetworkTypeAsString(IceCandidateNetworkType type) {
   switch (type) {
-    case webrtc::IceCandidateNetworkType::kEthernet:
+    case IceCandidateNetworkType::kEthernet:
       return kNetworkTypeEthernet;
-    case webrtc::IceCandidateNetworkType::kLoopback:
+    case IceCandidateNetworkType::kLoopback:
       return kNetworkTypeLoopback;
-    case webrtc::IceCandidateNetworkType::kWifi:
+    case IceCandidateNetworkType::kWifi:
       return kNetworkTypeWifi;
-    case webrtc::IceCandidateNetworkType::kVpn:
+    case IceCandidateNetworkType::kVpn:
       return kNetworkTypeVpn;
-    case webrtc::IceCandidateNetworkType::kCellular:
+    case IceCandidateNetworkType::kCellular:
       return kNetworkTypeCellular;
     default:
       return kUnknownEnumValue;
@@ -435,19 +434,19 @@ struct PacketLossSummary {
   Timestamp base_time = Timestamp::MinusInfinity();
 };
 
-float GetHighestSeqNumber(const webrtc::rtcp::ReportBlock& block) {
+float GetHighestSeqNumber(const rtcp::ReportBlock& block) {
   return block.extended_high_seq_num();
 }
 
-float GetFractionLost(const webrtc::rtcp::ReportBlock& block) {
+float GetFractionLost(const rtcp::ReportBlock& block) {
   return static_cast<double>(block.fraction_lost()) / 256 * 100;
 }
 
-float GetCumulativeLost(const webrtc::rtcp::ReportBlock& block) {
+float GetCumulativeLost(const rtcp::ReportBlock& block) {
   return block.cumulative_lost();
 }
 
-float DelaySinceLastSr(const webrtc::rtcp::ReportBlock& block) {
+float DelaySinceLastSr(const rtcp::ReportBlock& block) {
   return static_cast<double>(block.delay_since_last_sr()) / 65536;
 }
 
@@ -534,35 +533,35 @@ void EventLogAnalyzer::InitializeMapOfNamedGraphs(bool show_detector_state,
                                                   bool show_alr_state,
                                                   bool show_link_capacity) {
   plots_.RegisterPlot("incoming_packet_sizes", [this](Plot* plot) {
-    this->CreatePacketGraph(webrtc::kIncomingPacket, plot);
+    this->CreatePacketGraph(kIncomingPacket, plot);
   });
 
   plots_.RegisterPlot("outgoing_packet_sizes", [this](Plot* plot) {
-    this->CreatePacketGraph(webrtc::kOutgoingPacket, plot);
+    this->CreatePacketGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("incoming_rtcp_types", [this](Plot* plot) {
-    this->CreateRtcpTypeGraph(webrtc::kIncomingPacket, plot);
+    this->CreateRtcpTypeGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_rtcp_types", [this](Plot* plot) {
-    this->CreateRtcpTypeGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateRtcpTypeGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("incoming_packet_count", [this](Plot* plot) {
-    this->CreateAccumulatedPacketsGraph(webrtc::kIncomingPacket, plot);
+    this->CreateAccumulatedPacketsGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_packet_count", [this](Plot* plot) {
-    this->CreateAccumulatedPacketsGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateAccumulatedPacketsGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("incoming_packet_rate", [this](Plot* plot) {
-    this->CreatePacketRateGraph(webrtc::kIncomingPacket, plot);
+    this->CreatePacketRateGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_packet_rate", [this](Plot* plot) {
-    this->CreatePacketRateGraph(webrtc::kOutgoingPacket, plot);
+    this->CreatePacketRateGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("total_incoming_packet_rate", [this](Plot* plot) {
-    this->CreateTotalPacketRateGraph(webrtc::kIncomingPacket, plot);
+    this->CreateTotalPacketRateGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("total_outgoing_packet_rate", [this](Plot* plot) {
-    this->CreateTotalPacketRateGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateTotalPacketRateGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("audio_playout",
                       [this](Plot* plot) { this->CreatePlayoutGraph(plot); });
@@ -572,10 +571,10 @@ void EventLogAnalyzer::InitializeMapOfNamedGraphs(bool show_detector_state,
   });
 
   plots_.RegisterPlot("incoming_audio_level", [this](Plot* plot) {
-    this->CreateAudioLevelGraph(webrtc::kIncomingPacket, plot);
+    this->CreateAudioLevelGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_audio_level", [this](Plot* plot) {
-    this->CreateAudioLevelGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateAudioLevelGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("incoming_sequence_number_delta", [this](Plot* plot) {
     this->CreateSequenceNumberGraph(plot);
@@ -596,16 +595,16 @@ void EventLogAnalyzer::InitializeMapOfNamedGraphs(bool show_detector_state,
             plot, show_detector_state, show_alr_state, show_link_capacity);
       });
   plots_.RegisterPlot("incoming_stream_bitrate", [this](Plot* plot) {
-    this->CreateStreamBitrateGraph(webrtc::kIncomingPacket, plot);
+    this->CreateStreamBitrateGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_stream_bitrate", [this](Plot* plot) {
-    this->CreateStreamBitrateGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateStreamBitrateGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("incoming_layer_bitrate_allocation", [this](Plot* plot) {
-    this->CreateBitrateAllocationGraph(webrtc::kIncomingPacket, plot);
+    this->CreateBitrateAllocationGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_layer_bitrate_allocation", [this](Plot* plot) {
-    this->CreateBitrateAllocationGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateBitrateAllocationGraph(kOutgoingPacket, plot);
   });
   plots_.RegisterPlot("simulated_receiveside_bwe", [this](Plot* plot) {
     this->CreateReceiveSideBweSimulationGraph(plot);
@@ -632,54 +631,54 @@ void EventLogAnalyzer::InitializeMapOfNamedGraphs(bool show_detector_state,
     this->CreateFractionLossGraph(plot);
   });
   plots_.RegisterPlot("incoming_timestamps", [this](Plot* plot) {
-    this->CreateTimestampGraph(webrtc::kIncomingPacket, plot);
+    this->CreateTimestampGraph(kIncomingPacket, plot);
   });
   plots_.RegisterPlot("outgoing_timestamps", [this](Plot* plot) {
-    this->CreateTimestampGraph(webrtc::kOutgoingPacket, plot);
+    this->CreateTimestampGraph(kOutgoingPacket, plot);
   });
 
   plots_.RegisterPlot("incoming_rtcp_fraction_lost", [this](Plot* plot) {
-    this->CreateSenderAndReceiverReportPlot(
-        webrtc::kIncomingPacket, GetFractionLost,
-        "Fraction lost (incoming RTCP)", "Loss rate (percent)", plot);
+    this->CreateSenderAndReceiverReportPlot(kIncomingPacket, GetFractionLost,
+                                            "Fraction lost (incoming RTCP)",
+                                            "Loss rate (percent)", plot);
   });
   plots_.RegisterPlot("outgoing_rtcp_fraction_lost", [this](Plot* plot) {
-    this->CreateSenderAndReceiverReportPlot(
-        webrtc::kOutgoingPacket, GetFractionLost,
-        "Fraction lost (outgoing RTCP)", "Loss rate (percent)", plot);
+    this->CreateSenderAndReceiverReportPlot(kOutgoingPacket, GetFractionLost,
+                                            "Fraction lost (outgoing RTCP)",
+                                            "Loss rate (percent)", plot);
   });
 
   plots_.RegisterPlot("incoming_rtcp_cumulative_lost", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kIncomingPacket, GetCumulativeLost,
+        kIncomingPacket, GetCumulativeLost,
         "Cumulative lost packets (incoming RTCP)", "Packets", plot);
   });
   plots_.RegisterPlot("outgoing_rtcp_cumulative_lost", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kOutgoingPacket, GetCumulativeLost,
+        kOutgoingPacket, GetCumulativeLost,
         "Cumulative lost packets (outgoing RTCP)", "Packets", plot);
   });
 
   plots_.RegisterPlot("incoming_rtcp_highest_seq_number", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kIncomingPacket, GetHighestSeqNumber,
+        kIncomingPacket, GetHighestSeqNumber,
         "Highest sequence number (incoming RTCP)", "Sequence number", plot);
   });
   plots_.RegisterPlot("outgoing_rtcp_highest_seq_number", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kOutgoingPacket, GetHighestSeqNumber,
+        kOutgoingPacket, GetHighestSeqNumber,
         "Highest sequence number (outgoing RTCP)", "Sequence number", plot);
   });
 
   plots_.RegisterPlot("incoming_rtcp_delay_since_last_sr", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kIncomingPacket, DelaySinceLastSr,
+        kIncomingPacket, DelaySinceLastSr,
         "Delay since last received sender report (incoming RTCP)", "Time (s)",
         plot);
   });
   plots_.RegisterPlot("outgoing_rtcp_delay_since_last_sr", [this](Plot* plot) {
     this->CreateSenderAndReceiverReportPlot(
-        webrtc::kOutgoingPacket, DelaySinceLastSr,
+        kOutgoingPacket, DelaySinceLastSr,
         "Delay since last received sender report (outgoing RTCP)", "Time (s)",
         plot);
   });
@@ -1592,16 +1591,16 @@ void EventLogAnalyzer::CreateEcnFeedbackGraph(Plot* plot,
     for (const rtcp::CongestionControlFeedback::PacketInfo& info :
          feedback.congestion_feedback.packets()) {
       switch (info.ecn) {
-        case webrtc::EcnMarking::kNotEct:
+        case EcnMarking::kNotEct:
           ++not_ect_count;
           break;
-        case webrtc::EcnMarking::kEct1:
+        case EcnMarking::kEct1:
           ++ect_1_count;
           break;
-        case webrtc::EcnMarking::kEct0:
+        case EcnMarking::kEct0:
           RTC_LOG(LS_ERROR) << "unexpected ect(0)";
           break;
-        case webrtc::EcnMarking::kCe:
+        case EcnMarking::kCe:
           ++ce_count;
           break;
       }

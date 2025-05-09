@@ -29,7 +29,7 @@ using GrpcSignaling::SessionDescription;
 using GrpcSignaling::SignalingMessage;
 
 template <class T>
-class SessionData : public webrtc::SignalingInterface {
+class SessionData : public SignalingInterface {
  public:
   SessionData() {}
   explicit SessionData(T* stream) : stream_(stream) {}
@@ -102,8 +102,8 @@ void ProcessMessages(StreamReader* stream, SessionData* session) {
   while (stream->Read(&message)) {
     switch (message.Content_case()) {
       case SignalingMessage::ContentCase::kCandidate: {
-        webrtc::SdpParseError error;
-        auto jsep_candidate = std::make_unique<webrtc::JsepIceCandidate>(
+        SdpParseError error;
+        auto jsep_candidate = std::make_unique<JsepIceCandidate>(
             message.candidate().mid(), message.candidate().mline_index());
         if (!jsep_candidate->Initialize(message.candidate().description(),
                                         &error)) {
@@ -121,10 +121,9 @@ void ProcessMessages(StreamReader* stream, SessionData* session) {
         auto& description = message.description();
         auto content = description.content();
 
-        auto sdp = webrtc::CreateSessionDescription(
-            description.type() == SessionDescription::OFFER
-                ? webrtc::SdpType::kOffer
-                : webrtc::SdpType::kAnswer,
+        auto sdp = CreateSessionDescription(
+            description.type() == SessionDescription::OFFER ? SdpType::kOffer
+                                                            : SdpType::kAnswer,
             description.content());
         session->remote_description_callback_(std::move(sdp));
         break;
@@ -138,10 +137,9 @@ void ProcessMessages(StreamReader* stream, SessionData* session) {
 class GrpcNegotiationServer : public GrpcSignalingServerInterface,
                               public PeerConnectionSignaling::Service {
  public:
-  GrpcNegotiationServer(
-      std::function<void(webrtc::SignalingInterface*)> callback,
-      int port,
-      bool oneshot)
+  GrpcNegotiationServer(std::function<void(SignalingInterface*)> callback,
+                        int port,
+                        bool oneshot)
       : connect_callback_(std::move(callback)),
         requested_port_(port),
         oneshot_(oneshot) {}
@@ -196,7 +194,7 @@ class GrpcNegotiationServer : public GrpcSignalingServerInterface,
   }
 
  private:
-  std::function<void(webrtc::SignalingInterface*)> connect_callback_;
+  std::function<void(SignalingInterface*)> connect_callback_;
   int requested_port_;
   int selected_port_;
   bool oneshot_;
@@ -236,7 +234,7 @@ class GrpcNegotiationClient : public GrpcSignalingClientInterface {
     return true;
   }
 
-  webrtc::SignalingInterface* signaling_client() override { return &session_; }
+  SignalingInterface* signaling_client() override { return &session_; }
 
  private:
   std::shared_ptr<grpc::Channel> channel_;
@@ -252,7 +250,7 @@ class GrpcNegotiationClient : public GrpcSignalingClientInterface {
 
 std::unique_ptr<GrpcSignalingServerInterface>
 GrpcSignalingServerInterface::Create(
-    std::function<void(webrtc::SignalingInterface*)> callback,
+    std::function<void(SignalingInterface*)> callback,
     int port,
     bool oneshot) {
   return std::make_unique<GrpcNegotiationServer>(std::move(callback), port,

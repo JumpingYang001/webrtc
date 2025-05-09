@@ -136,8 +136,7 @@ TEST(VideoQualityAnalysisTest,
      PrintMaxRepeatedAndSkippedFramesDecodeErrorInTest) {
   ResultsContainer result;
 
-  std::string log_filename =
-      TempFilename(webrtc::test::OutputPath(), "log.log");
+  std::string log_filename = TempFilename(test::OutputPath(), "log.log");
   FILE* logfile = fopen(log_filename.c_str(), "w");
   ASSERT_TRUE(logfile != NULL);
 

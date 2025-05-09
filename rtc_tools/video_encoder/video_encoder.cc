@@ -189,14 +189,14 @@ uint32_t GetDefaultTargetBitrate(const VideoCodecType codec,
   };
   size_t codec_index = 0;
   switch (codec) {
-    case webrtc::kVideoCodecVP8:
-    case webrtc::kVideoCodecH264:
+    case kVideoCodecVP8:
+    case kVideoCodecH264:
       codec_index = 0;
       break;
-    case webrtc::kVideoCodecVP9:
+    case kVideoCodecVP9:
       codec_index = 1;
       break;
-    case webrtc::kVideoCodecAV1:
+    case kVideoCodecAV1:
       codec_index = 2;
       break;
     default:
@@ -264,7 +264,7 @@ class BitstreamProcessor final : public EncodedImageCallback,
     }
   }
 
-  void ValidatePSNR(webrtc::VideoFrame& frame) {
+  void ValidatePSNR(VideoFrame& frame) {
     RTC_CHECK(validate_psnr_);
     video_decoder_->Decode(*encoded_image_, /*dont_care=*/0);
     double psnr = I420PSNR(*frame.video_frame_buffer()->ToI420(),
@@ -494,10 +494,9 @@ class TestVideoEncoderFactoryWrapper final {
     RTC_CHECK(video_encoder);
 
     // Initialize video encoder.
-    const webrtc::VideoEncoder::Settings kSettings(
-        webrtc::VideoEncoder::Capabilities(false),
-        /*number_of_cores=*/1,
-        /*max_payload_size=*/0);
+    const VideoEncoder::Settings kSettings(VideoEncoder::Capabilities(false),
+                                           /*number_of_cores=*/1,
+                                           /*max_payload_size=*/0);
 
     int ret = video_encoder->InitEncode(&video_codec_setting, kSettings);
     RTC_CHECK_EQ(ret, WEBRTC_VIDEO_CODEC_OK);
@@ -508,12 +507,12 @@ class TestVideoEncoderFactoryWrapper final {
             env, video_codec_setting);
     RTC_CHECK(bitrate_allocator);
 
-    webrtc::VideoBitrateAllocation allocation =
+    VideoBitrateAllocation allocation =
         bitrate_allocator->GetAllocation(bitrate_kbps * 1000, frame_rate_fps);
     RTC_LOG(LS_INFO) << allocation.ToString();
 
-    video_encoder->SetRates(webrtc::VideoEncoder::RateControlParameters(
-        allocation, frame_rate_fps));
+    video_encoder->SetRates(
+        VideoEncoder::RateControlParameters(allocation, frame_rate_fps));
 
     return video_encoder;
   }

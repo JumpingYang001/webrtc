@@ -55,8 +55,8 @@ double Ssim(const scoped_refptr<I420BufferInterface>& ref_buffer,
 }
 
 std::vector<AnalysisResult> RunAnalysis(
-    const scoped_refptr<webrtc::test::Video>& reference_video,
-    const scoped_refptr<webrtc::test::Video>& test_video,
+    const scoped_refptr<test::Video>& reference_video,
+    const scoped_refptr<test::Video>& test_video,
     const std::vector<size_t>& test_frame_indices) {
   std::vector<AnalysisResult> results;
   for (size_t i = 0; i < test_video->number_of_frames(); ++i) {

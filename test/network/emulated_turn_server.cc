@@ -87,8 +87,8 @@ namespace test {
 // sending data back into the emulated network.
 class EmulatedTURNServer::AsyncPacketSocketWrapper : public AsyncPacketSocket {
  public:
-  AsyncPacketSocketWrapper(webrtc::test::EmulatedTURNServer* turn_server,
-                           webrtc::EmulatedEndpoint* endpoint,
+  AsyncPacketSocketWrapper(test::EmulatedTURNServer* turn_server,
+                           EmulatedEndpoint* endpoint,
                            uint16_t port)
       : turn_server_(turn_server),
         endpoint_(endpoint),
@@ -126,8 +126,8 @@ class EmulatedTURNServer::AsyncPacketSocketWrapper : public AsyncPacketSocket {
   void SetError(int error) override {}
 
  private:
-  webrtc::test::EmulatedTURNServer* const turn_server_;
-  webrtc::EmulatedEndpoint* const endpoint_;
+  test::EmulatedTURNServer* const turn_server_;
+  EmulatedEndpoint* const endpoint_;
   const SocketAddress local_address_;
 };
 
@@ -182,7 +182,7 @@ AsyncPacketSocket* EmulatedTURNServer::Wrap(EmulatedEndpoint* endpoint) {
   return socket;
 }
 
-void EmulatedTURNServer::OnPacketReceived(webrtc::EmulatedIpPacket packet) {
+void EmulatedTURNServer::OnPacketReceived(EmulatedIpPacket packet) {
   // Copy from EmulatedEndpoint to webrtc::AsyncPacketSocket.
   thread_->PostTask([this, packet(std::move(packet))]() {
     RTC_DCHECK_RUN_ON(thread_.get());

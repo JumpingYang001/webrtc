@@ -98,8 +98,8 @@ TEST(FeedbackGeneratorTest, WritesToEventLog) {
 }
 
 TEST(FeedbackGeneratorWithoutNetworkTest, ReportsFeedbackForSentPackets) {
-  auto network_emulation_manager = CreateNetworkEmulationManager(
-      {.time_mode = webrtc::TimeMode::kSimulated});
+  auto network_emulation_manager =
+      CreateNetworkEmulationManager({.time_mode = TimeMode::kSimulated});
   std::unique_ptr<FeedbackGeneratorWithoutNetwork> gen =
       CreateFeedbackGeneratorWithoutNetwork(
           FeedbackGeneratorWithoutNetwork::Config(),

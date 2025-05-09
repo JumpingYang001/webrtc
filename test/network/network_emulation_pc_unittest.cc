@@ -92,7 +92,7 @@ scoped_refptr<PeerConnectionInterface> CreatePeerConnection(
   // This test does not support TCP
   rtc_configuration.port_allocator_config.flags = PORTALLOCATOR_DISABLE_TCP;
   if (turn_server != nullptr) {
-    webrtc::PeerConnectionInterface::IceServer server;
+    PeerConnectionInterface::IceServer server;
     server.username = turn_server->GetIceServerConfig().username;
     server.password = turn_server->GetIceServerConfig().username;
     server.urls.push_back(turn_server->GetIceServerConfig().url);
@@ -161,7 +161,7 @@ TEST(NetworkEmulationManagerPCTest, Run) {
                                               std::move(bob_observer));
 
   SendTask(signaling_thread.get(), [&]() {
-    scoped_refptr<webrtc::AudioSourceInterface> source =
+    scoped_refptr<AudioSourceInterface> source =
         alice_pcf->CreateAudioSource(AudioOptions());
     scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());
@@ -272,7 +272,7 @@ TEST(NetworkEmulationManagerPCTest, RunTURN) {
                                               std::move(bob_observer));
 
   SendTask(signaling_thread.get(), [&]() {
-    scoped_refptr<webrtc::AudioSourceInterface> source =
+    scoped_refptr<AudioSourceInterface> source =
         alice_pcf->CreateAudioSource(AudioOptions());
     scoped_refptr<AudioTrackInterface> track =
         alice_pcf->CreateAudioTrack("audio", source.get());

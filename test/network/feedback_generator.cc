@@ -40,11 +40,6 @@
 #include "test/network/simulated_network.h"
 namespace webrtc {
 
-using ::webrtc::RtcEventRtcpPacketIncoming;
-using ::webrtc::RtcEventRtpPacketOutgoing;
-using ::webrtc::RtpPacketToSend;
-using ::webrtc::TimeDelta;
-using ::webrtc::TransportPacketsFeedback;
 
 namespace {
 Environment GetEnvironment(NetworkEmulationManager& net) {
@@ -54,9 +49,8 @@ Environment GetEnvironment(NetworkEmulationManager& net) {
   return factory.Create();
 }
 
-webrtc::EmulatedRoute* CreateRoute(
-    webrtc::NetworkEmulationManager& net,
-    std::vector<webrtc::EmulatedNetworkNode*> link) {
+EmulatedRoute* CreateRoute(NetworkEmulationManager& net,
+                           std::vector<EmulatedNetworkNode*> link) {
   if (!link.empty()) {
     return net.CreateRoute(link);
   } else {
