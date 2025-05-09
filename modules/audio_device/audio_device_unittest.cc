@@ -522,7 +522,7 @@ class MockAudioTransport : public test::MockAudioTransport {
 #endif
 
 class MAYBE_AudioDeviceTest
-    : public ::testing::TestWithParam<webrtc::AudioDeviceModule::AudioLayer> {
+    : public ::testing::TestWithParam<AudioDeviceModule::AudioLayer> {
  protected:
   MAYBE_AudioDeviceTest()
       : audio_layer_(GetParam()), env_(CreateEnvironment()) {
