@@ -28,9 +28,9 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::test::GetGlobalMetricsLogger;
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Unit;
+using test::GetGlobalMetricsLogger;
+using test::ImprovementDirection;
+using test::Unit;
 
 int64_t RunComplexityTest(const Environment& env,
                           const AudioEncoderOpusConfig& config) {
@@ -39,7 +39,7 @@ int64_t RunComplexityTest(const Environment& env,
       AudioEncoderOpus::MakeAudioEncoder(env, config, {.payload_type = 17});
   // Open speech file.
   const std::string kInputFileName =
-      webrtc::test::ResourcePath("audio_coding/speech_mono_32_48kHz", "pcm");
+      test::ResourcePath("audio_coding/speech_mono_32_48kHz", "pcm");
   test::AudioLoop audio_loop;
   constexpr int kSampleRateHz = 48000;
   EXPECT_EQ(kSampleRateHz, encoder->SampleRateHz());

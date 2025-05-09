@@ -180,8 +180,7 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
 void UpdateCodecTypeHistogram(size_t codec_type) {
   RTC_HISTOGRAM_ENUMERATION(
       "WebRTC.Audio.Encoder.CodecType", static_cast<int>(codec_type),
-      static_cast<int>(
-          webrtc::AudioEncoder::CodecType::kMaxLoggedAudioCodecTypes));
+      static_cast<int>(AudioEncoder::CodecType::kMaxLoggedAudioCodecTypes));
 }
 
 void AudioCodingModuleImpl::ChangeLogger::MaybeLog(int value) {

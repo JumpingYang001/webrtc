@@ -100,7 +100,7 @@ class NetEqStereoTest : public ::testing::TestWithParam<TestParameters> {
 
   virtual void SetUp() {
     const std::string file_name =
-        webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+        test::ResourcePath("audio_coding/testfile32kHz", "pcm");
     input_file_.reset(new test::InputAudioFile(file_name));
     RTC_CHECK_GE(num_channels_, 2);
     ASSERT_TRUE(neteq_mono_->RegisterPayloadType(

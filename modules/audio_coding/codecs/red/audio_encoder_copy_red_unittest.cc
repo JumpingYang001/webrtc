@@ -207,7 +207,7 @@ TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes1) {
 // Checks that the correct payload sizes are populated into the redundancy
 // information for a redundancy level of 0.
 TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes0) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Audio-Red-For-Opus/Enabled-0/");
   // Recreate the RED encoder to take the new field trial setting into account.
   AudioEncoderCopyRed::Config config;
@@ -233,7 +233,7 @@ TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes0) {
 // Checks that the correct payload sizes are populated into the redundancy
 // information for a redundancy level of 2.
 TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes2) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Audio-Red-For-Opus/Enabled-2/");
   // Recreate the RED encoder to take the new field trial setting into account.
   AudioEncoderCopyRed::Config config;
@@ -275,7 +275,7 @@ TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes2) {
 // Checks that the correct payload sizes are populated into the redundancy
 // information for a redundancy level of 3.
 TEST_F(AudioEncoderCopyRedTest, CheckPayloadSizes3) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Audio-Red-For-Opus/Enabled-3/");
   // Recreate the RED encoder to take the new field trial setting into account.
   AudioEncoderCopyRed::Config config;
@@ -489,7 +489,7 @@ TEST_F(AudioEncoderCopyRedTest, CheckRFC2198Header) {
 
 // Variant with a redundancy of 0.
 TEST_F(AudioEncoderCopyRedTest, CheckRFC2198Header0) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Audio-Red-For-Opus/Enabled-0/");
   // Recreate the RED encoder to take the new field trial setting into account.
   AudioEncoderCopyRed::Config config;
@@ -517,7 +517,7 @@ TEST_F(AudioEncoderCopyRedTest, CheckRFC2198Header0) {
 }
 // Variant with a redundancy of 2.
 TEST_F(AudioEncoderCopyRedTest, CheckRFC2198Header2) {
-  webrtc::test::ScopedKeyValueConfig field_trials(
+  test::ScopedKeyValueConfig field_trials(
       field_trials_, "WebRTC-Audio-Red-For-Opus/Enabled-2/");
   // Recreate the RED encoder to take the new field trial setting into account.
   AudioEncoderCopyRed::Config config;

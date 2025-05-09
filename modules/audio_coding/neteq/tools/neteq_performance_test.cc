@@ -42,7 +42,7 @@ int64_t NetEqPerformanceTest::Run(int runtime_ms,
                                   int lossrate,
                                   double drift_factor) {
   const std::string kInputFileName =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   const int kSampRateHz = 32000;
   const std::string kDecoderName = "pcm16-swb32";
   const int kPayloadType = 95;

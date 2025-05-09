@@ -60,9 +60,8 @@ namespace webrtc {
 namespace test {
 namespace {
 
-std::optional<int> CodecSampleRate(
-    uint8_t payload_type,
-    webrtc::test::NetEqTestFactory::Config config) {
+std::optional<int> CodecSampleRate(uint8_t payload_type,
+                                   test::NetEqTestFactory::Config config) {
   if (payload_type == config.pcmu || payload_type == config.pcma ||
       payload_type == config.pcm16b || payload_type == config.cn_nb ||
       payload_type == config.avt)

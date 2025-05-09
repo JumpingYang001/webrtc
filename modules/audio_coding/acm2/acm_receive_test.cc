@@ -105,7 +105,7 @@ void AcmReceiveTestOldApi::Run() {
           static_cast<size_t>(output_freq_hz_ * 10 / 1000);
       EXPECT_EQ(samples_per_block, output_frame.samples_per_channel_);
       if (exptected_output_channels_ != kArbitraryChannels) {
-        if (output_frame.speech_type_ == webrtc::AudioFrame::kPLC) {
+        if (output_frame.speech_type_ == AudioFrame::kPLC) {
           // Don't check number of channels for PLC output, since each test run
           // usually starts with a short period of mono PLC before decoding the
           // first packet.

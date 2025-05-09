@@ -50,7 +50,7 @@ class CngDeathTest : public CngTest {};
 void CngTest::SetUp() {
   FILE* input_file;
   const std::string file_name =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   input_file = fopen(file_name.c_str(), "rb");
   ASSERT_TRUE(input_file != NULL);
   ASSERT_EQ(640, static_cast<int32_t>(

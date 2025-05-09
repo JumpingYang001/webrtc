@@ -72,7 +72,7 @@ TestRedFec::~TestRedFec() {
 
 void TestRedFec::Perform() {
   const std::string file_name =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   _inFileA.Open(file_name, 32000, "rb");
 
   // Create and connect the channel
@@ -204,7 +204,7 @@ void TestRedFec::Run() {
 void TestRedFec::OpenOutFile(int16_t test_number) {
   std::string file_name;
   StringBuilder file_stream;
-  file_stream << webrtc::test::OutputPath();
+  file_stream << test::OutputPath();
   file_stream << "TestRedFec_outFile_";
   file_stream << test_number << ".pcm";
   file_name = file_stream.str();

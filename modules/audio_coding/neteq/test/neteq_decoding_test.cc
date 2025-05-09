@@ -46,7 +46,7 @@ namespace webrtc {
 
 namespace {
 
-void LoadDecoders(webrtc::NetEq* neteq) {
+void LoadDecoders(NetEq* neteq) {
   ASSERT_EQ(true,
             neteq->RegisterPayloadType(0, SdpAudioFormat("pcmu", 8000, 1)));
   ASSERT_EQ(true,
@@ -150,11 +150,11 @@ void NetEqDecodingTest::DecodeAndCompare(
   OpenInputFile(rtp_file);
 
   std::string ref_out_file =
-      gen_ref ? webrtc::test::OutputPath() + "neteq_universal_ref.pcm" : "";
+      gen_ref ? test::OutputPath() + "neteq_universal_ref.pcm" : "";
   ResultSink output(ref_out_file);
 
   std::string stat_out_file =
-      gen_ref ? webrtc::test::OutputPath() + "neteq_network_stats.dat" : "";
+      gen_ref ? test::OutputPath() + "neteq_network_stats.dat" : "";
   ResultSink network_stats(stat_out_file);
 
   packet_ = rtp_source_->NextPacket();

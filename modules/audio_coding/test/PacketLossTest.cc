@@ -159,8 +159,8 @@ void PacketLossTest::Perform() {
     send_format.parameters = {{"stereo", "1"}};
   }
 
-  std::string fileName = webrtc::test::TempFilename(webrtc::test::OutputPath(),
-                                                    "packet_loss_test");
+  std::string fileName =
+      test::TempFilename(test::OutputPath(), "packet_loss_test");
   rtpFile.Open(fileName.c_str(), "wb+");
   rtpFile.WriteHeader();
   SenderWithFEC sender;

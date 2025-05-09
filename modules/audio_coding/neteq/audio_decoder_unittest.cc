@@ -103,9 +103,8 @@ double MseInputOutput(const std::vector<int16_t>& input,
 class AudioDecoderTest : public ::testing::Test {
  protected:
   AudioDecoderTest()
-      : input_audio_(
-            webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm"),
-            32000),
+      : input_audio_(test::ResourcePath("audio_coding/testfile32kHz", "pcm"),
+                     32000),
         codec_input_rate_hz_(32000),  // Legacy default value.
         frame_size_(0),
         data_length_(0),

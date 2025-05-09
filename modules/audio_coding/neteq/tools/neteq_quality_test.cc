@@ -113,13 +113,12 @@ const std::string& GetInFilenamePath(absl::string_view file_name) {
   std::vector<absl::string_view> name_parts = split(file_name, '.');
   RTC_CHECK_EQ(name_parts.size(), 2);
   static const std::string path =
-      ::webrtc::test::ResourcePath(name_parts[0], name_parts[1]);
+      test::ResourcePath(name_parts[0], name_parts[1]);
   return path;
 }
 
 const std::string& GetOutFilenamePath(absl::string_view file_name) {
-  static const std::string path =
-      ::webrtc::test::OutputPath() + std::string(file_name);
+  static const std::string path = test::OutputPath() + std::string(file_name);
   return path;
 }
 
@@ -261,10 +260,10 @@ NetEqQualityTest::NetEqQualityTest(
       out_filename.substr(out_filename.size() - 4) == ".wav") {
     // Open a wav file.
     output_.reset(
-        new webrtc::test::OutputWavFile(out_filename, 1000 * out_sampling_khz));
+        new test::OutputWavFile(out_filename, 1000 * out_sampling_khz));
   } else {
     // Open a pcm file.
-    output_.reset(new webrtc::test::OutputAudioFile(out_filename));
+    output_.reset(new test::OutputAudioFile(out_filename));
   }
 
   NetEq::Config config;

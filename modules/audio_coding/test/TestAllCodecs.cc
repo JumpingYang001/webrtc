@@ -135,7 +135,7 @@ TestAllCodecs::~TestAllCodecs() {
 
 void TestAllCodecs::Perform() {
   const std::string file_name =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   infile_a_.Open(file_name, 32000, "rb");
 
   neteq_->SetCodecs({{107, {"L16", 8000, 1}},
@@ -378,7 +378,7 @@ void TestAllCodecs::Run(TestPack* channel) {
 }
 
 void TestAllCodecs::OpenOutFile(int test_number) {
-  std::string filename = webrtc::test::OutputPath();
+  std::string filename = test::OutputPath();
   StringBuilder test_number_str;
   test_number_str << test_number;
   filename += "testallcodecs_out_";

@@ -95,7 +95,7 @@ void Packet::DeleteRedHeaders(std::list<RTPHeader*>* headers) {
 bool Packet::ParseHeader(const RtpHeaderExtensionMap* extension_map) {
   // Use RtpPacketReceived instead of RtpPacket because former already has a
   // converter into legacy RTPHeader.
-  webrtc::RtpPacketReceived rtp_packet(extension_map);
+  RtpPacketReceived rtp_packet(extension_map);
 
   // Because of the special case of dummy packets that have padding marked in
   // the RTP header, but do not have rtp payload with the padding size, handle

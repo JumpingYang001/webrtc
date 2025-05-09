@@ -707,7 +707,7 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
     // output.
     test::AudioChecksum audio_checksum;
     const std::string output_file_name =
-        webrtc::test::OutputPath() +
+        test::OutputPath() +
         ::testing::UnitTest::GetInstance()
             ->current_test_info()
             ->test_case_name() +
@@ -817,13 +817,12 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
   uint32_t last_timestamp_;
   std::unique_ptr<MessageDigest> payload_checksum_;
   const std::string kTestFileMono32kHz =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   const std::string kTestFileFakeStereo32kHz =
-      webrtc::test::ResourcePath("audio_coding/testfile_fake_stereo_32kHz",
-                                 "pcm");
-  const std::string kTestFileQuad48kHz = webrtc::test::ResourcePath(
-      "audio_coding/speech_4_channels_48k_one_second",
-      "wav");
+      test::ResourcePath("audio_coding/testfile_fake_stereo_32kHz", "pcm");
+  const std::string kTestFileQuad48kHz =
+      test::ResourcePath("audio_coding/speech_4_channels_48k_one_second",
+                         "wav");
 };
 
 class AcmSenderBitExactnessNewApi : public AcmSenderBitExactnessOldApi {};
@@ -1047,7 +1046,7 @@ class AcmSetBitRateTest : public ::testing::Test {
   // false.
   bool SetUpSender() {
     const std::string input_file_name =
-        webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+        test::ResourcePath("audio_coding/testfile32kHz", "pcm");
     // Note that `audio_source_` will loop forever. The test duration is set
     // explicitly by `kTestDurationMs`.
     audio_source_.reset(new test::InputAudioFile(input_file_name));
@@ -1270,10 +1269,9 @@ TEST_F(AcmSenderBitExactnessOldApi, External_Pcmu_20ms) {
   EXPECT_CALL(*mock_encoder, EncodeImpl(_, _, _))
       .Times(AtLeast(1))
       .WillRepeatedly(Invoke(
-          &encoder,
-          static_cast<AudioEncoder::EncodedInfo (AudioEncoder::*)(
-              uint32_t, webrtc::ArrayView<const int16_t>, webrtc::Buffer*)>(
-              &AudioEncoderPcmU::Encode)));
+          &encoder, static_cast<AudioEncoder::EncodedInfo (AudioEncoder::*)(
+                        uint32_t, ArrayView<const int16_t>, Buffer*)>(
+                        &AudioEncoderPcmU::Encode)));
   ASSERT_TRUE(SetUpSender(kTestFileMono32kHz, 32000));
   ASSERT_NO_FATAL_FAILURE(
       SetUpTestExternalEncoder(std::move(mock_encoder), config.payload_type));
@@ -1310,7 +1308,7 @@ class AcmSwitchingOutputFrequencyOldApi : public ::testing::Test,
     // Set up the receiver used to decode the packets and verify the decoded
     // output.
     const std::string output_file_name =
-        webrtc::test::OutputPath() +
+        test::OutputPath() +
         ::testing::UnitTest::GetInstance()
             ->current_test_info()
             ->test_case_name() +

@@ -43,8 +43,8 @@ namespace {
 using test::ExplicitKeyValueConfig;
 using testing::SizeIs;
 
-using DecodeResult = ::webrtc::AudioDecoder::EncodedAudioFrame::DecodeResult;
-using ParseResult = ::webrtc::AudioDecoder::ParseResult;
+using DecodeResult = AudioDecoder::EncodedAudioFrame::DecodeResult;
+using ParseResult = AudioDecoder::ParseResult;
 
 constexpr int kSampleRateHz = 48000;
 

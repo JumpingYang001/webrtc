@@ -71,7 +71,7 @@ void Sender::Setup(const Environment& env,
                    int payload_type,
                    SdpAudioFormat format) {
   // Open input file
-  const std::string file_name = webrtc::test::ResourcePath(in_file_name, "pcm");
+  const std::string file_name = test::ResourcePath(in_file_name, "pcm");
   _pcmFile.Open(file_name, in_sample_rate, "rb");
   if (format.num_channels == 2) {
     _pcmFile.ReadStereo(true);
@@ -146,8 +146,7 @@ void Receiver::Setup(NetEq* neteq,
   int playSampFreq;
   std::string file_name;
   StringBuilder file_stream;
-  file_stream << webrtc::test::OutputPath() << out_file_name << file_num
-              << ".pcm";
+  file_stream << test::OutputPath() << out_file_name << file_num << ".pcm";
   file_name = file_stream.str();
   _rtpStream = rtpStream;
 
@@ -259,8 +258,8 @@ void EncodeDecodeTest::Perform() {
     RTPFile rtpFile;
     std::unique_ptr<AudioCodingModule> acm(AudioCodingModule::Create());
 
-    std::string fileName = webrtc::test::TempFilename(
-        webrtc::test::OutputPath(), "encode_decode_rtp");
+    std::string fileName =
+        test::TempFilename(test::OutputPath(), "encode_decode_rtp");
     rtpFile.Open(fileName.c_str(), "wb+");
     rtpFile.WriteHeader();
     Sender sender;

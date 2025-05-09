@@ -184,7 +184,7 @@ void OpusTest::PrepareSpeechData(int block_length_ms, int loop_length_ms) {
       {4, "audio_coding/speech_4_channels_48k_one_second"}};
   std::map<int, std::string> channel_to_suffix = {
       {1, "pcm"}, {2, "pcm"}, {4, "wav"}};
-  const std::string file_name = webrtc::test::ResourcePath(
+  const std::string file_name = test::ResourcePath(
       channel_to_basename[channels_], channel_to_suffix[channels_]);
   if (loop_length_ms < block_length_ms) {
     loop_length_ms = block_length_ms;

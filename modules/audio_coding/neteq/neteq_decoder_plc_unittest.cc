@@ -212,7 +212,7 @@ TestStatistics RunTest(int loss_cadence,
   NetEqTest::DecoderMap decoders;
   // Using a fake decoder which simply reads the output audio from a file.
   auto input_file = std::make_unique<InputAudioFile>(
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm"));
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm"));
   AudioDecoderPlc dec(std::move(input_file), kSampleRateHz);
   // Masquerading as a PCM16b decoder.
   decoders.emplace(kPayloadType, SdpAudioFormat("l16", 32000, 1));

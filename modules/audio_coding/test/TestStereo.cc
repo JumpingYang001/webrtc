@@ -140,9 +140,9 @@ void TestStereo::Perform() {
 
   // Open both mono and stereo test files in 32 kHz.
   const std::string file_name_stereo =
-      webrtc::test::ResourcePath("audio_coding/teststereo32kHz", "pcm");
+      test::ResourcePath("audio_coding/teststereo32kHz", "pcm");
   const std::string file_name_mono =
-      webrtc::test::ResourcePath("audio_coding/testfile32kHz", "pcm");
+      test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   frequency_hz = 32000;
   in_file_stereo_ = new PCMFile();
   in_file_mono_ = new PCMFile();
@@ -618,7 +618,7 @@ void TestStereo::Run(TestPackStereo* channel,
 void TestStereo::OpenOutFile(int16_t test_number) {
   std::string file_name;
   StringBuilder file_stream;
-  file_stream << webrtc::test::OutputPath() << "teststereo_out_" << test_number
+  file_stream << test::OutputPath() << "teststereo_out_" << test_number
               << ".pcm";
   file_name = file_stream.str();
   out_file_.Open(file_name, 32000, "wb");

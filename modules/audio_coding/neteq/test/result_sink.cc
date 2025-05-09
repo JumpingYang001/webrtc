@@ -34,8 +34,8 @@
 namespace webrtc {
 
 #ifdef WEBRTC_NETEQ_UNITTEST_BITEXACT
-void Convert(const webrtc::NetEqNetworkStatistics& stats_raw,
-             webrtc::neteq_unittest::NetEqNetworkStatistics* stats) {
+void Convert(const NetEqNetworkStatistics& stats_raw,
+             neteq_unittest::NetEqNetworkStatistics* stats) {
   stats->set_current_buffer_size_ms(stats_raw.current_buffer_size_ms);
   stats->set_preferred_buffer_size_ms(stats_raw.preferred_buffer_size_ms);
   stats->set_jitter_peaks_found(stats_raw.jitter_peaks_found);

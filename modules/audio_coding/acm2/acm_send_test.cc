@@ -39,7 +39,7 @@ AcmSendTestOldApi::AcmSendTestOldApi(InputAudioFile* audio_source,
                                      int test_duration_ms)
     : clock_(0),
       env_(CreateEnvironment(&clock_)),
-      acm_(webrtc::AudioCodingModule::Create()),
+      acm_(AudioCodingModule::Create()),
       audio_source_(audio_source),
       source_rate_hz_(source_rate_hz),
       input_block_size_samples_(
