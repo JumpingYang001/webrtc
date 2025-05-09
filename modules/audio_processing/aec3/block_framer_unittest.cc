@@ -124,9 +124,9 @@ void RunWronglySizedInsertAndExtractParametersTest(
       num_sub_frame_bands,
       std::vector<std::vector<float>>(
           num_sub_frame_channels, std::vector<float>(sub_frame_length, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> output_sub_frame_view(
+  std::vector<std::vector<ArrayView<float>>> output_sub_frame_view(
       output_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(num_sub_frame_channels));
+      std::vector<ArrayView<float>>(num_sub_frame_channels));
   SetupSubFrameView(&output_sub_frame, &output_sub_frame_view);
   BlockFramer framer(correct_num_bands, correct_num_channels);
   EXPECT_DEATH(
@@ -147,9 +147,9 @@ void RunWronglySizedInsertParameterTest(int sample_rate_hz,
       correct_num_bands,
       std::vector<std::vector<float>>(
           correct_num_channels, std::vector<float>(kSubFrameLength, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> output_sub_frame_view(
+  std::vector<std::vector<ArrayView<float>>> output_sub_frame_view(
       output_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(correct_num_channels));
+      std::vector<ArrayView<float>>(correct_num_channels));
   SetupSubFrameView(&output_sub_frame, &output_sub_frame_view);
   BlockFramer framer(correct_num_bands, correct_num_channels);
   framer.InsertBlockAndExtractSubFrame(correct_block, &output_sub_frame_view);
@@ -174,9 +174,8 @@ void RunWronglyInsertOrderTest(int sample_rate_hz,
       correct_num_bands,
       std::vector<std::vector<float>>(
           num_channels, std::vector<float>(kSubFrameLength, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> output_sub_frame_view(
-      output_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(num_channels));
+  std::vector<std::vector<ArrayView<float>>> output_sub_frame_view(
+      output_sub_frame.size(), std::vector<ArrayView<float>>(num_channels));
   SetupSubFrameView(&output_sub_frame, &output_sub_frame_view);
   BlockFramer framer(correct_num_bands, num_channels);
   for (size_t k = 0; k < num_preceeding_api_calls; ++k) {
@@ -293,7 +292,7 @@ TEST(BlockFramerDeathTest, WrongNumberOfPreceedingApiCallsForInsertBlock) {
   for (size_t num_channels : {1, 2, 8}) {
     for (auto rate : {16000, 32000, 48000}) {
       for (size_t num_calls = 0; num_calls < 4; ++num_calls) {
-        webrtc::StringBuilder ss;
+        StringBuilder ss;
         ss << "Sample rate: " << rate;
         ss << ", Num channels: " << num_channels;
         ss << ", Num preceeding InsertBlockAndExtractSubFrame calls: "

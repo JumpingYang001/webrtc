@@ -132,9 +132,9 @@ TEST(BlockProcessor, DISABLED_DelayControllerIntegration) {
   Random random_generator(42U);
   for (auto rate : {16000, 32000, 48000}) {
     SCOPED_TRACE(ProduceDebugText(rate));
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockRenderDelayBuffer>>
+    std::unique_ptr<testing::StrictMock<test::MockRenderDelayBuffer>>
         render_delay_buffer_mock(
-            new StrictMock<webrtc::test::MockRenderDelayBuffer>(rate, 1));
+            new StrictMock<test::MockRenderDelayBuffer>(rate, 1));
     EXPECT_CALL(*render_delay_buffer_mock, Insert(_))
         .Times(kNumBlocks)
         .WillRepeatedly(Return(RenderDelayBuffer::BufferingEvent::kNone));
@@ -171,15 +171,14 @@ TEST(BlockProcessor, DISABLED_SubmoduleIntegration) {
   Random random_generator(42U);
   for (auto rate : {16000, 32000, 48000}) {
     SCOPED_TRACE(ProduceDebugText(rate));
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockRenderDelayBuffer>>
+    std::unique_ptr<testing::StrictMock<test::MockRenderDelayBuffer>>
         render_delay_buffer_mock(
-            new StrictMock<webrtc::test::MockRenderDelayBuffer>(rate, 1));
-    std::unique_ptr<
-        ::testing::StrictMock<webrtc::test::MockRenderDelayController>>
+            new StrictMock<test::MockRenderDelayBuffer>(rate, 1));
+    std::unique_ptr<::testing::StrictMock<test::MockRenderDelayController>>
         render_delay_controller_mock(
-            new StrictMock<webrtc::test::MockRenderDelayController>());
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockEchoRemover>>
-        echo_remover_mock(new StrictMock<webrtc::test::MockEchoRemover>());
+            new StrictMock<test::MockRenderDelayController>());
+    std::unique_ptr<testing::StrictMock<test::MockEchoRemover>>
+        echo_remover_mock(new StrictMock<test::MockEchoRemover>());
 
     EXPECT_CALL(*render_delay_buffer_mock, Insert(_))
         .Times(kNumBlocks - 1)
@@ -291,10 +290,9 @@ TEST(BlockProcessor, ExternalDelayAppliedCorrectlyWithInitialCaptureCalls) {
   std::unique_ptr<RenderDelayBuffer> delay_buffer(
       RenderDelayBuffer::Create(config, kSampleRateHz, kNumRenderChannels));
 
-  std::unique_ptr<testing::NiceMock<webrtc::test::MockEchoRemover>>
-      echo_remover_mock(new NiceMock<webrtc::test::MockEchoRemover>());
-  webrtc::test::MockEchoRemover* echo_remover_mock_pointer =
-      echo_remover_mock.get();
+  std::unique_ptr<testing::NiceMock<test::MockEchoRemover>> echo_remover_mock(
+      new NiceMock<test::MockEchoRemover>());
+  test::MockEchoRemover* echo_remover_mock_pointer = echo_remover_mock.get();
 
   std::unique_ptr<BlockProcessor> block_processor(BlockProcessor::Create(
       config, kSampleRateHz, kNumRenderChannels, kNumCaptureChannels,

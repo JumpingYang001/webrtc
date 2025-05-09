@@ -2369,7 +2369,7 @@ std::string ProduceDebugText(int render_input_sample_rate_hz,
 void RunApmRateAndChannelTest(ArrayView<const int> sample_rates_hz,
                               ArrayView<const int> render_channel_counts,
                               ArrayView<const int> capture_channel_counts) {
-  webrtc::AudioProcessing::Config apm_config;
+  AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture = true;
   apm_config.echo_canceller.enabled = true;

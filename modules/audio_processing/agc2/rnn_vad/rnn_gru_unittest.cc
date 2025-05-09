@@ -141,7 +141,7 @@ TEST_P(RnnGruParametrization, DISABLED_BenchmarkGatedRecurrentLayer) {
       input_sequence.size() / kInputLayerOutputSize;
 
   constexpr int kNumTests = 100;
-  ::webrtc::test::PerformanceTimer perf_timer(kNumTests);
+  test::PerformanceTimer perf_timer(kNumTests);
   for (int k = 0; k < kNumTests; ++k) {
     perf_timer.StartTimer();
     for (int i = 0; i < input_sequence_length; ++i) {

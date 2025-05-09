@@ -199,9 +199,9 @@ void RunWronglySizedInsertAndExtractParametersTest(
       num_sub_frame_bands,
       std::vector<std::vector<float>>(
           num_sub_frame_channels, std::vector<float>(sub_frame_length, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> input_sub_frame_view(
+  std::vector<std::vector<ArrayView<float>>> input_sub_frame_view(
       input_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(num_sub_frame_channels));
+      std::vector<ArrayView<float>>(num_sub_frame_channels));
   FillSubFrameView(0, 0, &input_sub_frame, &input_sub_frame_view);
   FrameBlocker blocker(correct_num_bands, correct_num_channels);
   EXPECT_DEATH(
@@ -222,9 +222,9 @@ void RunWronglySizedExtractParameterTest(int sample_rate_hz,
       correct_num_bands,
       std::vector<std::vector<float>>(
           correct_num_channels, std::vector<float>(kSubFrameLength, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> input_sub_frame_view(
+  std::vector<std::vector<ArrayView<float>>> input_sub_frame_view(
       input_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(correct_num_channels));
+      std::vector<ArrayView<float>>(correct_num_channels));
   FillSubFrameView(0, 0, &input_sub_frame, &input_sub_frame_view);
   FrameBlocker blocker(correct_num_bands, correct_num_channels);
   blocker.InsertSubFrameAndExtractBlock(input_sub_frame_view, &correct_block);
@@ -247,9 +247,8 @@ void RunWrongExtractOrderTest(int sample_rate_hz,
   std::vector<std::vector<std::vector<float>>> input_sub_frame(
       num_bands, std::vector<std::vector<float>>(
                      num_channels, std::vector<float>(kSubFrameLength, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> input_sub_frame_view(
-      input_sub_frame.size(),
-      std::vector<webrtc::ArrayView<float>>(num_channels));
+  std::vector<std::vector<ArrayView<float>>> input_sub_frame_view(
+      input_sub_frame.size(), std::vector<ArrayView<float>>(num_channels));
   FillSubFrameView(0, 0, &input_sub_frame, &input_sub_frame_view);
   FrameBlocker blocker(num_bands, num_channels);
   for (size_t k = 0; k < num_preceeding_api_calls; ++k) {
@@ -367,7 +366,7 @@ TEST(FrameBlockerDeathTest, WrongNumberOfPreceedingApiCallsForExtractBlock) {
   for (auto rate : {16000, 32000, 48000}) {
     for (size_t num_channels : {1, 2, 4, 8}) {
       for (size_t num_calls = 0; num_calls < 4; ++num_calls) {
-        webrtc::StringBuilder ss;
+        StringBuilder ss;
         ss << "Sample rate: " << rate;
         ss << "Num channels: " << num_channels;
         ss << ", Num preceeding InsertSubFrameAndExtractBlock calls: "
@@ -395,8 +394,7 @@ TEST(FrameBlockerDeathTest, NullBlockParameter) {
   std::vector<std::vector<std::vector<float>>> sub_frame(
       1, std::vector<std::vector<float>>(
              1, std::vector<float>(kSubFrameLength, 0.f)));
-  std::vector<std::vector<webrtc::ArrayView<float>>> sub_frame_view(
-      sub_frame.size());
+  std::vector<std::vector<ArrayView<float>>> sub_frame_view(sub_frame.size());
   FillSubFrameView(0, 0, &sub_frame, &sub_frame_view);
   EXPECT_DEATH(
       FrameBlocker(1, 1).InsertSubFrameAndExtractBlock(sub_frame_view, nullptr),

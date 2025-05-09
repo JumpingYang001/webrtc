@@ -42,10 +42,7 @@ class MockVad : public VoiceActivityDetectorWrapper::MonoVad {
  public:
   MOCK_METHOD(int, SampleRateHz, (), (const, override));
   MOCK_METHOD(void, Reset, (), (override));
-  MOCK_METHOD(float,
-              Analyze,
-              (webrtc::ArrayView<const float> frame),
-              (override));
+  MOCK_METHOD(float, Analyze, (ArrayView<const float> frame), (override));
 };
 
 // Checks that the ctor and `Initialize()` read the sample rate of the wrapped

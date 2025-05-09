@@ -68,7 +68,7 @@ class FloatFileReader : public FileReader {
 
 }  // namespace
 
-using webrtc::test::ResourcePath;
+using test::ResourcePath;
 
 void ExpectEqualFloatArray(ArrayView<const float> expected,
                            ArrayView<const float> computed) {

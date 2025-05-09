@@ -33,10 +33,10 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::test::GetGlobalMetricsLogger;
-using ::webrtc::test::ImprovementDirection;
-using ::webrtc::test::Metric;
-using ::webrtc::test::Unit;
+using test::GetGlobalMetricsLogger;
+using test::ImprovementDirection;
+using test::Metric;
+using test::Unit;
 
 class CallSimulator;
 
@@ -206,7 +206,7 @@ class TimedThreadApiProcessor {
         simulation_config_(simulation_config),
         apm_(apm),
         frame_data_(kMaxFrameSize),
-        clock_(webrtc::Clock::GetRealTimeClock()),
+        clock_(Clock::GetRealTimeClock()),
         num_durations_to_store_(num_durations_to_store),
         api_call_durations_(num_durations_to_store_ - kNumInitializationFrames),
         samples_count_(0),
@@ -355,7 +355,7 @@ class TimedThreadApiProcessor {
   const SimulationConfig* const simulation_config_ = nullptr;
   AudioProcessing* apm_ = nullptr;
   AudioFrameData frame_data_;
-  webrtc::Clock* clock_;
+  Clock* clock_;
   const size_t num_durations_to_store_;
   SamplesStatsCounter api_call_durations_;
   size_t samples_count_ = 0;

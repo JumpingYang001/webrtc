@@ -316,9 +316,8 @@ class EchoCanceller3Tester {
     constexpr size_t kNumFullBlocksPerFrame = 160 / kBlockSize;
     constexpr size_t kExpectedNumBlocksToProcess =
         (kNumFramesToProcess * 160) / kBlockSize;
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockBlockProcessor>>
-        block_processor_mock(
-            new StrictMock<webrtc::test::MockBlockProcessor>());
+    std::unique_ptr<testing::StrictMock<test::MockBlockProcessor>>
+        block_processor_mock(new StrictMock<test::MockBlockProcessor>());
     EXPECT_CALL(*block_processor_mock, BufferRender(_))
         .Times(kExpectedNumBlocksToProcess);
     EXPECT_CALL(*block_processor_mock, UpdateEchoLeakageStatus(_)).Times(0);
@@ -393,9 +392,8 @@ class EchoCanceller3Tester {
       EchoLeakageTestVariant leakage_report_variant) {
     constexpr size_t kExpectedNumBlocksToProcess =
         (kNumFramesToProcess * 160) / kBlockSize;
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockBlockProcessor>>
-        block_processor_mock(
-            new StrictMock<webrtc::test::MockBlockProcessor>());
+    std::unique_ptr<testing::StrictMock<test::MockBlockProcessor>>
+        block_processor_mock(new StrictMock<test::MockBlockProcessor>());
     EXPECT_CALL(*block_processor_mock, BufferRender(_))
         .Times(kExpectedNumBlocksToProcess);
     EXPECT_CALL(*block_processor_mock, ProcessCapture(_, _, _, _))
@@ -482,9 +480,8 @@ class EchoCanceller3Tester {
     const size_t kNumFullBlocksPerFrame = 160 / kBlockSize;
     const size_t kExpectedNumBlocksToProcess =
         (kNumFramesToProcess * 160) / kBlockSize;
-    std::unique_ptr<testing::StrictMock<webrtc::test::MockBlockProcessor>>
-        block_processor_mock(
-            new StrictMock<webrtc::test::MockBlockProcessor>());
+    std::unique_ptr<testing::StrictMock<test::MockBlockProcessor>>
+        block_processor_mock(new StrictMock<test::MockBlockProcessor>());
     EXPECT_CALL(*block_processor_mock, BufferRender(_))
         .Times(kExpectedNumBlocksToProcess);
     EXPECT_CALL(*block_processor_mock, UpdateEchoLeakageStatus(_)).Times(0);

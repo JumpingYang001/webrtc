@@ -503,7 +503,7 @@ void AudioProcessingSimulator::ConfigureAudioProcessor() {
   }
   if (settings_.agc_mode) {
     apm_config.gain_controller1.mode =
-        static_cast<webrtc::AudioProcessing::Config::GainController1::Mode>(
+        static_cast<AudioProcessing::Config::GainController1::Mode>(
             *settings_.agc_mode);
   }
   if (settings_.use_agc_limiter) {

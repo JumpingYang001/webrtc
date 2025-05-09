@@ -23,8 +23,8 @@
 namespace webrtc {
 
 namespace {
-void CopyFromConfigToEvent(const webrtc::InternalAPMConfig& config,
-                           webrtc::audioproc::Config* pb_cfg) {
+void CopyFromConfigToEvent(const InternalAPMConfig& config,
+                           audioproc::Config* pb_cfg) {
   pb_cfg->set_aec_enabled(config.aec_enabled);
   pb_cfg->set_aec_delay_agnostic_enabled(config.aec_delay_agnostic_enabled);
   pb_cfg->set_aec_drift_compensation_enabled(
