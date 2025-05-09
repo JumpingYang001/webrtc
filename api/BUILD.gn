@@ -1550,20 +1550,9 @@ if (rtc_include_tests) {
     ]
 
     deps = [
-      ":enable_media_with_defaults",
-      ":libjingle_peerconnection_api",
       ":time_controller",
-      "../call",
-      "../call:call_interfaces",
-      "../media:media_engine",
-      "../pc:media_factory",
-      "../rtc_base:checks",
-      "../system_wrappers",
       "../test/time_controller",
-      "environment",
-      "environment:environment_factory",
       "units:timestamp",
-      "//third_party/abseil-cpp/absl/base:nullability",
     ]
   }
 
