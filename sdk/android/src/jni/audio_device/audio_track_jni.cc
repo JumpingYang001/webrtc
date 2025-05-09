@@ -84,11 +84,10 @@ int32_t AudioTrackJni::InitPlayout() {
     return 0;
   }
   RTC_DCHECK(!playing_);
-  double buffer_size_factor =
-      strtod(webrtc::field_trial::FindFullName(
-                 "WebRTC-AudioDevicePlayoutBufferSizeFactor")
-                 .c_str(),
-             nullptr);
+  double buffer_size_factor = strtod(
+      field_trial::FindFullName("WebRTC-AudioDevicePlayoutBufferSizeFactor")
+          .c_str(),
+      nullptr);
   if (buffer_size_factor == 0)
     buffer_size_factor = 1.0;
   int requested_buffer_size_bytes = Java_WebRtcAudioTrack_initPlayout(
