@@ -101,7 +101,7 @@ ACTION_P(SaveUniquePtrArg, dest) {
 #define MAYBE_GetScreenListAndSelectScreen GetScreenListAndSelectScreen
 #endif
 TEST_F(ScreenCapturerTest, MAYBE_GetScreenListAndSelectScreen) {
-  webrtc::DesktopCapturer::SourceList screens;
+  DesktopCapturer::SourceList screens;
   EXPECT_TRUE(capturer_->GetSourceList(&screens));
   for (const auto& screen : screens) {
     EXPECT_TRUE(capturer_->SelectSource(screen.id));
