@@ -140,7 +140,7 @@ class MockPacingControllerCallback : public PacingController::PacketSender {
   MOCK_METHOD(size_t, SendPadding, (size_t target_size));
   MOCK_METHOD(void,
               OnAbortedRetransmissions,
-              (uint32_t, webrtc::ArrayView<const uint16_t>),
+              (uint32_t, ArrayView<const uint16_t>),
               (override));
   MOCK_METHOD(std::optional<uint32_t>,
               GetRtxSsrcForMedia,
@@ -168,7 +168,7 @@ class MockPacketSender : public PacingController::PacketSender {
               (override));
   MOCK_METHOD(void,
               OnAbortedRetransmissions,
-              (uint32_t, webrtc::ArrayView<const uint16_t>),
+              (uint32_t, ArrayView<const uint16_t>),
               (override));
   MOCK_METHOD(std::optional<uint32_t>,
               GetRtxSsrcForMedia,
@@ -304,7 +304,7 @@ class PacingControllerTest : public ::testing::Test {
                            type == RtpPacketMediaType::kRetransmission, false));
   }
 
-  void AdvanceTimeUntil(webrtc::Timestamp time) {
+  void AdvanceTimeUntil(Timestamp time) {
     Timestamp now = clock_.CurrentTime();
     clock_.AdvanceTime(std::max(TimeDelta::Zero(), time - now));
   }

@@ -45,7 +45,7 @@ const uint64_t kStartTime = 123456789;
 
 using ::testing::ElementsAreArray;
 
-class LoopbackTransportTest : public webrtc::Transport {
+class LoopbackTransportTest : public Transport {
  public:
   LoopbackTransportTest() {
     receivers_extensions_.Register<AudioLevelExtension>(kAudioLevelExtensionId);

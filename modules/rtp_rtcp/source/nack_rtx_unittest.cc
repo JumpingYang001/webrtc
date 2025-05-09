@@ -67,7 +67,7 @@ class VerifyingMediaStream : public RtpPacketSinkInterface {
   std::list<uint16_t> sequence_numbers_;
 };
 
-class RtxLoopBackTransport : public webrtc::Transport {
+class RtxLoopBackTransport : public Transport {
  public:
   explicit RtxLoopBackTransport(uint32_t rtx_ssrc)
       : count_(0),

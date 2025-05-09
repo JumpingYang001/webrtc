@@ -59,6 +59,11 @@
 namespace webrtc {
 namespace {
 
+using rtcp::Bye;
+using rtcp::CompoundPacket;
+using rtcp::ReportBlock;
+using rtcp::SenderReport;
+using test::RtcpPacketParser;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -71,11 +76,6 @@ using ::testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
-using ::webrtc::rtcp::Bye;
-using ::webrtc::rtcp::CompoundPacket;
-using ::webrtc::rtcp::ReportBlock;
-using ::webrtc::rtcp::SenderReport;
-using ::webrtc::test::RtcpPacketParser;
 
 class MockReceiveStatisticsProvider : public ReceiveStatisticsProvider {
  public:
@@ -432,7 +432,7 @@ TEST_F(RtcpTransceiverImplTest, AvoidsEmptyPacketsInReducedMode) {
 
   RtcpTransceiverConfig config = DefaultTestConfig();
   config.rtcp_transport = transport.AsStdFunction();
-  config.rtcp_mode = webrtc::RtcpMode::kReducedSize;
+  config.rtcp_mode = RtcpMode::kReducedSize;
   config.receive_statistics = &receive_statistics;
   RtcpTransceiverImpl rtcp_transceiver(config);
 
@@ -445,7 +445,7 @@ TEST_F(RtcpTransceiverImplTest, AvoidsEmptyReceiverReportsInReducedMode) {
 
   RtcpTransceiverConfig config = DefaultTestConfig();
   config.rtcp_transport = RtcpParserTransport(rtcp_parser);
-  config.rtcp_mode = webrtc::RtcpMode::kReducedSize;
+  config.rtcp_mode = RtcpMode::kReducedSize;
   config.receive_statistics = &receive_statistics;
   // Set it to produce something (RRTR) in the "periodic" rtcp packets.
   config.non_sender_rtt_measurement = true;
@@ -545,7 +545,7 @@ TEST_F(RtcpTransceiverImplTest,
   const uint32_t kSenderSsrc = 12345;
   RtcpTransceiverConfig config = DefaultTestConfig();
   config.send_remb_on_change = true;
-  config.rtcp_mode = webrtc::RtcpMode::kReducedSize;
+  config.rtcp_mode = RtcpMode::kReducedSize;
   config.feedback_ssrc = kSenderSsrc;
   RtcpPacketParser rtcp_parser;
   config.rtcp_transport = RtcpParserTransport(rtcp_parser);
@@ -717,12 +717,12 @@ TEST_F(RtcpTransceiverImplTest, CallsObserverOnTargetBitrateBySenderSsrc) {
   rtcp_transceiver.AddMediaReceiverRtcpObserver(kRemoteSsrc1, &observer1);
   rtcp_transceiver.AddMediaReceiverRtcpObserver(kRemoteSsrc2, &observer2);
 
-  webrtc::rtcp::TargetBitrate target_bitrate;
+  rtcp::TargetBitrate target_bitrate;
   target_bitrate.AddTargetBitrate(0, 0, /*target_bitrate_kbps=*/10);
   target_bitrate.AddTargetBitrate(0, 1, /*target_bitrate_kbps=*/20);
   target_bitrate.AddTargetBitrate(1, 0, /*target_bitrate_kbps=*/40);
   target_bitrate.AddTargetBitrate(1, 1, /*target_bitrate_kbps=*/80);
-  webrtc::rtcp::ExtendedReports xr;
+  rtcp::ExtendedReports xr;
   xr.SetSenderSsrc(kRemoteSsrc1);
   xr.SetTargetBitrate(target_bitrate);
   auto raw_packet = xr.Build();
@@ -744,12 +744,12 @@ TEST_F(RtcpTransceiverImplTest, SkipsIncorrectTargetBitrateEntries) {
   RtcpTransceiverImpl rtcp_transceiver(config);
   rtcp_transceiver.AddMediaReceiverRtcpObserver(kRemoteSsrc, &observer);
 
-  webrtc::rtcp::TargetBitrate target_bitrate;
+  rtcp::TargetBitrate target_bitrate;
   target_bitrate.AddTargetBitrate(0, 0, /*target_bitrate_kbps=*/10);
-  target_bitrate.AddTargetBitrate(0, webrtc::kMaxTemporalStreams, 20);
-  target_bitrate.AddTargetBitrate(webrtc::kMaxSpatialLayers, 0, 40);
+  target_bitrate.AddTargetBitrate(0, kMaxTemporalStreams, 20);
+  target_bitrate.AddTargetBitrate(kMaxSpatialLayers, 0, 40);
 
-  webrtc::rtcp::ExtendedReports xr;
+  rtcp::ExtendedReports xr;
   xr.SetTargetBitrate(target_bitrate);
   xr.SetSenderSsrc(kRemoteSsrc);
   auto raw_packet = xr.Build();
@@ -790,7 +790,7 @@ TEST_F(RtcpTransceiverImplTest, CallsObserverOnByeBehindUnknownRtcpPacket) {
 
   CompoundPacket compound;
   // Use Application-Defined rtcp packet as unknown.
-  auto app = std::make_unique<webrtc::rtcp::App>();
+  auto app = std::make_unique<rtcp::App>();
   compound.Append(std::move(app));
   auto bye = std::make_unique<Bye>();
   bye->SetSenderSsrc(kRemoteSsrc);
@@ -1180,7 +1180,7 @@ TEST_F(RtcpTransceiverImplTest, KeyFrameRequestCreatesCompoundPacket) {
   RtcpPacketParser rtcp_parser;
   config.rtcp_transport = RtcpParserTransport(rtcp_parser);
 
-  config.rtcp_mode = webrtc::RtcpMode::kCompound;
+  config.rtcp_mode = RtcpMode::kCompound;
 
   RtcpTransceiverImpl rtcp_transceiver(config);
   rtcp_transceiver.SendFullIntraRequest(kRemoteSsrcs, true);
@@ -1198,7 +1198,7 @@ TEST_F(RtcpTransceiverImplTest, KeyFrameRequestCreatesReducedSizePacket) {
   RtcpPacketParser rtcp_parser;
   config.rtcp_transport = RtcpParserTransport(rtcp_parser);
 
-  config.rtcp_mode = webrtc::RtcpMode::kReducedSize;
+  config.rtcp_mode = RtcpMode::kReducedSize;
 
   RtcpTransceiverImpl rtcp_transceiver(config);
   rtcp_transceiver.SendFullIntraRequest(kRemoteSsrcs, true);
@@ -1393,10 +1393,10 @@ TEST_F(RtcpTransceiverImplTest, IgnoresUnknownSsrcInDlrr) {
   RtcpTransceiverImpl rtcp_transceiver(config);
 
   Timestamp time = Timestamp::Micros(12345678);
-  webrtc::rtcp::ReceiveTimeInfo rti;
+  rtcp::ReceiveTimeInfo rti;
   rti.ssrc = kUnknownSsrc;
   rti.last_rr = CompactNtp(config.clock->ConvertTimestampToNtpTime(time));
-  webrtc::rtcp::ExtendedReports xr;
+  rtcp::ExtendedReports xr;
   xr.AddDlrrItem(rti);
   auto raw_packet = xr.Build();
 

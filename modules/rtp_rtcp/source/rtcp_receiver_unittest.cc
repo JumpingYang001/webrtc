@@ -68,6 +68,7 @@ namespace webrtc {
 namespace {
 
 using rtcp::ReceiveTimeInfo;
+using test::ExplicitKeyValueConfig;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -83,7 +84,6 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
-using ::webrtc::test::ExplicitKeyValueConfig;
 
 class MockRtcpPacketTypeCounterObserver : public RtcpPacketTypeCounterObserver {
  public:

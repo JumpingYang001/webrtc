@@ -669,7 +669,7 @@ bool RTPSenderVideo::SendVideo(int payload_type,
   Buffer encrypted_video_payload;
   if (frame_encryptor_ != nullptr) {
     const size_t max_ciphertext_size =
-        frame_encryptor_->GetMaxCiphertextByteSize(webrtc::MediaType::VIDEO,
+        frame_encryptor_->GetMaxCiphertextByteSize(MediaType::VIDEO,
                                                    payload.size());
     encrypted_video_payload.SetSize(max_ciphertext_size);
 
@@ -682,8 +682,8 @@ bool RTPSenderVideo::SendVideo(int payload_type,
     }
 
     if (frame_encryptor_->Encrypt(
-            webrtc::MediaType::VIDEO, first_packet->Ssrc(), additional_data,
-            payload, encrypted_video_payload, &bytes_written) != 0) {
+            MediaType::VIDEO, first_packet->Ssrc(), additional_data, payload,
+            encrypted_video_payload, &bytes_written) != 0) {
       return false;
     }
 

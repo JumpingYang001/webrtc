@@ -21,9 +21,9 @@
 
 namespace webrtc {
 
+using rtcp::LossNotification;
 using ::testing::ElementsAreArray;
 using ::testing::make_tuple;
-using ::webrtc::rtcp::LossNotification;
 
 TEST(RtcpPacketLossNotificationTest, SetWithIllegalValuesFails) {
   constexpr uint16_t kLastDecoded = 0x3c7b;

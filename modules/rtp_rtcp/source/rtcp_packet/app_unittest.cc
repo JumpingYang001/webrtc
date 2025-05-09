@@ -20,9 +20,9 @@
 namespace webrtc {
 namespace {
 
+using rtcp::App;
 using ::testing::ElementsAreArray;
 using ::testing::make_tuple;
-using ::webrtc::rtcp::App;
 
 constexpr uint32_t kName = ((uint32_t)'n' << 24) | ((uint32_t)'a' << 16) |
                            ((uint32_t)'m' << 8) | (uint32_t)'e';

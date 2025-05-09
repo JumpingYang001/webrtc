@@ -84,9 +84,9 @@ ForwardErrorCorrection::PacketList MediaPacketGenerator::ConstructMediaPackets(
     // Only push one (fake) frame to the FEC.
     data[1] &= 0x7f;
 
-    webrtc::ByteWriter<uint16_t>::WriteBigEndian(&data[2], seq_num);
-    webrtc::ByteWriter<uint32_t>::WriteBigEndian(&data[4], time_stamp);
-    webrtc::ByteWriter<uint32_t>::WriteBigEndian(&data[8], ssrc_);
+    ByteWriter<uint16_t>::WriteBigEndian(&data[2], seq_num);
+    ByteWriter<uint32_t>::WriteBigEndian(&data[4], time_stamp);
+    ByteWriter<uint32_t>::WriteBigEndian(&data[8], ssrc_);
 
     // Generate random values for payload.
     for (size_t j = 12; j < media_packet->data.size(); ++j)
