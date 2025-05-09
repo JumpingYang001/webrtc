@@ -8,42 +8,34 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "rtc_base/base64.h"
-
+#include <cstdint>
 #include <optional>
 #include <string>
-#include <utility>
 
-#include "absl/algorithm/container.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
+#include "rtc_base/base64.h"
+#include "rtc_base/base64.rs.h"
+#include "third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h"
 
 namespace webrtc {
 
-namespace {
-
-bool IsStrictBase64(absl::string_view data) {
-  // Strict base64 must be a multiple of 4 bytes and have no whitespace.
-  return data.size() % 4 == 0 && absl::c_none_of(data, absl::ascii_isspace);
-}
-}  // namespace
-
 std::string Base64Encode(absl::string_view data) {
-  return absl::Base64Escape(data);
+  rust::Slice<const uint8_t> input_slice(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  rust::Vec<uint8_t> output_slice;
+  rust::String str = rs_base64_encode(input_slice);
+  return std::string(str);
 }
 
 std::optional<std::string> Base64Decode(absl::string_view data,
                                         Base64DecodeOptions options) {
-  // absl::Base64Unescape is forgiving. Return nullopt if the input is not
-  // strict.
-  if (options == Base64DecodeOptions::kStrict && !IsStrictBase64(data)) {
+  rust::Slice<const uint8_t> input_slice(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  std::string output;
+  if (!rs_base64_decode(input_slice, options, output)) {
     return std::nullopt;
   }
-
-  std::string dest;
-  return absl::Base64Unescape(data, &dest) ? std::make_optional(std::move(dest))
-                                           : std::nullopt;
+  return output;
 }
 
 }  // namespace webrtc

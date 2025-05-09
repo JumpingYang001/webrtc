@@ -1795,6 +1795,66 @@ rtc_library("base64") {
   ]
 }
 
+if (rtc_rusty_base64) {
+  import("//build/config/rust.gni")
+  import("//build/rust/rust_static_library.gni")
+
+  rtc_source_set("base64_header") {
+    sources = [ "base64.h" ]
+    deps = [
+      "../api:array_view",
+      "//third_party/abseil-cpp/absl/strings:string_view",
+    ]
+  }
+
+  rust_static_library("base64_rust_bridge") {
+    allow_unsafe = true  # Needed for FFI with cxx crate.
+    crate_root = "base64.rs"
+    sources = [ "base64.rs" ]
+    cxx_bindings = [ "base64.rs" ]
+    deps = [
+      ":base64_header",
+      "//third_party/rust/base64/v0_22:lib",
+    ]
+    visibility = [ ":rusty_base64" ]
+  }
+
+  rtc_library("rusty_base64") {
+    sources = [ "base64_rust.cc" ]
+    deps = [
+      ":base64_header",
+      ":base64_rust_bridge",
+      "//build/rust:cxx_cppdeps",
+      "//third_party/abseil-cpp/absl/strings:string_view",
+    ]
+  }
+
+  if (rtc_include_tests) {
+    rtc_test("rusty_base64_unittest") {
+      sources = [ "base64_unittest.cc" ]
+      deps = [
+        ":base64_header",
+        ":rusty_base64",
+        "../test:test_main",
+        "../test:test_support",
+        "//third_party/abseil-cpp/absl/strings:string_view",
+      ]
+    }
+
+    if (rtc_enable_google_benchmarks) {
+      rtc_test("rusty_base64_benchmark") {
+        sources = [ "base64_benchmark.cc" ]
+        deps = [
+          ":base64_header",
+          ":rusty_base64",
+          "../test:benchmark_main",
+          "//third_party/google_benchmark",
+        ]
+      }
+    }
+  }
+}
+
 if (rtc_include_tests) {
   if (rtc_enable_google_benchmarks) {
     rtc_test("base64_benchmark") {
