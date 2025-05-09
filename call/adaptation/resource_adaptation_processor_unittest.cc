@@ -147,7 +147,7 @@ class ResourceAdaptationProcessorTest : public ::testing::Test {
 
  protected:
   AutoThread main_thread_;
-  webrtc::test::ScopedKeyValueConfig field_trials_;
+  test::ScopedKeyValueConfig field_trials_;
   FakeFrameRateProvider frame_rate_provider_;
   VideoStreamInputStateProvider input_state_provider_;
   scoped_refptr<FakeResource> resource_;

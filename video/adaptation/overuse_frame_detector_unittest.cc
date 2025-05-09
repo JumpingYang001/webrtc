@@ -108,7 +108,7 @@ class OveruseFrameDetectorTest : public ::testing::Test,
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))
-            .set_rotation(webrtc::kVideoRotation_0)
+            .set_rotation(kVideoRotation_0)
             .set_timestamp_us(0)
             .build();
     uint32_t timestamp = 0;
@@ -134,7 +134,7 @@ class OveruseFrameDetectorTest : public ::testing::Test,
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))
-            .set_rotation(webrtc::kVideoRotation_0)
+            .set_rotation(kVideoRotation_0)
             .set_timestamp_us(0)
             .build();
     uint32_t timestamp = 0;
@@ -164,12 +164,12 @@ class OveruseFrameDetectorTest : public ::testing::Test,
                                                      int width,
                                                      int height,
                                                      int delay_us) {
-    webrtc::Random random(17);
+    Random random(17);
 
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))
-            .set_rotation(webrtc::kVideoRotation_0)
+            .set_rotation(kVideoRotation_0)
             .set_timestamp_us(0)
             .build();
     uint32_t timestamp = 0;
@@ -382,7 +382,7 @@ TEST_F(OveruseFrameDetectorTest, MeasuresMultipleConcurrentSamples) {
   VideoFrame frame =
       VideoFrame::Builder()
           .set_video_frame_buffer(I420Buffer::Create(kWidth, kHeight))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .set_timestamp_us(0)
           .build();
   for (size_t i = 0; i < 1000; ++i) {
@@ -409,7 +409,7 @@ TEST_F(OveruseFrameDetectorTest, UpdatesExistingSamples) {
   VideoFrame frame =
       VideoFrame::Builder()
           .set_video_frame_buffer(I420Buffer::Create(kWidth, kHeight))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .set_timestamp_us(0)
           .build();
   uint32_t timestamp = 0;
@@ -675,7 +675,7 @@ class OveruseFrameDetectorTest2 : public OveruseFrameDetectorTest {
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))
-            .set_rotation(webrtc::kVideoRotation_0)
+            .set_rotation(kVideoRotation_0)
             .set_timestamp_us(0)
             .build();
     while (num_frames-- > 0) {
@@ -694,12 +694,12 @@ class OveruseFrameDetectorTest2 : public OveruseFrameDetectorTest {
                                              int width,
                                              int height,
                                              int delay_us) override {
-    webrtc::Random random(17);
+    Random random(17);
 
     VideoFrame frame =
         VideoFrame::Builder()
             .set_video_frame_buffer(I420Buffer::Create(width, height))
-            .set_rotation(webrtc::kVideoRotation_0)
+            .set_rotation(kVideoRotation_0)
             .set_timestamp_us(0)
             .build();
     for (int i = 0; i < num_frames; i++) {
@@ -863,7 +863,7 @@ TEST_F(OveruseFrameDetectorTest2, MeasuresMultipleConcurrentSamples) {
   VideoFrame frame =
       VideoFrame::Builder()
           .set_video_frame_buffer(I420Buffer::Create(kWidth, kHeight))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .set_timestamp_us(0)
           .build();
   for (size_t i = 0; i < 1000; ++i) {
@@ -890,7 +890,7 @@ TEST_F(OveruseFrameDetectorTest2, UpdatesExistingSamples) {
   VideoFrame frame =
       VideoFrame::Builder()
           .set_video_frame_buffer(I420Buffer::Create(kWidth, kHeight))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_rotation(kVideoRotation_0)
           .set_timestamp_us(0)
           .build();
   uint32_t timestamp = 0;

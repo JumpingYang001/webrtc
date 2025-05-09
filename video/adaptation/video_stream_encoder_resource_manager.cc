@@ -579,7 +579,7 @@ void VideoStreamEncoderResourceManager::UpdateBandwidthQualityScalerSettings(
       // Before executing "StartCheckForOveruse",we must execute "AddResource"
       // firstly,because it can make the listener valid.
       AddResource(bandwidth_quality_scaler_resource_,
-                  webrtc::VideoAdaptationReason::kQuality);
+                  VideoAdaptationReason::kQuality);
       bandwidth_quality_scaler_resource_->StartCheckForOveruse(
           resolution_bitrate_limits, codec_type);
     }

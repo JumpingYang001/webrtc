@@ -155,7 +155,7 @@ class VideoStreamAdapterTest : public ::testing::Test {
                  field_trials_) {}
 
  protected:
-  webrtc::test::ScopedKeyValueConfig field_trials_;
+  test::ScopedKeyValueConfig field_trials_;
   FakeVideoStreamInputStateProvider input_state_provider_;
   scoped_refptr<Resource> resource_;
   testing::StrictMock<MockVideoStreamEncoderObserver> encoder_stats_observer_;
@@ -918,7 +918,7 @@ TEST_F(VideoStreamAdapterTest, AdaptationConstraintDisallowsAdaptationsUp) {
 
 TEST(VideoStreamAdapterDeathTest,
      SetDegradationPreferenceInvalidatesAdaptations) {
-  webrtc::test::ScopedKeyValueConfig field_trials;
+  test::ScopedKeyValueConfig field_trials;
   FakeVideoStreamInputStateProvider input_state_provider;
   testing::StrictMock<MockVideoStreamEncoderObserver> encoder_stats_observer_;
   VideoStreamAdapter adapter(&input_state_provider, &encoder_stats_observer_,
@@ -931,7 +931,7 @@ TEST(VideoStreamAdapterDeathTest,
 }
 
 TEST(VideoStreamAdapterDeathTest, AdaptDownInvalidatesAdaptations) {
-  webrtc::test::ScopedKeyValueConfig field_trials;
+  test::ScopedKeyValueConfig field_trials;
   FakeVideoStreamInputStateProvider input_state_provider;
   testing::StrictMock<MockVideoStreamEncoderObserver> encoder_stats_observer_;
   VideoStreamAdapter adapter(&input_state_provider, &encoder_stats_observer_,
