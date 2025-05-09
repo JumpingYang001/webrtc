@@ -173,7 +173,7 @@ TYPED_TEST(UniqueIdGeneratorTest,
 // Tests that it's OK to construct the generator in one execution environment
 // (thread/task queue) but use it in another.
 TEST(UniqueNumberGenerator, UsedOnSecondaryThread) {
-  const auto* current_tq = webrtc::TaskQueueBase::Current();
+  const auto* current_tq = TaskQueueBase::Current();
   // Construct the generator before `fake_task_queue` to ensure that it is
   // constructed in a different execution environment than what
   // `fake_task_queue` will represent.
@@ -181,7 +181,7 @@ TEST(UniqueNumberGenerator, UsedOnSecondaryThread) {
 
   FakeTaskQueue fake_task_queue;
   // Sanity check to make sure we're in a different runtime environment.
-  ASSERT_NE(current_tq, webrtc::TaskQueueBase::Current());
+  ASSERT_NE(current_tq, TaskQueueBase::Current());
 
   // Generating an id should be fine in this context.
   generator.Generate();

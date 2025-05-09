@@ -108,7 +108,7 @@ int64_t ASN1TimeToSec(const unsigned char* s, size_t length, bool long_format) {
   if (bytes_left != 1) {
     return -1;
   }
-  return webrtc::TmToSeconds(tm);
+  return TmToSeconds(tm);
 }
 
 //////////////////////////////////////////////////////////////////////

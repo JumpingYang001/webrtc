@@ -22,7 +22,6 @@
 namespace webrtc {
 
 using ::testing::ElementsAre;
-using ::webrtc::BitstreamReader;
 
 TEST(BitBufferWriterTest, ConsumeBits) {
   uint8_t bytes[64] = {0};

@@ -57,7 +57,7 @@ void TestUdpInternal(const SocketAddress& loopback) {
 void TestTcpInternal(const SocketAddress& loopback) {
   PhysicalSocketServer socket_server;
   AutoSocketServerThread main_thread(&socket_server);
-  webrtc::TestEchoServer server(&main_thread, loopback);
+  TestEchoServer server(&main_thread, loopback);
 
   Socket* socket = socket_server.CreateSocket(loopback.family(), SOCK_STREAM);
   std::unique_ptr<AsyncTCPSocket> tcp_socket = absl::WrapUnique(

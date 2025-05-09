@@ -41,7 +41,7 @@ AsyncPacketSocket::~AsyncPacketSocket() = default;
 
 void AsyncPacketSocket::SubscribeCloseEvent(
     const void* removal_tag,
-    std::function<void(webrtc::AsyncPacketSocket*, int)> callback) {
+    std::function<void(AsyncPacketSocket*, int)> callback) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   on_close_.AddReceiver(removal_tag, std::move(callback));
 }
@@ -52,8 +52,7 @@ void AsyncPacketSocket::UnsubscribeCloseEvent(const void* removal_tag) {
 }
 
 void AsyncPacketSocket::RegisterReceivedPacketCallback(
-    absl::AnyInvocable<void(webrtc::AsyncPacketSocket*,
-                            const webrtc::ReceivedIpPacket&)>
+    absl::AnyInvocable<void(AsyncPacketSocket*, const ReceivedIpPacket&)>
         received_packet_callback) {
   RTC_DCHECK_RUN_ON(&network_checker_);
   RTC_CHECK(!received_packet_callback_);

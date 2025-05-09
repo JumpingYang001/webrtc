@@ -61,7 +61,7 @@ SSLFingerprint* SSLFingerprint::CreateFromRfc4572(
 std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUniqueFromRfc4572(
     absl::string_view algorithm,
     absl::string_view fingerprint) {
-  if (algorithm.empty() || !webrtc::IsFips180DigestAlgorithm(algorithm))
+  if (algorithm.empty() || !IsFips180DigestAlgorithm(algorithm))
     return nullptr;
 
   if (fingerprint.empty())

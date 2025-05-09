@@ -152,8 +152,8 @@ bool ParseCertificate(CRYPTO_BUFFER* cert_buffer,
     return false;
   }
   if (expiration_time) {
-    *expiration_time = webrtc::ASN1TimeToSec(CBS_data(&not_after),
-                                             CBS_len(&not_after), long_format);
+    *expiration_time =
+        ASN1TimeToSec(CBS_data(&not_after), CBS_len(&not_after), long_format);
   }
   //        subject              Name,
   if (!CBS_get_asn1_element(&tbs_certificate, nullptr, CBS_ASN1_SEQUENCE)) {
@@ -248,9 +248,8 @@ bool LoadBuiltinSSLRootCertificates(SSL_CTX* ctx) {
   for (size_t i = 0; i < arraysize(kSSLCertCertificateList); i++) {
     const unsigned char* cert_buffer = kSSLCertCertificateList[i];
     size_t cert_buffer_len = kSSLCertCertificateSizeList[i];
-    X509* cert =
-        d2i_X509(nullptr, &cert_buffer,
-                 webrtc::checked_cast<long>(cert_buffer_len));  // NOLINT
+    X509* cert = d2i_X509(nullptr, &cert_buffer,
+                          checked_cast<long>(cert_buffer_len));  // NOLINT
     if (cert) {
       int return_value = X509_STORE_add_cert(SSL_CTX_get_cert_store(ctx), cert);
       if (return_value == 0) {

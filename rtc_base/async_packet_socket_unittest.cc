@@ -30,7 +30,7 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
               Send,
               (const void* pv,
                size_t cb,
-               const webrtc::AsyncSocketPacketOptions& options),
+               const AsyncSocketPacketOptions& options),
               (override));
 
   MOCK_METHOD(int,
@@ -38,7 +38,7 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
               (const void* pv,
                size_t cb,
                const SocketAddress& addr,
-               const webrtc::AsyncSocketPacketOptions& options),
+               const AsyncSocketPacketOptions& options),
               (override));
   MOCK_METHOD(int, Close, (), (override));
   MOCK_METHOD(State, GetState, (), (const, override));
@@ -52,8 +52,7 @@ class MockAsyncPacketSocket : public AsyncPacketSocket {
 
 TEST(AsyncPacketSocket, RegisteredCallbackReceivePacketsFromNotify) {
   MockAsyncPacketSocket mock_socket;
-  MockFunction<void(webrtc::AsyncPacketSocket*,
-                    const webrtc::ReceivedIpPacket&)>
+  MockFunction<void(AsyncPacketSocket*, const ReceivedIpPacket&)>
       received_packet;
 
   EXPECT_CALL(received_packet, Call);

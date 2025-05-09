@@ -30,8 +30,6 @@
 
 namespace webrtc {
 
-using ::webrtc::TimeDelta;
-
 Event::Event() : Event(false, false) {}
 
 #if defined(WEBRTC_WIN)
@@ -189,7 +187,7 @@ bool Event::Wait(TimeDelta give_up_after, TimeDelta warn_after) {
   } else {
     error = wait(warn_ts);
     if (error == ETIMEDOUT) {
-      webrtc::WarnThatTheCurrentThreadIsProbablyDeadlocked();
+      WarnThatTheCurrentThreadIsProbablyDeadlocked();
       error = wait(give_up_ts);
     }
   }

@@ -31,7 +31,7 @@ bool IfAddrsConverter::ConvertIfAddrsToIPAddress(
       return true;
     }
     case AF_INET6: {
-      int ip_attributes = webrtc::IPV6_ADDRESS_FLAG_NONE;
+      int ip_attributes = IPV6_ADDRESS_FLAG_NONE;
       if (!ConvertNativeAttributesToIPAttributes(interface, &ip_attributes)) {
         return false;
       }
@@ -51,7 +51,7 @@ bool IfAddrsConverter::ConvertIfAddrsToIPAddress(
 bool IfAddrsConverter::ConvertNativeAttributesToIPAttributes(
     const struct ifaddrs* /* interface */,
     int* ip_attributes) {
-  *ip_attributes = webrtc::IPV6_ADDRESS_FLAG_NONE;
+  *ip_attributes = IPV6_ADDRESS_FLAG_NONE;
   return true;
 }
 

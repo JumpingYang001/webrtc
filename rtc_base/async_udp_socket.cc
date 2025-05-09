@@ -67,7 +67,7 @@ int AsyncUDPSocket::Send(const void* pv,
                          const AsyncSocketPacketOptions& options) {
   SentPacketInfo sent_packet(options.packet_id, TimeMillis(),
                              options.info_signaled_after_sent);
-  webrtc::CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
+  CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
   int ret = socket_->Send(pv, cb);
   SignalSentPacket(this, sent_packet);
   return ret;
@@ -79,7 +79,7 @@ int AsyncUDPSocket::SendTo(const void* pv,
                            const AsyncSocketPacketOptions& options) {
   SentPacketInfo sent_packet(options.packet_id, TimeMillis(),
                              options.info_signaled_after_sent);
-  webrtc::CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
+  CopySocketInformationToPacketInfo(cb, *this, &sent_packet.info);
   if (has_set_ect1_options_ != options.ecn_1) {
     // It is unclear what is most efficient, setting options on every sent
     // packet or when changed. Potentially, can separate send sockets be used?

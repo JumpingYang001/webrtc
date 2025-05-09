@@ -56,7 +56,7 @@ bool ByteBufferReader::ReadUInt16(uint16_t* val) {
   if (!ReadBytes(reinterpret_cast<uint8_t*>(&v), 2)) {
     return false;
   } else {
-    *val = webrtc::NetworkToHost16(v);
+    *val = NetworkToHost16(v);
     return true;
   }
 }
@@ -72,7 +72,7 @@ bool ByteBufferReader::ReadUInt24(uint32_t* val) {
   if (!ReadBytes(read_into, 3)) {
     return false;
   } else {
-    *val = webrtc::NetworkToHost32(v);
+    *val = NetworkToHost32(v);
     return true;
   }
 }
@@ -85,7 +85,7 @@ bool ByteBufferReader::ReadUInt32(uint32_t* val) {
   if (!ReadBytes(reinterpret_cast<uint8_t*>(&v), 4)) {
     return false;
   } else {
-    *val = webrtc::NetworkToHost32(v);
+    *val = NetworkToHost32(v);
     return true;
   }
 }
@@ -98,7 +98,7 @@ bool ByteBufferReader::ReadUInt64(uint64_t* val) {
   if (!ReadBytes(reinterpret_cast<uint8_t*>(&v), 8)) {
     return false;
   } else {
-    *val = webrtc::NetworkToHost64(v);
+    *val = NetworkToHost64(v);
     return true;
   }
 }

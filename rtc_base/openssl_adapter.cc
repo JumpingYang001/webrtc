@@ -184,7 +184,6 @@ static void LogSslError() {
 
 namespace webrtc {
 
-using ::webrtc::TimeDelta;
 
 bool OpenSSLAdapter::InitializeSSL() {
   // TODO: https://issues.webrtc.org/issues/339300437 - remove once
@@ -206,12 +205,12 @@ OpenSSLAdapter::OpenSSLAdapter(Socket* socket,
       ssl_session_cache_(ssl_session_cache),
       ssl_cert_verifier_(ssl_cert_verifier),
       state_(SSL_NONE),
-      role_(webrtc::SSL_CLIENT),
+      role_(SSL_CLIENT),
       ssl_read_needs_write_(false),
       ssl_write_needs_read_(false),
       ssl_(nullptr),
       ssl_ctx_(nullptr),
-      ssl_mode_(webrtc::SSL_MODE_TLS),
+      ssl_mode_(SSL_MODE_TLS),
       ignore_bad_cert_(false),
       custom_cert_verifier_status_(false) {
   // If a factory is used, take a reference on the factory's SSL_CTX.
@@ -365,12 +364,12 @@ int OpenSSLAdapter::BeginSSL() {
     if (!tls_alpn_string.empty()) {
       SSL_set_alpn_protos(
           ssl_, reinterpret_cast<const unsigned char*>(tls_alpn_string.data()),
-          webrtc::dchecked_cast<unsigned>(tls_alpn_string.size()));
+          dchecked_cast<unsigned>(tls_alpn_string.size()));
     }
   }
 
   if (!elliptic_curves_.empty()) {
-    SSL_set1_curves_list(ssl_, webrtc::StrJoin(elliptic_curves_, ":").c_str());
+    SSL_set1_curves_list(ssl_, StrJoin(elliptic_curves_, ":").c_str());
   }
 
   // Now that the initial config is done, transfer ownership of `bio` to the
@@ -393,8 +392,7 @@ int OpenSSLAdapter::ContinueSSL() {
   // Clear the DTLS timer
   timer_.reset();
 
-  int code =
-      (role_ == webrtc::SSL_CLIENT) ? SSL_connect(ssl_) : SSL_accept(ssl_);
+  int code = (role_ == SSL_CLIENT) ? SSL_connect(ssl_) : SSL_accept(ssl_);
   switch (SSL_get_error(ssl_, code)) {
     case SSL_ERROR_NONE:
       if (!SSLPostConnectionCheck(ssl_, ssl_host_name_)) {
@@ -480,7 +478,7 @@ int OpenSSLAdapter::DoSslWrite(const void* pv, size_t cb, int* error) {
   RTC_DCHECK(error != nullptr);
 
   ssl_write_needs_read_ = false;
-  int ret = SSL_write(ssl_, pv, webrtc::checked_cast<int>(cb));
+  int ret = SSL_write(ssl_, pv, checked_cast<int>(cb));
   *error = SSL_get_error(ssl_, ret);
   switch (*error) {
     case SSL_ERROR_NONE:
@@ -574,7 +572,7 @@ int OpenSSLAdapter::Send(const void* pv, size_t cb) {
     pending_data_.SetData(static_cast<const uint8_t*>(pv), cb);
     // Since we're taking responsibility for sending this data, return its full
     // size. The user of this class can consider it sent.
-    return webrtc::dchecked_cast<int>(cb);
+    return dchecked_cast<int>(cb);
   }
   return ret;
 }
@@ -612,7 +610,7 @@ int OpenSSLAdapter::Recv(void* pv, size_t cb, int64_t* timestamp) {
   }
 
   ssl_read_needs_write_ = false;
-  int code = SSL_read(ssl_, pv, webrtc::checked_cast<int>(cb));
+  int code = SSL_read(ssl_, pv, checked_cast<int>(cb));
   int error = SSL_get_error(ssl_, code);
 
   switch (error) {
@@ -944,7 +942,7 @@ SSL_CTX* OpenSSLAdapter::CreateContext(SSLMode mode, bool enable_cache) {
                                                    : TLS_with_buffers_method());
 #else
   SSL_CTX* ctx =
-      SSL_CTX_new(mode == webrtc::SSL_MODE_DTLS ? DTLS_method() : TLS_method());
+      SSL_CTX_new(mode == SSL_MODE_DTLS ? DTLS_method() : TLS_method());
 #endif
   if (ctx == nullptr) {
     unsigned long error = ERR_get_error();  // NOLINT: type used by OpenSSL.

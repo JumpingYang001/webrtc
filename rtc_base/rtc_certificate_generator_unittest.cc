@@ -97,10 +97,9 @@ TEST_F(RTCCertificateGeneratorTest, GenerateAsyncECDSA) {
   // posted to this thread (which is done by `EXPECT_TRUE_WAIT`).
   EXPECT_FALSE(fixture_.GenerateAsyncCompleted());
   EXPECT_FALSE(fixture_.certificate());
-  EXPECT_THAT(
-      webrtc::WaitUntil([&] { return fixture_.GenerateAsyncCompleted(); },
+  EXPECT_THAT(WaitUntil([&] { return fixture_.GenerateAsyncCompleted(); },
                         ::testing::IsTrue(), {.timeout = kGenerationTimeoutMs}),
-      webrtc::IsRtcOk());
+              IsRtcOk());
   EXPECT_TRUE(fixture_.certificate());
 }
 
@@ -140,10 +139,9 @@ TEST_F(RTCCertificateGeneratorTest, GenerateWithInvalidParamsShouldFail) {
 
   fixture_.generator()->GenerateCertificateAsync(invalid_params, std::nullopt,
                                                  fixture_.OnGenerated());
-  EXPECT_THAT(
-      webrtc::WaitUntil([&] { return fixture_.GenerateAsyncCompleted(); },
+  EXPECT_THAT(WaitUntil([&] { return fixture_.GenerateAsyncCompleted(); },
                         ::testing::IsTrue(), {.timeout = kGenerationTimeoutMs}),
-      webrtc::IsRtcOk());
+              IsRtcOk());
   EXPECT_FALSE(fixture_.certificate());
 }
 

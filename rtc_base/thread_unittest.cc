@@ -53,7 +53,6 @@ namespace webrtc {
 namespace {
 
 using ::testing::ElementsAre;
-using ::webrtc::TimeDelta;
 
 // Generates a sequence of numbers (collaboratively).
 class TestGenerator {
@@ -206,7 +205,7 @@ TEST(ThreadTest, CountBlockingCalls) {
   //   (thread_unittest.cc:262): Blocking TestBody: total=2 (actual=1, could=1)
   RTC_LOG_THREAD_BLOCK_COUNT();
 #if RTC_DCHECK_IS_ON
-  webrtc::Thread::ScopedCountBlockingCalls blocked_calls(
+  Thread::ScopedCountBlockingCalls blocked_calls(
       [&](uint32_t actual_block, uint32_t could_block) {
         EXPECT_EQ(1u, actual_block);
         EXPECT_EQ(1u, could_block);
@@ -242,10 +241,10 @@ TEST(ThreadTest, CountBlockingCalls) {
 
 #if RTC_DCHECK_IS_ON
 TEST(ThreadTest, CountBlockingCallsOneCallback) {
-  webrtc::AutoThread current;
+  AutoThread current;
   bool was_called_back = false;
   {
-    webrtc::Thread::ScopedCountBlockingCalls blocked_calls(
+    Thread::ScopedCountBlockingCalls blocked_calls(
         [&](uint32_t actual_block, uint32_t could_block) {
           was_called_back = true;
         });
@@ -255,10 +254,10 @@ TEST(ThreadTest, CountBlockingCallsOneCallback) {
 }
 
 TEST(ThreadTest, CountBlockingCallsSkipCallback) {
-  webrtc::AutoThread current;
+  AutoThread current;
   bool was_called_back = false;
   {
-    webrtc::Thread::ScopedCountBlockingCalls blocked_calls(
+    Thread::ScopedCountBlockingCalls blocked_calls(
         [&](uint32_t actual_block, uint32_t could_block) {
           was_called_back = true;
         });
@@ -309,7 +308,7 @@ TEST(ThreadTest, Wrap) {
 
 #if (!defined(NDEBUG) || RTC_DCHECK_IS_ON)
 TEST(ThreadTest, InvokeToThreadAllowedReturnsTrueWithoutPolicies) {
-  webrtc::AutoThread main_thread;
+  AutoThread main_thread;
   // Create and start the thread.
   auto thread1 = Thread::CreateWithSocketServer();
   auto thread2 = Thread::CreateWithSocketServer();
@@ -320,7 +319,7 @@ TEST(ThreadTest, InvokeToThreadAllowedReturnsTrueWithoutPolicies) {
 }
 
 TEST(ThreadTest, InvokeAllowedWhenThreadsAdded) {
-  webrtc::AutoThread main_thread;
+  AutoThread main_thread;
   // Create and start the thread.
   auto thread1 = Thread::CreateWithSocketServer();
   auto thread2 = Thread::CreateWithSocketServer();
@@ -339,7 +338,7 @@ TEST(ThreadTest, InvokeAllowedWhenThreadsAdded) {
 }
 
 TEST(ThreadTest, InvokesDisallowedWhenDisallowAllInvokes) {
-  webrtc::AutoThread main_thread;
+  AutoThread main_thread;
   // Create and start the thread.
   auto thread1 = Thread::CreateWithSocketServer();
   auto thread2 = Thread::CreateWithSocketServer();
@@ -469,9 +468,9 @@ TEST(ThreadTest, ThreeThreadsBlockingCall) {
         SetAndInvokeSet(&async_invoked, thread2, out);
       });
 
-      EXPECT_THAT(webrtc::WaitUntil([&] { return async_invoked.Get(); },
-                                    ::testing::IsTrue()),
-                  webrtc::IsRtcOk());
+      EXPECT_THAT(
+          WaitUntil([&] { return async_invoked.Get(); }, ::testing::IsTrue()),
+          IsRtcOk());
     }
   };
 
@@ -486,9 +485,9 @@ TEST(ThreadTest, ThreeThreadsBlockingCall) {
   });
   EXPECT_FALSE(thread_a_called.Get());
 
-  EXPECT_THAT(webrtc::WaitUntil([&] { return thread_a_called.Get(); },
-                                ::testing::IsTrue()),
-              webrtc::IsRtcOk());
+  EXPECT_THAT(
+      WaitUntil([&] { return thread_a_called.Get(); }, ::testing::IsTrue()),
+      IsRtcOk());
 }
 
 static void DelayedPostsWithIdenticalTimesAreProcessedInFifoOrder(
@@ -858,7 +857,6 @@ std::unique_ptr<TaskQueueFactory> CreateDefaultThreadFactory(
   return std::make_unique<ThreadFactory>();
 }
 
-using ::webrtc::TaskQueueTest;
 
 INSTANTIATE_TEST_SUITE_P(RtcThread,
                          TaskQueueTest,

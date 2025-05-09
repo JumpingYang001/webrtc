@@ -138,7 +138,7 @@ void TestClient::AdvanceTime(int ms) {
   // advance time. Otherwise, ProcessMessages will work.
   if (fake_clock_) {
     for (int64_t start = TimeMillis(); TimeMillis() < start + ms;) {
-      fake_clock_->AdvanceTime(webrtc::TimeDelta::Millis(1));
+      fake_clock_->AdvanceTime(TimeDelta::Millis(1));
     };
   } else {
     Thread::Current()->ProcessMessages(1);

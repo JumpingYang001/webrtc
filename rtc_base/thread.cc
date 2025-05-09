@@ -88,8 +88,6 @@ class ScopedAutoReleasePool {
 
 namespace webrtc {
 
-using ::webrtc::MutexLock;
-using ::webrtc::TimeDelta;
 
 ThreadManager* ThreadManager::Instance() {
   static ThreadManager* const thread_manager = new ThreadManager();
@@ -499,7 +497,7 @@ void Thread::PostDelayedTaskImpl(absl::AnyInvocable<void() &&> task,
   // Add to the priority queue. Gets sorted soonest first.
   // Signal for the multiplexer to return.
 
-  int64_t delay_ms = delay.RoundUpTo(webrtc::TimeDelta::Millis(1)).ms<int>();
+  int64_t delay_ms = delay.RoundUpTo(TimeDelta::Millis(1)).ms<int>();
   int64_t run_time_ms = TimeAfter(delay_ms);
   {
     MutexLock lock(&mutex_);
@@ -523,7 +521,7 @@ int Thread::GetDelay() {
     return 0;
 
   if (!delayed_messages_.empty()) {
-    int delay = webrtc::TimeUntil(delayed_messages_.top().run_time_ms);
+    int delay = TimeUntil(delayed_messages_.top().run_time_ms);
     if (delay < 0)
       delay = 0;
     return delay;
@@ -535,10 +533,10 @@ int Thread::GetDelay() {
 void Thread::Dispatch(absl::AnyInvocable<void() &&> task) {
   TRACE_EVENT0("webrtc", "Thread::Dispatch");
   RTC_DCHECK_RUN_ON(this);
-  int64_t start_time = webrtc::TimeMillis();
+  int64_t start_time = TimeMillis();
   std::move(task)();
-  int64_t end_time = webrtc::TimeMillis();
-  int64_t diff = webrtc::TimeDiff(end_time, start_time);
+  int64_t end_time = TimeMillis();
+  int64_t diff = TimeDiff(end_time, start_time);
   if (diff >= dispatch_warning_ms_) {
     RTC_LOG(LS_INFO) << "Message to " << name() << " took " << diff
                      << "ms to dispatch.";
@@ -850,9 +848,9 @@ bool Thread::ProcessMessages(int cmsLoop) {
   // Using ProcessMessages with a custom clock for testing and a time greater
   // than 0 doesn't work, since it's not guaranteed to advance the custom
   // clock's time, and may get stuck in an infinite loop.
-  RTC_DCHECK(webrtc::GetClockForTesting() == nullptr || cmsLoop == 0 ||
+  RTC_DCHECK(GetClockForTesting() == nullptr || cmsLoop == 0 ||
              cmsLoop == kForever);
-  int64_t msEnd = (kForever == cmsLoop) ? 0 : webrtc::TimeAfter(cmsLoop);
+  int64_t msEnd = (kForever == cmsLoop) ? 0 : TimeAfter(cmsLoop);
   int cmsNext = cmsLoop;
 
   while (true) {
@@ -865,7 +863,7 @@ bool Thread::ProcessMessages(int cmsLoop) {
     Dispatch(std::move(task));
 
     if (cmsLoop != kForever) {
-      cmsNext = static_cast<int>(webrtc::TimeUntil(msEnd));
+      cmsNext = static_cast<int>(TimeUntil(msEnd));
       if (cmsNext < 0)
         return true;
     }

@@ -23,14 +23,14 @@
 namespace webrtc {
 
 StreamState MemoryStream::GetState() const {
-  return webrtc::SS_OPEN;
+  return SS_OPEN;
 }
 
 StreamResult MemoryStream::Read(ArrayView<uint8_t> buffer,
                                 size_t& bytes_read,
                                 int& error) {
   if (seek_position_ >= data_length_) {
-    return webrtc::SR_EOS;
+    return SR_EOS;
   }
   size_t available = data_length_ - seek_position_;
   size_t bytes;
@@ -43,7 +43,7 @@ StreamResult MemoryStream::Read(ArrayView<uint8_t> buffer,
   memcpy(buffer.data(), &buffer_[seek_position_], bytes);
   seek_position_ += bytes;
   bytes_read = bytes;
-  return webrtc::SR_SUCCESS;
+  return SR_SUCCESS;
 }
 
 StreamResult MemoryStream::Write(ArrayView<const uint8_t> buffer,
@@ -57,7 +57,7 @@ StreamResult MemoryStream::Write(ArrayView<const uint8_t> buffer,
     size_t new_buffer_length = std::max(
         ((seek_position_ + buffer.size()) | 0xFF) + 1, buffer_length_ * 2);
     StreamResult result = DoReserve(new_buffer_length, &error);
-    if (webrtc::SR_SUCCESS != result) {
+    if (SR_SUCCESS != result) {
       return result;
     }
     RTC_DCHECK(buffer_length_ >= new_buffer_length);
@@ -74,7 +74,7 @@ StreamResult MemoryStream::Write(ArrayView<const uint8_t> buffer,
     data_length_ = seek_position_;
   }
   bytes_written = bytes;
-  return webrtc::SR_SUCCESS;
+  return SR_SUCCESS;
 }
 
 void MemoryStream::Close() {
@@ -105,7 +105,7 @@ bool MemoryStream::GetSize(size_t* size) const {
 }
 
 bool MemoryStream::ReserveSize(size_t size) {
-  return (webrtc::SR_SUCCESS == DoReserve(size, nullptr));
+  return (SR_SUCCESS == DoReserve(size, nullptr));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ void MemoryStream::SetData(const void* data, size_t length) {
 
 StreamResult MemoryStream::DoReserve(size_t size, int* error) {
   if (buffer_length_ >= size)
-    return webrtc::SR_SUCCESS;
+    return SR_SUCCESS;
 
   if (char* new_buffer = new char[size]) {
     if (buffer_ != nullptr && data_length_ > 0) {
@@ -135,13 +135,13 @@ StreamResult MemoryStream::DoReserve(size_t size, int* error) {
     delete[] buffer_;
     buffer_ = new_buffer;
     buffer_length_ = size;
-    return webrtc::SR_SUCCESS;
+    return SR_SUCCESS;
   }
 
   if (error) {
     *error = ENOMEM;
   }
-  return webrtc::SR_ERROR;
+  return SR_ERROR;
 }
 
 }  // namespace webrtc

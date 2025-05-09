@@ -112,7 +112,7 @@ class AsyncDnsResolver::State : public RefCountedBase {
 
   // Execute the passed function if the state is Active.
   void Finish(absl::AnyInvocable<void()> function) {
-    webrtc::MutexLock lock(&mutex_);
+    MutexLock lock(&mutex_);
     if (status_ != Status::kActive) {
       return;
     }
@@ -120,12 +120,12 @@ class AsyncDnsResolver::State : public RefCountedBase {
     function();
   }
   void Kill() {
-    webrtc::MutexLock lock(&mutex_);
+    MutexLock lock(&mutex_);
     status_ = Status::kDead;
   }
 
  private:
-  webrtc::Mutex mutex_;
+  Mutex mutex_;
   Status status_ RTC_GUARDED_BY(mutex_) = Status::kActive;
 };
 
@@ -148,7 +148,7 @@ void AsyncDnsResolver::Start(const SocketAddress& addr,
   result_.addr_ = addr;
   callback_ = std::move(callback);
   auto thread_function = [this, addr, family, flag = safety_.flag(),
-                          caller_task_queue = webrtc::TaskQueueBase::Current(),
+                          caller_task_queue = TaskQueueBase::Current(),
                           state = state_] {
     std::vector<IPAddress> addresses;
     int error = ResolveHostname(addr.hostname(), family, addresses);
