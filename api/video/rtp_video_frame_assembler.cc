@@ -239,7 +239,7 @@ RtpVideoFrameAssembler::Impl::UpdateWithPadding(uint16_t seq_num) {
 bool RtpVideoFrameAssembler::Impl::ParseDependenciesDescriptorExtension(
     const RtpPacketReceived& rtp_packet,
     RTPVideoHeader& video_header) {
-  webrtc::DependencyDescriptor dependency_descriptor;
+  DependencyDescriptor dependency_descriptor;
 
   if (!rtp_packet.GetExtension<RtpDependencyDescriptorExtension>(
           video_structure_.get(), &dependency_descriptor)) {

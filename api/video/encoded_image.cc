@@ -77,7 +77,7 @@ void EncodedImage::SetEncodeTime(int64_t encode_start_ms,
   timing_.encode_finish_ms = encode_finish_ms;
 }
 
-webrtc::Timestamp EncodedImage::CaptureTime() const {
+Timestamp EncodedImage::CaptureTime() const {
   return capture_time_ms_ > 0 ? Timestamp::Millis(capture_time_ms_)
                               : Timestamp::MinusInfinity();
 }

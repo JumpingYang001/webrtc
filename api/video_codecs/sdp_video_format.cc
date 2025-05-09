@@ -191,7 +191,7 @@ bool SdpVideoFormat::IsSameCodec(const SdpVideoFormat& other) const {
 }
 
 bool SdpVideoFormat::IsCodecInList(
-    ArrayView<const webrtc::SdpVideoFormat> formats) const {
+    ArrayView<const SdpVideoFormat> formats) const {
   for (const auto& format : formats) {
     if (IsSameCodec(format)) {
       return true;

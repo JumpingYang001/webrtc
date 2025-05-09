@@ -265,7 +265,7 @@ VideoFrame::Builder& VideoFrame::Builder::set_packet_infos(
 }
 
 VideoFrame::VideoFrame(const scoped_refptr<VideoFrameBuffer>& buffer,
-                       webrtc::VideoRotation rotation,
+                       VideoRotation rotation,
                        int64_t timestamp_us)
     : video_frame_buffer_(buffer),
       timestamp_rtp_(0),

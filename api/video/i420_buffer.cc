@@ -120,12 +120,11 @@ scoped_refptr<I420Buffer> I420Buffer::Rotate(const I420BufferInterface& src,
 
   int rotated_width = src.width();
   int rotated_height = src.height();
-  if (rotation == webrtc::kVideoRotation_90 ||
-      rotation == webrtc::kVideoRotation_270) {
+  if (rotation == kVideoRotation_90 || rotation == kVideoRotation_270) {
     std::swap(rotated_width, rotated_height);
   }
 
-  scoped_refptr<webrtc::I420Buffer> buffer =
+  scoped_refptr<I420Buffer> buffer =
       I420Buffer::Create(rotated_width, rotated_height);
 
   RTC_CHECK_EQ(0,

@@ -152,10 +152,9 @@ void SimpleEncoderWrapper::SetEncodeFps(int fps) {
   fps_ = fps;
 }
 
-void SimpleEncoderWrapper::Encode(
-    scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
-    bool force_keyframe,
-    EncodeResultCallback callback) {
+void SimpleEncoderWrapper::Encode(scoped_refptr<VideoFrameBuffer> frame_buffer,
+                                  bool force_keyframe,
+                                  EncodeResultCallback callback) {
   std::vector<ScalableVideoController::LayerFrameConfig> configs =
       svc_controller_->NextFrameConfig(force_keyframe);
   std::vector<FrameEncodeSettings> encode_settings;
