@@ -231,9 +231,8 @@ enum SdpMungingType {
 // and if the should be accepted or rejected. Keep in sync with
 // SdpMungingOutcome from tools/metrics/histograms/metadata/web_rtc/enums.xml
 enum class SdpMungingOutcome {
-  kNoMunge = 0,
-  kAccepted = 1,
-  kRejected = 2,
+  kAccepted = 0,
+  kRejected = 1,
   kMaxValue = kRejected,
 };
 
