@@ -1472,9 +1472,6 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   scoped_refptr<AudioEncoderFactory> audio_encoder_factory;
   scoped_refptr<AudioDecoderFactory> audio_decoder_factory;
   scoped_refptr<AudioMixer> audio_mixer;
-  // TODO: bugs.webrtc.org/369904700 - Delete `audio_processing` in favor
-  // of `audio_processing_builder`.
-  [[deprecated]] scoped_refptr<AudioProcessing> audio_processing;
   std::unique_ptr<AudioProcessingBuilderInterface> audio_processing_builder;
   std::unique_ptr<AudioFrameProcessor> audio_frame_processor;
   std::unique_ptr<VideoEncoderFactory> video_encoder_factory;

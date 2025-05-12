@@ -764,7 +764,7 @@ TEST(PeerConnectionFactoryDependenciesTest, UsesPacketSocketFactory) {
 }
 
 TEST(PeerConnectionFactoryDependenciesTest,
-     CreatesAudioProcessingWithProvidedFactory) {
+     CreatesAudioProcessingWithProvidedBuilder) {
   auto ap_factory = std::make_unique<MockAudioProcessingBuilder>();
   auto audio_processing = make_ref_counted<NiceMock<MockAudioProcessing>>();
   // Validate that provided audio_processing is used by expecting that a request
@@ -776,26 +776,6 @@ TEST(PeerConnectionFactoryDependenciesTest,
   PeerConnectionFactoryDependencies pcf_dependencies;
   pcf_dependencies.adm = FakeAudioCaptureModule::Create();
   pcf_dependencies.audio_processing_builder = std::move(ap_factory);
-  EnableMediaWithDefaults(pcf_dependencies);
-
-  scoped_refptr<PeerConnectionFactoryInterface> pcf =
-      CreateModularPeerConnectionFactory(std::move(pcf_dependencies));
-  pcf->StartAecDump(nullptr, 24'242);
-}
-
-TEST(PeerConnectionFactoryDependenciesTest, UsesAudioProcessingWhenProvided) {
-  // Test legacy way of providing audio_processing.
-  // TODO: bugs.webrtc.org/369904700 - Delete this test when webrtc users no
-  // longer set PeerConnectionFactoryDependencies::audio_processing.
-  auto audio_processing = make_ref_counted<NiceMock<MockAudioProcessing>>();
-  EXPECT_CALL(*audio_processing, CreateAndAttachAecDump(A<FILE*>(), 24'242, _));
-
-  PeerConnectionFactoryDependencies pcf_dependencies;
-  pcf_dependencies.adm = FakeAudioCaptureModule::Create();
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  pcf_dependencies.audio_processing = std::move(audio_processing);
-#pragma clang diagnostic pop
   EnableMediaWithDefaults(pcf_dependencies);
 
   scoped_refptr<PeerConnectionFactoryInterface> pcf =
