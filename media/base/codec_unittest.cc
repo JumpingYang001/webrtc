@@ -65,7 +65,7 @@ TEST(CodecTest, TestCodecOperators) {
   EXPECT_TRUE(c0 != c1);
 
   TestCodec c5;
-  TestCodec c6(Codec::kIdNotSet, "", 0);
+  TestCodec c6(Codec::kIdNotSet, "", kDefaultAudioClockRateHz);
   EXPECT_TRUE(c5 == c6);
 }
 
@@ -83,7 +83,7 @@ TEST(CodecTest, TestAudioCodecOperators) {
   EXPECT_NE(c0, c4);
   EXPECT_NE(c0, c5);
 
-  Codec c8 = CreateAudioCodec(0, "", 0, 0);
+  Codec c8 = CreateAudioCodec(0, "", kDefaultAudioClockRateHz, 0);
   Codec c9 = c0;
   EXPECT_EQ(c9, c0);
 

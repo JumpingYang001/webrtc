@@ -4083,8 +4083,8 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecs) {
     // Rather than just ASSERTing that there are enough codecs, ensure that we
     // can check the actual values safely, to provide better test results.
     auto get_codec = [&codecs](size_t index) -> const webrtc::Codec& {
-      static const webrtc::Codec missing_codec =
-          webrtc::CreateAudioCodec(0, "<missing>", 0, 0);
+      static const webrtc::Codec missing_codec = webrtc::CreateAudioCodec(
+          0, "<missing>", webrtc::kDefaultAudioClockRateHz, 0);
       if (codecs.size() > index)
         return codecs[index];
       return missing_codec;
@@ -4172,8 +4172,8 @@ TEST(WebRtcVoiceEngineTest, CollectRecvCodecsWithLatePtAssignment) {
     // Rather than just ASSERTing that there are enough codecs, ensure that we
     // can check the actual values safely, to provide better test results.
     auto get_codec = [&codecs](size_t index) -> const webrtc::Codec& {
-      static const webrtc::Codec missing_codec =
-          webrtc::CreateAudioCodec(0, "<missing>", 0, 0);
+      static const webrtc::Codec missing_codec = webrtc::CreateAudioCodec(
+          0, "<missing>", webrtc::kDefaultAudioClockRateHz, 0);
       if (codecs.size() > index)
         return codecs[index];
       return missing_codec;

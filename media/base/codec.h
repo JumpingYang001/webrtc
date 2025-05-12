@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/base/macros.h"
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
@@ -68,6 +67,8 @@ class FeedbackParams {
 
   std::vector<FeedbackParam> params_;
 };
+constexpr int kDefaultVideoClockRateHz = 90'000;
+constexpr int kDefaultAudioClockRateHz = 8'000;
 
 struct RTC_EXPORT Codec {
   enum class Type {
@@ -172,6 +173,8 @@ struct RTC_EXPORT Codec {
 
   std::string ToString() const;
 
+  // Default constructor, for initialization.
+  Codec() : Codec(Type::kAudio, kIdNotSet, "", kDefaultAudioClockRateHz) {}
   Codec& operator=(const Codec& c);
   Codec& operator=(Codec&& c);
 

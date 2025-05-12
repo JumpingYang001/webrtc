@@ -342,7 +342,6 @@ TEST(CodecTest, TestCodecMatches) {
   EXPECT_TRUE(c0.Matches(CreateAudioCodec(34, "", 44100, 1)));
   EXPECT_TRUE(c0.Matches(CreateAudioCodec(34, "", 44100, 0)));
   EXPECT_TRUE(c0.Matches(CreateAudioCodec(34, "", 44100, 0)));
-  EXPECT_TRUE(c0.Matches(CreateAudioCodec(34, "", 0, 0)));
   EXPECT_FALSE(c0.Matches(CreateAudioCodec(96, "A", 44100, 1)));
   EXPECT_FALSE(c0.Matches(CreateAudioCodec(96, "", 44100, 1)));
   EXPECT_FALSE(c0.Matches(CreateAudioCodec(95, "", 55100, 1)));
@@ -352,15 +351,15 @@ TEST(CodecTest, TestCodecMatches) {
 
   // Test a codec with a dynamic payload type.
   Codec c1 = CreateAudioCodec(96, "A", 44100, 1);
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(96, "A", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(97, "A", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(96, "a", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(97, "a", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(35, "a", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(42, "a", 0, 0)));
-  EXPECT_TRUE(c1.Matches(CreateAudioCodec(65, "a", 0, 0)));
-  EXPECT_FALSE(c1.Matches(CreateAudioCodec(95, "A", 0, 0)));
-  EXPECT_FALSE(c1.Matches(CreateAudioCodec(34, "A", 0, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(96, "A", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(97, "A", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(96, "a", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(97, "a", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(35, "a", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(42, "a", 44100, 0)));
+  EXPECT_TRUE(c1.Matches(CreateAudioCodec(65, "a", 44100, 0)));
+  EXPECT_FALSE(c1.Matches(CreateAudioCodec(95, "A", 44100, 0)));
+  EXPECT_FALSE(c1.Matches(CreateAudioCodec(34, "A", 44100, 0)));
   EXPECT_FALSE(c1.Matches(CreateAudioCodec(96, "", 44100, 2)));
   EXPECT_FALSE(c1.Matches(CreateAudioCodec(96, "A", 55100, 1)));
 

@@ -313,22 +313,18 @@ bool MatchesWithCodecRules(const Codec& left_codec, const Codec& right_codec) {
   auto matches_type_specific = [&]() {
     switch (left_codec.type) {
       case Codec::Type::kAudio:
-        // If a nonzero clockrate is specified, it must match the actual
-        // clockrate. If a nonzero bitrate is specified, it must match the
+        // If a nonzero bitrate is specified, it must match the
         // actual bitrate, unless the codec is VBR (0), where we just force the
         // supplied value. The number of channels must match exactly, with the
         // exception that channels=0 is treated synonymously as channels=1, per
         // RFC 4566 section 6: " [The channels] parameter is OPTIONAL and may be
         // omitted if the number of channels is one."
         // Preference is ignored.
-        // TODO(juberti): Treat a zero clockrate as 8000Hz, the RTP default
-        // clockrate.
-        return ((right_codec.clockrate == 0 /*&& clockrate == 8000*/) ||
-                left_codec.clockrate == right_codec.clockrate) &&
-               (right_codec.bitrate == 0 || left_codec.bitrate <= 0 ||
-                left_codec.bitrate == right_codec.bitrate) &&
-               ((right_codec.channels < 2 && left_codec.channels < 2) ||
-                left_codec.channels == right_codec.channels);
+        return ((left_codec.clockrate == right_codec.clockrate) &&
+                (right_codec.bitrate == 0 || left_codec.bitrate <= 0 ||
+                 left_codec.bitrate == right_codec.bitrate) &&
+                ((right_codec.channels < 2 && left_codec.channels < 2) ||
+                 left_codec.channels == right_codec.channels));
 
       case Codec::Type::kVideo:
         return IsSameCodecSpecific(left_codec.name, left_codec.params,

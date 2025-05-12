@@ -2841,7 +2841,7 @@ Codec GetCodecWithPayloadType(MediaType type,
     return *codec;
   // Return empty codec with `payload_type`.
   if (type == MediaType::AUDIO) {
-    return CreateAudioCodec(payload_type, "", 0, 0);
+    return CreateAudioCodec(payload_type, "", kDefaultAudioClockRateHz, 0);
   } else {
     return CreateVideoCodec(payload_type, "");
   }

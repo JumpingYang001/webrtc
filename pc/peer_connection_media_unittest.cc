@@ -1468,8 +1468,9 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
        SetCodecPreferencesAudioMissingRecvCodec) {
   auto fake_engine = std::make_unique<FakeMediaEngine>();
   auto send_codecs = fake_engine->voice().LegacySendCodecs();
-  send_codecs.push_back(
-      CreateAudioCodec(send_codecs.back().id + 1, "send_only_codec", 0, 1));
+  send_codecs.push_back(CreateAudioCodec(send_codecs.back().id + 1,
+                                         "send_only_codec",
+                                         kDefaultAudioClockRateHz, 1));
   fake_engine->SetAudioSendCodecs(send_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
@@ -1902,7 +1903,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
   auto fake_engine = std::make_unique<FakeMediaEngine>();
 
   std::vector<Codec> audio_codecs;
-  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
   audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
