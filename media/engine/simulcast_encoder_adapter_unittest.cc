@@ -301,7 +301,7 @@ class MockVideoEncoder : public VideoEncoder {
     image._encodedWidth = width;
     image._encodedHeight = height;
     CodecSpecificInfo codec_specific_info;
-    codec_specific_info.codecType = webrtc::kVideoCodecVP8;
+    codec_specific_info.codecType = kVideoCodecVP8;
     callback_->OnEncodedImage(image, &codec_specific_info);
   }
 
@@ -617,7 +617,7 @@ class TestSimulcastEncoderAdapterFake : public ::testing::Test,
     InitRefCodec(0, &ref_codec);
     ref_codec.qpMax = 45;
     ref_codec.SetVideoEncoderComplexity(
-        webrtc::VideoCodecComplexity::kComplexityHigher);
+        VideoCodecComplexity::kComplexityHigher);
     ref_codec.VP8()->denoisingOn = false;
     ref_codec.startBitrate = 100;  // Should equal to the target bitrate.
     VerifyCodec(ref_codec, 0);
@@ -1366,8 +1366,7 @@ TEST_F(TestSimulcastEncoderAdapterFake, DoesNotAlterMaxQpForScreenshare) {
   VideoCodec ref_codec;
   InitRefCodec(0, &ref_codec);
   ref_codec.qpMax = kHighMaxQp;
-  ref_codec.SetVideoEncoderComplexity(
-      webrtc::VideoCodecComplexity::kComplexityHigher);
+  ref_codec.SetVideoEncoderComplexity(VideoCodecComplexity::kComplexityHigher);
   ref_codec.VP8()->denoisingOn = false;
   ref_codec.startBitrate = 100;  // Should equal to the target bitrate.
   VerifyCodec(ref_codec, 0);
@@ -1400,8 +1399,7 @@ TEST_F(TestSimulcastEncoderAdapterFake,
   VideoCodec ref_codec;
   InitRefCodec(2, &ref_codec, true /* reverse_layer_order */);
   ref_codec.qpMax = kHighMaxQp;
-  ref_codec.SetVideoEncoderComplexity(
-      webrtc::VideoCodecComplexity::kComplexityHigher);
+  ref_codec.SetVideoEncoderComplexity(VideoCodecComplexity::kComplexityHigher);
   ref_codec.VP8()->denoisingOn = false;
   ref_codec.startBitrate = 100;  // Should equal to the target bitrate.
   VerifyCodec(ref_codec, 2);

@@ -33,14 +33,14 @@ namespace webrtc {
 namespace {
 
 using Factory =
-    VideoEncoderFactoryTemplate<webrtc::LibvpxVp8EncoderTemplateAdapter,
+    VideoEncoderFactoryTemplate<LibvpxVp8EncoderTemplateAdapter,
 #if defined(WEBRTC_USE_H264)
                                 webrtc::OpenH264EncoderTemplateAdapter,
 #endif
 #if defined(RTC_USE_LIBAOM_AV1_ENCODER)
                                 webrtc::LibaomAv1EncoderTemplateAdapter,
 #endif
-                                webrtc::LibvpxVp9EncoderTemplateAdapter>;
+                                LibvpxVp9EncoderTemplateAdapter>;
 }  // namespace
 
 std::vector<SdpVideoFormat> InternalEncoderFactory::GetSupportedFormats()

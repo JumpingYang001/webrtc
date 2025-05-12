@@ -49,7 +49,7 @@ scoped_refptr<PeerConnectionFactoryInterface> CreatePeerConnectionFactory(
   dependencies.worker_thread = worker_thread;
   dependencies.signaling_thread = signaling_thread;
   dependencies.event_log_factory = std::make_unique<RtcEventLogFactory>();
-  dependencies.env = webrtc::CreateEnvironment(std::move(field_trials));
+  dependencies.env = CreateEnvironment(std::move(field_trials));
 
   if (network_thread) {
     // TODO(bugs.webrtc.org/13145): Add an webrtc::SocketFactory* argument.

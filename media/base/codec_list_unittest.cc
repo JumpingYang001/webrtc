@@ -22,8 +22,6 @@
 namespace webrtc {
 namespace {
 
-using webrtc::RTCErrorOr;
-using webrtc::RTCErrorType;
 
 TEST(CodecList, StoreAndRecall) {
   CodecList empty_list = CodecList::CreateFromTrustedData(std::vector<Codec>{});
@@ -36,7 +34,7 @@ TEST(CodecList, StoreAndRecall) {
 }
 
 TEST(CodecList, RejectIllegalConstructorArguments) {
-  std::vector<Codec> apt_without_number{webrtc::CreateVideoCodec(
+  std::vector<Codec> apt_without_number{CreateVideoCodec(
       {SdpVideoFormat{"rtx", CodecParameterMap{{"apt", "not-a-number"}}}})};
   apt_without_number[0].id = 96;
   RTCErrorOr<CodecList> checked_codec_list =
@@ -54,7 +52,7 @@ TEST(CodecList, CrashOnIllegalConstructorArguments) {
   // Checks that can't be enabled log things instead.
   // Note: DCHECK is on in some release builds, so we can't use
   // EXPECT_DEBUG_DEATH here.
-  std::vector<Codec> apt_without_number{webrtc::CreateVideoCodec(
+  std::vector<Codec> apt_without_number{CreateVideoCodec(
       {SdpVideoFormat{"rtx", CodecParameterMap{{"apt", "not-a-number"}}}})};
   apt_without_number[0].id = 96;
 #if RTC_DCHECK_IS_ON

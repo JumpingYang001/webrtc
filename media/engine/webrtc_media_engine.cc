@@ -37,8 +37,7 @@ void DiscardRedundantExtensions(
   bool found = false;
   for (const char* uri : extensions_decreasing_prio) {
     auto it = absl::c_find_if(
-        *extensions,
-        [uri](const webrtc::RtpExtension& rhs) { return rhs.uri == uri; });
+        *extensions, [uri](const RtpExtension& rhs) { return rhs.uri == uri; });
     if (it != extensions->end()) {
       if (found) {
         extensions->erase(it);

@@ -44,7 +44,7 @@ class CompileTimeTestForGuardedBy {
 
  private:
   int guarded_ RTC_GUARDED_BY(sequence_checker_);
-  ::webrtc::SequenceChecker sequence_checker_;
+  SequenceChecker sequence_checker_;
 };
 
 void RunOnDifferentThread(FunctionView<void()> run) {

@@ -390,8 +390,7 @@ TEST(CodecTest, TestOpusAudioCodecWithDifferentParameters) {
   // Matches does not compare parameters for audio.
   EXPECT_TRUE(opus_with_fec.Matches(opus_without_fec));
 
-  webrtc::RtpCodecParameters rtp_opus_with_fec =
-      opus_with_fec.ToCodecParameters();
+  RtpCodecParameters rtp_opus_with_fec = opus_with_fec.ToCodecParameters();
   // MatchesRtpCodec takes parameters into account.
   EXPECT_TRUE(opus_with_fec.MatchesRtpCodec(rtp_opus_with_fec));
   EXPECT_FALSE(opus_without_fec.MatchesRtpCodec(rtp_opus_with_fec));
@@ -480,19 +479,19 @@ TEST(CodecTest, TestVP9CodecMatches) {
 
   Codec c_no_profile = CreateVideoCodec(95, kVp9CodecName);
   Codec c_profile0 = CreateVideoCodec(95, kVp9CodecName);
-  c_profile0.params[webrtc::kVP9FmtpProfileId] = kProfile0;
+  c_profile0.params[kVP9FmtpProfileId] = kProfile0;
 
   EXPECT_TRUE(c_profile0.Matches(c_no_profile));
 
   {
     Codec c_profile0_eq = CreateVideoCodec(95, kVp9CodecName);
-    c_profile0_eq.params[webrtc::kVP9FmtpProfileId] = kProfile0;
+    c_profile0_eq.params[kVP9FmtpProfileId] = kProfile0;
     EXPECT_TRUE(c_profile0.Matches(c_profile0_eq));
   }
 
   {
     Codec c_profile2 = CreateVideoCodec(95, kVp9CodecName);
-    c_profile2.params[webrtc::kVP9FmtpProfileId] = kProfile2;
+    c_profile2.params[kVP9FmtpProfileId] = kProfile2;
     EXPECT_FALSE(c_profile0.Matches(c_profile2));
     EXPECT_FALSE(c_no_profile.Matches(c_profile2));
   }

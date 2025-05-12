@@ -35,10 +35,10 @@ constexpr int kWidth = 1280;
 constexpr int kHeight = 720;
 constexpr int kDefaultFps = 30;
 
+using test::ScopedFieldTrials;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Pair;
-using ::webrtc::test::ScopedFieldTrials;
 
 VideoSinkWants BuildSinkWants(std::optional<int> target_pixel_count,
                               int max_pixel_count,
@@ -84,8 +84,7 @@ class VideoAdapterTest : public ::testing::Test,
         frame_source_(std::make_unique<FakeFrameSource>(
             kWidth,
             kHeight,
-            VideoFormat::FpsToInterval(kDefaultFps) /
-                webrtc::kNumNanosecsPerMicrosec)),
+            VideoFormat::FpsToInterval(kDefaultFps) / kNumNanosecsPerMicrosec)),
         adapter_(source_resolution_alignment),
         adapter_wrapper_(std::make_unique<VideoAdapterWrapper>(&adapter_)),
         use_new_format_request_(GetParam()) {}
@@ -117,8 +116,8 @@ class VideoAdapterTest : public ::testing::Test,
       int out_height;
       if (video_adapter_->AdaptFrameResolution(
               in_width, in_height,
-              frame.timestamp_us() * webrtc::kNumNanosecsPerMicrosec,
-              &cropped_width, &cropped_height, &out_width, &out_height)) {
+              frame.timestamp_us() * kNumNanosecsPerMicrosec, &cropped_width,
+              &cropped_height, &out_width, &out_height)) {
         stats_.cropped_width = cropped_width;
         stats_.cropped_height = cropped_height;
         stats_.out_width = out_width;
@@ -164,7 +163,7 @@ class VideoAdapterTest : public ::testing::Test,
     }
     adapter_.OnOutputFormatRequest(
         VideoFormat(width, height, fps ? VideoFormat::FpsToInterval(*fps) : 0,
-                    webrtc::FOURCC_I420));
+                    FOURCC_I420));
   }
 
   // Return pair of <out resolution, cropping>
@@ -1058,7 +1057,7 @@ TEST(VideoAdapterTestMultipleOrientation, TestNormal) {
 
   EXPECT_TRUE(video_adapter.AdaptFrameResolution(
       /* in_width= */ 480, /* in_height= */ 640,
-      /* in_timestamp_ns= */ webrtc::kNumNanosecsPerSec / 30, &cropped_width,
+      /* in_timestamp_ns= */ kNumNanosecsPerSec / 30, &cropped_width,
       &cropped_height, &out_width, &out_height));
   EXPECT_EQ(360, cropped_width);
   EXPECT_EQ(640, cropped_height);
@@ -1086,7 +1085,7 @@ TEST(VideoAdapterTestMultipleOrientation, TestForcePortrait) {
 
   EXPECT_TRUE(video_adapter.AdaptFrameResolution(
       /* in_width= */ 480, /* in_height= */ 640,
-      /* in_timestamp_ns= */ webrtc::kNumNanosecsPerSec / 30, &cropped_width,
+      /* in_timestamp_ns= */ kNumNanosecsPerSec / 30, &cropped_width,
       &cropped_height, &out_width, &out_height));
   EXPECT_EQ(360, cropped_width);
   EXPECT_EQ(640, cropped_height);
@@ -1195,8 +1194,8 @@ TEST_P(VideoAdapterTest, AdaptResolutionWithSinkAlignment) {
                        std::numeric_limits<int>::max(), sink_alignment));
     EXPECT_TRUE(adapter_.AdaptFrameResolution(
         kSourceWidth, kSourceHeight,
-        frame_num * webrtc::kNumNanosecsPerSec / kSourceFramerate,
-        &cropped_width_, &cropped_height_, &out_width_, &out_height_));
+        frame_num * kNumNanosecsPerSec / kSourceFramerate, &cropped_width_,
+        &cropped_height_, &out_width_, &out_height_));
     EXPECT_EQ(out_width_ % sink_alignment, 0);
     EXPECT_EQ(out_height_ % sink_alignment, 0);
 

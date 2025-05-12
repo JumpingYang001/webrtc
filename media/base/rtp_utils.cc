@@ -102,10 +102,10 @@ void UpdateRtpAuthTag(uint8_t* rtp,
   size_t auth_required_length = length - tag_length + kRocLength;
 
   uint8_t output[64];
-  size_t result = webrtc::ComputeHmac(
-      webrtc::DIGEST_SHA_1, &packet_time_params.srtp_auth_key[0],
-      packet_time_params.srtp_auth_key.size(), rtp, auth_required_length,
-      output, sizeof(output));
+  size_t result =
+      ComputeHmac(DIGEST_SHA_1, &packet_time_params.srtp_auth_key[0],
+                  packet_time_params.srtp_auth_key.size(), rtp,
+                  auth_required_length, output, sizeof(output));
 
   if (result < tag_length) {
     RTC_DCHECK_NOTREACHED();
@@ -147,7 +147,7 @@ bool GetRtcpSsrc(const void* data, size_t len, uint32_t* value) {
   // SDES packet parsing is not supported.
   if (pl_type == kRtcpTypeSDES)
     return false;
-  *value = webrtc::GetBE32(static_cast<const uint8_t*>(data) + 4);
+  *value = GetBE32(static_cast<const uint8_t*>(data) + 4);
   return true;
 }
 
@@ -176,10 +176,10 @@ absl::string_view RtpPacketTypeToString(RtpPacketType packet_type) {
 }
 
 RtpPacketType InferRtpPacketType(ArrayView<const uint8_t> packet) {
-  if (webrtc::IsRtcpPacket(packet)) {
+  if (IsRtcpPacket(packet)) {
     return RtpPacketType::kRtcp;
   }
-  if (webrtc::IsRtpPacket(packet)) {
+  if (IsRtpPacket(packet)) {
     return RtpPacketType::kRtp;
   }
   return RtpPacketType::kUnknown;
@@ -219,7 +219,7 @@ bool ValidateRtpHeader(const uint8_t* rtp,
 
   // Getting extension profile length.
   // Length is in 32 bit words.
-  uint16_t extension_length_in_32bits = webrtc::GetBE16(rtp + 2);
+  uint16_t extension_length_in_32bits = GetBE16(rtp + 2);
   size_t extension_length = extension_length_in_32bits * 4;
 
   size_t rtp_header_length = extension_length +
@@ -267,9 +267,9 @@ bool UpdateRtpAbsSendTimeExtension(uint8_t* rtp,
   rtp += header_length_without_extension;
 
   // Getting extension profile ID and length.
-  uint16_t profile_id = webrtc::GetBE16(rtp);
+  uint16_t profile_id = GetBE16(rtp);
   // Length is in 32 bit words.
-  uint16_t extension_length_in_32bits = webrtc::GetBE16(rtp + 2);
+  uint16_t extension_length_in_32bits = GetBE16(rtp + 2);
   size_t extension_length = extension_length_in_32bits * 4;
 
   rtp += kRtpExtensionHeaderLen;  // Moving past extension header.
@@ -373,14 +373,14 @@ bool ApplyPacketOptions(uint8_t* data,
   // indication.
   size_t rtp_start_pos;
   size_t rtp_length;
-  if (!webrtc::UnwrapTurnPacket(data, length, &rtp_start_pos, &rtp_length)) {
+  if (!UnwrapTurnPacket(data, length, &rtp_start_pos, &rtp_length)) {
     RTC_DCHECK_NOTREACHED();
     return false;
   }
 
   // Making sure we have a valid RTP packet at the end.
   auto packet = MakeArrayView(data + rtp_start_pos, rtp_length);
-  if (!webrtc::IsRtpPacket(packet) ||
+  if (!IsRtpPacket(packet) ||
       !ValidateRtpHeader(data + rtp_start_pos, rtp_length, nullptr)) {
     RTC_DCHECK_NOTREACHED();
     return false;

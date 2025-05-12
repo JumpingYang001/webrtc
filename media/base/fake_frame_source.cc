@@ -48,12 +48,12 @@ void FakeFrameSource::SetRotation(VideoRotation rotation) {
 
 VideoFrame FakeFrameSource::GetFrameRotationApplied() {
   switch (rotation_) {
-    case webrtc::kVideoRotation_0:
-    case webrtc::kVideoRotation_180:
-      return GetFrame(width_, height_, webrtc::kVideoRotation_0, interval_us_);
-    case webrtc::kVideoRotation_90:
-    case webrtc::kVideoRotation_270:
-      return GetFrame(height_, width_, webrtc::kVideoRotation_0, interval_us_);
+    case kVideoRotation_0:
+    case kVideoRotation_180:
+      return GetFrame(width_, height_, kVideoRotation_0, interval_us_);
+    case kVideoRotation_90:
+    case kVideoRotation_270:
+      return GetFrame(height_, width_, kVideoRotation_0, interval_us_);
   }
   RTC_DCHECK_NOTREACHED() << "Invalid rotation value: "
                           << static_cast<int>(rotation_);

@@ -47,7 +47,6 @@
 #include "rtc_base/system/file_wrapper.h"
 
 namespace webrtc {
-using webrtc::TaskQueueBase;
 
 FakeVoiceMediaReceiveChannel::DtmfInfo::DtmfInfo(uint32_t ssrc,
                                                  int event_code,
@@ -561,12 +560,11 @@ bool FakeVideoMediaReceiveChannel::GetStats(VideoMediaReceiveInfo* /* info */) {
 }
 
 FakeVoiceEngine::FakeVoiceEngine()
-    : encoder_factory_(webrtc::make_ref_counted<FakeVoiceEncoderFactory>(this)),
-      decoder_factory_(
-          webrtc::make_ref_counted<FakeVoiceDecoderFactory>(this)) {
+    : encoder_factory_(make_ref_counted<FakeVoiceEncoderFactory>(this)),
+      decoder_factory_(make_ref_counted<FakeVoiceDecoderFactory>(this)) {
   // Add a fake audio codec. Note that the name must not be "" as there are
   // sanity checks against that.
-  SetCodecs({webrtc::CreateAudioCodec(101, "fake_audio_codec", 8000, 1)});
+  SetCodecs({CreateAudioCodec(101, "fake_audio_codec", 8000, 1)});
 }
 void FakeVoiceEngine::Init() {}
 scoped_refptr<AudioState> FakeVoiceEngine::GetAudioState() const {
@@ -635,8 +633,8 @@ void FakeVoiceEngine::SetRtpHeaderExtensions(
 FakeVideoEngine::FakeVideoEngine() : capture_(false) {
   // Add a fake video codec. Note that the name must not be "" as there are
   // sanity checks against that.
-  send_codecs_.push_back(webrtc::CreateVideoCodec(111, "fake_video_codec"));
-  recv_codecs_.push_back(webrtc::CreateVideoCodec(111, "fake_video_codec"));
+  send_codecs_.push_back(CreateVideoCodec(111, "fake_video_codec"));
+  recv_codecs_.push_back(CreateVideoCodec(111, "fake_video_codec"));
 }
 bool FakeVideoEngine::SetOptions(const VideoOptions& options) {
   options_ = options;

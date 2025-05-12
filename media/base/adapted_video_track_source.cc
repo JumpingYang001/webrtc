@@ -53,13 +53,13 @@ void AdaptedVideoTrackSource::OnFrame(const VideoFrame& frame) {
      true was just added. The VideoBroadcaster enforces
      synchronization for us in this case, by not passing the frame on
      to sinks which don't want it. */
-  if (apply_rotation() && frame.rotation() != webrtc::kVideoRotation_0 &&
+  if (apply_rotation() && frame.rotation() != kVideoRotation_0 &&
       buffer->type() == VideoFrameBuffer::Type::kI420) {
     /* Apply pending rotation. */
     VideoFrame rotated_frame(frame);
     rotated_frame.set_video_frame_buffer(
         I420Buffer::Rotate(*buffer->GetI420(), frame.rotation()));
-    rotated_frame.set_rotation(webrtc::kVideoRotation_0);
+    rotated_frame.set_rotation(kVideoRotation_0);
     broadcaster_.OnFrame(rotated_frame);
   } else {
     broadcaster_.OnFrame(frame);
@@ -109,7 +109,7 @@ bool AdaptedVideoTrackSource::AdaptFrame(int width,
   }
 
   if (!video_adapter_.AdaptFrameResolution(
-          width, height, time_us * webrtc::kNumNanosecsPerMicrosec, crop_width,
+          width, height, time_us * kNumNanosecsPerMicrosec, crop_width,
           crop_height, out_width, out_height)) {
     broadcaster_.OnDiscardedFrame();
     // VideoAdapter dropped the frame.

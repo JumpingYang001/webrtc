@@ -19,8 +19,8 @@
 namespace webrtc {
 namespace {
 
-using ::webrtc::field_trial::FieldTrialsAllowedInScopeForTesting;
-using ::webrtc::test::ScopedFieldTrials;
+using field_trial::FieldTrialsAllowedInScopeForTesting;
+using test::ScopedFieldTrials;
 
 TEST(FieldTrialsTest, EmptyStringHasNoEffect) {
   FieldTrialsAllowedInScopeForTesting k({"MyCoolTrial"});

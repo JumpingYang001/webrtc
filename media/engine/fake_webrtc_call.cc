@@ -58,8 +58,6 @@
 
 namespace webrtc {
 
-using ::webrtc::Environment;
-using ::webrtc::ParseRtpSsrc;
 
 FakeAudioSendStream::FakeAudioSendStream(int id,
                                          const AudioSendStream::Config& config)
@@ -68,7 +66,7 @@ FakeAudioSendStream::FakeAudioSendStream(int id,
 void FakeAudioSendStream::Reconfigure(const AudioSendStream::Config& config,
                                       SetParametersCallback callback) {
   config_ = config;
-  webrtc::InvokeSetParametersCallback(callback, RTCError::OK());
+  InvokeSetParametersCallback(callback, RTCError::OK());
 }
 
 const AudioSendStream::Config& FakeAudioSendStream::GetConfig() const {
@@ -353,7 +351,7 @@ void FakeVideoSendStream::ReconfigureVideoEncoder(
   codec_settings_set_ = config.encoder_specific_settings != nullptr;
   encoder_config_ = std::move(config);
   ++num_encoder_reconfigurations_;
-  webrtc::InvokeSetParametersCallback(callback, RTCError::OK());
+  InvokeSetParametersCallback(callback, RTCError::OK());
 }
 
 void FakeVideoSendStream::Start() {
@@ -467,8 +465,8 @@ FakeCall::FakeCall(const Environment& env,
     : env_(env),
       network_thread_(network_thread),
       worker_thread_(worker_thread),
-      audio_network_state_(webrtc::kNetworkUp),
-      video_network_state_(webrtc::kNetworkUp),
+      audio_network_state_(kNetworkUp),
+      video_network_state_(kNetworkUp),
       num_created_send_streams_(0),
       num_created_receive_streams_(0) {}
 
@@ -537,13 +535,13 @@ NetworkState FakeCall::GetNetworkState(MediaType media) const {
     case MediaType::ANY:
     case MediaType::UNSUPPORTED:
       ADD_FAILURE() << "GetNetworkState called with unknown parameter.";
-      return webrtc::kNetworkDown;
+      return kNetworkDown;
   }
   // Even though all the values for the enum class are listed above,the compiler
   // will emit a warning as the method may be called with a value outside of the
   // valid enum range, unless this case is also handled.
   ADD_FAILURE() << "GetNetworkState called with unknown parameter.";
-  return webrtc::kNetworkDown;
+  return kNetworkDown;
 }
 
 AudioSendStream* FakeCall::CreateAudioSendStream(

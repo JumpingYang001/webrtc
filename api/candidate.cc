@@ -48,8 +48,8 @@ Candidate::Candidate()
     : id_(CreateRandomString(8)),
       component_(ICE_CANDIDATE_COMPONENT_DEFAULT),
       priority_(0),
-      network_type_(webrtc::ADAPTER_TYPE_UNKNOWN),
-      underlying_type_for_vpn_(webrtc::ADAPTER_TYPE_UNKNOWN),
+      network_type_(ADAPTER_TYPE_UNKNOWN),
+      underlying_type_for_vpn_(ADAPTER_TYPE_UNKNOWN),
       generation_(0),
       network_id_(0),
       network_cost_(0) {}
@@ -73,8 +73,8 @@ Candidate::Candidate(int component,
       username_(username),
       password_(password),
       type_(type),
-      network_type_(webrtc::ADAPTER_TYPE_UNKNOWN),
-      underlying_type_for_vpn_(webrtc::ADAPTER_TYPE_UNKNOWN),
+      network_type_(ADAPTER_TYPE_UNKNOWN),
+      underlying_type_for_vpn_(ADAPTER_TYPE_UNKNOWN),
       generation_(generation),
       foundation_(foundation),
       network_id_(network_id),
@@ -102,7 +102,7 @@ bool Candidate::is_relay() const {
 }
 
 absl::string_view Candidate::type_name() const {
-  return webrtc::IceCandidateTypeToString(type_);
+  return IceCandidateTypeToString(type_);
 }
 
 bool Candidate::IsEquivalent(const Candidate& c) const {
@@ -157,7 +157,7 @@ uint32_t Candidate::GetPriority(uint32_t type_preference,
   // local preference =  (NIC Type << 8 | Addr_Pref) + relay preference.
   // The relay preference is based on the number of TURN servers, the
   // first TURN server gets the highest preference.
-  int addr_pref = webrtc::IPAddressPrecedence(address_.ipaddr());
+  int addr_pref = IPAddressPrecedence(address_.ipaddr());
   int local_preference =
       ((network_adapter_preference << 8) | addr_pref) + relay_preference;
 
@@ -205,7 +205,7 @@ Candidate Candidate::ToSanitizedCopy(bool use_hostname_address,
       // IP needs to be redacted, but no hostname available.
       SocketAddress redacted_addr("redacted-ip.invalid", address().port());
       copy.set_address(redacted_addr);
-    } else if (webrtc::IPFromString(address().hostname(), &ip)) {
+    } else if (IPFromString(address().hostname(), &ip)) {
       // The hostname is an IP literal, and needs to be redacted too.
       SocketAddress redacted_addr("redacted-literal.invalid", address().port());
       copy.set_address(redacted_addr);
@@ -216,7 +216,7 @@ Candidate Candidate::ToSanitizedCopy(bool use_hostname_address,
   }
   if (filter_related_address) {
     copy.set_related_address(
-        webrtc::EmptySocketAddressWithFamily(copy.address().family()));
+        EmptySocketAddressWithFamily(copy.address().family()));
   }
   if (filter_ufrag) {
     copy.set_username("");
@@ -253,13 +253,13 @@ void Candidate::ComputeFoundation(const SocketAddress& base_address,
   // - 1 (that is, a 64-bit positive integer).  This number is used in
   // connectivity checks to detect and repair this case [...]
   sb << absl::StrCat(tie_breaker);
-  foundation_ = absl::StrCat(webrtc::ComputeCrc32(sb.Release()));
+  foundation_ = absl::StrCat(ComputeCrc32(sb.Release()));
 }
 
 void Candidate::ComputePrflxFoundation() {
   RTC_DCHECK(is_prflx());
   RTC_DCHECK(!id_.empty());
-  foundation_ = absl::StrCat(webrtc::ComputeCrc32(id_));
+  foundation_ = absl::StrCat(ComputeCrc32(id_));
 }
 
 void Candidate::Assign(std::string& s, absl::string_view view) {

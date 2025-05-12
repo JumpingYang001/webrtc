@@ -32,11 +32,10 @@ namespace webrtc {
 
 std::vector<SdpVideoFormat> FakeVideoEncoderFactory::GetSupportedFormats()
     const {
-  const absl::InlinedVector<webrtc::ScalabilityMode,
-                            webrtc::kScalabilityModeCount>
-      kSupportedScalabilityModes = {webrtc::ScalabilityMode::kL1T1,
-                                    webrtc::ScalabilityMode::kL1T2,
-                                    webrtc::ScalabilityMode::kL1T3};
+  const absl::InlinedVector<ScalabilityMode, kScalabilityModeCount>
+      kSupportedScalabilityModes = {ScalabilityMode::kL1T1,
+                                    ScalabilityMode::kL1T2,
+                                    ScalabilityMode::kL1T3};
 
   return std::vector<SdpVideoFormat>(
       1, SdpVideoFormat(kFakeCodecFactoryCodecName, {},

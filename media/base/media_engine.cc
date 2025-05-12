@@ -40,10 +40,9 @@ bool SupportsMode(const Codec& codec,
   if (!scalability_mode.has_value()) {
     return true;
   }
-  return absl::c_any_of(
-      codec.scalability_modes, [&](webrtc::ScalabilityMode mode) {
-        return ScalabilityModeToString(mode) == *scalability_mode;
-      });
+  return absl::c_any_of(codec.scalability_modes, [&](ScalabilityMode mode) {
+    return ScalabilityModeToString(mode) == *scalability_mode;
+  });
 }
 
 }  // namespace
@@ -90,8 +89,6 @@ std::vector<RtpExtension> GetDefaultEnabledRtpHeaderExtensions(
 RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
                                     ArrayView<Codec> send_codecs,
                                     std::optional<Codec> send_codec) {
-  using webrtc::RTCErrorType;
-
   if (send_codecs.empty()) {
     // This is an audio sender or an extra check in the stack where the codec
     // list is not available and we can't check the scalability_mode values.
@@ -101,7 +98,7 @@ RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
   for (size_t i = 0; i < rtp_parameters.encodings.size(); ++i) {
     if (rtp_parameters.encodings[i].codec) {
       bool codecFound = false;
-      for (const webrtc::Codec& codec : send_codecs) {
+      for (const Codec& codec : send_codecs) {
         if (IsSameRtpCodecIgnoringLevel(codec,
                                         *rtp_parameters.encodings[i].codec) &&
             SupportsMode(codec, rtp_parameters.encodings[i].scalability_mode)) {
@@ -120,7 +117,7 @@ RTCError CheckScalabilityModeValues(const RtpParameters& rtp_parameters,
     if (rtp_parameters.encodings[i].scalability_mode) {
       if (!send_codec) {
         bool scalabilityModeFound = false;
-        for (const webrtc::Codec& codec : send_codecs) {
+        for (const Codec& codec : send_codecs) {
           for (const auto& scalability_mode : codec.scalability_modes) {
             if (ScalabilityModeToString(scalability_mode) ==
                 *rtp_parameters.encodings[i].scalability_mode) {
@@ -164,8 +161,6 @@ RTCError CheckRtpParametersValues(const RtpParameters& rtp_parameters,
                                   ArrayView<Codec> send_codecs,
                                   std::optional<Codec> send_codec,
                                   const FieldTrialsView& field_trials) {
-  using webrtc::RTCErrorType;
-
   bool has_scale_resolution_down_to = false;
   for (size_t i = 0; i < rtp_parameters.encodings.size(); ++i) {
     if (rtp_parameters.encodings[i].bitrate_priority <= 0) {
@@ -198,7 +193,7 @@ RTCError CheckRtpParametersValues(const RtpParameters& rtp_parameters,
     if (rtp_parameters.encodings[i].num_temporal_layers) {
       if (*rtp_parameters.encodings[i].num_temporal_layers < 1 ||
           *rtp_parameters.encodings[i].num_temporal_layers >
-              webrtc::kMaxTemporalStreams) {
+              kMaxTemporalStreams) {
         LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_RANGE,
                              "Attempted to set RtpParameters "
                              "num_temporal_layers to an invalid number.");
@@ -252,7 +247,6 @@ RTCError CheckRtpParametersInvalidModificationAndValues(
     ArrayView<Codec> send_codecs,
     std::optional<Codec> send_codec,
     const FieldTrialsView& field_trials) {
-  using webrtc::RTCErrorType;
   if (rtp_parameters.encodings.size() != old_rtp_parameters.encodings.size()) {
     LOG_AND_RETURN_ERROR(
         RTCErrorType::INVALID_MODIFICATION,

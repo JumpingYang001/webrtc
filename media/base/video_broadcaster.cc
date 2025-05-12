@@ -74,7 +74,7 @@ void VideoBroadcaster::OnFrame(const VideoFrame& frame) {
   bool current_frame_was_discarded = false;
   for (auto& sink_pair : sink_pairs()) {
     if (sink_pair.wants.rotation_applied &&
-        frame.rotation() != webrtc::kVideoRotation_0) {
+        frame.rotation() != kVideoRotation_0) {
       // Calls to OnFrame are not synchronized with changes to the sink wants.
       // When rotation_applied is set to true, one or a few frames may get here
       // with rotation still pending. Protect sinks that don't expect any

@@ -22,7 +22,7 @@
 namespace webrtc {
 namespace {
 
-using webrtc::test::ScopedKeyValueConfig;
+using test::ScopedKeyValueConfig;
 
 std::vector<RtpExtension> MakeUniqueExtensions() {
   std::vector<RtpExtension> result;

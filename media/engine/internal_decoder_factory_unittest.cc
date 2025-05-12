@@ -28,7 +28,7 @@ using ::testing::Contains;
 using ::testing::Field;
 using ::testing::Not;
 
-using ::webrtc::field_trial::InitFieldTrialsFromString;
+using field_trial::InitFieldTrialsFromString;
 
 #ifdef RTC_ENABLE_VP9
 constexpr bool kVp9Enabled = true;

@@ -36,20 +36,20 @@ void SleepFor(TimeDelta duration) {
 }
 
 std::unique_ptr<TaskQueueBase, TaskQueueDeleter> CreateTaskQueue(
-    const std::unique_ptr<webrtc::TaskQueueFactory>& factory,
+    const std::unique_ptr<TaskQueueFactory>& factory,
     absl::string_view task_queue_name,
     TaskQueueFactory::Priority priority = TaskQueueFactory::Priority::NORMAL) {
   return factory->CreateTaskQueue(task_queue_name, priority);
 }
 
 TEST_P(TaskQueueTest, Construct) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   auto queue = CreateTaskQueue(factory, "Construct");
   EXPECT_FALSE(queue->IsCurrent());
 }
 
 TEST_P(TaskQueueTest, PostAndCheckCurrent) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event event;
   auto queue = CreateTaskQueue(factory, "PostAndCheckCurrent");
 
@@ -67,7 +67,7 @@ TEST_P(TaskQueueTest, PostAndCheckCurrent) {
 }
 
 TEST_P(TaskQueueTest, PostCustomTask) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event ran;
   auto queue = CreateTaskQueue(factory, "PostCustomImplementation");
 
@@ -86,7 +86,7 @@ TEST_P(TaskQueueTest, PostCustomTask) {
 }
 
 TEST_P(TaskQueueTest, PostDelayedZero) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event event;
   auto queue = CreateTaskQueue(factory, "PostDelayedZero");
 
@@ -95,7 +95,7 @@ TEST_P(TaskQueueTest, PostDelayedZero) {
 }
 
 TEST_P(TaskQueueTest, PostFromQueue) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event event;
   auto queue = CreateTaskQueue(factory, "PostFromQueue");
 
@@ -105,7 +105,7 @@ TEST_P(TaskQueueTest, PostFromQueue) {
 }
 
 TEST_P(TaskQueueTest, PostDelayed) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event event;
   auto queue =
       CreateTaskQueue(factory, "PostDelayed", TaskQueueFactory::Priority::HIGH);
@@ -127,7 +127,7 @@ TEST_P(TaskQueueTest, PostDelayed) {
 }
 
 TEST_P(TaskQueueTest, PostMultipleDelayed) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   auto queue = CreateTaskQueue(factory, "PostMultipleDelayed");
 
   std::vector<Event> events(100);
@@ -146,7 +146,7 @@ TEST_P(TaskQueueTest, PostMultipleDelayed) {
 }
 
 TEST_P(TaskQueueTest, PostDelayedAfterDestruct) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event run;
   Event deleted;
   auto queue = CreateTaskQueue(factory, "PostDelayedAfterDestruct");
@@ -161,7 +161,7 @@ TEST_P(TaskQueueTest, PostDelayedAfterDestruct) {
 }
 
 TEST_P(TaskQueueTest, PostDelayedHighPrecisionAfterDestruct) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event run;
   Event deleted;
   auto queue =
@@ -178,7 +178,7 @@ TEST_P(TaskQueueTest, PostDelayedHighPrecisionAfterDestruct) {
 }
 
 TEST_P(TaskQueueTest, PostedUnexecutedClosureDestroyedOnTaskQueue) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   auto queue =
       CreateTaskQueue(factory, "PostedUnexecutedClosureDestroyedOnTaskQueue");
   TaskQueueBase* queue_ptr = queue.get();
@@ -198,7 +198,7 @@ TEST_P(TaskQueueTest, PostedUnexecutedClosureDestroyedOnTaskQueue) {
 }
 
 TEST_P(TaskQueueTest, PostedClosureDestroyedOnTaskQueue) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   auto queue = CreateTaskQueue(factory, "PostedClosureDestroyedOnTaskQueue");
   TaskQueueBase* queue_ptr = queue.get();
   Event finished;
@@ -215,7 +215,7 @@ TEST_P(TaskQueueTest, PostedClosureDestroyedOnTaskQueue) {
 }
 
 TEST_P(TaskQueueTest, PostedExecutedClosureDestroyedOnTaskQueue) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   auto queue =
       CreateTaskQueue(factory, "PostedExecutedClosureDestroyedOnTaskQueue");
   TaskQueueBase* queue_ptr = queue.get();
@@ -229,7 +229,7 @@ TEST_P(TaskQueueTest, PostedExecutedClosureDestroyedOnTaskQueue) {
 }
 
 TEST_P(TaskQueueTest, PostAndReuse) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   Event event;
   auto post_queue = CreateTaskQueue(factory, "PostQueue");
   auto reply_queue = CreateTaskQueue(factory, "ReplyQueue");
@@ -274,7 +274,7 @@ TEST_P(TaskQueueTest, PostALot) {
     explicit BlockingCounter(int initial_count) : count_(initial_count) {}
 
     void DecrementCount() {
-      if (count_.DecRef() == webrtc::RefCountReleaseStatus::kDroppedLastRef) {
+      if (count_.DecRef() == RefCountReleaseStatus::kDroppedLastRef) {
         event_.Set();
       }
     }
@@ -285,7 +285,7 @@ TEST_P(TaskQueueTest, PostALot) {
     Event event_;
   };
 
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   static constexpr int kTaskCount = 0xffff;
   Event posting_done;
   BlockingCounter all_destroyed(kTaskCount);
@@ -329,7 +329,7 @@ TEST_P(TaskQueueTest, PostALot) {
 // unit test, run it under TSan or some other tool that is able to
 // directly detect data races.
 TEST_P(TaskQueueTest, PostTwoWithSharedUnprotectedState) {
-  std::unique_ptr<webrtc::TaskQueueFactory> factory = GetParam()(nullptr);
+  std::unique_ptr<TaskQueueFactory> factory = GetParam()(nullptr);
   struct SharedState {
     // First task will set this value to 1 and second will assert it.
     int state = 0;

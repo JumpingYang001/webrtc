@@ -42,7 +42,6 @@ namespace webrtc {
 
 namespace {
 
-using ::webrtc::Environment;
 
 static constexpr TimeDelta kEventTimeout = TimeDelta::Seconds(10);
 
@@ -103,7 +102,7 @@ std::vector<SdpVideoFormat> FakeWebRtcVideoDecoderFactory::GetSupportedFormats()
     const {
   std::vector<SdpVideoFormat> formats;
 
-  for (const webrtc::SdpVideoFormat& format : supported_codec_formats_) {
+  for (const SdpVideoFormat& format : supported_codec_formats_) {
     // We need to test erroneous scenarios, so just warn if there's
     // a duplicate.
     if (format.IsCodecInList(formats)) {
@@ -232,7 +231,7 @@ std::vector<SdpVideoFormat> FakeWebRtcVideoEncoderFactory::GetSupportedFormats()
     const {
   std::vector<SdpVideoFormat> formats;
 
-  for (const webrtc::SdpVideoFormat& format : formats_) {
+  for (const SdpVideoFormat& format : formats_) {
     // Don't add same codec twice.
     if (!format.IsCodecInList(formats))
       formats.push_back(format);
