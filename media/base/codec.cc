@@ -401,10 +401,7 @@ Codec CreateAudioCodec(int id,
                        const std::string& name,
                        int clockrate,
                        size_t channels) {
-  return Codec(Codec::Type::kAudio, id, name,
-               // TODO: bugs.webrtc.org/416695360 - remove mapping when
-               // all call sites are updated to not use zero clock rate.
-               clockrate == 0 ? kDefaultAudioClockRateHz : clockrate, channels);
+  return Codec(Codec::Type::kAudio, id, name, clockrate, channels);
 }
 
 Codec CreateAudioCodec(const webrtc::SdpAudioFormat& c) {

@@ -1203,14 +1203,17 @@ TEST_P(PeerConnectionMediaTest, SetRemoteDescriptionFailsWithDuplicateMids) {
 // fmtp line is modified to refer to the correct payload type.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeReassigned) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
   callee_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1245,15 +1248,19 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeReassigned) {
 // Test that RED without fmtp does match RED without fmtp.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpMatchNoFmtp) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(101, kRedCodecName, 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(101, kRedCodecName, kDefaultAudioClockRateHz, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
   callee_fake_engine->SetAudioCodecs(callee_fake_codecs);
   auto callee = CreatePeerConnectionWithAudio(std::move(callee_fake_engine));
@@ -1285,15 +1292,19 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpMatchNoFmtp) {
 // Test that RED without fmtp does not match RED with fmtp.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpNoMatchFmtp) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(101, kRedCodecName, 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(101, kRedCodecName, kDefaultAudioClockRateHz, 1));
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
   caller_fake_engine->SetAudioCodecs(caller_fake_codecs);
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
   callee_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1329,8 +1340,10 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeNoFmtpNoMatchFmtp) {
 // Test that RED with fmtp must match base codecs.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeMustMatchBaseCodecs) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(101, kRedCodecName, 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(101, kRedCodecName, kDefaultAudioClockRateHz, 1));
   caller_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "100/100");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1338,9 +1351,12 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeMustMatchBaseCodecs) {
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(122, "bar", 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(122, "bar", kDefaultAudioClockRateHz, 1));
   callee_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "122/122");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1361,9 +1377,12 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadTypeMustMatchBaseCodecs) {
 // which is not supported.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadMixed) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(102, "bar", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(101, kRedCodecName, 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(102, "bar", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(101, kRedCodecName, kDefaultAudioClockRateHz, 1));
   caller_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "100/102");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1371,8 +1390,10 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadMixed) {
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
   callee_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1393,8 +1414,10 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadMixed) {
 // redundancy.
 TEST_P(PeerConnectionMediaTest, RedFmtpPayloadDifferentRedundancy) {
   std::vector<Codec> caller_fake_codecs;
-  caller_fake_codecs.push_back(CreateAudioCodec(100, "foo", 0, 1));
-  caller_fake_codecs.push_back(CreateAudioCodec(101, kRedCodecName, 0, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
+  caller_fake_codecs.push_back(
+      CreateAudioCodec(101, kRedCodecName, kDefaultAudioClockRateHz, 1));
   caller_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "100/100");
   auto caller_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1402,8 +1425,10 @@ TEST_P(PeerConnectionMediaTest, RedFmtpPayloadDifferentRedundancy) {
   auto caller = CreatePeerConnectionWithAudio(std::move(caller_fake_engine));
 
   std::vector<Codec> callee_fake_codecs;
-  callee_fake_codecs.push_back(CreateAudioCodec(120, "foo", 0, 1));
-  callee_fake_codecs.push_back(CreateAudioCodec(121, kRedCodecName, 0, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(120, "foo", kDefaultAudioClockRateHz, 1));
+  callee_fake_codecs.push_back(
+      CreateAudioCodec(121, kRedCodecName, kDefaultAudioClockRateHz, 1));
   callee_fake_codecs.back().SetParam(kCodecParamNotInNameValueFormat,
                                      "120/120/120");
   auto callee_fake_engine = std::make_unique<FakeMediaEngine>();
@@ -1510,10 +1535,11 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
   auto audio_codecs = fake_engine->voice().LegacySendCodecs();
   audio_codecs.push_back(
       CreateAudioRtxCodec(audio_codecs.back().id + 1, audio_codecs.back().id));
-  audio_codecs.push_back(
-      CreateAudioCodec(audio_codecs.back().id + 1, kRedCodecName, 0, 1));
-  audio_codecs.push_back(
-      CreateAudioCodec(audio_codecs.back().id + 1, kUlpfecCodecName, 0, 1));
+  audio_codecs.push_back(CreateAudioCodec(
+      audio_codecs.back().id + 1, kRedCodecName, kDefaultAudioClockRateHz, 1));
+  audio_codecs.push_back(CreateAudioCodec(audio_codecs.back().id + 1,
+                                          kUlpfecCodecName,
+                                          kDefaultAudioClockRateHz, 1));
   fake_engine->SetAudioCodecs(audio_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
@@ -1862,7 +1888,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
   auto fake_engine = std::make_unique<FakeMediaEngine>();
 
   std::vector<Codec> audio_codecs;
-  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
   audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
@@ -1949,7 +1976,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
   auto fake_engine = std::make_unique<FakeMediaEngine>();
 
   std::vector<Codec> audio_codecs;
-  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
   audio_codecs.emplace_back(CreateAudioRtxCodec(101, 100));
   fake_engine->SetAudioCodecs(audio_codecs);
 
@@ -1995,7 +2023,8 @@ TEST_F(PeerConnectionMediaTestUnifiedPlan,
   auto fake_engine = std::make_unique<FakeMediaEngine>();
 
   std::vector<Codec> audio_codecs;
-  audio_codecs.emplace_back(CreateAudioCodec(100, "foo", 0, 1));
+  audio_codecs.emplace_back(
+      CreateAudioCodec(100, "foo", kDefaultAudioClockRateHz, 1));
   fake_engine->SetAudioRecvCodecs(audio_codecs);
 
   auto caller = CreatePeerConnectionWithAudio(std::move(fake_engine));
