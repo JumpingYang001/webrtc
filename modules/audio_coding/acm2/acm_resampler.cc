@@ -39,8 +39,21 @@ int ACMResampler::Resample10Msec(const int16_t* in_audio,
                                SampleRateToDefaultChannelSize(out_freq_hz),
                                num_audio_channels);
   RTC_DCHECK_GE(out_capacity_samples, dst.size());
+  return Resample10Msec(src, in_freq_hz, dst, out_freq_hz);
+}
+
+int ACMResampler::Resample10Msec(InterleavedView<const int16_t> src,
+                                 int in_freq_hz,
+                                 InterleavedView<int16_t> dst,
+                                 int out_freq_hz) {
+  RTC_DCHECK_EQ(src.num_channels(), dst.num_channels());
   if (in_freq_hz == out_freq_hz) {
-    if (out_capacity_samples < src.data().size()) {
+    // TODO(tommi): Could this `if()` be replaced with a stricter check?
+    // RTC_CHECK_EQ(dst.size(), src.size());
+    // Eventually change the method to never return -1 and not have to
+    // expect that at higher level call sites. The Resample() method below
+    // can never return -1
+    if (dst.size() < src.size()) {
       RTC_DCHECK_NOTREACHED();
       return -1;
     }
@@ -50,14 +63,9 @@ int ACMResampler::Resample10Msec(const int16_t* in_audio,
   }
 
   int out_length = resampler_.Resample(src, dst);
-  if (out_length == -1) {
-    RTC_LOG(LS_ERROR) << "Resample(" << in_audio << ", " << src.data().size()
-                      << ", " << out_audio << ", " << out_capacity_samples
-                      << ") failed.";
-    return -1;
-  }
+  RTC_CHECK_GE(out_length, 0);
   RTC_DCHECK_EQ(out_length, dst.size());
-  RTC_DCHECK_EQ(out_length / num_audio_channels, dst.samples_per_channel());
+  RTC_DCHECK_EQ(out_length / dst.num_channels(), dst.samples_per_channel());
   return static_cast<int>(dst.samples_per_channel());
 }
 

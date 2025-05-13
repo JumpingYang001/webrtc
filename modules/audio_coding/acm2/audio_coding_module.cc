@@ -20,6 +20,7 @@
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/audio/audio_view.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/function_view.h"
 #include "modules/audio_coding/acm2/acm_remixing.h"
@@ -122,6 +123,13 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   bool HaveValidEncoder(absl::string_view caller_name) const
       RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
 
+  // Updates or checks `expected_in_ts_` and `expected_codec_ts` based on the
+  // timestamps in `in_frame`. If no audio frame has been received, the fields
+  // are just set. For subsequent frames, the expected timestamps are checked
+  // for consistency.
+  void SetInputTimestamps(const AudioFrame& in_frame)
+      RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
+
   // Preprocessing of input audio, including resampling and down-mixing if
   // required, before pushing audio into encoder's buffer.
   //
@@ -135,6 +143,20 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   //    0: otherwise.
   int PreprocessToAddData(const AudioFrame& in_frame,
                           const AudioFrame** ptr_out)
+      RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
+
+  // Called from `PreprocessToAddData` when no resampling or downmixing is
+  // required. Returns a pointer to an output audio_frame. If timestamps are as
+  // expected the return value will point to `in_frame`, otherwise the data will
+  // have been copied into `preprocess_frame_` and the returned pointer points
+  // to `preprocess_frame_`.
+  const AudioFrame* AddDataNoPreProcess(const AudioFrame& in_frame)
+      RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
+
+  // Resamples `source` into the `preprocess_frame_` buffer.
+  // `sample_rate` refers to the sample rate of `source`.
+  bool ResampleToPreProcessFrame(InterleavedView<const int16_t> source,
+                                 int sample_rate)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
 
   // Change required states after starting to receive the codec corresponding
@@ -410,24 +432,7 @@ int AudioCodingModuleImpl::Add10MsDataInternal(const AudioFrame& audio_frame,
   return 0;
 }
 
-// Perform a resampling and down-mix if required. We down-mix only if
-// encoder is mono and input is stereo. In case of dual-streaming, both
-// encoders has to be mono for down-mix to take place.
-// |*ptr_out| will point to the pre-processed audio-frame. If no pre-processing
-// is required, |*ptr_out| points to `in_frame`.
-// TODO(yujo): Make this more efficient for muted frames.
-int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
-                                               const AudioFrame** ptr_out) {
-  const bool resample =
-      in_frame.sample_rate_hz_ != encoder_stack_->SampleRateHz();
-
-  // This variable is true if primary codec and secondary codec (if exists)
-  // are both mono and input is stereo.
-  // TODO(henrik.lundin): This condition should probably be
-  //   in_frame.num_channels_ > encoder_stack_->NumChannels()
-  const bool down_mix =
-      in_frame.num_channels_ == 2 && encoder_stack_->NumChannels() == 1;
-
+void AudioCodingModuleImpl::SetInputTimestamps(const AudioFrame& in_frame) {
   if (!first_10ms_data_) {
     expected_in_ts_ = in_frame.timestamp_;
     expected_codec_ts_ = in_frame.timestamp_;
@@ -442,68 +447,75 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
             static_cast<double>(in_frame.sample_rate_hz_));
     expected_in_ts_ = in_frame.timestamp_;
   }
+}
+
+// Perform a resampling and down-mix if required. We down-mix only if
+// encoder is mono and input is stereo. In case of dual-streaming, both
+// encoders has to be mono for down-mix to take place.
+// |*ptr_out| will point to the pre-processed audio-frame. If no pre-processing
+// is required, |*ptr_out| points to `in_frame`.
+// TODO(yujo): Make this more efficient for muted frames.
+int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
+                                               const AudioFrame** ptr_out) {
+  SetInputTimestamps(in_frame);
+
+  const bool resample =
+      in_frame.sample_rate_hz_ != encoder_stack_->SampleRateHz();
+
+  // This variable is true if primary codec and secondary codec (if exists)
+  // are both mono and input is stereo.
+  // TODO(henrik.lundin): This condition should probably be
+  //   in_frame.num_channels_ > encoder_stack_->NumChannels()
+  const bool down_mix =
+      in_frame.num_channels_ == 2 && encoder_stack_->NumChannels() == 1;
 
   if (!down_mix && !resample) {
     // No preprocessing is required.
-    if (expected_in_ts_ == expected_codec_ts_) {
-      // If we've never resampled, we can use the input frame as-is
-      *ptr_out = &in_frame;
-    } else {
-      // Otherwise we'll need to alter the timestamp. Since in_frame is const,
-      // we'll have to make a copy of it.
-      preprocess_frame_.CopyFrom(in_frame);
-      preprocess_frame_.timestamp_ = expected_codec_ts_;
-      *ptr_out = &preprocess_frame_;
-    }
-
-    expected_in_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
-    expected_codec_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
+    *ptr_out = AddDataNoPreProcess(in_frame);
     return 0;
   }
 
+  // Some pre-processing will be required, so we'll use the internal buffer.
   *ptr_out = &preprocess_frame_;
-  preprocess_frame_.num_channels_ = in_frame.num_channels_;
+  preprocess_frame_.timestamp_ = expected_codec_ts_;
   preprocess_frame_.samples_per_channel_ = in_frame.samples_per_channel_;
-  std::array<int16_t, AudioFrame::kMaxDataSizeSamples> audio;
-  const int16_t* src_ptr_audio;
-  if (down_mix) {
-    // If a resampling is required, the output of a down-mix is written into a
-    // local buffer, otherwise, it will be written to the output frame.
-    int16_t* dest_ptr_audio =
-        resample ? audio.data() : preprocess_frame_.mutable_data();
-    RTC_DCHECK_GE(audio.size(), preprocess_frame_.samples_per_channel_);
-    RTC_DCHECK_GE(audio.size(), in_frame.samples_per_channel_);
-    DownMixFrame(in_frame,
-                 ArrayView<int16_t>(dest_ptr_audio,
-                                    preprocess_frame_.samples_per_channel_));
-    preprocess_frame_.num_channels_ = 1;
 
-    // Set the input of the resampler to the down-mixed signal.
-    src_ptr_audio = audio.data();
+  // Temporary buffer in case both downmixing and resampling is required.
+  std::array<int16_t, AudioFrame::kMaxDataSizeSamples> audio;
+  // When resampling is needed, this view will represent the buffer to resample.
+  InterleavedView<const int16_t> resample_src_audio;
+
+  if (down_mix) {
+    RTC_DCHECK_GE(audio.size(), in_frame.samples_per_channel());
+    preprocess_frame_.num_channels_ = 1;  // We always downmix to mono.
+    // If a resampling is also required, the output of a down-mix is written
+    // into a local buffer, otherwise, it will be written to the output frame.
+    auto downmixed =
+        resample
+            ? InterleavedView<int16_t>(audio.data(),
+                                       in_frame.samples_per_channel(), 1)
+            : preprocess_frame_.mutable_data(in_frame.samples_per_channel(), 1);
+    DownMixFrame(in_frame, downmixed.AsMono());
+    if (resample) {
+      // Set the input for the resampler to the down-mixed signal.
+      resample_src_audio = downmixed;
+    }
   } else {
-    // Set the input of the resampler to the original data.
-    src_ptr_audio = in_frame.data();
+    preprocess_frame_.num_channels_ = in_frame.num_channels_;
+    if (resample) {
+      // Set the input of the resampler to the original data.
+      resample_src_audio = in_frame.data_view();
+    }
   }
 
-  preprocess_frame_.timestamp_ = expected_codec_ts_;
-  preprocess_frame_.sample_rate_hz_ = in_frame.sample_rate_hz_;
-  // If it is required, we have to do a resampling.
+  RTC_DCHECK(resample_src_audio.empty() || resample);
+  preprocess_frame_.SetSampleRateAndChannelSize(encoder_stack_->SampleRateHz());
+
   if (resample) {
-    // The result of the resampler is written to output frame.
-    int16_t* dest_ptr_audio = preprocess_frame_.mutable_data();
-
-    int samples_per_channel = resampler_.Resample10Msec(
-        src_ptr_audio, in_frame.sample_rate_hz_, encoder_stack_->SampleRateHz(),
-        preprocess_frame_.num_channels_, AudioFrame::kMaxDataSizeSamples,
-        dest_ptr_audio);
-
-    if (samples_per_channel < 0) {
-      RTC_LOG(LS_ERROR) << "Cannot add 10 ms audio, resampling failed";
+    if (!ResampleToPreProcessFrame(resample_src_audio,
+                                   in_frame.sample_rate_hz())) {
       return -1;
     }
-    preprocess_frame_.samples_per_channel_ =
-        static_cast<size_t>(samples_per_channel);
-    preprocess_frame_.sample_rate_hz_ = encoder_stack_->SampleRateHz();
   }
 
   expected_codec_ts_ +=
@@ -511,6 +523,45 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
   expected_in_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
 
   return 0;
+}
+
+const AudioFrame* AudioCodingModuleImpl::AddDataNoPreProcess(
+    const AudioFrame& in_frame) {
+  const AudioFrame* ret = nullptr;
+  // No preprocessing is required.
+  if (expected_in_ts_ == expected_codec_ts_) {
+    // Timestamps as expected, we can use the input frame as-is.
+    ret = &in_frame;
+  } else {
+    // Otherwise we'll need to alter the timestamp. Since in_frame is const,
+    // we'll have to make a copy of it.
+    preprocess_frame_.CopyFrom(in_frame);
+    preprocess_frame_.timestamp_ = expected_codec_ts_;
+    ret = &preprocess_frame_;
+  }
+
+  expected_in_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
+  expected_codec_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
+
+  return ret;
+}
+
+bool AudioCodingModuleImpl::ResampleToPreProcessFrame(
+    InterleavedView<const int16_t> source,
+    int sample_rate) {
+  int samples_per_channel = resampler_.Resample10Msec(
+      source, sample_rate,
+      preprocess_frame_.mutable_data(preprocess_frame_.samples_per_channel(),
+                                     preprocess_frame_.num_channels()),
+      preprocess_frame_.sample_rate_hz());
+
+  // TODO(tommi): Resample10Msec() should never return an error. Remove this
+  // check and change this method to return void.
+  if (samples_per_channel < 0) {
+    RTC_LOG(LS_ERROR) << "Cannot add 10 ms audio, resampling failed";
+  }
+
+  return samples_per_channel >= 0;
 }
 
 /////////////////////////////////////////

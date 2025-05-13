@@ -17,6 +17,7 @@
 #include <string>
 
 #include "api/audio/audio_frame.h"
+#include "api/audio/audio_view.h"
 #include "api/audio_codecs/audio_format.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/environment/environment_factory.h"
@@ -265,10 +266,10 @@ void OpusTest::Run(TestPackStereo* channel,
     }
 
     // If input audio is sampled at 32 kHz, resampling to 48 kHz is required.
-    EXPECT_EQ(480, resampler_.Resample10Msec(
-                       audio_frame.data(), audio_frame.sample_rate_hz_, 48000,
-                       channels, kBufferSizeSamples - written_samples,
-                       &audio[written_samples]));
+    InterleavedView<int16_t> dst(&audio[written_samples], 480, channels);
+    EXPECT_EQ(480, resampler_.Resample10Msec(audio_frame.data_view(),
+                                             audio_frame.sample_rate_hz_, dst,
+                                             48000));
     written_samples += 480 * channels;
 
     // Sometimes we need to loop over the audio vector to produce the right

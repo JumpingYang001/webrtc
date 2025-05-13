@@ -17,6 +17,7 @@
 #include <array>
 
 #include "api/audio/audio_frame.h"
+#include "api/audio/audio_view.h"
 #include "common_audio/resampler/include/push_resampler.h"
 
 namespace webrtc {
@@ -27,13 +28,18 @@ class ACMResampler {
   ACMResampler();
   ~ACMResampler();
 
-  // TODO: b/335805780 - Change to accept InterleavedView<>.
+  // TODO: b/335805780 - Remove and use only the InterleavedView<> version
   int Resample10Msec(const int16_t* in_audio,
                      int in_freq_hz,
                      int out_freq_hz,
                      size_t num_audio_channels,
                      size_t out_capacity_samples,
                      int16_t* out_audio);
+
+  int Resample10Msec(InterleavedView<const int16_t> src,
+                     int src_freq_hz,
+                     InterleavedView<int16_t> dst,
+                     int dst_freq_hz);
 
  private:
   PushResampler<int16_t> resampler_;

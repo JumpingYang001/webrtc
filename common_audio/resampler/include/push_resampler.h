@@ -11,6 +11,7 @@
 #ifndef COMMON_AUDIO_RESAMPLER_INCLUDE_PUSH_RESAMPLER_H_
 #define COMMON_AUDIO_RESAMPLER_INCLUDE_PUSH_RESAMPLER_H_
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -32,10 +33,11 @@ class PushResampler final {
   ~PushResampler();
 
   // Returns the total number of samples provided in destination (e.g. 32 kHz,
-  // 2 channel audio gives 640 samples).
+  // 2 channel audio gives 640 samples) - never a negative value.
   int Resample(InterleavedView<const T> src, InterleavedView<T> dst);
   // For when a deinterleaved/mono channel already exists and we can skip the
-  // deinterleaved operation.
+  // deinterleaved operation. The return value is the number of resampled
+  // samples.
   int Resample(MonoView<const T> src, MonoView<T> dst);
 
  private:
