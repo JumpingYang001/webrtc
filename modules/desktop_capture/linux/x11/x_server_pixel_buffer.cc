@@ -164,6 +164,10 @@ void XServerPixelBuffer::Release() {
 void XServerPixelBuffer::ReleaseSharedMemorySegment() {
   if (!shm_segment_info_)
     return;
+  if (xshm_attached_) {
+    XShmDetach(display_, shm_segment_info_);
+    xshm_attached_ = false;
+  }
   if (shm_segment_info_->shmaddr != nullptr)
     shmdt(shm_segment_info_->shmaddr);
   if (shm_segment_info_->shmid != -1)
@@ -211,7 +215,6 @@ void XServerPixelBuffer::InitShm(const XWindowAttributes& attributes) {
     return;
   }
 
-  bool using_shm = false;
   shm_segment_info_ = new XShmSegmentInfo;
   shm_segment_info_->shmid = -1;
   shm_segment_info_->shmaddr = nullptr;
@@ -230,11 +233,11 @@ void XServerPixelBuffer::InitShm(const XWindowAttributes& attributes) {
         x_shm_image_->data = shm_segment_info_->shmaddr;
 
         XErrorTrap error_trap(display_);
-        using_shm = XShmAttach(display_, shm_segment_info_);
+        xshm_attached_ = XShmAttach(display_, shm_segment_info_);
         XSync(display_, False);
         if (error_trap.GetLastErrorAndDisable() != 0)
-          using_shm = false;
-        if (using_shm) {
+          xshm_attached_ = false;
+        if (xshm_attached_) {
           RTC_LOG(LS_VERBOSE)
               << "Using X shared memory segment " << shm_segment_info_->shmid;
         }
@@ -245,7 +248,7 @@ void XServerPixelBuffer::InitShm(const XWindowAttributes& attributes) {
     }
   }
 
-  if (!using_shm) {
+  if (!xshm_attached_) {
     RTC_LOG(LS_WARNING)
         << "Not using shared memory. Performance may be degraded.";
     ReleaseSharedMemorySegment();
