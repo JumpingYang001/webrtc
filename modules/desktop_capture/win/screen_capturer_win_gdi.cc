@@ -117,6 +117,9 @@ bool ScreenCapturerWinGdi::SelectSource(SourceId id) {
   if (valid) {
     current_screen_id_ = id;
     current_device_key_ = device_key;
+  } else {
+    current_screen_id_ = kFullDesktopScreenId;
+    current_device_key_ = std::nullopt;
   }
   return valid;
 }
