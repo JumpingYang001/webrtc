@@ -80,6 +80,54 @@
 }
 
 - (void)setCorrectVideoOrientation {
+  if (@available(iOS 17, *)) {
+    [self modifyVideoAngle];
+    return;
+  }
+
+  [self modifyVideoOrientation];
+}
+
+#pragma mark - Private
+
+- (void)addOrientationObserver {
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(orientationChanged:)
+             name:UIDeviceOrientationDidChangeNotification
+           object:nil];
+}
+
+- (void)removeOrientationObserver {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIDeviceOrientationDidChangeNotification
+              object:nil];
+}
+
+- (AVCaptureVideoPreviewLayer *)previewLayer {
+  return (AVCaptureVideoPreviewLayer *)self.layer;
+}
+
+- (void)modifyVideoAngle API_AVAILABLE(ios(17.0)) {
+  AVCaptureDeviceInput* captureSessionInput =
+      _captureSession.inputs.firstObject;
+  AVCaptureDevice* camera = captureSessionInput.device;
+  AVCaptureVideoPreviewLayer* previewLayer = [self previewLayer];
+  AVCaptureConnection* videoConnection = previewLayer.connection;
+  AVCaptureDeviceRotationCoordinator* rotationCoordiantor =
+      [[AVCaptureDeviceRotationCoordinator alloc]
+          initWithDevice:camera
+            previewLayer:previewLayer];
+  CGFloat angle =
+      rotationCoordiantor.videoRotationAngleForHorizonLevelCapture;
+  if ([videoConnection isVideoRotationAngleSupported:angle]) {
+    [videoConnection setVideoRotationAngle:angle];
+  }
+}
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)modifyVideoOrientation {
   // Get current device orientation.
   UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
   AVCaptureVideoPreviewLayer *previewLayer = [self previewLayer];
@@ -104,26 +152,6 @@
     // orientation.
   }
 }
-
-#pragma mark - Private
-
-- (void)addOrientationObserver {
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(orientationChanged:)
-             name:UIDeviceOrientationDidChangeNotification
-           object:nil];
-}
-
-- (void)removeOrientationObserver {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIDeviceOrientationDidChangeNotification
-              object:nil];
-}
-
-- (AVCaptureVideoPreviewLayer *)previewLayer {
-  return (AVCaptureVideoPreviewLayer *)self.layer;
-}
+#endif
 
 @end
