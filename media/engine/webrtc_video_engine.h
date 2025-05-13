@@ -25,7 +25,6 @@
 
 #include "absl/functional/any_invocable.h"
 #include "absl/strings/string_view.h"
-#include "api/array_view.h"
 #include "api/crypto/crypto_options.h"
 #include "api/crypto/frame_decryptor_interface.h"
 #include "api/crypto/frame_encryptor_interface.h"
@@ -164,7 +163,6 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
       const VideoOptions& options,
       const CryptoOptions& crypto_options,
       VideoEncoderFactory* encoder_factory,
-      VideoDecoderFactory* decoder_factory,
       VideoBitrateAllocatorFactory* bitrate_allocator_factory);
   ~WebRtcVideoSendChannel() override;
 
@@ -307,15 +305,6 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
   bool ApplyChangedParams(const ChangedSenderParameters& changed_params);
   bool ValidateSendSsrcAvailability(const StreamParams& sp) const
       RTC_EXCLUSIVE_LOCKS_REQUIRED(thread_checker_);
-
-  // Populates `rtx_associated_payload_types`, `raw_payload_types` and
-  // `decoders` based on codec settings provided by `recv_codecs`.
-  // `recv_codecs` must be non-empty and all other parameters must be empty.
-  static void ExtractCodecInformation(
-      ArrayView<const VideoCodecSettings> recv_codecs,
-      std::map<int, int>& rtx_associated_payload_types,
-      std::set<int>& raw_payload_types,
-      std::vector<VideoReceiveStreamInterface::Decoder>& decoders);
 
   // Wrapper for the sender part.
   class WebRtcVideoSendStream {
@@ -505,12 +494,7 @@ class WebRtcVideoSendChannel : public MediaChannelUtil,
       RTC_GUARDED_BY(thread_checker_);
 
   VideoEncoderFactory* const encoder_factory_ RTC_GUARDED_BY(thread_checker_);
-  VideoDecoderFactory* const decoder_factory_ RTC_GUARDED_BY(thread_checker_);
   VideoBitrateAllocatorFactory* const bitrate_allocator_factory_
-      RTC_GUARDED_BY(thread_checker_);
-  std::vector<VideoCodecSettings> recv_codecs_ RTC_GUARDED_BY(thread_checker_);
-  RtpHeaderExtensionMap recv_rtp_extension_map_ RTC_GUARDED_BY(thread_checker_);
-  std::vector<RtpExtension> recv_rtp_extensions_
       RTC_GUARDED_BY(thread_checker_);
   // See reason for keeping track of the FlexFEC payload type separately in
   // comment in WebRtcVideoChannel::ChangedReceiverParameters.

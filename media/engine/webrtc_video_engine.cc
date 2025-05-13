@@ -88,7 +88,6 @@
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
-#include "modules/rtp_rtcp/source/rtp_util.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/dscp.h"
@@ -843,7 +842,7 @@ WebRtcVideoEngine::CreateSendChannel(
     VideoBitrateAllocatorFactory* video_bitrate_allocator_factory) {
   return std::make_unique<WebRtcVideoSendChannel>(
       call, config, options, crypto_options, encoder_factory_.get(),
-      decoder_factory_.get(), video_bitrate_allocator_factory);
+      video_bitrate_allocator_factory);
 }
 std::unique_ptr<VideoMediaReceiveChannelInterface>
 WebRtcVideoEngine::CreateReceiveChannel(Call* call,
@@ -925,7 +924,6 @@ WebRtcVideoSendChannel::WebRtcVideoSendChannel(
     const VideoOptions& options,
     const CryptoOptions& crypto_options,
     VideoEncoderFactory* encoder_factory,
-    VideoDecoderFactory* decoder_factory,
     VideoBitrateAllocatorFactory* bitrate_allocator_factory)
     : MediaChannelUtil(call->network_thread(), config.enable_dscp),
       worker_thread_(call->worker_thread()),
@@ -935,7 +933,6 @@ WebRtcVideoSendChannel::WebRtcVideoSendChannel(
       default_sink_(nullptr),
       video_config_(config.video),
       encoder_factory_(encoder_factory),
-      decoder_factory_(decoder_factory),
       bitrate_allocator_factory_(bitrate_allocator_factory),
       default_send_options_(options),
       last_send_stats_log_ms_(-1),
@@ -946,13 +943,6 @@ WebRtcVideoSendChannel::WebRtcVideoSendChannel(
       crypto_options_(crypto_options) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   rtcp_receiver_report_ssrc_ = kDefaultRtcpReceiverReportSsrc;
-  // Crash if MapCodecs fails.
-  recv_codecs_ = MapCodecs(GetPayloadTypesAndDefaultCodecs(
-                               decoder_factory_, /*is_decoder_factory=*/true,
-                               /*include_rtx=*/true, call_->trials()))
-                     .value();
-  recv_flexfec_payload_type_ =
-      recv_codecs_.empty() ? 0 : recv_codecs_.front().flexfec_payload_type;
 }
 
 WebRtcVideoSendChannel::~WebRtcVideoSendChannel() {
