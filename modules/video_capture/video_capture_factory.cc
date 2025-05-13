@@ -10,6 +10,8 @@
 
 #include "modules/video_capture/video_capture_factory.h"
 
+#include "api/scoped_refptr.h"
+#include "modules/video_capture/video_capture.h"
 #include "modules/video_capture/video_capture_impl.h"
 
 namespace webrtc {
