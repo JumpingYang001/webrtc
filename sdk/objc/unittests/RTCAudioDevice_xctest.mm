@@ -12,6 +12,8 @@
 
 #include <stdlib.h>
 
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "api/task_queue/default_task_queue_factory.h"
 
 #import "sdk/objc/components/audio/RTCAudioSession+Private.h"
@@ -45,8 +47,10 @@
   _testEnabled = true;
 #endif
 
-  _audioDeviceModule = webrtc::CreateAudioDeviceModule();
+  webrtc::Environment env = webrtc::CreateEnvironment();
+  _audioDeviceModule = webrtc::CreateAudioDeviceModule(env);
   _audio_device.reset(new webrtc::ios_adm::AudioDeviceIOS(
+      env,
       /*bypass_voice_processing=*/false,
       /*muted_speech_event_handler=*/nullptr,
       /*render_error_handler=*/nullptr));
@@ -149,6 +153,7 @@
       };
 
   _audio_device.reset(new webrtc::ios_adm::AudioDeviceIOS(
+      webrtc::CreateEnvironment(),
       /*bypass_voice_processing=*/false,
       /*muted_speech_event_handler=*/muted_speech_event_handler,
       /*render_error_handler=*/nullptr));
@@ -169,6 +174,7 @@
           };
 
   _audio_device.reset(new webrtc::ios_adm::AudioDeviceIOS(
+      webrtc::CreateEnvironment(),
       /*bypass_voice_processing=*/false,
       /*muted_speech_event_handler=*/muted_speech_event_handler,
       /*render_error_handler=*/nullptr));

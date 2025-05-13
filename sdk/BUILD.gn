@@ -231,6 +231,10 @@ if (is_ios || is_mac) {
       rtc_library("native_api_audio_device_module") {
         visibility = [ "*" ]
 
+        # TODO: bugs.webrtc.org/413413572 - Remove the poison when users of this
+        # api provide Environment explicitly.
+        allow_poison = [ "environment_construction" ]
+
         sources = [
           "objc/native/api/audio_device_module.h",
           "objc/native/api/audio_device_module.mm",
@@ -240,7 +244,10 @@ if (is_ios || is_mac) {
           ":audio_device",
           ":audio_device_module_error_handler",
           "../api:make_ref_counted",
+          "../api:scoped_refptr",
           "../api/audio:audio_device",
+          "../api/environment",
+          "../api/environment:environment_factory",
           "../modules/audio_device:audio_device_generic",
           "../rtc_base:checks",
           "../rtc_base:logging",
@@ -306,8 +313,8 @@ if (is_ios || is_mac) {
           "../api:scoped_refptr",
           "../api:sequence_checker",
           "../api/audio:audio_device",
+          "../api/environment",
           "../api/task_queue",
-          "../api/task_queue:default_task_queue_factory",
           "../api/task_queue:pending_task_safety_flag",
           "../modules/audio_device:audio_device_buffer",
           "../modules/audio_device:audio_device_config",
@@ -485,7 +492,6 @@ if (is_ios || is_mac) {
 
     rtc_library("audio_device_objc") {
       visibility = [ "*" ]
-      allow_poison = [ "environment_construction" ]
       sources = [
         "objc/native/src/objc_audio_device.h",
         "objc/native/src/objc_audio_device.mm",
@@ -501,8 +507,8 @@ if (is_ios || is_mac) {
         "../api:scoped_refptr",
         "../api:sequence_checker",
         "../api/audio:audio_device",
+        "../api/environment",
         "../api/task_queue",
-        "../api/task_queue:default_task_queue_factory",
         "../modules/audio_device:audio_device_buffer",
         "../rtc_base:buffer",
         "../rtc_base:checks",
@@ -528,7 +534,6 @@ if (is_ios || is_mac) {
 
     rtc_library("objc_audio_device_module") {
       visibility = [ "*" ]
-      allow_poison = [ "environment_construction" ]
       sources = [
         "objc/native/api/objc_audio_device_module.h",
         "objc/native/api/objc_audio_device_module.mm",
@@ -538,7 +543,9 @@ if (is_ios || is_mac) {
         ":audio_device_api_objc",
         ":audio_device_objc",
         "../api:make_ref_counted",
+        "../api:scoped_refptr",
         "../api/audio:audio_device",
+        "../api/environment",
         "../rtc_base:logging",
       ]
       if (is_mac) {
@@ -1209,6 +1216,7 @@ if (is_ios || is_mac) {
             "../api/audio:audio_processing",
             "../api/audio_codecs:builtin_audio_decoder_factory",
             "../api/audio_codecs:builtin_audio_encoder_factory",
+            "../api/environment",
             "../api/environment:environment_factory",
             "../api/task_queue:default_task_queue_factory",
             "../api/video:video_frame",

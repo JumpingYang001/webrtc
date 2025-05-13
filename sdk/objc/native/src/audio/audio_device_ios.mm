@@ -17,6 +17,7 @@
 #include <cmath>
 
 #include "api/array_view.h"
+#include "api/environment/environment.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "helpers.h"
 #include "modules/audio_device/fine_audio_buffer.h"
@@ -25,7 +26,6 @@
 #include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/field_trial.h"
 #include "system_wrappers/include/metrics.h"
 
 #import "base/RTCLogging.h"
@@ -96,10 +96,12 @@ static void LogDeviceInfo() {
 #endif  // !defined(NDEBUG)
 
 AudioDeviceIOS::AudioDeviceIOS(
+    const Environment& env,
     bool bypass_voice_processing,
     AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
     AudioDeviceIOSRenderErrorHandler render_error_handler)
-    : bypass_voice_processing_(bypass_voice_processing),
+    : env_(env),
+      bypass_voice_processing_(bypass_voice_processing),
       muted_speech_event_handler_(muted_speech_event_handler),
       render_error_handler_(render_error_handler),
       disregard_next_render_error_(false),
@@ -579,7 +581,7 @@ void AudioDeviceIOS::HandleInterruptionEnd() {
          is_interrupted_);
   is_interrupted_ = false;
   if (!audio_unit_) return;
-  if (webrtc::field_trial::IsEnabled("WebRTC-Audio-iOS-Holding")) {
+  if (env_.field_trials().IsEnabled("WebRTC-Audio-iOS-Holding")) {
     // Work around an issue where audio does not restart properly after an
     // interruption by restarting the audio unit when the interruption ends.
     if (audio_unit_->GetState() == VoiceProcessingAudioUnit::kStarted) {

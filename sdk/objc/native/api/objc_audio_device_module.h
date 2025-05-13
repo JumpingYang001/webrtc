@@ -12,11 +12,14 @@
 #define SDK_OBJC_NATIVE_API_OBJC_AUDIO_DEVICE_MODULE_H_
 
 #include "api/audio/audio_device.h"
+#include "api/environment/environment.h"
+#include "api/scoped_refptr.h"
 #import "components/audio/RTCAudioDevice.h"
 
 namespace webrtc {
 
-webrtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+    const Environment& env,
     id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device);
 
 }  // namespace webrtc

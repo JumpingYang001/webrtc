@@ -102,7 +102,7 @@ AudioDeviceModuleImpl::Create(const Environment& env, AudioLayer audio_layer) {
   }
 
   // Create the platform-dependent implementation.
-  if (audio_device->CreatePlatformSpecificObjects() == -1) {
+  if (audio_device->CreatePlatformSpecificObjects(env) == -1) {
     return nullptr;
   }
 
@@ -166,7 +166,8 @@ int32_t AudioDeviceModuleImpl::CheckPlatform() {
   return 0;
 }
 
-int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects() {
+int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects(
+    [[maybe_unused]] const Environment& env) {
   RTC_LOG(LS_INFO) << __FUNCTION__;
   if (audio_device_ != nullptr) {
     RTC_LOG(LS_INFO) << "Reusing provided audio device";
@@ -241,10 +242,11 @@ int32_t AudioDeviceModuleImpl::CreatePlatformSpecificObjects() {
 // iOS ADM implementation.
 #if defined(WEBRTC_IOS)
   if (audio_layer == kPlatformDefaultAudio) {
-    audio_device_.reset(new ios_adm::AudioDeviceIOS(
+    audio_device_ = std::make_unique<ios_adm::AudioDeviceIOS>(
+        env,
         /*bypass_voice_processing=*/false,
         /*muted_speech_event_handler=*/nullptr,
-        /*render_error_handler=*/nullptr));
+        /*render_error_handler=*/nullptr);
     RTC_LOG(LS_INFO) << "iPhone Audio APIs will be utilized.";
   }
 // END #if defined(WEBRTC_IOS)

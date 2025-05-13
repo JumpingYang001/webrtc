@@ -16,6 +16,7 @@
 #import "components/audio/RTCAudioDevice.h"
 
 #include "api/audio/audio_device.h"
+#include "api/environment/environment.h"
 #include "modules/audio_device/audio_device_buffer.h"
 #include "rtc_base/thread.h"
 
@@ -30,7 +31,7 @@ namespace objc_adm {
 class ObjCAudioDeviceModule : public AudioDeviceModule {
  public:
   explicit ObjCAudioDeviceModule(
-      id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device);
+      const Environment& env, id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device);
   ~ObjCAudioDeviceModule() override;
 
   // Retrieve the currently utilized audio layer
@@ -219,7 +220,7 @@ class ObjCAudioDeviceModule : public AudioDeviceModule {
  private:
   id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device_;
 
-  const std::unique_ptr<TaskQueueFactory> task_queue_factory_;
+  const Environment env_;
 
   // AudioDeviceBuffer is a buffer to consume audio recorded by `RTCAudioDevice`
   // and provide audio to be played via `RTCAudioDevice`.

@@ -453,7 +453,7 @@ scoped_refptr<AudioDeviceModule> TestAudioDeviceModule::Create(
   }
 
   // Create the platform-dependent implementation.
-  if (audio_device->CreatePlatformSpecificObjects() == -1) {
+  if (audio_device->CreatePlatformSpecificObjects(env) == -1) {
     return nullptr;
   }
 

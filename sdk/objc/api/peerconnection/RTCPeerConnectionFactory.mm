@@ -62,14 +62,6 @@
 
 @synthesize nativeFactory = _nativeFactory;
 
-- (webrtc::scoped_refptr<webrtc::AudioDeviceModule>)audioDeviceModule {
-#if defined(WEBRTC_IOS)
-  return webrtc::CreateAudioDeviceModule();
-#else
-  return nullptr;
-#endif
-}
-
 - (instancetype)init {
   webrtc::PeerConnectionFactoryDependencies dependencies;
   dependencies.audio_encoder_factory =
@@ -80,7 +72,10 @@
       [[RTC_OBJC_TYPE(RTCVideoEncoderFactoryH264) alloc] init]);
   dependencies.video_decoder_factory = webrtc::ObjCToNativeVideoDecoderFactory(
       [[RTC_OBJC_TYPE(RTCVideoDecoderFactoryH264) alloc] init]);
-  dependencies.adm = [self audioDeviceModule];
+  dependencies.env = webrtc::CreateEnvironment();
+#ifdef WEBRTC_IOS
+  dependencies.adm = webrtc::CreateAudioDeviceModule(*dependencies.env);
+#endif
   return [self initWithMediaAndDependencies:dependencies];
 }
 
@@ -105,6 +100,7 @@
   return [self initWithNoMedia];
 #else
   webrtc::PeerConnectionFactoryDependencies dependencies;
+  dependencies.env = webrtc::CreateEnvironment();
   dependencies.audio_encoder_factory =
       webrtc::CreateBuiltinAudioEncoderFactory();
   dependencies.audio_decoder_factory =
@@ -118,9 +114,12 @@
         webrtc::ObjCToNativeVideoDecoderFactory(decoderFactory);
   }
   if (audioDevice) {
-    dependencies.adm = webrtc::CreateAudioDeviceModule(audioDevice);
+    dependencies.adm =
+        webrtc::CreateAudioDeviceModule(*dependencies.env, audioDevice);
+#ifdef WEBRTC_IOS
   } else {
-    dependencies.adm = [self audioDeviceModule];
+    dependencies.adm = webrtc::CreateAudioDeviceModule(*dependencies.env);
+#endif
   }
   return [self initWithMediaAndDependencies:dependencies];
 #endif

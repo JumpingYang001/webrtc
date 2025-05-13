@@ -14,6 +14,7 @@
 #include <atomic>
 #include <memory>
 
+#include "api/environment/environment.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
@@ -56,6 +57,7 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
                        public VoiceProcessingAudioUnitObserver {
  public:
   explicit AudioDeviceIOS(
+      const Environment& env,
       bool bypass_voice_processing,
       AudioDeviceModule::MutedSpeechEventHandler muted_speech_event_handler,
       AudioDeviceIOSRenderErrorHandler render_error_handler);
@@ -219,6 +221,8 @@ class AudioDeviceIOS : public AudioDeviceGeneric,
 
   // Resets thread-checkers before a call is restarted.
   void PrepareForNewStart();
+
+  const Environment env_;
 
   // Determines whether voice processing should be enabled or disabled.
   const bool bypass_voice_processing_;

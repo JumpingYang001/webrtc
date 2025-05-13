@@ -14,7 +14,6 @@
 #include <memory>
 
 #include "api/audio/audio_device.h"
-#include "api/task_queue/task_queue_factory.h"
 #include "audio_device_ios.h"
 #include "modules/audio_device/audio_device_buffer.h"
 #include "rtc_base/checks.h"
@@ -31,6 +30,7 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
   int32_t AttachAudioBuffer();
 
   explicit AudioDeviceModuleIOS(
+      const Environment& env,
       bool bypass_voice_processing,
       MutedSpeechEventHandler muted_speech_event_handler,
       ADMErrorHandler error_handler);
@@ -137,11 +137,12 @@ class AudioDeviceModuleIOS : public AudioDeviceModule {
 #endif  // WEBRTC_IOS
  private:
   void ReportError(ADMError error) const;
+
+  const Environment env_;
   const bool bypass_voice_processing_;
   MutedSpeechEventHandler muted_speech_event_handler_;
   ADMErrorHandler error_handler_;
   bool initialized_ = false;
-  const std::unique_ptr<TaskQueueFactory> task_queue_factory_;
   std::unique_ptr<AudioDeviceIOS> audio_device_;
   std::unique_ptr<AudioDeviceBuffer> audio_device_buffer_;
 };

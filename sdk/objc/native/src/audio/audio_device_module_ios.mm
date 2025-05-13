@@ -10,7 +10,9 @@
 
 #include "audio_device_module_ios.h"
 
-#include "api/task_queue/default_task_queue_factory.h"
+#include <memory>
+
+#include "api/environment/environment.h"
 #include "modules/audio_device/audio_device_config.h"
 #include "modules/audio_device/audio_device_generic.h"
 #include "rtc_base/checks.h"
@@ -42,13 +44,14 @@ namespace webrtc {
 namespace ios_adm {
 
 AudioDeviceModuleIOS::AudioDeviceModuleIOS(
+    const Environment& env,
     bool bypass_voice_processing,
     MutedSpeechEventHandler muted_speech_event_handler,
     ADMErrorHandler error_handler)
-    : bypass_voice_processing_(bypass_voice_processing),
+    : env_(env),
+      bypass_voice_processing_(bypass_voice_processing),
       muted_speech_event_handler_(muted_speech_event_handler),
-      error_handler_(error_handler),
-      task_queue_factory_(CreateDefaultTaskQueueFactory()) {
+      error_handler_(error_handler) {
   RTC_LOG(LS_INFO) << "current platform is IOS";
   RTC_LOG(LS_INFO) << "iPhone Audio APIs will be utilized.";
 }
@@ -87,10 +90,13 @@ int32_t AudioDeviceModuleIOS::Init() {
   AudioDeviceIOSRenderErrorHandler error_handler = ^(OSStatus error) {
     ReportError(kRecordingDeviceFailed);
   };
-  audio_device_buffer_.reset(
-      new webrtc::AudioDeviceBuffer(task_queue_factory_.get()));
-  audio_device_.reset(new ios_adm::AudioDeviceIOS(
-      bypass_voice_processing_, muted_speech_event_handler_, error_handler));
+  audio_device_buffer_ =
+      std::make_unique<AudioDeviceBuffer>(&env_.task_queue_factory());
+  audio_device_ =
+      std::make_unique<ios_adm::AudioDeviceIOS>(env_,
+                                                bypass_voice_processing_,
+                                                muted_speech_event_handler_,
+                                                error_handler);
   RTC_CHECK(audio_device_);
 
   this->AttachAudioBuffer();

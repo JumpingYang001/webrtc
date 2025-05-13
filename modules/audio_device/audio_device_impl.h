@@ -61,7 +61,7 @@ class AudioDeviceModuleImpl : public AudioDeviceModuleForTest {
   ~AudioDeviceModuleImpl() override;
 
   int32_t CheckPlatform();
-  int32_t CreatePlatformSpecificObjects();
+  int32_t CreatePlatformSpecificObjects(const Environment& env);
   int32_t AttachAudioBuffer();
 
   // Retrieve the currently utilized audio layer

@@ -9,12 +9,12 @@
  */
 
 #include "objc_audio_device.h"
-#include "objc_audio_device_delegate.h"
+
+#include <memory>
 
 #import "components/audio/RTCAudioDevice.h"
 #include "modules/audio_device/fine_audio_buffer.h"
-
-#include "api/task_queue/default_task_queue_factory.h"
+#include "objc_audio_device_delegate.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_minmax.h"
 #include "rtc_base/time_utils.h"
@@ -49,9 +49,8 @@ namespace webrtc {
 namespace objc_adm {
 
 ObjCAudioDeviceModule::ObjCAudioDeviceModule(
-    id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device)
-    : audio_device_(audio_device),
-      task_queue_factory_(CreateDefaultTaskQueueFactory()) {
+    const Environment& env, id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device)
+    : audio_device_(audio_device), env_(env) {
   RTC_DLOG_F(LS_VERBOSE) << "";
   RTC_DCHECK(audio_device_);
   thread_checker_.Detach();
@@ -82,8 +81,8 @@ int32_t ObjCAudioDeviceModule::Init() {
   io_record_thread_checker_.Detach();
 
   thread_ = Thread::Current();
-  audio_device_buffer_.reset(
-      new webrtc::AudioDeviceBuffer(task_queue_factory_.get()));
+  audio_device_buffer_ =
+      std::make_unique<webrtc::AudioDeviceBuffer>(&env_.task_queue_factory());
 
   if (![audio_device_ isInitialized]) {
     if (audio_device_delegate_ == nil) {
