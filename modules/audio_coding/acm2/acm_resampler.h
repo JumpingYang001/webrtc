@@ -36,10 +36,10 @@ class ACMResampler {
                      size_t out_capacity_samples,
                      int16_t* out_audio);
 
-  int Resample10Msec(InterleavedView<const int16_t> src,
-                     int src_freq_hz,
-                     InterleavedView<int16_t> dst,
-                     int dst_freq_hz);
+  void Resample10Msec(InterleavedView<const int16_t> src,
+                      int src_freq_hz,
+                      InterleavedView<int16_t> dst,
+                      int dst_freq_hz);
 
  private:
   PushResampler<int16_t> resampler_;

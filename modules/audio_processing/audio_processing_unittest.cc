@@ -13,41 +13,54 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <iostream>
 #include <limits>
+#include <map>
 #include <memory>
 #include <numeric>
+#include <ostream>
 #include <queue>
 #include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "absl/flags/flag.h"
 #include "absl/strings/string_view.h"
+#include "api/array_view.h"
+#include "api/audio/audio_processing_statistics.h"
+#include "api/audio/audio_view.h"
 #include "api/audio/builtin_audio_processing_builder.h"
+#include "api/audio/echo_control.h"
 #include "api/audio/echo_detector_creator.h"
+#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
 #include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+#include "common_audio/channel_buffer.h"
 #include "common_audio/include/audio_util.h"
 #include "common_audio/resampler/include/push_resampler.h"
 #include "common_audio/resampler/push_sinc_resampler.h"
-#include "common_audio/signal_processing/include/signal_processing_library.h"
 #include "modules/audio_processing/aec_dump/aec_dump_factory.h"
-#include "modules/audio_processing/audio_processing_impl.h"
 #include "modules/audio_processing/include/mock_audio_processing.h"
 #include "modules/audio_processing/test/protobuf_utils.h"
 #include "modules/audio_processing/test/test_utils.h"
 #include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/fake_clock.h"
-#include "rtc_base/gtest_prod_util.h"
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/numerics/safe_minmax.h"
 #include "rtc_base/protobuf_utils.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/swap_queue.h"
-#include "rtc_base/system/arch.h"
+#include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/task_queue_for_test.h"
-#include "rtc_base/thread.h"
 #include "system_wrappers/include/cpu_features_wrapper.h"
+#include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 
@@ -1669,7 +1682,6 @@ TEST_F(ApmTest, DebugDumpFromFileHandle) {
 // of enabled components.
 
 TEST_F(ApmTest, Process) {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
   audioproc::OutputData ref_data;
 
   if (!absl::GetFlag(FLAGS_write_apm_ref_data)) {
@@ -2166,8 +2178,7 @@ TEST_P(AudioProcessingTest, Formats) {
                                            out_num);
           InterleavedView<float> dst(cmp_data.get(), ref_samples_per_channel,
                                      out_num);
-          ASSERT_EQ(ref_length,
-                    static_cast<size_t>(resampler.Resample(src, dst)));
+          resampler.Resample(src, dst);
           out_ptr = cmp_data.get();
         }
 

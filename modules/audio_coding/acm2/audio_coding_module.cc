@@ -153,12 +153,6 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   const AudioFrame* AddDataNoPreProcess(const AudioFrame& in_frame)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
 
-  // Resamples `source` into the `preprocess_frame_` buffer.
-  // `sample_rate` refers to the sample rate of `source`.
-  bool ResampleToPreProcessFrame(InterleavedView<const int16_t> source,
-                                 int sample_rate)
-      RTC_EXCLUSIVE_LOCKS_REQUIRED(acm_mutex_);
-
   // Change required states after starting to receive the codec corresponding
   // to `index`.
   int UpdateUponReceivingCodec(int index);
@@ -512,10 +506,11 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
   preprocess_frame_.SetSampleRateAndChannelSize(encoder_stack_->SampleRateHz());
 
   if (resample) {
-    if (!ResampleToPreProcessFrame(resample_src_audio,
-                                   in_frame.sample_rate_hz())) {
-      return -1;
-    }
+    resampler_.Resample10Msec(
+        resample_src_audio, in_frame.sample_rate_hz(),
+        preprocess_frame_.mutable_data(preprocess_frame_.samples_per_channel(),
+                                       preprocess_frame_.num_channels()),
+        preprocess_frame_.sample_rate_hz());
   }
 
   expected_codec_ts_ +=
@@ -544,24 +539,6 @@ const AudioFrame* AudioCodingModuleImpl::AddDataNoPreProcess(
   expected_codec_ts_ += static_cast<uint32_t>(in_frame.samples_per_channel_);
 
   return ret;
-}
-
-bool AudioCodingModuleImpl::ResampleToPreProcessFrame(
-    InterleavedView<const int16_t> source,
-    int sample_rate) {
-  int samples_per_channel = resampler_.Resample10Msec(
-      source, sample_rate,
-      preprocess_frame_.mutable_data(preprocess_frame_.samples_per_channel(),
-                                     preprocess_frame_.num_channels()),
-      preprocess_frame_.sample_rate_hz());
-
-  // TODO(tommi): Resample10Msec() should never return an error. Remove this
-  // check and change this method to return void.
-  if (samples_per_channel < 0) {
-    RTC_LOG(LS_ERROR) << "Cannot add 10 ms audio, resampling failed";
-  }
-
-  return samples_per_channel >= 0;
 }
 
 /////////////////////////////////////////

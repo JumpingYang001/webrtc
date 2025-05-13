@@ -341,6 +341,7 @@ if (rtc_include_tests) {
         "../../api/audio:aec3_factory",
         "../../api/audio:audio_frame_api",
         "../../api/audio:audio_processing",
+        "../../api/audio:audio_processing_statistics",
         "../../api/audio:builtin_audio_processing_builder",
         "../../api/audio:echo_detector_creator",
         "../../api/environment",
