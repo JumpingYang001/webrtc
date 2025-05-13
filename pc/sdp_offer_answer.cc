@@ -5338,6 +5338,7 @@ bool SdpOfferAnswerHandler::ReadyToUseRemoteCandidate(
     const std::string host = candidate->candidate().address().HostAsURIString();
     const std::vector<absl::string_view> restricted_address_list =
         absl::StrSplit(restricted_addresses, '|');
+    bool allowed = true;
     for (const absl::string_view restricted_address : restricted_address_list) {
       const std::pair<absl::string_view, absl::string_view> address =
           absl::StrSplit(restricted_address, ':');
@@ -5358,11 +5359,14 @@ bool SdpOfferAnswerHandler::ReadyToUseRemoteCandidate(
         RTC_HISTOGRAM_ENUMERATION_SPARSE(
             "WebRTC.PeerConnection.RestrictedCandidates.Port",
             candidate->candidate().address().port(), 65536);
-        return false;
+        allowed = false;
+        break;
       }
     }
+    RTC_HISTOGRAM_BOOLEAN(
+        "WebRTC.PeerConnection.RestrictedCandidates.MungeAllowed", allowed);
+    return allowed;
   }
-
   return true;
 }
 
