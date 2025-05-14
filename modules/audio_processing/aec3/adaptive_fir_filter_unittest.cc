@@ -513,8 +513,8 @@ TEST_P(AdaptiveFirFilterMultiChannel, FilterAndAdapt) {
   std::array<float, kFftLengthBy2Plus1> E2_coarse;
   // [B,A] = butter(2,100/8000,'high')
   constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-      kHighPassFilterCoefficients = {CascadedBiQuadFilter::BiQuadCoefficients{
-          {0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}};
+      kHighPassFilterCoefficients = {
+          {{{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}}};
   for (auto& Y2_ch : Y2) {
     Y2_ch.fill(0.f);
   }

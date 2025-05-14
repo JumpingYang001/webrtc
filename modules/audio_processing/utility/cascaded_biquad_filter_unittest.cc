@@ -25,22 +25,18 @@ namespace {
 // Coefficients for a second order Butterworth high-pass filter with cutoff
 // frequency 100 Hz.
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kHighPassFilterCoefficients = {CascadedBiQuadFilter::BiQuadCoefficients{
-        {0.97261f, -1.94523f, 0.97261f},
-        {-1.94448f, 0.94598f}}};
+    kHighPassFilterCoefficients = {
+        {{{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}}};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kTransparentCoefficients = {
-        CascadedBiQuadFilter::BiQuadCoefficients{{1.f, 0.f, 0.f}, {0.f, 0.f}}};
+    kTransparentCoefficients = {{{{1.f, 0.f, 0.f}, {0.f, 0.f}}}};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kBlockingCoefficients = {
-        CascadedBiQuadFilter::BiQuadCoefficients{{0.f, 0.f, 0.f}, {0.f, 0.f}}};
+    kBlockingCoefficients = {{{{0.f, 0.f, 0.f}, {0.f, 0.f}}}};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 2>
     kCascadedCoefficients = {
-        CascadedBiQuadFilter::BiQuadCoefficients{{-1.f, 0.f, 0.f}, {0.f, 0.f}},
-        CascadedBiQuadFilter::BiQuadCoefficients{{0.f, 0.f, -1.f}, {0.f, 0.f}}};
+        {{{-1.f, 0.f, 0.f}, {0.f, 0.f}}, {{0.f, 0.f, -1.f}, {0.f, 0.f}}}};
 
 std::vector<float> CreateInputWithIncreasingValues(size_t vector_length) {
   std::vector<float> v(vector_length);
