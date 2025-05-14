@@ -693,9 +693,4 @@ bool SendSideBandwidthEstimation::LossBasedBandwidthEstimatorV2ReadyForUse()
   return loss_based_bandwidth_estimator_v2_->IsReady();
 }
 
-bool SendSideBandwidthEstimation::PaceAtLossBasedEstimate() const {
-  return LossBasedBandwidthEstimatorV2ReadyForUse() &&
-         loss_based_bandwidth_estimator_v2_->PaceAtLossBasedEstimate();
-}
-
 }  // namespace webrtc

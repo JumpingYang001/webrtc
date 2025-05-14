@@ -469,8 +469,6 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
   FieldTrialParameter<TimeDelta> padding_duration("PaddingDuration",
                                                   TimeDelta::Zero());
   FieldTrialParameter<bool> bound_best_candidate("BoundBestCandidate", false);
-  FieldTrialParameter<bool> pace_at_loss_based_estimate(
-      "PaceAtLossBasedEstimate", false);
   FieldTrialParameter<double> median_sending_rate_factor(
       "MedianSendingRateFactor", 2.0);
   if (key_value_config) {
@@ -513,7 +511,6 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
                      &use_byte_loss_rate,
                      &padding_duration,
                      &bound_best_candidate,
-                     &pace_at_loss_based_estimate,
                      &median_sending_rate_factor},
                     key_value_config->Lookup("WebRTC-Bwe-LossBasedBweV2"));
   }
@@ -579,7 +576,6 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
   config.use_byte_loss_rate = use_byte_loss_rate.Get();
   config.padding_duration = padding_duration.Get();
   config.bound_best_candidate = bound_best_candidate.Get();
-  config.pace_at_loss_based_estimate = pace_at_loss_based_estimate.Get();
   config.median_sending_rate_factor = median_sending_rate_factor.Get();
   return config;
 }
@@ -1214,11 +1210,6 @@ bool LossBasedBweV2::CanKeepIncreasingState(DataRate estimate) const {
   return last_padding_info_.padding_timestamp + config_->padding_duration >=
              last_send_time_most_recent_observation_ ||
          last_padding_info_.padding_rate < estimate;
-}
-
-bool LossBasedBweV2::PaceAtLossBasedEstimate() const {
-  return config_->pace_at_loss_based_estimate &&
-         loss_based_result_.state != LossBasedState::kDelayBasedEstimate;
 }
 
 DataRate LossBasedBweV2::GetMedianSendingRate() const {
