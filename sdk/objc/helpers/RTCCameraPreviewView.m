@@ -82,10 +82,12 @@
 - (void)setCorrectVideoOrientation {
   if (@available(iOS 17, *)) {
     [self modifyVideoAngle];
-    return;
   }
-
-  [self modifyVideoOrientation];
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+  else {
+    [self modifyVideoOrientation];
+  }
+#endif
 }
 
 #pragma mark - Private
