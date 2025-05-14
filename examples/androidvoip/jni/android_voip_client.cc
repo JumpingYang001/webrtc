@@ -23,7 +23,7 @@
 #include "api/audio/builtin_audio_processing_builder.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
-#include "api/task_queue/default_task_queue_factory.h"
+#include "api/environment/environment_factory.h"
 #include "api/units/time_delta.h"
 #include "api/voip/voip_base.h"
 #include "api/voip/voip_codec.h"
@@ -127,9 +127,9 @@ void AndroidVoipClient::Init(
   webrtc::VoipEngineConfig config;
   config.encoder_factory = webrtc::CreateBuiltinAudioEncoderFactory();
   config.decoder_factory = webrtc::CreateBuiltinAudioDecoderFactory();
-  config.task_queue_factory = webrtc::CreateDefaultTaskQueueFactory();
-  config.audio_device_module =
-      webrtc::CreateJavaAudioDeviceModule(env, application_context.obj());
+  config.env = webrtc::CreateEnvironment();
+  config.audio_device_module = webrtc::CreateJavaAudioDeviceModule(
+      env, *config.env, application_context.obj());
   config.audio_processing_builder =
       std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
 

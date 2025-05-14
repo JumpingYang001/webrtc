@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "api/enable_media_with_defaults.h"
+#include "api/environment/environment_factory.h"
 #include "api/peer_connection_interface.h"
 #include "api/rtc_event_log/rtc_event_log_factory.h"
 #include "api/scoped_refptr.h"
@@ -53,8 +54,10 @@ webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> CreateTestPCF(
   pcf_deps.worker_thread = worker_thread;
   pcf_deps.signaling_thread = signaling_thread;
   pcf_deps.event_log_factory = std::make_unique<RtcEventLogFactory>();
+  pcf_deps.env = CreateEnvironment();
 
-  pcf_deps.adm = CreateJavaAudioDeviceModule(jni, GetAppContext(jni).obj());
+  pcf_deps.adm =
+      CreateJavaAudioDeviceModule(jni, *pcf_deps.env, GetAppContext(jni).obj());
   pcf_deps.video_encoder_factory =
       std::make_unique<webrtc::InternalEncoderFactory>();
   pcf_deps.video_decoder_factory =

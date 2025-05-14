@@ -14,32 +14,49 @@
 #include <jni.h>
 
 #include "api/audio/audio_device.h"
+#include "api/environment/environment.h"
+#include "api/scoped_refptr.h"
 
 namespace webrtc {
 
+scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
+    JNIEnv* env,
+    const Environment& webrtc_env,
+    jobject application_context);
+
+scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
+    const Environment& webrtc_env,
+    AudioDeviceModule::AudioLayer audio_layer);
+
 #if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
-webrtc::scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
     JNIEnv* env,
     jobject application_context);
 #endif
 
-webrtc::scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
     JNIEnv* env,
     jobject application_context);
 
-webrtc::scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
     JNIEnv* env,
     jobject application_context);
 
-webrtc::scoped_refptr<AudioDeviceModule>
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule>
 CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
                                                   jobject application_context);
 
-webrtc::scoped_refptr<AudioDeviceModule>
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule>
 CreateJavaInputAndAAudioOutputAudioDeviceModule(JNIEnv* env,
                                                 jobject application_context);
 
-webrtc::scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
+[[deprecated("bugs.webrtc.org/413413572")]]
+scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
     AudioDeviceModule::AudioLayer audio_layer);
 
 }  // namespace webrtc

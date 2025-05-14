@@ -327,8 +327,6 @@ rtc_library("audio_device_impl") {
       "include/audio_device_data_observer.h",
     ]
     if (is_android) {
-      deps += [ "../../sdk/android:native_api_audio_device_module" ]
-
       if (build_with_mozilla) {
         include_dirs += [
           "/config/external/nspr",

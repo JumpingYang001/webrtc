@@ -33,10 +33,6 @@
 #if defined(WEBRTC_WINDOWS_CORE_AUDIO_BUILD)
 #include "modules/audio_device/win/audio_device_core_win.h"
 #endif
-#elif defined(WEBRTC_ANDROID)
-#include <stdlib.h>
-
-#include "sdk/android/native_api/audio_device_module/audio_device_android.h"
 #elif defined(WEBRTC_LINUX)
 #if defined(WEBRTC_ENABLE_LINUX_ALSA)
 #include "modules/audio_device/linux/audio_device_alsa_linux.h"

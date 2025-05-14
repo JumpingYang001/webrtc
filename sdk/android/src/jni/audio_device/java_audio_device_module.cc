@@ -10,6 +10,8 @@
 
 #include <memory>
 
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
 #include "sdk/android/generated_java_audio_jni/JavaAudioDeviceModule_jni.h"
 #include "sdk/android/src/jni/audio_device/audio_record_jni.h"
 #include "sdk/android/src/jni/audio_device/audio_track_jni.h"
@@ -29,6 +31,7 @@ static jlong JNI_JavaAudioDeviceModule_CreateAudioDeviceModule(
     int output_sample_rate,
     jboolean j_use_stereo_input,
     jboolean j_use_stereo_output) {
+  const Environment webrtc_env = CreateEnvironment();
   AudioParameters input_parameters;
   AudioParameters output_parameters;
   GetAudioParameters(env, j_context, j_audio_manager, input_sample_rate,
@@ -40,12 +43,12 @@ static jlong JNI_JavaAudioDeviceModule_CreateAudioDeviceModule(
       j_webrtc_audio_record);
   auto audio_output = std::make_unique<AudioTrackJni>(env, output_parameters,
                                                       j_webrtc_audio_track);
-  return jlongFromPointer(CreateAudioDeviceModuleFromInputAndOutput(
-                              AudioDeviceModule::kAndroidJavaAudio,
-                              j_use_stereo_input, j_use_stereo_output,
-                              kHighLatencyModeDelayEstimateInMilliseconds,
-                              std::move(audio_input), std::move(audio_output))
-                              .release());
+  return NativeToJavaPointer(
+      CreateAudioDeviceModuleFromInputAndOutput(
+          webrtc_env, AudioDeviceModule::kAndroidJavaAudio, j_use_stereo_input,
+          j_use_stereo_output, kHighLatencyModeDelayEstimateInMilliseconds,
+          std::move(audio_input), std::move(audio_output))
+          .release());
 }
 
 }  // namespace jni

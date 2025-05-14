@@ -868,10 +868,16 @@ if (current_os == "linux" || is_android) {
     visibility = [ "*" ]
     sources = [ "src/jni/audio_device/java_audio_device_module.cc" ]
 
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when Environment is
+    # propagated
+    allow_poison = [ "environment_construction" ]
+
     deps = [
       ":base_jni",
       ":generated_java_audio_jni",
       ":java_audio_device_module",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "//third_party/jni_zero",
     ]
   }
@@ -1029,6 +1035,10 @@ if (current_os == "linux" || is_android) {
   rtc_library("native_api_audio_device_module") {
     visibility = [ "*" ]
 
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when Environment is
+    # propagated
+    allow_poison = [ "environment_construction" ]
+
     sources = [
       "native_api/audio_device_module/audio_device_android.cc",
       "native_api/audio_device_module/audio_device_android.h",
@@ -1042,6 +1052,8 @@ if (current_os == "linux" || is_android) {
       ":opensles_audio_device_module",
       "../../api:scoped_refptr",
       "../../api/audio:audio_device",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../rtc_base:refcount",
@@ -1218,6 +1230,10 @@ if (current_os == "linux" || is_android) {
   rtc_library("audio_device_module_base") {
     visibility = [ "*" ]
 
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when Environment is
+    # propagated
+    allow_poison = [ "environment_construction" ]
+
     sources = [
       "src/jni/audio_device/audio_common.h",
       "src/jni/audio_device/audio_device_module.cc",
@@ -1229,10 +1245,12 @@ if (current_os == "linux" || is_android) {
       ":generated_audio_device_module_base_jni",
       ":native_api_jni",
       "../../api:make_ref_counted",
+      "../../api:scoped_refptr",
       "../../api:sequence_checker",
       "../../api/audio:audio_device",
+      "../../api/environment",
+      "../../api/environment:environment_factory",
       "../../api/task_queue",
-      "../../api/task_queue:default_task_queue_factory",
       "../../modules/audio_device:audio_device_buffer",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
@@ -1242,6 +1260,10 @@ if (current_os == "linux" || is_android) {
 
   rtc_library("java_audio_device_module") {
     visibility = [ "*" ]
+
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when
+    # 'audio_device_module_base' is no longer poisonous.
+    allow_poison = [ "environment_construction" ]
 
     sources = [
       "src/jni/audio_device/audio_record_jni.cc",
@@ -1300,6 +1322,11 @@ if (current_os == "linux" || is_android) {
 
   rtc_library("opensles_audio_device_module") {
     visibility = [ "*" ]
+
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when
+    # 'audio_device_module_base' is no longer poisonous.
+    allow_poison = [ "environment_construction" ]
+
     sources = [
       "src/jni/audio_device/opensles_common.cc",
       "src/jni/audio_device/opensles_common.h",
