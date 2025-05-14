@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
+ *  Copyright (c) 2025 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -8,22 +8,20 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef SYSTEM_WRAPPERS_INCLUDE_CPU_INFO_H_
-#define SYSTEM_WRAPPERS_INCLUDE_CPU_INFO_H_
+#ifndef RTC_BASE_CPU_INFO_H_
+#define RTC_BASE_CPU_INFO_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace webrtc {
 
-class CpuInfo {
- public:
-  // Wrapper kept while updating dependencies.
-  static uint32_t DetectNumberOfCores();
+namespace cpu_info {
 
- private:
-  CpuInfo() {}
-};
+// Returned number of cores is always >= 1.
+uint32_t DetectNumberOfCores();
+
+}  // namespace cpu_info
 
 }  // namespace webrtc
 
-#endif  // SYSTEM_WRAPPERS_INCLUDE_CPU_INFO_H_
+#endif  // RTC_BASE_CPU_INFO_H_

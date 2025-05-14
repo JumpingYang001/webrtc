@@ -333,6 +333,7 @@ rtc_library("call") {
     "../modules/video_coding:nack_requester",
     "../rtc_base:checks",
     "../rtc_base:copy_on_write_buffer",
+    "../rtc_base:cpu_info",
     "../rtc_base:event_tracer",
     "../rtc_base:logging",
     "../rtc_base:macromagic",

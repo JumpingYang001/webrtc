@@ -614,6 +614,7 @@ if (rtc_include_tests) {
         "../modules/video_coding:video_coding_utility",
         "../rtc_base:checks",
         "../rtc_base:copy_on_write_buffer",
+        "../rtc_base:cpu_info",
         "../rtc_base:logging",
         "../rtc_base:macromagic",
         "../rtc_base:platform_thread",

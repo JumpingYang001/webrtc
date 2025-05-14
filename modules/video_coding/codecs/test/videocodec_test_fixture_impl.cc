@@ -65,6 +65,7 @@
 #include "modules/video_coding/codecs/vp9/svc_config.h"
 #include "modules/video_coding/utility/ivf_file_writer.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/cpu_info.h"
 #include "rtc_base/cpu_time.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
@@ -72,7 +73,6 @@
 #include "rtc_base/system_time.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/cpu_info.h"
 #include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
@@ -296,7 +296,7 @@ void VideoCodecTestFixtureImpl::Config::SetCodecSettings(
 }
 
 size_t VideoCodecTestFixtureImpl::Config::NumberOfCores() const {
-  return use_single_core ? 1 : CpuInfo::DetectNumberOfCores();
+  return use_single_core ? 1 : cpu_info::DetectNumberOfCores();
 }
 
 size_t VideoCodecTestFixtureImpl::Config::NumberOfTemporalLayers() const {

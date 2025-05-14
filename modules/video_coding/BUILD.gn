@@ -981,6 +981,7 @@ if (rtc_include_tests) {
       "../../media:media_constants",
       "../../media:rtc_audio_video",
       "../../rtc_base:checks",
+      "../../rtc_base:cpu_info",
       "../../rtc_base:logging",
       "../../rtc_base:rtc_base_tests_utils",
       "../../rtc_base:stringutils",

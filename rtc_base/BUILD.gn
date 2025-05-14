@@ -1855,6 +1855,18 @@ if (rtc_rusty_base64) {
   }
 }
 
+rtc_library("cpu_info") {
+  visibility = [ "*" ]
+  sources = [
+    "cpu_info.cc",
+    "cpu_info.h",
+  ]
+  deps = [
+    ":checks",
+    ":logging",
+  ]
+}
+
 if (rtc_include_tests) {
   if (rtc_enable_google_benchmarks) {
     rtc_test("base64_benchmark") {

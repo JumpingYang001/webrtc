@@ -51,13 +51,13 @@
 #include "media/base/media_constants.h"
 #include "pc/test/mock_peer_connection_observers.h"
 #include "rtc_base/checks.h"
+#include "rtc_base/cpu_info.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/thread.h"
-#include "system_wrappers/include/cpu_info.h"
 #include "system_wrappers/include/field_trial.h"
 #include "test/field_trial.h"
 #include "test/gtest.h"
@@ -329,8 +329,7 @@ void PeerConnectionE2EQualityTest::Run(RunParams run_params) {
           [this]() { StartVideo(bob_video_sources_); }),
       bob_remote_audio_config, run_params.echo_emulation_config);
 
-  int num_cores = CpuInfo::DetectNumberOfCores();
-  RTC_DCHECK_GE(num_cores, 1);
+  int num_cores = cpu_info::DetectNumberOfCores();
 
   int video_analyzer_threads =
       num_cores - kPeerConnectionUsedThreads - kFrameworkUsedThreads;

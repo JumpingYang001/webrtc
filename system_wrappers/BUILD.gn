@@ -35,6 +35,7 @@ rtc_library("system_wrappers") {
     "../api/units:timestamp",
     "../modules:module_api_public",
     "../rtc_base:checks",
+    "../rtc_base:cpu_info",
     "../rtc_base:logging",
     "../rtc_base:safe_conversions",
     "../rtc_base:timeutils",

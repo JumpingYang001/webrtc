@@ -80,6 +80,7 @@
 #include "modules/video_coding/nack_requester.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
+#include "rtc_base/cpu_info.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/strings/string_builder.h"
@@ -90,7 +91,6 @@
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/clock.h"
-#include "system_wrappers/include/cpu_info.h"
 #include "system_wrappers/include/metrics.h"
 #include "video/call_stats2.h"
 #include "video/config/video_encoder_config.h"
@@ -718,7 +718,7 @@ Call::Call(CallConfig config,
                                                      config.decode_metronome,
                                                      worker_thread_)
               : nullptr),
-      num_cpu_cores_(CpuInfo::DetectNumberOfCores()),
+      num_cpu_cores_(cpu_info::DetectNumberOfCores()),
       call_stats_(new CallStats(&env_.clock(), worker_thread_)),
       bitrate_allocator_(new BitrateAllocator(
           this,
