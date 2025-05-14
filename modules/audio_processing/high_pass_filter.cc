@@ -10,47 +10,57 @@
 
 #include "modules/audio_processing/high_pass_filter.h"
 
+#include <array>
+#include <cstddef>
+#include <vector>
+
 #include "api/array_view.h"
 #include "modules/audio_processing/audio_buffer.h"
+#include "modules/audio_processing/utility/cascaded_biquad_filter.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {
 
 namespace {
 // [B,A] = butter(2,100/8000,'high')
-constexpr CascadedBiQuadFilter::BiQuadCoefficients
+constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
     kHighPassFilterCoefficients16kHz = {
-        {0.972613898f, -1.945227797f, 0.972613898f},
-        {-1.944477658f, 0.945977936f}};
+        CascadedBiQuadFilter::BiQuadCoefficients{
+            {0.972613898f, -1.945227797f, 0.972613898f},
+            {-1.944477658f, 0.945977936f}}};
 
 // [B,A] = butter(2,100/16000,'high')
-constexpr CascadedBiQuadFilter::BiQuadCoefficients
+constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
     kHighPassFilterCoefficients32kHz = {
-        {0.986211925f, -1.972423849f, 0.986211925f},
-        {-1.972233729f, 0.972613969f}};
+        CascadedBiQuadFilter::BiQuadCoefficients{
+            {0.986211925f, -1.972423849f, 0.986211925f},
+            {-1.972233729f, 0.972613969f}}};
 
 // [B,A] = butter(2,100/24000,'high')
-constexpr CascadedBiQuadFilter::BiQuadCoefficients
+constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
     kHighPassFilterCoefficients48kHz = {
-        {0.990786698f, -1.981573396f, 0.990786698f},
-        {-1.981488509f, 0.981658283f}};
+        CascadedBiQuadFilter::BiQuadCoefficients{
+            {0.990786698f, -1.981573396f, 0.990786698f},
+            {-1.981488509f, 0.981658283f}}};
 
-constexpr size_t kNumberOfHighPassBiQuads = 1;
-
-const CascadedBiQuadFilter::BiQuadCoefficients& ChooseCoefficients(
+ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients> ChooseCoefficients(
     int sample_rate_hz) {
   switch (sample_rate_hz) {
     case 16000:
-      return kHighPassFilterCoefficients16kHz;
+      return ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+          kHighPassFilterCoefficients16kHz);
     case 32000:
-      return kHighPassFilterCoefficients32kHz;
+      return ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+          kHighPassFilterCoefficients32kHz);
     case 48000:
-      return kHighPassFilterCoefficients48kHz;
+      return ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+          kHighPassFilterCoefficients48kHz);
     default:
       RTC_DCHECK_NOTREACHED();
   }
   RTC_DCHECK_NOTREACHED();
-  return kHighPassFilterCoefficients16kHz;
+  return ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+      kHighPassFilterCoefficients16kHz);
 }
 
 }  // namespace
@@ -58,10 +68,9 @@ const CascadedBiQuadFilter::BiQuadCoefficients& ChooseCoefficients(
 HighPassFilter::HighPassFilter(int sample_rate_hz, size_t num_channels)
     : sample_rate_hz_(sample_rate_hz) {
   filters_.resize(num_channels);
-  const auto& coefficients = ChooseCoefficients(sample_rate_hz_);
+  auto coefficients = ChooseCoefficients(sample_rate_hz_);
   for (size_t k = 0; k < filters_.size(); ++k) {
-    filters_[k].reset(
-        new CascadedBiQuadFilter(coefficients, kNumberOfHighPassBiQuads));
+    filters_[k].reset(new CascadedBiQuadFilter(coefficients));
   }
 }
 
@@ -109,8 +118,7 @@ void HighPassFilter::Reset(size_t num_channels) {
     }
     const auto& coefficients = ChooseCoefficients(sample_rate_hz_);
     for (size_t k = old_num_channels; k < filters_.size(); ++k) {
-      filters_[k].reset(
-          new CascadedBiQuadFilter(coefficients, kNumberOfHighPassBiQuads));
+      filters_[k].reset(new CascadedBiQuadFilter(coefficients));
     }
   }
 }

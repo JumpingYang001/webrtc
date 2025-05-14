@@ -10,7 +10,11 @@
 #include "modules/audio_processing/utility/cascaded_biquad_filter.h"
 
 #include <algorithm>
+#include <complex>
+#include <cstddef>
+#include <vector>
 
+#include "api/array_view.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {
@@ -58,9 +62,11 @@ void CascadedBiQuadFilter::BiQuad::BiQuad::Reset() {
 }
 
 CascadedBiQuadFilter::CascadedBiQuadFilter(
-    const CascadedBiQuadFilter::BiQuadCoefficients& coefficients,
-    size_t num_biquads)
-    : biquads_(num_biquads, BiQuad(coefficients)) {}
+    ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients> coefficients) {
+  for (const auto& single_biquad_coefficients : coefficients) {
+    biquads_.push_back(BiQuad(single_biquad_coefficients));
+  }
+}
 
 CascadedBiQuadFilter::CascadedBiQuadFilter(
     const std::vector<CascadedBiQuadFilter::BiQuadParam>& biquad_params) {

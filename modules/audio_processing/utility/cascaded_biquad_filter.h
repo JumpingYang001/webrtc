@@ -52,8 +52,7 @@ class CascadedBiQuadFilter {
   };
 
   CascadedBiQuadFilter(
-      const CascadedBiQuadFilter::BiQuadCoefficients& coefficients,
-      size_t num_biquads);
+      ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients> coefficients);
   explicit CascadedBiQuadFilter(
       const std::vector<CascadedBiQuadFilter::BiQuadParam>& biquad_params);
   ~CascadedBiQuadFilter();

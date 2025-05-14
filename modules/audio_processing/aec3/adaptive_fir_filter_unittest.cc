@@ -14,9 +14,24 @@
 #include <math.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
+#include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
+#include <tuple>
+#include <vector>
 
+#include "api/array_view.h"
+#include "api/audio/echo_canceller3_config.h"
+#include "modules/audio_processing/aec3/aec3_common.h"
+#include "modules/audio_processing/aec3/block.h"
+#include "modules/audio_processing/aec3/delay_estimate.h"
+#include "modules/audio_processing/aec3/echo_path_variability.h"
+#include "modules/audio_processing/aec3/fft_data.h"
+#include "modules/audio_processing/aec3/subtractor_output.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/system/arch.h"
 #if defined(WEBRTC_ARCH_X86_FAMILY)
 #include <emmintrin.h>
@@ -32,7 +47,6 @@
 #include "modules/audio_processing/logging/apm_data_dumper.h"
 #include "modules/audio_processing/test/echo_canceller_test_tools.h"
 #include "modules/audio_processing/utility/cascaded_biquad_filter.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/numerics/safe_minmax.h"
 #include "rtc_base/random.h"
 #include "rtc_base/strings/string_builder.h"
@@ -498,9 +512,9 @@ TEST_P(AdaptiveFirFilterMultiChannel, FilterAndAdapt) {
       num_capture_channels);
   std::array<float, kFftLengthBy2Plus1> E2_coarse;
   // [B,A] = butter(2,100/8000,'high')
-  constexpr CascadedBiQuadFilter::BiQuadCoefficients
-      kHighPassFilterCoefficients = {{0.97261f, -1.94523f, 0.97261f},
-                                     {-1.94448f, 0.94598f}};
+  constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
+      kHighPassFilterCoefficients = {CascadedBiQuadFilter::BiQuadCoefficients{
+          {0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}};
   for (auto& Y2_ch : Y2) {
     Y2_ch.fill(0.f);
   }
@@ -521,9 +535,12 @@ TEST_P(AdaptiveFirFilterMultiChannel, FilterAndAdapt) {
         num_render_channels);
     for (size_t ch = 0; ch < num_render_channels; ++ch) {
       x_hp_filter[ch] = std::make_unique<CascadedBiQuadFilter>(
-          kHighPassFilterCoefficients, 1);
+          ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+              kHighPassFilterCoefficients));
     }
-    CascadedBiQuadFilter y_hp_filter(kHighPassFilterCoefficients, 1);
+    CascadedBiQuadFilter y_hp_filter(
+        (ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients>(
+            kHighPassFilterCoefficients)));
 
     SCOPED_TRACE(ProduceDebugText(num_render_channels, delay_samples));
     const size_t num_blocks_to_process =
