@@ -154,7 +154,7 @@ TEST_F(FileUtilsTest, GenerateTempFilename) {
   ASSERT_FALSE(test::FileExists(temp_filename))
       << "File exists: " << temp_filename;
   FILE* file = fopen(temp_filename.c_str(), "wb");
-  ASSERT_TRUE(file != NULL) << "Failed to open file: " << temp_filename;
+  ASSERT_TRUE(file != nullptr) << "Failed to open file: " << temp_filename;
   ASSERT_GT(fprintf(file, "%s", "Dummy data"), 0)
       << "Failed to write to file: " << temp_filename;
   fclose(file);
@@ -216,7 +216,7 @@ TEST_F(FileUtilsTest, GetFileSizeExistingFile) {
   std::string temp_filename =
       test::TempFilename(test::OutputPath(), "fileutils_unittest");
   FILE* file = fopen(temp_filename.c_str(), "wb");
-  ASSERT_TRUE(file != NULL) << "Failed to open file: " << temp_filename;
+  ASSERT_TRUE(file != nullptr) << "Failed to open file: " << temp_filename;
   ASSERT_GT(fprintf(file, "%s", "Dummy data"), 0)
       << "Failed to write to file: " << temp_filename;
   fclose(file);

@@ -36,7 +36,7 @@ Y4mFrameGenerator::Y4mFrameGenerator(absl::string_view filename,
     : filename_(filename), repeat_mode_(repeat_mode) {
   // Read resolution from the Y4M header.
   FILE* file = fopen(filename_.c_str(), "r");
-  RTC_CHECK(file != NULL) << "Cannot open " << filename_;
+  RTC_CHECK(file != nullptr) << "Cannot open " << filename_;
   char header[kHeaderBytesToRead];
   RTC_CHECK(fgets(header, sizeof(header), file) != nullptr)
       << "File " << filename_ << " is too small";

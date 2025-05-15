@@ -27,7 +27,7 @@ class TestRtpFileReader : public ::testing::Test {
         test::ResourcePath("video_coding/" + filename, "rtp");
     rtp_packet_source_.reset(
         test::RtpFileReader::Create(test::RtpFileReader::kRtpDump, filepath));
-    ASSERT_TRUE(rtp_packet_source_.get() != NULL);
+    ASSERT_TRUE(rtp_packet_source_.get() != nullptr);
     headers_only_file_ = headers_only_file;
   }
 
@@ -68,7 +68,7 @@ class TestPcapFileReader : public ::testing::Test {
         test::ResourcePath("video_coding/" + filename, "pcap");
     rtp_packet_source_.reset(
         test::RtpFileReader::Create(test::RtpFileReader::kPcap, filepath));
-    ASSERT_TRUE(rtp_packet_source_.get() != NULL);
+    ASSERT_TRUE(rtp_packet_source_.get() != nullptr);
   }
 
   int CountRtpPackets() {

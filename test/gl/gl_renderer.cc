@@ -19,7 +19,7 @@ namespace webrtc {
 namespace test {
 
 GlRenderer::GlRenderer()
-    : is_init_(false), buffer_(NULL), width_(0), height_(0) {}
+    : is_init_(false), buffer_(nullptr), width_(0), height_(0) {}
 
 void GlRenderer::Init() {
   RTC_DCHECK(!is_init_);
@@ -36,7 +36,7 @@ void GlRenderer::Destroy() {
   is_init_ = false;
 
   delete[] buffer_;
-  buffer_ = NULL;
+  buffer_ = nullptr;
 
   glDeleteTextures(1, &texture_);
 }

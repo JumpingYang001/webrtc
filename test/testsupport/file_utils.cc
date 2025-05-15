@@ -277,7 +277,7 @@ std::string JoinFilename(absl::string_view dir, absl::string_view name) {
 size_t GetFileSize(absl::string_view filename) {
   FILE* f = fopen(std::string(filename).c_str(), "rb");
   size_t size = 0;
-  if (f != NULL) {
+  if (f != nullptr) {
     if (fseek(f, 0, SEEK_END) == 0) {
       size = ftell(f);
     }

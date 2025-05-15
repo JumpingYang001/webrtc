@@ -94,7 +94,7 @@ void YuvFrameReaderImpl::Init() {
       CalcBufferSize(VideoType::kI420, resolution_.width, resolution_.height);
 
   file_ = fopen(filepath_.c_str(), "rb");
-  RTC_CHECK(file_ != NULL) << "Cannot open " << filepath_;
+  RTC_CHECK(file_ != nullptr) << "Cannot open " << filepath_;
 
   size_t file_size_bytes = GetFileSize(filepath_);
   RTC_CHECK_GT(file_size_bytes, 0u) << "File " << filepath_ << " is empty";

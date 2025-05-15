@@ -243,7 +243,7 @@ bool WritePerfResults(const std::string& output_path) {
   std::string results = GetPerfResults();
   CreateDir(DirName(output_path));
   FILE* output = fopen(output_path.c_str(), "wb");
-  if (output == NULL) {
+  if (output == nullptr) {
     printf("Failed to write to %s.\n", output_path.c_str());
     return false;
   }
