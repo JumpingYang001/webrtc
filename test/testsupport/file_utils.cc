@@ -10,6 +10,21 @@
 
 #include "test/testsupport/file_utils.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "absl/base/attributes.h"
+#include "absl/strings/string_view.h"
+#include "rtc_base/checks.h"
+#include "rtc_base/crypto_random.h"
+#include "rtc_base/string_utils.h"
+#include "rtc_base/strings/string_builder.h"
+#include "test/testsupport/file_utils_override.h"
+
 #if defined(WEBRTC_POSIX)
 #include <unistd.h>
 #endif
@@ -38,28 +53,11 @@
 #define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <memory>
-#include <optional>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 #if defined(WEBRTC_IOS)
 #include "test/testsupport/ios_file_utils.h"
 #elif defined(WEBRTC_MAC)
 #include "test/testsupport/mac_file_utils.h"
 #endif
-
-#include "absl/strings/string_view.h"
-#include "rtc_base/checks.h"
-#include "rtc_base/crypto_random.h"
-#include "rtc_base/string_utils.h"
-#include "rtc_base/strings/string_builder.h"
-#include "test/testsupport/file_utils_override.h"
 
 namespace webrtc {
 namespace test {
@@ -80,6 +78,13 @@ std::string DirName(absl::string_view path) {
     path.remove_suffix(1);  // Remove trailing separator.
 
   return std::string(path.substr(0, path.find_last_of(kPathDelimiter)));
+}
+
+absl::string_view FileName(absl::string_view path) {
+  if (path.find_last_of(kPathDelimiter) == absl::string_view::npos) {
+    return path;
+  }
+  return path.substr(path.find_last_of(kPathDelimiter) + 1);
 }
 
 bool FileExists(absl::string_view file_name) {

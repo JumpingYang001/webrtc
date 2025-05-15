@@ -10,10 +10,8 @@
 
 #include "test/test_main_lib.h"
 
-#include <stdlib.h>
-
 #include <cstddef>
-#include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <memory>
 #include <optional>
@@ -25,11 +23,11 @@
 #include "absl/strings/string_view.h"
 #include "api/test/metrics/chrome_perf_dashboard_metrics_exporter.h"
 #include "api/test/metrics/global_metrics_logger_and_exporter.h"
+#include "api/test/metrics/metric.h"
 #include "api/test/metrics/metrics_exporter.h"
 #include "api/test/metrics/metrics_set_proto_file_exporter.h"
 #include "api/test/metrics/print_result_proxy_metrics_exporter.h"
 #include "api/test/metrics/stdout_metrics_exporter.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/event_tracer.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_adapter.h"
@@ -38,6 +36,7 @@
 #include "system_wrappers/include/metrics.h"
 #include "test/gtest.h"
 #include "test/test_flags.h"
+#include "test/testsupport/file_utils.h"
 #include "test/testsupport/perf_test.h"
 #include "test/testsupport/resources_dir_flag.h"
 
@@ -217,6 +216,30 @@ class TestMainImpl : public TestMain {
       exporters.push_back(
           std::make_unique<test::PrintResultProxyMetricsExporter>());
     }
+    // Log number of tests that should be run, are disabled or skipped and total
+    // number.
+    int total_test_count =
+        ::testing::UnitTest::GetInstance()->total_test_count();
+    int test_to_run_count =
+        ::testing::UnitTest::GetInstance()->test_to_run_count();
+    int disabled_test_count =
+        ::testing::UnitTest::GetInstance()->disabled_test_count();
+    int skipped_test_count =
+        ::testing::UnitTest::GetInstance()->skipped_test_count();
+    absl::string_view test_suite_name = test::FileName(argv[0]);
+    test::GetGlobalMetricsLogger()->LogSingleValueMetric(
+        "TotalTestCount", test_suite_name, total_test_count, test::Unit::kCount,
+        test::ImprovementDirection::kBiggerIsBetter);
+    test::GetGlobalMetricsLogger()->LogSingleValueMetric(
+        "RunTestCount", test_suite_name, test_to_run_count, test::Unit::kCount,
+        test::ImprovementDirection::kBiggerIsBetter);
+    test::GetGlobalMetricsLogger()->LogSingleValueMetric(
+        "DisabledTestCount", test_suite_name, disabled_test_count,
+        test::Unit::kCount, test::ImprovementDirection::kSmallerIsBetter);
+    test::GetGlobalMetricsLogger()->LogSingleValueMetric(
+        "SkippedTestCount", test_suite_name, skipped_test_count,
+        test::Unit::kCount, test::ImprovementDirection::kSmallerIsBetter);
+
     test::ExportPerfMetric(*test::GetGlobalMetricsLogger(),
                            std::move(exporters));
     if (!absl::GetFlag(FLAGS_export_perf_results_new_api)) {

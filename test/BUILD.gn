@@ -587,12 +587,14 @@ if (rtc_include_tests) {
 
       deps = [
         ":field_trial",
+        ":fileutils",
         ":perf_test",
         ":resources_dir_flag",
         ":test_flags",
         ":test_support",
         "../api/test/metrics:chrome_perf_dashboard_metrics_exporter",
         "../api/test/metrics:global_metrics_logger_and_exporter",
+        "../api/test/metrics:metric",
         "../api/test/metrics:metrics_exporter",
         "../api/test/metrics:metrics_set_proto_file_exporter",
         "../api/test/metrics:print_result_proxy_metrics_exporter",

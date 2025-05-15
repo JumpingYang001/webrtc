@@ -8,11 +8,10 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <stdio.h>
-
 #ifndef TEST_TESTSUPPORT_FILE_UTILS_H_
 #define TEST_TESTSUPPORT_FILE_UTILS_H_
 
+#include <cstdio>
 #include <optional>
 #include <string>
 #include <vector>
@@ -106,6 +105,9 @@ bool DirExists(absl::string_view directory_name);
 
 // Strips the rightmost path segment from a path.
 std::string DirName(absl::string_view path);
+
+// Returns the rightmost path segment from a path.
+absl::string_view FileName(absl::string_view path);
 
 // File size of the supplied file in bytes. Will return 0 if the file is
 // empty or if the file does not exist/is readable.
