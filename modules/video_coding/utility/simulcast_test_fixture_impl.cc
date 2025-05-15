@@ -766,7 +766,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
   bool expected_layer_sync[3] = {false, false, false};
 
   // First frame: #0.
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(0, 0, 0, expected_temporal_idx);
   SetExpectedValues3<bool>(!is_h264, !is_h264, !is_h264, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -774,7 +774,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
 
   // Next frame: #1.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 2, 2, expected_temporal_idx);
   SetExpectedValues3<bool>(true, true, true, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -782,7 +782,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
 
   // Next frame: #2.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(1, 1, 1, expected_temporal_idx);
   SetExpectedValues3<bool>(true, true, true, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -790,7 +790,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
 
   // Next frame: #3.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 2, 2, expected_temporal_idx);
   SetExpectedValues3<bool>(false, false, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -798,7 +798,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
 
   // Next frame: #4.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(0, 0, 0, expected_temporal_idx);
   SetExpectedValues3<bool>(false, false, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -806,7 +806,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers333PatternEncoder() {
 
   // Next frame: #5.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 2, 2, expected_temporal_idx);
   SetExpectedValues3<bool>(is_h264, is_h264, is_h264, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -836,7 +836,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
   bool expected_layer_sync[3] = {false, false, false};
 
   // First frame: #0.
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(0, 0, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(true, true, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -844,7 +844,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
 
   // Next frame: #1.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 1, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(true, true, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -852,7 +852,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
 
   // Next frame: #2.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(1, 0, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(true, false, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -860,7 +860,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
 
   // Next frame: #3.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 1, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(false, false, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -868,7 +868,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
 
   // Next frame: #4.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(0, 0, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(false, false, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -876,7 +876,7 @@ void SimulcastTestFixtureImpl::TestSpatioTemporalLayers321PatternEncoder() {
 
   // Next frame: #5.
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
   SetExpectedValues3<int>(2, 1, 255, expected_temporal_idx);
   SetExpectedValues3<bool>(false, true, false, expected_layer_sync);
   VerifyTemporalIdxAndSyncForAllSpatialLayers(
@@ -910,7 +910,7 @@ void SimulcastTestFixtureImpl::TestStrideEncodeDecode() {
   plane_offset[kVPlane] = kColorV;
   CreateImage(input_buffer_, plane_offset);
 
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
 
   // Change color.
   plane_offset[kYPlane] += 1;
@@ -918,7 +918,7 @@ void SimulcastTestFixtureImpl::TestStrideEncodeDecode() {
   plane_offset[kVPlane] += 1;
   CreateImage(input_buffer_, plane_offset);
   input_frame_->set_rtp_timestamp(input_frame_->rtp_timestamp() + 3000);
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
 
   EncodedImage encoded_frame;
   // Only encoding one frame - so will be a key frame.
@@ -952,7 +952,7 @@ void SimulcastTestFixtureImpl::TestDecodeWidthHeightSet() {
             return EncodedImageCallback::Result(
                 EncodedImageCallback::Result::OK, 0);
           }));
-  EXPECT_EQ(0, encoder_->Encode(*input_frame_, NULL));
+  EXPECT_EQ(0, encoder_->Encode(*input_frame_, nullptr));
 
   EXPECT_CALL(decoder_callback, Decoded(_, _, _))
       .WillOnce(

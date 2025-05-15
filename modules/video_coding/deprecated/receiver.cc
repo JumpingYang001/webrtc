@@ -137,7 +137,7 @@ VCMEncodedFrame* VCMReceiver::FrameForDecoding(uint16_t max_wait_time_ms,
     // Timing error => reset timing and flush the jitter buffer.
     jitter_buffer_.Flush();
     timing_->Reset();
-    return NULL;
+    return nullptr;
   }
 
   if (prefer_late_decoding) {
@@ -158,7 +158,7 @@ VCMEncodedFrame* VCMReceiver::FrameForDecoding(uint16_t max_wait_time_ms,
       // waiting as long as we're allowed to avoid busy looping, and then return
       // NULL. Next call to this function might return the frame.
       render_wait_event_->Wait(new_max_wait_time);
-      return NULL;
+      return nullptr;
     }
     // Wait until it's time to render.
     render_wait_event_->Wait(wait_time_ms);
@@ -166,8 +166,8 @@ VCMEncodedFrame* VCMReceiver::FrameForDecoding(uint16_t max_wait_time_ms,
 
   // Extract the frame from the jitter buffer and set the render time.
   VCMEncodedFrame* frame = jitter_buffer_.ExtractAndSetDecode(frame_timestamp);
-  if (frame == NULL) {
-    return NULL;
+  if (frame == nullptr) {
+    return nullptr;
   }
   frame->SetRenderTime(render_time_ms);
   TRACE_EVENT_ASYNC_STEP_INTO1("webrtc", "Video", frame->RtpTimestamp(),

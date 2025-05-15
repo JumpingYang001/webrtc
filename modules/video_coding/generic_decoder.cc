@@ -292,7 +292,7 @@ void VCMDecodedFrameCallback::ClearTimestampMap() {
 }
 
 VCMGenericDecoder::VCMGenericDecoder(VideoDecoder* decoder)
-    : _callback(NULL),
+    : _callback(nullptr),
       decoder_(decoder),
       _last_keyframe_content_type(VideoContentType::UNSPECIFIED) {
   RTC_DCHECK(decoder_);

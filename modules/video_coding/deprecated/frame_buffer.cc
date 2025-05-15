@@ -82,8 +82,8 @@ VCMFrameBufferEnum VCMFrameBuffer::InsertPacket(const VCMPacket& packet,
                                                 int64_t timeInMs,
                                                 const FrameData& frame_data) {
   TRACE_EVENT0("webrtc", "VCMFrameBuffer::InsertPacket");
-  RTC_DCHECK(!(NULL == packet.dataPtr && packet.sizeBytes > 0));
-  if (packet.dataPtr != NULL) {
+  RTC_DCHECK(!(nullptr == packet.dataPtr && packet.sizeBytes > 0));
+  if (packet.dataPtr != nullptr) {
     _payloadType = packet.payloadType;
   }
 

@@ -26,7 +26,7 @@ VCMPacket::VCMPacket()
       timestamp(0),
       ntp_time_ms_(0),
       seqNum(0),
-      dataPtr(NULL),
+      dataPtr(nullptr),
       sizeBytes(0),
       markerBit(false),
       timesNacked(-1),

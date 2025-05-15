@@ -499,7 +499,7 @@ void LibvpxVp8Encoder::SetFecControllerOverride(
 // TODO(eladalon): s/inst/codec_settings/g.
 int LibvpxVp8Encoder::InitEncode(const VideoCodec* inst,
                                  const VideoEncoder::Settings& settings) {
-  if (inst == NULL) {
+  if (inst == nullptr) {
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
   if (inst->maxFramerate < 1) {
@@ -696,7 +696,7 @@ int LibvpxVp8Encoder::InitEncode(const VideoCodec* inst,
   // Actual pointer will be set in encode. Setting align to 1, as it
   // is meaningless (no memory allocation is done here).
   libvpx_->img_wrap(&raw_images_[0], pixel_format, inst->width, inst->height, 1,
-                    NULL);
+                    nullptr);
 
   // Note the order we use is different from webm, we have lowest resolution
   // at position 0 and they have highest resolution at position 0.
@@ -1020,7 +1020,7 @@ int LibvpxVp8Encoder::Encode(const VideoFrame& frame,
 
   if (!inited_)
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
-  if (encoded_complete_callback_ == NULL)
+  if (encoded_complete_callback_ == nullptr)
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
 
   bool key_frame_requested = false;
@@ -1236,15 +1236,15 @@ int LibvpxVp8Encoder::GetEncodedPartitions(const VideoFrame& input_image,
   int result = WEBRTC_VIDEO_CODEC_OK;
   for (size_t encoder_idx = 0; encoder_idx < encoders_.size();
        ++encoder_idx, --stream_idx) {
-    vpx_codec_iter_t iter = NULL;
+    vpx_codec_iter_t iter = nullptr;
     encoded_images_[encoder_idx].set_size(0);
     encoded_images_[encoder_idx]._frameType = VideoFrameType::kVideoFrameDelta;
     CodecSpecificInfo codec_specific;
-    const vpx_codec_cx_pkt_t* pkt = NULL;
+    const vpx_codec_cx_pkt_t* pkt = nullptr;
 
     size_t encoded_size = 0;
     while ((pkt = libvpx_->codec_get_cx_data(&encoders_[encoder_idx], &iter)) !=
-           NULL) {
+           nullptr) {
       if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
         encoded_size += pkt->data.frame.sz;
       }
@@ -1252,10 +1252,10 @@ int LibvpxVp8Encoder::GetEncodedPartitions(const VideoFrame& input_image,
 
     auto buffer = EncodedImageBuffer::Create(encoded_size);
 
-    iter = NULL;
+    iter = nullptr;
     size_t encoded_pos = 0;
     while ((pkt = libvpx_->codec_get_cx_data(&encoders_[encoder_idx], &iter)) !=
-           NULL) {
+           nullptr) {
       switch (pkt->kind) {
         case VPX_CODEC_CX_FRAME_PKT: {
           RTC_CHECK_LE(encoded_pos + pkt->data.frame.sz, buffer->size());
@@ -1435,7 +1435,7 @@ void LibvpxVp8Encoder::MaybeUpdatePixelFormat(vpx_img_fmt fmt) {
     libvpx_->img_free(&img);
     // First image is wrapping the input frame, the rest are allocated.
     if (i == 0) {
-      libvpx_->img_wrap(&img, fmt, d_w, d_h, 1, NULL);
+      libvpx_->img_wrap(&img, fmt, d_w, d_h, 1, nullptr);
     } else {
       libvpx_->img_alloc(&img, fmt, d_w, d_h, kVp832ByteAlign);
     }

@@ -56,7 +56,7 @@ void FrameList::InsertFrame(VCMFrameBuffer* frame) {
 VCMFrameBuffer* FrameList::PopFrame(uint32_t timestamp) {
   FrameList::iterator it = find(timestamp);
   if (it == end())
-    return NULL;
+    return nullptr;
   VCMFrameBuffer* frame = it->second;
   erase(it);
   return frame;
@@ -271,7 +271,7 @@ VCMEncodedFrame* VCMJitterBuffer::NextCompleteFrame(uint32_t max_wait_time_ms) {
 VCMEncodedFrame* VCMJitterBuffer::ExtractAndSetDecode(uint32_t timestamp) {
   MutexLock lock(&mutex_);
   if (!running_) {
-    return NULL;
+    return nullptr;
   }
   // Extract the frame with the desired timestamp.
   VCMFrameBuffer* frame = decodable_frames_.PopFrame(timestamp);
@@ -281,7 +281,7 @@ VCMEncodedFrame* VCMJitterBuffer::ExtractAndSetDecode(uint32_t timestamp) {
     if (frame)
       continuous = last_decoded_state_.ContinuousFrame(frame);
     else
-      return NULL;
+      return nullptr;
   }
   // Frame pulled out from jitter buffer, update the jitter estimate.
   const bool retransmitted = (frame->GetNackCount() > 0);
@@ -330,20 +330,20 @@ VCMFrameBufferEnum VCMJitterBuffer::GetFrame(const VCMPacket& packet,
                                              VCMFrameBuffer** frame,
                                              FrameList** frame_list) {
   *frame = incomplete_frames_.PopFrame(packet.timestamp);
-  if (*frame != NULL) {
+  if (*frame != nullptr) {
     *frame_list = &incomplete_frames_;
     return kNoError;
   }
   *frame = decodable_frames_.PopFrame(packet.timestamp);
-  if (*frame != NULL) {
+  if (*frame != nullptr) {
     *frame_list = &decodable_frames_;
     return kNoError;
   }
 
-  *frame_list = NULL;
+  *frame_list = nullptr;
   // No match, return empty frame.
   *frame = GetEmptyFrame();
-  if (*frame == NULL) {
+  if (*frame == nullptr) {
     // No free frame! Try to reclaim some...
     RTC_LOG(LS_WARNING) << "Unable to get empty frame; Recycling.";
     bool found_key_frame = RecycleFramesUntilKeyFrame();
@@ -499,7 +499,7 @@ VCMFrameBufferEnum VCMJitterBuffer::InsertPacket(const VCMPacket& packet,
     case kOutOfBoundsPacket:
     case kDuplicatePacket: {
       // Put back the frame where it came from.
-      if (frame_list != NULL) {
+      if (frame_list != nullptr) {
         frame_list->InsertFrame(frame);
       } else {
         RecycleFrameBuffer(frame);
@@ -686,7 +686,7 @@ VCMFrameBuffer* VCMJitterBuffer::NextFrame() const {
     return decodable_frames_.Front();
   if (!incomplete_frames_.empty())
     return incomplete_frames_.Front();
-  return NULL;
+  return nullptr;
 }
 
 bool VCMJitterBuffer::UpdateNackList(uint16_t sequence_number) {
@@ -772,7 +772,7 @@ void VCMJitterBuffer::DropPacketsFromNackList(
 VCMFrameBuffer* VCMJitterBuffer::GetEmptyFrame() {
   if (free_frames_.empty()) {
     if (!TryToIncreaseJitterBufferSize()) {
-      return NULL;
+      return nullptr;
     }
   }
   VCMFrameBuffer* frame = free_frames_.front();

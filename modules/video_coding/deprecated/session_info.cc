@@ -54,8 +54,8 @@ VCMSessionInfo::~VCMSessionInfo() {}
 void VCMSessionInfo::UpdateDataPointers(const uint8_t* old_base_ptr,
                                         const uint8_t* new_base_ptr) {
   for (PacketIterator it = packets_.begin(); it != packets_.end(); ++it)
-    if ((*it).dataPtr != NULL) {
-      RTC_DCHECK(old_base_ptr != NULL && new_base_ptr != NULL);
+    if ((*it).dataPtr != nullptr) {
+      RTC_DCHECK(old_base_ptr != nullptr && new_base_ptr != nullptr);
       (*it).dataPtr = new_base_ptr + ((*it).dataPtr - old_base_ptr);
     }
 }
@@ -272,7 +272,7 @@ void VCMSessionInfo::ShiftSubsequentPackets(PacketIterator it,
   // Calculate the total move length and move the data pointers in advance.
   for (; it != packets_.end(); ++it) {
     shift_length += (*it).sizeBytes;
-    if ((*it).dataPtr != NULL)
+    if ((*it).dataPtr != nullptr)
       (*it).dataPtr += steps_to_shift;
   }
   memmove(first_packet_ptr + steps_to_shift, first_packet_ptr, shift_length);
@@ -334,7 +334,7 @@ size_t VCMSessionInfo::DeletePacketData(PacketIterator start,
   for (PacketIterator it = start; it != packet_after_end; ++it) {
     bytes_to_delete += (*it).sizeBytes;
     (*it).sizeBytes = 0;
-    (*it).dataPtr = NULL;
+    (*it).dataPtr = nullptr;
   }
   if (bytes_to_delete > 0)
     ShiftSubsequentPackets(end, -static_cast<int>(bytes_to_delete));

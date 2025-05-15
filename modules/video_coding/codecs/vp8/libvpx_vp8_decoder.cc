@@ -123,9 +123,9 @@ LibvpxVp8Decoder::LibvpxVp8Decoder(const Environment& env)
           kIsArm ? env.field_trials().IsEnabled(kVp8PostProcArmFieldTrial)
                  : true),
       buffer_pool_(false, 300 /* max_number_of_buffers*/),
-      decode_complete_callback_(NULL),
+      decode_complete_callback_(nullptr),
       inited_(false),
-      decoder_(NULL),
+      decoder_(nullptr),
       last_frame_width_(0),
       last_frame_height_(0),
       key_frame_required_(true),
@@ -143,7 +143,7 @@ bool LibvpxVp8Decoder::Configure(const Settings& settings) {
   if (Release() < 0) {
     return false;
   }
-  if (decoder_ == NULL) {
+  if (decoder_ == nullptr) {
     decoder_ = new vpx_codec_ctx_t;
     memset(decoder_, 0, sizeof(*decoder_));
   }
@@ -183,10 +183,10 @@ int LibvpxVp8Decoder::Decode(const EncodedImage& input_image,
   if (!inited_) {
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   }
-  if (decode_complete_callback_ == NULL) {
+  if (decode_complete_callback_ == nullptr) {
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   }
-  if (input_image.data() == NULL && input_image.size() > 0) {
+  if (input_image.data() == nullptr && input_image.size() > 0) {
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
 
@@ -242,14 +242,14 @@ int LibvpxVp8Decoder::Decode(const EncodedImage& input_image,
 
   const uint8_t* buffer = input_image.data();
   if (input_image.size() == 0) {
-    buffer = NULL;  // Triggers full frame concealment.
+    buffer = nullptr;  // Triggers full frame concealment.
   }
-  if (vpx_codec_decode(decoder_, buffer, input_image.size(), 0,
+  if (vpx_codec_decode(decoder_, buffer, input_image.size(), nullptr,
                        kDecodeDeadlineRealtime)) {
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
 
-  vpx_codec_iter_t iter = NULL;
+  vpx_codec_iter_t iter = nullptr;
   vpx_image_t* img = vpx_codec_get_frame(decoder_, &iter);
   int qp;
   vpx_codec_err_t vpx_ret =
@@ -267,7 +267,7 @@ int LibvpxVp8Decoder::ReturnFrame(const vpx_image_t* img,
                                   uint32_t timestamp,
                                   int qp,
                                   const ColorSpace* explicit_color_space) {
-  if (img == NULL) {
+  if (img == nullptr) {
     // Decoder OK and NULL image => No show frame
     return WEBRTC_VIDEO_CODEC_NO_OUTPUT;
   }
@@ -322,14 +322,14 @@ int LibvpxVp8Decoder::RegisterDecodeCompleteCallback(
 int LibvpxVp8Decoder::Release() {
   int ret_val = WEBRTC_VIDEO_CODEC_OK;
 
-  if (decoder_ != NULL) {
+  if (decoder_ != nullptr) {
     if (inited_) {
       if (vpx_codec_destroy(decoder_)) {
         ret_val = WEBRTC_VIDEO_CODEC_MEMORY;
       }
     }
     delete decoder_;
-    decoder_ = NULL;
+    decoder_ = nullptr;
   }
   buffer_pool_.Release();
   inited_ = false;

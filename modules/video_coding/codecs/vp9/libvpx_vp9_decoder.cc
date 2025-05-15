@@ -245,7 +245,7 @@ int LibvpxVp9Decoder::Decode(const EncodedImage& input_image,
   // `libvpx_buffer_pool_`. In practice libvpx keeps a few (~3-4) buffers alive
   // at a time.
   if (vpx_codec_decode(decoder_, buffer,
-                       static_cast<unsigned int>(input_image.size()), 0,
+                       static_cast<unsigned int>(input_image.size()), nullptr,
                        VPX_DL_REALTIME)) {
     return WEBRTC_VIDEO_CODEC_ERROR;
   }
