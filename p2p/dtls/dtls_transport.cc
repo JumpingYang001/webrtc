@@ -166,7 +166,7 @@ bool StreamInterfaceChannel::OnPacketReceived(const char* data, size_t size) {
   if (packets_.size() > 0) {
     RTC_LOG(LS_WARNING) << "Packet already in queue.";
   }
-  bool ret = packets_.WriteBack(data, size, NULL);
+  bool ret = packets_.WriteBack(data, size, nullptr);
   if (!ret) {
     // Somehow we received another packet before the SSLStreamAdapter read the
     // previous one out of our temporary buffer. In this case, we'll log an

@@ -408,7 +408,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     }
     ChannelData* GetChannelData(PacketTransportInternal* transport) {
       if (!HasTransport(transport))
-        return NULL;
+        return nullptr;
       if (cd1_.ch_.get() == transport)
         return &cd1_;
       else
@@ -572,7 +572,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     } else if (endpoint == 1) {
       return &ep2_;
     } else {
-      return NULL;
+      return nullptr;
     }
   }
   BasicPortAllocator* GetAllocator(int endpoint) {
@@ -988,12 +988,12 @@ class P2PTransportChannelTestBase : public ::testing::Test,
   static const Candidate* LocalCandidate(P2PTransportChannel* ch) {
     return (ch && ch->selected_connection())
                ? &ch->selected_connection()->local_candidate()
-               : NULL;
+               : nullptr;
   }
   static const Candidate* RemoteCandidate(P2PTransportChannel* ch) {
     return (ch && ch->selected_connection())
                ? &ch->selected_connection()->remote_candidate()
-               : NULL;
+               : nullptr;
   }
   Endpoint* GetEndpoint(PacketTransportInternal* transport) {
     if (ep1_.HasTransport(transport)) {
@@ -1001,7 +1001,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     } else if (ep2_.HasTransport(transport)) {
       return &ep2_;
     } else {
-      return NULL;
+      return nullptr;
     }
   }
   P2PTransportChannel* GetRemoteChannel(IceTransportInternal* ch) {
@@ -1014,7 +1014,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
     else if (ch == ep2_ch2())
       return ep1_ch2();
     else
-      return NULL;
+      return nullptr;
   }
   std::list<std::string>& GetPacketList(PacketTransportInternal* transport) {
     return GetChannelData(transport)->ch_packets_;
@@ -1255,21 +1255,23 @@ const P2PTransportChannelMatrixTest::Result*
         /*OP*/
         {LULU, LUSU, LUSU, LUSU, LUPU, LUSU, LUPU, LTPT, LTPT, LSRS},
         /*CO*/
-        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, NULL, NULL, LSRS},
+        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, nullptr, nullptr, LSRS},
         /*AD*/
-        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, NULL, NULL, LSRS},
+        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, nullptr, nullptr, LSRS},
         /*PO*/
-        {SULU, SUSU, SUSU, SUSU, RUPU, SUSU, RUPU, NULL, NULL, LSRS},
+        {SULU, SUSU, SUSU, SUSU, RUPU, SUSU, RUPU, nullptr, nullptr, LSRS},
         /*SY*/
-        {PULU, PUSU, PUSU, PURU, PURU, PUSU, PURU, NULL, NULL, LSRS},
+        {PULU, PUSU, PUSU, PURU, PURU, PUSU, PURU, nullptr, nullptr, LSRS},
         /*2C*/
-        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, NULL, NULL, LSRS},
+        {SULU, SUSU, SUSU, SUSU, SUPU, SUSU, SUPU, nullptr, nullptr, LSRS},
         /*SC*/
-        {PULU, PUSU, PUSU, PURU, PURU, PUSU, PURU, NULL, NULL, LSRS},
+        {PULU, PUSU, PUSU, PURU, PURU, PUSU, PURU, nullptr, nullptr, LSRS},
         /*!U*/
-        {LTPT, NULL, NULL, NULL, NULL, NULL, NULL, LTPT, LTPT, LSRS},
+        {LTPT, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, LTPT, LTPT,
+         LSRS},
         /*!T*/
-        {PTLT, NULL, NULL, NULL, NULL, NULL, NULL, PTLT, LTRT, LSRS},
+        {PTLT, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, PTLT, LTRT,
+         LSRS},
         /*HT*/
         {LSRS, LSRS, LSRS, LSRS, LSRS, LSRS, LSRS, LSRS, LSRS, LSRS},
 };
@@ -1828,7 +1830,7 @@ TEST_F(P2PTransportChannelTest, RemoteCandidatesWithoutUfragPwd) {
   ConfigureEndpoints(env, OPEN, OPEN, webrtc::kDefaultPortAllocatorFlags,
                      webrtc::kDefaultPortAllocatorFlags);
   CreateChannels(env);
-  const Connection* selected_connection = NULL;
+  const Connection* selected_connection = nullptr;
   // Wait until the callee's connections are created.
   EXPECT_THAT(
       webrtc::WaitUntil(

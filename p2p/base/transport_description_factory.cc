@@ -58,7 +58,7 @@ std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateOffer(
   // Fail if we can't create the fingerprint.
   // If we are the initiator set role to "actpass".
   if (!SetSecurityInfo(desc.get(), CONNECTIONROLE_ACTPASS)) {
-    return NULL;
+    return nullptr;
   }
 
   return desc;
@@ -74,7 +74,7 @@ std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateAnswer(
   if (!offer) {
     RTC_LOG(LS_WARNING) << "Failed to create TransportDescription answer "
                            "because offer is NULL";
-    return NULL;
+    return nullptr;
   }
 
   auto desc = std::make_unique<TransportDescription>();
@@ -103,7 +103,7 @@ std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateAnswer(
       // We require DTLS, but the other side didn't offer it. Fail.
       RTC_LOG(LS_WARNING) << "Failed to create TransportDescription answer "
                              "because of incompatible security settings";
-      return NULL;
+      return nullptr;
     }
     // This may be a bundled section, fingerprint may legitimately be missing.
     return desc;
@@ -130,10 +130,10 @@ std::unique_ptr<TransportDescription> TransportDescriptionFactory::CreateAnswer(
     RTC_LOG(LS_ERROR) << "Remote offer connection role is " << role
                       << " which is a protocol violation";
     RTC_DCHECK_NOTREACHED();
-    return NULL;
+    return nullptr;
   }
   if (!SetSecurityInfo(desc.get(), role)) {
-    return NULL;
+    return nullptr;
   }
   return desc;
 }

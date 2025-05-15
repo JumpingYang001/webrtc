@@ -256,7 +256,7 @@ StunRequest::StunRequest(StunRequestManager& manager,
 StunRequest::~StunRequest() {}
 
 int StunRequest::type() {
-  RTC_DCHECK(msg_ != NULL);
+  RTC_DCHECK(msg_ != nullptr);
   return msg_->type();
 }
 

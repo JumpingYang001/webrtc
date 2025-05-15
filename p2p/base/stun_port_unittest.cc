@@ -225,7 +225,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
       socket_.reset(socket_factory()->CreateUdpSocket(
           webrtc::SocketAddress(kPrivateIP.ipaddr(), 0), 0, 0));
     }
-    ASSERT_TRUE(socket_ != NULL);
+    ASSERT_TRUE(socket_ != nullptr);
     socket_->RegisterReceivedPacketCallback(
         [&](webrtc::AsyncPacketSocket* socket,
             const webrtc::ReceivedIpPacket& packet) {
@@ -242,7 +242,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
          .ice_password = webrtc::CreateRandomString(22)},
         socket_.get(), false, std::nullopt);
     stun_port_->set_server_addresses(stun_servers);
-    ASSERT_TRUE(stun_port_ != NULL);
+    ASSERT_TRUE(stun_port_ != nullptr);
     stun_port_->SetIceTiebreaker(kTiebreakerDefault);
     stun_port_->SignalPortComplete.connect(this,
                                            &StunPortTestBase::OnPortComplete);
@@ -270,7 +270,7 @@ class StunPortTestBase : public ::testing::Test, public sigslot::has_slots<> {
  protected:
   static void SetUpTestSuite() {
     // Ensure the RNG is inited.
-    webrtc::InitRandom(NULL, 0);
+    webrtc::InitRandom(nullptr, 0);
   }
 
   void OnPortComplete(webrtc::Port* /* port */) {

@@ -89,8 +89,8 @@ static void InitErrorResponse(int code,
 TurnServer::TurnServer(TaskQueueBase* thread)
     : thread_(thread),
       nonce_key_(CreateRandomString(kNonceKeySize)),
-      auth_hook_(NULL),
-      redirect_hook_(NULL),
+      auth_hook_(nullptr),
+      redirect_hook_(nullptr),
       enable_otu_nonce_(false) {}
 
 TurnServer::~TurnServer() {
@@ -152,7 +152,7 @@ void TurnServer::AcceptConnection(Socket* server_socket) {
   // Check if someone is trying to connect to us.
   SocketAddress accept_addr;
   Socket* accepted_socket = server_socket->Accept(&accept_addr);
-  if (accepted_socket != NULL) {
+  if (accepted_socket != nullptr) {
     const ServerSocketInfo& info = server_listen_sockets_[server_socket];
     if (info.ssl_adapter_factory) {
       SSLAdapter* ssl_adapter =
@@ -222,7 +222,7 @@ void TurnServer::HandleStunMessage(TurnServerConnection* conn,
     return;
   }
 
-  if (redirect_hook_ != NULL && msg.type() == STUN_ALLOCATE_REQUEST) {
+  if (redirect_hook_ != nullptr && msg.type() == STUN_ALLOCATE_REQUEST) {
     SocketAddress address;
     if (redirect_hook_->ShouldRedirect(conn->src(), &address)) {
       SendErrorResponseWithAlternateServer(conn, &msg, address);
@@ -276,7 +276,7 @@ bool TurnServer::GetKey(const StunMessage* msg, std::string* key) {
     return false;
   }
 
-  return (auth_hook_ != NULL &&
+  return (auth_hook_ != nullptr &&
           auth_hook_->GetKey(std::string(username_attr->string_view()), realm_,
                              key));
 }
@@ -429,9 +429,9 @@ TurnServerAllocation* TurnServer::CreateAllocation(TurnServerConnection* conn,
   AsyncPacketSocket* external_socket =
       (external_socket_factory_)
           ? external_socket_factory_->CreateUdpSocket(external_addr_, 0, 0)
-          : NULL;
+          : nullptr;
   if (!external_socket) {
-    return NULL;
+    return nullptr;
   }
 
   // The Allocation takes ownership of the socket.
@@ -589,7 +589,7 @@ std::string TurnServerAllocation::ToString() const {
 
 void TurnServerAllocation::HandleTurnMessage(const TurnMessage* msg) {
   RTC_DCHECK_RUN_ON(thread_);
-  RTC_DCHECK(msg != NULL);
+  RTC_DCHECK(msg != nullptr);
   switch (msg->type()) {
     case STUN_ALLOCATE_REQUEST:
       HandleAllocateRequest(msg);
@@ -619,7 +619,7 @@ void TurnServerAllocation::HandleAllocateRequest(const TurnMessage* msg) {
   transaction_id_ = msg->transaction_id();
   const StunByteStringAttribute* username_attr =
       msg->GetByteString(STUN_ATTR_USERNAME);
-  RTC_DCHECK(username_attr != NULL);
+  RTC_DCHECK(username_attr != nullptr);
   username_ = std::string(username_attr->string_view());
 
   // Figure out the lifetime and start the allocation timer.

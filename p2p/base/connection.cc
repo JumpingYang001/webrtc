@@ -741,8 +741,8 @@ void Connection::SendStunBindingResponse(const StunMessage* message) {
   // Retrieve the username from the `message`.
   const StunByteStringAttribute* username_attr =
       message->GetByteString(STUN_ATTR_USERNAME);
-  RTC_DCHECK(username_attr != NULL);
-  if (username_attr == NULL) {
+  RTC_DCHECK(username_attr != nullptr);
+  if (username_attr == nullptr) {
     // No valid username, skip the response.
     return;
   }

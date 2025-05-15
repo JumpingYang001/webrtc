@@ -49,7 +49,7 @@ bool CheckReceive(webrtc::TestClient* client,
                   bool should_receive,
                   const char* buf,
                   size_t size) {
-  return (should_receive) ? client->CheckNextPacket(buf, size, 0)
+  return (should_receive) ? client->CheckNextPacket(buf, size, nullptr)
                           : client->CheckNoPacket();
 }
 

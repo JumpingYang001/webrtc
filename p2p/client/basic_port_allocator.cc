@@ -955,7 +955,7 @@ void BasicPortAllocatorSession::OnCandidateReady(Port* port,
                                                  const Candidate& c) {
   RTC_DCHECK_RUN_ON(network_thread_);
   PortData* data = FindPort(port);
-  RTC_DCHECK(data != NULL);
+  RTC_DCHECK(data != nullptr);
   RTC_LOG(LS_INFO) << port->ToString()
                    << ": Gathered candidate: " << c.ToSensitiveString();
   // Discarding any candidate signal if port allocation status is
@@ -1104,7 +1104,7 @@ void BasicPortAllocatorSession::OnPortComplete(Port* port) {
   RTC_LOG(LS_INFO) << port->ToString()
                    << ": Port completed gathering candidates.";
   PortData* data = FindPort(port);
-  RTC_DCHECK(data != NULL);
+  RTC_DCHECK(data != nullptr);
 
   // Ignore any late signals.
   if (!data->inprogress()) {
@@ -1122,7 +1122,7 @@ void BasicPortAllocatorSession::OnPortError(Port* port) {
   RTC_LOG(LS_INFO) << port->ToString()
                    << ": Port encountered error while gathering candidates.";
   PortData* data = FindPort(port);
-  RTC_DCHECK(data != NULL);
+  RTC_DCHECK(data != nullptr);
   // We might have already given up on this port and stopped it.
   if (!data->inprogress()) {
     return;
@@ -1209,7 +1209,7 @@ BasicPortAllocatorSession::PortData* BasicPortAllocatorSession::FindPort(
       return &*it;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 std::vector<BasicPortAllocatorSession::PortData*>
@@ -1270,7 +1270,7 @@ AllocationSequence::AllocationSequence(
       state_(kInit),
       flags_(flags),
       udp_socket_(),
-      udp_port_(NULL),
+      udp_port_(nullptr),
       phase_(0),
       port_allocation_complete_callback_(
           std::move(port_allocation_complete_callback)) {}
@@ -1293,7 +1293,7 @@ void AllocationSequence::Init() {
 
 void AllocationSequence::Clear() {
   TRACE_EVENT0("webrtc", "AllocationSequence::Clear");
-  udp_port_ = NULL;
+  udp_port_ = nullptr;
   relay_ports_.clear();
 }
 
@@ -1650,7 +1650,7 @@ void AllocationSequence::CreateTurnPort(const RelayServerConfig& config,
         continue;
       }
     }
-    RTC_DCHECK(port != NULL);
+    RTC_DCHECK(port != nullptr);
     port->SetIceTiebreaker(session_->allocator()->ice_tiebreaker());
     session_->AddAllocatedPort(port.release(), this);
   }
@@ -1692,7 +1692,7 @@ void AllocationSequence::OnReadPacket(AsyncPacketSocket* socket,
 
 void AllocationSequence::OnPortDestroyed(PortInterface* port) {
   if (udp_port_ == port) {
-    udp_port_ = NULL;
+    udp_port_ = nullptr;
     return;
   }
 

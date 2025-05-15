@@ -209,7 +209,7 @@ Connection* Port::GetConnection(const SocketAddress& remote_addr) {
   if (iter != connections_.end())
     return iter->second;
   else
-    return NULL;
+    return nullptr;
 }
 
 void Port::AddAddress(const SocketAddress& address,
@@ -401,8 +401,8 @@ bool Port::GetStunMessage(const char* data,
   // NOTE: This could clearly be optimized to avoid allocating any memory.
   //       However, at the data rates we'll be looking at on the client side,
   //       this probably isn't worth worrying about.
-  RTC_DCHECK(out_msg != NULL);
-  RTC_DCHECK(out_username != NULL);
+  RTC_DCHECK(out_msg != nullptr);
+  RTC_DCHECK(out_username != nullptr);
   out_username->clear();
 
   // Don't bother parsing the packet if we can tell it's not STUN.
@@ -609,7 +609,7 @@ bool Port::ParseStunUsername(const StunMessage* stun_msg,
   remote_ufrag->clear();
   const StunByteStringAttribute* username_attr =
       stun_msg->GetByteString(STUN_ATTR_USERNAME);
-  if (username_attr == NULL)
+  if (username_attr == nullptr)
     return false;
 
   // RFRAG:LFRAG

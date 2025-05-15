@@ -163,7 +163,7 @@ static int GetFDCount() {
   struct dirent* dp;
   int fd_count = 0;
   DIR* dir = opendir("/proc/self/fd/");
-  while ((dp = readdir(dir)) != NULL) {
+  while ((dp = readdir(dir)) != nullptr) {
     if (dp->d_name[0] == '.')
       continue;
     ++fd_count;
@@ -344,7 +344,7 @@ class TurnPortTest : public ::testing::Test,
     if (!socket_) {
       socket_.reset(socket_factory()->CreateUdpSocket(
           SocketAddress(kLocalAddr1.ipaddr(), 0), 0, 0));
-      ASSERT_TRUE(socket_ != NULL);
+      ASSERT_TRUE(socket_ != nullptr);
       socket_->RegisterReceivedPacketCallback(
           [&](AsyncPacketSocket* socket, const ReceivedIpPacket& packet) {
             OnSocketReadPacket(socket, packet);
@@ -660,7 +660,7 @@ class TurnPortTest : public ::testing::Test,
     ASSERT_GE(turn_port_->Candidates().size(), 1U);
     Connection* conn1 = udp_port_->CreateConnection(turn_port_->Candidates()[0],
                                                     Port::ORIGIN_MESSAGE);
-    ASSERT_TRUE(conn1 != NULL);
+    ASSERT_TRUE(conn1 != nullptr);
     conn1->Ping(0);
     SIMULATED_WAIT(!turn_unknown_address_, kSimulatedRtt * 2, fake_clock_);
     EXPECT_FALSE(turn_unknown_address_);
@@ -670,7 +670,7 @@ class TurnPortTest : public ::testing::Test,
     // Send ping from TURN to UDP.
     Connection* conn2 = turn_port_->CreateConnection(udp_port_->Candidates()[0],
                                                      Port::ORIGIN_MESSAGE);
-    ASSERT_TRUE(conn2 != NULL);
+    ASSERT_TRUE(conn2 != nullptr);
     ASSERT_THAT(
         WaitUntil([&] { return turn_create_permission_success_; }, IsTrue(),
                   {.timeout = TimeDelta::Millis(kSimulatedRtt),
@@ -711,7 +711,7 @@ class TurnPortTest : public ::testing::Test,
     // the TurnPort.
     turn_port_->set_timeout_delay(10 * 60 * 1000);
 
-    ASSERT_TRUE(conn2 != NULL);
+    ASSERT_TRUE(conn2 != nullptr);
     ASSERT_THAT(
         WaitUntil([&] { return turn_create_permission_success_; }, IsTrue(),
                   {.timeout = TimeDelta::Millis(kSimulatedRtt),
@@ -789,8 +789,8 @@ class TurnPortTest : public ::testing::Test,
                                                      Port::ORIGIN_MESSAGE);
     Connection* conn2 = udp_port_->CreateConnection(turn_port_->Candidates()[0],
                                                     Port::ORIGIN_MESSAGE);
-    ASSERT_TRUE(conn1 != NULL);
-    ASSERT_TRUE(conn2 != NULL);
+    ASSERT_TRUE(conn1 != nullptr);
+    ASSERT_TRUE(conn2 != nullptr);
     conn1->RegisterReceivedPacketCallback(
         [&](Connection* connection, const ReceivedIpPacket& packet) {
           turn_packets_.push_back(
@@ -862,8 +862,8 @@ class TurnPortTest : public ::testing::Test,
                                                      Port::ORIGIN_MESSAGE);
     Connection* conn2 = udp_port_->CreateConnection(turn_port_->Candidates()[0],
                                                     Port::ORIGIN_MESSAGE);
-    ASSERT_TRUE(conn1 != NULL);
-    ASSERT_TRUE(conn2 != NULL);
+    ASSERT_TRUE(conn1 != nullptr);
+    ASSERT_TRUE(conn2 != nullptr);
     conn1->RegisterReceivedPacketCallback(
         [&](Connection* connection, const ReceivedIpPacket& packet) {
           turn_packets_.push_back(
@@ -1466,8 +1466,8 @@ TEST_F(TurnPortTest, TestStopProcessingPacketsAfterClosed) {
                                                    Port::ORIGIN_MESSAGE);
   Connection* conn2 = udp_port_->CreateConnection(turn_port_->Candidates()[0],
                                                   Port::ORIGIN_MESSAGE);
-  ASSERT_TRUE(conn1 != NULL);
-  ASSERT_TRUE(conn2 != NULL);
+  ASSERT_TRUE(conn1 != nullptr);
+  ASSERT_TRUE(conn2 != nullptr);
   // Make sure conn2 is writable.
   conn2->Ping(0);
   EXPECT_THAT(WaitUntil([&] { return conn2->write_state(); },
@@ -1494,13 +1494,13 @@ TEST_F(TurnPortTest, TestCreateConnectionWhenSocketClosed) {
   // Create a connection.
   Connection* conn1 = turn_port_->CreateConnection(udp_port_->Candidates()[0],
                                                    Port::ORIGIN_MESSAGE);
-  ASSERT_TRUE(conn1 != NULL);
+  ASSERT_TRUE(conn1 != nullptr);
 
   // Close the socket and create a connection again.
   turn_port_->OnSocketClose(turn_port_->socket(), 1);
   conn1 = turn_port_->CreateConnection(udp_port_->Candidates()[0],
                                        Port::ORIGIN_MESSAGE);
-  ASSERT_TRUE(conn1 == NULL);
+  ASSERT_TRUE(conn1 == nullptr);
 }
 
 // Tests that when a TCP socket is closed, the respective TURN connection will
@@ -1660,7 +1660,7 @@ TEST_F(TurnPortTest, TestRefreshCreatePermissionRequest) {
 
   Connection* conn = turn_port_->CreateConnection(udp_port_->Candidates()[0],
                                                   Port::ORIGIN_MESSAGE);
-  ASSERT_TRUE(conn != NULL);
+  ASSERT_TRUE(conn != nullptr);
   EXPECT_THAT(
       WaitUntil(
           [&] { return turn_create_permission_success_; }, IsTrue(),

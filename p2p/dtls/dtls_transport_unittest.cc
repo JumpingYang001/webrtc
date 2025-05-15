@@ -369,7 +369,7 @@ class DtlsTestClient : public sigslot::has_slots<> {
       RTC_LOG(LS_INFO) << "Found DTLS ACK";
     } else if (dtls_transport_->IsDtlsActive()) {
       if (IsRtpLeadByte(data[0])) {
-        ASSERT_TRUE(VerifyPacket(packet.payload(), NULL));
+        ASSERT_TRUE(VerifyPacket(packet.payload(), nullptr));
       } else if (packet_size_ && packet.payload().size() >= packet_size_) {
         ASSERT_TRUE(VerifyEncryptedPacket(data, packet.payload().size()));
       }

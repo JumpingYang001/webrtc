@@ -132,31 +132,31 @@ TCPPort::~TCPPort() {
 Connection* TCPPort::CreateConnection(const Candidate& address,
                                       CandidateOrigin origin) {
   if (!SupportsProtocol(address.protocol())) {
-    return NULL;
+    return nullptr;
   }
 
   if ((address.tcptype() == TCPTYPE_ACTIVE_STR && !address.is_prflx()) ||
       (address.tcptype().empty() && address.address().port() == 0)) {
     // It's active only candidate, we should not try to create connections
     // for these candidates.
-    return NULL;
+    return nullptr;
   }
 
   // We can't accept TCP connections incoming on other ports
   if (origin == ORIGIN_OTHER_PORT)
-    return NULL;
+    return nullptr;
 
   // We don't know how to act as an ssl server yet
   if ((address.protocol() == SSLTCP_PROTOCOL_NAME) &&
       (origin == ORIGIN_THIS_PORT)) {
-    return NULL;
+    return nullptr;
   }
 
   if (!IsCompatibleAddress(address.address())) {
-    return NULL;
+    return nullptr;
   }
 
-  TCPConnection* conn = NULL;
+  TCPConnection* conn = nullptr;
   if (AsyncPacketSocket* socket = GetIncoming(address.address(), true)) {
     // Incoming connection; we already created a socket and connected signals,
     // so we need to hand off the "read packet" responsibility to
@@ -205,7 +205,7 @@ int TCPPort::SendTo(const void* data,
                     const SocketAddress& addr,
                     const AsyncSocketPacketOptions& options,
                     bool payload) {
-  AsyncPacketSocket* socket = NULL;
+  AsyncPacketSocket* socket = nullptr;
   TCPConnection* conn = static_cast<TCPConnection*>(GetConnection(addr));
 
   // For Connection, this is the code path used by Ping() to establish
@@ -313,7 +313,7 @@ void TCPPort::TryCreateServerSocket() {
 
 AsyncPacketSocket* TCPPort::GetIncoming(const SocketAddress& addr,
                                         bool remove) {
-  AsyncPacketSocket* socket = NULL;
+  AsyncPacketSocket* socket = nullptr;
   for (std::list<Incoming>::iterator it = incoming_.begin();
        it != incoming_.end(); ++it) {
     if (it->addr == addr) {
@@ -350,7 +350,7 @@ TCPConnection::TCPConnection(WeakPtr<Port> tcp_port,
     : Connection(std::move(tcp_port), 0, candidate),
       socket_(socket),
       error_(0),
-      outgoing_(socket == NULL),
+      outgoing_(socket == nullptr),
       connection_pending_(false),
       pretending_to_be_writable_(false),
       reconnection_timeout_(CONNECTION_WRITE_CONNECT_TIMEOUT) {

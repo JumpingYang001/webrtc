@@ -53,7 +53,7 @@ class StunServerTest : public ::testing::Test {
   }
   bool ReceiveFails() { return (client_->CheckNoPacket()); }
   StunMessage* Receive() {
-    StunMessage* msg = NULL;
+    StunMessage* msg = nullptr;
     std::unique_ptr<TestClient::Packet> packet =
         client_->NextPacket(TestClient::kTimeoutMs);
     if (packet) {
@@ -78,13 +78,13 @@ TEST_F(StunServerTest, TestGood) {
   Send(req);
 
   StunMessage* msg = Receive();
-  ASSERT_TRUE(msg != NULL);
+  ASSERT_TRUE(msg != nullptr);
   EXPECT_EQ(STUN_BINDING_RESPONSE, msg->type());
   EXPECT_EQ(req.transaction_id(), msg->transaction_id());
 
   const StunAddressAttribute* mapped_addr =
       msg->GetAddress(STUN_ATTR_MAPPED_ADDRESS);
-  EXPECT_TRUE(mapped_addr != NULL);
+  EXPECT_TRUE(mapped_addr != nullptr);
   EXPECT_EQ(1, mapped_addr->family());
   EXPECT_EQ(client_addr.port(), mapped_addr->port());
 
@@ -99,13 +99,13 @@ TEST_F(StunServerTest, TestGoodXorMappedAddr) {
   Send(req);
 
   StunMessage* msg = Receive();
-  ASSERT_TRUE(msg != NULL);
+  ASSERT_TRUE(msg != nullptr);
   EXPECT_EQ(STUN_BINDING_RESPONSE, msg->type());
   EXPECT_EQ(req.transaction_id(), msg->transaction_id());
 
   const StunAddressAttribute* mapped_addr =
       msg->GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  EXPECT_TRUE(mapped_addr != NULL);
+  EXPECT_TRUE(mapped_addr != nullptr);
   EXPECT_EQ(1, mapped_addr->family());
   EXPECT_EQ(client_addr.port(), mapped_addr->port());
 
@@ -120,13 +120,13 @@ TEST_F(StunServerTest, TestNoXorMappedAddr) {
   Send(req);
 
   StunMessage* msg = Receive();
-  ASSERT_TRUE(msg != NULL);
+  ASSERT_TRUE(msg != nullptr);
   EXPECT_EQ(STUN_BINDING_RESPONSE, msg->type());
   EXPECT_EQ(req.transaction_id(), msg->transaction_id());
 
   const StunAddressAttribute* mapped_addr =
       msg->GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  EXPECT_TRUE(mapped_addr == NULL);
+  EXPECT_TRUE(mapped_addr == nullptr);
 
   delete msg;
 }

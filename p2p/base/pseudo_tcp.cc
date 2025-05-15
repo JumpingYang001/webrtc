@@ -915,7 +915,7 @@ bool PseudoTcp::process(Segment& seg) {
     } else {
       uint32_t nOffset = seg.seq - m_rcv_nxt;
 
-      if (!m_rbuf.WriteOffset(seg.data, seg.len, nOffset, NULL)) {
+      if (!m_rbuf.WriteOffset(seg.data, seg.len, nOffset, nullptr)) {
         // Ignore incoming packets outside of the receive window.
         return false;
       }

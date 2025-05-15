@@ -55,7 +55,7 @@ class StunRequestTest : public ::testing::Test {
                    OnSendPacket(data, size, request);
                  }),
         request_count_(0),
-        response_(NULL),
+        response_(nullptr),
         success_(false),
         failure_(false),
         timeout_(false) {}
@@ -143,7 +143,7 @@ TEST_F(StunRequestTest, TestUnexpected) {
   manager_.Send(request);
   EXPECT_FALSE(manager_.CheckResponse(res.get()));
 
-  EXPECT_TRUE(response_ == NULL);
+  EXPECT_TRUE(response_ == nullptr);
   EXPECT_FALSE(success_);
   EXPECT_FALSE(failure_);
   EXPECT_FALSE(timeout_);
@@ -187,7 +187,7 @@ TEST_F(StunRequestTest, TestTimeout) {
   SIMULATED_WAIT(false, STUN_TOTAL_TIMEOUT, fake_clock);
 
   EXPECT_FALSE(manager_.CheckResponse(res.get()));
-  EXPECT_TRUE(response_ == NULL);
+  EXPECT_TRUE(response_ == nullptr);
   EXPECT_FALSE(success_);
   EXPECT_FALSE(failure_);
   EXPECT_TRUE(timeout_);

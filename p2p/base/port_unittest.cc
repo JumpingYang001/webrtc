@@ -334,7 +334,7 @@ class TestChannel : public sigslot::has_slots<> {
       conn_->SignalDestroyed.disconnect(this);
       conn_ = nullptr;
     }
-    ASSERT_TRUE(remote_request_.get() != NULL);
+    ASSERT_TRUE(remote_request_.get() != nullptr);
     Candidate c = remote_candidate;
     c.set_address(remote_address_);
     conn_ = port_->CreateConnection(c, Port::ORIGIN_MESSAGE);
@@ -375,9 +375,9 @@ class TestChannel : public sigslot::has_slots<> {
         msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY);
     const StunUInt32Attribute* fingerprint_attr =
         msg->GetUInt32(STUN_ATTR_FINGERPRINT);
-    EXPECT_TRUE(priority_attr != NULL);
-    EXPECT_TRUE(mi_attr != NULL);
-    EXPECT_TRUE(fingerprint_attr != NULL);
+    EXPECT_TRUE(priority_attr != nullptr);
+    EXPECT_TRUE(mi_attr != nullptr);
+    EXPECT_TRUE(fingerprint_attr != nullptr);
     remote_address_ = addr;
     remote_request_ = CopyStunMessage(*msg);
     remote_frag_ = rf;
@@ -994,7 +994,7 @@ void PortTest::TestConnectivity(absl::string_view name1,
 
   // Send a ping from src to dst. This may or may not make it.
   ch1.CreateConnection(GetCandidate(ch2.port()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_THAT(
       webrtc::WaitUntil(
           [&] { return ch1.conn()->connected(); }, IsTrue(),
@@ -1017,7 +1017,7 @@ void PortTest::TestConnectivity(absl::string_view name1,
 
     // Send a ping from dst to src.
     ch2.AcceptConnection(GetCandidate(ch1.port()));
-    ASSERT_TRUE(ch2.conn() != NULL);
+    ASSERT_TRUE(ch2.conn() != nullptr);
     ch2.Ping();
     EXPECT_THAT(
         webrtc::WaitUntil(
@@ -1033,7 +1033,7 @@ void PortTest::TestConnectivity(absl::string_view name1,
 
     // Send a ping from dst to src. Again, this may or may not make it.
     ch2.CreateConnection(GetCandidate(ch1.port()));
-    ASSERT_TRUE(ch2.conn() != NULL);
+    ASSERT_TRUE(ch2.conn() != nullptr);
     ch2.Ping();
     SIMULATED_WAIT(ch2.conn()->write_state() == Connection::STATE_WRITABLE,
                    kShortTimeout, clock);
@@ -1073,7 +1073,7 @@ void PortTest::TestConnectivity(absl::string_view name1,
 
       // Pick up the actual address and establish the connection.
       ch2.AcceptConnection(GetCandidate(ch1.port()));
-      ASSERT_TRUE(ch2.conn() != NULL);
+      ASSERT_TRUE(ch2.conn() != nullptr);
       ch2.Ping();
       EXPECT_THAT(
           webrtc::WaitUntil(
@@ -1108,8 +1108,8 @@ void PortTest::TestConnectivity(absl::string_view name1,
   }
 
   // Everything should be good, unless we know the situation is impossible.
-  ASSERT_TRUE(ch1.conn() != NULL);
-  ASSERT_TRUE(ch2.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
+  ASSERT_TRUE(ch2.conn() != nullptr);
   if (possible) {
     EXPECT_TRUE(ch1.conn()->receiving());
     EXPECT_EQ(Connection::STATE_WRITABLE, ch1.conn()->write_state());
@@ -1138,15 +1138,15 @@ void PortTest::TestConnectivity(absl::string_view name1,
 class FakePacketSocketFactory : public PacketSocketFactory {
  public:
   FakePacketSocketFactory()
-      : next_udp_socket_(NULL), next_server_tcp_socket_(NULL) {}
+      : next_udp_socket_(nullptr), next_server_tcp_socket_(nullptr) {}
   ~FakePacketSocketFactory() override {}
 
   AsyncPacketSocket* CreateUdpSocket(const SocketAddress& address,
                                      uint16_t min_port,
                                      uint16_t max_port) override {
-    EXPECT_TRUE(next_udp_socket_ != NULL);
+    EXPECT_TRUE(next_udp_socket_ != nullptr);
     AsyncPacketSocket* result = next_udp_socket_;
-    next_udp_socket_ = NULL;
+    next_udp_socket_ = nullptr;
     return result;
   }
 
@@ -1154,9 +1154,9 @@ class FakePacketSocketFactory : public PacketSocketFactory {
                                            uint16_t min_port,
                                            uint16_t max_port,
                                            int opts) override {
-    EXPECT_TRUE(next_server_tcp_socket_ != NULL);
+    EXPECT_TRUE(next_server_tcp_socket_ != nullptr);
     AsyncListenSocket* result = next_server_tcp_socket_;
-    next_server_tcp_socket_ = NULL;
+    next_server_tcp_socket_ = nullptr;
     return result;
   }
 
@@ -1761,7 +1761,7 @@ TEST_F(PortTest, TestTcpNoDelay) {
               webrtc::IsRtcOk());
   // Connect and send a ping from src to dst.
   ch1.CreateConnection(GetCandidate(ch2.port()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_THAT(
       webrtc::WaitUntil(
           [&] { return ch1.conn()->connected(); }, IsTrue(),
@@ -1772,7 +1772,7 @@ TEST_F(PortTest, TestTcpNoDelay) {
 
   // Accept the connection.
   ch2.AcceptConnection(GetCandidate(ch1.port()));
-  ASSERT_TRUE(ch2.conn() != NULL);
+  ASSERT_TRUE(ch2.conn() != nullptr);
 
   option_value = -1;
   success = static_cast<TCPConnection*>(ch1.conn())
@@ -1878,11 +1878,11 @@ void PortTest::TestCrossFamilyPorts(int type) {
   }
   Connection* c = ports[0]->CreateConnection(GetCandidate(ports[2].get()),
                                              Port::ORIGIN_MESSAGE);
-  EXPECT_TRUE(NULL == c);
+  EXPECT_TRUE(nullptr == c);
   EXPECT_EQ(0U, ports[0]->connections().size());
   c = ports[0]->CreateConnection(GetCandidate(ports[1].get()),
                                  Port::ORIGIN_MESSAGE);
-  EXPECT_FALSE(NULL == c);
+  EXPECT_FALSE(nullptr == c);
   EXPECT_EQ(1U, ports[0]->connections().size());
 
   // IPv6 Port, connects to IPv4 candidate and to IPv6 candidate.
@@ -1892,11 +1892,11 @@ void PortTest::TestCrossFamilyPorts(int type) {
   }
   c = ports[2]->CreateConnection(GetCandidate(ports[0].get()),
                                  Port::ORIGIN_MESSAGE);
-  EXPECT_TRUE(NULL == c);
+  EXPECT_TRUE(nullptr == c);
   EXPECT_EQ(0U, ports[2]->connections().size());
   c = ports[2]->CreateConnection(GetCandidate(ports[3].get()),
                                  Port::ORIGIN_MESSAGE);
-  EXPECT_FALSE(NULL == c);
+  EXPECT_FALSE(nullptr == c);
   EXPECT_EQ(1U, ports[2]->connections().size());
 }
 
@@ -1911,10 +1911,10 @@ TEST_F(PortTest, TestSkipCrossFamilyUdp) {
 void PortTest::ExpectPortsCanConnect(bool can_connect, Port* p1, Port* p2) {
   Connection* c = p1->CreateConnection(GetCandidate(p2), Port::ORIGIN_MESSAGE);
   if (can_connect) {
-    EXPECT_FALSE(NULL == c);
+    EXPECT_FALSE(nullptr == c);
     EXPECT_EQ(1U, p1->connections().size());
   } else {
-    EXPECT_TRUE(NULL == c);
+    EXPECT_TRUE(nullptr == c);
     EXPECT_EQ(0U, p1->connections().size());
   }
 }
@@ -2043,27 +2043,27 @@ TEST_F(PortTest, TestSendStunMessage) {
   EXPECT_FALSE(msg->IsLegacy());
   const StunByteStringAttribute* username_attr =
       msg->GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username_attr != NULL);
+  ASSERT_TRUE(username_attr != nullptr);
   const StunUInt32Attribute* priority_attr = msg->GetUInt32(STUN_ATTR_PRIORITY);
-  ASSERT_TRUE(priority_attr != NULL);
+  ASSERT_TRUE(priority_attr != nullptr);
   EXPECT_EQ(kDefaultPrflxPriority, priority_attr->value());
   EXPECT_EQ("rfrag:lfrag", username_attr->string_view());
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
   EXPECT_EQ(StunMessage::IntegrityStatus::kIntegrityOk,
             msg->ValidateMessageIntegrity("rpass"));
   const StunUInt64Attribute* ice_controlling_attr =
       msg->GetUInt64(STUN_ATTR_ICE_CONTROLLING);
-  ASSERT_TRUE(ice_controlling_attr != NULL);
+  ASSERT_TRUE(ice_controlling_attr != nullptr);
   EXPECT_EQ(lport->IceTiebreaker(), ice_controlling_attr->value());
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLED) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) != NULL);
-  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLED) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) != nullptr);
+  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != nullptr);
   EXPECT_TRUE(StunMessage::ValidateFingerprint(
       reinterpret_cast<const char*>(lport->last_stun_buf().data()),
       lport->last_stun_buf().size()));
 
   // Request should not include ping count.
-  ASSERT_TRUE(msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT) == NULL);
+  ASSERT_TRUE(msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT) == nullptr);
 
   // Save a copy of the BINDING-REQUEST for use below.
   std::unique_ptr<IceMessage> request = CopyStunMessage(*msg);
@@ -2072,7 +2072,7 @@ TEST_F(PortTest, TestSendStunMessage) {
   rconn->OnReadPacket(
       ReceivedIpPacket(lport->last_stun_buf(), SocketAddress(), std::nullopt));
   msg = rport->last_stun_msg();
-  ASSERT_TRUE(msg != NULL);
+  ASSERT_TRUE(msg != nullptr);
   EXPECT_EQ(STUN_BINDING_RESPONSE, msg->type());
   // Received a BINDING-RESPONSE.
   lconn->OnReadPacket(
@@ -2088,25 +2088,25 @@ TEST_F(PortTest, TestSendStunMessage) {
   EXPECT_FALSE(msg->IsLegacy());
   const StunAddressAttribute* addr_attr =
       msg->GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  ASSERT_TRUE(addr_attr != NULL);
+  ASSERT_TRUE(addr_attr != nullptr);
   EXPECT_EQ(lport->Candidates()[0].address(), addr_attr->GetAddress());
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
   EXPECT_EQ(StunMessage::IntegrityStatus::kIntegrityOk,
             msg->ValidateMessageIntegrity("rpass"));
-  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != NULL);
+  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != nullptr);
   EXPECT_TRUE(StunMessage::ValidateFingerprint(
       reinterpret_cast<const char*>(lport->last_stun_buf().data()),
       lport->last_stun_buf().size()));
   // No USERNAME or PRIORITY in ICE responses.
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USERNAME) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_PRIORITY) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MAPPED_ADDRESS) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLING) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLED) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USERNAME) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_PRIORITY) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MAPPED_ADDRESS) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLING) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_ICE_CONTROLLED) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == nullptr);
 
   // Response should not include ping count.
-  ASSERT_TRUE(msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT) == NULL);
+  ASSERT_TRUE(msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT) == nullptr);
 
   // Respond with a BINDING-ERROR-RESPONSE. This wouldn't happen in real life,
   // but we can do it here.
@@ -2114,23 +2114,23 @@ TEST_F(PortTest, TestSendStunMessage) {
       request.get(), lport->Candidates()[0].address(), STUN_ERROR_SERVER_ERROR,
       STUN_ERROR_REASON_SERVER_ERROR);
   msg = rport->last_stun_msg();
-  ASSERT_TRUE(msg != NULL);
+  ASSERT_TRUE(msg != nullptr);
   EXPECT_EQ(STUN_BINDING_ERROR_RESPONSE, msg->type());
   EXPECT_FALSE(msg->IsLegacy());
   const StunErrorCodeAttribute* error_attr = msg->GetErrorCode();
-  ASSERT_TRUE(error_attr != NULL);
+  ASSERT_TRUE(error_attr != nullptr);
   EXPECT_EQ(STUN_ERROR_SERVER_ERROR, error_attr->code());
   EXPECT_EQ(std::string(STUN_ERROR_REASON_SERVER_ERROR), error_attr->reason());
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
   EXPECT_EQ(StunMessage::IntegrityStatus::kIntegrityOk,
             msg->ValidateMessageIntegrity("rpass"));
-  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != NULL);
+  EXPECT_TRUE(msg->GetUInt32(STUN_ATTR_FINGERPRINT) != nullptr);
   EXPECT_TRUE(StunMessage::ValidateFingerprint(
       reinterpret_cast<const char*>(lport->last_stun_buf().data()),
       lport->last_stun_buf().size()));
   // No USERNAME with ICE.
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USERNAME) == NULL);
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_PRIORITY) == NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USERNAME) == nullptr);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_PRIORITY) == nullptr);
 
   // Testing STUN binding requests from rport --> lport, having ICE_CONTROLLED
   // and (incremented) RETRANSMIT_COUNT attributes.
@@ -2147,14 +2147,14 @@ TEST_F(PortTest, TestSendStunMessage) {
   EXPECT_EQ(STUN_BINDING_REQUEST, msg->type());
   const StunUInt64Attribute* ice_controlled_attr =
       msg->GetUInt64(STUN_ATTR_ICE_CONTROLLED);
-  ASSERT_TRUE(ice_controlled_attr != NULL);
+  ASSERT_TRUE(ice_controlled_attr != nullptr);
   EXPECT_EQ(rport->IceTiebreaker(), ice_controlled_attr->value());
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == nullptr);
 
   // Request should include ping count.
   const StunUInt32Attribute* retransmit_attr =
       msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT);
-  ASSERT_TRUE(retransmit_attr != NULL);
+  ASSERT_TRUE(retransmit_attr != nullptr);
   EXPECT_EQ(2U, retransmit_attr->value());
 
   // Respond with a BINDING-RESPONSE.
@@ -2180,7 +2180,7 @@ TEST_F(PortTest, TestSendStunMessage) {
 
   // Response should include same ping count.
   retransmit_attr = msg->GetUInt32(STUN_ATTR_RETRANSMIT_COUNT);
-  ASSERT_TRUE(retransmit_attr != NULL);
+  ASSERT_TRUE(retransmit_attr != nullptr);
   EXPECT_EQ(2U, retransmit_attr->value());
 }
 
@@ -2307,10 +2307,10 @@ TEST_F(PortTest, TestUseCandidateAttribute) {
   IceMessage* msg = lport->last_stun_msg();
   const StunUInt64Attribute* ice_controlling_attr =
       msg->GetUInt64(STUN_ATTR_ICE_CONTROLLING);
-  ASSERT_TRUE(ice_controlling_attr != NULL);
+  ASSERT_TRUE(ice_controlling_attr != nullptr);
   const StunByteStringAttribute* use_candidate_attr =
       msg->GetByteString(STUN_ATTR_USE_CANDIDATE);
-  ASSERT_TRUE(use_candidate_attr != NULL);
+  ASSERT_TRUE(use_candidate_attr != nullptr);
 }
 
 // Tests that when the network type changes, the network cost of the port will
@@ -2403,7 +2403,7 @@ TEST_F(PortTest, TestNetworkInfoAttribute) {
   IceMessage* msg = lport->last_stun_msg();
   const StunUInt32Attribute* network_info_attr =
       msg->GetUInt32(STUN_ATTR_GOOG_NETWORK_INFO);
-  ASSERT_TRUE(network_info_attr != NULL);
+  ASSERT_TRUE(network_info_attr != nullptr);
   uint32_t network_info = network_info_attr->value();
   EXPECT_EQ(lnetwork_id, network_info >> 16);
   // Default network has unknown type and cost kNetworkCostUnknown.
@@ -2423,7 +2423,7 @@ TEST_F(PortTest, TestNetworkInfoAttribute) {
       webrtc::IsRtcOk());
   msg = rport->last_stun_msg();
   network_info_attr = msg->GetUInt32(STUN_ATTR_GOOG_NETWORK_INFO);
-  ASSERT_TRUE(network_info_attr != NULL);
+  ASSERT_TRUE(network_info_attr != nullptr);
   network_info = network_info_attr->value();
   EXPECT_EQ(rnetwork_id, network_info >> 16);
   EXPECT_EQ(webrtc::kNetworkCostHigh, network_info & 0xFFFF);
@@ -2447,7 +2447,7 @@ TEST_F(PortTest, TestHandleStunMessage) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() != NULL);
+  EXPECT_TRUE(out_msg.get() != nullptr);
   EXPECT_EQ("lfrag", username);
 
   // BINDING-RESPONSE without username, with MESSAGE-INTEGRITY and FINGERPRINT.
@@ -2459,7 +2459,7 @@ TEST_F(PortTest, TestHandleStunMessage) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() != NULL);
+  EXPECT_TRUE(out_msg.get() != nullptr);
   EXPECT_EQ("", username);
 
   // BINDING-ERROR-RESPONSE without username, with error, M-I, and FINGERPRINT.
@@ -2471,9 +2471,9 @@ TEST_F(PortTest, TestHandleStunMessage) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() != NULL);
+  EXPECT_TRUE(out_msg.get() != nullptr);
   EXPECT_EQ("", username);
-  ASSERT_TRUE(out_msg->GetErrorCode() != NULL);
+  ASSERT_TRUE(out_msg->GetErrorCode() != nullptr);
   EXPECT_EQ(STUN_ERROR_SERVER_ERROR, out_msg->GetErrorCode()->code());
   EXPECT_EQ(std::string(STUN_ERROR_REASON_SERVER_ERROR),
             out_msg->GetErrorCode()->reason());
@@ -2495,7 +2495,7 @@ TEST_F(PortTest, TestHandleStunMessageBadUsername) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_BAD_REQUEST, port->last_stun_error_code());
 
@@ -2506,7 +2506,7 @@ TEST_F(PortTest, TestHandleStunMessageBadUsername) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_UNAUTHORIZED, port->last_stun_error_code());
 
@@ -2517,7 +2517,7 @@ TEST_F(PortTest, TestHandleStunMessageBadUsername) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_UNAUTHORIZED, port->last_stun_error_code());
 
@@ -2528,7 +2528,7 @@ TEST_F(PortTest, TestHandleStunMessageBadUsername) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_UNAUTHORIZED, port->last_stun_error_code());
 
@@ -2539,7 +2539,7 @@ TEST_F(PortTest, TestHandleStunMessageBadUsername) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_UNAUTHORIZED, port->last_stun_error_code());
 }
@@ -2561,7 +2561,7 @@ TEST_F(PortTest, TestHandleStunMessageBadMessageIntegrity) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_BAD_REQUEST, port->last_stun_error_code());
 
@@ -2573,7 +2573,7 @@ TEST_F(PortTest, TestHandleStunMessageBadMessageIntegrity) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(port.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() == NULL);
+  EXPECT_TRUE(out_msg.get() == nullptr);
   EXPECT_EQ("", username);
   EXPECT_EQ(STUN_ERROR_UNAUTHORIZED, port->last_stun_error_code());
 
@@ -2777,7 +2777,7 @@ TEST_F(PortTest, TestHandleStunBindingIndication) {
   WriteStunMessage(*in_msg, buf.get());
   EXPECT_TRUE(GetStunMessageFromBufferWriter(lport.get(), buf.get(), addr,
                                              &out_msg, &username));
-  EXPECT_TRUE(out_msg.get() != NULL);
+  EXPECT_TRUE(out_msg.get() != nullptr);
   EXPECT_EQ(out_msg->type(), STUN_BINDING_INDICATION);
   EXPECT_EQ("", username);
 
@@ -3165,7 +3165,7 @@ TEST_F(PortTest, TestWritableState) {
 
   // Send a ping from src to dst.
   ch1.CreateConnection(GetCandidate(ch2.port()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
   // for TCP connect
   EXPECT_THAT(
@@ -3258,7 +3258,7 @@ TEST_F(PortTest, TestWritableStateWithConfiguredThreshold) {
 
   // Send a ping from src to dst.
   ch1.CreateConnection(GetCandidate(ch2.port()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   ch1.Ping();
   SIMULATED_WAIT(!ch2.remote_address().IsNil(), kShortTimeout, clock);
 
@@ -3312,7 +3312,7 @@ TEST_F(PortTest, TestTimeoutForNeverWritable) {
   ch2.Start();
 
   ch1.CreateConnection(GetCandidate(ch2.port()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
 
   // Attempt to go directly to write timeout.
@@ -3349,7 +3349,7 @@ TEST_F(PortTest, TestIceLiteConnectivity) {
   ASSERT_FALSE(ice_lite_port->Candidates().empty());
 
   ch1.CreateConnection(GetCandidate(ice_lite_port.get()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
 
   // Send ping from full mode client.
@@ -3363,7 +3363,7 @@ TEST_F(PortTest, TestIceLiteConnectivity) {
                   {.timeout = TimeDelta::Millis(kDefaultTimeout)}),
               webrtc::IsRtcOk());
   IceMessage* msg = ice_full_port_ptr->last_stun_msg();
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) == nullptr);
 
   // Respond with a BINDING-RESPONSE from litemode client.
   // NOTE: Ideally we should't create connection at this stage from lite
@@ -3399,7 +3399,7 @@ TEST_F(PortTest, TestIceLiteConnectivity) {
                   {.timeout = TimeDelta::Millis(kDefaultTimeout)}),
               webrtc::IsRtcOk());
   msg = ice_full_port_ptr->last_stun_msg();
-  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) != NULL);
+  EXPECT_TRUE(msg->GetByteString(STUN_ATTR_USE_CANDIDATE) != nullptr);
   ch1.Stop();
 }
 
@@ -3476,7 +3476,7 @@ TEST_P(GoogPingTest, TestGoogPingAnnounceEnable) {
   ASSERT_FALSE(port2->Candidates().empty());
 
   ch1.CreateConnection(GetCandidate(port2.get()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
   ch1.conn()->SetIceFieldTrials(&trials);
 
@@ -3575,7 +3575,7 @@ TEST_F(PortTest, TestGoogPingUnsupportedVersionInStunBinding) {
   ASSERT_FALSE(port2->Candidates().empty());
 
   ch1.CreateConnection(GetCandidate(port2.get()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
   ch1.conn()->SetIceFieldTrials(&trials);
 
@@ -3650,7 +3650,7 @@ TEST_F(PortTest, TestGoogPingUnsupportedVersionInStunBindingResponse) {
   ASSERT_FALSE(port2->Candidates().empty());
 
   ch1.CreateConnection(GetCandidate(port2.get()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
   ch1.conn()->SetIceFieldTrials(&trials);
 
@@ -3854,7 +3854,7 @@ TEST_F(PortTest, TestErrorResponseMakesGoogPingFallBackToStunBinding) {
   ASSERT_FALSE(port2->Candidates().empty());
 
   ch1.CreateConnection(GetCandidate(port2.get()));
-  ASSERT_TRUE(ch1.conn() != NULL);
+  ASSERT_TRUE(ch1.conn() != nullptr);
   EXPECT_EQ(Connection::STATE_WRITE_INIT, ch1.conn()->write_state());
   ch1.conn()->SetIceFieldTrials(&trials);
 

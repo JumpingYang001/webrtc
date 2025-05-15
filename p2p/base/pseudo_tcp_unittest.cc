@@ -358,8 +358,8 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
  public:
   PseudoTcpTestPingPong()
       : iterations_remaining_(0),
-        sender_(NULL),
-        receiver_(NULL),
+        sender_(nullptr),
+        receiver_(nullptr),
         bytes_per_send_(0) {}
   void SetBytesPerSend(int bytes) { bytes_per_send_ = bytes; }
   void TestPingPong(int size, int iterations) {
