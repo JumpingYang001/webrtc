@@ -171,7 +171,7 @@ int16_t MaxAudioFrame(const Int16FrameData& frame) {
 void OpenFileAndWriteMessage(absl::string_view filename,
                              const MessageLite& msg) {
   FILE* file = fopen(std::string(filename).c_str(), "wb");
-  ASSERT_TRUE(file != NULL);
+  ASSERT_TRUE(file != nullptr);
 
   int32_t size = checked_cast<int32_t>(msg.ByteSizeLong());
   ASSERT_GT(size, 0);
@@ -253,7 +253,7 @@ void ClearTempOutFiles() {
 
 void OpenFileAndReadMessage(absl::string_view filename, MessageLite* msg) {
   FILE* file = fopen(std::string(filename).c_str(), "rb");
-  ASSERT_TRUE(file != NULL);
+  ASSERT_TRUE(file != nullptr);
   ReadMessageFromFile(file, msg);
   fclose(file);
 }
@@ -438,9 +438,9 @@ ApmTest::ApmTest()
       ref_filename_(GetReferenceFilename()),
       output_sample_rate_hz_(0),
       num_output_channels_(0),
-      far_file_(NULL),
-      near_file_(NULL),
-      out_file_(NULL) {
+      far_file_(nullptr),
+      near_file_(nullptr),
+      out_file_(nullptr) {
   apm_ = BuiltinAudioProcessingBuilder().Build(CreateEnvironment());
   AudioProcessing::Config apm_config = apm_->GetConfig();
   apm_config.gain_controller1.analog_gain_controller.enabled = false;
@@ -449,7 +449,7 @@ ApmTest::ApmTest()
 }
 
 void ApmTest::SetUp() {
-  ASSERT_TRUE(apm_.get() != NULL);
+  ASSERT_TRUE(apm_.get() != nullptr);
 
   Init(32000, 32000, 32000, 2, 2, 2, false);
 }
@@ -458,17 +458,17 @@ void ApmTest::TearDown() {
   if (far_file_) {
     ASSERT_EQ(0, fclose(far_file_));
   }
-  far_file_ = NULL;
+  far_file_ = nullptr;
 
   if (near_file_) {
     ASSERT_EQ(0, fclose(near_file_));
   }
-  near_file_ = NULL;
+  near_file_ = nullptr;
 
   if (out_file_) {
     ASSERT_EQ(0, fclose(out_file_));
   }
-  out_file_ = NULL;
+  out_file_ = nullptr;
 }
 
 void ApmTest::Init(AudioProcessing* ap) {
@@ -500,14 +500,16 @@ void ApmTest::Init(int sample_rate_hz,
   }
   std::string filename = ResourceFilePath("far", sample_rate_hz);
   far_file_ = fopen(filename.c_str(), "rb");
-  ASSERT_TRUE(far_file_ != NULL) << "Could not open file " << filename << "\n";
+  ASSERT_TRUE(far_file_ != nullptr)
+      << "Could not open file " << filename << "\n";
 
   if (near_file_) {
     ASSERT_EQ(0, fclose(near_file_));
   }
   filename = ResourceFilePath("near", sample_rate_hz);
   near_file_ = fopen(filename.c_str(), "rb");
-  ASSERT_TRUE(near_file_ != NULL) << "Could not open file " << filename << "\n";
+  ASSERT_TRUE(near_file_ != nullptr)
+      << "Could not open file " << filename << "\n";
 
   if (open_output_file) {
     if (out_file_) {
@@ -518,7 +520,7 @@ void ApmTest::Init(int sample_rate_hz,
         reverse_sample_rate_hz, num_input_channels, num_output_channels,
         num_reverse_channels, num_reverse_channels, kForward);
     out_file_ = fopen(filename.c_str(), "wb");
-    ASSERT_TRUE(out_file_ != NULL)
+    ASSERT_TRUE(out_file_ != nullptr)
         << "Could not open file " << filename << "\n";
   }
 }
@@ -552,7 +554,7 @@ bool ApmTest::ReadFrame(FILE* file,
 }
 
 bool ApmTest::ReadFrame(FILE* file, Int16FrameData* frame) {
-  return ReadFrame(file, frame, NULL);
+  return ReadFrame(file, frame, nullptr);
 }
 
 // If the end of the file has been reached, rewind it and attempt to read the
@@ -567,7 +569,7 @@ void ApmTest::ReadFrameWithRewind(FILE* /* file */,
 }
 
 void ApmTest::ReadFrameWithRewind(FILE* file, Int16FrameData* frame) {
-  ReadFrameWithRewind(file, frame, NULL);
+  ReadFrameWithRewind(file, frame, nullptr);
 }
 
 int ApmTest::ProcessStreamChooser(Format format) {
@@ -1429,7 +1431,7 @@ void ApmTest::ProcessDebugDump(absl::string_view in_filename,
                                int max_size_bytes) {
   TaskQueueForTest worker_queue("ApmTest_worker_queue");
   FILE* in_file = fopen(std::string(in_filename).c_str(), "rb");
-  ASSERT_TRUE(in_file != NULL);
+  ASSERT_TRUE(in_file != nullptr);
   audioproc::Event event_msg;
   bool first_init = true;
 
@@ -1541,9 +1543,9 @@ void ApmTest::VerifyDebugDumpTest(Format format) {
   FILE* ref_file = fopen(ref_filename.c_str(), "rb");
   FILE* out_file = fopen(out_filename.c_str(), "rb");
   FILE* limited_file = fopen(limited_filename.c_str(), "rb");
-  ASSERT_TRUE(ref_file != NULL);
-  ASSERT_TRUE(out_file != NULL);
-  ASSERT_TRUE(limited_file != NULL);
+  ASSERT_TRUE(ref_file != nullptr);
+  ASSERT_TRUE(out_file != nullptr);
+  ASSERT_TRUE(limited_file != nullptr);
   std::unique_ptr<uint8_t[]> ref_bytes;
   std::unique_ptr<uint8_t[]> out_bytes;
   std::unique_ptr<uint8_t[]> limited_bytes;
@@ -1626,7 +1628,7 @@ TEST_F(ApmTest, DebugDump) {
 
   // Verify the file has been written.
   FILE* fid = fopen(filename.c_str(), "r");
-  ASSERT_TRUE(fid != NULL);
+  ASSERT_TRUE(fid != nullptr);
 
   // Clean it up.
   ASSERT_EQ(0, fclose(fid));
@@ -1670,7 +1672,7 @@ TEST_F(ApmTest, DebugDumpFromFileHandle) {
 
   // Verify the file has been written.
   FILE* fid = fopen(filename.c_str(), "r");
-  ASSERT_TRUE(fid != NULL);
+  ASSERT_TRUE(fid != nullptr);
 
   // Clean it up.
   ASSERT_EQ(0, fclose(fid));
@@ -1989,10 +1991,10 @@ class AudioProcessingTest
             num_reverse_input_channels, num_reverse_output_channels, kReverse)
             .c_str(),
         "wb");
-    ASSERT_TRUE(far_file != NULL);
-    ASSERT_TRUE(near_file != NULL);
-    ASSERT_TRUE(out_file != NULL);
-    ASSERT_TRUE(rev_out_file != NULL);
+    ASSERT_TRUE(far_file != nullptr);
+    ASSERT_TRUE(near_file != nullptr);
+    ASSERT_TRUE(out_file != nullptr);
+    ASSERT_TRUE(rev_out_file != nullptr);
 
     ChannelBuffer<float> fwd_cb(AudioProcessing::GetFrameSize(input_rate),
                                 num_input_channels);
@@ -2123,8 +2125,8 @@ TEST_P(AudioProcessingTest, Formats) {
                                cf[i].num_reverse_output, file_direction)
                     .c_str(),
                 "rb");
-      ASSERT_TRUE(out_file != NULL);
-      ASSERT_TRUE(ref_file != NULL);
+      ASSERT_TRUE(out_file != nullptr);
+      ASSERT_TRUE(ref_file != nullptr);
 
       const size_t ref_samples_per_channel =
           AudioProcessing::GetFrameSize(ref_rate);

@@ -191,9 +191,9 @@ int EchoControlMobileImpl::ProcessCaptureAudio(AudioBuffer* audio,
       split_bands = nullptr;
     }
 
-    if (noisy == NULL) {
+    if (noisy == nullptr) {
       noisy = clean;
-      clean = NULL;
+      clean = nullptr;
     }
     for (size_t render = 0; render < stream_properties_->num_reverse_channels;
          ++render) {

@@ -77,7 +77,7 @@ TEST(AecDumper, WriteToFile) {
   // Verify the file has been written after the AecDump d-tor has
   // finished.
   FILE* fid = fopen(filename.c_str(), "r");
-  ASSERT_TRUE(fid != NULL);
+  ASSERT_TRUE(fid != nullptr);
 
   // Clean it up.
   ASSERT_EQ(0, fclose(fid));
