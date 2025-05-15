@@ -2294,7 +2294,7 @@ TEST_F(WebRtcVideoChannelBaseTest, SetSendSsrcAfterSetCodecs) {
 TEST_F(WebRtcVideoChannelBaseTest, SetSink) {
   RtpPacketReceived packet;
   packet.SetSsrc(kSsrc);
-  receive_channel_->SetDefaultSink(NULL);
+  receive_channel_->SetDefaultSink(nullptr);
   EXPECT_TRUE(SetDefaultCodec());
   EXPECT_TRUE(SetSend(true));
   EXPECT_EQ(0, renderer_.num_rendered_frames());

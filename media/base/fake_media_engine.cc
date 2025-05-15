@@ -494,7 +494,7 @@ bool FakeVideoMediaReceiveChannel::AddRecvStream(const StreamParams& sp) {
   if (!RtpReceiveChannelHelper<
           VideoMediaReceiveChannelInterface>::AddRecvStream(sp))
     return false;
-  sinks_[sp.first_ssrc()] = NULL;
+  sinks_[sp.first_ssrc()] = nullptr;
   output_delays_[sp.first_ssrc()] = 0;
   return true;
 }

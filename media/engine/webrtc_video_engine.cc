@@ -1869,7 +1869,7 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::WebRtcVideoSendStream(
 }
 
 WebRtcVideoSendChannel::WebRtcVideoSendStream::~WebRtcVideoSendStream() {
-  if (stream_ != NULL) {
+  if (stream_ != nullptr) {
     call_->DestroyVideoSendStream(stream_);
   }
 }
@@ -2605,7 +2605,7 @@ WebRtcVideoSendChannel::WebRtcVideoSendStream::GetAggregatedVideoSenderInfo(
 void WebRtcVideoSendChannel::WebRtcVideoSendStream::FillBitrateInfo(
     BandwidthEstimationInfo* bwe_info) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
-  if (stream_ == NULL) {
+  if (stream_ == nullptr) {
     return;
   }
   VideoSendStream::Stats stats = stream_->GetStats();
@@ -2659,7 +2659,7 @@ void WebRtcVideoSendChannel::WebRtcVideoSendStream::RecreateWebRtcStream() {
     config.encoder_settings.enable_frame_instrumentation_generator = true;
   }
 
-  if (stream_ != NULL) {
+  if (stream_ != nullptr) {
     // TODO: webrtc:40644448 - Make sure the stats are not updated between
     // GetStats and DestroyVideoSendStream.
     VideoSendStream::Stats stats = stream_->GetStats();
@@ -2672,7 +2672,7 @@ void WebRtcVideoSendChannel::WebRtcVideoSendStream::RecreateWebRtcStream() {
                                            parameters_.encoder_config.Copy());
   }
 
-  parameters_.encoder_config.encoder_specific_settings = NULL;
+  parameters_.encoder_config.encoder_specific_settings = nullptr;
 
   // Calls stream_->StartPerRtpStream() to start the VideoSendStream
   // if necessary conditions are met.
@@ -2688,7 +2688,7 @@ void WebRtcVideoSendChannel::WebRtcVideoSendStream::RecreateWebRtcStream() {
 void WebRtcVideoSendChannel::WebRtcVideoSendStream::GenerateKeyFrame(
     const std::vector<std::string>& rids) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
-  if (stream_ != NULL) {
+  if (stream_ != nullptr) {
     stream_->GenerateKeyFrame(rids);
   } else {
     RTC_LOG(LS_WARNING)
@@ -3416,12 +3416,12 @@ WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::WebRtcVideoReceiveStream(
     const FlexfecReceiveStream::Config& flexfec_config)
     : call_(call),
       stream_params_(sp),
-      stream_(NULL),
+      stream_(nullptr),
       default_stream_(default_stream),
       config_(std::move(config)),
       flexfec_config_(flexfec_config),
       flexfec_stream_(nullptr),
-      sink_(NULL),
+      sink_(nullptr),
       first_frame_timestamp_(-1),
       estimated_remote_start_ntp_time_ms_(0),
       receiving_(false) {
@@ -3725,7 +3725,7 @@ void WebRtcVideoReceiveChannel::WebRtcVideoReceiveStream::OnFrame(
   if (frame.ntp_time_ms() > 0)
     estimated_remote_start_ntp_time_ms_ = frame.ntp_time_ms() - elapsed_time_ms;
 
-  if (sink_ == NULL) {
+  if (sink_ == nullptr) {
     RTC_LOG(LS_WARNING)
         << "VideoReceiveStreamInterface not connected to a VideoSink.";
     return;

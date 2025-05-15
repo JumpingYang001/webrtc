@@ -102,7 +102,7 @@ TEST(StreamParams, HasSsrcGroup) {
 TEST(StreamParams, GetSsrcGroup) {
   webrtc::StreamParams sp =
       CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
-  EXPECT_EQ(NULL, sp.get_ssrc_group("xyz"));
+  EXPECT_EQ(nullptr, sp.get_ssrc_group("xyz"));
   EXPECT_EQ(&sp.ssrc_groups[0], sp.get_ssrc_group("XYZ"));
 }
 
