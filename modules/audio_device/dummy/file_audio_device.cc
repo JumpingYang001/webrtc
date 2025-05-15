@@ -32,9 +32,9 @@ const size_t kRecordingBufferSize =
 
 FileAudioDevice::FileAudioDevice(absl::string_view inputFilename,
                                  absl::string_view outputFilename)
-    : _ptrAudioBuffer(NULL),
-      _recordingBuffer(NULL),
-      _playoutBuffer(NULL),
+    : _ptrAudioBuffer(nullptr),
+      _recordingBuffer(nullptr),
+      _playoutBuffer(nullptr),
       _recordingFramesLeft(0),
       _playoutFramesLeft(0),
       _recordingBufferSizeIn10MS(0),
@@ -212,7 +212,7 @@ int32_t FileAudioDevice::StartPlayout() {
       RTC_LOG(LS_ERROR) << "Failed to open playout file: " << _outputFilename;
       _playing = false;
       delete[] _playoutBuffer;
-      _playoutBuffer = NULL;
+      _playoutBuffer = nullptr;
       return -1;
     }
   }
@@ -244,7 +244,7 @@ int32_t FileAudioDevice::StopPlayout() {
 
   _playoutFramesLeft = 0;
   delete[] _playoutBuffer;
-  _playoutBuffer = NULL;
+  _playoutBuffer = nullptr;
   _outputFile.Close();
 
   RTC_LOG(LS_INFO) << "Stopped playout capture to output file: "
@@ -273,7 +273,7 @@ int32_t FileAudioDevice::StartRecording() {
                         << _inputFilename;
       _recording = false;
       delete[] _recordingBuffer;
-      _recordingBuffer = NULL;
+      _recordingBuffer = nullptr;
       return -1;
     }
   }
@@ -304,7 +304,7 @@ int32_t FileAudioDevice::StopRecording() {
   _recordingFramesLeft = 0;
   if (_recordingBuffer) {
     delete[] _recordingBuffer;
-    _recordingBuffer = NULL;
+    _recordingBuffer = nullptr;
   }
   _inputFile.Close();
 

@@ -28,7 +28,7 @@
 namespace webrtc {
 namespace field_trial {
 
-static const char* trials_init_string = NULL;
+static const char* trials_init_string = nullptr;
 
 namespace {
 
@@ -127,7 +127,7 @@ std::string FindFullName(absl::string_view name) {
       << name << " is not registered, see g3doc/field-trials.md.";
 #endif
 
-  if (trials_init_string == NULL)
+  if (trials_init_string == nullptr)
     return std::string();
 
   absl::string_view trials_string(trials_init_string);

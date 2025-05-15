@@ -652,16 +652,16 @@ int32_t AudioDeviceModuleImpl::PlayoutDeviceName(
     char guid[kAdmMaxGuidSize]) {
   RTC_LOG(LS_INFO) << __FUNCTION__ << "(" << index << ", ...)";
   CHECKinitialized_();
-  if (name == NULL) {
+  if (name == nullptr) {
     return -1;
   }
   if (audio_device_->PlayoutDeviceName(index, name, guid) == -1) {
     return -1;
   }
-  if (name != NULL) {
+  if (name != nullptr) {
     RTC_LOG(LS_INFO) << "output: name = " << name;
   }
-  if (guid != NULL) {
+  if (guid != nullptr) {
     RTC_LOG(LS_INFO) << "output: guid = " << guid;
   }
   return 0;
@@ -673,16 +673,16 @@ int32_t AudioDeviceModuleImpl::RecordingDeviceName(
     char guid[kAdmMaxGuidSize]) {
   RTC_LOG(LS_INFO) << __FUNCTION__ << "(" << index << ", ...)";
   CHECKinitialized_();
-  if (name == NULL) {
+  if (name == nullptr) {
     return -1;
   }
   if (audio_device_->RecordingDeviceName(index, name, guid) == -1) {
     return -1;
   }
-  if (name != NULL) {
+  if (name != nullptr) {
     RTC_LOG(LS_INFO) << "output: name = " << name;
   }
-  if (guid != NULL) {
+  if (guid != nullptr) {
     RTC_LOG(LS_INFO) << "output: guid = " << guid;
   }
   return 0;

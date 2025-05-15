@@ -65,13 +65,13 @@ static const unsigned int ALSA_CAPTURE_WAIT_TIMEOUT = 5;     // in ms
 #define FUNC_GET_DEVICE_NAME_FOR_AN_ENUM 2
 
 AudioDeviceLinuxALSA::AudioDeviceLinuxALSA()
-    : _ptrAudioBuffer(NULL),
+    : _ptrAudioBuffer(nullptr),
       _inputDeviceIndex(0),
       _outputDeviceIndex(0),
       _inputDeviceIsSpecified(false),
       _outputDeviceIsSpecified(false),
-      _handleRecord(NULL),
-      _handlePlayout(NULL),
+      _handleRecord(nullptr),
+      _handlePlayout(nullptr),
       _recordingBuffersizeInFrame(0),
       _recordingPeriodSizeInFrame(0),
       _playoutBufferSizeInFrame(0),
@@ -84,8 +84,8 @@ AudioDeviceLinuxALSA::AudioDeviceLinuxALSA()
       _playoutFreq(ALSA_PLAYOUT_FREQ),
       _recChannels(ALSA_CAPTURE_CH),
       _playChannels(ALSA_PLAYOUT_CH),
-      _recordingBuffer(NULL),
-      _playoutBuffer(NULL),
+      _recordingBuffer(nullptr),
+      _playoutBuffer(nullptr),
       _recordingFramesLeft(0),
       _playoutFramesLeft(0),
       _initialized(false),
@@ -111,11 +111,11 @@ AudioDeviceLinuxALSA::~AudioDeviceLinuxALSA() {
   // Clean up the recording buffer and playout buffer.
   if (_recordingBuffer) {
     delete[] _recordingBuffer;
-    _recordingBuffer = NULL;
+    _recordingBuffer = nullptr;
   }
   if (_playoutBuffer) {
     delete[] _playoutBuffer;
-    _playoutBuffer = NULL;
+    _playoutBuffer = nullptr;
   }
 }
 
@@ -154,7 +154,7 @@ AudioDeviceGeneric::InitStatus AudioDeviceLinuxALSA::Init() {
   }
 #if defined(WEBRTC_USE_X11)
   // Get X display handle for typing detection
-  _XDisplay = XOpenDisplay(NULL);
+  _XDisplay = XOpenDisplay(nullptr);
   if (!_XDisplay) {
     RTC_LOG(LS_WARNING)
         << "failed to open X display, typing detection will not work";
@@ -186,7 +186,7 @@ int32_t AudioDeviceLinuxALSA::Terminate() {
 #if defined(WEBRTC_USE_X11)
   if (_XDisplay) {
     XCloseDisplay(_XDisplay);
-    _XDisplay = NULL;
+    _XDisplay = nullptr;
   }
 #endif
   _initialized = false;
@@ -616,13 +616,13 @@ int32_t AudioDeviceLinuxALSA::PlayoutDeviceName(
     char guid[kAdmMaxGuidSize]) {
   const uint16_t nDevices(PlayoutDevices());
 
-  if ((index > (nDevices - 1)) || (name == NULL)) {
+  if ((index > (nDevices - 1)) || (name == nullptr)) {
     return -1;
   }
 
   memset(name, 0, kAdmMaxDeviceNameSize);
 
-  if (guid != NULL) {
+  if (guid != nullptr) {
     memset(guid, 0, kAdmMaxGuidSize);
   }
 
@@ -635,13 +635,13 @@ int32_t AudioDeviceLinuxALSA::RecordingDeviceName(
     char guid[kAdmMaxGuidSize]) {
   const uint16_t nDevices(RecordingDevices());
 
-  if ((index > (nDevices - 1)) || (name == NULL)) {
+  if ((index > (nDevices - 1)) || (name == nullptr)) {
     return -1;
   }
 
   memset(name, 0, kAdmMaxDeviceNameSize);
 
-  if (guid != NULL) {
+  if (guid != nullptr) {
     memset(guid, 0, kAdmMaxGuidSize);
   }
 
@@ -759,9 +759,9 @@ int32_t AudioDeviceLinuxALSA::InitPlayoutLocked() {
 
   // Start by closing any existing wave-output devices
   //
-  if (_handlePlayout != NULL) {
+  if (_handlePlayout != nullptr) {
     LATE(snd_pcm_close)(_handlePlayout);
-    _handlePlayout = NULL;
+    _handlePlayout = nullptr;
     _playIsInitialized = false;
     if (errVal < 0) {
       RTC_LOG(LS_ERROR) << "Error closing current playout sound device, error: "
@@ -793,7 +793,7 @@ int32_t AudioDeviceLinuxALSA::InitPlayoutLocked() {
   if (errVal < 0) {
     RTC_LOG(LS_ERROR) << "unable to open playback device: "
                       << LATE(snd_strerror)(errVal) << " (" << errVal << ")";
-    _handlePlayout = NULL;
+    _handlePlayout = nullptr;
     return -1;
   }
 
@@ -817,7 +817,7 @@ int32_t AudioDeviceLinuxALSA::InitPlayoutLocked() {
                       << LATE(snd_strerror)(errVal) << " (" << errVal << ")";
     ErrorRecovery(errVal, _handlePlayout);
     errVal = LATE(snd_pcm_close)(_handlePlayout);
-    _handlePlayout = NULL;
+    _handlePlayout = nullptr;
     return -1;
   }
 
@@ -846,7 +846,7 @@ int32_t AudioDeviceLinuxALSA::InitPlayoutLocked() {
 
   // Init varaibles used for play
 
-  if (_handlePlayout != NULL) {
+  if (_handlePlayout != nullptr) {
     _playIsInitialized = true;
     return 0;
   } else {
@@ -881,9 +881,9 @@ int32_t AudioDeviceLinuxALSA::InitRecordingLocked() {
 
   // Start by closing any existing pcm-input devices
   //
-  if (_handleRecord != NULL) {
+  if (_handleRecord != nullptr) {
     errVal = LATE(snd_pcm_close)(_handleRecord);
-    _handleRecord = NULL;
+    _handleRecord = nullptr;
     _recIsInitialized = false;
     if (errVal < 0) {
       RTC_LOG(LS_ERROR)
@@ -917,7 +917,7 @@ int32_t AudioDeviceLinuxALSA::InitRecordingLocked() {
   if (errVal < 0) {
     RTC_LOG(LS_ERROR) << "unable to open record device: "
                       << LATE(snd_strerror)(errVal);
-    _handleRecord = NULL;
+    _handleRecord = nullptr;
     return -1;
   }
 
@@ -959,7 +959,7 @@ int32_t AudioDeviceLinuxALSA::InitRecordingLocked() {
                         << LATE(snd_strerror)(errVal) << " (" << errVal << ")";
       ErrorRecovery(errVal, _handleRecord);
       errVal = LATE(snd_pcm_close)(_handleRecord);
-      _handleRecord = NULL;
+      _handleRecord = nullptr;
       return -1;
     }
   }
@@ -987,7 +987,7 @@ int32_t AudioDeviceLinuxALSA::InitRecordingLocked() {
   _recordingBufferSizeIn10MS =
       LATE(snd_pcm_frames_to_bytes)(_handleRecord, _recordingFramesIn10MS);
 
-  if (_handleRecord != NULL) {
+  if (_handleRecord != nullptr) {
     // Mark recording side as initialized
     _recIsInitialized = true;
     return 0;
@@ -1062,7 +1062,7 @@ int32_t AudioDeviceLinuxALSA::StopRecordingLocked() {
     return 0;
   }
 
-  if (_handleRecord == NULL) {
+  if (_handleRecord == nullptr) {
     return -1;
   }
 
@@ -1075,7 +1075,7 @@ int32_t AudioDeviceLinuxALSA::StopRecordingLocked() {
   _recordingFramesLeft = 0;
   if (_recordingBuffer) {
     delete[] _recordingBuffer;
-    _recordingBuffer = NULL;
+    _recordingBuffer = nullptr;
   }
 
   // Stop and close pcm recording device.
@@ -1100,7 +1100,7 @@ int32_t AudioDeviceLinuxALSA::StopRecordingLocked() {
   }
 
   // set the pcm input handle to NULL
-  _handleRecord = NULL;
+  _handleRecord = nullptr;
   return 0;
 }
 
@@ -1167,7 +1167,7 @@ int32_t AudioDeviceLinuxALSA::StopPlayoutLocked() {
     return 0;
   }
 
-  if (_handlePlayout == NULL) {
+  if (_handlePlayout == nullptr) {
     return -1;
   }
 
@@ -1178,7 +1178,7 @@ int32_t AudioDeviceLinuxALSA::StopPlayoutLocked() {
 
   _playoutFramesLeft = 0;
   delete[] _playoutBuffer;
-  _playoutBuffer = NULL;
+  _playoutBuffer = nullptr;
 
   // stop and close pcm playout device
   int errVal = LATE(snd_pcm_drop)(_handlePlayout);
@@ -1193,7 +1193,7 @@ int32_t AudioDeviceLinuxALSA::StopPlayoutLocked() {
 
   // set the pcm input handle to NULL
   _playIsInitialized = false;
-  _handlePlayout = NULL;
+  _handlePlayout = nullptr;
   RTC_LOG(LS_VERBOSE) << "handle_playout is now set to NULL";
 
   return 0;
@@ -1261,7 +1261,7 @@ int32_t AudioDeviceLinuxALSA::GetDevicesInfo(const int32_t function,
       return 0;
     }
 
-    for (void** list = hints; *list != NULL; ++list) {
+    for (void** list = hints; *list != nullptr; ++list) {
       char* actualType = LATE(snd_device_name_get_hint)(*list, "IOID");
       if (actualType) {  // NULL means it's both.
         bool wrongType = (strcmp(actualType, type) != 0);
@@ -1351,7 +1351,7 @@ int32_t AudioDeviceLinuxALSA::GetDevicesInfo(const int32_t function,
 }
 
 int32_t AudioDeviceLinuxALSA::InputSanityCheckAfterUnlockedPeriod() const {
-  if (_handleRecord == NULL) {
+  if (_handleRecord == nullptr) {
     RTC_LOG(LS_ERROR) << "input state has been modified during unlocked period";
     return -1;
   }
@@ -1359,7 +1359,7 @@ int32_t AudioDeviceLinuxALSA::InputSanityCheckAfterUnlockedPeriod() const {
 }
 
 int32_t AudioDeviceLinuxALSA::OutputSanityCheckAfterUnlockedPeriod() const {
-  if (_handlePlayout == NULL) {
+  if (_handlePlayout == nullptr) {
     RTC_LOG(LS_ERROR)
         << "output state has been modified during unlocked period";
     return -1;
