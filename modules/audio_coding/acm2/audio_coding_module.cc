@@ -221,7 +221,7 @@ AudioCodingModuleImpl::AudioCodingModuleImpl()
       previous_pltype_(255),
       first_10ms_data_(false),
       first_frame_(true),
-      packetization_callback_(NULL),
+      packetization_callback_(nullptr),
       codec_histogram_bins_log_(),
       number_of_consecutive_empty_packets_(0) {
   RTC_LOG(LS_INFO) << "Created";

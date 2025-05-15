@@ -134,7 +134,7 @@ bool RTPBuffer::EndOfFile() const {
 void RTPFile::Open(absl::string_view filename, absl::string_view mode) {
   std::string filename_str = std::string(filename);
   if ((_rtpFile = fopen(filename_str.c_str(), std::string(mode).c_str())) ==
-      NULL) {
+      nullptr) {
     printf("Cannot write file %s.\n", filename_str.c_str());
     ADD_FAILURE() << "Unable to write file";
     exit(1);
@@ -142,9 +142,9 @@ void RTPFile::Open(absl::string_view filename, absl::string_view mode) {
 }
 
 void RTPFile::Close() {
-  if (_rtpFile != NULL) {
+  if (_rtpFile != nullptr) {
     fclose(_rtpFile);
-    _rtpFile = NULL;
+    _rtpFile = nullptr;
   }
 }
 
@@ -165,7 +165,7 @@ void RTPFile::ReadHeader() {
   uint32_t start_sec, start_usec, source;
   uint16_t port, padding;
   char fileHeader[40];
-  EXPECT_TRUE(fgets(fileHeader, 40, _rtpFile) != 0);
+  EXPECT_TRUE(fgets(fileHeader, 40, _rtpFile) != nullptr);
   EXPECT_EQ(1u, fread(&start_sec, 4, 1, _rtpFile));
   start_sec = ntohl(start_sec);
   EXPECT_EQ(1u, fread(&start_usec, 4, 1, _rtpFile));

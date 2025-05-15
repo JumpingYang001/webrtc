@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
   char inname[80], outname[40], bitname[40];
   FILE* inp;
   FILE* outp;
-  FILE* bitp = NULL;
+  FILE* bitp = nullptr;
   int framecnt;
   bool endfile;
 
@@ -94,17 +94,17 @@ int main(int argc, char* argv[]) {
   sscanf(argv[4], "%s", outname);
   if (argc == 6) {
     sscanf(argv[5], "%s", bitname);
-    if ((bitp = fopen(bitname, "wb")) == NULL) {
+    if ((bitp = fopen(bitname, "wb")) == nullptr) {
       printf("  G.711: Cannot read file %s.\n", bitname);
       exit(1);
     }
   }
 
-  if ((inp = fopen(inname, "rb")) == NULL) {
+  if ((inp = fopen(inname, "rb")) == nullptr) {
     printf("  G.711: Cannot read file %s.\n", inname);
     exit(1);
   }
-  if ((outp = fopen(outname, "wb")) == NULL) {
+  if ((outp = fopen(outname, "wb")) == nullptr) {
     printf("  G.711: Cannot write file %s.\n", outname);
     exit(1);
   }

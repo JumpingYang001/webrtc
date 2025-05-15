@@ -68,7 +68,7 @@ class AudioEncoderCopyRedTest : public ::testing::Test {
   void TearDown() override { red_.reset(); }
 
   void Encode() {
-    ASSERT_TRUE(red_.get() != NULL);
+    ASSERT_TRUE(red_.get() != nullptr);
     encoded_.Clear();
     encoded_info_ = red_->Encode(
         timestamp_, ArrayView<const int16_t>(audio_, num_audio_samples_10ms),
@@ -650,9 +650,9 @@ TEST_F(AudioEncoderCopyRedDeathTest, WrongFrameSize) {
 
 TEST_F(AudioEncoderCopyRedDeathTest, NullSpeechEncoder) {
   test::ScopedKeyValueConfig field_trials;
-  AudioEncoderCopyRed* red = NULL;
+  AudioEncoderCopyRed* red = nullptr;
   AudioEncoderCopyRed::Config config;
-  config.speech_encoder = NULL;
+  config.speech_encoder = nullptr;
   RTC_EXPECT_DEATH(
       red = new AudioEncoderCopyRed(std::move(config), field_trials),
       "Speech encoder not provided.");

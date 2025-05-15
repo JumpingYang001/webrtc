@@ -332,7 +332,7 @@ TEST(TimestampScaler, Failures) {
   uint32_t timestamp = 4711;  // Some number.
   EXPECT_EQ(timestamp, scaler.ToInternal(timestamp, kRtpPayloadType));
 
-  Packet* packet = NULL;
+  Packet* packet = nullptr;
   scaler.ToInternal(packet);  // Should not crash. That's all we can test.
 
   EXPECT_CALL(db, Die());  // Called when database object is deleted.

@@ -69,7 +69,7 @@ ResultSink::ResultSink(absl::string_view output_file)
     : output_fp_(nullptr), digest_(MessageDigestFactory::Create(DIGEST_SHA_1)) {
   if (!output_file.empty()) {
     output_fp_ = fopen(std::string(output_file).c_str(), "wb");
-    EXPECT_TRUE(output_fp_ != NULL);
+    EXPECT_TRUE(output_fp_ != nullptr);
   }
 }
 

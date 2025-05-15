@@ -188,7 +188,7 @@ const DecoderDatabase::DecoderInfo* DecoderDatabase::GetDecoderInfo(
   DecoderMap::const_iterator it = decoders_.find(rtp_payload_type);
   if (it == decoders_.end()) {
     // Decoder not found.
-    return NULL;
+    return nullptr;
   }
   return &it->second;
 }
@@ -221,7 +221,7 @@ int DecoderDatabase::SetActiveDecoder(uint8_t rtp_payload_type,
 AudioDecoder* DecoderDatabase::GetActiveDecoder() const {
   if (active_decoder_type_ < 0) {
     // No active decoder.
-    return NULL;
+    return nullptr;
   }
   return GetDecoder(active_decoder_type_);
 }
@@ -246,7 +246,7 @@ int DecoderDatabase::SetActiveCngDecoder(uint8_t rtp_payload_type) {
 ComfortNoiseDecoder* DecoderDatabase::GetActiveCngDecoder() const {
   if (active_cng_decoder_type_ < 0) {
     // No active CNG decoder.
-    return NULL;
+    return nullptr;
   }
   if (!active_cng_decoder_) {
     active_cng_decoder_.reset(new ComfortNoiseDecoder);

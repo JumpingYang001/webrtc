@@ -50,7 +50,7 @@ TEST(Expand, CreateUsingFactory) {
   ExpandFactory expand_factory;
   Expand* expand = expand_factory.Create(&bgn, &sync_buffer, &random_vector,
                                          &statistics, fs, channels);
-  EXPECT_TRUE(expand != NULL);
+  EXPECT_TRUE(expand != nullptr);
   delete expand;
 }
 

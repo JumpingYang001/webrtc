@@ -56,7 +56,7 @@ namespace webrtc {
 
 // Class for simulating packet handling.
 TestPack::TestPack()
-    : neteq_(NULL),
+    : neteq_(nullptr),
       sequence_number_(0),
       timestamp_diff_(0),
       last_in_timestamp_(0),
@@ -121,15 +121,15 @@ TestAllCodecs::TestAllCodecs()
       neteq_(DefaultNetEqFactory().Create(env_,
                                           NetEq::Config(),
                                           CreateBuiltinAudioDecoderFactory())),
-      channel_a_to_b_(NULL),
+      channel_a_to_b_(nullptr),
       test_count_(0),
       packet_size_samples_(0),
       packet_size_bytes_(0) {}
 
 TestAllCodecs::~TestAllCodecs() {
-  if (channel_a_to_b_ != NULL) {
+  if (channel_a_to_b_ != nullptr) {
     delete channel_a_to_b_;
-    channel_a_to_b_ = NULL;
+    channel_a_to_b_ = nullptr;
   }
 }
 

@@ -42,7 +42,7 @@ namespace webrtc {
 
 // Class for simulating packet handling
 TestPackStereo::TestPackStereo()
-    : neteq_(NULL),
+    : neteq_(nullptr),
       seq_no_(0),
       timestamp_diff_(0),
       last_in_timestamp_(0),
@@ -120,16 +120,16 @@ TestStereo::TestStereo()
       neteq_(DefaultNetEqFactory().Create(env_,
                                           NetEq::Config(),
                                           CreateBuiltinAudioDecoderFactory())),
-      channel_a2b_(NULL),
+      channel_a2b_(nullptr),
       test_cntr_(0),
       pack_size_samp_(0),
       pack_size_bytes_(0),
       counter_(0) {}
 
 TestStereo::~TestStereo() {
-  if (channel_a2b_ != NULL) {
+  if (channel_a2b_ != nullptr) {
     delete channel_a2b_;
-    channel_a2b_ = NULL;
+    channel_a2b_ = nullptr;
   }
 }
 
@@ -152,7 +152,7 @@ void TestStereo::Perform() {
   in_file_mono_->ReadStereo(false);
 
   // Create and initialize two ACMs, one for each side of a one-to-one call.
-  ASSERT_TRUE((acm_a_.get() != NULL) && (neteq_.get() != NULL));
+  ASSERT_TRUE((acm_a_.get() != nullptr) && (neteq_.get() != nullptr));
   neteq_->FlushBuffers();
 
   neteq_->SetCodecs({{103, {"ISAC", 16000, 1}},
@@ -474,7 +474,7 @@ void TestStereo::RegisterSendCodec(char side,
                                 0.875);
 
   // Set pointer to the ACM where to register the codec
-  AudioCodingModule* my_acm = NULL;
+  AudioCodingModule* my_acm = nullptr;
   switch (side) {
     case 'A': {
       my_acm = acm_a_.get();
@@ -489,7 +489,7 @@ void TestStereo::RegisterSendCodec(char side,
     default:
       break;
   }
-  ASSERT_TRUE(my_acm != NULL);
+  ASSERT_TRUE(my_acm != nullptr);
 
   auto encoder_factory = CreateBuiltinAudioEncoderFactory();
   const int clockrate_hz = absl::EqualsIgnoreCase(codec_name, "g722")

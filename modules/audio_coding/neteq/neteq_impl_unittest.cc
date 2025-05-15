@@ -156,13 +156,14 @@ class NetEqImplTest : public ::testing::Test {
         new TimestampScaler(*deps.decoder_database.get()));
 
     neteq_.reset(new NetEqImpl(config_, std::move(deps)));
-    ASSERT_TRUE(neteq_ != NULL);
+    ASSERT_TRUE(neteq_ != nullptr);
   }
 
   void CreateInstance() { CreateInstance(CreateBuiltinAudioDecoderFactory()); }
 
   void UseNoMocks() {
-    ASSERT_TRUE(neteq_ == NULL) << "Must call UseNoMocks before CreateInstance";
+    ASSERT_TRUE(neteq_ == nullptr)
+        << "Must call UseNoMocks before CreateInstance";
     use_mock_decoder_database_ = false;
     use_mock_neteq_controller_ = false;
     use_mock_dtmf_buffer_ = false;
@@ -568,7 +569,7 @@ TEST_F(NetEqImplTest, VerifyTimestampPropagation) {
   // Check the timestamp for the last value in the sync buffer. This should
   // be one full frame length ahead of the RTP timestamp.
   const SyncBuffer* sync_buffer = neteq_->sync_buffer_for_test();
-  ASSERT_TRUE(sync_buffer != NULL);
+  ASSERT_TRUE(sync_buffer != nullptr);
   EXPECT_EQ(rtp_header.timestamp + kPayloadLengthSamples,
             sync_buffer->end_timestamp());
 

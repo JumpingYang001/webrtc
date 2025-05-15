@@ -549,7 +549,7 @@ ChannelSend::~ChannelSend() {
     frame_transformer_delegate_->Reset();
 
   StopSend();
-  int error = audio_coding_->RegisterTransportCallback(NULL);
+  int error = audio_coding_->RegisterTransportCallback(nullptr);
   RTC_DCHECK_EQ(0, error);
 
   // Delete the encoder task queue first to ensure that there are no running

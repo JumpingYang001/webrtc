@@ -46,8 +46,8 @@ OpusSpeedTest::OpusSpeedTest()
     : AudioCodecSpeedTest(kOpusBlockDurationMs,
                           kOpusSamplingKhz,
                           kOpusSamplingKhz),
-      opus_encoder_(NULL),
-      opus_decoder_(NULL) {}
+      opus_encoder_(nullptr),
+      opus_decoder_(nullptr) {}
 
 void OpusSpeedTest::SetUp() {
   AudioCodecSpeedTest::SetUp();

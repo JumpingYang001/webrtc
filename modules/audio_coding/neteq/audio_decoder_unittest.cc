@@ -110,7 +110,7 @@ class AudioDecoderTest : public ::testing::Test {
         data_length_(0),
         channels_(1),
         payload_type_(17),
-        decoder_(NULL) {}
+        decoder_(nullptr) {}
 
   ~AudioDecoderTest() override {}
 
@@ -123,7 +123,7 @@ class AudioDecoderTest : public ::testing::Test {
 
   void TearDown() override {
     delete decoder_;
-    decoder_ = NULL;
+    decoder_ = nullptr;
   }
 
   virtual void InitEncoder() {}

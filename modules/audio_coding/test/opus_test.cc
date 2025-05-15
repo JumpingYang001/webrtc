@@ -35,31 +35,31 @@ OpusTest::OpusTest()
     : neteq_(DefaultNetEqFactory().Create(CreateEnvironment(),
                                           NetEq::Config(),
                                           CreateBuiltinAudioDecoderFactory())),
-      channel_a2b_(NULL),
+      channel_a2b_(nullptr),
       counter_(0),
       payload_type_(255),
       rtp_timestamp_(0) {}
 
 OpusTest::~OpusTest() {
-  if (channel_a2b_ != NULL) {
+  if (channel_a2b_ != nullptr) {
     delete channel_a2b_;
-    channel_a2b_ = NULL;
+    channel_a2b_ = nullptr;
   }
-  if (opus_mono_encoder_ != NULL) {
+  if (opus_mono_encoder_ != nullptr) {
     WebRtcOpus_EncoderFree(opus_mono_encoder_);
-    opus_mono_encoder_ = NULL;
+    opus_mono_encoder_ = nullptr;
   }
-  if (opus_stereo_encoder_ != NULL) {
+  if (opus_stereo_encoder_ != nullptr) {
     WebRtcOpus_EncoderFree(opus_stereo_encoder_);
-    opus_stereo_encoder_ = NULL;
+    opus_stereo_encoder_ = nullptr;
   }
-  if (opus_mono_decoder_ != NULL) {
+  if (opus_mono_decoder_ != nullptr) {
     WebRtcOpus_DecoderFree(opus_mono_decoder_);
-    opus_mono_decoder_ = NULL;
+    opus_mono_decoder_ = nullptr;
   }
-  if (opus_stereo_decoder_ != NULL) {
+  if (opus_stereo_decoder_ != nullptr) {
     WebRtcOpus_DecoderFree(opus_stereo_decoder_);
-    opus_stereo_decoder_ = NULL;
+    opus_stereo_decoder_ = nullptr;
   }
 }
 
@@ -93,7 +93,7 @@ void OpusTest::Perform() {
   WebRtcOpus_DecoderInit(opus_mono_decoder_);
   WebRtcOpus_DecoderInit(opus_stereo_decoder_);
 
-  ASSERT_TRUE(neteq_.get() != NULL);
+  ASSERT_TRUE(neteq_.get() != nullptr);
   neteq_->FlushBuffers();
 
   // Register Opus stereo as receiving codec.
@@ -316,7 +316,7 @@ void OpusTest::Run(TestPackStereo* channel,
             size_t total_plc_samples = 0;
             while (total_plc_samples < frame_length) {
               int ret = WebRtcOpus_Decode(
-                  opus_mono_decoder_, NULL, 0,
+                  opus_mono_decoder_, nullptr, 0,
                   &out_audio[decoded_samples * channels], &audio_type);
               EXPECT_EQ(ret, kPlcSamples);
               decoded_samples += ret;
@@ -336,7 +336,7 @@ void OpusTest::Run(TestPackStereo* channel,
             size_t total_plc_samples = 0;
             while (total_plc_samples < frame_length) {
               int ret = WebRtcOpus_Decode(
-                  opus_stereo_decoder_, NULL, 0,
+                  opus_stereo_decoder_, nullptr, 0,
                   &out_audio[decoded_samples * channels], &audio_type);
               EXPECT_EQ(ret, kPlcSamples);
               decoded_samples += ret;

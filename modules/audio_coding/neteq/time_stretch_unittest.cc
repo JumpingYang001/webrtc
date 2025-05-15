@@ -48,13 +48,13 @@ TEST(TimeStretch, CreateUsingFactory) {
   AccelerateFactory accelerate_factory;
   Accelerate* accelerate =
       accelerate_factory.Create(kSampleRate, kNumChannels, bgn);
-  EXPECT_TRUE(accelerate != NULL);
+  EXPECT_TRUE(accelerate != nullptr);
   delete accelerate;
 
   PreemptiveExpandFactory preemptive_expand_factory;
   PreemptiveExpand* preemptive_expand = preemptive_expand_factory.Create(
       kSampleRate, kNumChannels, bgn, kOverlapSamples);
-  EXPECT_TRUE(preemptive_expand != NULL);
+  EXPECT_TRUE(preemptive_expand != nullptr);
   delete preemptive_expand;
 }
 

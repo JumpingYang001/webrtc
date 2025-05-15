@@ -117,7 +117,7 @@ void Channel::CalcStatistics(const RTPHeader& rtp_header, size_t payloadSize) {
   _lastPayloadType = rtp_header.payloadType;
 
   bool newPayload = true;
-  ACMTestPayloadStats* currentPayloadStr = NULL;
+  ACMTestPayloadStats* currentPayloadStr = nullptr;
   for (n = 0; n < MAX_NUM_PAYLOADS; n++) {
     if (rtp_header.payloadType == _payloadStats[n].payloadType) {
       newPayload = false;
@@ -196,9 +196,9 @@ void Channel::CalcStatistics(const RTPHeader& rtp_header, size_t payloadSize) {
 }
 
 Channel::Channel(int16_t chID)
-    : _neteq(NULL),
+    : _neteq(nullptr),
       _seqNo(0),
-      _bitStreamFile(NULL),
+      _bitStreamFile(nullptr),
       _saveBitStream(false),
       _lastPayloadType(-1),
       _isStereo(false),

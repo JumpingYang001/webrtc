@@ -120,7 +120,7 @@ TEST_P(AudioMultiVectorTest, PushBackInterleavedAndCopy) {
 // Try to copy to a NULL pointer. Nothing should happen.
 TEST_P(AudioMultiVectorTest, CopyToNull) {
   AudioMultiVector vec(num_channels_);
-  AudioMultiVector* vec_copy = NULL;
+  AudioMultiVector* vec_copy = nullptr;
   vec.PushBackInterleaved(array_interleaved_);
   vec.CopyTo(vec_copy);
 }

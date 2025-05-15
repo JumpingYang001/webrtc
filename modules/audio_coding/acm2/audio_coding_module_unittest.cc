@@ -666,7 +666,7 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
     audio_source_.reset(new test::InputAudioFile(input_file_name));
     send_test_.reset(new test::AcmSendTestOldApi(audio_source_.get(),
                                                  source_rate, kTestDurationMs));
-    return send_test_.get() != NULL;
+    return send_test_.get() != nullptr;
   }
 
   // Registers a send codec in the test::AcmSendTest object. Returns true on
@@ -758,7 +758,7 @@ class AcmSenderBitExactnessOldApi : public ::testing::Test,
   std::unique_ptr<test::Packet> NextPacket() override {
     auto packet = send_test_->NextPacket();
     if (!packet)
-      return NULL;
+      return nullptr;
 
     VerifyPacket(packet.get());
     // TODO(henrik.lundin) Save the packet to file as well.
@@ -1338,7 +1338,7 @@ class AcmSwitchingOutputFrequencyOldApi : public ::testing::Test,
     // "manually".
     if (num_packets_++ > kTestNumPackets) {
       EXPECT_TRUE(has_toggled_);
-      return NULL;  // Test ended.
+      return nullptr;  // Test ended.
     }
 
     // Get the next packet from the source.

@@ -28,7 +28,7 @@ namespace webrtc {
 #define MAX_FILE_NAME_LENGTH_BYTE 500
 
 PCMFile::PCMFile()
-    : pcm_file_(NULL),
+    : pcm_file_(nullptr),
       samples_10ms_(160),
       frequency_(16000),
       end_of_file_(false),
@@ -41,7 +41,7 @@ PCMFile::PCMFile()
 }
 
 PCMFile::PCMFile(uint32_t timestamp)
-    : pcm_file_(NULL),
+    : pcm_file_(nullptr),
       samples_10ms_(160),
       frequency_(16000),
       end_of_file_(false),
@@ -63,7 +63,7 @@ int16_t PCMFile::ChooseFile(std::string* file_name,
                             uint16_t* frequency_hz) {
   char tmp_name[MAX_FILE_NAME_LENGTH_BYTE];
 
-  EXPECT_TRUE(fgets(tmp_name, MAX_FILE_NAME_LENGTH_BYTE, stdin) != NULL);
+  EXPECT_TRUE(fgets(tmp_name, MAX_FILE_NAME_LENGTH_BYTE, stdin) != nullptr);
   tmp_name[MAX_FILE_NAME_LENGTH_BYTE - 1] = '\0';
   int16_t n = 0;
 
@@ -101,7 +101,7 @@ int16_t PCMFile::ChooseFile(std::string* file_name,
   }
   printf("Enter the sampling frequency (in Hz) of the above file [%u]: ",
          *frequency_hz);
-  EXPECT_TRUE(fgets(tmp_name, 10, stdin) != NULL);
+  EXPECT_TRUE(fgets(tmp_name, 10, stdin) != nullptr);
   uint16_t tmp_frequency = (uint16_t)atoi(tmp_name);
   if (tmp_frequency > 0) {
     *frequency_hz = tmp_frequency;
@@ -114,7 +114,7 @@ void PCMFile::Open(absl::string_view file_name,
                    absl::string_view mode,
                    bool auto_rewind) {
   if ((pcm_file_ = fopen(std::string(file_name).c_str(),
-                         std::string(mode).c_str())) == NULL) {
+                         std::string(mode).c_str())) == nullptr) {
     printf("Cannot open file %s.\n", std::string(file_name).c_str());
     ADD_FAILURE() << "Unable to read file";
   }
@@ -208,7 +208,7 @@ void PCMFile::Write10MsData(const int16_t* playout_buffer,
 
 void PCMFile::Close() {
   fclose(pcm_file_);
-  pcm_file_ = NULL;
+  pcm_file_ = nullptr;
   blocks_read_ = 0;
 }
 

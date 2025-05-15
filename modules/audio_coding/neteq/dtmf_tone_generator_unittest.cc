@@ -176,7 +176,7 @@ TEST(DtmfToneGenerator, TestErrors) {
   EXPECT_TRUE(tone_gen.initialized());
   // NULL pointer to destination.
   EXPECT_EQ(DtmfToneGenerator::kParameterError,
-            tone_gen.Generate(kNumSamples, NULL));
+            tone_gen.Generate(kNumSamples, nullptr));
 }
 
 }  // namespace webrtc

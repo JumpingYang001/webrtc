@@ -391,7 +391,7 @@ TEST(PacketBuffer, Failures) {
   EXPECT_EQ(PacketBuffer::kBufferEmpty, buffer.NextTimestamp(&temp_ts));
   EXPECT_EQ(PacketBuffer::kBufferEmpty,
             buffer.NextHigherTimestamp(0, &temp_ts));
-  EXPECT_EQ(NULL, buffer.PeekNextPacket());
+  EXPECT_EQ(nullptr, buffer.PeekNextPacket());
   EXPECT_FALSE(buffer.GetNextPacket());
 
   // Discarding packets will not invoke mock_stats.PacketDiscarded() because the

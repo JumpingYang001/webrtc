@@ -60,13 +60,13 @@ TestRedFec::TestRedFec()
       _neteq(DefaultNetEqFactory().Create(env_,
                                           NetEq::Config(),
                                           decoder_factory_)),
-      _channelA2B(NULL),
+      _channelA2B(nullptr),
       _testCntr(0) {}
 
 TestRedFec::~TestRedFec() {
-  if (_channelA2B != NULL) {
+  if (_channelA2B != nullptr) {
     delete _channelA2B;
-    _channelA2B = NULL;
+    _channelA2B = nullptr;
   }
 }
 

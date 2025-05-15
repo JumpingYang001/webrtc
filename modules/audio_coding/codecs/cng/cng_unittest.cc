@@ -52,11 +52,11 @@ void CngTest::SetUp() {
   const std::string file_name =
       test::ResourcePath("audio_coding/testfile32kHz", "pcm");
   input_file = fopen(file_name.c_str(), "rb");
-  ASSERT_TRUE(input_file != NULL);
+  ASSERT_TRUE(input_file != nullptr);
   ASSERT_EQ(640, static_cast<int32_t>(
                      fread(speech_data_, sizeof(int16_t), 640, input_file)));
   fclose(input_file);
-  input_file = NULL;
+  input_file = nullptr;
 }
 
 void CngTest::TestCngEncode(int sample_rate_hz, int quality) {

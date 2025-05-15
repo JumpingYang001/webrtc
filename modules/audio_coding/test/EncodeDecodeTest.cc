@@ -61,7 +61,7 @@ int32_t TestPacketization::SendData(
 }
 
 Sender::Sender()
-    : _acm(NULL), _pcmFile(), _audioFrame(), _packetization(NULL) {}
+    : _acm(nullptr), _pcmFile(), _audioFrame(), _packetization(nullptr) {}
 
 void Sender::Setup(const Environment& env,
                    AudioCodingModule* acm,

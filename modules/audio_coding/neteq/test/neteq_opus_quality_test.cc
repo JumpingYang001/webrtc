@@ -82,8 +82,8 @@ NetEqOpusQualityTest::NetEqOpusQualityTest()
                        kOpusSamplingKhz,
                        kOpusSamplingKhz,
                        SdpAudioFormat("opus", 48000, 2)),
-      opus_encoder_(NULL),
-      repacketizer_(NULL),
+      opus_encoder_(nullptr),
+      repacketizer_(nullptr),
       sub_block_size_samples_(
           static_cast<size_t>(kOpusBlockDurationMs * kOpusSamplingKhz)),
       bit_rate_kbps_(absl::GetFlag(FLAGS_bit_rate_kbps)),
