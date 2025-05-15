@@ -36,7 +36,7 @@ class FakeAdmTest : public ::testing::Test, public webrtc::AudioTransport {
 
   void SetUp() override {
     fake_audio_capture_module_ = FakeAudioCaptureModule::Create();
-    EXPECT_TRUE(fake_audio_capture_module_.get() != NULL);
+    EXPECT_TRUE(fake_audio_capture_module_.get() != nullptr);
   }
 
   // Callbacks inherited from webrtc::AudioTransport.

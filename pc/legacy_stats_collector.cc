@@ -576,7 +576,7 @@ double LegacyStatsCollector::GetTimeNow() {
 // to GetStats.
 void LegacyStatsCollector::AddStream(MediaStreamInterface* stream) {
   RTC_DCHECK_RUN_ON(pc_->signaling_thread());
-  RTC_DCHECK(stream != NULL);
+  RTC_DCHECK(stream != nullptr);
 
   CreateTrackReports<AudioTrackVector>(stream->GetAudioTracks(), &reports_,
                                        &track_ids_);
@@ -599,7 +599,7 @@ void LegacyStatsCollector::AddTrack(MediaStreamTrackInterface* track) {
 void LegacyStatsCollector::AddLocalAudioTrack(AudioTrackInterface* audio_track,
                                               uint32_t ssrc) {
   RTC_DCHECK_RUN_ON(pc_->signaling_thread());
-  RTC_DCHECK(audio_track != NULL);
+  RTC_DCHECK(audio_track != nullptr);
 #if RTC_DCHECK_IS_ON
   for (const auto& track : local_audio_tracks_)
     RTC_DCHECK(track.first != audio_track || track.second != ssrc);
@@ -621,7 +621,7 @@ void LegacyStatsCollector::AddLocalAudioTrack(AudioTrackInterface* audio_track,
 void LegacyStatsCollector::RemoveLocalAudioTrack(
     AudioTrackInterface* audio_track,
     uint32_t ssrc) {
-  RTC_DCHECK(audio_track != NULL);
+  RTC_DCHECK(audio_track != nullptr);
   local_audio_tracks_.erase(
       std::remove_if(
           local_audio_tracks_.begin(), local_audio_tracks_.end(),
@@ -634,7 +634,7 @@ void LegacyStatsCollector::RemoveLocalAudioTrack(
 void LegacyStatsCollector::GetStats(MediaStreamTrackInterface* track,
                                     StatsReports* reports) {
   RTC_DCHECK_RUN_ON(pc_->signaling_thread());
-  RTC_DCHECK(reports != NULL);
+  RTC_DCHECK(reports != nullptr);
   RTC_DCHECK(reports->empty());
 
   Thread::ScopedDisallowBlockingCalls no_blocking_calls;
@@ -1360,7 +1360,7 @@ void LegacyStatsCollector::UpdateStatsFromExistingLocalAudioTracks(
     uint32_t ssrc = it.second;
     StatsReport* report = GetReport(StatsReport::kStatsReportTypeSsrc,
                                     absl::StrCat(ssrc), StatsReport::kSend);
-    if (report == NULL) {
+    if (report == nullptr) {
       // This can happen if a local audio track is added to a stream on the
       // fly and the report has not been set up yet. Do nothing in this case.
       RTC_LOG(LS_ERROR) << "Stats report does not exist for ssrc " << ssrc;
@@ -1383,7 +1383,7 @@ void LegacyStatsCollector::UpdateReportFromAudioTrack(
     StatsReport* report,
     bool has_remote_tracks) {
   RTC_DCHECK_RUN_ON(pc_->signaling_thread());
-  RTC_DCHECK(track != NULL);
+  RTC_DCHECK(track != nullptr);
 
   // Don't overwrite report values if they're not available.
   int signal_level;

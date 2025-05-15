@@ -366,7 +366,7 @@ RTCError JsepTransport::VerifyCertificateFingerprint(
   }
   std::unique_ptr<SSLFingerprint> fp_tmp = SSLFingerprint::CreateUnique(
       fingerprint->algorithm, *certificate->identity());
-  RTC_DCHECK(fp_tmp.get() != NULL);
+  RTC_DCHECK(fp_tmp.get() != nullptr);
   if (*fp_tmp == *fingerprint) {
     return RTCError::OK();
   }

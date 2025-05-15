@@ -655,7 +655,7 @@ void SetMediaProtocol(bool secure_transport, MediaContentDescription* desc) {
 const TransportDescription* GetTransportDescription(
     const std::string& content_name,
     const SessionDescription* current_description) {
-  const TransportDescription* desc = NULL;
+  const TransportDescription* desc = nullptr;
   if (current_description) {
     const TransportInfo* info =
         current_description->GetTransportInfoByName(content_name);

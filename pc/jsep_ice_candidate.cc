@@ -31,7 +31,7 @@ IceCandidateInterface* CreateIceCandidate(const std::string& sdp_mid,
   JsepIceCandidate* jsep_ice = new JsepIceCandidate(sdp_mid, sdp_mline_index);
   if (!jsep_ice->Initialize(sdp, error)) {
     delete jsep_ice;
-    return NULL;
+    return nullptr;
   }
   return jsep_ice;
 }

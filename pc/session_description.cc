@@ -45,7 +45,7 @@ const ContentInfo* FindContentInfoByName(const ContentInfos& contents,
       return &(*content);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const ContentInfo* FindContentInfoByType(const ContentInfos& contents,
@@ -70,7 +70,7 @@ ContentGroup& ContentGroup::operator=(ContentGroup&&) = default;
 ContentGroup::~ContentGroup() = default;
 
 const std::string* ContentGroup::FirstContentName() const {
-  return (!content_names_.empty()) ? &(*content_names_.begin()) : NULL;
+  return (!content_names_.empty()) ? &(*content_names_.begin()) : nullptr;
 }
 
 bool ContentGroup::HasContentName(absl::string_view content_name) const {
@@ -127,8 +127,8 @@ ContentInfo* SessionDescription::GetContentByName(const std::string& name) {
 const MediaContentDescription* SessionDescription::GetContentDescriptionByName(
     absl::string_view name) const {
   const ContentInfo* cinfo = FindContentInfoByName(contents_, name);
-  if (cinfo == NULL) {
-    return NULL;
+  if (cinfo == nullptr) {
+    return nullptr;
   }
 
   return cinfo->media_description();
@@ -137,8 +137,8 @@ const MediaContentDescription* SessionDescription::GetContentDescriptionByName(
 MediaContentDescription* SessionDescription::GetContentDescriptionByName(
     absl::string_view name) {
   ContentInfo* cinfo = FindContentInfoByName(&contents_, name);
-  if (cinfo == NULL) {
-    return NULL;
+  if (cinfo == nullptr) {
+    return nullptr;
   }
 
   return cinfo->media_description();
@@ -150,7 +150,7 @@ const ContentInfo* SessionDescription::FirstContentByType(
 }
 
 const ContentInfo* SessionDescription::FirstContent() const {
-  return (contents_.empty()) ? NULL : &(*contents_.begin());
+  return (contents_.empty()) ? nullptr : &(*contents_.begin());
 }
 
 void SessionDescription::AddContent(
@@ -222,7 +222,7 @@ const TransportInfo* SessionDescription::GetTransportInfoByName(
       return &(*iter);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 TransportInfo* SessionDescription::GetTransportInfoByName(
@@ -233,7 +233,7 @@ TransportInfo* SessionDescription::GetTransportInfoByName(
       return &(*iter);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void SessionDescription::RemoveGroupByName(const std::string& name) {
@@ -264,7 +264,7 @@ const ContentGroup* SessionDescription::GetGroupByName(
       return &(*iter);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 std::vector<const ContentGroup*> SessionDescription::GetGroupsByName(

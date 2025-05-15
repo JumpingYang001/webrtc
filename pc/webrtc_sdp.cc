@@ -848,7 +848,7 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
       desc->GetGroupsByName(GROUP_TYPE_BUNDLE);
   for (const ContentGroup* group : groups) {
     std::string group_line = kAttrGroup;
-    RTC_DCHECK(group != NULL);
+    RTC_DCHECK(group != nullptr);
     for (const std::string& content_name : group->content_names()) {
       group_line.append(" ");
       group_line.append(content_name);
@@ -970,7 +970,7 @@ bool SdpDeserialize(absl::string_view message,
 bool SdpDeserializeCandidate(absl::string_view message,
                              JsepIceCandidate* jcandidate,
                              SdpParseError* error) {
-  RTC_DCHECK(jcandidate != NULL);
+  RTC_DCHECK(jcandidate != nullptr);
   Candidate candidate;
   if (!ParseCandidate(message, &candidate, error, true)) {
     return false;
@@ -995,7 +995,7 @@ bool ParseCandidate(absl::string_view message,
                     Candidate* candidate,
                     SdpParseError* error,
                     bool is_raw) {
-  RTC_DCHECK(candidate != NULL);
+  RTC_DCHECK(candidate != nullptr);
 
   // Makes sure `message` contains only one line.
   absl::string_view first_line;
@@ -1847,8 +1847,8 @@ bool GetParameter(const std::string& name,
 void BuildRtpmap(const MediaContentDescription* media_desc,
                  const MediaType media_type,
                  std::string* message) {
-  RTC_DCHECK(message != NULL);
-  RTC_DCHECK(media_desc != NULL);
+  RTC_DCHECK(message != nullptr);
+  RTC_DCHECK(media_desc != nullptr);
   StringBuilder os;
   if (media_type == MediaType::VIDEO) {
     for (const Codec& codec : media_desc->codecs()) {
@@ -2227,7 +2227,7 @@ bool ParseSessionDescription(absl::string_view message,
 bool ParseGroupAttribute(absl::string_view line,
                          SessionDescription* desc,
                          SdpParseError* error) {
-  RTC_DCHECK(desc != NULL);
+  RTC_DCHECK(desc != nullptr);
 
   // RFC 5888 and draft-holmberg-mmusic-sdp-bundle-negotiation-00
   // a=group:BUNDLE video voice
@@ -2622,7 +2622,7 @@ bool ParseMediaDescription(
     SessionDescription* desc,
     std::vector<std::unique_ptr<JsepIceCandidate>>* candidates,
     SdpParseError* error) {
-  RTC_DCHECK(desc != NULL);
+  RTC_DCHECK(desc != nullptr);
   int mline_index = -1;
   int msid_signaling = desc->msid_signaling();
 
@@ -2964,9 +2964,9 @@ bool ParseContent(absl::string_view message,
                   TransportDescription* transport,
                   std::vector<std::unique_ptr<JsepIceCandidate>>* candidates,
                   SdpParseError* error) {
-  RTC_DCHECK(media_desc != NULL);
-  RTC_DCHECK(content_name != NULL);
-  RTC_DCHECK(transport != NULL);
+  RTC_DCHECK(media_desc != nullptr);
+  RTC_DCHECK(content_name != nullptr);
+  RTC_DCHECK(transport != nullptr);
 
   if (media_type == MediaType::AUDIO) {
     MaybeCreateStaticPayloadAudioCodecs(payload_types, media_desc);
@@ -3377,7 +3377,7 @@ bool ParseSsrcAttribute(absl::string_view line,
                         SsrcInfoVec* ssrc_infos,
                         int* msid_signaling,
                         SdpParseError* error) {
-  RTC_DCHECK(ssrc_infos != NULL);
+  RTC_DCHECK(ssrc_infos != nullptr);
   // RFC 5576
   // a=ssrc:<ssrc-id> <attribute>
   // a=ssrc:<ssrc-id> <attribute>:<value>
@@ -3449,7 +3449,7 @@ bool ParseSsrcAttribute(absl::string_view line,
 bool ParseSsrcGroupAttribute(absl::string_view line,
                              SsrcGroupVec* ssrc_groups,
                              SdpParseError* error) {
-  RTC_DCHECK(ssrc_groups != NULL);
+  RTC_DCHECK(ssrc_groups != nullptr);
   // RFC 5576
   // a=ssrc-group:<semantics> <ssrc-id> ...
   std::vector<absl::string_view> fields =

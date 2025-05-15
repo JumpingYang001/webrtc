@@ -2064,7 +2064,7 @@ TEST_P(PeerConnectionInterfaceTest, DISABLED_TestRejectSctpDataChannelInAnswer)
   RTCConfiguration rtc_config;
   CreatePeerConnection(rtc_config);
 
-  auto offer_channel = pc_->CreateDataChannelOrError("offer_channel", NULL);
+  auto offer_channel = pc_->CreateDataChannelOrError("offer_channel", nullptr);
 
   CreateOfferAsLocalDescription();
 
@@ -2474,7 +2474,7 @@ TEST_F(PeerConnectionInterfaceTestPlanB, CloseAndTestMethods) {
   pc_->RemoveStream(local_stream.get());
   EXPECT_FALSE(pc_->AddStream(local_stream.get()));
 
-  EXPECT_FALSE(pc_->CreateDataChannelOrError("test", NULL).ok());
+  EXPECT_FALSE(pc_->CreateDataChannelOrError("test", nullptr).ok());
 
   EXPECT_TRUE(pc_->local_description() != nullptr);
   EXPECT_TRUE(pc_->remote_description() != nullptr);

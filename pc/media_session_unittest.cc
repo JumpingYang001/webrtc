@@ -827,8 +827,8 @@ TEST_F(MediaSessionDescriptionFactoryTest,
   ASSERT_TRUE(offer.get());
   const ContentInfo* ac = offer->GetContentByName("audio");
   const ContentInfo* vc = offer->GetContentByName("video");
-  ASSERT_TRUE(ac != NULL);
-  ASSERT_TRUE(vc == NULL);
+  ASSERT_TRUE(ac != nullptr);
+  ASSERT_TRUE(vc == nullptr);
   EXPECT_EQ(MediaProtocolType::kRtp, ac->type);
   const MediaContentDescription* acd = ac->media_description();
   EXPECT_EQ(webrtc::MediaType::AUDIO, acd->type());
@@ -855,8 +855,8 @@ TEST_F(MediaSessionDescriptionFactoryTest, TestCreateAudioOfferWithRedForOpus) {
   ASSERT_TRUE(offer.get());
   const ContentInfo* ac = offer->GetContentByName("audio");
   const ContentInfo* vc = offer->GetContentByName("video");
-  ASSERT_TRUE(ac != NULL);
-  ASSERT_TRUE(vc == NULL);
+  ASSERT_TRUE(ac != nullptr);
+  ASSERT_TRUE(vc == nullptr);
   EXPECT_EQ(MediaProtocolType::kRtp, ac->type);
   const MediaContentDescription* acd = ac->media_description();
   EXPECT_EQ(webrtc::MediaType::AUDIO, acd->type());

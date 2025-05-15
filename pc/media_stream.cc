@@ -84,7 +84,7 @@ bool MediaStream::AddTrack(TrackVector* tracks, scoped_refptr<Track> track) {
 template <typename TrackVector>
 bool MediaStream::RemoveTrack(TrackVector* tracks,
                               scoped_refptr<MediaStreamTrackInterface> track) {
-  RTC_DCHECK(tracks != NULL);
+  RTC_DCHECK(tracks != nullptr);
   if (!track)
     return false;
   typename TrackVector::iterator it = FindTrack(tracks, track->id());

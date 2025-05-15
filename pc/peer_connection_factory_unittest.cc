@@ -162,7 +162,7 @@ class PeerConnectionFactoryTest : public ::testing::Test {
             OpenH264DecoderTemplateAdapter, Dav1dDecoderTemplateAdapter>>(),
         nullptr /* audio_mixer */, nullptr /* audio_processing */);
 
-    ASSERT_TRUE(factory_.get() != NULL);
+    ASSERT_TRUE(factory_.get() != nullptr);
     port_allocator_ = std::make_unique<FakePortAllocator>(CreateEnvironment(),
                                                           socket_server_.get());
     raw_port_allocator_ = port_allocator_.get();
@@ -641,10 +641,10 @@ TEST_F(PeerConnectionFactoryTest, LocalRendering) {
 
   FakeFrameSource frame_source(1280, 720, kNumMicrosecsPerSec / 30);
 
-  ASSERT_TRUE(source.get() != NULL);
+  ASSERT_TRUE(source.get() != nullptr);
   scoped_refptr<VideoTrackInterface> track(
       factory_->CreateVideoTrack(source, "testlabel"));
-  ASSERT_TRUE(track.get() != NULL);
+  ASSERT_TRUE(track.get() != nullptr);
   FakeVideoTrackRenderer local_renderer(track.get());
 
   EXPECT_EQ(0, local_renderer.num_rendered_frames());

@@ -74,12 +74,12 @@ CreateCricketSessionDescription() {
       webrtc::CN_AUDIO,
       webrtc::TransportDescription(
           std::vector<std::string>(), kCandidateUfragVoice, kCandidatePwdVoice,
-          webrtc::ICEMODE_FULL, webrtc::CONNECTIONROLE_NONE, NULL)));
+          webrtc::ICEMODE_FULL, webrtc::CONNECTIONROLE_NONE, nullptr)));
   desc->AddTransportInfo(webrtc::TransportInfo(
       webrtc::CN_VIDEO,
       webrtc::TransportDescription(
           std::vector<std::string>(), kCandidateUfragVideo, kCandidatePwdVideo,
-          webrtc::ICEMODE_FULL, webrtc::CONNECTIONROLE_NONE, NULL)));
+          webrtc::ICEMODE_FULL, webrtc::CONNECTIONROLE_NONE, nullptr)));
   return desc;
 }
 
@@ -173,10 +173,10 @@ TEST_F(JsepSessionDescriptionTest, AddCandidateWithoutMid) {
   JsepIceCandidate jsep_candidate("", 0, candidate_);
   EXPECT_TRUE(jsep_desc_->AddCandidate(&jsep_candidate));
   const IceCandidateCollection* ice_candidates = jsep_desc_->candidates(0);
-  ASSERT_TRUE(ice_candidates != NULL);
+  ASSERT_TRUE(ice_candidates != nullptr);
   EXPECT_EQ(1u, ice_candidates->count());
   const IceCandidateInterface* ice_candidate = ice_candidates->at(0);
-  ASSERT_TRUE(ice_candidate != NULL);
+  ASSERT_TRUE(ice_candidate != nullptr);
   candidate_.set_username(kCandidateUfragVoice);
   candidate_.set_password(kCandidatePwdVoice);
   EXPECT_TRUE(ice_candidate->candidate().IsEquivalent(candidate_));
@@ -193,10 +193,10 @@ TEST_F(JsepSessionDescriptionTest, AddAndRemoveCandidatesWithMid) {
   EXPECT_TRUE(jsep_desc_->AddCandidate(&jsep_candidate));
   EXPECT_EQ(0u, jsep_desc_->candidates(0)->count());
   const IceCandidateCollection* ice_candidates = jsep_desc_->candidates(1);
-  ASSERT_TRUE(ice_candidates != NULL);
+  ASSERT_TRUE(ice_candidates != nullptr);
   EXPECT_EQ(1u, ice_candidates->count());
   const IceCandidateInterface* ice_candidate = ice_candidates->at(0);
-  ASSERT_TRUE(ice_candidate != NULL);
+  ASSERT_TRUE(ice_candidate != nullptr);
   candidate_.set_username(kCandidateUfragVideo);
   candidate_.set_password(kCandidatePwdVideo);
   EXPECT_TRUE(ice_candidate->candidate().IsEquivalent(candidate_));
@@ -216,10 +216,10 @@ TEST_F(JsepSessionDescriptionTest, AddCandidateAlreadyHasUfrag) {
   JsepIceCandidate jsep_candidate("audio", 0, candidate_);
   EXPECT_TRUE(jsep_desc_->AddCandidate(&jsep_candidate));
   const IceCandidateCollection* ice_candidates = jsep_desc_->candidates(0);
-  ASSERT_TRUE(ice_candidates != NULL);
+  ASSERT_TRUE(ice_candidates != nullptr);
   EXPECT_EQ(1u, ice_candidates->count());
   const IceCandidateInterface* ice_candidate = ice_candidates->at(0);
-  ASSERT_TRUE(ice_candidate != NULL);
+  ASSERT_TRUE(ice_candidate != nullptr);
   candidate_.set_username(kCandidateUfrag);
   candidate_.set_password(kCandidatePwd);
   EXPECT_TRUE(ice_candidate->candidate().IsEquivalent(candidate_));

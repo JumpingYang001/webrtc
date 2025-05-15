@@ -359,7 +359,7 @@ void PeerConnectionTestWrapper::AddIceCandidate(const std::string& sdp_mid,
                                                 int sdp_mline_index,
                                                 const std::string& candidate) {
   std::unique_ptr<webrtc::IceCandidateInterface> owned_candidate(
-      webrtc::CreateIceCandidate(sdp_mid, sdp_mline_index, candidate, NULL));
+      webrtc::CreateIceCandidate(sdp_mid, sdp_mline_index, candidate, nullptr));
   EXPECT_TRUE(peer_connection_->AddIceCandidate(owned_candidate.get()));
 }
 

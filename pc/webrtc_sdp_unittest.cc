@@ -836,12 +836,12 @@ static SdpType kDummyType = SdpType::kOffer;
 
 static bool SdpDeserialize(const std::string& message,
                            JsepSessionDescription* jdesc) {
-  return SdpDeserialize(message, jdesc, NULL);
+  return SdpDeserialize(message, jdesc, nullptr);
 }
 
 static bool SdpDeserializeCandidate(const std::string& message,
                                     JsepIceCandidate* candidate) {
-  return SdpDeserializeCandidate(message, candidate, NULL);
+  return SdpDeserializeCandidate(message, candidate, nullptr);
 }
 
 // Add some extra `newlines` to the `message` after `line`.
@@ -1547,7 +1547,7 @@ class WebRtcSdpTest : public ::testing::Test {
 
   void AddIceOptions(const std::string& content_name,
                      const std::vector<std::string>& transport_options) {
-    ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != NULL);
+    ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != nullptr);
     TransportInfo transport_info =
         *(desc_.GetTransportInfoByName(content_name));
     desc_.RemoveTransportInfoByName(content_name);
@@ -1558,7 +1558,7 @@ class WebRtcSdpTest : public ::testing::Test {
   void SetIceUfragPwd(const std::string& content_name,
                       const std::string& ice_ufrag,
                       const std::string& ice_pwd) {
-    ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != NULL);
+    ASSERT_TRUE(desc_.GetTransportInfoByName(content_name) != nullptr);
     TransportInfo transport_info =
         *(desc_.GetTransportInfoByName(content_name));
     desc_.RemoveTransportInfoByName(content_name);

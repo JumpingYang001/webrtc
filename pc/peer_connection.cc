@@ -2551,7 +2551,7 @@ bool PeerConnection::ValidateBundleSettings(
   for (ContentInfos::const_iterator citer = contents.begin();
        citer != contents.end(); ++citer) {
     const ContentInfo* content = (&*citer);
-    RTC_DCHECK(content != NULL);
+    RTC_DCHECK(content != nullptr);
     auto it = bundle_groups_by_mid.find(content->mid());
     if (it != bundle_groups_by_mid.end() &&
         !(content->rejected || content->bundle_only) &&
