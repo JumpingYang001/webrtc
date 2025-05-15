@@ -75,7 +75,7 @@ ImproveDirection ToChromePerfDashboardImproveDirection(
 bool WriteMetricsToFile(const std::string& path, const std::string& data) {
   CreateDir(DirName(path));
   FILE* output = fopen(path.c_str(), "wb");
-  if (output == NULL) {
+  if (output == nullptr) {
     printf("Failed to write to %s.\n", path.c_str());
     return false;
   }

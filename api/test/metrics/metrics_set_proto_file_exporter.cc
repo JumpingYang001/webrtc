@@ -101,7 +101,7 @@ bool WriteMetricsToFile(const std::string& path,
 
   CreateDir(DirName(path));
   FILE* output = fopen(path.c_str(), "wb");
-  if (output == NULL) {
+  if (output == nullptr) {
     RTC_LOG(LS_ERROR) << "Failed to write to " << path;
     return false;
   }
