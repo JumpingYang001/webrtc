@@ -19,11 +19,11 @@
 #include "call/syncable.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/rtp_to_ntp_estimator.h"
 #include "rtc_base/task_utils/repeating_task.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/ntp_time.h"
-#include "system_wrappers/include/rtp_to_ntp_estimator.h"
 #include "video/stream_synchronization.h"
 
 namespace webrtc {

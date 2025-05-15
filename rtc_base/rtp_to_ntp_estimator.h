@@ -8,15 +8,13 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#ifndef SYSTEM_WRAPPERS_INCLUDE_RTP_TO_NTP_ESTIMATOR_H_
-#define SYSTEM_WRAPPERS_INCLUDE_RTP_TO_NTP_ESTIMATOR_H_
+#ifndef RTC_BASE_RTP_TO_NTP_ESTIMATOR_H_
+#define RTC_BASE_RTP_TO_NTP_ESTIMATOR_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <optional>
 
-#include "rtc_base/checks.h"
 #include "rtc_base/numerics/sequence_number_unwrapper.h"
 #include "system_wrappers/include/ntp_time.h"
 
@@ -69,4 +67,4 @@ class RtpToNtpEstimator {
 };
 }  // namespace webrtc
 
-#endif  // SYSTEM_WRAPPERS_INCLUDE_RTP_TO_NTP_ESTIMATOR_H_
+#endif  // RTC_BASE_RTP_TO_NTP_ESTIMATOR_H_

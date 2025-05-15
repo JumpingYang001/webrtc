@@ -8,17 +8,16 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "system_wrappers/include/rtp_to_ntp_estimator.h"
-
-#include <stddef.h>
+#include "rtc_base/rtp_to_ntp_estimator.h"
 
 #include <cmath>
-#include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 
-#include "api/array_view.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/numerics/safe_conversions.h"
+#include "system_wrappers/include/ntp_time.h"
 
 namespace webrtc {
 namespace {

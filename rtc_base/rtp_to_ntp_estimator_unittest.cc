@@ -8,11 +8,13 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "system_wrappers/include/rtp_to_ntp_estimator.h"
+#include "rtc_base/rtp_to_ntp_estimator.h"
 
-#include <stddef.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "rtc_base/random.h"
+#include "system_wrappers/include/ntp_time.h"
 #include "test/gtest.h"
 
 namespace webrtc {

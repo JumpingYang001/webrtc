@@ -1762,6 +1762,21 @@ rtc_library("rtc_base_tests_utils") {
   }
 }
 
+rtc_library("rtp_to_ntp_estimator") {
+  visibility = [ "*" ]
+  sources = [
+    "rtp_to_ntp_estimator.cc",
+    "rtp_to_ntp_estimator.h",
+  ]
+  deps = [
+    ":checks",
+    ":logging",
+    ":rtc_numerics",
+    ":safe_conversions",
+    "../system_wrappers",
+  ]
+}
+
 rtc_library("task_queue_for_test") {
   testonly = true
 
@@ -2190,6 +2205,7 @@ if (rtc_include_tests) {
         "rolling_accumulator_unittest.cc",
         "rtc_certificate_generator_unittest.cc",
         "rtc_certificate_unittest.cc",
+        "rtp_to_ntp_estimator_unittest.cc",
         "test_client_unittest.cc",
         "thread_unittest.cc",
         "unique_id_generator_unittest.cc",
@@ -2216,11 +2232,13 @@ if (rtc_include_tests) {
         ":network_constants",
         ":network_route",
         ":null_socket_server",
+        ":random",
         ":refcount",
         ":rolling_accumulator",
         ":rtc_base_tests_utils",
         ":rtc_certificate_generator",
         ":rtc_event",
+        ":rtp_to_ntp_estimator",
         ":safe_conversions",
         ":socket",
         ":socket_adapters",
@@ -2249,6 +2267,7 @@ if (rtc_include_tests) {
         "../api/task_queue:pending_task_safety_flag",
         "../api/task_queue:task_queue_test",
         "../api/units:time_delta",
+        "../system_wrappers",
         "../test:field_trial",
         "../test:fileutils",
         "../test:rtc_expect_death",

@@ -13,9 +13,9 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "rtc_base/rtp_to_ntp_estimator.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/ntp_time.h"
-#include "system_wrappers/include/rtp_to_ntp_estimator.h"
 #include "test/gtest.h"
 
 namespace webrtc {

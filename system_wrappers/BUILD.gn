@@ -19,12 +19,10 @@ rtc_library("system_wrappers") {
     "include/cpu_features_wrapper.h",
     "include/cpu_info.h",
     "include/ntp_time.h",
-    "include/rtp_to_ntp_estimator.h",
     "include/sleep.h",
     "source/clock.cc",
     "source/cpu_features.cc",
     "source/cpu_info.cc",
-    "source/rtp_to_ntp_estimator.cc",
     "source/sleep.cc",
   ]
 
@@ -136,7 +134,6 @@ if (rtc_include_tests && !build_with_chromium) {
       "source/metrics_default_unittest.cc",
       "source/metrics_unittest.cc",
       "source/ntp_time_unittest.cc",
-      "source/rtp_to_ntp_estimator_unittest.cc",
     ]
 
     deps = [
