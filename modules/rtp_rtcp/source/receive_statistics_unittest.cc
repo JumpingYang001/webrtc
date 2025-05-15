@@ -132,7 +132,7 @@ TEST_P(ReceiveStatisticsTest, TwoIncomingSsrcs) {
 
   StreamStatistician* statistician =
       receive_statistics_->GetStatistician(kSsrc1);
-  ASSERT_TRUE(statistician != NULL);
+  ASSERT_TRUE(statistician != nullptr);
   EXPECT_GT(statistician->BitrateReceived(), 0u);
   StreamDataCounters counters = statistician->GetReceiveStreamDataCounters();
   EXPECT_EQ(176u, counters.transmitted.payload_bytes);
@@ -141,7 +141,7 @@ TEST_P(ReceiveStatisticsTest, TwoIncomingSsrcs) {
   EXPECT_EQ(2u, counters.transmitted.packets);
 
   statistician = receive_statistics_->GetStatistician(kSsrc2);
-  ASSERT_TRUE(statistician != NULL);
+  ASSERT_TRUE(statistician != nullptr);
   EXPECT_GT(statistician->BitrateReceived(), 0u);
   counters = statistician->GetReceiveStreamDataCounters();
   EXPECT_EQ(576u, counters.transmitted.payload_bytes);
@@ -237,7 +237,7 @@ TEST_P(ReceiveStatisticsTest, ActiveStatisticians) {
   EXPECT_EQ(1u, receive_statistics_->RtcpReportBlocks(3).size());
   StreamStatistician* statistician =
       receive_statistics_->GetStatistician(kSsrc1);
-  ASSERT_TRUE(statistician != NULL);
+  ASSERT_TRUE(statistician != nullptr);
   StreamDataCounters counters = statistician->GetReceiveStreamDataCounters();
   EXPECT_EQ(176u, counters.transmitted.payload_bytes);
   EXPECT_EQ(24u, counters.transmitted.header_bytes);
@@ -260,7 +260,7 @@ TEST_P(ReceiveStatisticsTest, GetReceiveStreamDataCounters) {
   receive_statistics_->OnRtpPacket(packet1_);
   StreamStatistician* statistician =
       receive_statistics_->GetStatistician(kSsrc1);
-  ASSERT_TRUE(statistician != NULL);
+  ASSERT_TRUE(statistician != nullptr);
 
   StreamDataCounters counters = statistician->GetReceiveStreamDataCounters();
   EXPECT_TRUE(counters.first_packet_time.IsFinite());

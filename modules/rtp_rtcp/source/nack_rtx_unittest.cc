@@ -76,7 +76,7 @@ class RtxLoopBackTransport : public Transport {
         consecutive_drop_end_(0),
         rtx_ssrc_(rtx_ssrc),
         count_rtx_ssrc_(0),
-        module_(NULL) {}
+        module_(nullptr) {}
 
   void SetSendModule(RtpRtcpInterface* rtpRtcpModule) {
     module_ = rtpRtcpModule;
