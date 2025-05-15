@@ -138,7 +138,7 @@ TEST(VideoQualityAnalysisTest,
 
   std::string log_filename = TempFilename(test::OutputPath(), "log.log");
   FILE* logfile = fopen(log_filename.c_str(), "w");
-  ASSERT_TRUE(logfile != NULL);
+  ASSERT_TRUE(logfile != nullptr);
 
   result.max_repeated_frames = 1;
   result.max_skipped_frames = 0;
