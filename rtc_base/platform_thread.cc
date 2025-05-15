@@ -108,7 +108,7 @@ void* RunPlatformThread(void* param) {
   auto function = static_cast<std::function<void()>*>(param);
   (*function)();
   delete function;
-  return 0;
+  return nullptr;
 }
 #endif  // defined(WEBRTC_WIN)
 

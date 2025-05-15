@@ -196,7 +196,7 @@ static BIO* BIO_new_stream(StreamInterface* stream) {
 static int stream_new(BIO* b) {
   BIO_set_shutdown(b, 0);
   BIO_set_init(b, 1);
-  BIO_set_data(b, 0);
+  BIO_set_data(b, nullptr);
   return 1;
 }
 

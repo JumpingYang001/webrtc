@@ -110,7 +110,7 @@ class FirewallSocket : public AsyncSocketAdapter {
                           << addr.ToSensitiveString() << " to "
                           << GetLocalAddress().ToSensitiveString() << " denied";
     }
-    return 0;
+    return nullptr;
   }
 
  private:
