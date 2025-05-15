@@ -11,8 +11,7 @@
 #ifndef MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_DEFINES_H_
 #define MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_DEFINES_H_
 
-#include <cstdint>
-
+#include "api/video/video_frame.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
 
 namespace webrtc {

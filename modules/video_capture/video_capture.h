@@ -11,10 +11,6 @@
 #ifndef MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_H_
 #define MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_H_
 
-#include <cstdint>
-
-#include "api/ref_count.h"
-#include "api/video/video_frame.h"
 #include "api/video/video_rotation.h"
 #include "api/video/video_sink_interface.h"
 #include "modules/video_capture/raw_video_sink_interface.h"

@@ -28,7 +28,6 @@ rtc_library("video_capture_module") {
   ]
 
   deps = [
-    "../../api:ref_count",
     "../../api:scoped_refptr",
     "../../api:sequence_checker",
     "../../api/video:video_frame",
@@ -56,7 +55,6 @@ if (!build_with_chromium || is_linux || is_chromeos) {
     visibility = [ "*" ]
     deps = [
       ":video_capture_module",
-      "../../api:make_ref_counted",
       "../../api:scoped_refptr",
       "../../api:sequence_checker",
       "../../media:video_common",

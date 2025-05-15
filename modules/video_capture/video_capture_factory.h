@@ -16,6 +16,7 @@
 
 #include "api/scoped_refptr.h"
 #include "modules/video_capture/video_capture.h"
+#include "modules/video_capture/video_capture_defines.h"
 #include "rtc_base/system/rtc_export.h"
 
 namespace webrtc {
