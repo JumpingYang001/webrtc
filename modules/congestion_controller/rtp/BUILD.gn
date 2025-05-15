@@ -55,7 +55,6 @@ rtc_library("transport_feedback") {
     "../../../rtc_base/synchronization:mutex",
     "../../../rtc_base/system:no_unique_address",
     "../../../system_wrappers",
-    "../../../system_wrappers:field_trial",
     "../../rtp_rtcp:ntp_time_util",
     "../../rtp_rtcp:rtp_rtcp_format",
     "//third_party/abseil-cpp/absl/algorithm:container",

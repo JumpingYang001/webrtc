@@ -319,7 +319,6 @@ rtc_library("libjingle_peerconnection_api") {
     ":data_channel_event_observer_interface",
     ":dtls_transport_interface",
     ":fec_controller_api",
-    ":field_trials",
     ":field_trials_view",
     ":frame_transformer_interface",
     ":ice_transport_interface",

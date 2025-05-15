@@ -174,7 +174,6 @@ rtc_library("video_adapter") {
     "../rtc_base:timeutils",
     "../rtc_base/synchronization:mutex",
     "../rtc_base/system:rtc_export",
-    "../system_wrappers:field_trial",
   ]
 }
 
@@ -545,7 +544,6 @@ rtc_library("rtc_internal_video_codecs") {
     "../rtc_base:checks",
     "../rtc_base:logging",
     "../rtc_base/system:rtc_export",
-    "../system_wrappers:field_trial",
     "../test:fake_video_codecs",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/strings",
@@ -779,7 +777,6 @@ rtc_library("rtc_data_sctp_transport_factory") {
     deps += [
       ":rtc_data_dcsctp_transport",
       "../system_wrappers",
-      "../system_wrappers:field_trial",
     ]
   }
 }

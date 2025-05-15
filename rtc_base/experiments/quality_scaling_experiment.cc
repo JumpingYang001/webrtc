@@ -11,11 +11,14 @@
 
 #include <stdio.h>
 
+#include <optional>
 #include <string>
 
 #include "absl/strings/match.h"
 #include "api/field_trials_view.h"
-#include "api/transport/field_trial_based_config.h"
+#include "api/video/video_codec_type.h"
+#include "api/video_codecs/video_encoder.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_parser.h"
 #include "rtc_base/logging.h"
 

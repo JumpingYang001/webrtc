@@ -62,6 +62,7 @@ rtc_library("network_control") {
 
 rtc_library("field_trial_based_config") {
   visibility = [ "*" ]
+  allow_poison = [ "environment_construction" ]
   sources = [
     "field_trial_based_config.cc",
     "field_trial_based_config.h",

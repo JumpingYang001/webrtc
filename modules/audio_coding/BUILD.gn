@@ -435,7 +435,6 @@ rtc_library("audio_network_adaptor") {
     "../../rtc_base:timeutils",
     "../../rtc_base/system:file_wrapper",
     "../../system_wrappers",
-    "../../system_wrappers:field_trial",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]

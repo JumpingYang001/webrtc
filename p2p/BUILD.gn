@@ -194,7 +194,6 @@ rtc_library("connection") {
     "../api:sequence_checker",
     "../api/task_queue",
     "../api/transport:enums",
-    "../api/transport:field_trial_based_config",
     "../api/transport:stun_types",
     "../api/units:time_delta",
     "../api/units:timestamp",
