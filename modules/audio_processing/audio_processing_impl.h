@@ -13,11 +13,12 @@
 
 #include <stdio.h>
 
+#include <array>
 #include <atomic>
-#include <list>
+#include <cstdint>
 #include <memory>
 #include <optional>
-#include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/base/nullability.h"
@@ -25,12 +26,11 @@
 #include "api/array_view.h"
 #include "api/audio/audio_processing.h"
 #include "api/audio/audio_processing_statistics.h"
+#include "api/audio/echo_control.h"
 #include "api/environment/environment.h"
-#include "api/function_view.h"
+#include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_base.h"
-#include "modules/audio_processing/aec3/echo_canceller3.h"
 #include "modules/audio_processing/agc/agc_manager_direct.h"
-#include "modules/audio_processing/agc/gain_control.h"
 #include "modules/audio_processing/agc2/input_volume_stats_reporter.h"
 #include "modules/audio_processing/audio_buffer.h"
 #include "modules/audio_processing/capture_levels_adjuster/capture_levels_adjuster.h"
@@ -41,6 +41,7 @@
 #include "modules/audio_processing/include/aec_dump.h"
 #include "modules/audio_processing/include/audio_frame_proxies.h"
 #include "modules/audio_processing/ns/noise_suppressor.h"
+#include "modules/audio_processing/post_filter.h"
 #include "modules/audio_processing/render_queue_item_verifier.h"
 #include "modules/audio_processing/rms_level.h"
 #include "rtc_base/gtest_prod_util.h"
@@ -384,6 +385,7 @@ class AudioProcessingImpl : public AudioProcessing {
     std::unique_ptr<EchoControl> echo_controller;
     std::unique_ptr<EchoControlMobileImpl> echo_control_mobile;
     std::unique_ptr<NoiseSuppressor> noise_suppressor;
+    std::unique_ptr<PostFilter> post_filter;
     std::unique_ptr<CaptureLevelsAdjuster> capture_levels_adjuster;
   } submodules_;
 

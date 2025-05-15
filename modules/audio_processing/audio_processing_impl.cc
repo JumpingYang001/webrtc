@@ -52,6 +52,7 @@
 #include "modules/audio_processing/logging/apm_data_dumper.h"
 #include "modules/audio_processing/ns/noise_suppressor.h"
 #include "modules/audio_processing/ns/ns_config.h"
+#include "modules/audio_processing/post_filter.h"
 #include "modules/audio_processing/render_queue_item_verifier.h"
 #include "modules/audio_processing/rms_level.h"
 #include "rtc_base/checks.h"
@@ -1475,6 +1476,10 @@ int AudioProcessingImpl::ProcessCaptureStreamLocked() {
           capture_.applied_input_volume_changed, capture_buffer);
     }
 
+    if (submodules_.post_filter) {
+      submodules_.post_filter->Process(*capture_buffer);
+    }
+
     if (submodules_.capture_post_processor) {
       submodules_.capture_post_processor->Process(capture_buffer);
     }
@@ -1936,6 +1941,13 @@ void AudioProcessingImpl::InitializeEchoController() {
     }
 
     capture_nonlocked_.echo_controller_enabled = true;
+
+    if (!env_.field_trials().IsEnabled("WebRTC-PostFilterKillSwitch")) {
+      // Only creates a PostFilter if current sample-rate is high enough to
+      // require a filter.
+      submodules_.post_filter = PostFilter::CreateIfNeeded(
+          proc_sample_rate_hz(), num_proc_channels());
+    }
 
     submodules_.echo_control_mobile.reset();
     aecm_render_signal_queue_.reset();

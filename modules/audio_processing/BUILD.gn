@@ -82,6 +82,24 @@ rtc_library("high_pass_filter") {
   ]
 }
 
+rtc_library("post_filter") {
+  visibility = [ "*" ]
+
+  sources = [
+    "post_filter.cc",
+    "post_filter.h",
+  ]
+
+  defines = []
+
+  deps = [
+    ":audio_buffer",
+    "../../api:array_view",
+    "../../rtc_base:checks",
+    "utility:cascaded_biquad_filter",
+  ]
+}
+
 rtc_library("aec_dump_interface") {
   visibility = [ "*" ]
   sources = [
@@ -152,6 +170,7 @@ rtc_library("audio_processing") {
     ":audio_frame_view",
     ":gain_controller2",
     ":high_pass_filter",
+    ":post_filter",
     ":rms_level",
     "../../api:array_view",
     "../../api:field_trials_view",
@@ -337,6 +356,7 @@ if (rtc_include_tests) {
         ":gain_controller2",
         ":high_pass_filter",
         ":mocks",
+        ":post_filter",
         "../../api:array_view",
         "../../api:make_ref_counted",
         "../../api:scoped_refptr",
@@ -436,6 +456,7 @@ if (rtc_include_tests) {
           "echo_detector/normalized_covariance_estimator_unittest.cc",
           "gain_control_unittest.cc",
           "high_pass_filter_unittest.cc",
+          "post_filter_unittest.cc",
           "residual_echo_detector_unittest.cc",
           "rms_level_unittest.cc",
           "test/debug_dump_replayer.cc",
