@@ -182,6 +182,19 @@ rtc_library("copy_on_write_buffer") {
   ]
 }
 
+rtc_library("denormal_disabler") {
+  visibility = [ "*" ]
+  public = [ "denormal_disabler.h" ]
+  sources = [ "denormal_disabler.cc" ]
+  deps = [
+    "../rtc_base:checks",
+    "../rtc_base/system:arch",
+  ]
+  if (is_clang) {
+    cflags_cc = [ "-Wno-unused-private-field" ]
+  }
+}
+
 rtc_library("event_tracer") {
   visibility = [ "*" ]
   sources = [
@@ -2195,6 +2208,7 @@ if (rtc_include_tests) {
         "crc32_unittest.cc",
         "crypto_random_unittest.cc",
         "data_rate_limiter_unittest.cc",
+        "denormal_disabler_unittest.cc",
         "fake_clock_unittest.cc",
         "ip_address_unittest.cc",
         "memory_usage_unittest.cc",
@@ -2220,6 +2234,7 @@ if (rtc_include_tests) {
         ":crc32",
         ":crypto_random",
         ":data_rate_limiter",
+        ":denormal_disabler",
         ":digest",
         ":gunit_helpers",
         ":ifaddrs_converter",

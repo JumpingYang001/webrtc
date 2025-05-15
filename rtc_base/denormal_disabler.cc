@@ -8,9 +8,10 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "system_wrappers/include/denormal_disabler.h"
+#include "rtc_base/denormal_disabler.h"
 
 #include "rtc_base/checks.h"
+#include "rtc_base/system/arch.h"
 
 namespace webrtc {
 namespace {
