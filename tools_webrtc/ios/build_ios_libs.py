@@ -190,8 +190,13 @@ def BuildWebRTC(output_dir, target_environment, target_arch, flavor,
                    ('true' if libvpx_build_vp9 else 'false'))
 
     gn_args.append('use_lld=true')
-    gn_args.append('use_remoteexec=' + ('true' if use_remoteexec else 'false'))
     gn_args.append('rtc_enable_objc_symbol_export=true')
+    gn_args.append('use_siso=true')
+    if use_remoteexec:
+        gn_args.extend([
+            'use_remoteexec=true',
+            'use_reclient=false',
+        ])
 
     args_string = ' '.join(gn_args + extra_gn_args)
     logging.info('Building WebRTC with args: %s', args_string)
@@ -207,13 +212,14 @@ def BuildWebRTC(output_dir, target_environment, target_arch, flavor,
     logging.info('Building target: %s', gn_target_name)
 
     cmd = [
-        os.path.join(SRC_DIR, 'third_party', 'ninja', 'ninja'),
+        os.path.join(SRC_DIR, 'third_party', 'siso', 'cipd', 'siso'),
+        'ninja',
         '-C',
         output_dir,
         gn_target_name,
     ]
     if use_remoteexec:
-        cmd.extend(['-j', '200'])
+        cmd.extend(['-remote_jobs', '200'])
     _RunCommand(cmd)
 
 
