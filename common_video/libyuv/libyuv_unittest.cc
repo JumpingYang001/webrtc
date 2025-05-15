@@ -95,7 +95,7 @@ class TestLibYuv : public ::testing::Test {
 };
 
 TestLibYuv::TestLibYuv()
-    : source_file_(NULL),
+    : source_file_(nullptr),
       orig_frame_(),
       width_(352),
       height_(288),
@@ -106,7 +106,7 @@ TestLibYuv::TestLibYuv()
 void TestLibYuv::SetUp() {
   const std::string input_file_name = test::ResourcePath("foreman_cif", "yuv");
   source_file_ = fopen(input_file_name.c_str(), "rb");
-  ASSERT_TRUE(source_file_ != NULL)
+  ASSERT_TRUE(source_file_ != nullptr)
       << "Cannot read file: " << input_file_name << "\n";
 
   scoped_refptr<I420BufferInterface> buffer(
@@ -120,10 +120,10 @@ void TestLibYuv::SetUp() {
 }
 
 void TestLibYuv::TearDown() {
-  if (source_file_ != NULL) {
+  if (source_file_ != nullptr) {
     ASSERT_EQ(0, fclose(source_file_));
   }
-  source_file_ = NULL;
+  source_file_ = nullptr;
 }
 
 TEST_F(TestLibYuv, ConvertTest) {
@@ -132,7 +132,7 @@ TEST_F(TestLibYuv, ConvertTest) {
   std::string output_file_name =
       test::OutputPath() + "LibYuvTest_conversion.yuv";
   FILE* output_file = fopen(output_file_name.c_str(), "wb");
-  ASSERT_TRUE(output_file != NULL);
+  ASSERT_TRUE(output_file != nullptr);
 
   double psnr = 0.0;
 
@@ -298,7 +298,7 @@ TEST_F(TestLibYuv, ConvertAlignedFrame) {
   std::string output_file_name =
       test::OutputPath() + "LibYuvTest_conversion.yuv";
   FILE* output_file = fopen(output_file_name.c_str(), "wb");
-  ASSERT_TRUE(output_file != NULL);
+  ASSERT_TRUE(output_file != nullptr);
 
   double psnr = 0.0;
 
