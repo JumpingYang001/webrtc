@@ -652,20 +652,20 @@ TEST_F(StunTest, ReadRfc5769RequestMessage) {
 
   const StunByteStringAttribute* software =
       msg.GetByteString(STUN_ATTR_SOFTWARE);
-  ASSERT_TRUE(software != NULL);
+  ASSERT_TRUE(software != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgClientSoftware, software->string_view());
 
   const StunByteStringAttribute* username =
       msg.GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username != NULL);
+  ASSERT_TRUE(username != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgUsername, username->string_view());
 
   // Actual M-I value checked in a later test.
-  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
+  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
 
   // Fingerprint checked in a later test, but double-check the value here.
   const StunUInt32Attribute* fingerprint = msg.GetUInt32(STUN_ATTR_FINGERPRINT);
-  ASSERT_TRUE(fingerprint != NULL);
+  ASSERT_TRUE(fingerprint != nullptr);
   EXPECT_EQ(0xe57a3bcf, fingerprint->value());
 }
 
@@ -679,17 +679,17 @@ TEST_F(StunTest, ReadRfc5769ResponseMessage) {
 
   const StunByteStringAttribute* software =
       msg.GetByteString(STUN_ATTR_SOFTWARE);
-  ASSERT_TRUE(software != NULL);
+  ASSERT_TRUE(software != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgServerSoftware, software->string_view());
 
   const StunAddressAttribute* mapped_address =
       msg.GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  ASSERT_TRUE(mapped_address != NULL);
+  ASSERT_TRUE(mapped_address != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgMappedAddress, mapped_address->GetAddress());
 
   // Actual M-I and fingerprint checked in later tests.
-  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
-  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) != NULL);
+  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
+  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) != nullptr);
 }
 
 // Read the RFC5389 fields from the RFC5769 sample STUN response for IPv6.
@@ -702,17 +702,17 @@ TEST_F(StunTest, ReadRfc5769ResponseMessageIPv6) {
 
   const StunByteStringAttribute* software =
       msg.GetByteString(STUN_ATTR_SOFTWARE);
-  ASSERT_TRUE(software != NULL);
+  ASSERT_TRUE(software != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgServerSoftware, software->string_view());
 
   const StunAddressAttribute* mapped_address =
       msg.GetAddress(STUN_ATTR_XOR_MAPPED_ADDRESS);
-  ASSERT_TRUE(mapped_address != NULL);
+  ASSERT_TRUE(mapped_address != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgIPv6MappedAddress, mapped_address->GetAddress());
 
   // Actual M-I and fingerprint checked in later tests.
-  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
-  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) != NULL);
+  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
+  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) != nullptr);
 }
 
 // Read the RFC5389 fields from the RFC5769 sample STUN response with auth.
@@ -725,20 +725,20 @@ TEST_F(StunTest, ReadRfc5769RequestMessageLongTermAuth) {
 
   const StunByteStringAttribute* username =
       msg.GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username != NULL);
+  ASSERT_TRUE(username != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgWithAuthUsername, username->string_view());
 
   const StunByteStringAttribute* nonce = msg.GetByteString(STUN_ATTR_NONCE);
-  ASSERT_TRUE(nonce != NULL);
+  ASSERT_TRUE(nonce != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgWithAuthNonce, nonce->string_view());
 
   const StunByteStringAttribute* realm = msg.GetByteString(STUN_ATTR_REALM);
-  ASSERT_TRUE(realm != NULL);
+  ASSERT_TRUE(realm != nullptr);
   EXPECT_EQ(kRfc5769SampleMsgWithAuthRealm, realm->string_view());
 
   // No fingerprint, actual M-I checked in later tests.
-  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != NULL);
-  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) == NULL);
+  ASSERT_TRUE(msg.GetByteString(STUN_ATTR_MESSAGE_INTEGRITY) != nullptr);
+  ASSERT_TRUE(msg.GetUInt32(STUN_ATTR_FINGERPRINT) == nullptr);
 }
 
 // The RFC3489 packet in this test is the same as
@@ -778,7 +778,7 @@ TEST_F(StunTest, SetIPv6XorAddressAttributeOwner) {
 
   // Owner with a different transaction ID.
   StunMessage msg2(STUN_INVALID_MESSAGE_TYPE, "ABCDABCDABCD");
-  StunXorAddressAttribute addr2(STUN_ATTR_XOR_MAPPED_ADDRESS, 20, NULL);
+  StunXorAddressAttribute addr2(STUN_ATTR_XOR_MAPPED_ADDRESS, 20, nullptr);
   addr2.SetIP(addr->ipaddr());
   addr2.SetPort(addr->port());
   addr2.SetOwner(&msg2);
@@ -799,7 +799,7 @@ TEST_F(StunTest, SetIPv6XorAddressAttributeOwner) {
   addr2.SetIP(addr->ipaddr());
   addr2.SetPort(addr->port());
   // Try writing with no owner at all, should fail and write nothing.
-  addr2.SetOwner(NULL);
+  addr2.SetOwner(nullptr);
   ASSERT_EQ(addr2.ipaddr(), addr->ipaddr());
   wrong_buf.Clear();
   EXPECT_FALSE(addr2.Write(&wrong_buf));
@@ -825,7 +825,7 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
 
   // Owner with a different transaction ID.
   StunMessage msg2(STUN_INVALID_MESSAGE_TYPE, "ABCDABCDABCD");
-  StunXorAddressAttribute addr2(STUN_ATTR_XOR_MAPPED_ADDRESS, 20, NULL);
+  StunXorAddressAttribute addr2(STUN_ATTR_XOR_MAPPED_ADDRESS, 20, nullptr);
   addr2.SetIP(addr->ipaddr());
   addr2.SetPort(addr->port());
   addr2.SetOwner(&msg2);
@@ -846,7 +846,7 @@ TEST_F(StunTest, SetIPv4XorAddressAttributeOwner) {
   ASSERT_EQ(addr->ipaddr(), addr2.ipaddr());
 
   // However, no owner is still an error, should fail and write nothing.
-  addr2.SetOwner(NULL);
+  addr2.SetOwner(nullptr);
   ASSERT_EQ(addr2.ipaddr(), addr->ipaddr());
   wrong_buf.Clear();
   EXPECT_FALSE(addr2.Write(&wrong_buf));
@@ -1015,7 +1015,7 @@ TEST_F(StunTest, ReadByteStringAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId2, kStunTransactionIdLength);
   const StunByteStringAttribute* username =
       msg.GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username != NULL);
+  ASSERT_TRUE(username != nullptr);
   EXPECT_EQ(kTestUserName1, username->string_view());
 }
 
@@ -1028,7 +1028,7 @@ TEST_F(StunTest, ReadPaddedByteStringAttribute) {
   CheckStunTransactionID(msg, kTestTransactionId2, kStunTransactionIdLength);
   const StunByteStringAttribute* username =
       msg.GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username != NULL);
+  ASSERT_TRUE(username != nullptr);
   EXPECT_EQ(kTestUserName2, username->string_view());
 }
 
@@ -1039,7 +1039,7 @@ TEST_F(StunTest, ReadErrorCodeAttribute) {
   CheckStunHeader(msg, STUN_BINDING_ERROR_RESPONSE, size);
   CheckStunTransactionID(msg, kTestTransactionId1, kStunTransactionIdLength);
   const StunErrorCodeAttribute* errorcode = msg.GetErrorCode();
-  ASSERT_TRUE(errorcode != NULL);
+  ASSERT_TRUE(errorcode != nullptr);
   EXPECT_EQ(kTestErrorClass, errorcode->eclass());
   EXPECT_EQ(kTestErrorNumber, errorcode->number());
   EXPECT_EQ(kTestErrorReason, errorcode->reason());
@@ -1060,7 +1060,7 @@ TEST_F(StunTest, ReadMessageWithAUInt16ListAttribute) {
   size_t size = ReadStunMessage(&msg, kStunMessageWithUInt16ListAttribute);
   CheckStunHeader(msg, STUN_BINDING_REQUEST, size);
   const StunUInt16ListAttribute* types = msg.GetUnknownAttributes();
-  ASSERT_TRUE(types != NULL);
+  ASSERT_TRUE(types != nullptr);
   EXPECT_EQ(3U, types->Size());
   EXPECT_EQ(0x1U, types->GetType(0));
   EXPECT_EQ(0x1000U, types->GetType(1));
@@ -1075,7 +1075,7 @@ TEST_F(StunTest, ReadMessageWithAnUnknownAttribute) {
   // Parsing should have succeeded and there should be a USERNAME attribute
   const StunByteStringAttribute* username =
       msg.GetByteString(STUN_ATTR_USERNAME);
-  ASSERT_TRUE(username != NULL);
+  ASSERT_TRUE(username != nullptr);
   EXPECT_EQ(kTestUserName2, username->string_view());
 }
 
@@ -1680,7 +1680,7 @@ TEST_F(StunTest, GoogMiscInfo) {
   CheckStunHeader(msg, STUN_BINDING_REQUEST, read_size);
   const StunUInt16ListAttribute* types =
       msg.GetUInt16List(STUN_ATTR_GOOG_MISC_INFO);
-  ASSERT_TRUE(types != NULL);
+  ASSERT_TRUE(types != nullptr);
   EXPECT_EQ(4U, types->Size());
   EXPECT_EQ(0x1U, types->GetType(0));
   EXPECT_EQ(0x0U, types->GetType(1));

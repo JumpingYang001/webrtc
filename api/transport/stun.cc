@@ -732,7 +732,7 @@ StunAttribute* StunMessage::CreateAttribute(int type, size_t length) /*const*/ {
     return StunAttribute::Create(STUN_VALUE_BYTE_STRING, type,
                                  static_cast<uint16_t>(length), this);
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -742,7 +742,7 @@ const StunAttribute* StunMessage::GetAttribute(int type) const {
       return attr.get();
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 bool StunMessage::IsValidTransactionId(absl::string_view transaction_id) {
@@ -828,7 +828,7 @@ StunAttribute* StunAttribute::Create(StunAttributeValueType value_type,
     case STUN_VALUE_UINT16_LIST:
       return new StunUInt16ListAttribute(type, length);
     default:
-      return NULL;
+      return nullptr;
   }
 }
 
@@ -954,7 +954,7 @@ bool StunAddressAttribute::Write(ByteBufferWriter* buf) const {
 
 StunXorAddressAttribute::StunXorAddressAttribute(uint16_t type,
                                                  const SocketAddress& addr)
-    : StunAddressAttribute(type, addr), owner_(NULL) {}
+    : StunAddressAttribute(type, addr), owner_(nullptr) {}
 
 StunXorAddressAttribute::StunXorAddressAttribute(uint16_t type,
                                                  uint16_t length,
@@ -1096,23 +1096,23 @@ bool StunUInt64Attribute::Write(ByteBufferWriter* buf) const {
 }
 
 StunByteStringAttribute::StunByteStringAttribute(uint16_t type)
-    : StunAttribute(type, 0), bytes_(NULL) {}
+    : StunAttribute(type, 0), bytes_(nullptr) {}
 
 StunByteStringAttribute::StunByteStringAttribute(uint16_t type,
                                                  absl::string_view str)
-    : StunAttribute(type, 0), bytes_(NULL) {
+    : StunAttribute(type, 0), bytes_(nullptr) {
   CopyBytes(str);
 }
 
 StunByteStringAttribute::StunByteStringAttribute(uint16_t type,
                                                  const void* bytes,
                                                  size_t length)
-    : StunAttribute(type, 0), bytes_(NULL) {
+    : StunAttribute(type, 0), bytes_(nullptr) {
   CopyBytes(bytes, length);
 }
 
 StunByteStringAttribute::StunByteStringAttribute(uint16_t type, uint16_t length)
-    : StunAttribute(type, length), bytes_(NULL) {}
+    : StunAttribute(type, length), bytes_(nullptr) {}
 
 StunByteStringAttribute::~StunByteStringAttribute() {
   delete[] bytes_;
@@ -1135,13 +1135,13 @@ void StunByteStringAttribute::CopyBytes(const void* bytes, size_t length) {
 }
 
 uint8_t StunByteStringAttribute::GetByte(size_t index) const {
-  RTC_DCHECK(bytes_ != NULL);
+  RTC_DCHECK(bytes_ != nullptr);
   RTC_DCHECK(index < length());
   return bytes_[index];
 }
 
 void StunByteStringAttribute::SetByte(size_t index, uint8_t value) {
-  RTC_DCHECK(bytes_ != NULL);
+  RTC_DCHECK(bytes_ != nullptr);
   RTC_DCHECK(index < length());
   bytes_[index] = value;
 }
