@@ -97,7 +97,7 @@ int64_t RtpStream::next_rtp_time() const {
 // Generates an RTCP packet.
 RtpStream::RtcpPacket* RtpStream::Rtcp(int64_t time_now_us) {
   if (time_now_us < next_rtcp_time_) {
-    return NULL;
+    return nullptr;
   }
   RtcpPacket* rtcp = new RtcpPacket;
   int64_t send_time_us = time_now_us + kSendSideOffsetUs;
