@@ -10,6 +10,9 @@
 
 #include "modules/video_capture/video_capture_options.h"
 
+#include "api/make_ref_counted.h"
+#include "api/scoped_refptr.h"
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 #include "modules/video_capture/linux/pipewire_session.h"
 #endif

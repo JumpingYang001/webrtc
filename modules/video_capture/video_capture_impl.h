@@ -23,12 +23,14 @@
 #include "api/video/video_frame.h"
 #include "api/video/video_rotation.h"
 #include "api/video/video_sink_interface.h"
+#include "modules/video_capture/raw_video_sink_interface.h"
 #include "modules/video_capture/video_capture.h"
 #include "modules/video_capture/video_capture_config.h"
 #include "modules/video_capture/video_capture_defines.h"
 #include "rtc_base/race_checker.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/system/rtc_export.h"
+#include "rtc_base/thread_annotations.h"
 
 namespace webrtc {
 

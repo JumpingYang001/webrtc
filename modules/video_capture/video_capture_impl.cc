@@ -10,17 +10,28 @@
 
 #include "modules/video_capture/video_capture_impl.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
 #include "api/video/i420_buffer.h"
-#include "api/video/video_frame_buffer.h"
+#include "api/video/video_frame.h"
+#include "api/video/video_rotation.h"
+#include "api/video/video_sink_interface.h"
 #include "common_video/libyuv/include/webrtc_libyuv.h"
+#include "modules/video_capture/raw_video_sink_interface.h"
 #include "modules/video_capture/video_capture_config.h"
+#include "modules/video_capture/video_capture_defines.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/race_checker.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
-#include "third_party/libyuv/include/libyuv.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/rotate.h"
 
 namespace webrtc {
 namespace videocapturemodule {
