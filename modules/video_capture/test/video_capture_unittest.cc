@@ -156,7 +156,7 @@ class VideoCaptureTest : public ::testing::Test {
 
     webrtc::scoped_refptr<VideoCaptureModule> module(
         VideoCaptureFactory::Create(unique_name));
-    if (module.get() == NULL)
+    if (module.get() == nullptr)
       return nullptr;
 
     EXPECT_FALSE(module->CaptureStarted());
@@ -193,7 +193,7 @@ TEST_F(VideoCaptureTest, MAYBE_CreateDelete) {
     TestVideoCaptureCallback capture_observer;
     webrtc::scoped_refptr<VideoCaptureModule> module(
         OpenVideoCaptureDevice(0, &capture_observer));
-    ASSERT_TRUE(module.get() != NULL);
+    ASSERT_TRUE(module.get() != nullptr);
 
     VideoCaptureCapability capability;
 #ifndef WEBRTC_MAC
@@ -237,7 +237,7 @@ TEST_F(VideoCaptureTest, MAYBE_Capabilities) {
 
   webrtc::scoped_refptr<VideoCaptureModule> module(
       OpenVideoCaptureDevice(0, &capture_observer));
-  ASSERT_TRUE(module.get() != NULL);
+  ASSERT_TRUE(module.get() != nullptr);
 
   int number_of_capabilities =
       device_info_->NumberOfCapabilities(module->CurrentDeviceName());
@@ -301,7 +301,7 @@ TEST_F(VideoCaptureTest, DISABLED_TestTwoCameras) {
   TestVideoCaptureCallback capture_observer1;
   webrtc::scoped_refptr<VideoCaptureModule> module1(
       OpenVideoCaptureDevice(0, &capture_observer1));
-  ASSERT_TRUE(module1.get() != NULL);
+  ASSERT_TRUE(module1.get() != nullptr);
   VideoCaptureCapability capability1;
 #ifndef WEBRTC_MAC
   device_info_->GetCapability(module1->CurrentDeviceName(), 0, capability1);
@@ -316,7 +316,7 @@ TEST_F(VideoCaptureTest, DISABLED_TestTwoCameras) {
   TestVideoCaptureCallback capture_observer2;
   webrtc::scoped_refptr<VideoCaptureModule> module2(
       OpenVideoCaptureDevice(1, &capture_observer2));
-  ASSERT_TRUE(module1.get() != NULL);
+  ASSERT_TRUE(module1.get() != nullptr);
 
   VideoCaptureCapability capability2;
 #ifndef WEBRTC_MAC
@@ -353,7 +353,7 @@ TEST_F(VideoCaptureTest, MAYBE_ConcurrentAccess) {
   TestVideoCaptureCallback capture_observer1;
   webrtc::scoped_refptr<VideoCaptureModule> module1(
       OpenVideoCaptureDevice(0, &capture_observer1));
-  ASSERT_TRUE(module1.get() != NULL);
+  ASSERT_TRUE(module1.get() != nullptr);
   VideoCaptureCapability capability;
   device_info_->GetCapability(module1->CurrentDeviceName(), 0, capability);
   capture_observer1.SetExpectedCapability(capability);
@@ -361,7 +361,7 @@ TEST_F(VideoCaptureTest, MAYBE_ConcurrentAccess) {
   TestVideoCaptureCallback capture_observer2;
   webrtc::scoped_refptr<VideoCaptureModule> module2(
       OpenVideoCaptureDevice(0, &capture_observer2));
-  ASSERT_TRUE(module2.get() != NULL);
+  ASSERT_TRUE(module2.get() != nullptr);
   capture_observer2.SetExpectedCapability(capability);
 
   // Starting module1 should work.

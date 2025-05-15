@@ -84,12 +84,12 @@ int32_t VideoCaptureImpl::RotationInDegrees(VideoRotation rotation,
 }
 
 VideoCaptureImpl::VideoCaptureImpl()
-    : _deviceUniqueId(NULL),
+    : _deviceUniqueId(nullptr),
       _requestedCapability(),
       _lastProcessTimeNanos(TimeNanos()),
       _lastFrameRateCallbackTimeNanos(TimeNanos()),
-      _dataCallBack(NULL),
-      _rawDataCallBack(NULL),
+      _dataCallBack(nullptr),
+      _rawDataCallBack(nullptr),
       _lastProcessFrameTimeNanos(TimeNanos()),
       _rotateFrame(kVideoRotation_0),
       apply_rotation_(false) {
@@ -123,8 +123,8 @@ void VideoCaptureImpl::RegisterCaptureDataCallback(
 
 void VideoCaptureImpl::DeRegisterCaptureDataCallback() {
   MutexLock lock(&api_lock_);
-  _dataCallBack = NULL;
-  _rawDataCallBack = NULL;
+  _dataCallBack = nullptr;
+  _rawDataCallBack = nullptr;
 }
 int32_t VideoCaptureImpl::DeliverCapturedFrame(VideoFrame& captureFrame) {
   RTC_CHECK_RUNS_SERIALIZED(&capture_checker_);

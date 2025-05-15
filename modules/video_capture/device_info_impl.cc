@@ -31,7 +31,7 @@ namespace webrtc {
 namespace videocapturemodule {
 
 DeviceInfoImpl::DeviceInfoImpl()
-    : _lastUsedDeviceName(NULL), _lastUsedDeviceNameLength(0) {}
+    : _lastUsedDeviceName(nullptr), _lastUsedDeviceNameLength(0) {}
 
 DeviceInfoImpl::~DeviceInfoImpl(void) {
   MutexLock lock(&_apiLock);
