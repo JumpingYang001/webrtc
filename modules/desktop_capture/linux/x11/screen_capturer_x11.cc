@@ -67,8 +67,8 @@ bool ScreenCapturerX11::Init(const DesktopCaptureOptions& options) {
     return false;
   }
 
-  gc_ = XCreateGC(display(), root_window_, 0, NULL);
-  if (gc_ == NULL) {
+  gc_ = XCreateGC(display(), root_window_, 0, nullptr);
+  if (gc_ == nullptr) {
     RTC_LOG(LS_ERROR) << "Unable to get graphics context";
     DeinitXlib();
     return false;
@@ -133,7 +133,7 @@ void ScreenCapturerX11::InitXDamage() {
   }
 
   // Create an XFixes server-side region to collate damage into.
-  damage_region_ = XFixesCreateRegion(display(), 0, 0);
+  damage_region_ = XFixesCreateRegion(display(), nullptr, 0);
   if (!damage_region_) {
     XDamageDestroy(display(), damage_handle_);
     RTC_LOG(LS_ERROR) << "Unable to create XFixes region.";
