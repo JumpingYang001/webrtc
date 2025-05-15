@@ -197,7 +197,7 @@ bool DataSocket::ParseMethodAndPath(const char* begin, size_t len) {
       {"OPTIONS", 7, OPTIONS},
   };
 
-  const char* path = NULL;
+  const char* path = nullptr;
   for (size_t i = 0; i < ARRAYSIZE(supported_methods); ++i) {
     if (len > supported_methods[i].method_name_len &&
         isspace(begin[supported_methods[i].method_name_len]) &&
@@ -246,7 +246,7 @@ bool DataSocket::ParseContentLengthAndType(const char* headers, size_t length) {
         while (headers[0] == ' ')
           ++headers;
         const char* type_end = strstr(headers, "\r\n");
-        if (type_end == NULL)
+        if (type_end == nullptr)
           type_end = end;
         content_type_.assign(headers, type_end);
       }
@@ -293,7 +293,7 @@ DataSocket* ListeningSocket::Accept() const {
   NativeSocket client =
       accept(socket_, reinterpret_cast<sockaddr*>(&addr), &size);
   if (client == INVALID_SOCKET)
-    return NULL;
+    return nullptr;
 
   return new DataSocket(client);
 }

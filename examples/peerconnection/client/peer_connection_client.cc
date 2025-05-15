@@ -27,20 +27,23 @@ constexpr webrtc::TimeDelta kReconnectDelay = webrtc::TimeDelta::Seconds(2);
 
 webrtc::Socket* CreateClientSocket(int family) {
   webrtc::Thread* thread = webrtc::Thread::Current();
-  RTC_DCHECK(thread != NULL);
+  RTC_DCHECK(thread != nullptr);
   return thread->socketserver()->CreateSocket(family, SOCK_STREAM);
 }
 
 }  // namespace
 
 PeerConnectionClient::PeerConnectionClient()
-    : callback_(NULL), resolver_(nullptr), state_(NOT_CONNECTED), my_id_(-1) {}
+    : callback_(nullptr),
+      resolver_(nullptr),
+      state_(NOT_CONNECTED),
+      my_id_(-1) {}
 
 PeerConnectionClient::~PeerConnectionClient() = default;
 
 void PeerConnectionClient::InitSocketSignals() {
-  RTC_DCHECK(control_socket_.get() != NULL);
-  RTC_DCHECK(hanging_get_.get() != NULL);
+  RTC_DCHECK(control_socket_.get() != nullptr);
+  RTC_DCHECK(hanging_get_.get() != nullptr);
   control_socket_->SignalCloseEvent.connect(this,
                                             &PeerConnectionClient::OnClose);
   hanging_get_->SignalCloseEvent.connect(this, &PeerConnectionClient::OnClose);
@@ -249,7 +252,7 @@ bool PeerConnectionClient::GetHeaderValue(const std::string& data,
                                           size_t eoh,
                                           const char* header_pattern,
                                           size_t* value) {
-  RTC_DCHECK(value != NULL);
+  RTC_DCHECK(value != nullptr);
   size_t found = data.find(header_pattern);
   if (found != std::string::npos && found < eoh) {
     *value = atoi(&data[found + strlen(header_pattern)]);
@@ -262,7 +265,7 @@ bool PeerConnectionClient::GetHeaderValue(const std::string& data,
                                           size_t eoh,
                                           const char* header_pattern,
                                           std::string* value) {
-  RTC_DCHECK(value != NULL);
+  RTC_DCHECK(value != nullptr);
   size_t found = data.find(header_pattern);
   if (found != std::string::npos && found < eoh) {
     size_t begin = found + strlen(header_pattern);
@@ -412,9 +415,9 @@ bool PeerConnectionClient::ParseEntry(const std::string& entry,
                                       std::string* name,
                                       int* id,
                                       bool* connected) {
-  RTC_DCHECK(name != NULL);
-  RTC_DCHECK(id != NULL);
-  RTC_DCHECK(connected != NULL);
+  RTC_DCHECK(name != nullptr);
+  RTC_DCHECK(id != nullptr);
+  RTC_DCHECK(connected != nullptr);
   RTC_DCHECK(!entry.empty());
 
   *connected = false;

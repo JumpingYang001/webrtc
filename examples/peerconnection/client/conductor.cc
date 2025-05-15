@@ -340,7 +340,7 @@ void Conductor::OnPeerDisconnected(int id) {
   RTC_LOG(LS_INFO) << __FUNCTION__;
   if (id == peer_id_) {
     RTC_LOG(LS_INFO) << "Our peer disconnected";
-    main_wnd_->QueueUIThreadCallback(PEER_CONNECTION_CLOSED, NULL);
+    main_wnd_->QueueUIThreadCallback(PEER_CONNECTION_CLOSED, nullptr);
   } else {
     // Refresh the list if we're showing it.
     if (main_wnd_->current_ui() == MainWindow::LIST_PEERS)
@@ -457,7 +457,7 @@ void Conductor::OnMessageFromPeer(int peer_id, const std::string& message) {
 
 void Conductor::OnMessageSent(int err) {
   // Process the next pending message if any.
-  main_wnd_->QueueUIThreadCallback(SEND_MESSAGE_TO_PEER, NULL);
+  main_wnd_->QueueUIThreadCallback(SEND_MESSAGE_TO_PEER, nullptr);
 }
 
 void Conductor::OnServerConnectionFailure() {

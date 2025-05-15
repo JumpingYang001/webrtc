@@ -27,7 +27,7 @@
 class CustomSocketServer : public webrtc::PhysicalSocketServer {
  public:
   explicit CustomSocketServer(GtkMainWnd* wnd)
-      : wnd_(wnd), conductor_(NULL), client_(NULL) {}
+      : wnd_(wnd), conductor_(nullptr), client_(nullptr) {}
   virtual ~CustomSocketServer() {}
 
   void SetMessageQueue(webrtc::Thread* queue) override {
@@ -49,7 +49,7 @@ class CustomSocketServer : public webrtc::PhysicalSocketServer {
       gtk_main_iteration();
 
     if (!wnd_->IsWindow() && !conductor_->connection_active() &&
-        client_ != NULL && !client_->is_connected()) {
+        client_ != nullptr && !client_->is_connected()) {
       message_queue_->Quit();
     }
     return webrtc::PhysicalSocketServer::Wait(webrtc::TimeDelta::Zero(),

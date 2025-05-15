@@ -109,7 +109,8 @@ int main(int argc, char* argv[]) {
       FD_SET((*i)->socket(), &socket_set);
 
     struct timeval timeout = {10, 0};
-    if (select(FD_SETSIZE, &socket_set, NULL, NULL, &timeout) == SOCKET_ERROR) {
+    if (select(FD_SETSIZE, &socket_set, nullptr, nullptr, &timeout) ==
+        SOCKET_ERROR) {
       printf("select failed\n");
       break;
     }
