@@ -41,8 +41,8 @@ TestAudioDevice::TestAudioDevice(
       rendering_(false),
       capturing_(false) {
   auto good_sample_rate = [](int sr) {
-    return sr == 8000 || sr == 16000 || sr == 32000 || sr == 44100 ||
-           sr == 48000;
+    return sr == 8000 || sr == 16000 || sr == 24000 || sr == 32000 ||
+           sr == 44100 || sr == 48000;
   };
 
   if (renderer_) {
