@@ -49,7 +49,6 @@ specific_include_rules = {
   ],
 
   ".*\.h": [
-    "+rtc_base/arraysize.h",
     "+rtc_base/checks.h",
     "+rtc_base/system/rtc_export.h",
     "+rtc_base/system/rtc_export_template.h",

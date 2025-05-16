@@ -15,7 +15,6 @@
 
 #include "api/rtp_parameters.h"
 #include "api/video/resolution.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/string_to_number.h"
 
 namespace webrtc {
@@ -310,7 +309,7 @@ std::optional<H265Level> GetSupportedH265Level(const Resolution& resolution,
   int aligned_height =
       (resolution.height + kMinCbSizeYMax - 1) & ~(kMinCbSizeYMax - 1);
 
-  for (int i = arraysize(kLevelConstraints) - 1; i >= 0; --i) {
+  for (int i = std::ssize(kLevelConstraints) - 1; i >= 0; --i) {
     const LevelConstraint& level_constraint = kLevelConstraints[i];
     if (level_constraint.max_luma_picture_size <=
             aligned_width * aligned_height &&

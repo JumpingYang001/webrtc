@@ -18,7 +18,6 @@
 #include <string>
 
 #include "api/rtp_parameters.h"
-#include "rtc_base/arraysize.h"
 
 namespace webrtc {
 
@@ -166,7 +165,7 @@ std::optional<H264Level> H264SupportedLevel(int max_frame_pixel_count,
                                             float max_fps) {
   static const int kPixelsPerMacroblock = 16 * 16;
 
-  for (int i = arraysize(kLevelConstraints) - 1; i >= 0; --i) {
+  for (int i = std::ssize(kLevelConstraints) - 1; i >= 0; --i) {
     const LevelConstraint& level_constraint = kLevelConstraints[i];
     if (level_constraint.max_macroblock_frame_size * kPixelsPerMacroblock <=
             max_frame_pixel_count &&

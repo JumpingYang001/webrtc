@@ -52,7 +52,6 @@ rtc_library("audio_frame_api") {
     "..:rtp_packet_info",
     "../../rtc_base:checks",
     "../../rtc_base:logging",
-    "../../rtc_base:macromagic",
     "../../rtc_base:timeutils",
   ]
 }
@@ -88,7 +87,6 @@ rtc_library("audio_processing") {
     "..:ref_count",
     "..:scoped_refptr",
     "../../rtc_base:checks",
-    "../../rtc_base:macromagic",
     "../../rtc_base:stringutils",
     "../../rtc_base/system:arch",
     "../../rtc_base/system:file_wrapper",

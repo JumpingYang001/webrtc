@@ -55,8 +55,6 @@ std::string GainController1ModeToString(const Agc1Config::Mode& mode) {
 
 }  // namespace
 
-constexpr int AudioProcessing::kNativeSampleRatesHz[];
-
 void CustomProcessing::SetRuntimeSetting(
     AudioProcessing::RuntimeSetting /* setting */) {}
 

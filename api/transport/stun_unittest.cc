@@ -18,7 +18,6 @@
 #include <utility>
 
 #include "api/array_view.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/ip_address.h"
@@ -566,7 +565,7 @@ TEST_F(StunTest, MessageTypes) {
 
   int types[] = {STUN_BINDING_REQUEST, STUN_BINDING_INDICATION,
                  STUN_BINDING_RESPONSE, STUN_BINDING_ERROR_RESPONSE};
-  for (size_t i = 0; i < arraysize(types); ++i) {
+  for (size_t i = 0; i < std::size(types); ++i) {
     EXPECT_EQ(i == 0U, IsStunRequestType(types[i]));
     EXPECT_EQ(i == 1U, IsStunIndicationType(types[i]));
     EXPECT_EQ(i == 2U, IsStunSuccessResponseType(types[i]));

@@ -36,7 +36,6 @@
 #include "api/ref_count.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_base.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/system/rtc_export.h"
 
@@ -691,22 +690,16 @@ class RTC_EXPORT AudioProcessing : public RefCountInterface {
   };
 
   // Native rates supported by the integer interfaces.
-  enum NativeRate {
+  enum NativeRate : int {
     kSampleRate8kHz = 8000,
     kSampleRate16kHz = 16000,
     kSampleRate32kHz = 32000,
     kSampleRate48kHz = 48000
   };
 
-  // TODO(kwiberg): We currently need to support a compiler (Visual C++) that
-  // complains if we don't explicitly state the size of the array here. Remove
-  // the size when that's no longer the case.
-  static constexpr int kNativeSampleRatesHz[4] = {
+  static constexpr std::array kNativeSampleRatesHz = {
       kSampleRate8kHz, kSampleRate16kHz, kSampleRate32kHz, kSampleRate48kHz};
-  static constexpr size_t kNumNativeSampleRates =
-      arraysize(kNativeSampleRatesHz);
-  static constexpr int kMaxNativeSampleRateHz =
-      kNativeSampleRatesHz[kNumNativeSampleRates - 1];
+  static constexpr int kMaxNativeSampleRateHz = kNativeSampleRatesHz.back();
 
   // APM processes audio in chunks of about 10 ms. See GetFrameSize() for
   // details.

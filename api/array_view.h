@@ -40,7 +40,7 @@ namespace webrtc {
 // std::vector, webrtc::Buffer, ...), but it's error-prone because the caller
 // has to correctly specify the array length:
 //
-//   Contains17(arr, arraysize(arr));     // C array
+//   Contains17(arr, std::size(arr));     // C array
 //   Contains17(arr.data(), arr.size());  // std::vector
 //   Contains17(arr, size);               // pointer + size
 //   ...
