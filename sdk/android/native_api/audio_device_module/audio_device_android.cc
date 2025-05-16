@@ -125,7 +125,7 @@ scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
       jni::AudioRecordJni::CreateJavaWebRtcAudioRecord(env, j_context,
                                                        j_audio_manager));
   auto audio_output = std::make_unique<jni::AudioTrackJni>(
-      env, output_parameters,
+      env, webrtc_env, output_parameters,
       jni::AudioTrackJni::CreateJavaWebRtcAudioTrack(env, j_context,
                                                      j_audio_manager));
   return CreateAudioDeviceModuleFromInputAndOutput(

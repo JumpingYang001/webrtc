@@ -867,16 +867,17 @@ if (current_os == "linux" || is_android) {
     visibility = [ "*" ]
     sources = [ "src/jni/audio_device/java_audio_device_module.cc" ]
 
-    # TODO: bugs.webrtc.org/413413572 - Remove poison when Environment is
-    # propagated
+    # TODO: bugs.webrtc.org/413413572 - Remove poison when
+    # 'audio_device_module_base' is no longer poisonous.
     allow_poison = [ "environment_construction" ]
 
     deps = [
-      ":base_jni",
+      ":audio_device_module_base",
       ":generated_java_audio_jni",
       ":java_audio_device_module",
+      ":native_api_jni",
+      "../../api/audio:audio_device",
       "../../api/environment",
-      "../../api/environment:environment_factory",
       "//third_party/jni_zero",
     ]
   }
@@ -1274,15 +1275,17 @@ if (current_os == "linux" || is_android) {
       ":audio_device_module_base",
       ":base_jni",
       ":generated_java_audio_device_module_native_jni",
+      ":internal_jni",
+      ":native_api_jni",
       "../../api:sequence_checker",
       "../../api/audio:audio_device",
+      "../../api/environment",
       "../../modules/audio_device:audio_device_buffer",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
       "../../rtc_base:macromagic",
       "../../rtc_base:platform_thread",
       "../../rtc_base:timeutils",
-      "../../system_wrappers:field_trial",
       "../../system_wrappers:metrics",
       "//third_party/jni_zero",
     ]
