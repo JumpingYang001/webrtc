@@ -16,6 +16,7 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <numbers>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -35,7 +36,7 @@ std::string ProduceDebugText(int sample_rate_hz) {
 }
 
 constexpr size_t kDownSamplingFactors[] = {2, 4, 8};
-constexpr float kPi = 3.141592f;
+constexpr float kPi = std::numbers::pi_v<float>;
 constexpr size_t kNumStartupBlocks = 50;
 constexpr size_t kNumBlocks = 1000;
 

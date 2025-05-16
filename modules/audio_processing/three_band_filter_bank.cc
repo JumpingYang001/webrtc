@@ -33,6 +33,7 @@
 #include "modules/audio_processing/three_band_filter_bank.h"
 
 #include <array>
+#include <numbers>
 
 #include "rtc_base/checks.h"
 
@@ -88,17 +89,21 @@ const float
 constexpr int kZeroFilterIndex1 = 3;
 constexpr int kZeroFilterIndex2 = 9;
 
+constexpr float kSqrt3 = std::numbers::sqrt3_v<float>;
+
+// clang-format off
 const float kDctModulation[ThreeBandFilterBank::kNumNonZeroFilters][kDctSize] =
     {{2.f, 2.f, 2.f},
-     {1.73205077f, 0.f, -1.73205077f},
+     {kSqrt3, 0.f, -kSqrt3},
      {1.f, -2.f, 1.f},
      {-1.f, 2.f, -1.f},
-     {-1.73205077f, 0.f, 1.73205077f},
+     {-kSqrt3, 0.f, kSqrt3},
      {-2.f, -2.f, -2.f},
-     {-1.73205077f, 0.f, 1.73205077f},
+     {-kSqrt3, 0.f, kSqrt3},
      {-1.f, 2.f, -1.f},
      {1.f, -2.f, 1.f},
-     {1.73205077f, 0.f, -1.73205077f}};
+     {kSqrt3, 0.f, -kSqrt3}};
+// clang-format on
 
 // Filters the input signal `in` with the filter `filter` using a shift by
 // `in_shift`, taking into account the previous state.

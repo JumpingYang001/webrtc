@@ -13,12 +13,14 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <numbers>
+
 #include "rtc_base/numerics/safe_conversions.h"
 
 namespace webrtc {
 
 namespace {
-constexpr float kPi = 3.14159265f;
+constexpr float kPi = std::numbers::pi_v<float>;
 }  // namespace
 
 void SineWaveGenerator::GenerateNextFrame(AudioFrame* frame) {

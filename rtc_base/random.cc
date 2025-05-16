@@ -11,6 +11,8 @@
 
 #include <math.h>
 
+#include <numbers>
+
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"
 
@@ -71,7 +73,7 @@ double Random::Gaussian(double mean, double standard_deviation) {
   // interval (0, 1]. Note that we rely on NextOutput to generate integers
   // in the range [1, 2^64-1]. Normally this behavior is a bit frustrating,
   // but here it is exactly what we need.
-  const double kPi = 3.14159265358979323846;
+  const double kPi = std::numbers::pi;
   double u1 = static_cast<double>(NextOutput()) /
               static_cast<double>(0xFFFFFFFFFFFFFFFFull);
   double u2 = static_cast<double>(NextOutput()) /
