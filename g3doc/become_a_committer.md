@@ -88,5 +88,5 @@ demonstrate activity and maintain their WebRTC Committer status.
 [3]: https://webrtc.googlesource.com/src/+/refs/heads/main/g3doc/style-guide.md
 [4]: https://developers.google.com/open-source/cla/individual?hl=en
 [5]: https://google.github.io/styleguide/cppguide.html
-[6]: https://bugs.chromium.org/p/webrtc/issues/entry?template=Become+WebRTC+committer
-[7]: https://bugs.chromium.org/p/webrtc/issues/entry?template=Get+tryjob+access
+[6]: https://issues.webrtc.org/issues/new?component=1565136&template=1986141
+[7]: https://issues.webrtc.org/issues/new?component=1565136&template=1986372
