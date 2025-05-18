@@ -11,30 +11,54 @@
 #include "modules/audio_processing/audio_processing_impl.h"
 
 #include <algorithm>
+#include <array>
+#include <atomic>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
-#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
-#include "api/audio/audio_frame.h"
+#include "api/audio/audio_processing.h"
+#include "api/audio/audio_processing_statistics.h"
+#include "api/audio/audio_view.h"
+#include "api/audio/echo_canceller3_config.h"
+#include "api/audio/echo_control.h"
 #include "api/environment/environment.h"
 #include "api/field_trials_view.h"
+#include "api/scoped_refptr.h"
 #include "api/task_queue/task_queue_base.h"
 #include "common_audio/audio_converter.h"
 #include "common_audio/include/audio_util.h"
+#include "modules/audio_processing/aec3/echo_canceller3.h"
 #include "modules/audio_processing/aec_dump/aec_dump_factory.h"
+#include "modules/audio_processing/agc/agc_manager_direct.h"
+#include "modules/audio_processing/agc/gain_control.h"
+#include "modules/audio_processing/agc2/input_volume_controller.h"
+#include "modules/audio_processing/agc2/input_volume_stats_reporter.h"
 #include "modules/audio_processing/audio_buffer.h"
-#include "modules/audio_processing/include/audio_frame_view.h"
+#include "modules/audio_processing/capture_levels_adjuster/capture_levels_adjuster.h"
+#include "modules/audio_processing/echo_control_mobile_impl.h"
+#include "modules/audio_processing/gain_control_impl.h"
+#include "modules/audio_processing/gain_controller2.h"
+#include "modules/audio_processing/high_pass_filter.h"
+#include "modules/audio_processing/include/aec_dump.h"
 #include "modules/audio_processing/logging/apm_data_dumper.h"
+#include "modules/audio_processing/ns/noise_suppressor.h"
+#include "modules/audio_processing/ns/ns_config.h"
+#include "modules/audio_processing/render_queue_item_verifier.h"
+#include "modules/audio_processing/rms_level.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/denormal_disabler.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/swap_queue.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/metrics.h"
@@ -1587,8 +1611,7 @@ int AudioProcessingImpl::AnalyzeReverseStreamLocked(
         formats_.api_format.reverse_input_stream().num_frames();
     const size_t num_channels =
         formats_.api_format.reverse_input_stream().num_channels();
-    aec_dump_->WriteRenderStreamMessage(
-        AudioFrameView<const float>(src, num_channels, channel_size));
+    aec_dump_->WriteRenderStreamMessage(src, num_channels, channel_size);
   }
   render_.render_audio->CopyFrom(src,
                                  formats_.api_format.reverse_input_stream());
@@ -2201,8 +2224,10 @@ void AudioProcessingImpl::RecordUnprocessedCaptureStream(
 
   const size_t channel_size = formats_.api_format.input_stream().num_frames();
   const size_t num_channels = formats_.api_format.input_stream().num_channels();
-  aec_dump_->AddCaptureStreamInput(
-      AudioFrameView<const float>(src, num_channels, channel_size));
+  for (size_t ch = 0u; ch < num_channels; ++ch) {
+    aec_dump_->AddCaptureStreamInput(
+        MonoView<const float>(src[ch], channel_size));
+  }
   RecordAudioProcessingState();
 }
 
@@ -2224,8 +2249,11 @@ void AudioProcessingImpl::RecordProcessedCaptureStream(
   const size_t channel_size = formats_.api_format.output_stream().num_frames();
   const size_t num_channels =
       formats_.api_format.output_stream().num_channels();
-  aec_dump_->AddCaptureStreamOutput(AudioFrameView<const float>(
-      processed_capture_stream, num_channels, channel_size));
+  for (size_t ch = 0u; ch < num_channels; ++ch) {
+    aec_dump_->AddCaptureStreamOutput(
+        MonoView<const float>(processed_capture_stream[ch], channel_size));
+  }
+
   aec_dump_->WriteCaptureStreamMessage();
 }
 

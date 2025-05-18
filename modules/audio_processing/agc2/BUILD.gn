@@ -196,6 +196,7 @@ rtc_library("input_volume_controller") {
   ]
 
   visibility = [
+    "..:audio_processing",
     "..:gain_controller2",
     "./*",
   ]

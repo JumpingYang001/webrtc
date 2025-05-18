@@ -10,15 +10,26 @@
 
 #include "modules/audio_processing/aec_dump/aec_dump_impl.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"
+#include "api/audio/audio_processing.h"
+#include "api/audio/audio_view.h"
 #include "api/task_queue/task_queue_base.h"
 #include "modules/audio_processing/aec_dump/aec_dump_factory.h"
+#include "modules/audio_processing/debug.pb.h"
+#include "modules/audio_processing/include/aec_dump.h"
+#include "modules/audio_processing/include/audio_frame_view.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/event.h"
+#include "rtc_base/race_checker.h"
+#include "rtc_base/system/file_wrapper.h"
 
 namespace webrtc {
 
@@ -105,9 +116,17 @@ void AecDumpImpl::AddCaptureStreamInput(
   capture_stream_info_.AddInput(src);
 }
 
+void AecDumpImpl::AddCaptureStreamInput(MonoView<const float> channel) {
+  capture_stream_info_.AddInputChannel(channel);
+}
+
 void AecDumpImpl::AddCaptureStreamOutput(
     const AudioFrameView<const float>& src) {
   capture_stream_info_.AddOutput(src);
+}
+
+void AecDumpImpl::AddCaptureStreamOutput(MonoView<const float> channel) {
+  capture_stream_info_.AddOutputChannel(channel);
 }
 
 void AecDumpImpl::AddCaptureStreamInput(const int16_t* const data,
@@ -151,6 +170,22 @@ void AecDumpImpl::WriteRenderStreamMessage(
 
   for (int i = 0; i < src.num_channels(); ++i) {
     const auto& channel_view = src.channel(i);
+    msg->add_channel(channel_view.begin(), sizeof(float) * channel_view.size());
+  }
+
+  PostWriteToFileTask(std::move(event));
+}
+
+void AecDumpImpl::WriteRenderStreamMessage(const float* const* data,
+                                           int num_channels,
+                                           int samples_per_channel) {
+  auto event = std::make_unique<audioproc::Event>();
+  event->set_type(audioproc::Event::REVERSE_STREAM);
+
+  audioproc::ReverseStream* msg = event->mutable_reverse_stream();
+
+  for (int i = 0; i < num_channels; ++i) {
+    MonoView<const float> channel_view(data[i], samples_per_channel);
     msg->add_channel(channel_view.begin(), sizeof(float) * channel_view.size());
   }
 
