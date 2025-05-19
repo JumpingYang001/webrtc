@@ -30,10 +30,11 @@
 #include "absl/strings/string_view.h"
 #include "api/candidate.h"
 #include "api/dtls_transport_interface.h"
+#include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
 #include "api/function_view.h"
 #include "api/media_types.h"
-#include "api/rtc_event_log/rtc_event_log.h"
 #include "api/rtp_headers.h"
 #include "api/transport/bandwidth_usage.h"
 #include "api/transport/ecn_marking.h"
@@ -77,7 +78,6 @@
 #include "rtc_tools/rtc_event_log_visualizer/log_simulation.h"
 #include "rtc_tools/rtc_event_log_visualizer/plot_base.h"
 #include "system_wrappers/include/clock.h"
-#include "test/explicit_key_value_config.h"
 
 namespace webrtc {
 
@@ -471,7 +471,7 @@ std::map<uint32_t, std::string> BuildCandidateIdLogDescriptionMap(
 
 EventLogAnalyzer::EventLogAnalyzer(const ParsedRtcEventLog& log,
                                    bool normalize_time)
-    : parsed_log_(log) {
+    : env_(CreateEnvironment()), parsed_log_(log) {
   config_.window_duration_ = TimeDelta::Millis(250);
   config_.step_ = TimeDelta::Millis(10);
   if (!log.start_log_events().empty()) {
@@ -493,9 +493,10 @@ EventLogAnalyzer::EventLogAnalyzer(const ParsedRtcEventLog& log,
                    << " seconds long.";
 }
 
-EventLogAnalyzer::EventLogAnalyzer(const ParsedRtcEventLog& log,
+EventLogAnalyzer::EventLogAnalyzer(const Environment& env,
+                                   const ParsedRtcEventLog& log,
                                    const AnalyzerConfig& config)
-    : parsed_log_(log), config_(config) {
+    : env_(env), parsed_log_(log), config_(config) {
   RTC_LOG(LS_INFO) << "Log is "
                    << (parsed_log_.last_timestamp().ms() -
                        parsed_log_.first_timestamp().ms()) /
@@ -1533,7 +1534,7 @@ void EventLogAnalyzer::CreateGoogCcSimulationGraph(Plot* plot) const {
                            PointStyle::kHighlight);
 
   LogBasedNetworkControllerSimulation simulation(
-      std::make_unique<GoogCcNetworkControllerFactory>(),
+      env_, std::make_unique<GoogCcNetworkControllerFactory>(),
       [&](const NetworkControlUpdate& update, Timestamp at_time) {
         if (update.target_rate) {
           target_rates.points.emplace_back(
@@ -1762,13 +1763,12 @@ void EventLogAnalyzer::CreateSendSideBweSimulationGraph(Plot* plot) const {
 
   SimulatedClock clock(0);
   BitrateObserver observer;
-  RtcEventLogNull null_event_log;
   TransportFeedbackAdapter transport_feedback;
   auto factory = GoogCcNetworkControllerFactory();
   TimeDelta process_interval = factory.GetProcessInterval();
   // TODO(holmer): Log the call config and use that here instead.
   static const uint32_t kDefaultStartBitrateBps = 300000;
-  NetworkControllerConfig cc_config(CreateEnvironment(&null_event_log));
+  NetworkControllerConfig cc_config(env_);
   cc_config.constraints.at_time = Timestamp::Micros(clock.TimeInMicroseconds());
   cc_config.constraints.starting_rate =
       DataRate::BitsPerSec(kDefaultStartBitrateBps);
@@ -1809,12 +1809,12 @@ void EventLogAnalyzer::CreateSendSideBweSimulationGraph(Plot* plot) const {
   };
 
   RateStatistics raw_acked_bitrate(750, 8000);
-  test::ExplicitKeyValueConfig throughput_config(
+  FieldTrials throughput_config(
       "WebRTC-Bwe-RobustThroughputEstimatorSettings/enabled:true/");
   std::unique_ptr<AcknowledgedBitrateEstimatorInterface>
       robust_throughput_estimator(
           AcknowledgedBitrateEstimatorInterface::Create(&throughput_config));
-  test::ExplicitKeyValueConfig acked_bitrate_config(
+  FieldTrials acked_bitrate_config(
       "WebRTC-Bwe-RobustThroughputEstimatorSettings/enabled:false/");
   std::unique_ptr<AcknowledgedBitrateEstimatorInterface>
       acknowledged_bitrate_estimator(
@@ -1968,9 +1968,11 @@ void EventLogAnalyzer::CreateReceiveSideBweSimulationGraph(Plot* plot) const {
   }
 
   SimulatedClock clock(0);
+  EnvironmentFactory env_factory(env_);
+  env_factory.Set(&clock);
   RembInterceptor remb_interceptor;
   ReceiveSideCongestionController rscc(
-      CreateEnvironment(&clock), [](auto...) {},
+      env_factory.Create(), [](auto...) {},
       absl::bind_front(&RembInterceptor::SendRemb, &remb_interceptor));
   // TODO(holmer): Log the call config and use that here instead.
   // static const uint32_t kDefaultStartBitrateBps = 300000;

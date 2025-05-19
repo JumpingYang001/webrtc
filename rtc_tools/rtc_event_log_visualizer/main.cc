@@ -28,6 +28,9 @@
 #include "absl/flags/usage_config.h"
 #include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
+#include "api/environment/environment.h"
+#include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
 #include "api/neteq/neteq.h"
 #include "api/units/time_delta.h"
 #include "logging/rtc_event_log/rtc_event_log_parser.h"
@@ -40,7 +43,6 @@
 #include "rtc_tools/rtc_event_log_visualizer/conversational_speech_en.h"
 #include "rtc_tools/rtc_event_log_visualizer/plot_base.h"
 #include "rtc_tools/rtc_event_log_visualizer/proto/chart.pb.h"
-#include "system_wrappers/include/field_trial.h"
 
 ABSL_FLAG(std::string,
           plot,
@@ -157,10 +159,9 @@ int main(int argc, char* argv[]) {
   }
   webrtc::LogMessage::SetLogToStderr(true);
 
-  // InitFieldTrialsFromString stores the char*, so the char array must outlive
-  // the application.
   const std::string field_trials = absl::GetFlag(FLAGS_force_fieldtrials);
-  webrtc::field_trial::InitFieldTrialsFromString(field_trials.c_str());
+  webrtc::Environment env = webrtc::CreateEnvironment(
+      std::make_unique<webrtc::FieldTrials>(field_trials));
 
   webrtc::ParsedRtcEventLog::UnconfiguredHeaderExtensions header_extensions =
       webrtc::ParsedRtcEventLog::UnconfiguredHeaderExtensions::kDontParse;
@@ -213,7 +214,7 @@ int main(int argc, char* argv[]) {
     has_generated_wav_file = true;
   }
 
-  webrtc::EventLogAnalyzer analyzer(parsed_log, config);
+  webrtc::EventLogAnalyzer analyzer(env, parsed_log, config);
   analyzer.InitializeMapOfNamedGraphs(absl::GetFlag(FLAGS_show_detector_state),
                                       absl::GetFlag(FLAGS_show_alr_state),
                                       absl::GetFlag(FLAGS_show_link_capacity));
@@ -329,7 +330,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_expand_rate") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqNetworkStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -341,7 +343,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_speech_expand_rate") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqNetworkStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -354,7 +357,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_accelerate_rate") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqNetworkStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -367,7 +371,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_preemptive_rate") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqNetworkStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -380,7 +385,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_concealment_events") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqLifetimeStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -393,7 +399,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_preferred_buffer_size") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     webrtc::CreateNetEqNetworkStatsGraph(
         parsed_log, config, *neteq_stats,
@@ -412,7 +419,8 @@ int main(int argc, char* argv[]) {
   if (absl::c_find(plot_names, "simulated_neteq_jitter_buffer_delay") !=
       plot_names.end()) {
     if (!neteq_stats) {
-      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000);
+      neteq_stats = webrtc::SimulateNetEq(parsed_log, config, wav_path, 48000,
+                                          field_trials);
     }
     for (auto it = neteq_stats->cbegin(); it != neteq_stats->cend(); ++it) {
       webrtc::CreateAudioJitterBufferGraph(
