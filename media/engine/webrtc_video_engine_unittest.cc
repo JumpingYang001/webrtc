@@ -107,7 +107,6 @@
 #include "modules/rtp_rtcp/source/rtp_packet.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
 #include "modules/video_coding/svc/scalability_mode_util.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
@@ -3325,21 +3324,21 @@ TEST_F(WebRtcVideoChannelTest,
 
 TEST_F(WebRtcVideoChannelTest, SetSendRtpHeaderExtensionsRejectsIncorrectIds) {
   const int kIncorrectIds[] = {-2, -1, 0, 15, 16};
-  for (size_t i = 0; i < arraysize(kIncorrectIds); ++i) {
+  for (int incorrect_id : kIncorrectIds) {
     send_parameters_.extensions.push_back(
-        RtpExtension(RtpExtension::kTimestampOffsetUri, kIncorrectIds[i]));
+        RtpExtension(RtpExtension::kTimestampOffsetUri, incorrect_id));
     EXPECT_FALSE(send_channel_->SetSenderParameters(send_parameters_))
-        << "Bad extension id '" << kIncorrectIds[i] << "' accepted.";
+        << "Bad extension id '" << incorrect_id << "' accepted.";
   }
 }
 
 TEST_F(WebRtcVideoChannelTest, SetRecvRtpHeaderExtensionsRejectsIncorrectIds) {
   const int kIncorrectIds[] = {-2, -1, 0, 15, 16};
-  for (size_t i = 0; i < arraysize(kIncorrectIds); ++i) {
+  for (int incorrect_id : kIncorrectIds) {
     recv_parameters_.extensions.push_back(
-        RtpExtension(RtpExtension::kTimestampOffsetUri, kIncorrectIds[i]));
+        RtpExtension(RtpExtension::kTimestampOffsetUri, incorrect_id));
     EXPECT_FALSE(receive_channel_->SetReceiverParameters(recv_parameters_))
-        << "Bad extension id '" << kIncorrectIds[i] << "' accepted.";
+        << "Bad extension id '" << incorrect_id << "' accepted.";
   }
 }
 
@@ -5242,10 +5241,10 @@ TEST_F(WebRtcVideoChannelTest, SetSendCodecsRejectBadPayloadTypes) {
   static const int kIncorrectPayloads[] = {-2, -1, 128, 129};
   VideoSenderParameters parameters;
   parameters.codecs.push_back(GetEngineCodec("VP8"));
-  for (size_t i = 0; i < arraysize(kIncorrectPayloads); ++i) {
-    parameters.codecs[0].id = kIncorrectPayloads[i];
+  for (int incorrect_id : kIncorrectPayloads) {
+    parameters.codecs[0].id = incorrect_id;
     EXPECT_FALSE(send_channel_->SetSenderParameters(parameters))
-        << "Bad payload type '" << kIncorrectPayloads[i] << "' accepted.";
+        << "Bad payload type '" << incorrect_id << "' accepted.";
   }
 }
 

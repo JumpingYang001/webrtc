@@ -15,7 +15,6 @@
 #include <string>
 
 #include "api/array_view.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 
@@ -44,9 +43,9 @@ static const FourCCAliasEntry kFourCCAliases[] = {
 };
 
 uint32_t CanonicalFourCC(uint32_t fourcc) {
-  for (uint32_t i = 0; i < arraysize(kFourCCAliases); ++i) {
-    if (kFourCCAliases[i].alias == fourcc) {
-      return kFourCCAliases[i].canonical;
+  for (const FourCCAliasEntry& entry : kFourCCAliases) {
+    if (entry.alias == fourcc) {
+      return entry.canonical;
     }
   }
   // Not an alias, so return it as-is.

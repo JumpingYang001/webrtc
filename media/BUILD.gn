@@ -221,7 +221,6 @@ rtc_library("video_common") {
   deps = [
     "../api:array_view",
     "../rtc_base:checks",
-    "../rtc_base:macromagic",
     "../rtc_base:stringutils",
     "../rtc_base:timeutils",
     "../rtc_base/system:rtc_export",
@@ -1032,7 +1031,6 @@ if (rtc_include_tests) {
         "../rtc_base:checks",
         "../rtc_base:copy_on_write_buffer",
         "../rtc_base:dscp",
-        "../rtc_base:macromagic",
         "../rtc_base:safe_conversions",
         "../rtc_base:socket",
         "../rtc_base:threading",

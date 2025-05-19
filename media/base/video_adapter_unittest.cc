@@ -23,7 +23,6 @@
 #include "api/video/video_source_interface.h"
 #include "media/base/fake_frame_source.h"
 #include "media/base/video_common.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/time_utils.h"
 #include "test/field_trial.h"
 #include "test/gmock.h"
@@ -1104,7 +1103,7 @@ TEST_P(VideoAdapterTest, AdaptResolutionInStepsFirst3_4) {
   int request_width = kWidth;
   int request_height = kHeight;
 
-  for (size_t i = 0; i < arraysize(kExpectedWidths); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedWidths); ++i) {
     // Adapt down one step.
     adapter_.OnSinkWants(BuildSinkWants(std::nullopt,
                                         request_width * request_height - 1,
@@ -1133,7 +1132,7 @@ TEST_P(VideoAdapterTest, AdaptResolutionInStepsFirst2_3) {
   int request_width = kWidth1080p;
   int request_height = kHeight1080p;
 
-  for (size_t i = 0; i < arraysize(kExpectedWidths); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedWidths); ++i) {
     // Adapt down one step.
     adapter_.OnSinkWants(BuildSinkWants(std::nullopt,
                                         request_width * request_height - 1,
@@ -1162,7 +1161,7 @@ TEST_P(VideoAdapterTest, AdaptResolutionInStepsFirst2x2_3) {
   int request_width = kWidth1080p4to3;
   int request_height = kHeight1080p4to3;
 
-  for (size_t i = 0; i < arraysize(kExpectedWidths); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedWidths); ++i) {
     // Adapt down one step.
     adapter_.OnSinkWants(BuildSinkWants(std::nullopt,
                                         request_width * request_height - 1,

@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "media/base/stream_params.h"
-#include "rtc_base/arraysize.h"
 
 namespace webrtc {
 class VideoFrame;
@@ -34,7 +33,7 @@ template <class T>
 inline std::vector<T> MakeVector(const T a[], size_t s) {
   return std::vector<T>(a, a + s);
 }
-#define MAKE_VECTOR(a) webrtc::MakeVector(a, arraysize(a))
+#define MAKE_VECTOR(a) webrtc::MakeVector(a, std::size(a))
 
 // Create Simulcast StreamParams with given `ssrcs` and `cname`.
 StreamParams CreateSimStreamParams(const std::string& cname,

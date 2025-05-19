@@ -16,8 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "api/array_view.h"
 #include "media/base/test_utils.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/unique_id_generator.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -30,10 +30,9 @@ static const uint32_t kSsrcs2[] = {1, 2};
 
 static webrtc::StreamParams CreateStreamParamsWithSsrcGroup(
     const std::string& semantics,
-    const uint32_t ssrcs_in[],
-    size_t len) {
+    webrtc::ArrayView<const uint32_t> ssrcs_in) {
   webrtc::StreamParams stream;
-  std::vector<uint32_t> ssrcs(ssrcs_in, ssrcs_in + len);
+  std::vector<uint32_t> ssrcs(ssrcs_in.begin(), ssrcs_in.end());
   webrtc::SsrcGroup sg(semantics, ssrcs);
   stream.ssrcs = ssrcs;
   stream.ssrc_groups.push_back(sg);
@@ -48,8 +47,8 @@ TEST(SsrcGroup, EqualNotEqual) {
       webrtc::SsrcGroup("abc", MAKE_VECTOR(kSsrcs2)),
   };
 
-  for (size_t i = 0; i < arraysize(ssrc_groups); ++i) {
-    for (size_t j = 0; j < arraysize(ssrc_groups); ++j) {
+  for (size_t i = 0; i < std::size(ssrc_groups); ++i) {
+    for (size_t j = 0; j < std::size(ssrc_groups); ++j) {
       EXPECT_EQ((ssrc_groups[i] == ssrc_groups[j]), (i == j));
       EXPECT_EQ((ssrc_groups[i] != ssrc_groups[j]), (i != j));
     }
@@ -85,8 +84,7 @@ TEST(StreamParams, CreateLegacy) {
 }
 
 TEST(StreamParams, HasSsrcGroup) {
-  webrtc::StreamParams sp =
-      CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
+  webrtc::StreamParams sp = CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2);
   EXPECT_EQ(2U, sp.ssrcs.size());
   EXPECT_EQ(kSsrcs2[0], sp.first_ssrc());
   EXPECT_TRUE(sp.has_ssrcs());
@@ -100,8 +98,7 @@ TEST(StreamParams, HasSsrcGroup) {
 }
 
 TEST(StreamParams, GetSsrcGroup) {
-  webrtc::StreamParams sp =
-      CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
+  webrtc::StreamParams sp = CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2);
   EXPECT_EQ(nullptr, sp.get_ssrc_group("xyz"));
   EXPECT_EQ(&sp.ssrc_groups[0], sp.get_ssrc_group("XYZ"));
 }
@@ -120,18 +117,14 @@ TEST(StreamParams, HasStreamWithNoSsrcs) {
 TEST(StreamParams, EqualNotEqual) {
   webrtc::StreamParams l1 = webrtc::StreamParams::CreateLegacy(1);
   webrtc::StreamParams l2 = webrtc::StreamParams::CreateLegacy(2);
-  webrtc::StreamParams sg1 =
-      CreateStreamParamsWithSsrcGroup("ABC", kSsrcs1, arraysize(kSsrcs1));
-  webrtc::StreamParams sg2 =
-      CreateStreamParamsWithSsrcGroup("ABC", kSsrcs2, arraysize(kSsrcs2));
-  webrtc::StreamParams sg3 =
-      CreateStreamParamsWithSsrcGroup("Abc", kSsrcs2, arraysize(kSsrcs2));
-  webrtc::StreamParams sg4 =
-      CreateStreamParamsWithSsrcGroup("abc", kSsrcs2, arraysize(kSsrcs2));
+  webrtc::StreamParams sg1 = CreateStreamParamsWithSsrcGroup("ABC", kSsrcs1);
+  webrtc::StreamParams sg2 = CreateStreamParamsWithSsrcGroup("ABC", kSsrcs2);
+  webrtc::StreamParams sg3 = CreateStreamParamsWithSsrcGroup("Abc", kSsrcs2);
+  webrtc::StreamParams sg4 = CreateStreamParamsWithSsrcGroup("abc", kSsrcs2);
   webrtc::StreamParams sps[] = {l1, l2, sg1, sg2, sg3, sg4};
 
-  for (size_t i = 0; i < arraysize(sps); ++i) {
-    for (size_t j = 0; j < arraysize(sps); ++j) {
+  for (size_t i = 0; i < std::size(sps); ++i) {
+    for (size_t j = 0; j < std::size(sps); ++j) {
       EXPECT_EQ((sps[i] == sps[j]), (i == j));
       EXPECT_EQ((sps[i] != sps[j]), (i != j));
     }
@@ -227,8 +220,7 @@ TEST(StreamParams, FecFrFunctions) {
 }
 
 TEST(StreamParams, ToString) {
-  webrtc::StreamParams sp =
-      CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2, arraysize(kSsrcs2));
+  webrtc::StreamParams sp = CreateStreamParamsWithSsrcGroup("XYZ", kSsrcs2);
   sp.set_stream_ids({"stream_id"});
   EXPECT_STREQ(
       "{ssrcs:[1,2];ssrc_groups:{semantics:XYZ;ssrcs:[1,2]};stream_ids:stream_"

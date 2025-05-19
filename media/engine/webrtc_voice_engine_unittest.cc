@@ -66,7 +66,6 @@
 #include "modules/rtp_rtcp/include/rtp_header_extension_map.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/copy_on_write_buffer.h"
@@ -2458,7 +2457,7 @@ TEST_P(WebRtcVoiceEngineTestFake, CreateAndDeleteMultipleSendStreams) {
     // Verify that we are in a sending state for all the created streams.
     EXPECT_TRUE(GetSendStream(ssrc).IsSending());
   }
-  EXPECT_EQ(arraysize(kSsrcs4), call_.GetAudioSendStreams().size());
+  EXPECT_EQ(std::size(kSsrcs4), call_.GetAudioSendStreams().size());
 
   // Delete the send streams.
   for (uint32_t ssrc : kSsrcs4) {
@@ -2566,8 +2565,7 @@ TEST_P(WebRtcVoiceEngineTestFake, GetStatsWithMultipleSendStreams) {
                         &receive_info, /*get_and_clear_legacy_stats=*/true));
 
     // We have added 4 send streams. We should see empty stats for all.
-    EXPECT_EQ(static_cast<size_t>(arraysize(kSsrcs4)),
-              send_info.senders.size());
+    EXPECT_EQ(std::size(kSsrcs4), send_info.senders.size());
     for (const auto& sender : send_info.senders) {
       VerifyVoiceSenderInfo(sender, false);
     }
@@ -2587,8 +2585,7 @@ TEST_P(WebRtcVoiceEngineTestFake, GetStatsWithMultipleSendStreams) {
     EXPECT_EQ(true, send_channel_->GetStats(&send_info));
     EXPECT_EQ(true, receive_channel_->GetStats(
                         &receive_info, /*get_and_clear_legacy_stats=*/true));
-    EXPECT_EQ(static_cast<size_t>(arraysize(kSsrcs4)),
-              send_info.senders.size());
+    EXPECT_EQ(std::size(kSsrcs4), send_info.senders.size());
     EXPECT_EQ(0u, receive_info.receivers.size());
   }
 
@@ -2603,8 +2600,7 @@ TEST_P(WebRtcVoiceEngineTestFake, GetStatsWithMultipleSendStreams) {
     EXPECT_EQ(true, send_channel_->GetStats(&send_info));
     EXPECT_EQ(true, receive_channel_->GetStats(
                         &receive_info, /*get_and_clear_legacy_stats=*/true));
-    EXPECT_EQ(static_cast<size_t>(arraysize(kSsrcs4)),
-              send_info.senders.size());
+    EXPECT_EQ(std::size(kSsrcs4), send_info.senders.size());
     EXPECT_EQ(1u, receive_info.receivers.size());
     VerifyVoiceReceiverInfo(receive_info.receivers[0]);
     VerifyVoiceSendRecvCodecs(send_info, receive_info);
@@ -2813,7 +2809,7 @@ TEST_P(WebRtcVoiceEngineTestFake, RecvWithMultipleStreams) {
   EXPECT_TRUE(AddRecvStream(ssrc3));
   // Create packets with the right SSRCs.
   unsigned char packets[4][sizeof(kPcmuFrame)];
-  for (size_t i = 0; i < arraysize(packets); ++i) {
+  for (size_t i = 0; i < std::size(packets); ++i) {
     memcpy(packets[i], kPcmuFrame, sizeof(kPcmuFrame));
     webrtc::SetBE32(packets[i] + 8, static_cast<uint32_t>(i));
   }
