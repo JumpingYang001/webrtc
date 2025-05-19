@@ -99,8 +99,9 @@ std::vector<float> RunSubtractorTest(
 
   // [B,A] = butter(2,100/8000,'high')
   constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-      kHighPassFilterCoefficients = {
-          {{{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}}};
+      kHighPassFilterCoefficients = {{
+          {{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}},
+      }};
   std::vector<std::unique_ptr<CascadedBiQuadFilter>> x_hp_filter(
       num_render_channels);
   for (size_t ch = 0; ch < num_render_channels; ++ch) {

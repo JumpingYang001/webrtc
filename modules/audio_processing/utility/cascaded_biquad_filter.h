@@ -13,7 +13,6 @@
 
 #include <stddef.h>
 
-#include <complex>
 #include <vector>
 
 #include "api/array_view.h"
@@ -24,18 +23,6 @@ namespace webrtc {
 // is direct form 1.
 class CascadedBiQuadFilter {
  public:
-  struct BiQuadParam {
-    BiQuadParam(std::complex<float> zero,
-                std::complex<float> pole,
-                float gain,
-                bool mirror_zero_along_i_axis = false);
-    explicit BiQuadParam(const BiQuadParam&);
-    std::complex<float> zero;
-    std::complex<float> pole;
-    float gain;
-    bool mirror_zero_along_i_axis;
-  };
-
   struct BiQuadCoefficients {
     float b[3];
     float a[2];
@@ -44,7 +31,6 @@ class CascadedBiQuadFilter {
   struct BiQuad {
     explicit BiQuad(const BiQuadCoefficients& coefficients)
         : coefficients(coefficients), x(), y() {}
-    explicit BiQuad(const CascadedBiQuadFilter::BiQuadParam& param);
     void Reset();
     BiQuadCoefficients coefficients;
     float x[2];
@@ -53,8 +39,6 @@ class CascadedBiQuadFilter {
 
   CascadedBiQuadFilter(
       ArrayView<const CascadedBiQuadFilter::BiQuadCoefficients> coefficients);
-  explicit CascadedBiQuadFilter(
-      const std::vector<CascadedBiQuadFilter::BiQuadParam>& biquad_params);
   ~CascadedBiQuadFilter();
   CascadedBiQuadFilter(const CascadedBiQuadFilter&) = delete;
   CascadedBiQuadFilter& operator=(const CascadedBiQuadFilter&) = delete;

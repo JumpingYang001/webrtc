@@ -21,7 +21,9 @@
 #include <string>
 #include <vector>
 
+#include "api/array_view.h"
 #include "modules/audio_processing/aec3/aec3_common.h"
+#include "rtc_base/checks.h"
 #include "rtc_base/strings/string_builder.h"
 #include "test/gtest.h"
 
@@ -35,7 +37,7 @@ std::string ProduceDebugText(int sample_rate_hz) {
   return ss.Release();
 }
 
-constexpr size_t kDownSamplingFactors[] = {2, 4, 8};
+constexpr size_t kDownSamplingFactors[] = {4, 8};
 constexpr float kPi = std::numbers::pi_v<float>;
 constexpr size_t kNumStartupBlocks = 50;
 constexpr size_t kNumBlocks = 1000;

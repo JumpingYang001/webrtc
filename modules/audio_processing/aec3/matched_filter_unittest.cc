@@ -52,7 +52,7 @@ std::string ProduceDebugText(size_t delay, size_t down_sampling_factor) {
 }
 
 constexpr size_t kNumMatchedFilters = 10;
-constexpr size_t kDownSamplingFactors[] = {2, 4, 8};
+constexpr size_t kDownSamplingFactors[] = {4, 8};
 constexpr size_t kWindowSizeSubBlocks = 32;
 constexpr size_t kAlignmentShiftSubBlocks = kWindowSizeSubBlocks * 3 / 4;
 

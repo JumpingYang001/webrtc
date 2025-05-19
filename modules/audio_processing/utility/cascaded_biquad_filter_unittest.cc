@@ -25,18 +25,25 @@ namespace {
 // Coefficients for a second order Butterworth high-pass filter with cutoff
 // frequency 100 Hz.
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kHighPassFilterCoefficients = {
-        {{{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}}}};
+    kHighPassFilterCoefficients = {{
+        {{0.97261f, -1.94523f, 0.97261f}, {-1.94448f, 0.94598f}},
+    }};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kTransparentCoefficients = {{{{1.f, 0.f, 0.f}, {0.f, 0.f}}}};
+    kTransparentCoefficients = {{
+        {{1.f, 0.f, 0.f}, {0.f, 0.f}},
+    }};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 1>
-    kBlockingCoefficients = {{{{0.f, 0.f, 0.f}, {0.f, 0.f}}}};
+    kBlockingCoefficients = {{
+        {{0.f, 0.f, 0.f}, {0.f, 0.f}},
+    }};
 
 constexpr std::array<CascadedBiQuadFilter::BiQuadCoefficients, 2>
-    kCascadedCoefficients = {
-        {{{-1.f, 0.f, 0.f}, {0.f, 0.f}}, {{0.f, 0.f, -1.f}, {0.f, 0.f}}}};
+    kCascadedCoefficients = {{
+        {{-1.f, 0.f, 0.f}, {0.f, 0.f}},
+        {{0.f, 0.f, -1.f}, {0.f, 0.f}},
+    }};
 
 std::vector<float> CreateInputWithIncreasingValues(size_t vector_length) {
   std::vector<float> v(vector_length);
@@ -143,47 +150,4 @@ TEST(CascadedBiquadFilterDeathTest, InputSizeCheckVerification) {
   EXPECT_DEATH(filter.Process(input, output), "");
 }
 #endif
-
-// Verifies the conversion from zero, pole, gain to filter coefficients for
-// lowpass filter.
-TEST(CascadedBiquadFilter, BiQuadParamLowPass) {
-  CascadedBiQuadFilter::BiQuadParam param(
-      {-1.0f, 0.0f}, {0.23146901f, 0.39514232f}, 0.1866943331163784f);
-  CascadedBiQuadFilter::BiQuad filter(param);
-  const float epsilon = 1e-6f;
-  EXPECT_NEAR(filter.coefficients.b[0], 0.18669433f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[1], 0.37338867f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[2], 0.18669433f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[0], -0.46293803f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[1], 0.20971536f, epsilon);
-}
-
-// Verifies the conversion from zero, pole, gain to filter coefficients for
-// highpass filter.
-TEST(CascadedBiquadFilter, BiQuadParamHighPass) {
-  CascadedBiQuadFilter::BiQuadParam param(
-      {1.0f, 0.0f}, {0.72712179f, 0.21296904f}, 0.75707637533388494f);
-  CascadedBiQuadFilter::BiQuad filter(param);
-  const float epsilon = 1e-6f;
-  EXPECT_NEAR(filter.coefficients.b[0], 0.75707638f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[1], -1.51415275f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[2], 0.75707638f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[0], -1.45424359f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[1], 0.57406192f, epsilon);
-}
-
-// Verifies the conversion from zero, pole, gain to filter coefficients for
-// bandpass filter.
-TEST(CascadedBiquadFilter, BiQuadParamBandPass) {
-  CascadedBiQuadFilter::BiQuadParam param(
-      {1.0f, 0.0f}, {1.11022302e-16f, 0.71381051f}, 0.2452372752527856f, true);
-  CascadedBiQuadFilter::BiQuad filter(param);
-  const float epsilon = 1e-6f;
-  EXPECT_NEAR(filter.coefficients.b[0], 0.24523728f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[1], 0.f, epsilon);
-  EXPECT_NEAR(filter.coefficients.b[2], -0.24523728f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[0], -2.22044605e-16f, epsilon);
-  EXPECT_NEAR(filter.coefficients.a[1], 5.09525449e-01f, epsilon);
-}
-
 }  // namespace webrtc
