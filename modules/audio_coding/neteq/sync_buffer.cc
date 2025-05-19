@@ -78,7 +78,7 @@ void SyncBuffer::ReplaceAtIndex(const AudioMultiVector& insert_this,
                                 size_t position) {
   position = std::min(position, Size());  // Cap `position` in the valid range.
   length = std::min(length, Size() - position);
-  AudioMultiVector::OverwriteAt(insert_this, length, position);
+  OverwriteAt(insert_this, length, position);
 }
 
 void SyncBuffer::ReplaceAtIndex(const AudioMultiVector& insert_this,
