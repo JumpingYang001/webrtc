@@ -634,9 +634,9 @@ bool RtpVideoStreamReceiver2::OnReceivedPayloadData(
     Timestamp now = env_.clock().CurrentTime();
     if (now - last_logged_failed_to_parse_dd_ > TimeDelta::Seconds(1)) {
       last_logged_failed_to_parse_dd_ = now;
-      RTC_LOG(LS_WARNING) << "ssrc: " << rtp_packet.Ssrc()
-                          << ", timestamp: " << rtp_packet.Timestamp()
-                          << " Failed to parse dependency descriptor.";
+      RTC_LOG(LS_WARNING) << "Failed to parse dependency descriptor for "
+                          << "ssrc: " << rtp_packet.Ssrc()
+                          << ", timestamp: " << rtp_packet.Timestamp();
     }
     if (video_structure_ == nullptr &&
         next_keyframe_request_for_missing_video_structure_ < now) {
@@ -1231,7 +1231,9 @@ void RtpVideoStreamReceiver2::ReceivePacket(const RtpPacketReceived& packet) {
     std::optional<VideoRtpDepacketizer::ParsedRtpPayload> parsed_payload =
         type_it->second->Parse(packet.PayloadBuffer());
     if (parsed_payload == std::nullopt) {
-      RTC_LOG(LS_WARNING) << "Failed parsing payload.";
+      RTC_LOG(LS_WARNING) << " Failed to parse payload for "
+                          << "ssrc: " << packet.Ssrc()
+                          << ", timestamp: " << packet.Timestamp();
       return false;
     }
 
