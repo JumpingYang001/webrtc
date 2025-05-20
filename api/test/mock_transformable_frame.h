@@ -32,6 +32,8 @@ class MockTransformableFrame : public TransformableFrameInterface {
   MOCK_METHOD(ArrayView<const uint8_t>, GetData, (), (const, override));
   MOCK_METHOD(void, SetData, (webrtc::ArrayView<const uint8_t>), (override));
   MOCK_METHOD(uint8_t, GetPayloadType, (), (const, override));
+  MOCK_METHOD(bool, CanSetPayloadType, (), (const, override));
+  MOCK_METHOD(void, SetPayloadType, (uint8_t), (override));
   MOCK_METHOD(uint32_t, GetSsrc, (), (const, override));
   MOCK_METHOD(uint32_t, GetTimestamp, (), (const, override));
   MOCK_METHOD(void, SetRTPTimestamp, (uint32_t), (override));
@@ -42,6 +44,8 @@ class MockTransformableFrame : public TransformableFrameInterface {
   MOCK_METHOD(std::string, GetMimeType, (), (const, override));
   MOCK_METHOD(std::optional<Timestamp>, ReceiveTime, (), (const, override));
   MOCK_METHOD(std::optional<Timestamp>, CaptureTime, (), (const, override));
+  MOCK_METHOD(bool, CanSetCaptureTime, (), (const, override));
+  MOCK_METHOD(void, SetCaptureTime, (std::optional<Timestamp>), (override));
   MOCK_METHOD(std::optional<TimeDelta>,
               SenderCaptureTimeOffset,
               (),

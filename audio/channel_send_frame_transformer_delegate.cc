@@ -89,6 +89,10 @@ class TransformableOutgoingAudioFrame
   }
 
   uint8_t GetPayloadType() const override { return payload_type_; }
+  bool CanSetPayloadType() const override { return true; }
+  void SetPayloadType(uint8_t payload_type) override {
+    payload_type_ = payload_type;
+  }
   Direction GetDirection() const override { return Direction::kSender; }
   std::string GetMimeType() const override { return codec_mime_type_; }
 
@@ -112,8 +116,27 @@ class TransformableOutgoingAudioFrame
     return audio_level_dbov_;
   }
 
+  bool CanSetAudioLevel() const override { return true; }
+  void SetAudioLevel(std::optional<uint8_t> audio_level_dbov) override {
+    if (audio_level_dbov.has_value() && audio_level_dbov > 127u) {
+      audio_level_dbov = 127u;
+    }
+    audio_level_dbov_ = audio_level_dbov;
+  }
+
   std::optional<Timestamp> ReceiveTime() const override { return std::nullopt; }
-  std::optional<Timestamp> CaptureTime() const override { return std::nullopt; }
+
+  std::optional<Timestamp> CaptureTime() const override {
+    return absolute_capture_timestamp_ms_
+               ? std::make_optional(
+                     Timestamp::Millis(*absolute_capture_timestamp_ms_))
+               : std::nullopt;
+  }
+  bool CanSetCaptureTime() const override { return true; }
+  void SetCaptureTime(std::optional<Timestamp> capture_time) override {
+    absolute_capture_timestamp_ms_ =
+        capture_time ? std::make_optional(capture_time->ms()) : std::nullopt;
+  }
   std::optional<TimeDelta> SenderCaptureTimeOffset() const override {
     return std::nullopt;
   }

@@ -51,6 +51,8 @@ class TransformableFrameInterface {
   virtual void SetData(ArrayView<const uint8_t> data) = 0;
 
   virtual uint8_t GetPayloadType() const = 0;
+  virtual bool CanSetPayloadType() const { return false; }
+  virtual void SetPayloadType(uint8_t payload_type) { RTC_DCHECK_NOTREACHED(); }
   virtual uint32_t GetSsrc() const = 0;
   virtual uint32_t GetTimestamp() const = 0;
   virtual void SetRTPTimestamp(uint32_t timestamp) = 0;
@@ -85,11 +87,17 @@ class TransformableFrameInterface {
   virtual std::optional<Timestamp> ReceiveTime() const = 0;
 
   // Timestamp at which the frame was captured in the capturer system.
-  // The timestamp is expressed in the capturer system's clock relative to the
-  // NTP epoch (January 1st 1970 00:00 UTC)
-  // Accessible only if the absolute capture timestamp header extension is
+  // For receiver frames, the timestamp is expressed in the capturer system's
+  // clock relative to the NTP epoch (January 1st 1970 00:00 UTC) and is
+  // available only if the absolute capture timestamp header extension is
   // enabled.
+  // For sender frames, the timestamp is expressed relative to the local
+  // system clock's default epoch.
   virtual std::optional<Timestamp> CaptureTime() const = 0;
+  virtual bool CanSetCaptureTime() const { return false; }
+  virtual void SetCaptureTime(std::optional<Timestamp> capture_time) {
+    RTC_DCHECK_NOTREACHED();
+  }
 
   // Offset between the sender system's clock and the capturer system's clock.
   // Can be used to express the capture time in the local system's clock as
@@ -134,6 +142,10 @@ class TransformableAudioFrameInterface : public TransformableFrameInterface {
   // dBov. 127 represents digital silence. Only present on remote frames if
   // the audio level header extension was included.
   virtual std::optional<uint8_t> AudioLevel() const = 0;
+  virtual bool CanSetAudioLevel() const { return false; }
+  virtual void SetAudioLevel(std::optional<uint8_t> audio_level_dbov) {
+    RTC_DCHECK_NOTREACHED();
+  }
 };
 
 // Objects implement this interface to be notified with the transformed frame.

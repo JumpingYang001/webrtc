@@ -278,5 +278,37 @@ TEST(ChannelSendFrameTransformerDelegateTest, CloningReceiverFrameWithCsrcs) {
   EXPECT_EQ(cloned_frame->AudioLevel(), frame->AudioLevel());
 }
 
+TEST(ChannelSendFrameTransformerDelegateTest, SetCaptureTime) {
+  std::unique_ptr<TransformableAudioFrameInterface> frame = CreateFrame();
+  EXPECT_TRUE(frame->CanSetCaptureTime());
+  frame->SetCaptureTime(webrtc::Timestamp::Millis(100));
+  EXPECT_EQ(frame->CaptureTime(), webrtc::Timestamp::Millis(100));
+  frame->SetCaptureTime(std::nullopt);
+  EXPECT_FALSE(frame->CaptureTime().has_value());
+}
+
+TEST(ChannelSendFrameTransformerDelegateTest, SetPayloadType) {
+  std::unique_ptr<TransformableAudioFrameInterface> frame = CreateFrame();
+  EXPECT_TRUE(frame->CanSetPayloadType());
+  frame->SetPayloadType(45);
+  EXPECT_EQ(frame->GetPayloadType(), 45);
+}
+
+TEST(ChannelSendFrameTransformerDelegateTest, SetAudioLevel) {
+  std::unique_ptr<TransformableAudioFrameInterface> frame = CreateFrame();
+  EXPECT_TRUE(frame->CanSetAudioLevel());
+  frame->SetAudioLevel(45u);
+  EXPECT_EQ(frame->AudioLevel(), 45u);
+  frame->SetAudioLevel(std::nullopt);
+  EXPECT_FALSE(frame->AudioLevel().has_value());
+}
+
+TEST(ChannelSendFrameTransformerDelegateTest, SetAudioLevelIsClamped) {
+  std::unique_ptr<TransformableAudioFrameInterface> frame = CreateFrame();
+  EXPECT_TRUE(frame->CanSetAudioLevel());
+  frame->SetAudioLevel(128u);
+  EXPECT_EQ(frame->AudioLevel(), 127u);
+}
+
 }  // namespace
 }  // namespace webrtc
