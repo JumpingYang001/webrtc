@@ -760,6 +760,7 @@ rtc_library("audio_coding_modules_tests_shared") {
     "../../api/neteq:default_neteq_factory",
     "../../api/neteq:neteq_api",
     "../../api/units:timestamp",
+    "../../common_audio",
     "../../rtc_base:checks",
     "../../rtc_base:digest",
     "../../rtc_base:stringutils",

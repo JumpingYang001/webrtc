@@ -23,8 +23,8 @@
 #include "api/audio/audio_view.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/function_view.h"
+#include "common_audio/resampler/include/push_resampler.h"
 #include "modules/audio_coding/acm2/acm_remixing.h"
-#include "modules/audio_coding/acm2/acm_resampler.h"
 #include "modules/audio_coding/include/audio_coding_module_typedefs.h"
 #include "modules/include/module_common_types_public.h"
 #include "rtc_base/buffer.h"
@@ -161,7 +161,7 @@ class AudioCodingModuleImpl final : public AudioCodingModule {
   Buffer encode_buffer_ RTC_GUARDED_BY(acm_mutex_);
   uint32_t expected_codec_ts_ RTC_GUARDED_BY(acm_mutex_);
   uint32_t expected_in_ts_ RTC_GUARDED_BY(acm_mutex_);
-  acm2::ACMResampler resampler_ RTC_GUARDED_BY(acm_mutex_);
+  PushResampler<int16_t> resampler_ RTC_GUARDED_BY(acm_mutex_);
   ChangeLogger bitrate_logger_ RTC_GUARDED_BY(acm_mutex_);
 
   // Current encoder stack, provided by a call to RegisterEncoder.
@@ -506,11 +506,10 @@ int AudioCodingModuleImpl::PreprocessToAddData(const AudioFrame& in_frame,
   preprocess_frame_.SetSampleRateAndChannelSize(encoder_stack_->SampleRateHz());
 
   if (resample) {
-    resampler_.Resample10Msec(
-        resample_src_audio, in_frame.sample_rate_hz(),
+    resampler_.Resample(
+        resample_src_audio,
         preprocess_frame_.mutable_data(preprocess_frame_.samples_per_channel(),
-                                       preprocess_frame_.num_channels()),
-        preprocess_frame_.sample_rate_hz());
+                                       preprocess_frame_.num_channels()));
   }
 
   expected_codec_ts_ +=

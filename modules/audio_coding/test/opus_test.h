@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "api/neteq/neteq.h"
+#include "common_audio/resampler/include/push_resampler.h"
 #include "modules/audio_coding/acm2/acm_resampler.h"
 #include "modules/audio_coding/codecs/opus/opus_inst.h"
 #include "modules/audio_coding/test/PCMFile.h"
@@ -51,7 +52,7 @@ class OpusTest {
   int counter_;
   uint8_t payload_type_;
   uint32_t rtp_timestamp_;
-  acm2::ACMResampler resampler_;
+  PushResampler<int16_t> resampler_;
   WebRtcOpusEncInst* opus_mono_encoder_;
   WebRtcOpusEncInst* opus_stereo_encoder_;
   WebRtcOpusDecInst* opus_mono_decoder_;

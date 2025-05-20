@@ -267,9 +267,8 @@ void OpusTest::Run(TestPackStereo* channel,
 
     // If input audio is sampled at 32 kHz, resampling to 48 kHz is required.
     InterleavedView<int16_t> dst(&audio[written_samples], 480, channels);
-    resampler_.Resample10Msec(audio_frame.data_view(),
-                              audio_frame.sample_rate_hz_, dst, 48000);
-    written_samples += 480 * channels;
+    resampler_.Resample(audio_frame.data_view(), dst);
+    written_samples += dst.size();
 
     // Sometimes we need to loop over the audio vector to produce the right
     // number of packets.
