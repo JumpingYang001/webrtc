@@ -1712,6 +1712,8 @@ rtc_library("field_trials") {
     ":field_trials_registry",
     "../rtc_base:checks",
     "../rtc_base/containers:flat_map",
+    "//third_party/abseil-cpp/absl/base:nullability",
+    "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
