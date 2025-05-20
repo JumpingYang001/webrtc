@@ -72,6 +72,8 @@ class API_AVAILABLE(macos(14.0)) ScreenCapturerSck final
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
+  // Creates the SckPickerHandle if needed and not already done.
+  void EnsurePickerHandle();
   // Prep for implementing DelegatedSourceListController interface, for now used
   // by Start(). Triggers SCContentSharingPicker. Runs on the caller's thread.
   void EnsureVisible();
@@ -218,15 +220,6 @@ ScreenCapturerSck::ScreenCapturerSck(const DesktopCaptureOptions& options,
     : api_checker_(SequenceChecker::kDetached),
       capture_options_(options),
       picker_modes_(modes) {
-  if (capture_options_.allow_sck_system_picker()) {
-    picker_handle_ = CreateSckPickerHandle();
-  }
-  RTC_LOG(LS_INFO) << "ScreenCapturerSck " << this
-                   << " created. allow_sck_system_picker="
-                   << capture_options_.allow_sck_system_picker() << ", source="
-                   << (picker_handle_ ? picker_handle_->Source() : -1)
-                   << ", modes="
-                   << StringifiableSCContentSharingPickerMode{.modes_ = modes};
   helper_ = [[SckHelper alloc] initWithCapturer:this];
 }
 
@@ -322,9 +315,25 @@ void ScreenCapturerSck::CaptureFrame() {
   }
 }
 
+void ScreenCapturerSck::EnsurePickerHandle() {
+  RTC_DCHECK_RUN_ON(&api_checker_);
+  if (!picker_handle_ && capture_options_.allow_sck_system_picker()) {
+    picker_handle_ = CreateSckPickerHandle();
+    RTC_LOG(LS_INFO) << "ScreenCapturerSck " << this
+                     << " Created picker handle. allow_sck_system_picker="
+                     << capture_options_.allow_sck_system_picker()
+                     << ", source="
+                     << (picker_handle_ ? picker_handle_->Source() : -1)
+                     << ", modes="
+                     << StringifiableSCContentSharingPickerMode{
+                            .modes_ = picker_modes_};
+  }
+}
+
 void ScreenCapturerSck::EnsureVisible() {
   RTC_DCHECK_RUN_ON(&api_checker_);
   RTC_LOG(LS_INFO) << "ScreenCapturerSck " << this << " " << __func__ << ".";
+  EnsurePickerHandle();
   if (picker_handle_) {
     if (!picker_handle_registered_) {
       picker_handle_registered_ = true;
@@ -433,15 +442,14 @@ void ScreenCapturerSck::NotifyCaptureStopped(SCStream* stream) {
 bool ScreenCapturerSck::GetSourceList(SourceList* sources) {
   RTC_DCHECK_RUN_ON(&api_checker_);
   sources->clear();
-  if (capture_options_.allow_sck_system_picker() && picker_handle_) {
+  EnsurePickerHandle();
+  if (picker_handle_) {
     sources->push_back({picker_handle_->Source(), std::string()});
   }
   return true;
 }
 
 bool ScreenCapturerSck::SelectSource(SourceId id) {
-  RTC_DCHECK_RUN_ON(&api_checker_);
-
   if (capture_options_.allow_sck_system_picker()) {
     return true;
   }
