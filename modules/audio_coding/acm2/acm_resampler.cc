@@ -58,8 +58,10 @@ bool ResamplerHelper::MaybeResample(int desired_sample_rate_hz,
     audio_frame->SetSampleRateAndChannelSize(desired_sample_rate_hz);
     InterleavedView<int16_t> dst = audio_frame->mutable_data(
         audio_frame->samples_per_channel(), audio_frame->num_channels());
-    // TODO(tommi): Don't resample muted audio frames.
-    resampler_.Resample(src, dst);
+    // Muted frames will already have the audio buffer zeroed out.
+    if (!audio_frame->muted()) {
+      resampler_.Resample(src, dst);
+    }
     resampled_last_output_frame_ = true;
   } else {
     resampled_last_output_frame_ = false;
