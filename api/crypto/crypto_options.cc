@@ -23,13 +23,6 @@ namespace webrtc {
 
 CryptoOptions::CryptoOptions() {}
 
-CryptoOptions::CryptoOptions(const CryptoOptions& other) {
-  srtp = other.srtp;
-  sframe = other.sframe;
-}
-
-CryptoOptions::~CryptoOptions() {}
-
 // static
 CryptoOptions CryptoOptions::NoGcm() {
   CryptoOptions options;

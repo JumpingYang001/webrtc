@@ -27,8 +27,6 @@ namespace webrtc {
 // and are only applicable to native use cases of WebRTC.
 struct RTC_EXPORT CryptoOptions {
   CryptoOptions();
-  CryptoOptions(const CryptoOptions& other);
-  ~CryptoOptions();
 
   // Helper method to return an instance of the CryptoOptions with GCM crypto
   // suites disabled. This method should be used instead of depending on current

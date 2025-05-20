@@ -128,3 +128,14 @@ TEST(EphemeralKeyExchangeCipherGroupsTest, Update) {
   groups.Update(&field_trials, &disable);
   EXPECT_EQ(groups.GetEnabled(), expected);
 }
+
+TEST(EphemeralKeyExchangeCipherGroupsTest, CopyCryptoOptions) {
+  webrtc::CryptoOptions options;
+  options.ephemeral_key_exchange_cipher_groups.SetEnabled({
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519_MLKEM768,
+  });
+  webrtc::CryptoOptions copy1 = options;
+  webrtc::CryptoOptions copy2(options);
+  EXPECT_EQ(options, copy1);
+  EXPECT_EQ(options, copy2);
+}
