@@ -28,37 +28,6 @@ scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
     const Environment& webrtc_env,
     AudioDeviceModule::AudioLayer audio_layer);
 
-#if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context);
-#endif
-
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context);
-
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context);
-
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule>
-CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
-                                                  jobject application_context);
-
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule>
-CreateJavaInputAndAAudioOutputAudioDeviceModule(JNIEnv* env,
-                                                jobject application_context);
-
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
-    AudioDeviceModule::AudioLayer audio_layer);
-
 }  // namespace webrtc
 
 #endif  // SDK_ANDROID_NATIVE_API_AUDIO_DEVICE_MODULE_AUDIO_DEVICE_ANDROID_H_

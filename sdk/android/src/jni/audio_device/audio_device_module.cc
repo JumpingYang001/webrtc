@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "api/environment/environment.h"
-#include "api/environment/environment_factory.h"
 #include "api/make_ref_counted.h"
 #include "api/sequence_checker.h"
 #include "modules/audio_device/audio_device_buffer.h"
@@ -646,20 +645,6 @@ bool IsLowLatencyInputSupported(JNIEnv* env,
 bool IsLowLatencyOutputSupported(JNIEnv* env,
                                  const JavaRef<jobject>& j_context) {
   return Java_WebRtcAudioManager_isLowLatencyOutputSupported(env, j_context);
-}
-
-scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(
-    AudioDeviceModule::AudioLayer audio_layer,
-    bool is_stereo_playout_supported,
-    bool is_stereo_record_supported,
-    uint16_t playout_delay_ms,
-    std::unique_ptr<AudioInput> audio_input,
-    std::unique_ptr<AudioOutput> audio_output) {
-  RTC_DLOG(LS_INFO) << __FUNCTION__;
-  return make_ref_counted<AndroidAudioDeviceModule>(
-      CreateEnvironment(), audio_layer, is_stereo_playout_supported,
-      is_stereo_record_supported, playout_delay_ms, std::move(audio_input),
-      std::move(audio_output));
 }
 
 scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(

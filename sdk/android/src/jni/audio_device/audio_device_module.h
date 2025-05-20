@@ -97,15 +97,6 @@ bool IsLowLatencyOutputSupported(JNIEnv* env,
                                  const JavaRef<jobject>& j_context);
 
 // Glue together an audio input and audio output to get an AudioDeviceModule.
-[[deprecated("bugs.webrtc.org/413413572")]]
-scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(
-    AudioDeviceModule::AudioLayer audio_layer,
-    bool is_stereo_playout_supported,
-    bool is_stereo_record_supported,
-    uint16_t playout_delay_ms,
-    std::unique_ptr<AudioInput> audio_input,
-    std::unique_ptr<AudioOutput> audio_output);
-
 scoped_refptr<AudioDeviceModule> CreateAudioDeviceModuleFromInputAndOutput(
     const Environment& env,
     AudioDeviceModule::AudioLayer audio_layer,

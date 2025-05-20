@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "api/environment/environment.h"
-#include "api/environment/environment_factory.h"
 #include "api/scoped_refptr.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ref_count.h"
@@ -244,41 +243,6 @@ scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
     default:
       return nullptr;
   }
-}
-
-#if defined(WEBRTC_AUDIO_DEVICE_INCLUDE_ANDROID_AAUDIO)
-scoped_refptr<AudioDeviceModule> CreateAAudioAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context) {
-  return CreateAAudioAudioDeviceModule(env, CreateEnvironment(),
-                                       application_context);
-}
-#endif
-
-scoped_refptr<AudioDeviceModule> CreateJavaAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context) {
-  return CreateJavaAudioDeviceModule(env, CreateEnvironment(),
-                                     application_context);
-}
-
-scoped_refptr<AudioDeviceModule> CreateOpenSLESAudioDeviceModule(
-    JNIEnv* env,
-    jobject application_context) {
-  return CreateOpenSLESAudioDeviceModule(env, CreateEnvironment(),
-                                         application_context);
-}
-
-scoped_refptr<AudioDeviceModule>
-CreateJavaInputAndOpenSLESOutputAudioDeviceModule(JNIEnv* env,
-                                                  jobject application_context) {
-  return CreateJavaInputAndOpenSLESOutputAudioDeviceModule(
-      env, CreateEnvironment(), application_context);
-}
-
-scoped_refptr<AudioDeviceModule> CreateAndroidAudioDeviceModule(
-    AudioDeviceModule::AudioLayer audio_layer) {
-  return CreateAndroidAudioDeviceModule(CreateEnvironment(), audio_layer);
 }
 
 }  // namespace webrtc
