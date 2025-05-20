@@ -402,9 +402,9 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
     const FieldTrialsView* key_value_config) {
   FieldTrialParameter<bool> enabled("Enabled", true);
   FieldTrialParameter<double> bandwidth_rampup_upper_bound_factor(
-      "BwRampupUpperBoundFactor", 1000000.0);
+      "BwRampupUpperBoundFactor", 1.5);
   FieldTrialParameter<double> bandwidth_rampup_upper_bound_factor_in_hold(
-      "BwRampupUpperBoundInHoldFactor", 1000000.0);
+      "BwRampupUpperBoundInHoldFactor", 1.2);
   FieldTrialParameter<double> bandwidth_rampup_hold_threshold(
       "BwRampupUpperBoundHoldThreshold", 1.3);
   FieldTrialParameter<double> rampup_acceleration_max_factor(
@@ -420,11 +420,11 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
   FieldTrialParameter<double> inherent_loss_lower_bound(
       "InherentLossLowerBound", 1.0e-3);
   FieldTrialParameter<double> loss_threshold_of_high_bandwidth_preference(
-      "LossThresholdOfHighBandwidthPreference", 0.15);
+      "LossThresholdOfHighBandwidthPreference", 0.2);
   FieldTrialParameter<double> bandwidth_preference_smoothing_factor(
       "BandwidthPreferenceSmoothingFactor", 0.002);
   FieldTrialParameter<DataRate> inherent_loss_upper_bound_bandwidth_balance(
-      "InherentLossUpperBoundBwBalance", DataRate::KilobitsPerSec(75.0));
+      "InherentLossUpperBoundBwBalance", DataRate::KilobitsPerSec(100.0));
   FieldTrialParameter<double> inherent_loss_upper_bound_offset(
       "InherentLossUpperBoundOffset", 0.05);
   FieldTrialParameter<double> initial_inherent_loss_estimate(
@@ -439,13 +439,13 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
       "UpperBoundCandidateInAlr", false);
   FieldTrialParameter<TimeDelta> observation_duration_lower_bound(
       "ObservationDurationLowerBound", TimeDelta::Millis(250));
-  FieldTrialParameter<int> observation_window_size("ObservationWindowSize", 20);
+  FieldTrialParameter<int> observation_window_size("ObservationWindowSize", 15);
   FieldTrialParameter<double> sending_rate_smoothing_factor(
       "SendingRateSmoothingFactor", 0.0);
   FieldTrialParameter<double> instant_upper_bound_temporal_weight_factor(
       "InstantUpperBoundTemporalWeightFactor", 0.9);
   FieldTrialParameter<DataRate> instant_upper_bound_bandwidth_balance(
-      "InstantUpperBoundBwBalance", DataRate::KilobitsPerSec(75.0));
+      "InstantUpperBoundBwBalance", DataRate::KilobitsPerSec(100.0));
   FieldTrialParameter<double> instant_upper_bound_loss_offset(
       "InstantUpperBoundLossOffset", 0.05);
   FieldTrialParameter<double> temporal_weight_factor("TemporalWeightFactor",
@@ -460,15 +460,15 @@ std::optional<LossBasedBweV2::Config> LossBasedBweV2::CreateConfig(
           "NotIncreaseIfInherentLossLessThanAverageLoss", true);
   FieldTrialParameter<bool> not_use_acked_rate_in_alr("NotUseAckedRateInAlr",
                                                       true);
-  FieldTrialParameter<bool> use_in_start_phase("UseInStartPhase", false);
+  FieldTrialParameter<bool> use_in_start_phase("UseInStartPhase", true);
   FieldTrialParameter<int> min_num_observations("MinNumObservations", 3);
   FieldTrialParameter<double> lower_bound_by_acked_rate_factor(
-      "LowerBoundByAckedRateFactor", 0.0);
-  FieldTrialParameter<double> hold_duration_factor("HoldDurationFactor", 0.0);
-  FieldTrialParameter<bool> use_byte_loss_rate("UseByteLossRate", false);
+      "LowerBoundByAckedRateFactor", 1.0);
+  FieldTrialParameter<double> hold_duration_factor("HoldDurationFactor", 2.0);
+  FieldTrialParameter<bool> use_byte_loss_rate("UseByteLossRate", true);
   FieldTrialParameter<TimeDelta> padding_duration("PaddingDuration",
-                                                  TimeDelta::Zero());
-  FieldTrialParameter<bool> bound_best_candidate("BoundBestCandidate", false);
+                                                  TimeDelta::Seconds(2));
+  FieldTrialParameter<bool> bound_best_candidate("BoundBestCandidate", true);
   FieldTrialParameter<double> median_sending_rate_factor(
       "MedianSendingRateFactor", 2.0);
   if (key_value_config) {
@@ -854,6 +854,12 @@ double LossBasedBweV2::CalculateAverageReportedByteLossRatio() const {
     // the loss rate might not be due to a spike.
     return lost_bytes / total_bytes;
   }
+
+  if (total_bytes == max_bytes_received + min_bytes_received) {
+    // It could happen if the observation window was 2.
+    return lost_bytes / total_bytes;
+  }
+
   return (lost_bytes - min_lost_bytes - max_lost_bytes) /
          (total_bytes - max_bytes_received - min_bytes_received);
 }

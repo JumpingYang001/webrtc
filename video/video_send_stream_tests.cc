@@ -1537,8 +1537,9 @@ TEST_F(VideoSendStreamTest, PaddingIsPrimarilyRetransmissions) {
       SleepMs(5000);
       {
         MutexLock lock(&mutex_);
-        // Expect padding to be a small percentage of total bytes sent.
-        EXPECT_LT(padding_length_, .1 * total_length_);
+        // Expect padding to be some percentage of total bytes sent.
+        // BWE uses padding to ramp up after network has recovered from loss.
+        EXPECT_LT(padding_length_, .6 * total_length_);
       }
     }
 
