@@ -1292,8 +1292,14 @@ bool ParseExtmap(absl::string_view line,
 }
 
 static void BuildSctpContentAttributes(
-    std::string* message,
-    const SctpDataContentDescription* data_desc) {
+    const MediaContentDescription* media_desc,
+    std::string* message) {
+  const SctpDataContentDescription* data_desc = media_desc->as_sctp();
+  if (!data_desc) {
+    // Ignore unsupported media types with the SCTP protocol.
+    return;
+  }
+
   StringBuilder os;
   if (data_desc->use_sctpmap()) {
     // draft-ietf-mmusic-sctp-sdp-04
@@ -1524,8 +1530,7 @@ void BuildMediaDescription(const ContentInfo* content_info,
   AddLine(os.str(), message);
 
   if (IsDtlsSctp(media_desc->protocol())) {
-    const SctpDataContentDescription* data_desc = media_desc->as_sctp();
-    BuildSctpContentAttributes(message, data_desc);
+    BuildSctpContentAttributes(media_desc, message);
   } else if (IsRtpProtocol(media_desc->protocol())) {
     BuildRtpContentAttributes(media_desc, media_type, msid_signaling, message);
   }
