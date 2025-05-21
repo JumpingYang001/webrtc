@@ -101,7 +101,6 @@
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/unique_id_generator.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
 #include "test/configurable_frame_size_encoder.h"
 #include "test/encoder_settings.h"
@@ -1534,7 +1533,7 @@ TEST_F(VideoSendStreamTest, PaddingIsPrimarilyRetransmissions) {
       // TODO(isheriff): Some platforms do not ramp up as expected to full
       // capacity due to packet scheduling delays. Fix that before getting
       // rid of this.
-      SleepMs(5000);
+      Thread::SleepMs(5000);
       {
         MutexLock lock(&mutex_);
         // Expect padding to be some percentage of total bytes sent.

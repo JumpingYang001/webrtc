@@ -72,8 +72,8 @@
 #include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/system_time.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 #include "test/testsupport/frame_reader.h"
@@ -539,7 +539,7 @@ void VideoCodecTestFixtureImpl::ProcessAllFrames(
       // Roughly pace the frames.
       const int frame_duration_ms =
           std::ceil(kNumMillisecsPerSec / rate_profile->input_fps);
-      SleepMs(frame_duration_ms);
+      Thread::SleepMs(frame_duration_ms);
     }
   }
 
@@ -550,7 +550,7 @@ void VideoCodecTestFixtureImpl::ProcessAllFrames(
 
   // Give the VideoProcessor pipeline some time to process the last frame,
   // and then release the codecs.
-  SleepMs(1 * kNumMillisecsPerSec);
+  Thread::SleepMs(1 * kNumMillisecsPerSec);
   cpu_process_time_->Stop();
 }
 

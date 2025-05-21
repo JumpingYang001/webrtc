@@ -13,7 +13,7 @@
 #include "modules/audio_device/audio_device_config.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/system/arch.h"
-#include "system_wrappers/include/sleep.h"
+#include "rtc_base/thread.h"
 
 WebRTCAlsaSymbolTable* GetAlsaSymbolTable() {
   static WebRTCAlsaSymbolTable* alsa_symbol_table = new WebRTCAlsaSymbolTable();
@@ -782,7 +782,7 @@ int32_t AudioDeviceLinuxALSA::InitPlayoutLocked() {
   if (errVal == -EBUSY)  // Device busy - try some more!
   {
     for (int i = 0; i < 5; i++) {
-      SleepMs(1000);
+      Thread::SleepMs(1000);
       errVal = LATE(snd_pcm_open)(&_handlePlayout, deviceName,
                                   SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
       if (errVal == 0) {
@@ -906,7 +906,7 @@ int32_t AudioDeviceLinuxALSA::InitRecordingLocked() {
   if (errVal == -EBUSY)  // Device busy - try some more!
   {
     for (int i = 0; i < 5; i++) {
-      SleepMs(1000);
+      Thread::SleepMs(1000);
       errVal = LATE(snd_pcm_open)(&_handleRecord, deviceName,
                                   SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
       if (errVal == 0) {

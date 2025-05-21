@@ -28,7 +28,6 @@
 #include "rtc_base/win/scoped_com_initializer.h"
 #include "rtc_base/win/windows_version.h"
 #include "system_wrappers/include/metrics.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 
 namespace webrtc {
@@ -548,7 +547,7 @@ TEST_F(WgcCapturerWindowTest, CloseWindowMidCapture) {
     // Unlike GetMessage, PeekMessage will not hang if there are no messages in
     // the queue.
     PeekMessage(&msg, 0, 0, 0, PM_REMOVE);
-    SleepMs(1);
+    Thread::SleepMs(1);
   }
 
   EXPECT_FALSE(wgc_capturer->IsSourceBeingCaptured(source_id_));

@@ -66,7 +66,7 @@ if (rtc_include_tests) {
         ":screen_drawer",
         "../../api:array_view",
         "../../rtc_base:base64",
-        "../../system_wrappers",
+        "../../rtc_base:threading",
         "../../test:test_support",
       ]
       sources += [
@@ -158,12 +158,9 @@ if (rtc_include_tests) {
       "../../rtc_base:logging",
       "../../rtc_base:macromagic",
       "../../rtc_base:random",
-      "../../rtc_base:timeutils",
-
-      # TODO(bugs.webrtc.org/9987): Remove this dep on rtc_base:rtc_base once
-      # rtc_base:threading is fully defined.
       "../../rtc_base:task_queue_for_test",
       "../../rtc_base:threading",
+      "../../rtc_base:timeutils",
       "../../system_wrappers",
       "../../test:test_support",
     ]
@@ -235,7 +232,7 @@ if (rtc_include_tests) {
       "../../api:scoped_refptr",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
-      "../../system_wrappers",
+      "../../rtc_base:threading",
       "//third_party/abseil-cpp/absl/strings:string_view",
     ]
 
@@ -527,6 +524,7 @@ rtc_library("desktop_capture") {
       "shcore.lib",
     ]
     deps += [
+      "../../rtc_base:threading",
       "../../rtc_base:win32",
       "../../rtc_base/containers:flat_map",
       "../../rtc_base/win:create_direct3d_device",
@@ -595,6 +593,7 @@ rtc_library("desktop_capture") {
     libs += [ "dwmapi.lib" ]
     deps += [
       "../../rtc_base:rtc_event",
+      "../../rtc_base:threading",
       "../../rtc_base/win:hstring",
     ]
   }

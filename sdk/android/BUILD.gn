@@ -1749,7 +1749,6 @@ if (is_android) {
       "../../rtc_base:timeutils",
       "../../rtc_base/synchronization:mutex",
       "../../rtc_base/system:inline",
-      "../../system_wrappers",
       "../../test:fileutils",
       "../../test:scoped_key_value_config",
       "../../test:test_support",

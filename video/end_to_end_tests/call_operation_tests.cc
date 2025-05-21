@@ -19,7 +19,7 @@
 #include "api/video/video_sink_interface.h"
 #include "rtc_base/event.h"
 #include "rtc_base/task_queue_for_test.h"
-#include "system_wrappers/include/sleep.h"
+#include "rtc_base/thread.h"
 #include "test/call_test.h"
 #include "test/direct_transport.h"
 #include "test/frame_forwarder.h"
@@ -88,7 +88,7 @@ TEST_F(CallOperationEndToEndTest, RendersSingleDelayedFrame) {
   class Renderer : public VideoSinkInterface<VideoFrame> {
    public:
     void OnFrame(const VideoFrame& video_frame) override {
-      SleepMs(kRenderDelayMs);
+      Thread::SleepMs(kRenderDelayMs);
       event_.Set();
     }
 

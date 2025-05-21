@@ -24,7 +24,7 @@
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/system/inline.h"
-#include "system_wrappers/include/sleep.h"
+#include "rtc_base/thread.h"
 #include "test/gtest.h"
 
 namespace webrtc {
@@ -176,7 +176,7 @@ void TestStacktrace(std::unique_ptr<DeadlockInterface> deadlock_impl) {
   // Wait until the thread has entered the deadlock region, and take a very
   // brief nap to give it time to reach the actual deadlock.
   params.deadlock_start_event.Wait();
-  SleepMs(1);
+  Thread::SleepMs(1);
 
   // Acquire the stack trace of the thread which should now be deadlocking.
   std::vector<StackTraceElement> stack_trace = GetStackTrace(params.tid);

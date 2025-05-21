@@ -514,8 +514,8 @@ if (rtc_include_tests) {
         "../../../../../api/video:video_frame",
         "../../../../../common_video",
         "../../../../../rtc_base:stringutils",
+        "../../../../../rtc_base:threading",
         "../../../../../rtc_tools:video_quality_analysis",
-        "../../../../../system_wrappers",
         "../../../../time_controller",
       ]
     }
@@ -540,6 +540,7 @@ if (rtc_include_tests) {
         "../../../../../api/video:encoded_image",
         "../../../../../api/video:video_frame",
         "../../../../../common_video",
+        "../../../../../rtc_base:threading",
         "../../../../../rtc_tools:video_quality_analysis",
         "../../../../../system_wrappers",
         "//third_party/abseil-cpp/absl/flags:flag",

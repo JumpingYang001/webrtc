@@ -24,12 +24,12 @@
 #include "modules/desktop_capture/win/wgc_desktop_frame.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
 #include "rtc_base/win/create_direct3d_device.h"
 #include "rtc_base/win/get_activation_factory.h"
 #include "rtc_base/win/windows_version.h"
 #include "system_wrappers/include/metrics.h"
-#include "system_wrappers/include/sleep.h"
 
 using Microsoft::WRL::ComPtr;
 namespace WGC = ABI::Windows::Graphics::Capture;
@@ -256,7 +256,7 @@ void WgcCaptureSession::EnsureFrame() {
   int sleep_count = 0;
   while (!queue_.current_frame() && sleep_count < max_sleep_count) {
     sleep_count++;
-    webrtc::SleepMs(sleep_time_ms);
+    Thread::SleepMs(sleep_time_ms);
     hr = ProcessFrame();
     if (FAILED(hr)) {
       RTC_DLOG(LS_WARNING) << "ProcessFrame failed during startup: " << hr;

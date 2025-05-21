@@ -13,7 +13,6 @@
 #include <optional>
 
 #include "rtc_base/event.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gmock.h"
 
 namespace webrtc {

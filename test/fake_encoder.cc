@@ -24,7 +24,7 @@
 #include "modules/video_coding/include/video_codec_interface.h"
 #include "modules/video_coding/include/video_error_codes.h"
 #include "rtc_base/checks.h"
-#include "system_wrappers/include/sleep.h"
+#include "rtc_base/thread.h"
 
 namespace webrtc {
 namespace test {
@@ -380,7 +380,7 @@ int32_t DelayedEncoder::Encode(const VideoFrame& input_image,
                                const std::vector<VideoFrameType>* frame_types) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
 
-  SleepMs(delay_ms_);
+  Thread::SleepMs(delay_ms_);
 
   return FakeEncoder::Encode(input_image, frame_types);
 }

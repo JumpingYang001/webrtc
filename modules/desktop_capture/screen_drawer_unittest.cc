@@ -20,8 +20,8 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/platform_thread.h"
 #include "rtc_base/random.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 
 #if defined(WEBRTC_POSIX)
@@ -54,7 +54,7 @@ void TestScreenDrawerLock(
       created_->store(true);
       // Wait for the main thread to get the signal of created_.
       while (!ready_.load()) {
-        SleepMs(1);
+        Thread::SleepMs(1);
       }
       // At this point, main thread should begin to create a second lock. Though
       // it's still possible the second lock won't be created before the
@@ -66,7 +66,7 @@ void TestScreenDrawerLock(
       // But we need to ensure at least 100 ms has been passed before unlocking
       // `lock`.
       while (TimeMillis() - current_ms < kLockDurationMs) {
-        SleepMs(kLockDurationMs - (TimeMillis() - current_ms));
+        Thread::SleepMs(kLockDurationMs - (TimeMillis() - current_ms));
       }
     }
 
@@ -84,7 +84,7 @@ void TestScreenDrawerLock(
   // lock. See
   // https://chromium-review.googlesource.com/c/607688/13/webrtc/modules/desktop_capture/screen_drawer_unittest.cc
   while (!created.load()) {
-    SleepMs(1);
+    Thread::SleepMs(1);
   }
 
   const int64_t start_ms = TimeMillis();
@@ -130,11 +130,11 @@ TEST(ScreenDrawerTest, DISABLED_DrawRectangles) {
                   random.Rand<uint8_t>(), random.Rand<uint8_t>()));
 
     if (i == 50) {
-      SleepMs(10000);
+      Thread::SleepMs(10000);
     }
   }
 
-  SleepMs(10000);
+  Thread::SleepMs(10000);
 }
 
 #if defined(THREAD_SANITIZER)  // bugs.webrtc.org/10019

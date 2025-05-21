@@ -63,9 +63,9 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/system/arch.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/clock.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/audio_decoder_proxy_factory.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -441,7 +441,7 @@ class AudioCodingModuleMtTestOldApi : public AudioCodingModuleTestOldApi {
   // The send thread doesn't have to care about the current simulated time,
   // since only the AcmReceiver is using the clock.
   void CbSendImpl() {
-    SleepMs(1);
+    Thread::SleepMs(1);
     if (HasFatalFailure()) {
       // End the test early if a fatal failure (ASSERT_*) has occurred.
       test_complete_.Set();
@@ -454,7 +454,7 @@ class AudioCodingModuleMtTestOldApi : public AudioCodingModuleTestOldApi {
   }
 
   void CbInsertPacketImpl() {
-    SleepMs(1);
+    Thread::SleepMs(1);
     {
       MutexLock lock(&mutex_);
       if (env_.clock().TimeInMilliseconds() < next_insert_packet_time_ms_) {
@@ -468,7 +468,7 @@ class AudioCodingModuleMtTestOldApi : public AudioCodingModuleTestOldApi {
   }
 
   void CbPullAudioImpl() {
-    SleepMs(1);
+    Thread::SleepMs(1);
     {
       MutexLock lock(&mutex_);
       // Don't let the insert thread fall behind.

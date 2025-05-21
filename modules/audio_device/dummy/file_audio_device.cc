@@ -16,8 +16,8 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/platform_thread.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/sleep.h"
 
 namespace webrtc {
 
@@ -466,7 +466,7 @@ bool FileAudioDevice::PlayThreadProcess() {
 
   int64_t deltaTimeMillis = TimeMillis() - currentTime;
   if (deltaTimeMillis < 10) {
-    SleepMs(10 - deltaTimeMillis);
+    Thread::SleepMs(10 - deltaTimeMillis);
   }
 
   return true;
@@ -499,7 +499,7 @@ bool FileAudioDevice::RecThreadProcess() {
 
   int64_t deltaTimeMillis = TimeMillis() - currentTime;
   if (deltaTimeMillis < 10) {
-    SleepMs(10 - deltaTimeMillis);
+    Thread::SleepMs(10 - deltaTimeMillis);
   }
 
   return true;

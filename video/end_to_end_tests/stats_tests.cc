@@ -45,9 +45,9 @@
 #include "rtc_base/strings/string_builder.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/metrics.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
 #include "test/fake_decoder.h"
 #include "test/fake_encoder.h"
@@ -424,7 +424,7 @@ TEST_F(StatsEndToEndTest, TimingFramesAreReported) {
         }
       });
       // Wait for at least one timing frame to be sent with 100ms grace period.
-      SleepMs(kDefaultTimingFramesDelayMs + 100);
+      Thread::SleepMs(kDefaultTimingFramesDelayMs + 100);
       // Check that timing frames are reported for each stream.
       SendTask(task_queue_, [&]() {
         for (const auto& receive_stream : receive_streams_) {
@@ -775,7 +775,7 @@ TEST_F(StatsEndToEndTest, CallReportsRttForSender) {
       EXPECT_GE(stats.rtt_ms, kSendDelayMs + kReceiveDelayMs - kAllowedErrorMs);
       break;
     }
-    SleepMs(10);
+    Thread::SleepMs(10);
   }
 
   SendTask(task_queue(), [this]() {

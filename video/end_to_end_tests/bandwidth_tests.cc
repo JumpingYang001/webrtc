@@ -35,9 +35,9 @@
 #include "rtc_base/rate_limiter.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/field_trial.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/call_test.h"
 #include "test/fake_encoder.h"
 #include "test/field_trial.h"
@@ -392,7 +392,7 @@ TEST_F(BandwidthEndToEndTest, ReportsSetEncoderRates) {
             return;
           }
         }
-        SleepMs(1);
+        Thread::SleepMs(1);
       }
       FAIL()
           << "Timed out waiting for stats reporting the currently set bitrate.";
@@ -403,7 +403,7 @@ TEST_F(BandwidthEndToEndTest, ReportsSetEncoderRates) {
         if (send_stream_->GetStats().target_media_bitrate_bps == 0) {
           return;
         }
-        SleepMs(1);
+        Thread::SleepMs(1);
       }
       FAIL() << "Timed out waiting for stats reporting zero bitrate.";
     }

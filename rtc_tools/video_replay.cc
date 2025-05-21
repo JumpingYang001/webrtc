@@ -60,7 +60,6 @@
 #include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/thread.h"
 #include "system_wrappers/include/clock.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/call_config_utils.h"
 #include "test/encoder_settings.h"
 #include "test/fake_decoder.h"
@@ -703,7 +702,7 @@ class RtpReplayer final {
     if (time_sim_) {
       time_sim_->AdvanceTime(TimeDelta::Millis(duration_ms));
     } else if (duration_ms > 0) {
-      SleepMs(duration_ms);
+      Thread::SleepMs(duration_ms);
     }
   }
 

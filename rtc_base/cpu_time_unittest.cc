@@ -13,8 +13,8 @@
 #include <cstdint>
 
 #include "rtc_base/platform_thread.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gtest.h"
 
 // Only run these tests on non-instrumented builds, because timing on
@@ -91,7 +91,7 @@ TEST(CpuTimeTest, MAYBE_TEST(TwoThreads)) {
 
 TEST(CpuTimeTest, MAYBE_TEST(Sleeping)) {
   int64_t process_start_time_nanos = GetProcessCpuTimeNanos();
-  SleepMs(kProcessingTimeMillisecs);
+  Thread::SleepMs(kProcessingTimeMillisecs);
   int64_t process_duration_nanos =
       GetProcessCpuTimeNanos() - process_start_time_nanos;
   // Sleeping should not introduce any additional CPU time.

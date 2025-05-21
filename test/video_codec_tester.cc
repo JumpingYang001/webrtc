@@ -82,9 +82,9 @@
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/system/file_wrapper.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/time_utils.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/testsupport/file_utils.h"
 #include "test/testsupport/frame_reader.h"
 #include "test/testsupport/video_frame_writer.h"
@@ -276,7 +276,7 @@ class LimitedTaskQueue {
       int64_t wait_ms = (scheduled - now).ms();
       if (wait_ms > 0) {
         RTC_CHECK_LT(wait_ms, 10000) << "Too high wait_ms " << wait_ms;
-        SleepMs(wait_ms);
+        Thread::SleepMs(wait_ms);
       }
       std::move(task)();
       --queue_size_;

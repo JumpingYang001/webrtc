@@ -716,10 +716,10 @@ if (rtc_include_tests) {
       ":logging",
       ":rtc_event",
       ":rtc_task_queue_stdlib",
+      ":threading",
       "../api/task_queue",
       "../api/task_queue:task_queue_test",
       "../api/units:time_delta",
-      "../system_wrappers",
       "../test:test_main",
       "../test:test_support",
     ]

@@ -33,11 +33,11 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/rate_statistics.h"
 #include "rtc_base/task_queue_for_test.h"
+#include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/clock.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/ntp_time.h"
-#include "system_wrappers/include/sleep.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/scoped_key_value_config.h"
@@ -1082,7 +1082,7 @@ TEST(FrameCadenceAdapterRealTimeTest, TimestampsDoNotDrift) {
               ++frame_counter;
               // Avoid the first OnFrame and sleep on the second.
               if (frame_counter == 2) {
-                SleepMs(kSleepMs);
+                Thread::SleepMs(kSleepMs);
               } else if (frame_counter == 3) {
                 EXPECT_GE(incoming_frame.ntp_time_ms(),
                           original_ntp_time_ms + kSleepMs);
@@ -1134,7 +1134,7 @@ TEST(FrameCadenceAdapterRealTimeTest, ScheduledRepeatAllowsForSlowEncode) {
           // Avoid the first OnFrame and sleep on the second.
           if (frame_counter == 2) {
             start_time = clock->CurrentTime();
-            SleepMs(kSleepMs);
+            Thread::SleepMs(kSleepMs);
           } else if (frame_counter == 3) {
             TimeDelta diff =
                 clock->CurrentTime() - (*start_time + TimeDelta::Millis(500));
