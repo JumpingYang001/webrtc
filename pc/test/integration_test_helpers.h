@@ -33,6 +33,7 @@
 #include "api/candidate.h"
 #include "api/crypto/crypto_options.h"
 #include "api/data_channel_interface.h"
+#include "api/dtls_transport_interface.h"
 #include "api/field_trials.h"
 #include "api/field_trials_view.h"
 #include "api/ice_transport_interface.h"
@@ -739,18 +740,16 @@ class PeerConnectionIntegrationWrapper : public PeerConnectionObserver,
   }
 
   std::optional<int> tls_version() {
-    return network_thread_->BlockingCall([&] {
-      return pc()
-          ->GetSctpTransport()
-          ->dtls_transport()
-          ->Information()
-          .tls_version();
-    });
+    return dtls_transport_information().tls_version();
   }
 
   std::optional<DtlsTransportTlsRole> dtls_transport_role() {
+    return dtls_transport_information().role();
+  }
+
+  DtlsTransportInformation dtls_transport_information() {
     return network_thread_->BlockingCall([&] {
-      return pc()->GetSctpTransport()->dtls_transport()->Information().role();
+      return pc()->GetSctpTransport()->dtls_transport()->Information();
     });
   }
 
@@ -1385,12 +1384,12 @@ class PeerConnectionIntegrationBaseTest : public ::testing::Test {
     if (caller_) {
       caller_->set_signaling_message_receiver(nullptr);
       caller_->pc()->Close();
-      delete SetCallerPcWrapperAndReturnCurrent(nullptr);
+      caller_.reset();
     }
     if (callee_) {
       callee_->set_signaling_message_receiver(nullptr);
       callee_->pc()->Close();
-      delete SetCalleePcWrapperAndReturnCurrent(nullptr);
+      callee_.reset();
     }
 
     // If turn servers were created for the test they need to be destroyed on
@@ -1403,6 +1402,12 @@ class PeerConnectionIntegrationBaseTest : public ::testing::Test {
 
   bool SignalingStateStable() {
     return caller_->SignalingStateStable() && callee_->SignalingStateStable();
+  }
+
+  bool PeerConnectionStateIs(
+      PeerConnectionInterface::PeerConnectionState state) {
+    return caller_->pc()->peer_connection_state() == state &&
+           callee_->pc()->peer_connection_state() == state;
   }
 
   bool DtlsConnected() {
@@ -1720,9 +1725,9 @@ class PeerConnectionIntegrationBaseTest : public ::testing::Test {
   // Set the `caller_` to the `wrapper` passed in and return the
   // original `caller_`.
   PeerConnectionIntegrationWrapper* SetCallerPcWrapperAndReturnCurrent(
-      PeerConnectionIntegrationWrapper* wrapper) {
+      std::unique_ptr<PeerConnectionIntegrationWrapper> wrapper) {
     PeerConnectionIntegrationWrapper* old = caller_.release();
-    caller_.reset(wrapper);
+    caller_ = std::move(wrapper);
     return old;
   }
 
@@ -1731,9 +1736,9 @@ class PeerConnectionIntegrationBaseTest : public ::testing::Test {
   // Set the `callee_` to the `wrapper` passed in and return the
   // original `callee_`.
   PeerConnectionIntegrationWrapper* SetCalleePcWrapperAndReturnCurrent(
-      PeerConnectionIntegrationWrapper* wrapper) {
+      std::unique_ptr<PeerConnectionIntegrationWrapper> wrapper) {
     PeerConnectionIntegrationWrapper* old = callee_.release();
-    callee_.reset(wrapper);
+    callee_ = std::move(wrapper);
     return old;
   }
 

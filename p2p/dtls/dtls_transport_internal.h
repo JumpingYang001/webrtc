@@ -64,6 +64,9 @@ class DtlsTransportInternal : public PacketTransportInternal {
 
   // Finds out which TLS/DTLS version is running.
   virtual bool GetSslVersionBytes(int* version) const = 0;
+  // Return the the ID of the group used by the adapters most recently
+  // completed handshake, or 0 if not applicable (e.g. before the handshake).
+  virtual uint16_t GetSslGroupId() const = 0;
   // Finds out which DTLS-SRTP cipher was negotiated.
   // TODO(zhihuang): Remove this once all dependencies implement this.
   virtual bool GetSrtpCryptoSuite(int* cipher) const = 0;

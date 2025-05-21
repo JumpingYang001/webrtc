@@ -519,6 +519,10 @@ bool DtlsTransportInternalImpl::GetSslVersionBytes(int* version) const {
   return dtls_->GetSslVersionBytes(version);
 }
 
+uint16_t DtlsTransportInternalImpl::GetSslGroupId() const {
+  return dtls_->GetSslGroupId();
+}
+
 uint16_t DtlsTransportInternalImpl::GetSslPeerSignatureAlgorithm() const {
   if (dtls_state() != DtlsTransportState::kConnected) {
     return kSslSignatureAlgorithmUnknown;  // "not applicable"

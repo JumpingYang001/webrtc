@@ -134,14 +134,16 @@ void DtlsTransport::UpdateInformation() {
         set_info(DtlsTransportInformation(
             internal_dtls_transport_->dtls_state(), role, tls_version,
             ssl_cipher_suite, srtp_cipher,
-            internal_dtls_transport_->GetRemoteSSLCertChain()));
+            internal_dtls_transport_->GetRemoteSSLCertChain(),
+            internal_dtls_transport_->GetSslGroupId()));
       } else {
         RTC_LOG(LS_ERROR) << "DtlsTransport in connected state has incomplete "
                              "TLS information";
         set_info(DtlsTransportInformation(
             internal_dtls_transport_->dtls_state(), role, std::nullopt,
             std::nullopt, std::nullopt,
-            internal_dtls_transport_->GetRemoteSSLCertChain()));
+            internal_dtls_transport_->GetRemoteSSLCertChain(),
+            /* ssl_group_id= */ std::nullopt));
       }
     } else {
       set_info(

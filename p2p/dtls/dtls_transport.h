@@ -178,6 +178,9 @@ class DtlsTransportInternalImpl : public webrtc::DtlsTransportInternal {
 
   // Find out which TLS version was negotiated
   bool GetSslVersionBytes(int* version) const override;
+  // Return the the ID of the group used by the adapters most recently
+  // completed handshake, or 0 if not applicable (e.g. before the handshake).
+  uint16_t GetSslGroupId() const override;
   // Find out which DTLS-SRTP cipher was negotiated
   bool GetSrtpCryptoSuite(int* cipher) const override;
 

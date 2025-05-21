@@ -471,7 +471,7 @@ TEST_P(PeerConnectionIntegrationTest, CallTransferredForCallee) {
   // receiving client. These SRTP packets will be dropped.
   std::unique_ptr<PeerConnectionIntegrationWrapper> original_peer(
       SetCallerPcWrapperAndReturnCurrent(
-          CreatePeerConnectionWrapperWithAlternateKey().release()));
+          CreatePeerConnectionWrapperWithAlternateKey()));
   // TODO(deadbeef): Why do we call Close here? That goes against the comment
   // directly above.
   original_peer->pc()->Close();
@@ -504,7 +504,7 @@ TEST_P(PeerConnectionIntegrationTest, CallTransferredForCaller) {
   // receiving client. These SRTP packets will be dropped.
   std::unique_ptr<PeerConnectionIntegrationWrapper> original_peer(
       SetCalleePcWrapperAndReturnCurrent(
-          CreatePeerConnectionWrapperWithAlternateKey().release()));
+          CreatePeerConnectionWrapperWithAlternateKey()));
   // TODO(deadbeef): Why do we call Close here? That goes against the comment
   // directly above.
   original_peer->pc()->Close();

@@ -4997,6 +4997,98 @@ TEST_F(PeerConnectionIntegrationTestUnifiedPlan,
   }
 }
 
+#ifdef WEBRTC_HAVE_SCTP
+
+TEST_P(PeerConnectionIntegrationTest, DtlsPqc) {
+  CryptoOptions crypto_options;
+  crypto_options.ephemeral_key_exchange_cipher_groups.AddFirst(
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+          kX25519_MLKEM768);
+
+  PeerConnectionInterface::RTCConfiguration config;
+  config.crypto_options = crypto_options;
+
+  PeerConnectionFactoryInterface::Options options;
+  options.ssl_max_version = SSL_PROTOCOL_DTLS_13;
+
+  const bool create_media_engine = false;
+  SetCallerPcWrapperAndReturnCurrent(CreatePeerConnectionWrapper(
+      "caller", &options, &config, PeerConnectionDependencies(nullptr),
+      /* event_log_factory= */ nullptr,
+      /* reset_encoder_factory= */ false,
+      /* reset_decoder_factory= */ false, create_media_engine));
+  SetCalleePcWrapperAndReturnCurrent(CreatePeerConnectionWrapper(
+      "callee", &options, &config, PeerConnectionDependencies(nullptr),
+      /* event_log_factory= */ nullptr,
+      /* reset_encoder_factory= */ false,
+      /* reset_decoder_factory= */ false, create_media_engine));
+
+  ConnectFakeSignaling();
+
+  caller()->CreateDataChannel();
+
+  caller()->CreateAndSetAndSignalOffer();
+  ASSERT_THAT(
+      WaitUntil(
+          [&] {
+            return PeerConnectionStateIs(
+                PeerConnectionInterface::PeerConnectionState::kConnected);
+          },
+          ::testing::IsTrue()),
+      IsRtcOk());
+
+  uint16_t expected =
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519_MLKEM768;
+  if (!SSLStreamAdapter::IsBoringSsl()) {
+    expected = webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519;
+  }
+  EXPECT_EQ(caller()->dtls_transport_information().ssl_group_id(), expected);
+  EXPECT_EQ(caller()->dtls_transport_information().ssl_group_id(), expected);
+}
+
+TEST_P(PeerConnectionIntegrationTest, DtlsPqcFieldTrial) {
+  SetFieldTrials("WebRTC-EnableDtlsPqc/Enabled/");
+  PeerConnectionInterface::RTCConfiguration config;
+  PeerConnectionFactoryInterface::Options options;
+  options.ssl_max_version = SSL_PROTOCOL_DTLS_13;
+
+  const bool create_media_engine = false;
+  SetCallerPcWrapperAndReturnCurrent(CreatePeerConnectionWrapper(
+      "caller", &options, &config, PeerConnectionDependencies(nullptr),
+      /* event_log_factory= */ nullptr,
+      /* reset_encoder_factory= */ false,
+      /* reset_decoder_factory= */ false, create_media_engine));
+  SetCalleePcWrapperAndReturnCurrent(CreatePeerConnectionWrapper(
+      "callee", &options, &config, PeerConnectionDependencies(nullptr),
+      /* event_log_factory= */ nullptr,
+      /* reset_encoder_factory= */ false,
+      /* reset_decoder_factory= */ false, create_media_engine));
+
+  ConnectFakeSignaling();
+
+  caller()->CreateDataChannel();
+
+  caller()->CreateAndSetAndSignalOffer();
+  ASSERT_THAT(
+      WaitUntil(
+          [&] {
+            return PeerConnectionStateIs(
+                PeerConnectionInterface::PeerConnectionState::kConnected);
+          },
+          ::testing::IsTrue()),
+      IsRtcOk());
+
+  uint16_t expected =
+      webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519_MLKEM768;
+  if (!SSLStreamAdapter::IsBoringSsl()) {
+    expected = webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::kX25519;
+  }
+  EXPECT_EQ(caller()->dtls_transport_information().ssl_group_id(), expected);
+  EXPECT_EQ(caller()->dtls_transport_information().ssl_group_id(), expected);
+}
+
+#endif  // WEBRTC_HAVE_SCTP
+
 }  // namespace
 
 }  // namespace webrtc

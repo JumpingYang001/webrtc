@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "api/field_trials_view.h"
@@ -114,11 +115,16 @@ void CryptoOptions::EphemeralKeyExchangeCipherGroups::Update(
     const std::vector<uint16_t>* disabled_groups) {
   // Note: assumption is that these lists contains few elements...so converting
   // to set<> is not worth it.
-  std::vector<uint16_t> current;
-  enabled_ = SSLStreamAdapter::GetDefaultEphemeralKeyExchangeCipherGroups(
-      field_trials);
+  std::vector<uint16_t> default_groups =
+      SSLStreamAdapter::GetDefaultEphemeralKeyExchangeCipherGroups(
+          field_trials);
   // Remove all disabled.
   if (disabled_groups) {
+    default_groups.erase(std::remove_if(
+        default_groups.begin(), default_groups.end(), [&](uint16_t val) {
+          return std::find(disabled_groups->begin(), disabled_groups->end(),
+                           val) != disabled_groups->end();
+        }));
     enabled_.erase(
         std::remove_if(enabled_.begin(), enabled_.end(), [&](uint16_t val) {
           return std::find(disabled_groups->begin(), disabled_groups->end(),
@@ -126,10 +132,17 @@ void CryptoOptions::EphemeralKeyExchangeCipherGroups::Update(
         }));
   }
 
-  // Add all current not already present to end of list.
-  auto end = enabled_.end();
+  // Add those enabled by field-trials first.
+  std::vector<uint16_t> current = std::move(enabled_);
+  for (auto val : default_groups) {
+    if (std::find(current.begin(), current.end(), val) == current.end()) {
+      enabled_.push_back(val);
+    }
+  }
+
+  // Then re-add those present (unless already there).
   for (auto val : current) {
-    if (std::find(enabled_.begin(), end, val) == end) {
+    if (std::find(enabled_.begin(), enabled_.end(), val) == enabled_.end()) {
       enabled_.push_back(val);
     }
   }

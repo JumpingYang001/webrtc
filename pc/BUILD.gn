@@ -2683,6 +2683,7 @@ if (rtc_include_tests && !build_with_chromium) {
       ":video_track_source",
       "../api:audio_options_api",
       "../api:candidate",
+      "../api:dtls_transport_interface",
       "../api:enable_media_with_defaults",
       "../api:field_trials",
       "../api:field_trials_view",

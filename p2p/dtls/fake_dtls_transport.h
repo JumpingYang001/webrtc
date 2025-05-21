@@ -207,6 +207,7 @@ class FakeDtlsTransport : public DtlsTransportInternal {
     *version = 0x0102;
     return true;
   }
+  uint16_t GetSslGroupId() const override { return 0; }
   bool GetSrtpCryptoSuite(int* crypto_suite) const override {
     if (!do_dtls_) {
       return false;
