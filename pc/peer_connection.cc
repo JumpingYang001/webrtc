@@ -2506,9 +2506,16 @@ std::optional<std::string> PeerConnection::SetupDataChannelTransport_n(
   DataChannelTransportInterface* transport =
       transport_controller_->GetDataChannelTransport(*sctp_mid_n_);
   if (!transport) {
+#ifndef WEBRTC_HAVE_SCTP
+    RTC_LOG(LS_ERROR) << "Data channel transport is not available"
+                      << " as WebRTC has been compiled without SCTP support "
+                         "(WEBRTC_HAVE_SCTP), mid="
+                      << mid;
+#else
     RTC_LOG(LS_ERROR)
         << "Data channel transport is not available for data channels, mid="
         << mid;
+#endif
     sctp_mid_n_ = std::nullopt;
     return std::nullopt;
   }
