@@ -553,6 +553,7 @@ webrtc_fuzzer_test("audio_processing_fuzzer") {
   deps = [
     ":audio_processing_fuzzer_helper",
     "../../api:array_view",
+    "../../api:field_trials",
     "../../api:scoped_refptr",
     "../../api/audio:aec3_factory",
     "../../api/audio:audio_processing",
@@ -562,19 +563,10 @@ webrtc_fuzzer_test("audio_processing_fuzzer") {
     "../../api/environment",
     "../../api/environment:environment_factory",
     "../../api/task_queue",
-    "../../api/task_queue:default_task_queue_factory",
-    "../../modules/audio_processing",
-    "../../modules/audio_processing:audio_buffer",
-    "../../modules/audio_processing:audioproc_test_utils",
-    "../../modules/audio_processing/aec3",
     "../../modules/audio_processing/aec_dump",
-    "../../modules/audio_processing/aec_dump:aec_dump_impl",
     "../../rtc_base:checks",
-    "../../rtc_base:macromagic",
-    "../../rtc_base:safe_minmax",
-    "../../system_wrappers:field_trial",
     "//third_party/abseil-cpp/absl/base:nullability",
-    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
   seed_corpus = "corpora/audio_processing-corpus"
 }
