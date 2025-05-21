@@ -281,5 +281,14 @@ TEST(AudioDecoderFactoryTemplateTest, Opus) {
   EXPECT_EQ(48000, dec->SampleRateHz());
 }
 
+TEST(AudioDecoderFactoryTemplateTest, G711TooManyChannels) {
+  auto factory = CreateAudioDecoderFactory<AudioDecoderG711>();
+  const Environment env = CreateEnvironment();
+  EXPECT_EQ(nullptr, factory->Create(env,
+                                     {"pcmu", 16000,
+                                      /* num_channels=*/1000},
+                                     std::nullopt));
+}
+
 }  // namespace
 }  // namespace webrtc

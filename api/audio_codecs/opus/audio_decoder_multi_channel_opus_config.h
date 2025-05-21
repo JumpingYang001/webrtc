@@ -55,7 +55,7 @@ struct AudioDecoderMultiChannelOpusConfig {
       }
     }
 
-    if (num_channels > 255 || max_coded_channel >= 255) {
+    if (max_coded_channel >= 255) {
       return false;
     }
     return true;

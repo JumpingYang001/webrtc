@@ -29,6 +29,7 @@ AudioDecoderPcm16B::AudioDecoderPcm16B(int sample_rate_hz, size_t num_channels)
              sample_rate_hz == 32000 || sample_rate_hz == 48000)
       << "Unsupported sample rate " << sample_rate_hz;
   RTC_DCHECK_GE(num_channels, 1);
+  RTC_DCHECK_LE(num_channels, AudioDecoder::kMaxNumberOfChannels);
 }
 
 void AudioDecoderPcm16B::Reset() {}

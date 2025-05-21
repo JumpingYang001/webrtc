@@ -15,7 +15,6 @@
 #include <iterator>
 
 #include "api/array_view.h"
-#include "api/audio/channel_layout.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {
@@ -45,6 +44,13 @@ namespace webrtc {
 template <typename T>
 using MonoView = ArrayView<T>;
 
+// The maximum number of audio channels supported by WebRTC encoders, decoders
+// and the AudioFrame class.
+// TODO(peah, tommi): Should kMaxNumberOfAudioChannels be 16 rather than 24?
+// The reason is that AudioFrame's max number of samples is 7680, which can
+// hold 16 10ms 16bit channels at 48 kHz (and not 24 channels).
+static constexpr size_t kMaxNumberOfAudioChannels = 24;
+
 // InterleavedView<> is a view over an interleaved audio buffer (e.g. from
 // AudioFrame).
 template <typename T>
@@ -59,7 +65,7 @@ class InterleavedView {
       : num_channels_(num_channels),
         samples_per_channel_(samples_per_channel),
         data_(data, num_channels * samples_per_channel) {
-    RTC_DCHECK_LE(num_channels_, kMaxConcurrentChannels);
+    RTC_DCHECK_LE(num_channels_, kMaxNumberOfAudioChannels);
     RTC_DCHECK(num_channels_ == 0u || samples_per_channel_ != 0u);
   }
 

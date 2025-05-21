@@ -22,6 +22,7 @@
 
 #include "absl/base/attributes.h"
 #include "api/array_view.h"
+#include "api/audio/audio_view.h"
 #include "api/call/bitrate_allocation.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
@@ -256,7 +257,7 @@ class AudioEncoder {
   }
 
   // The maximum number of audio channels supported by WebRTC encoders.
-  static constexpr int kMaxNumberOfChannels = 24;
+  static constexpr int kMaxNumberOfChannels = kMaxNumberOfAudioChannels;
 
  protected:
   // Subclasses implement this to perform the actual encoding. Called by

@@ -30,6 +30,7 @@
 #include "api/units/timestamp.h"
 #include "modules/audio_coding/neteq/tools/rtp_generator.h"
 #include "rtc_base/buffer.h"
+#include "rtc_base/checks.h"
 #include "test/audio_decoder_proxy_factory.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -67,7 +68,10 @@ class MockAudioDecoder final : public AudioDecoder {
 
   class MockFrame : public AudioDecoder::EncodedAudioFrame {
    public:
-    MockFrame(size_t num_channels) : num_channels_(num_channels) {}
+    MockFrame(size_t num_channels) : num_channels_(num_channels) {
+      RTC_DCHECK_GE(num_channels_, 1);
+      RTC_DCHECK_LE(num_channels_, AudioDecoder::kMaxNumberOfChannels);
+    }
 
     size_t Duration() const override { return kPacketDuration; }
 

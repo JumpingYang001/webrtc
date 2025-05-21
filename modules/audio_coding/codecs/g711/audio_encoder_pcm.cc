@@ -25,7 +25,8 @@
 namespace webrtc {
 
 bool AudioEncoderPcm::Config::IsOk() const {
-  return (frame_size_ms % 10 == 0) && (num_channels >= 1);
+  return (frame_size_ms % 10 == 0) && (num_channels >= 1) &&
+         (num_channels <= AudioEncoder::kMaxNumberOfChannels);
 }
 
 AudioEncoderPcm::AudioEncoderPcm(const Config& config, int sample_rate_hz)

@@ -1408,6 +1408,7 @@ rtc_library("webrtc_sdp") {
     "../api:rtc_error",
     "../api:rtp_parameters",
     "../api:rtp_transceiver_direction",
+    "../api/audio:audio_frame_api",
     "../media:codec",
     "../media:media_constants",
     "../media:rid_description",

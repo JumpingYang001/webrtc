@@ -26,6 +26,7 @@ class AudioDecoderPcmU final : public AudioDecoder {
  public:
   explicit AudioDecoderPcmU(size_t num_channels) : num_channels_(num_channels) {
     RTC_DCHECK_GE(num_channels, 1);
+    RTC_DCHECK_LE(num_channels, AudioDecoder::kMaxNumberOfChannels);
   }
 
   AudioDecoderPcmU(const AudioDecoderPcmU&) = delete;
@@ -55,6 +56,7 @@ class AudioDecoderPcmA final : public AudioDecoder {
  public:
   explicit AudioDecoderPcmA(size_t num_channels) : num_channels_(num_channels) {
     RTC_DCHECK_GE(num_channels, 1);
+    RTC_DCHECK_LE(num_channels, AudioDecoder::kMaxNumberOfChannels);
   }
 
   AudioDecoderPcmA(const AudioDecoderPcmA&) = delete;

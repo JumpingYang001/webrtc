@@ -75,7 +75,7 @@ class NetEqImpl : public webrtc::NetEq {
     kCodecPLC
   };
 
-  enum ErrorCodes {
+  enum Error : int {
     kNoError = 0,
     kOtherError,
     kUnknownRtpPayloadType,
@@ -92,7 +92,7 @@ class NetEqImpl : public webrtc::NetEq {
     kSampleUnderrun,
     kDecodedTooMuch,
     kRedundancySplitError,
-    kPacketBufferCorruption
+    kPacketBufferCorruption,
   };
 
   struct Dependencies {
@@ -217,9 +217,9 @@ class NetEqImpl : public webrtc::NetEq {
   // Inserts a new packet into NetEq. This is used by the InsertPacket method
   // above. Returns 0 on success, otherwise an error code.
   // TODO(hlundin): Merge this with InsertPacket above?
-  int InsertPacketInternal(const RTPHeader& rtp_header,
-                           ArrayView<const uint8_t> payload,
-                           const RtpPacketInfo& packet_info)
+  Error InsertPacketInternal(const RTPHeader& rtp_header,
+                             ArrayView<const uint8_t> payload,
+                             const RtpPacketInfo& packet_info)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   // Returns true if the payload type changed (this should be followed by
@@ -334,6 +334,8 @@ class NetEqImpl : public webrtc::NetEq {
 
   // Resets various variables and objects to new values based on the sample rate
   // `fs_hz` and `channels` number audio channels.
+  // If the sample rate, the number of channels or a combination thereof aren't
+  // supported, the function will fail on an RTC_CHECK.
   void SetSampleRateAndChannels(int fs_hz, size_t channels)
       RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "api/array_view.h"
+#include "api/audio/audio_view.h"
 #include "rtc_base/buffer.h"
 
 namespace webrtc {
@@ -173,7 +174,7 @@ class AudioDecoder {
   virtual size_t Channels() const = 0;
 
   // The maximum number of audio channels supported by WebRTC decoders.
-  static constexpr int kMaxNumberOfChannels = 24;
+  static constexpr int kMaxNumberOfChannels = kMaxNumberOfAudioChannels;
 
  protected:
   static SpeechType ConvertSpeechType(int16_t type);

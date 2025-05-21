@@ -64,6 +64,10 @@ class AudioFrame {
   enum : size_t {
     // Stereo, 32 kHz, 120 ms (2 * 32 * 120)
     // Stereo, 192 kHz, 20 ms (2 * 192 * 20)
+    // 8 channels (kMaxConcurrentChannels), 48 kHz, 20 ms (8 * 48 * 20).
+    // 24 channels (kMaxNumberOfAudioChannels), 32 kHz kHz, 10 ms (24 * 32 * 10)
+    // At 48 kHz, 10 ms buffers, the maximum number of channels AudioFrame can
+    // hold, is 16. (16 * 48 * 10).
     kMaxDataSizeSamples = 7680,
     kMaxDataSizeBytes = kMaxDataSizeSamples * sizeof(int16_t),
   };

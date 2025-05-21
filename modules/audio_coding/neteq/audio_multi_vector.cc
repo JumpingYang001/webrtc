@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "api/array_view.h"
+#include "api/audio/audio_view.h"
 #include "modules/audio_coding/neteq/audio_vector.h"
 #include "rtc_base/checks.h"
 
@@ -23,6 +24,7 @@ namespace webrtc {
 
 AudioMultiVector::AudioMultiVector(size_t N) : channels_(N) {
   RTC_DCHECK_GT(N, 0);
+  RTC_DCHECK_LE(N, kMaxNumberOfAudioChannels);
   for (auto& c : channels_) {
     c.reset(new AudioVector());
   }
@@ -31,6 +33,7 @@ AudioMultiVector::AudioMultiVector(size_t N) : channels_(N) {
 AudioMultiVector::AudioMultiVector(size_t N, size_t initial_size)
     : channels_(N) {
   RTC_DCHECK_GT(N, 0);
+  RTC_DCHECK_LE(N, kMaxNumberOfAudioChannels);
   for (auto& c : channels_) {
     c.reset(new AudioVector(initial_size));
   }

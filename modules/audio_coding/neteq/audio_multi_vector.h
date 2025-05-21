@@ -22,6 +22,7 @@
 
 namespace webrtc {
 
+// TODO: b/335805780 - Update to use InterleavedView.
 class AudioMultiVector {
  public:
   // Creates an empty AudioMultiVector with `N` audio channels. `N` must be

@@ -10,15 +10,17 @@
 
 #include "modules/audio_mixer/frame_combiner.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <numeric>
-#include <optional>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include "api/array_view.h"
+#include "api/audio/audio_frame.h"
+#include "api/audio/audio_view.h"
+#include "api/audio/channel_layout.h"
 #include "api/rtp_packet_info.h"
 #include "api/rtp_packet_infos.h"
 #include "api/units/timestamp.h"
@@ -145,14 +147,13 @@ TEST(FrameCombinerDeathTest, BuildCrashesWithManyChannels) {
   FrameCombiner combiner(true);
   for (const int rate : {8000, 18000, 34000, 48000}) {
     for (const int number_of_channels : {10, 20, 21}) {
+      RTC_DCHECK_LE(number_of_channels, kMaxNumberOfAudioChannels);
       if (static_cast<size_t>(rate / 100 * number_of_channels) >
           AudioFrame::kMaxDataSizeSamples) {
         continue;
       }
       const std::vector<AudioFrame*> all_frames = {&frame1, &frame2};
-      // With an unsupported channel count, this will crash in
-      // `AudioFrame::UpdateFrame`.
-      EXPECT_DEATH(SetUpFrames(rate, number_of_channels), "");
+      SetUpFrames(rate, number_of_channels);
 
       const int number_of_frames = 2;
       SCOPED_TRACE(

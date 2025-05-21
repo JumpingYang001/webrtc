@@ -38,7 +38,7 @@ AudioFrame::AudioFrame(int sample_rate_hz,
       channel_layout_(layout == CHANNEL_LAYOUT_UNSUPPORTED
                           ? GuessChannelLayout(num_channels)
                           : layout) {
-  RTC_DCHECK_LE(num_channels_, kMaxConcurrentChannels);
+  RTC_DCHECK_LE(num_channels_, kMaxNumberOfAudioChannels);
   RTC_DCHECK_GT(sample_rate_hz_, 0);
   RTC_DCHECK_GT(samples_per_channel_, 0u);
 }
@@ -72,7 +72,7 @@ void AudioFrame::UpdateFrame(uint32_t timestamp,
                              SpeechType speech_type,
                              VADActivity vad_activity,
                              size_t num_channels) {
-  RTC_CHECK_LE(num_channels, kMaxConcurrentChannels);
+  RTC_CHECK_LE(num_channels, kMaxNumberOfAudioChannels);
   timestamp_ = timestamp;
   samples_per_channel_ = samples_per_channel;
   sample_rate_hz_ = sample_rate_hz;
@@ -172,7 +172,7 @@ InterleavedView<int16_t> AudioFrame::mutable_data(size_t samples_per_channel,
                                                   size_t num_channels) {
   const size_t total_samples = samples_per_channel * num_channels;
   RTC_CHECK_LE(total_samples, data_.size());
-  RTC_CHECK_LE(num_channels, kMaxConcurrentChannels);
+  RTC_CHECK_LE(num_channels, kMaxNumberOfAudioChannels);
   // Sanity check for valid argument values during development.
   // If `samples_per_channel` is < `num_channels` but larger than 0,
   // then chances are the order of arguments is incorrect.

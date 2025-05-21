@@ -20,7 +20,10 @@ rtc_library("audio_encoder_opus_config") {
     "audio_encoder_opus_config.cc",
     "audio_encoder_opus_config.h",
   ]
-  deps = [ "../../../rtc_base/system:rtc_export" ]
+  deps = [
+    "..:audio_codecs_api",
+    "../../../rtc_base/system:rtc_export",
+  ]
   defines = []
   if (rtc_opus_variable_complexity) {
     defines += [ "WEBRTC_OPUS_VARIABLE_COMPLEXITY=1" ]

@@ -30,6 +30,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "api/audio/audio_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
 #include "api/jsep_ice_candidate.h"
@@ -225,9 +226,6 @@ static const char kDefaultSctpmapProtocol[] = "webrtc-datachannel";
 // RTP payload type is in the 0-127 range. Use -1 to indicate "all" payload
 // types.
 const int kWildcardPayloadType = -1;
-
-// Maximum number of channels allowed.
-static const size_t kMaxNumberOfChannels = 24;
 
 struct SsrcInfo {
   uint32_t ssrc_id;
@@ -3589,8 +3587,11 @@ bool ParseRtpmapAttribute(absl::string_view line,
         return false;
       }
     }
-    if (channels > kMaxNumberOfChannels) {
-      return ParseFailed(line, "At most 24 channels are supported.", error);
+    if (channels > kMaxNumberOfAudioChannels) {
+      StringBuilder description;
+      description << "At most " << kMaxNumberOfAudioChannels
+                  << " channels are supported.";
+      return ParseFailed(line, description.Release(), error);
     }
 
     for (const Codec& existing_codec : media_desc->codecs()) {
