@@ -1757,6 +1757,7 @@ rtc_library("rtc_base_tests_utils") {
     "../api:scoped_refptr",
     "../api:sequence_checker",
     "../api/task_queue",
+    "../api/task_queue:pending_task_safety_flag",
     "../api/units:time_delta",
     "../api/units:timestamp",
     "../test:scoped_key_value_config",
@@ -1769,6 +1770,7 @@ rtc_library("rtc_base_tests_utils") {
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/strings:strings",
   ]
   if (is_fuchsia) {
     deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]

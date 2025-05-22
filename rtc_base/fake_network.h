@@ -17,14 +17,17 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "api/scoped_refptr.h"
+#include "api/sequence_checker.h"
+#include "api/task_queue/pending_task_safety_flag.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/mdns_responder_interface.h"
 #include "rtc_base/net_helpers.h"
 #include "rtc_base/network.h"
 #include "rtc_base/network_constants.h"
 #include "rtc_base/socket_address.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/thread.h"
 
 namespace webrtc {
@@ -35,7 +38,18 @@ const int kFakeIPv6NetworkPrefixLength = 64;
 // Fake network manager that allows us to manually specify the IPs to use.
 class FakeNetworkManager : public NetworkManagerBase {
  public:
-  FakeNetworkManager() {}
+  explicit FakeNetworkManager(Thread* network_thread)
+      : network_thread_(network_thread) {}
+  ~FakeNetworkManager() override {
+    if (network_thread_) {
+      network_thread_->BlockingCall([this]() {
+        if (safety_flag_) {
+          safety_flag_->SetNotAlive();
+          safety_flag_ = nullptr;
+        }
+      });
+    }
+  }
 
   struct Iface {
     SocketAddress socket_address;
@@ -75,12 +89,18 @@ class FakeNetworkManager : public NetworkManagerBase {
   }
 
   void StartUpdating() override {
+    RTC_DCHECK_RUN_ON(network_thread_);
+    if (!safety_flag_) {
+      safety_flag_ = PendingTaskSafetyFlag::Create();
+    }
     ++start_count_;
     if (start_count_ == 1) {
       sent_first_update_ = false;
-      Thread::Current()->PostTask([this] { DoUpdateNetworks(); });
+      network_thread_->PostTask(
+          SafeTask(safety_flag_, [this] { DoUpdateNetworks(); }));
     } else if (sent_first_update_) {
-      Thread::Current()->PostTask([this] { SignalNetworksChanged(); });
+      network_thread_->PostTask(
+          SafeTask(safety_flag_, [this] { SignalNetworksChanged(); }));
     }
   }
 
@@ -130,6 +150,9 @@ class FakeNetworkManager : public NetworkManagerBase {
       sent_first_update_ = true;
     }
   }
+
+  Thread* const network_thread_;
+  scoped_refptr<PendingTaskSafetyFlag> safety_flag_;
 
   IfaceList ifaces_;
   int next_index_ = 0;

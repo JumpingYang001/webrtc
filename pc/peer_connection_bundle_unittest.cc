@@ -88,6 +88,9 @@ using ::testing::Values;
 
 class FakeNetworkManagerWithNoAnyNetwork : public FakeNetworkManager {
  public:
+  FakeNetworkManagerWithNoAnyNetwork()
+      : FakeNetworkManager(Thread::Current()) {}
+
   std::vector<const Network*> GetAnyAddressNetworks() override {
     // This function allocates networks that are owned by the
     // NetworkManager. But some tests assume that they can release

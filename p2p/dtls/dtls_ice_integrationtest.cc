@@ -148,9 +148,13 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
       const scoped_refptr<webrtc::RTCCertificate> client_certificate,
       const scoped_refptr<webrtc::RTCCertificate> server_certificate) {
     thread(ep)->BlockingCall([&]() {
+      if (!network_manager_) {
+        network_manager_ =
+            std::make_unique<FakeNetworkManager>(Thread::Current());
+      }
       if (network_emulation_manager_ == nullptr) {
         ep.allocator = std::make_unique<webrtc::BasicPortAllocator>(
-            ep.env, &network_manager_, socket_factory_.get());
+            ep.env, network_manager_.get(), socket_factory_.get());
       } else {
         ep.network_manager =
             ep.emulated_network_manager->ReleaseNetworkManager();
@@ -234,7 +238,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
 
     // Setup the network.
     if (network_emulation_manager_ == nullptr) {
-      network_manager_.AddInterface(webrtc::SocketAddress("192.168.1.1", 0));
+      network_manager_->AddInterface(webrtc::SocketAddress("192.168.1.1", 0));
     }
 
     client_thread()->BlockingCall([&]() { client_.allocator->Initialize(); });
@@ -335,11 +339,11 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
   }
 
   webrtc::ScopedFakeClock fake_clock_;
-  webrtc::FakeNetworkManager network_manager_;
   std::unique_ptr<webrtc::VirtualSocketServer> ss_;
   std::unique_ptr<webrtc::BasicPacketSocketFactory> socket_factory_;
   std::unique_ptr<webrtc::NetworkEmulationManager> network_emulation_manager_;
   std::unique_ptr<webrtc::AutoSocketServerThread> thread_;
+  std::unique_ptr<webrtc::FakeNetworkManager> network_manager_;
 
   Endpoint client_;
   Endpoint server_;
@@ -386,7 +390,7 @@ TEST_P(DtlsIceIntegrationTest, SmokeTest) {
   }
 
   // Validate that we can add new Connections (that become writable).
-  network_manager_.AddInterface(webrtc::SocketAddress("192.168.2.1", 0));
+  network_manager_->AddInterface(webrtc::SocketAddress("192.168.2.1", 0));
   EXPECT_THAT(webrtc::WaitUntil(
                   [&] {
                     return CountWritableConnections(client_.ice.get()) > 1 &&

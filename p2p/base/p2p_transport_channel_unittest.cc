@@ -65,6 +65,7 @@
 #include "p2p/test/stun_server.h"
 #include "p2p/test/test_stun_server.h"
 #include "p2p/test/test_turn_server.h"
+#include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/checks.h"
@@ -434,7 +435,7 @@ class P2PTransportChannelTestBase : public ::testing::Test,
       return ice_regathering_counter_[reason];
     }
 
-    FakeNetworkManager network_manager_;
+    FakeNetworkManager network_manager_{Thread::Current()};
     std::unique_ptr<BasicPortAllocator> allocator_;
     AsyncDnsResolverFactoryInterface* async_dns_resolver_factory_ = nullptr;
     ChannelData cd1_;
@@ -5693,7 +5694,7 @@ class P2PTransportChannelMostLikelyToWorkFirstTest
 
  private:
   std::unique_ptr<BasicPortAllocator> port_allocator_;
-  FakeNetworkManager network_manager_;
+  FakeNetworkManager network_manager_{Thread::Current()};
   TestTurnServer turn_server_;
   std::unique_ptr<P2PTransportChannel> channel_;
 };

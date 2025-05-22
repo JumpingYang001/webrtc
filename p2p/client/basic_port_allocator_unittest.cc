@@ -170,6 +170,7 @@ class BasicPortAllocatorTestBase : public ::testing::Test,
                      fss_.get(),
                      kTurnUdpIntAddr,
                      kTurnUdpExtAddr),
+        network_manager_(&thread_),
         candidate_allocation_done_(false) {
     allocator_.emplace(env_, &network_manager_, &socket_factory_);
     allocator_->SetConfiguration({kStunAddr}, {}, 0, NO_PRUNE, nullptr);

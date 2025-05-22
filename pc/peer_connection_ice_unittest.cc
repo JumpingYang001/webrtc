@@ -158,7 +158,8 @@ class PeerConnectionIceBaseTest : public ::testing::Test {
     pcf_deps.worker_thread = Thread::Current();
     pcf_deps.signaling_thread = Thread::Current();
     pcf_deps.socket_factory = &vss_;
-    auto network_manager = std::make_unique<FakeNetworkManager>();
+    auto network_manager =
+        std::make_unique<FakeNetworkManager>(pcf_deps.network_thread);
     auto* fake_network = network_manager.get();
     pcf_deps.network_manager = std::move(network_manager);
     pcf_deps.adm = FakeAudioCaptureModule::Create();
