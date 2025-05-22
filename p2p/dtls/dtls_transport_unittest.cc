@@ -1489,9 +1489,9 @@ INSTANTIATE_TEST_SUITE_P(
             std::vector<DtlsTransportInternalImplEvent>{
                 CALLER_RECEIVES_CLIENTHELLO, CALLER_WRITABLE,
                 HANDSHAKE_FINISHES, CALLER_RECEIVES_FINGERPRINT}),
-        ::testing::Bool(),
+        /*valid_fingerprint=*/::testing::Bool(),
         ::testing::Values(SSL_PROTOCOL_DTLS_12, SSL_PROTOCOL_DTLS_13),
-        ::testing::Bool()));
+        /*pqc=*/::testing::Bool()));
 
 class DtlsTransportInternalImplDtlsInStunTest
     : public DtlsTransportInternalImplVersionTest {

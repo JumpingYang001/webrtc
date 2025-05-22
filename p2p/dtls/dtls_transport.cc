@@ -1032,6 +1032,9 @@ void DtlsTransportInternalImpl::set_dtls_state(DtlsTransportState state) {
                       << static_cast<int>(dtls_state_) << " to "
                       << static_cast<int>(state);
   dtls_state_ = state;
+  if (dtls_state_ == DtlsTransportState::kFailed) {
+    dtls_stun_piggyback_controller_.SetDtlsFailed();
+  }
   SendDtlsState(this, state);
 }
 

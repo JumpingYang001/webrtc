@@ -58,6 +58,17 @@ void DtlsStunPiggybackController::SetDtlsHandshakeComplete(bool is_dtls_client,
   state_ = State::PENDING;
 }
 
+void DtlsStunPiggybackController::SetDtlsFailed() {
+  RTC_DCHECK_RUN_ON(&sequence_checker_);
+
+  if (state_ == State::TENTATIVE || state_ == State::CONFIRMED ||
+      state_ == State::PENDING) {
+    RTC_LOG(LS_INFO)
+        << "DTLS-STUN piggybacking DTLS failed during negotiation.";
+  }
+  state_ = State::OFF;
+}
+
 void DtlsStunPiggybackController::CapturePacket(ArrayView<const uint8_t> data) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   if (!IsDtlsPacket(data)) {
