@@ -337,6 +337,8 @@ if (rtc_include_tests && !build_with_chromium) {
     testonly = true
 
     sources = [
+      "allocation_counter.cc",
+      "allocation_counter.h",
       "audio_converter_unittest.cc",
       "audio_util_unittest.cc",
       "channel_buffer_unittest.cc",
@@ -387,6 +389,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../test:test_main",
       "../test:test_support",
       "//testing/gtest",
+      "//third_party/abseil-cpp/absl/base:core_headers",
     ]
 
     if (is_android) {
