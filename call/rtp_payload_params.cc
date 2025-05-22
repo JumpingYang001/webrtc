@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <optional>
 
 #include "absl/container/inlined_vector.h"
@@ -36,7 +37,6 @@
 #include "modules/video_coding/codecs/vp9/include/vp9_globals.h"
 #include "modules/video_coding/frame_dependencies_calculator.h"
 #include "modules/video_coding/include/video_codec_interface.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/random.h"
@@ -789,7 +789,7 @@ void RtpPayloadParams::SetDependenciesVp8New(
 
   RTC_DCHECK_GT(vp8_info.referencedBuffersCount, 0u);
   RTC_DCHECK_LE(vp8_info.referencedBuffersCount,
-                arraysize(vp8_info.referencedBuffers));
+                std::size(vp8_info.referencedBuffers));
 
   for (size_t i = 0; i < vp8_info.referencedBuffersCount; ++i) {
     const size_t referenced_buffer = vp8_info.referencedBuffers[i];

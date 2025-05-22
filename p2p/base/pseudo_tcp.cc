@@ -188,7 +188,7 @@ void ReportStats() {
   char buffer[256];
   size_t len = 0;
   for (int i = 0; i < S_NUM_STATS; ++i) {
-    len += snprintf(buffer, arraysize(buffer), "%s%s:%d",
+    len += snprintf(buffer, std::size(buffer), "%s%s:%d",
                           (i == 0) ? "" : ",", STAT_NAMES[i], g_stats[i]);
     g_stats[i] = 0;
   }

@@ -13,13 +13,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <memory>
 
 #include "api/array_view.h"
 #include "p2p/test/nat_socket_factory.h"
 #include "p2p/test/nat_types.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/async_udp_socket.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/ip_address.h"
 #include "rtc_base/logging.h"
@@ -229,17 +229,12 @@ void NATServer::OnExternalUDPPacket(AsyncPacketSocket* socket,
 
   // Forward this packet to the internal address.
   // First prepend the address in a quasi-STUN format.
-  std::unique_ptr<char[]> real_buf(
-      new char[packet.payload().size() + kNATEncodedIPv6AddressSize]);
-  size_t addrlength = PackAddressForNAT(
-      real_buf.get(), packet.payload().size() + kNATEncodedIPv6AddressSize,
-      packet.source_address());
+  Buffer real_buf(packet.payload().size() + kNATEncodedIPv6AddressSize);
+  PackAddressForNAT(packet.source_address(), real_buf);
   // Copy the data part after the address.
   AsyncSocketPacketOptions options;
-  memcpy(real_buf.get() + addrlength, packet.payload().data(),
-         packet.payload().size());
-  udp_server_socket_->SendTo(real_buf.get(),
-                             packet.payload().size() + addrlength,
+  real_buf.AppendData(packet.payload());
+  udp_server_socket_->SendTo(real_buf.data(), real_buf.size(),
                              iter->second->route.source(), options);
 }
 

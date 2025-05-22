@@ -51,8 +51,6 @@
 #include "p2p/test/stun_server.h"
 #include "p2p/test/test_stun_server.h"
 #include "p2p/test/test_turn_server.h"
-#include "p2p/test/turn_server.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/async_packet_socket.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_buffer.h"
@@ -3178,7 +3176,7 @@ TEST_F(PortTest, TestWritableState) {
 
   // Data should be sendable before the connection is accepted.
   char data[] = "abcd";
-  int data_size = arraysize(data);
+  int data_size = std::ssize(data);
   AsyncSocketPacketOptions options;
   EXPECT_EQ(data_size, ch1.conn()->Send(data, data_size, options));
 

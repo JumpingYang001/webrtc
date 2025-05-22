@@ -21,7 +21,6 @@
 #include "api/units/timestamp.h"
 #include "p2p/test/nat_server.h"
 #include "p2p/test/nat_types.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/byte_order.h"
 #include "rtc_base/checks.h"
@@ -41,9 +40,8 @@ namespace webrtc {
 // Packs the given socketaddress into the buffer in buf, in the quasi-STUN
 // format that the natserver uses.
 // Returns 0 if an invalid address is passed.
-size_t PackAddressForNAT(char* buf,
-                         size_t buf_size,
-                         const SocketAddress& remote_addr) {
+void PackAddressForNAT(const SocketAddress& remote_addr, Buffer& buf) {
+  RTC_DCHECK_GE(buf.capacity(), 4);
   const IPAddress& ip = remote_addr.ipaddr();
   int family = ip.family();
   buf[0] = 0;
@@ -51,17 +49,18 @@ size_t PackAddressForNAT(char* buf,
   // Writes the port.
   *(reinterpret_cast<uint16_t*>(&buf[2])) = HostToNetwork16(remote_addr.port());
   if (family == AF_INET) {
-    RTC_DCHECK(buf_size >= kNATEncodedIPv4AddressSize);
+    RTC_DCHECK_GE(buf.capacity(), kNATEncodedIPv4AddressSize);
     in_addr v4addr = ip.ipv4_address();
     memcpy(&buf[4], &v4addr, kNATEncodedIPv4AddressSize - 4);
-    return kNATEncodedIPv4AddressSize;
+    buf.SetSize(kNATEncodedIPv4AddressSize);
   } else if (family == AF_INET6) {
-    RTC_DCHECK(buf_size >= kNATEncodedIPv6AddressSize);
+    RTC_DCHECK_GE(buf.capacity(), kNATEncodedIPv6AddressSize);
     in6_addr v6addr = ip.ipv6_address();
     memcpy(&buf[4], &v6addr, kNATEncodedIPv6AddressSize - 4);
-    return kNATEncodedIPv6AddressSize;
+    buf.SetSize(kNATEncodedIPv6AddressSize);
+  } else {
+    buf.SetSize(0);
   }
-  return 0U;
 }
 
 // Decodes the remote address from a packet that has been encoded with the nat's
@@ -152,12 +151,12 @@ class NATSocket : public Socket, public sigslot::has_slots<> {
       return socket_->SendTo(data, size, addr);
     }
     // This array will be too large for IPv4 packets, but only by 12 bytes.
-    std::unique_ptr<char[]> buf(new char[size + kNATEncodedIPv6AddressSize]);
-    size_t addrlength =
-        PackAddressForNAT(buf.get(), size + kNATEncodedIPv6AddressSize, addr);
-    size_t encoded_size = size + addrlength;
-    memcpy(buf.get() + addrlength, data, size);
-    int result = socket_->SendTo(buf.get(), encoded_size, server_addr_);
+    Buffer buf(/*size=*/size + kNATEncodedIPv6AddressSize);
+    PackAddressForNAT(addr, buf);
+    size_t addrlength = buf.size();
+    buf.AppendData(static_cast<const uint8_t*>(data), size);
+    size_t encoded_size = buf.size();
+    int result = socket_->SendTo(buf.data(), buf.size(), server_addr_);
     if (result >= 0) {
       RTC_DCHECK(result == static_cast<int>(encoded_size));
       result = result - static_cast<int>(addrlength);
@@ -298,9 +297,9 @@ class NATSocket : public Socket, public sigslot::has_slots<> {
 
   // Sends the destination address to the server to tell it to connect.
   void SendConnectRequest() {
-    char buf[kNATEncodedIPv6AddressSize];
-    size_t length = PackAddressForNAT(buf, arraysize(buf), remote_addr_);
-    socket_->Send(buf, length);
+    Buffer buf(kNATEncodedIPv6AddressSize);
+    PackAddressForNAT(remote_addr_, buf);
+    socket_->Send(buf.data(), buf.size());
   }
 
   // Handles the byte sent back from the server and fires the appropriate event.

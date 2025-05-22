@@ -22,6 +22,7 @@
 #include "api/units/time_delta.h"
 #include "p2p/test/nat_server.h"
 #include "p2p/test/nat_types.h"
+#include "rtc_base/buffer.h"
 #include "rtc_base/socket.h"
 #include "rtc_base/socket_address.h"
 #include "rtc_base/socket_factory.h"
@@ -172,9 +173,7 @@ class NATSocketServer : public SocketServer, public NATInternalSocketFactory {
 };
 
 // Free-standing NAT helper functions.
-size_t PackAddressForNAT(char* buf,
-                         size_t buf_size,
-                         const SocketAddress& remote_addr);
+void PackAddressForNAT(const SocketAddress& remote_addr, Buffer& buf);
 size_t UnpackAddressFromNAT(ArrayView<const uint8_t> buf,
                             SocketAddress* remote_addr);
 }  //  namespace webrtc

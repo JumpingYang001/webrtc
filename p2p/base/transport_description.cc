@@ -21,7 +21,6 @@
 #include "absl/strings/string_view.h"
 #include "api/rtc_error.h"
 #include "p2p/base/p2p_constants.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/ssl_fingerprint.h"
 #include "rtc_base/strings/string_builder.h"
@@ -123,7 +122,7 @@ std::optional<ConnectionRole> StringToConnectionRole(
       CONNECTIONROLE_ACTIVE_STR, CONNECTIONROLE_PASSIVE_STR,
       CONNECTIONROLE_ACTPASS_STR, CONNECTIONROLE_HOLDCONN_STR};
 
-  for (size_t i = 0; i < arraysize(roles); ++i) {
+  for (size_t i = 0; i < std::size(roles); ++i) {
     if (absl::EqualsIgnoreCase(roles[i], role_str)) {
       return static_cast<ConnectionRole>(CONNECTIONROLE_ACTIVE + i);
     }
