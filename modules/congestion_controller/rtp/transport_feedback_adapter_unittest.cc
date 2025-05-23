@@ -112,6 +112,11 @@ void ComparePacketFeedbackVectors(const std::vector<PacketTemplate>& truth,
     EXPECT_EQ(truth[i].packet_size, input[i].sent_packet.size);
     EXPECT_EQ(truth[i].pacing_info, input[i].sent_packet.pacing_info);
     EXPECT_EQ(truth[i].is_audio, input[i].sent_packet.audio);
+    EXPECT_EQ(input[i].rtp_packet_info->rtp_sequence_number,
+              truth[i].rtp_sequence_number);
+    EXPECT_EQ(input[i].rtp_packet_info->ssrc, truth[i].ssrc);
+    EXPECT_EQ(input[i].rtp_packet_info->is_retransmission,
+              truth[i].media_type == RtpPacketMediaType::kRetransmission);
   }
 }
 

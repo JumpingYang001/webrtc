@@ -35,16 +35,13 @@ struct PacketFeedback {
   // Time corresponding to when this object was created.
   Timestamp creation_time = Timestamp::MinusInfinity();
   SentPacket sent;
-  // Time corresponding to when the packet was received. Timestamped with the
-  // receiver's clock. For unreceived packet, Timestamp::PlusInfinity() is
-  // used.
-  Timestamp receive_time = Timestamp::PlusInfinity();
 
   // The network route that this packet is associated with.
   NetworkRoute network_route;
 
   uint32_t ssrc = 0;
   uint16_t rtp_sequence_number = 0;
+  bool is_retransmission = false;
 };
 
 class InFlightBytesTracker {

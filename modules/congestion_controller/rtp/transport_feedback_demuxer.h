@@ -11,13 +11,12 @@
 #define MODULES_CONGESTION_CONTROLLER_RTP_TRANSPORT_FEEDBACK_DEMUXER_H_
 
 #include <cstdint>
-#include <map>
 #include <utility>
 #include <vector>
 
 #include "api/sequence_checker.h"
+#include "api/transport/network_types.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
-#include "rtc_base/numerics/sequence_number_unwrapper.h"
 #include "rtc_base/system/no_unique_address.h"
 #include "rtc_base/thread_annotations.h"
 
@@ -42,16 +41,10 @@ class TransportFeedbackDemuxer final : public StreamFeedbackProvider {
       StreamFeedbackObserver* observer) override;
   void DeRegisterStreamFeedbackObserver(
       StreamFeedbackObserver* observer) override;
-  void AddPacket(const RtpPacketSendInfo& packet_info);
-  void OnTransportFeedback(const rtcp::TransportFeedback& feedback);
+  void OnTransportFeedback(const TransportPacketsFeedback& feedback);
 
  private:
   RTC_NO_UNIQUE_ADDRESS SequenceChecker observer_checker_;
-  RtpSequenceNumberUnwrapper seq_num_unwrapper_
-      RTC_GUARDED_BY(&observer_checker_);
-  std::map<int64_t, StreamFeedbackObserver::StreamPacketInfo> history_
-      RTC_GUARDED_BY(&observer_checker_);
-
   // Maps a set of ssrcs to corresponding observer. Vectors are used rather than
   // set/map to ensure that the processing order is consistent independently of
   // the randomized ssrcs.

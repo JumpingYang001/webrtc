@@ -50,7 +50,6 @@
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/congestion_control_feedback.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/transport_feedback.h"
-#include "modules/rtp_rtcp/source/rtp_header_extensions.h"
 #include "modules/rtp_rtcp/source/rtp_rtcp_interface.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/experiments/field_trial_parser.h"
@@ -624,15 +623,6 @@ void RtpTransportControllerSend::NotifyBweOfPacedSentPacket(
     RTC_DCHECK_NOTREACHED() << "Unknown packet type";
     return;
   }
-  if (packet.HasExtension<TransportSequenceNumber>()) {
-    // TODO: bugs.webrtc.org/42225697 - Refactor TransportFeedbackDemuxer to use
-    // TransportPacketsFeedback instead of directly using
-    // rtcp::TransportFeedback. For now, only use it if TransportSeqeunce number
-    // header extension is used.
-    RtpPacketSendInfo packet_info =
-        RtpPacketSendInfo::From(packet, pacing_info);
-    feedback_demuxer_.AddPacket(packet_info);
-  }
   Timestamp creation_time =
       Timestamp::Millis(env_.clock().TimeInMilliseconds());
   transport_feedback_adapter_.AddPacket(
@@ -652,7 +642,6 @@ void RtpTransportControllerSend::OnTransportFeedback(
     const rtcp::TransportFeedback& feedback) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   ++transport_cc_feedback_count_;
-  feedback_demuxer_.OnTransportFeedback(feedback);
   std::optional<TransportPacketsFeedback> feedback_msg =
       transport_feedback_adapter_.ProcessTransportFeedback(feedback,
                                                            receive_time);
@@ -666,9 +655,6 @@ void RtpTransportControllerSend::OnCongestionControlFeedback(
     const rtcp::CongestionControlFeedback& feedback) {
   RTC_DCHECK_RUN_ON(&sequence_checker_);
   ++feedback_count_;
-  // TODO: bugs.webrtc.org/42225697 - update feedback demuxer for RFC 8888.
-  // Suggest feedback_demuxer_.OnTransportFeedback use TransportPacketFeedback
-  // instead. See usage in OnTransportFeedback.
   std::optional<TransportPacketsFeedback> feedback_msg =
       transport_feedback_adapter_.ProcessCongestionControlFeedback(
           feedback, receive_time);
@@ -689,6 +675,8 @@ void RtpTransportControllerSend::HandleTransportPacketsFeedback(
                      << " ECN capable. Stop sending ECT(1).";
     packet_router_.ConfigureForRfc8888Feedback(sending_packets_as_ect1_);
   }
+
+  feedback_demuxer_.OnTransportFeedback(feedback);
   if (controller_)
     PostUpdates(controller_->OnTransportPacketsFeedback(feedback));
 

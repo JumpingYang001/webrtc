@@ -116,6 +116,8 @@ void TransportFeedbackAdapter::AddPacket(const RtpPacketToSend& packet_to_send,
   feedback.sent.pacing_info = pacing_info;
   feedback.ssrc = packet_to_send.Ssrc();
   feedback.rtp_sequence_number = packet_to_send.SequenceNumber();
+  feedback.is_retransmission =
+      packet_to_send.packet_type() == RtpPacketMediaType::kRetransmission;
 
   while (!history_.empty() &&
          creation_time - history_.begin()->second.creation_time >
@@ -223,14 +225,18 @@ TransportFeedbackAdapter::ProcessTransportFeedback(
       ++failed_lookups;
       return;
     }
-    if (delta_since_base.IsFinite()) {
-      packet_feedback->receive_time =
-          current_offset_ + delta_since_base.RoundDownTo(TimeDelta::Millis(1));
-    }
+
     if (packet_feedback->network_route == network_route_) {
       PacketResult result;
       result.sent_packet = packet_feedback->sent;
-      result.receive_time = packet_feedback->receive_time;
+      if (delta_since_base.IsFinite()) {
+        result.receive_time = current_offset_ + delta_since_base.RoundDownTo(
+                                                    TimeDelta::Millis(1));
+      }
+      result.rtp_packet_info = {
+          .ssrc = packet_feedback->ssrc,
+          .rtp_sequence_number = packet_feedback->rtp_sequence_number,
+          .is_retransmission = packet_feedback->is_retransmission};
       packet_result_vector.push_back(result);
     } else {
       ++ignored;
@@ -301,6 +307,10 @@ TransportFeedbackAdapter::ProcessCongestionControlFeedback(
       supports_ecn &= packet_info.ecn != EcnMarking::kNotEct;
     }
     result.ecn = packet_info.ecn;
+    result.rtp_packet_info = {
+        .ssrc = packet_feedback->ssrc,
+        .rtp_sequence_number = packet_feedback->rtp_sequence_number,
+        .is_retransmission = packet_feedback->is_retransmission};
     packet_result_vector.push_back(result);
   }
 
