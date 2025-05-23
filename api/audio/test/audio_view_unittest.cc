@@ -13,8 +13,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "api/array_view.h"
+#include "rtc_base/arraysize.h"
 #include "test/gtest.h"
 
 namespace webrtc {
@@ -190,4 +192,31 @@ TEST(AudioViewTest, ClearSamples) {
     }
   }
 }
+
+TEST(AudioViewTest, DeinterleavedViewPointerArray) {
+  // Create vectors of varying sizes to guarantee that they don't end up
+  // aligned in memory.
+  std::vector<float> v1(100), v2(200), v3(300), v4(400);
+  std::vector<float*> channels = {&v1[0], &v2[0], &v3[0], &v4[0]};
+
+  DeinterleavedView<float> di(channels, v1.size());
+  EXPECT_EQ(NumChannels(di), channels.size());
+  EXPECT_EQ(SamplesPerChannel(di), v1.size());
+  EXPECT_EQ(di[0].data(), v1.data());
+  EXPECT_EQ(di[1].data(), v2.data());
+  EXPECT_EQ(di[2].data(), v3.data());
+  EXPECT_EQ(di[3].data(), v4.data());
+
+  // Test that the same thing works with T* const *.
+  float* channel_array[] = {&v1[0], &v2[0], &v3[0], &v4[0]};
+  di = DeinterleavedView<float>(channel_array, v1.size(),
+                                arraysize(channel_array));
+  EXPECT_EQ(NumChannels(di), channels.size());
+  EXPECT_EQ(SamplesPerChannel(di), v1.size());
+  EXPECT_EQ(di[0].data(), v1.data());
+  EXPECT_EQ(di[1].data(), v2.data());
+  EXPECT_EQ(di[2].data(), v3.data());
+  EXPECT_EQ(di[3].data(), v4.data());
+}
+
 }  // namespace webrtc

@@ -13,10 +13,13 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "api/audio/audio_view.h"
 #include "modules/audio_processing/agc2/agc2_common.h"
+#include "modules/audio_processing/agc2/interpolated_gain_curve.h"
 #include "modules/audio_processing/logging/apm_data_dumper.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/numerics/safe_conversions.h"

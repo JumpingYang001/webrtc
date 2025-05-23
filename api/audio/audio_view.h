@@ -13,6 +13,8 @@
 
 #include <cstddef>
 #include <iterator>
+#include <variant>
+#include <vector>
 
 #include "api/array_view.h"
 #include "rtc_base/checks.h"
@@ -135,31 +137,65 @@ class DeinterleavedView {
 
   DeinterleavedView() = default;
 
+  // Construct a view where all the channels are coallocated in a single buffer.
   template <typename U>
   DeinterleavedView(U* data, size_t samples_per_channel, size_t num_channels)
       : num_channels_(num_channels),
         samples_per_channel_(samples_per_channel),
-        data_(data, num_channels * samples_per_channel_) {}
+        data_(data) {}
 
+  // Construct a view from an array of channel pointers where the channels
+  // may all be allocated seperately.
+  template <typename U>
+  DeinterleavedView(U* const* channels,
+                    size_t samples_per_channel,
+                    size_t num_channels)
+      : num_channels_(num_channels),
+        samples_per_channel_(samples_per_channel),
+        data_(channels) {}
+
+  // Construct a view from an array of channel pointers where the pointers are
+  // helt in a `std::vector<>`.
+  template <typename U>
+  DeinterleavedView(const std::vector<U*>& channels, size_t samples_per_channel)
+      : num_channels_(channels.size()),
+        samples_per_channel_(samples_per_channel),
+        data_(channels.data()) {}
+
+  // Construct a view from another view. Note that the type of
+  // the other view may be different from the current type and
+  // therefore the internal data types may not be exactly the
+  // same, but still compatible.
+  // E.g.:
+  // DeinterleavedView<float> mutable_view;
+  // DeinterleavedView<const float> const_view(mutable_view);
   template <typename U>
   DeinterleavedView(const DeinterleavedView<U>& other)
-      : num_channels_(other.num_channels()),
-        samples_per_channel_(other.samples_per_channel()),
-        data_(other.data()) {}
+      : num_channels_(other.num_channels_),
+        samples_per_channel_(other.samples_per_channel()) {
+    if (other.is_ptr_array()) {
+      data_ = std::get<U* const*>(other.data_);
+    } else {
+      data_ = std::get<U*>(other.data_);
+    }
+  }
 
   // Returns a deinterleaved channel where `idx` is the zero based index,
   // in the range [0 .. num_channels()-1].
   MonoView<T> operator[](size_t idx) const {
-    RTC_DCHECK_LT(idx, num_channels_);
-    return MonoView<T>(&data_[idx * samples_per_channel_],
+    RTC_DCHECK_LT(idx, num_channels());
+    if (is_ptr_array())
+      return MonoView<T>(std::get<T* const*>(data_)[idx], samples_per_channel_);
+    return MonoView<T>(&std::get<T*>(data_)[idx * samples_per_channel_],
                        samples_per_channel_);
   }
 
   size_t num_channels() const { return num_channels_; }
   size_t samples_per_channel() const { return samples_per_channel_; }
-  ArrayView<T> data() const { return data_; }
-  bool empty() const { return data_.empty(); }
-  size_t size() const { return data_.size(); }
+  bool empty() const {
+    return num_channels_ == 0u || samples_per_channel_ == 0u;
+  }
+  size_t size() const { return num_channels_ * samples_per_channel_; }
 
   // Returns the first (and possibly only) channel.
   MonoView<T> AsMono() const {
@@ -167,12 +203,23 @@ class DeinterleavedView {
     return (*this)[0];
   }
 
+  // Zeros out all samples in channels represented by the view.
+  void Clear() {
+    for (size_t i = 0u; i < num_channels_; ++i) {
+      MonoView<T> view = (*this)[i];
+      ClearSamples(view);
+    }
+  }
+
  private:
-  // TODO(tommi): Consider having these be stored as uint16_t to save a few
-  // bytes per view. Use `dchecked_cast` to support size_t during construction.
+  bool is_ptr_array() const { return std::holds_alternative<T* const*>(data_); }
+
+  template <typename U>
+  friend class DeinterleavedView;
+
   size_t num_channels_ = 0u;
   size_t samples_per_channel_ = 0u;
-  ArrayView<T> data_;
+  std::variant<T* const*, T*> data_;
 };
 
 template <typename T>
