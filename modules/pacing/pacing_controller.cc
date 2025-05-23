@@ -221,7 +221,7 @@ void PacingController::EnqueuePacket(std::unique_ptr<RtpPacketToSend> packet) {
     }
   }
 
-  prober_.OnIncomingPacket(DataSize::Bytes(packet->payload_size()));
+  prober_.OnIncomingPacket(DataSize::Bytes(packet->size()));
 
   const Timestamp now = CurrentTime();
   if (packet_queue_.Empty()) {
