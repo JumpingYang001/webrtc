@@ -2556,6 +2556,8 @@ TEST_F(WebRtcVideoChannelBaseTest, TwoStreamsSendAndReceive) {
 
 TEST_F(WebRtcVideoChannelBaseTest,
        RequestEncoderFallbackNextCodecFollowNegotiatedOrder) {
+  webrtc::test::ScopedKeyValueConfig field_trials(
+      field_trials_, "WebRTC-SwitchEncoderFollowCodecPreferenceOrder/Enabled/");
   VideoSenderParameters parameters;
   parameters.codecs.push_back(GetEngineCodec("VP9"));
   parameters.codecs.push_back(GetEngineCodec("AV1"));

@@ -8314,7 +8314,9 @@ TEST_F(VideoStreamEncoderTest,
       .WillByDefault(Return(WEBRTC_VIDEO_CODEC_ENCODER_FAILURE));
 
   Event encode_attempted;
-  EXPECT_CALL(switch_callback, RequestEncoderFallback())
+  EXPECT_CALL(switch_callback,
+              RequestEncoderSwitch(Field(&SdpVideoFormat::name, "VP8"),
+                                   /*allow_default_fallback=*/true))
       .WillOnce([&encode_attempted]() { encode_attempted.Set(); });
 
   video_source_.IncomingCapturedFrame(CreateFrame(1, nullptr));
@@ -8387,6 +8389,9 @@ TEST_F(VideoStreamEncoderTest, NoPreferenceDefaultFallbackToVP8Disabled) {
   constexpr int kDontCare = 100;
   constexpr int kNumFrames = 8;
 
+  webrtc::test::ScopedKeyValueConfig field_trials(
+      field_trials_, "WebRTC-SwitchEncoderFollowCodecPreferenceOrder/Enabled/");
+
   NiceMock<MockVideoEncoder> video_encoder;
   StrictMock<MockEncoderSwitchRequestCallback> switch_callback;
   video_send_config_.encoder_settings.encoder_switch_request_callback =
@@ -8443,10 +8448,6 @@ TEST_F(VideoStreamEncoderTest, NoPreferenceDefaultFallbackToVP8Disabled) {
 TEST_F(VideoStreamEncoderTest, NoPreferenceDefaultFallbackToVP8Enabled) {
   constexpr int kSufficientBitrateToNotDrop = 1000;
   constexpr int kDontCare = 100;
-
-  webrtc::test::ScopedKeyValueConfig field_trials(
-      field_trials_,
-      "WebRTC-SwitchEncoderFollowCodecPreferenceOrder/Disabled/");
 
   NiceMock<MockVideoEncoder> video_encoder;
   StrictMock<MockEncoderSwitchRequestCallback> switch_callback;
