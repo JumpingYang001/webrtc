@@ -10,6 +10,7 @@
 
 #include "audio/channel_receive_frame_transformer_delegate.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -90,6 +91,17 @@ class TransformableIncomingAudioFrame
       return header_.extension.audio_level()->level();
     }
     return std::nullopt;
+  }
+
+  bool CanSetAudioLevel() const override { return true; }
+
+  void SetAudioLevel(std::optional<uint8_t> audio_level_dbov) override {
+    header_.extension.set_audio_level(
+        audio_level_dbov.has_value()
+            ? std::make_optional(webrtc::AudioLevel(
+                  /*voice_activity=*/false,
+                  std::min(*audio_level_dbov, static_cast<uint8_t>(127u))))
+            : std::nullopt);
   }
 
   std::optional<Timestamp> ReceiveTime() const override {
@@ -199,6 +211,12 @@ void ChannelReceiveFrameTransformerDelegate::ReceiveFrame(
       header.extension.absolute_capture_time = AbsoluteCaptureTime();
       header.extension.absolute_capture_time->absolute_capture_timestamp =
           transformed_frame->AbsoluteCaptureTimestamp().value();
+    }
+    if (transformed_frame->AudioLevel().has_value()) {
+      // TODO(crbug.com/webrtc/419746427): Add support for voice activity in
+      // TransformableAudioFrameInterface.
+      header.extension.set_audio_level(AudioLevel(
+          /*voice_activity=*/false, *transformed_frame->AudioLevel()));
     }
   } else {
     auto* transformed_incoming_frame =

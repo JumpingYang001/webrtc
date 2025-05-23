@@ -34,6 +34,7 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::SaveArg;
 
 constexpr Timestamp kFakeReceiveTimestamp = Timestamp::Millis(1234567);
@@ -306,6 +307,66 @@ TEST(ChannelReceiveFrameTransformerDelegateTest,
     EXPECT_EQ(*audio_frame->CaptureTime(), capture_time);
     EXPECT_EQ(*audio_frame->SenderCaptureTimeOffset(), offset);
   }
+}
+
+TEST(ChannelReceiveFrameTransformerDelegateTest, SetAudioLevel) {
+  AutoThread main_thread;
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<NiceMock<MockFrameTransformer>>();
+  scoped_refptr<ChannelReceiveFrameTransformerDelegate> delegate =
+      make_ref_counted<ChannelReceiveFrameTransformerDelegate>(
+          /*receive_frame_callback=*/nullptr, mock_frame_transformer,
+          Thread::Current());
+  delegate->Init();
+  const uint8_t data[] = {1, 2, 3, 4};
+  ArrayView<const uint8_t> packet(data, sizeof(data));
+  std::unique_ptr<TransformableFrameInterface> frame;
+  ON_CALL(*mock_frame_transformer, Transform)
+      .WillByDefault(
+          [&](std::unique_ptr<TransformableFrameInterface> transform_frame) {
+            frame = std::move(transform_frame);
+          });
+  delegate->Transform(packet, RTPHeader(), /*ssrc=*/1111,
+                      /*mimeType=*/"audio/opus", kFakeReceiveTimestamp);
+
+  EXPECT_TRUE(frame);
+  auto* audio_frame =
+      static_cast<TransformableAudioFrameInterface*>(frame.get());
+  EXPECT_TRUE(audio_frame->CanSetAudioLevel());
+  EXPECT_FALSE(audio_frame->AudioLevel().has_value());
+
+  audio_frame->SetAudioLevel(67u);
+  EXPECT_EQ(audio_frame->AudioLevel(), 67u);
+
+  // Audio level is clamped to the range [0, 127].
+  audio_frame->SetAudioLevel(128u);
+  EXPECT_EQ(audio_frame->AudioLevel(), 127u);
+}
+
+TEST(ChannelReceiveFrameTransformerDelegateTest,
+     ReceivingSenderFrameWithAudioValueSetsAudioLevelInHeader) {
+  AutoThread main_thread;
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<NiceMock<MockFrameTransformer>>();
+  MockChannelReceive mock_channel;
+  scoped_refptr<ChannelReceiveFrameTransformerDelegate> delegate =
+      make_ref_counted<ChannelReceiveFrameTransformerDelegate>(
+          mock_channel.callback(), mock_frame_transformer, Thread::Current());
+  delegate->Init();
+
+  std::unique_ptr<MockTransformableAudioFrame> audio_frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  ON_CALL(*audio_frame, GetDirection())
+      .WillByDefault(Return(TransformableFrameInterface::Direction::kSender));
+  ON_CALL(*audio_frame, AudioLevel()).WillByDefault(Return(111u));
+
+  RTPHeader header;
+  EXPECT_CALL(mock_channel, ReceiveFrame).WillOnce(SaveArg<1>(&header));
+  delegate->OnTransformedFrame(std::move(audio_frame));
+  ThreadManager::ProcessAllMessageQueuesForTesting();
+
+  ASSERT_TRUE(header.extension.audio_level().has_value());
+  EXPECT_EQ(header.extension.audio_level()->level(), 111);
 }
 
 }  // namespace
