@@ -299,10 +299,9 @@ void LossBasedBweV2::UpdateBandwidthEstimate(
   }
   if (config_->bound_best_candidate &&
       bounded_bandwidth_estimate < best_candidate.loss_limited_bandwidth) {
-    RTC_LOG(LS_INFO) << "Resetting loss based BWE to "
-                     << bounded_bandwidth_estimate.kbps()
-                     << "due to loss. Avg loss rate: "
-                     << average_reported_loss_ratio_;
+    // If network is lossy, cap the best estimate by the instant upper bound,
+    // e.g. 450kbps if loss rate is 50%.
+    // Otherwise, cap the estimate by the delay-based estimate or max_bitrate.
     current_best_estimate_.loss_limited_bandwidth = bounded_bandwidth_estimate;
     current_best_estimate_.inherent_loss = 0;
   } else {
