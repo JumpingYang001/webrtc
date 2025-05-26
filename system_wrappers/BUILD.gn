@@ -17,11 +17,9 @@ rtc_library("system_wrappers") {
   sources = [
     "include/clock.h",
     "include/cpu_features_wrapper.h",
-    "include/cpu_info.h",
     "include/ntp_time.h",
     "source/clock.cc",
     "source/cpu_features.cc",
-    "source/cpu_info.cc",
   ]
 
   defines = []
@@ -31,7 +29,6 @@ rtc_library("system_wrappers") {
     "../api/units:timestamp",
     "../modules:module_api_public",
     "../rtc_base:checks",
-    "../rtc_base:cpu_info",
     "../rtc_base:logging",
     "../rtc_base:safe_conversions",
     "../rtc_base:timeutils",
