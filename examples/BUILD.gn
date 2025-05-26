@@ -713,7 +713,6 @@ if (is_linux || is_chromeos || is_win) {
       "../rtc_base:buffer",
       "../rtc_base:checks",
       "../rtc_base:logging",
-      "../rtc_base:macromagic",
       "../rtc_base:net_helpers",
       "../rtc_base:refcount",
       "../rtc_base:rtc_certificate_generator",
@@ -796,8 +795,6 @@ if (is_linux || is_chromeos || is_win) {
       "peerconnection/server/main.cc",
       "peerconnection/server/peer_channel.cc",
       "peerconnection/server/peer_channel.h",
-      "peerconnection/server/utils.cc",
-      "peerconnection/server/utils.h",
     ]
     deps = [
       "../rtc_base:checks",
@@ -807,6 +804,8 @@ if (is_linux || is_chromeos || is_win) {
       "//third_party/abseil-cpp/absl/flags:flag",
       "//third_party/abseil-cpp/absl/flags:parse",
       "//third_party/abseil-cpp/absl/flags:usage",
+      "//third_party/abseil-cpp/absl/strings",
+      "//third_party/abseil-cpp/absl/strings:string_view",
     ]
   }
   rtc_executable("turnserver") {

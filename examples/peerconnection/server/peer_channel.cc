@@ -14,9 +14,13 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <ctime>
+#include <iterator>
+#include <string>
 
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "examples/peerconnection/server/data_socket.h"
-#include "examples/peerconnection/server/utils.h"
 #include "rtc_base/checks.h"
 
 // Set to the peer id of the originator when messages are being
@@ -62,7 +66,7 @@ ChannelMember::ChannelMember(DataSocket* socket)
   RTC_DCHECK(socket->PathEquals("/sign_in"));
   name_ = socket->request_arguments();
   if (name_.empty())
-    name_ = "peer_" + int2str(id_);
+    name_ = "peer_" + absl::StrCat(id_);
   else if (name_.length() > kMaxNameLength)
     name_.resize(kMaxNameLength);
 
@@ -80,8 +84,7 @@ bool ChannelMember::TimedOut() {
 }
 
 std::string ChannelMember::GetPeerIdHeader() const {
-  std::string ret(kPeerIdHeader + int2str(id_) + "\r\n");
-  return ret;
+  return kPeerIdHeader + absl::StrCat(id_) + "\r\n";
 }
 
 bool ChannelMember::NotifyOfOtherMember(const ChannelMember& other) {
@@ -179,21 +182,21 @@ ChannelMember* PeerChannel::Lookup(DataSocket* ds) const {
     return nullptr;
 
   size_t i = 0;
-  for (; i < ARRAYSIZE(kRequestPaths); ++i) {
+  for (; i < std::size(kRequestPaths); ++i) {
     if (ds->PathEquals(kRequestPaths[i]))
       break;
   }
 
-  if (i == ARRAYSIZE(kRequestPaths))
+  if (i == std::size(kRequestPaths))
     return nullptr;
 
   std::string args(ds->request_arguments());
-  static const char kPeerId[] = "peer_id=";
+  static constexpr absl::string_view kPeerId = "peer_id=";
   size_t found = args.find(kPeerId);
   if (found == std::string::npos)
     return nullptr;
 
-  int id = atoi(&args[found + ARRAYSIZE(kPeerId) - 1]);
+  int id = atoi(&args[found + kPeerId.size()]);
   Members::const_iterator iter = members_.begin();
   for (; iter != members_.end(); ++iter) {
     if (id == (*iter)->id()) {
@@ -217,16 +220,16 @@ ChannelMember* PeerChannel::IsTargetedRequest(const DataSocket* ds) const {
   if (args == std::string::npos)
     return nullptr;
   size_t found;
-  const char kTargetPeerIdParam[] = "to=";
+  static constexpr absl::string_view kTargetPeerIdParam = "to=";
   do {
     found = path.find(kTargetPeerIdParam, args);
     if (found == std::string::npos)
       return nullptr;
     if (found == (args + 1) || path[found - 1] == '&') {
-      found += ARRAYSIZE(kTargetPeerIdParam) - 1;
+      found += kTargetPeerIdParam.size();
       break;
     }
-    args = found + ARRAYSIZE(kTargetPeerIdParam) - 1;
+    args = found + kTargetPeerIdParam.size();
   } while (true);
   int id = atoi(&path[found]);
   Members::const_iterator i = members_.begin();
@@ -246,8 +249,8 @@ bool PeerChannel::AddMember(DataSocket* ds) {
   HandleDeliveryFailures(&failures);
   members_.push_back(new_guy);
 
-  printf("New member added (total=%s): %s\n",
-         size_t2str(members_.size()).c_str(), new_guy->name().c_str());
+  printf("New member added (total=%zu): %s\n", members_.size(),
+         new_guy->name().c_str());
 
   // Let the newly connected peer know about other members of the channel.
   std::string content_type;
@@ -279,7 +282,7 @@ void PeerChannel::OnClosing(DataSocket* ds) {
         break;
     }
   }
-  printf("Total connected: %s\n", size_t2str(members_.size()).c_str());
+  printf("Total connected: %zu\n", members_.size());
 }
 
 void PeerChannel::CheckForTimeout() {
