@@ -12,8 +12,8 @@
 
 #include <string.h>
 
+#include "rtc_base/cpu_info.h"
 #include "rtc_base/system/arch.h"
-#include "system_wrappers/include/cpu_features_wrapper.h"
 
 // This needs to be after rtc_base/system/arch.h which defines
 // architecture macros.
@@ -36,7 +36,7 @@ bool VectorDifference(const uint8_t* image1, const uint8_t* image2) {
 
   if (!diff_proc) {
 #if defined(WEBRTC_ARCH_X86_FAMILY)
-    bool have_sse2 = GetCPUInfo(kSSE2) != 0;
+    bool have_sse2 = cpu_info::Supports(cpu_info::ISA::kSSE2);
     // For x86 processors, check if SSE2 is supported.
     if (have_sse2 && kBlockSize == 32) {
       diff_proc = &VectorDifference_SSE2_W32;

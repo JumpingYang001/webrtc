@@ -19,7 +19,6 @@ rtc_library("system_wrappers") {
     "include/cpu_features_wrapper.h",
     "include/ntp_time.h",
     "source/clock.cc",
-    "source/cpu_features.cc",
   ]
 
   defines = []

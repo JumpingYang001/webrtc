@@ -15,9 +15,6 @@
 
 namespace webrtc {
 
-// List of features in x86.
-typedef enum { kSSE2, kSSE3, kAVX2, kFMA3 } CPUFeature;
-
 // List of features in ARM.
 enum {
   kCPUFeatureARMv7 = (1 << 0),
@@ -25,9 +22,6 @@ enum {
   kCPUFeatureNEON = (1 << 2),
   kCPUFeatureLDREXSTREX = (1 << 3)
 };
-
-// Returns true if the CPU supports the feature.
-int GetCPUInfo(CPUFeature feature);
 
 // Return the features in an ARM device.
 // It detects the features in the hardware platform, and returns supported

@@ -23,6 +23,7 @@
 #include <tuple>
 
 #include "common_audio/resampler/sinusoidal_linear_chirp_source.h"
+#include "rtc_base/cpu_info.h"
 #include "rtc_base/system/arch.h"
 #include "rtc_base/time_utils.h"
 #include "system_wrappers/include/cpu_features_wrapper.h"
@@ -119,7 +120,7 @@ TEST(SincResamplerTest, DISABLED_SetRatioBench) {
 // will be tested by the parameterized SincResampler tests below.
 TEST(SincResamplerTest, Convolve) {
 #if defined(WEBRTC_ARCH_X86_FAMILY)
-  ASSERT_TRUE(GetCPUInfo(kSSE2));
+  ASSERT_TRUE(cpu_info::Supports(cpu_info::ISA::kSSE2));
 #elif defined(WEBRTC_ARCH_ARM_V7)
   ASSERT_TRUE(GetCPUFeaturesARM() & kCPUFeatureNEON);
 #endif
@@ -179,7 +180,7 @@ TEST(SincResamplerTest, ConvolveBenchmark) {
   printf("Convolve_C took %.2fms.\n", total_time_c_us / 1000);
 
 #if defined(WEBRTC_ARCH_X86_FAMILY)
-  ASSERT_TRUE(GetCPUInfo(kSSE2));
+  ASSERT_TRUE(cpu_info::Supports(cpu_info::ISA::kSSE2));
 #elif defined(WEBRTC_ARCH_ARM_V7)
   ASSERT_TRUE(GetCPUFeaturesARM() & kCPUFeatureNEON);
 #endif

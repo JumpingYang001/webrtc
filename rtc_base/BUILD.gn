@@ -1892,6 +1892,8 @@ rtc_library("cpu_info") {
   deps = [
     ":checks",
     ":logging",
+    "system:arch",
+    "system:unused",
   ]
 }
 
