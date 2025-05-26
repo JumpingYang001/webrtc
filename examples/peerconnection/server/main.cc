@@ -24,9 +24,11 @@
 #include "examples/peerconnection/server/data_socket.h"
 #include "examples/peerconnection/server/peer_channel.h"
 #include "rtc_base/checks.h"
-#include "system_wrappers/include/field_trial.h"
-#include "test/field_trial.h"
 
+// As of now, no components in peerconnection_server rely on WebRTC components
+// that change its behavior based on a field trial, so this flag is currently
+// unused. See peerconnection_client for example how this command line flag
+// can be used and propagated.
 ABSL_FLAG(
     std::string,
     force_fieldtrials,
@@ -69,11 +71,6 @@ int main(int argc, char* argv[]) {
   absl::SetProgramUsageMessage(
       "Example usage: ./peerconnection_server --port=8888\n");
   absl::ParseCommandLine(argc, argv);
-
-  // InitFieldTrialsFromString stores the char*, so the char array must outlive
-  // the application.
-  const std::string force_field_trials = absl::GetFlag(FLAGS_force_fieldtrials);
-  webrtc::field_trial::InitFieldTrialsFromString(force_field_trials.c_str());
 
   int port = absl::GetFlag(FLAGS_port);
 

@@ -18,12 +18,13 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/nullability.h"
 #include "absl/memory/memory.h"
 #include "api/audio_codecs/builtin_audio_decoder_factory.h"
 #include "api/audio_codecs/builtin_audio_encoder_factory.h"
 #include "api/audio_options.h"
 #include "api/enable_media.h"
-#include "api/environment/environment_factory.h"
+#include "api/environment/environment.h"
 #include "api/jsep.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
@@ -140,10 +141,12 @@ class CapturerTrackSource : public webrtc::VideoTrackSource {
 
 }  // namespace
 
-Conductor::Conductor(PeerConnectionClient* client, MainWindow* main_wnd)
+Conductor::Conductor(const webrtc::Environment& env,
+                     PeerConnectionClient* absl_nonnull client,
+                     MainWindow* absl_nonnull main_wnd)
     : peer_id_(-1),
       loopback_(false),
-      env_(webrtc::CreateEnvironment()),
+      env_(env),
       client_(client),
       main_wnd_(main_wnd) {
   client_->RegisterObserver(this);

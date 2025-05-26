@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/base/nullability.h"
 #include "api/data_channel_interface.h"
 #include "api/environment/environment.h"
 #include "api/jsep.h"
@@ -45,7 +46,9 @@ class Conductor : public webrtc::PeerConnectionObserver,
     TRACK_REMOVED,
   };
 
-  Conductor(PeerConnectionClient* client, MainWindow* main_wnd);
+  Conductor(const webrtc::Environment& env,
+            PeerConnectionClient* absl_nonnull client,
+            MainWindow* absl_nonnull main_wnd);
 
   bool connection_active() const;
 
@@ -124,7 +127,7 @@ class Conductor : public webrtc::PeerConnectionObserver,
 
   int peer_id_;
   bool loopback_;
-  webrtc::Environment env_;
+  const webrtc::Environment env_;
   std::unique_ptr<webrtc::Thread> signaling_thread_;
   webrtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
