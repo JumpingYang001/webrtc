@@ -38,6 +38,7 @@ rtc_library("primitives") {
     "../../api:scoped_refptr",
     "../../rtc_base:checks",
     "../../rtc_base:refcount",
+    "../../rtc_base:stringutils",
     "../../rtc_base/system:rtc_export",
     "//third_party/libyuv",
   ]
@@ -154,9 +155,9 @@ if (rtc_include_tests) {
       ":desktop_capture",
       ":desktop_capture_mock",
       ":primitives",
+      "../../api:array_view",
       "../../rtc_base:checks",
       "../../rtc_base:logging",
-      "../../rtc_base:macromagic",
       "../../rtc_base:random",
       "../../rtc_base:task_queue_for_test",
       "../../rtc_base:threading",
