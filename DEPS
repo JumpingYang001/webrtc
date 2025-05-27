@@ -71,9 +71,6 @@ vars = {
 }
 
 deps = {
-  # TODO(kjellander): Move this to be Android-only.
-  'src/base':
-    'https://chromium.googlesource.com/chromium/src/base@6740906f6cab029ebf111440a082a841b376043c',
   'src/build':
     'https://chromium.googlesource.com/chromium/src/build@29f8a43aae3335c48380a06aef0de479bd8ab297',
   'src/buildtools':
