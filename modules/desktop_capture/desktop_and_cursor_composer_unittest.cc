@@ -10,16 +10,19 @@
 
 #include "modules/desktop_capture/desktop_and_cursor_composer.h"
 
-#include <stdint.h>
-#include <string.h>
-
+#include <cstdint>
+#include <cstring>
+#include <iterator>
 #include <memory>
+#include <ostream>
 #include <utility>
-#include <vector>
 
 #include "modules/desktop_capture/desktop_capturer.h"
 #include "modules/desktop_capture/desktop_frame.h"
+#include "modules/desktop_capture/desktop_geometry.h"
+#include "modules/desktop_capture/desktop_region.h"
 #include "modules/desktop_capture/mouse_cursor.h"
+#include "modules/desktop_capture/mouse_cursor_monitor.h"
 #include "modules/desktop_capture/shared_desktop_frame.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
