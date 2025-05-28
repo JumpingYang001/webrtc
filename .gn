@@ -91,7 +91,4 @@ default_args = {
 
   # See context on https://issues.chromium.org/issues/415076048.
   enable_js_protobuf = false
-
-  # Use Siso instead of Ninja.
-  use_siso = true
 }
