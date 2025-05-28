@@ -14,13 +14,33 @@
 
 #if defined(WEBRTC_WIN)
 #include <windows.h>
-#elif defined(WEBRTC_LINUX)
-#include <unistd.h>
 #elif defined(WEBRTC_MAC)
 #include <sys/sysctl.h>
+#elif defined(WEBRTC_ANDROID)
+#include <cpu-features.h>
+#include <unistd.h>
 #elif defined(WEBRTC_FUCHSIA)
 #include <zircon/syscalls.h>
+#elif defined(WEBRTC_LINUX)
+#include <features.h>
+#include <stdlib.h>
+#include <string.h>  // IWYU pragma: keep
+#include <unistd.h>
+
+#ifdef __GLIBC_PREREQ
+#define WEBRTC_GLIBC_PREREQ(a, b) __GLIBC_PREREQ(a, b)
+#else
+#define WEBRTC_GLIBC_PREREQ(a, b) 0
 #endif
+
+#if WEBRTC_GLIBC_PREREQ(2, 16)
+#include <sys/auxv.h>  // IWYU pragma: keep
+#else
+#include <errno.h>
+#include <fcntl.h>
+#include <link.h>
+#endif
+#endif  // WEBRTC_LINUX
 
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
@@ -29,6 +49,9 @@
 
 #if defined(WEBRTC_ARCH_X86_FAMILY) && defined(_MSC_VER)
 #include <intrin.h>
+#endif
+#if defined(WEBRTC_ARCH_ARM_FAMILY) && defined(WEBRTC_LINUX)
+#include <asm/hwcap.h>
 #endif
 
 // Parts of this file derived from Chromium's base/cpu.cc.
@@ -162,9 +185,46 @@ bool Supports(ISA instruction_set_architecture) {
   if (instruction_set_architecture == ISA::kFMA3) {
     return 0 != (cpu_info[2] & 0x00001000);
   }
-#else  // WEBRTC_ARCH_X86_FAMILY
-  RTC_UNUSED(instruction_set_architecture);
+#elif defined(WEBRTC_ARCH_ARM_FAMILY)
+  if (instruction_set_architecture == ISA::kNeon) {
+#if defined(WEBRTC_ANDROID)
+    return 0 != (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON);
+#elif defined(WEBRTC_LINUX)
+    uint64_t hwcap = 0;
+#if WEBRTC_GLIBC_PREREQ(2, 16)
+    hwcap = getauxval(AT_HWCAP);
+#else
+    ElfW(auxv_t) auxv;
+    int fd = open("/proc/self/auxv", O_RDONLY);
+    if (fd >= 0) {
+      while (hwcap == 0) {
+        if (read(fd, &auxv, sizeof(auxv)) < (ssize_t)sizeof(auxv)) {
+          if (errno == EINTR) {
+            continue;
+          }
+          break;
+        }
+        if (AT_HWCAP == auxv.a_type) {
+          hwcap = auxv.a_un.a_val;
+        }
+      }
+      close(fd);
+    }
+#endif  // WEBRTC_GLIBC_PREREQ(2, 16)
+#if defined(__aarch64__)
+    if ((hwcap & HWCAP_ASIMD) != 0) {
+      return true;
+    }
+#else
+    if ((hwcap & HWCAP_NEON) != 0) {
+      return true;
+    }
 #endif
+#endif  // WEBRTC_LINUX
+  }
+#else
+  RTC_UNUSED(instruction_set_architecture);
+#endif  // WEBRTC_ARCH_ARM_FAMILY
   return false;
 }
 
