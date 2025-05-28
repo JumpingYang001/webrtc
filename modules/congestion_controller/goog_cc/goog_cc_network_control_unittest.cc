@@ -21,6 +21,7 @@
 #include "absl/strings/string_view.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
 #include "api/test/network_emulation/create_cross_traffic.h"
 #include "api/test/network_emulation/cross_traffic.h"
 #include "api/transport/goog_cc_factory.h"
@@ -31,7 +32,7 @@
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "call/video_receive_stream.h"
-#include "logging/rtc_event_log/mock/mock_rtc_event_log.h"
+#include "test/create_test_field_trials.h"
 #include "test/field_trial.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -262,7 +263,8 @@ DataRate RunRembDipScenario(absl::string_view test_name) {
 
 class NetworkControllerTestFixture {
  public:
-  NetworkControllerTestFixture() : factory_() {}
+  explicit NetworkControllerTestFixture(absl::string_view field_trials = "")
+      : field_trials_(CreateTestFieldTrials(field_trials)) {}
   explicit NetworkControllerTestFixture(GoogCcFactoryConfig googcc_config)
       : factory_(std::move(googcc_config)) {}
 
@@ -289,8 +291,8 @@ class NetworkControllerTestFixture {
     return config;
   }
 
-  NiceMock<MockRtcEventLog> event_log_;
-  const Environment env_ = CreateEnvironment(&event_log_);
+  FieldTrials field_trials_ = CreateTestFieldTrials();
+  const Environment env_ = CreateEnvironment(&field_trials_);
   GoogCcNetworkControllerFactory factory_;
 };
 
@@ -439,9 +441,9 @@ TEST(GoogCcNetworkControllerTest, UpdatesDelayBasedEstimate) {
 }
 
 TEST(GoogCcNetworkControllerTest, LimitPacingFactorToUpperLinkCapacity) {
-  ScopedFieldTrials trial(
+  NetworkControllerTestFixture fixture(
+      /*field_trials=*/
       "WebRTC-Bwe-LimitPacingFactorByUpperLinkCapacityEstimate/Enabled/");
-  NetworkControllerTestFixture fixture;
   std::unique_ptr<NetworkControllerInterface> controller =
       fixture.CreateController();
   Timestamp current_time = Timestamp::Millis(123);
