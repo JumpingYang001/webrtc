@@ -10,8 +10,6 @@
 
 #include "modules/desktop_capture/shared_memory.h"
 
-#include <cstddef>
-
 namespace webrtc {
 
 #if defined(WEBRTC_WIN)

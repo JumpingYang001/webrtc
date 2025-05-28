@@ -10,9 +10,7 @@
 
 #include "modules/desktop_capture/full_screen_application_handler.h"
 
-#include <cstdint>
-
-#include "modules/desktop_capture/desktop_capturer.h"
+#include "rtc_base/logging.h"
 
 namespace webrtc {
 

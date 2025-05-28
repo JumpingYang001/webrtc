@@ -10,13 +10,8 @@
 
 #include "modules/desktop_capture/desktop_capturer_wrapper.h"
 
-#include <memory>
 #include <utility>
 
-#include "modules/desktop_capture/desktop_capture_types.h"
-#include "modules/desktop_capture/desktop_capturer.h"
-#include "modules/desktop_capture/desktop_geometry.h"
-#include "modules/desktop_capture/shared_memory.h"
 #include "rtc_base/checks.h"
 
 namespace webrtc {

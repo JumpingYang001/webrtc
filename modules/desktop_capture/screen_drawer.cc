@@ -10,8 +10,6 @@
 
 #include "modules/desktop_capture/screen_drawer.h"
 
-#include <memory>
-
 namespace webrtc {
 
 namespace {

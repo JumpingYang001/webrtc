@@ -10,10 +10,9 @@
 
 #include "modules/desktop_capture/test_utils.h"
 
-#include <cstdint>
-#include <cstring>
+#include <stdint.h>
+#include <string.h>
 
-#include "modules/desktop_capture/desktop_frame.h"
 #include "modules/desktop_capture/desktop_geometry.h"
 #include "rtc_base/checks.h"
 

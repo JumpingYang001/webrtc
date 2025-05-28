@@ -10,13 +10,11 @@
 
 #include "modules/desktop_capture/linux/x11/x_error_trap.h"
 
-#include <X11/Xlib.h>
+#include <stddef.h>
 
 #include <atomic>
-#include <cstddef>
 
 #include "rtc_base/checks.h"
-#include "rtc_base/synchronization/mutex.h"
 
 namespace webrtc {
 

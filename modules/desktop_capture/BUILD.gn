@@ -104,7 +104,6 @@ if (rtc_include_tests) {
         ":desktop_capture",
         ":desktop_capture_mock",
         ":primitives",
-        "../../api:scoped_refptr",
         "../../rtc_base:checks",
         "../../rtc_base:logging",
         "../../rtc_base:random",

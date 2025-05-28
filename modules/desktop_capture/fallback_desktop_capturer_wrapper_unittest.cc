@@ -10,7 +10,8 @@
 
 #include "modules/desktop_capture/fallback_desktop_capturer_wrapper.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "modules/desktop_capture/desktop_capturer.h"
 #include "modules/desktop_capture/desktop_frame_generator.h"
 #include "modules/desktop_capture/fake_desktop_capturer.h"
-#include "modules/desktop_capture/shared_memory.h"
 #include "test/gtest.h"
 
 namespace webrtc {

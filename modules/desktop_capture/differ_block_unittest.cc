@@ -10,8 +10,7 @@
 
 #include "modules/desktop_capture/differ_block.h"
 
-#include <cstdint>
-#include <cstring>
+#include <string.h>
 
 #include "test/gtest.h"
 

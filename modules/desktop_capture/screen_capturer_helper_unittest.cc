@@ -10,8 +10,6 @@
 
 #include "modules/desktop_capture/screen_capturer_helper.h"
 
-#include "modules/desktop_capture/desktop_geometry.h"
-#include "modules/desktop_capture/desktop_region.h"
 #include "test/gtest.h"
 
 namespace webrtc {
