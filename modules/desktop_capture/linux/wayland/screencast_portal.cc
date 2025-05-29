@@ -10,11 +10,23 @@
 
 #include "modules/desktop_capture/linux/wayland/screencast_portal.h"
 
+#include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 #include <glib-object.h>
+#include <glib.h>
+#include <glibconfig.h>
+#include <unistd.h>
 
+#include <cstdint>
+#include <string>
+#include <utility>
+
+#include "modules/desktop_capture/desktop_capture_types.h"
+#include "modules/portal/pipewire_utils.h"
+#include "modules/portal/portal_request_response.h"
 #include "modules/portal/scoped_glib.h"
 #include "modules/portal/xdg_desktop_portal_utils.h"
+#include "modules/portal/xdg_session_details.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 
