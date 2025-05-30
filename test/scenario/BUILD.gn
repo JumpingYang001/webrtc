@@ -69,6 +69,7 @@ if (rtc_include_tests && !build_with_chromium) {
     ]
     deps = [
       ":column_printer",
+      "..:create_test_field_trials",
       "..:frame_generator_capturer",
       "..:test_video_capturer",
       "..:video_test_constants",
@@ -81,6 +82,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../api:array_view",
       "../../api:create_frame_generator",
       "../../api:fec_controller_api",
+      "../../api:field_trials",
       "../../api:frame_generator_api",
       "../../api:libjingle_logging_api",
       "../../api:libjingle_peerconnection_api",
@@ -161,6 +163,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../../rtc_base/synchronization:mutex",
       "../../rtc_base/task_utils:repeating_task",
       "../../system_wrappers",
+      "../../system_wrappers:field_trial",
       "../../video/config:streams_config",
       "../logging:log_writer",
       "../network:emulated_network",
@@ -199,6 +202,9 @@ if (rtc_include_tests && !build_with_chromium) {
       ":scenario",
       "../../api/test/network_emulation",
       "../../api/test/network_emulation:create_cross_traffic",
+      "../../api/units:data_rate",
+      "../../api/units:time_delta",
+      "../../call:video_send_stream_api",
       "../../logging:mocks",
       "../../rtc_base:checks",
       "../../system_wrappers",

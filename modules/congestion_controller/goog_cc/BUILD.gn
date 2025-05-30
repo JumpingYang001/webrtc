@@ -325,7 +325,6 @@ if (rtc_include_tests) {
         "../../../rtc_base/experiments:alr_experiment",
         "../../../system_wrappers",
         "../../../test:create_test_field_trials",
-        "../../../test:field_trial",
         "../../../test:test_support",
         "../../../test/network:emulated_network",
         "../../../test/scenario",
