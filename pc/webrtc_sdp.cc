@@ -55,7 +55,6 @@
 #include "pc/session_description.h"
 #include "pc/simulcast_description.h"
 #include "pc/simulcast_sdp_serializer.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/crypto_random.h"
 #include "rtc_base/ip_address.h"
@@ -156,10 +155,10 @@ static const char kAttributeMaxMessageSize[] = "max-message-size";
 static const int kDefaultSctpMaxMessageSize = 65536;
 // draft-ietf-mmusic-sdp-simulcast-13
 // a=simulcast
-static const char kAttributeSimulcast[] = "simulcast";
+static constexpr absl::string_view kAttributeSimulcast = "simulcast";
 // draft-ietf-mmusic-rid-15
 // a=rid
-static const char kAttributeRid[] = "rid";
+static constexpr absl::string_view kAttributeRid = "rid";
 static const char kAttributePacketization[] = "packetization";
 
 // Experimental flags
@@ -183,7 +182,7 @@ static const char kSdpDelimiterEqual[] = "=";
 static const char kSdpDelimiterEqualChar = '=';
 static const char kSdpDelimiterSpace[] = " ";
 static const char kSdpDelimiterSpaceChar = ' ';
-static const char kSdpDelimiterColon[] = ":";
+static constexpr absl::string_view kSdpDelimiterColon = ":";
 static const char kSdpDelimiterColonChar = ':';
 static const char kSdpDelimiterSemicolon[] = ";";
 static const char kSdpDelimiterSemicolonChar = ';';
@@ -2490,8 +2489,7 @@ void MaybeCreateStaticPayloadAudioCodecs(const std::vector<int>& fmts,
   RTC_DCHECK(media_desc->codecs().empty());
   for (int payload_type : fmts) {
     if (!media_desc->HasCodec(payload_type) && payload_type >= 0 &&
-        static_cast<uint32_t>(payload_type) <
-            arraysize(kStaticPayloadAudioCodecs)) {
+        payload_type < std::ssize(kStaticPayloadAudioCodecs)) {
       std::string encoding_name = kStaticPayloadAudioCodecs[payload_type].name;
       int clock_rate = kStaticPayloadAudioCodecs[payload_type].clockrate;
       size_t channels = kStaticPayloadAudioCodecs[payload_type].channels;
@@ -3199,8 +3197,9 @@ bool ParseContent(absl::string_view message,
         }
         *msid_signaling |= kMsidSignalingMediaSection;
       } else if (HasAttribute(*line, kAttributeRid)) {
-        const size_t kRidPrefixLength =
-            kLinePrefixLength + arraysize(kAttributeRid);
+        constexpr size_t kRidPrefixLength = kLinePrefixLength +
+                                            kAttributeRid.size() +
+                                            kSdpDelimiterColon.size();
         if (line->size() <= kRidPrefixLength) {
           RTC_LOG(LS_INFO) << "Ignoring empty RID attribute: " << *line;
           continue;
@@ -3219,8 +3218,9 @@ bool ParseContent(absl::string_view message,
 
         rids.push_back(error_or_rid_description.MoveValue());
       } else if (HasAttribute(*line, kAttributeSimulcast)) {
-        const size_t kSimulcastPrefixLength =
-            kLinePrefixLength + arraysize(kAttributeSimulcast);
+        constexpr size_t kSimulcastPrefixLength = kLinePrefixLength +
+                                                  kAttributeSimulcast.size() +
+                                                  kSdpDelimiterColon.size();
         if (line->size() <= kSimulcastPrefixLength) {
           return ParseFailed(*line, "Simulcast attribute is empty.", error);
         }

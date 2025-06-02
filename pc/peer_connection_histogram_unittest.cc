@@ -30,7 +30,6 @@
 #include "pc/test/mock_peer_connection_observers.h"
 #include "pc/usage_pattern.h"
 #include "pc/webrtc_sdp.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/fake_mdns_responder.h"
 #include "rtc_base/fake_network.h"
@@ -314,7 +313,7 @@ class PeerConnectionUsageHistogramTest : public ::testing::Test {
   }
 
   SocketAddress NextLocalAddress() {
-    RTC_DCHECK(next_local_address_ < (int)arraysize(kLocalAddrs));
+    RTC_DCHECK_LT(next_local_address_, std::ssize(kLocalAddrs));
     return kLocalAddrs[next_local_address_++];
   }
 
