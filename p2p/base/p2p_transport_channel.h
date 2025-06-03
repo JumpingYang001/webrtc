@@ -267,6 +267,18 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   }
 
  private:
+  struct CandidateAndResolver final {
+    CandidateAndResolver(const Candidate& candidate,
+                         std::unique_ptr<AsyncDnsResolverInterface>&& resolver);
+    ~CandidateAndResolver();
+    // Moveable, but not copyable.
+    CandidateAndResolver(CandidateAndResolver&&) = default;
+    CandidateAndResolver& operator=(CandidateAndResolver&&) = default;
+
+    Candidate candidate;
+    std::unique_ptr<AsyncDnsResolverInterface> resolver;
+  };
+
   P2PTransportChannel(
       absl::string_view transport_name,
       int component,
@@ -475,17 +487,6 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   std::unique_ptr<ActiveIceControllerInterface> ice_controller_
       RTC_GUARDED_BY(network_thread_);
 
-  struct CandidateAndResolver final {
-    CandidateAndResolver(const Candidate& candidate,
-                         std::unique_ptr<AsyncDnsResolverInterface>&& resolver);
-    ~CandidateAndResolver();
-    // Moveable, but not copyable.
-    CandidateAndResolver(CandidateAndResolver&&) = default;
-    CandidateAndResolver& operator=(CandidateAndResolver&&) = default;
-
-    Candidate candidate_;
-    std::unique_ptr<AsyncDnsResolverInterface> resolver_;
-  };
   std::vector<CandidateAndResolver> resolvers_ RTC_GUARDED_BY(network_thread_);
   void FinishAddingRemoteCandidate(const Candidate& new_remote_candidate);
   void OnCandidateResolved(AsyncDnsResolverInterface* resolver);
