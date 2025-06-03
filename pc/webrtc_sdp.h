@@ -31,8 +31,6 @@
 #include "rtc_base/system/rtc_export.h"
 
 namespace webrtc {
-class IceCandidateInterface;
-class JsepIceCandidate;
 class JsepSessionDescription;
 struct SdpParseError;
 

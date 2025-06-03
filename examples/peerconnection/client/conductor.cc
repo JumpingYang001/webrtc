@@ -303,12 +303,7 @@ void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   Json::Value jmessage;
   jmessage[kCandidateSdpMidName] = candidate->sdp_mid();
   jmessage[kCandidateSdpMlineIndexName] = candidate->sdp_mline_index();
-  std::string sdp;
-  if (!candidate->ToString(&sdp)) {
-    RTC_LOG(LS_ERROR) << "Failed to serialize candidate";
-    return;
-  }
-  jmessage[kCandidateSdpName] = sdp;
+  jmessage[kCandidateSdpName] = candidate->ToString();
 
   Json::StreamWriterBuilder factory;
   SendMessage(Json::writeString(factory, jmessage));

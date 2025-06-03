@@ -49,8 +49,7 @@
 - (instancetype)initWithNativeCandidate:
     (const webrtc::IceCandidateInterface *)candidate {
   NSParameterAssert(candidate);
-  std::string sdp;
-  candidate->ToString(&sdp);
+  std::string sdp = candidate->ToString();
 
   RTC_OBJC_TYPE(RTCIceCandidate) *rtcCandidate =
       [self initWithSdp:[NSString stringForStdString:sdp]

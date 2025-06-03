@@ -11,32 +11,38 @@
 #include "api/jsep_ice_candidate.h"
 
 #include <cstddef>
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "absl/algorithm/container.h"
 #include "absl/memory/memory.h"
+#include "absl/strings/string_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
 
 namespace webrtc {
-
-std::string JsepIceCandidate::sdp_mid() const {
-  return sdp_mid_;
+namespace {
+// The sdpMLineIndex property is an unsigned short, a zero based index of the
+// m-line associated with the candidate. This function ensures we consistently
+// set the property to -1 for out-of-bounds values, to make candidate
+// comparisons more robust.
+int EnsureValidMLineIndex(int sdp_mline_index) {
+  if (sdp_mline_index < 0 ||
+      sdp_mline_index > std::numeric_limits<uint16_t>::max())
+    return -1;
+  return sdp_mline_index;
 }
+}  // namespace
 
-int JsepIceCandidate::sdp_mline_index() const {
-  return sdp_mline_index_;
-}
-
-const Candidate& JsepIceCandidate::candidate() const {
-  return candidate_;
-}
-
-std::string JsepIceCandidate::server_url() const {
-  return candidate_.url();
-}
+IceCandidate::IceCandidate(absl::string_view sdp_mid,
+                           int sdp_mline_index,
+                           const Candidate& candidate)
+    : sdp_mid_(sdp_mid),
+      sdp_mline_index_(EnsureValidMLineIndex(sdp_mline_index)),
+      candidate_(candidate) {}
 
 JsepCandidateCollection::JsepCandidateCollection() = default;
 
@@ -51,12 +57,12 @@ void JsepCandidateCollection::add(JsepIceCandidate* candidate) {
   candidates_.push_back(absl::WrapUnique(candidate));
 }
 
-const IceCandidateInterface* JsepCandidateCollection::at(size_t index) const {
+const IceCandidate* JsepCandidateCollection::at(size_t index) const {
   return candidates_[index].get();
 }
 
 bool JsepCandidateCollection::HasCandidate(
-    const IceCandidateInterface* candidate) const {
+    const IceCandidate* candidate) const {
   return absl::c_any_of(
       candidates_, [&](const std::unique_ptr<JsepIceCandidate>& entry) {
         return entry->sdp_mid() == candidate->sdp_mid() &&

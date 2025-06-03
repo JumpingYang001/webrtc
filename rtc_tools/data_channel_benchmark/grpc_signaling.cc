@@ -21,7 +21,6 @@
 #include <utility>
 
 #include "api/jsep.h"
-#include "api/jsep_ice_candidate.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/thread.h"
@@ -46,12 +45,7 @@ class SessionData : public SignalingInterface {
 
   void SendIceCandidate(const IceCandidateInterface* candidate) override {
     RTC_LOG(LS_INFO) << "SendIceCandidate";
-    std::string serialized_candidate;
-    if (!candidate->ToString(&serialized_candidate)) {
-      RTC_LOG(LS_ERROR) << "Failed to serialize ICE candidate";
-      return;
-    }
-
+    std::string serialized_candidate = candidate->ToString();
     SignalingMessage message;
     IceCandidate* proto_candidate = message.mutable_candidate();
     proto_candidate->set_description(serialized_candidate);

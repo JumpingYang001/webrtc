@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "api/audio/audio_device.h"
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/audio_codecs/audio_encoder_factory.h"
@@ -66,7 +67,6 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/rtc_certificate_generator.h"
 #include "rtc_base/socket_server.h"
-#include "rtc_base/string_encode.h"
 #include "rtc_base/time_utils.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
@@ -283,8 +283,7 @@ void PeerConnectionTestWrapper::OnAddTrack(
 
 void PeerConnectionTestWrapper::OnIceCandidate(
     const IceCandidateInterface* candidate) {
-  std::string sdp;
-  EXPECT_TRUE(candidate->ToString(&sdp));
+  std::string sdp = candidate->ToString();
   SignalOnIceCandidateReady(candidate->sdp_mid(), candidate->sdp_mline_index(),
                             sdp);
 }

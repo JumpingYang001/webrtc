@@ -33,7 +33,6 @@
 #include "api/audio/audio_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
-#include "api/jsep_ice_candidate.h"
 #include "api/jsep_session_description.h"
 #include "api/media_types.h"
 #include "api/rtc_error.h"

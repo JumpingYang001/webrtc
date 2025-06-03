@@ -128,8 +128,7 @@ class PeerConnectionWrapperForUsageHistogramTest
         ->HaveDataChannel();
   }
   void BufferIceCandidate(const IceCandidateInterface* candidate) {
-    std::string sdp;
-    EXPECT_TRUE(candidate->ToString(&sdp));
+    std::string sdp = candidate->ToString();
     std::unique_ptr<IceCandidateInterface> candidate_copy(CreateIceCandidate(
         candidate->sdp_mid(), candidate->sdp_mline_index(), sdp, nullptr));
     buffered_candidates_.push_back(std::move(candidate_copy));

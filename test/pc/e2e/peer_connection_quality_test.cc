@@ -719,8 +719,7 @@ void PeerConnectionE2EQualityTest::ExchangeIceCandidates(
       signaling_interceptor->PatchOffererIceCandidates(
           alice_->observer()->GetAllCandidates());
   for (auto& candidate : alice_candidates) {
-    std::string candidate_str;
-    RTC_CHECK(candidate->ToString(&candidate_str));
+    std::string candidate_str = candidate->ToString();
     RTC_LOG(LS_INFO) << *alice_->params().name
                      << " ICE candidate(mid= " << candidate->sdp_mid()
                      << "): " << candidate_str;
@@ -730,8 +729,7 @@ void PeerConnectionE2EQualityTest::ExchangeIceCandidates(
       signaling_interceptor->PatchAnswererIceCandidates(
           bob_->observer()->GetAllCandidates());
   for (auto& candidate : bob_candidates) {
-    std::string candidate_str;
-    RTC_CHECK(candidate->ToString(&candidate_str));
+    std::string candidate_str = candidate->ToString();
     RTC_LOG(LS_INFO) << *bob_->params().name
                      << " ICE candidate(mid= " << candidate->sdp_mid()
                      << "): " << candidate_str;

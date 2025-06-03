@@ -30,9 +30,8 @@ struct IceMessage {
   IceMessage() = default;
   explicit IceMessage(const IceCandidateInterface* candidate)
       : sdp_mid(candidate->sdp_mid()),
-        sdp_mline_index(candidate->sdp_mline_index()) {
-    RTC_CHECK(candidate->ToString(&sdp_line));
-  }
+        sdp_mline_index(candidate->sdp_mline_index()),
+        sdp_line(candidate->ToString()) {}
   std::unique_ptr<IceCandidateInterface> AsCandidate() const {
     SdpParseError err;
     std::unique_ptr<IceCandidateInterface> candidate(

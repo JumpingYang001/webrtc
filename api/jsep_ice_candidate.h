@@ -17,46 +17,12 @@
 #include <stddef.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "absl/base/nullability.h"
-#include "absl/strings/string_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
-#include "rtc_base/system/rtc_export.h"
 
 namespace webrtc {
-
-// Implementation of IceCandidateInterface.
-class RTC_EXPORT JsepIceCandidate : public IceCandidateInterface {
- public:
-  JsepIceCandidate(absl::string_view sdp_mid,
-                   int sdp_mline_index,
-                   const Candidate& candidate);
-  JsepIceCandidate(const JsepIceCandidate&) = delete;
-  JsepIceCandidate& operator=(const JsepIceCandidate&) = delete;
-  ~JsepIceCandidate() override;
-
-  static std::unique_ptr<JsepIceCandidate> Create(
-      absl::string_view mid,
-      int sdp_mline_index,
-      absl::string_view sdp,
-      SdpParseError* absl_nullable error = nullptr);
-
-  std::string sdp_mid() const override;
-  int sdp_mline_index() const override;
-  const Candidate& candidate() const override;
-
-  std::string server_url() const override;
-
-  bool ToString(std::string* out) const override;
-
- private:
-  const std::string sdp_mid_;
-  const int sdp_mline_index_;
-  const Candidate candidate_;
-};
 
 // Implementation of IceCandidateCollection which stores JsepIceCandidates.
 class JsepCandidateCollection : public IceCandidateCollection {
