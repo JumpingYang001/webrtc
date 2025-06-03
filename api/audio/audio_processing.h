@@ -11,18 +11,11 @@
 #ifndef API_AUDIO_AUDIO_PROCESSING_H_
 #define API_AUDIO_AUDIO_PROCESSING_H_
 
-// MSVC++ requires this to be set before any other includes to get M_PI.
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-
-#include <math.h>
-#include <stddef.h>  // size_t
-#include <stdio.h>   // FILE
-#include <string.h>
-
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
