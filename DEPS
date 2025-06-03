@@ -453,18 +453,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  # TODO(webrtc:42223878): This is only needed for //base.
-  'src/third_party/android_build_tools/nullaway/cipd': {
-      'packages': [
-          {
-               'package': 'chromium/third_party/android_build_tools/nullaway',
-               'version': 'mFkUqdlIqmMQ3rAaTHFmOBYjNFgFUQOmMlPG6PGgmHYC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/aosp_dalvik/cipd': {
       'packages': [
           {
