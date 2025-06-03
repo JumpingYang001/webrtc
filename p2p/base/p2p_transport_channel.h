@@ -129,9 +129,6 @@ class RTC_EXPORT P2PTransportChannel : public IceTransportInternal,
   void SetIceParameters(const IceParameters& ice_params) override;
   void SetRemoteIceParameters(const IceParameters& ice_params) override;
   void SetRemoteIceMode(IceMode mode) override;
-  // TODO(deadbeef): Deprecated. Remove when Chromium's
-  // IceTransportChannel does not depend on this.
-  void Connect() {}
   void MaybeStartGathering() override;
   IceGatheringState gathering_state() const override;
   void ResolveHostnameCandidate(const Candidate& candidate);
