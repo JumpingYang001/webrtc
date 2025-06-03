@@ -23,9 +23,6 @@ vars = {
   # Fetch clang-tidy into the same bin/ directory as our clang binary.
   'checkout_clang_tidy': False,
 
-  # Fetch libraries required to compile and run fuzzer tests.
-  'checkout_fuzzer': False,
-
   'chromium_git': 'https://chromium.googlesource.com',
 
   # Keep the Chromium default of generating location tags.
