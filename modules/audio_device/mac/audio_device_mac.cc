@@ -19,7 +19,6 @@
 
 #include "modules/audio_device/audio_device_config.h"
 #include "modules/third_party/portaudio/pa_ringbuffer.h"
-#include "rtc_base/arraysize.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/platform_thread.h"
 #include "rtc_base/system/arch.h"
@@ -2491,7 +2490,7 @@ bool AudioDeviceMac::CaptureWorkerThread() {
 bool AudioDeviceMac::KeyPressed() {
   bool key_down = false;
   // Loop through all Mac virtual key constant values.
-  for (unsigned int key_index = 0; key_index < arraysize(prev_key_state_);
+  for (unsigned int key_index = 0; key_index < std::size(prev_key_state_);
        ++key_index) {
     bool keyState =
         CGEventSourceKeyState(kCGEventSourceStateHIDSystemState, key_index);
