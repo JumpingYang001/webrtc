@@ -29,7 +29,7 @@ vars = {
   'generate_location_tags': True,
 
   # ResultDB version
-  'resultdb_version': 'git_revision:ebc74d10fa0d64057daa6f128e89f3672eeeec95',
+  'result_adapter_revision': 'git_revision:5fb3ca203842fd691cab615453f8e5a14302a1d8',
 
   # By default, download the fuchsia sdk from the public sdk directory.
   'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/core/',
@@ -378,7 +378,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/tools/result_adapter/${{platform}}',
-        'version': Var('resultdb_version'),
+        'version': Var('result_adapter_revision'),
       },
     ],
     'dep_type': 'cipd',
