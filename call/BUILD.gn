@@ -401,6 +401,7 @@ rtc_library("video_send_stream_api") {
   ]
   deps = [
     ":rtp_interfaces",
+    "../api:array_view",
     "../api:frame_transformer_interface",
     "../api:rtp_parameters",
     "../api:rtp_sender_interface",

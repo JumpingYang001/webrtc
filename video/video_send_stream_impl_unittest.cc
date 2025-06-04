@@ -124,6 +124,7 @@ class MockRtpVideoSender : public RtpVideoSenderInterface {
   MOCK_METHOD(uint32_t, GetPayloadBitrateBps, (), (const, override));
   MOCK_METHOD(uint32_t, GetProtectionBitrateBps, (), (const, override));
   MOCK_METHOD(void, SetEncodingData, (size_t, size_t, size_t), (override));
+  MOCK_METHOD(void, SetCsrcs, (ArrayView<const uint32_t> csrcs), (override));
   MOCK_METHOD(std::vector<RtpSequenceNumberMap::Info>,
               GetSentRtpPacketInfos,
               (uint32_t ssrc, ArrayView<const uint16_t> sequence_numbers),

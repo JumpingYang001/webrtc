@@ -1612,9 +1612,58 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest,
   RTPVideoHeader video_header;
 
   EXPECT_CALL(*mock_frame_transformer, Transform);
-  rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                     *encoded_image, video_header,
-                                     kDefaultExpectedRetransmissionTime);
+  rtp_sender_video->SendEncodedImage(
+      kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+      kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
+}
+
+TEST_F(RtpSenderVideoTest, SendEncodedImageIncludesProvidedCsrcs) {
+  std::vector<uint32_t> expected_csrcs = {1, 2, 3};
+  std::unique_ptr<EncodedImage> encoded_image = CreateDefaultEncodedImage();
+  RTPVideoHeader video_header;
+  video_header.frame_type = VideoFrameType::kVideoFrameKey;
+
+  ASSERT_TRUE(rtp_sender_video_->SendEncodedImage(
+      0, kType, kTimestamp, *encoded_image, video_header,
+      kDefaultExpectedRetransmissionTime, expected_csrcs));
+
+  ASSERT_GT(transport_.packets_sent(), 0);
+  std::vector<uint32_t> csrcs = transport_.last_sent_packet().Csrcs();
+  EXPECT_EQ(csrcs, expected_csrcs);
+}
+
+TEST_F(RtpSenderVideoWithFrameTransformerTest,
+       SendEncodedImageIncludesProvidedCsrcs) {
+  auto mock_frame_transformer =
+      make_ref_counted<NiceMock<MockFrameTransformer>>();
+  scoped_refptr<TransformedFrameCallback> callback;
+  EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameSinkCallback)
+      .WillOnce(SaveArg<0>(&callback));
+  std::unique_ptr<RTPSenderVideo> rtp_sender_video =
+      CreateSenderWithFrameTransformer(mock_frame_transformer);
+  ASSERT_TRUE(callback);
+  ON_CALL(*mock_frame_transformer, Transform)
+      .WillByDefault(
+          [&callback](std::unique_ptr<TransformableFrameInterface> frame) {
+            callback->OnTransformedFrame(std::move(frame));
+          });
+
+  auto encoded_image = CreateDefaultEncodedImage();
+  std::vector<uint32_t> expected_csrcs = {1, 2, 3};
+  RTPVideoHeader video_header;
+  video_header.frame_type = VideoFrameType::kVideoFrameKey;
+  auto encoder_queue = time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
+      "encoder_queue", TaskQueueFactory::Priority::NORMAL);
+  encoder_queue->PostTask([&] {
+    rtp_sender_video->SendEncodedImage(
+        kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+        kDefaultExpectedRetransmissionTime, expected_csrcs);
+  });
+  time_controller_.AdvanceTime(TimeDelta::Zero());
+
+  ASSERT_GT(transport_.packets_sent(), 0);
+  std::vector<uint32_t> csrcs = transport_.last_sent_packet().Csrcs();
+  EXPECT_EQ(csrcs, expected_csrcs);
 }
 
 #if RTC_DCHECK_IS_ON && GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)
@@ -1628,17 +1677,17 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest, ValidPayloadTypes) {
 
   EXPECT_TRUE(rtp_sender_video->SendEncodedImage(
       0, kType, kTimestamp, *encoded_image, video_header,
-      kDefaultExpectedRetransmissionTime));
+      kDefaultExpectedRetransmissionTime, /*csrcs=*/{}));
   EXPECT_TRUE(rtp_sender_video->SendEncodedImage(
       127, kType, kTimestamp, *encoded_image, video_header,
-      kDefaultExpectedRetransmissionTime));
+      kDefaultExpectedRetransmissionTime, /*csrcs=*/{}));
   EXPECT_DEATH(rtp_sender_video->SendEncodedImage(
                    -1, kType, kTimestamp, *encoded_image, video_header,
-                   kDefaultExpectedRetransmissionTime),
+                   kDefaultExpectedRetransmissionTime, /*csrcs=*/{}),
                "");
   EXPECT_DEATH(rtp_sender_video->SendEncodedImage(
                    128, kType, kTimestamp, *encoded_image, video_header,
-                   kDefaultExpectedRetransmissionTime),
+                   kDefaultExpectedRetransmissionTime, /*csrcs=*/{}),
                "");
 }
 #endif
@@ -1664,16 +1713,16 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest, OnTransformedFrameSendsVideo) {
   auto encoder_queue = time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
       "encoder_queue", TaskQueueFactory::Priority::NORMAL);
   encoder_queue->PostTask([&] {
-    rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                       *encoded_image, video_header,
-                                       kDefaultExpectedRetransmissionTime);
+    rtp_sender_video->SendEncodedImage(
+        kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+        kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
   });
   time_controller_.AdvanceTime(TimeDelta::Zero());
   EXPECT_EQ(transport_.packets_sent(), 1);
   encoder_queue->PostTask([&] {
-    rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                       *encoded_image, video_header,
-                                       kDefaultExpectedRetransmissionTime);
+    rtp_sender_video->SendEncodedImage(
+        kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+        kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
   });
   time_controller_.AdvanceTime(TimeDelta::Zero());
   EXPECT_EQ(transport_.packets_sent(), 2);
@@ -1706,9 +1755,9 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest,
   const int kFramesPerSecond = 25;
   for (int i = 0; i < kFramesPerSecond; ++i) {
     encoder_queue->PostTask([&] {
-      rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                         *encoded_image, video_header,
-                                         kDefaultExpectedRetransmissionTime);
+      rtp_sender_video->SendEncodedImage(
+          kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+          kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
     });
     time_controller_.AdvanceTime(TimeDelta::Millis(1000 / kFramesPerSecond));
   }
@@ -1753,9 +1802,9 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest,
             EXPECT_THAT(metadata.GetDecodeTargetIndications(),
                         ElementsAre(DecodeTargetIndication::kSwitch));
           });
-  rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                     *encoded_image, video_header,
-                                     kDefaultExpectedRetransmissionTime);
+  rtp_sender_video->SendEncodedImage(
+      kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+      kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
 }
 
 TEST_F(RtpSenderVideoWithFrameTransformerTest,
@@ -1777,9 +1826,9 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest,
         EXPECT_EQ(frame->GetPresentationTimestamp(),
                   encoded_image->PresentationTimestamp());
       });
-  rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                     *encoded_image, video_header,
-                                     kDefaultExpectedRetransmissionTime);
+  rtp_sender_video->SendEncodedImage(
+      kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+      kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
 }
 
 TEST_F(RtpSenderVideoWithFrameTransformerTest,
@@ -1807,16 +1856,16 @@ TEST_F(RtpSenderVideoWithFrameTransformerTest,
   auto encoder_queue = time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
       "encoder_queue", TaskQueueFactory::Priority::NORMAL);
   encoder_queue->PostTask([&] {
-    rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                       *encoded_image, video_header,
-                                       kDefaultExpectedRetransmissionTime);
+    rtp_sender_video->SendEncodedImage(
+        kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+        kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
   });
   time_controller_.AdvanceTime(TimeDelta::Zero());
   EXPECT_EQ(transport_.packets_sent(), 1);
   encoder_queue->PostTask([&] {
-    rtp_sender_video->SendEncodedImage(kPayloadType, kType, kTimestamp,
-                                       *encoded_image, video_header,
-                                       kDefaultExpectedRetransmissionTime);
+    rtp_sender_video->SendEncodedImage(
+        kPayloadType, kType, kTimestamp, *encoded_image, video_header,
+        kDefaultExpectedRetransmissionTime, /*csrcs=*/{});
   });
   time_controller_.AdvanceTime(TimeDelta::Zero());
   EXPECT_EQ(transport_.packets_sent(), 2);
