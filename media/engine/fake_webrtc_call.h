@@ -31,11 +31,13 @@
 
 #include "absl/strings/string_view.h"
 #include "api/adaptation/resource.h"
+#include "api/array_view.h"
 #include "api/audio/audio_frame.h"
 #include "api/audio/audio_mixer.h"
 #include "api/audio_codecs/audio_format.h"
 #include "api/crypto/frame_decryptor_interface.h"
 #include "api/environment/environment.h"
+#include "api/field_trials_view.h"
 #include "api/frame_transformer_interface.h"
 #include "api/media_types.h"
 #include "api/rtp_headers.h"
@@ -205,6 +207,7 @@ class FakeVideoSendStream final : public VideoSendStream,
   int GetLastHeight() const;
   int64_t GetLastTimestamp() const;
   void SetStats(const VideoSendStream::Stats& stats);
+  void SetCsrcs(ArrayView<const uint32_t> csrcs) override;
   int num_encoder_reconfigurations() const {
     return num_encoder_reconfigurations_;
   }

@@ -71,6 +71,7 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
@@ -1002,6 +1003,13 @@ TEST_F(VideoSendStreamImplTest, CallsVideoStreamEncoderOnBitrateUpdate) {
               OnBitrateUpdated(DataRate::Zero(), DataRate::Zero(),
                                DataRate::Zero(), 0, 0, 0));
   vss_impl->Stop();
+}
+
+TEST_F(VideoSendStreamImplTest, ForwardsCsrcsToRtpVideoSender) {
+  auto vss_impl = CreateVideoSendStreamImpl(TestVideoEncoderConfig());
+  std::vector<uint32_t> csrcs = {1, 2, 3};
+  EXPECT_CALL(rtp_video_sender_, SetCsrcs(ElementsAreArray(csrcs)));
+  vss_impl->SetCsrcs(csrcs);
 }
 
 TEST_F(VideoSendStreamImplTest, DisablesPaddingOnPausedEncoder) {

@@ -10,6 +10,7 @@
 
 #include "audio/audio_send_stream.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -63,6 +64,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -77,6 +79,7 @@ static const float kTolerance = 0.0001f;
 
 const uint32_t kSsrc = 1234;
 const char* kCName = "foo_name";
+const std::array<uint32_t, 2> kCsrcs = {5678, 9012};
 const int kAudioLevelId = 2;
 const int kTransportSequenceNumberId = 4;
 const int32_t kEchoDelayMedian = 254;
@@ -187,6 +190,7 @@ struct ConfigHelper {
     stream_config_.send_codec_spec =
         AudioSendStream::Config::SendCodecSpec(kIsacPayloadType, kIsacFormat);
     stream_config_.rtp.ssrc = kSsrc;
+    stream_config_.rtp.csrcs.assign(kCsrcs.begin(), kCsrcs.end());
     stream_config_.rtp.c_name = kCName;
     stream_config_.rtp.extensions.push_back(
         RtpExtension(RtpExtension::kAudioLevelUri, kAudioLevelId));
@@ -234,6 +238,7 @@ struct ConfigHelper {
     EXPECT_CALL(*channel_send_, SetEncoderToPacketizerFrameTransformer(_))
         .Times(1);
     EXPECT_CALL(rtp_rtcp_, SetExtmapAllowMixed(false)).Times(1);
+    EXPECT_CALL(*channel_send_, SetCsrcs(ElementsAreArray(kCsrcs))).Times(1);
     EXPECT_CALL(*channel_send_,
                 SetSendAudioLevelIndicationStatus(true, kAudioLevelId))
         .Times(1);
@@ -365,6 +370,7 @@ std::unique_ptr<AudioFrame> CreateAudioFrame1kHzSineWave(int16_t audio_level,
 TEST(AudioSendStreamTest, ConfigToString) {
   AudioSendStream::Config config(/*send_transport=*/nullptr);
   config.rtp.ssrc = kSsrc;
+  config.rtp.csrcs.assign(kCsrcs.begin(), kCsrcs.end());
   config.rtp.c_name = kCName;
   config.min_bitrate_bps = 12000;
   config.max_bitrate_bps = 34000;
@@ -380,9 +386,9 @@ TEST(AudioSendStreamTest, ConfigToString) {
       RtpExtension(RtpExtension::kAudioLevelUri, kAudioLevelId));
   config.rtcp_report_interval_ms = 2500;
   EXPECT_EQ(
-      "{rtp: {ssrc: 1234, extmap-allow-mixed: true, extensions: [{uri: "
-      "urn:ietf:params:rtp-hdrext:ssrc-audio-level, id: 2}], "
-      "c_name: foo_name}, rtcp_report_interval_ms: 2500, "
+      "{rtp: {ssrc: 1234, csrcs: [5678, 9012], extmap-allow-mixed: true, "
+      "extensions: [{uri: urn:ietf:params:rtp-hdrext:ssrc-audio-level, "
+      "id: 2}], c_name: foo_name}, rtcp_report_interval_ms: 2500, "
       "send_transport: null, "
       "min_bitrate_bps: 12000, max_bitrate_bps: 34000, has "
       "audio_network_adaptor_config: false, has_dscp: true, "
@@ -418,6 +424,19 @@ TEST(AudioSendStreamTest, SetMuted) {
     auto send_stream = helper.CreateAudioSendStream();
     EXPECT_CALL(*helper.channel_send(), SetInputMute(true));
     send_stream->SetMuted(true);
+  }
+}
+
+TEST(AudioSendStreamTest, SetCsrcs) {
+  for (bool use_null_audio_processing : {false, true}) {
+    ConfigHelper helper(false, true, use_null_audio_processing);
+    auto send_stream = helper.CreateAudioSendStream();
+
+    std::vector<uint32_t> updated_csrcs = {4, 5, 6};
+    helper.config().rtp.csrcs = updated_csrcs;
+    EXPECT_CALL(*helper.channel_send(),
+                SetCsrcs(ElementsAreArray(updated_csrcs)));
+    send_stream->Reconfigure(helper.config(), nullptr);
   }
 }
 
