@@ -909,7 +909,6 @@ rtc_library("fileutils_override_impl") {
   deps = [
     ":fileutils_override_api",
     "../rtc_base:checks",
-    "../rtc_base:macromagic",
     "../rtc_base:stringutils",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
