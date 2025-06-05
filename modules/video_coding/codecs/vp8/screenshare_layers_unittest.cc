@@ -30,7 +30,7 @@
 #include "system_wrappers/include/metrics.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
-#include "vpx/vp8cx.h"
+#include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 
 using ::testing::_;
 using ::testing::ElementsAre;

@@ -60,8 +60,8 @@ _IWYU_MAPPING = {
 
     # IWYU does not refer to the complete third_party/ path.
     '"libyuv/': '"third_party/libyuv/include/libyuv/',
-    '"aom/': '"third_party/libaom/source/libaom/',
-    '"vpx/': '"third_party/libvpx/source/libvpx/',
+    '"aom/': '"third_party/libaom/source/libaom/aom/',
+    '"vpx/': '"third_party/libvpx/source/libvpx/vpx/',
 }
 
 # Supported file suffices.
