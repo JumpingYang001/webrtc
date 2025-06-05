@@ -807,7 +807,6 @@ if (rtc_include_tests) {
       ":rtp_utils",
       ":stream_params",
       ":video_common",
-      "../api:array_view",
       "../api:audio_options_api",
       "../api:call_api",
       "../api:fec_controller_api",
