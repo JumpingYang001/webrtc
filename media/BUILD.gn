@@ -810,7 +810,6 @@ if (rtc_include_tests) {
       "../api:audio_options_api",
       "../api:call_api",
       "../api:fec_controller_api",
-      "../api:field_trials_view",
       "../api:frame_transformer_interface",
       "../api:make_ref_counted",
       "../api:rtc_error",
