@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': '72bf7f37222fa5e8e6f3583b8c5c12d54c9b5212',
+  'chromium_revision': 'd0051c9105d286b12ca0e06027eee86eef8d23e3',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -69,7 +69,7 @@ vars = {
 
 deps = {
   'src/build':
-    'https://chromium.googlesource.com/chromium/src/build@0341480d3b7a2d163c62007899943ff6bd35330f',
+    'https://chromium.googlesource.com/chromium/src/build@425aec97c8fde20561c6cbc919130cc755ac9bbf',
   'src/buildtools':
     'https://chromium.googlesource.com/chromium/src/buildtools@3c185fa96c43d2dd48780b166d12944b9f4479c5',
   # Gradle 6.6.1. Used for testing Android Studio project generation for WebRTC.
@@ -78,13 +78,13 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@b0d244298f4e9e2b5268306b7f92893f4a8a9838',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@04c31d25247ad4cacef8eb85edaa7cf7aa347946',
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@358c35f9424b2399a1440c7290b6dc7f247c6bd0',
+    'https://chromium.googlesource.com/chromium/src/testing@8bb73c885f8a1db256bb6d5ff6f9e3062e65b967',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@57c42e2ce6a111b9c858255d38373ae14c1415c2',
+    'https://chromium.googlesource.com/chromium/src/third_party@7da247591f3fd883bacaee6cf4b00a25c6bf941a',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -462,7 +462,7 @@ deps = {
   },
 
   'src/third_party/boringssl/src':
-    'https://boringssl.googlesource.com/boringssl.git@9a895ea00a34ce7ce2d9f087c9d8bbfc639e233d',
+    'https://boringssl.googlesource.com/boringssl.git@60d933e9d62d33a8d58bb350dea7c27b6b18b619',
   'src/third_party/breakpad/breakpad':
     'https://chromium.googlesource.com/breakpad/breakpad.git@2625edb085169e92cf036c236ac79ab594a7b1cc',
   'src/third_party/catapult':
@@ -479,13 +479,13 @@ deps = {
   'src/third_party/crc32c/src':
     'https://chromium.googlesource.com/external/github.com/google/crc32c.git@d3d60ac6e0f16780bcfcc825385e1d338801a558',
   'src/third_party/depot_tools':
-    'https://chromium.googlesource.com/chromium/tools/depot_tools.git@6d52c22ee313eb5701f326a9eca98acb41b669b4',
+    'https://chromium.googlesource.com/chromium/tools/depot_tools.git@4e7e235dc89c740ddb1cca39ef2ad1fca7745be1',
   'src/third_party/ffmpeg':
     'https://chromium.googlesource.com/chromium/third_party/ffmpeg.git@dcdd0fa51b65a0b1688ff6b8f0cc81908f09ded2',
   'src/third_party/flatbuffers/src':
     'https://chromium.googlesource.com/external/github.com/google/flatbuffers.git@8db59321d9f02cdffa30126654059c7d02f70c32',
   'src/third_party/grpc/src': {
-    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@831535a857b9fc79ebfbf3af9ef44d552fe790a3',
+    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@53bc6c644078cca4c632a0706c88a49354c1b7ee',
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -579,7 +579,7 @@ deps = {
       'condition': 'checkout_android',
   },
   'src/third_party/perfetto':
-    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '557fafc38445fdde33d19b1cf2d784686e51d120',
+    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '576110306936083fafbdab5594b96d25d4b4106d',
   'src/third_party/protobuf-javascript/src':
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + '28bf5df73ef2f345a936d9cc95d64ba8ed426a53',
   'src/third_party/libvpx/source/libvpx':
@@ -638,7 +638,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@4a87a783dd2f1f880608f8f0774075bc8b199a82',
+    'https://chromium.googlesource.com/chromium/src/tools@86b5af4ea0d9a43be79f1ba936fea5fcb938c86f',
 
   'src/third_party/espresso': {
       'packages': [
