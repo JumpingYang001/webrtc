@@ -116,8 +116,7 @@ class RTPSenderVideo : public RTPVideoFrameSenderInterface {
                         uint32_t rtp_timestamp,
                         const EncodedImage& encoded_image,
                         RTPVideoHeader video_header,
-                        TimeDelta expected_retransmission_time,
-                        const std::vector<uint32_t>& csrcs);
+                        TimeDelta expected_retransmission_time);
 
   // Configures video structures produced by encoder to send using the
   // dependency descriptor rtp header extension. Next call to SendVideo should

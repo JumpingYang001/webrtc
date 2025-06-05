@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "absl/strings/string_view.h"
-#include "api/array_view.h"
 #include "api/audio/audio_frame.h"
 #include "api/audio_codecs/audio_encoder.h"
 #include "api/audio_codecs/audio_format.h"
@@ -91,10 +90,6 @@ class ChannelSendInterface {
   virtual void OnBitrateAllocation(BitrateAllocationUpdate update) = 0;
   virtual int GetTargetBitrate() const = 0;
   virtual void SetInputMute(bool muted) = 0;
-  // Sets the list of CSRCs to be included in the RTP header. If more than
-  // kRtpCsrcSize CSRCs are provided, only the first kRtpCsrcSize elements are
-  // kept.
-  virtual void SetCsrcs(ArrayView<const uint32_t> csrcs) = 0;
 
   virtual void ProcessAndEncodeAudio(
       std::unique_ptr<AudioFrame> audio_frame) = 0;
