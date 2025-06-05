@@ -228,7 +228,6 @@ if (rtc_include_tests) {
       "../modules/rtp_rtcp:rtp_rtcp_format",
       "../rtc_base:checks",
       "../rtc_base:gunit_helpers",
-      "../rtc_base:macromagic",
       "../rtc_base:refcount",
       "../rtc_base:rtc_base_tests_utils",
       "../rtc_base:safe_compare",
