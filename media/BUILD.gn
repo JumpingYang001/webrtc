@@ -245,7 +245,6 @@ rtc_library("media_engine") {
     "../api:audio_options_api",
     "../api:field_trials_view",
     "../api:rtc_error",
-    "../api:rtp_headers",
     "../api:rtp_parameters",
     "../api:rtp_transceiver_direction",
     "../api:scoped_refptr",
