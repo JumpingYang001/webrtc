@@ -2598,6 +2598,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "//third_party/abseil-cpp/absl/algorithm:container",
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/strings",
+      "//third_party/abseil-cpp/absl/strings:str_format",
       "//third_party/abseil-cpp/absl/strings:string_view",
       "//third_party/jsoncpp",
     ]
