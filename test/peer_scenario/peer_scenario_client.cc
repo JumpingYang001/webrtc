@@ -123,7 +123,7 @@ class LambdaPeerConnectionObserver final : public PeerConnectionObserver {
     for (const auto& handler : handlers_->on_ice_gathering_change)
       handler(new_state);
   }
-  void OnIceCandidate(const IceCandidateInterface* candidate) override {
+  void OnIceCandidate(const IceCandidate* candidate) override {
     for (const auto& handler : handlers_->on_ice_candidate)
       handler(candidate);
   }
@@ -467,7 +467,7 @@ void PeerScenarioClient::SetSdpAnswer(
 }
 
 void PeerScenarioClient::AddIceCandidate(
-    std::unique_ptr<IceCandidateInterface> candidate) {
+    std::unique_ptr<IceCandidate> candidate) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
   if (peer_connection_->signaling_state() ==
           PeerConnectionInterface::SignalingState::kStable &&

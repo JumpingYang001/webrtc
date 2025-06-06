@@ -77,7 +77,7 @@ namespace {
 using ::webrtc::Environment;
 using ::webrtc::FakeVideoTrackRenderer;
 using ::webrtc::FieldTrialsView;
-using ::webrtc::IceCandidateInterface;
+using ::webrtc::IceCandidate;
 using ::webrtc::MediaStreamInterface;
 using ::webrtc::MediaStreamTrackInterface;
 using ::webrtc::MockSetSessionDescriptionObserver;
@@ -281,8 +281,7 @@ void PeerConnectionTestWrapper::OnAddTrack(
   }
 }
 
-void PeerConnectionTestWrapper::OnIceCandidate(
-    const IceCandidateInterface* candidate) {
+void PeerConnectionTestWrapper::OnIceCandidate(const IceCandidate* candidate) {
   std::string sdp = candidate->ToString();
   SignalOnIceCandidateReady(candidate->sdp_mid(), candidate->sdp_mline_index(),
                             sdp);
@@ -357,7 +356,7 @@ void PeerConnectionTestWrapper::SetRemoteDescription(SdpType type,
 void PeerConnectionTestWrapper::AddIceCandidate(const std::string& sdp_mid,
                                                 int sdp_mline_index,
                                                 const std::string& candidate) {
-  std::unique_ptr<webrtc::IceCandidateInterface> owned_candidate(
+  std::unique_ptr<webrtc::IceCandidate> owned_candidate(
       webrtc::CreateIceCandidate(sdp_mid, sdp_mline_index, candidate, nullptr));
   EXPECT_TRUE(peer_connection_->AddIceCandidate(owned_candidate.get()));
 }

@@ -62,7 +62,7 @@ ScopedJavaLocalRef<jobject> NativeToJavaCandidate(JNIEnv* env,
 
 ScopedJavaLocalRef<jobject> NativeToJavaIceCandidate(
     JNIEnv* env,
-    const IceCandidateInterface& candidate) {
+    const IceCandidate& candidate) {
   return CreateJavaIceCandidate(
       env, candidate.sdp_mid(), candidate.sdp_mline_index(),
       candidate.ToString(), candidate.candidate().url(), 0);

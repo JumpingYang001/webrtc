@@ -28,13 +28,13 @@ constexpr size_t kSdpPacketSize = 1200;
 
 struct IceMessage {
   IceMessage() = default;
-  explicit IceMessage(const IceCandidateInterface* candidate)
+  explicit IceMessage(const IceCandidate* candidate)
       : sdp_mid(candidate->sdp_mid()),
         sdp_mline_index(candidate->sdp_mline_index()),
         sdp_line(candidate->ToString()) {}
-  std::unique_ptr<IceCandidateInterface> AsCandidate() const {
+  std::unique_ptr<IceCandidate> AsCandidate() const {
     SdpParseError err;
-    std::unique_ptr<IceCandidateInterface> candidate(
+    std::unique_ptr<IceCandidate> candidate(
         CreateIceCandidate(sdp_mid, sdp_mline_index, sdp_line, &err));
     RTC_CHECK(candidate) << "Failed to parse: \"" << err.line
                          << "\". Reason: " << err.description;
@@ -49,7 +49,7 @@ void StartIceSignalingForRoute(PeerScenarioClient* caller,
                                PeerScenarioClient* callee,
                                CrossTrafficRoute* send_route) {
   caller->handlers()->on_ice_candidate.push_back(
-      [=](const IceCandidateInterface* candidate) {
+      [=](const IceCandidate* candidate) {
         IceMessage msg(candidate);
         send_route->NetworkDelayedAction(kIcePacketSize, [callee, msg]() {
           callee->thread()->PostTask(

@@ -68,8 +68,7 @@ class PeerScenarioClient {
         on_connection_change;
     std::vector<std::function<void(PeerConnectionInterface::IceGatheringState)>>
         on_ice_gathering_change;
-    std::vector<std::function<void(const IceCandidateInterface*)>>
-        on_ice_candidate;
+    std::vector<std::function<void(const IceCandidate*)>> on_ice_candidate;
     std::vector<std::function<void(const std::string&,
                                    int,
                                    const std::string&,
@@ -176,7 +175,7 @@ class PeerScenarioClient {
           done_handler);
 
   // Adds the given ice candidate when the peer connection is ready.
-  void AddIceCandidate(std::unique_ptr<IceCandidateInterface> candidate);
+  void AddIceCandidate(std::unique_ptr<IceCandidate> candidate);
 
  private:
   const Environment env_;
@@ -188,7 +187,7 @@ class PeerScenarioClient {
   const std::unique_ptr<PeerConnectionObserver> observer_;
   std::map<std::string, std::vector<VideoSinkInterface<VideoFrame>*>>
       track_id_to_video_sinks_ RTC_GUARDED_BY(signaling_thread_);
-  std::list<std::unique_ptr<IceCandidateInterface>> pending_ice_candidates_
+  std::list<std::unique_ptr<IceCandidate>> pending_ice_candidates_
       RTC_GUARDED_BY(signaling_thread_);
 
   scoped_refptr<PeerConnectionFactoryInterface> pc_factory_;

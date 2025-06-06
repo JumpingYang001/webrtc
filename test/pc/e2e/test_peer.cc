@@ -113,7 +113,7 @@ bool TestPeer::SetRemoteDescription(
 }
 
 bool TestPeer::AddIceCandidates(
-    std::vector<std::unique_ptr<IceCandidateInterface>> candidates) {
+    std::vector<std::unique_ptr<IceCandidate>> candidates) {
   RTC_CHECK(wrapper_) << "TestPeer is already closed";
   bool success = true;
   for (auto& candidate : candidates) {

@@ -114,7 +114,7 @@ class RTC_EXPORT IceCandidate final {
 using JsepIceCandidate = IceCandidate;
 using IceCandidateInterface = IceCandidate;
 
-// Creates a IceCandidateInterface based on SDP string.
+// Creates an IceCandidate based on SDP string.
 // Returns null if the sdp string can't be parsed.
 // `error` may be null.
 RTC_EXPORT IceCandidate* CreateIceCandidate(const std::string& sdp_mid,

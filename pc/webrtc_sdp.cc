@@ -800,7 +800,7 @@ static void GetCandidatesByMindex(const SessionDescriptionInterface& desci,
   }
   const IceCandidateCollection* cc = desci.candidates(mline_index);
   for (size_t i = 0; i < cc->count(); ++i) {
-    const IceCandidateInterface* candidate = cc->at(i);
+    const IceCandidate* candidate = cc->at(i);
     candidates->push_back(candidate->candidate());
   }
 }
@@ -909,9 +909,9 @@ std::string SdpSerialize(const JsepSessionDescription& jdesc) {
   return message;
 }
 
-// Serializes the passed in IceCandidateInterface to a SDP string.
+// Serializes the passed in IceCandidate to a SDP string.
 // candidate - The candidate to be serialized.
-std::string SdpSerializeCandidate(const IceCandidateInterface& candidate) {
+std::string SdpSerializeCandidate(const IceCandidate& candidate) {
   return SdpSerializeCandidate(candidate.candidate());
 }
 

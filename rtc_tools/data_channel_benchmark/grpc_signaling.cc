@@ -43,7 +43,7 @@ class SessionData : public SignalingInterface {
   explicit SessionData(T* stream) : stream_(stream) {}
   void SetStream(T* stream) { stream_ = stream; }
 
-  void SendIceCandidate(const IceCandidateInterface* candidate) override {
+  void SendIceCandidate(const ::webrtc::IceCandidate* candidate) override {
     RTC_LOG(LS_INFO) << "SendIceCandidate";
     std::string serialized_candidate = candidate->ToString();
     SignalingMessage message;
@@ -79,7 +79,7 @@ class SessionData : public SignalingInterface {
   }
 
   void OnIceCandidate(
-      std::function<void(std::unique_ptr<IceCandidateInterface> candidate)>
+      std::function<void(std::unique_ptr<::webrtc::IceCandidate> candidate)>
           callback) override {
     RTC_LOG(LS_INFO) << "OnIceCandidate";
     ice_candidate_callback_ = callback;
@@ -87,7 +87,7 @@ class SessionData : public SignalingInterface {
 
   T* stream_;
 
-  std::function<void(std::unique_ptr<webrtc::IceCandidateInterface>)>
+  std::function<void(std::unique_ptr<webrtc::IceCandidate>)>
       ice_candidate_callback_;
   std::function<void(std::unique_ptr<webrtc::SessionDescriptionInterface>)>
       remote_description_callback_;

@@ -715,7 +715,7 @@ void PeerConnectionE2EQualityTest::ExchangeOfferAnswer(
 void PeerConnectionE2EQualityTest::ExchangeIceCandidates(
     SignalingInterceptor* signaling_interceptor) {
   // Connect an ICE candidate pairs.
-  std::vector<std::unique_ptr<IceCandidateInterface>> alice_candidates =
+  std::vector<std::unique_ptr<IceCandidate>> alice_candidates =
       signaling_interceptor->PatchOffererIceCandidates(
           alice_->observer()->GetAllCandidates());
   for (auto& candidate : alice_candidates) {
@@ -725,7 +725,7 @@ void PeerConnectionE2EQualityTest::ExchangeIceCandidates(
                      << "): " << candidate_str;
   }
   ASSERT_TRUE(bob_->AddIceCandidates(std::move(alice_candidates)));
-  std::vector<std::unique_ptr<IceCandidateInterface>> bob_candidates =
+  std::vector<std::unique_ptr<IceCandidate>> bob_candidates =
       signaling_interceptor->PatchAnswererIceCandidates(
           bob_->observer()->GetAllCandidates());
   for (auto& candidate : bob_candidates) {

@@ -53,7 +53,7 @@ void UpdateConnectionAddress(
   int current_preference = 0;  // Start with lowest preference.
   int current_family = AF_UNSPEC;
   for (size_t i = 0; i < candidate_collection.count(); ++i) {
-    const IceCandidateInterface* jsep_candidate = candidate_collection.at(i);
+    const IceCandidate* jsep_candidate = candidate_collection.at(i);
     if (jsep_candidate->candidate().component() !=
         ICE_CANDIDATE_COMPONENT_RTP) {
       continue;
@@ -218,8 +218,7 @@ std::unique_ptr<SessionDescriptionInterface> JsepSessionDescription::Clone()
   return new_description;
 }
 
-bool JsepSessionDescription::AddCandidate(
-    const IceCandidateInterface* candidate) {
+bool JsepSessionDescription::AddCandidate(const IceCandidate* candidate) {
   if (!candidate)
     return false;
   size_t mediasection_index = 0;
@@ -298,9 +297,8 @@ bool JsepSessionDescription::ToString(std::string* out) const {
   return !out->empty();
 }
 
-bool JsepSessionDescription::GetMediasectionIndex(
-    const IceCandidateInterface* candidate,
-    size_t* index) {
+bool JsepSessionDescription::GetMediasectionIndex(const IceCandidate* candidate,
+                                                  size_t* index) {
   if (!candidate || !index) {
     return false;
   }

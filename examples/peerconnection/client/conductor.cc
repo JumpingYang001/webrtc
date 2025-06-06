@@ -290,7 +290,7 @@ void Conductor::OnRemoveTrack(
   main_wnd_->QueueUIThreadCallback(TRACK_REMOVED, receiver->track().release());
 }
 
-void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
+void Conductor::OnIceCandidate(const webrtc::IceCandidate* candidate) {
   RTC_LOG(LS_INFO) << __FUNCTION__ << " " << candidate->sdp_mline_index();
   // For loopback test. To save some connecting delay.
   if (loopback_) {
@@ -437,7 +437,7 @@ void Conductor::OnMessageFromPeer(int peer_id, const std::string& message) {
       return;
     }
     webrtc::SdpParseError error;
-    std::unique_ptr<webrtc::IceCandidateInterface> candidate(
+    std::unique_ptr<webrtc::IceCandidate> candidate(
         webrtc::CreateIceCandidate(sdp_mid, sdp_mlineindex, sdp, &error));
     if (!candidate.get()) {
       RTC_LOG(LS_WARNING) << "Can't parse received candidate message. "
