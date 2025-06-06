@@ -22,6 +22,7 @@
 #include "absl/strings/string_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
+#include "rtc_base/checks.h"
 
 namespace webrtc {
 namespace {
@@ -44,36 +45,37 @@ IceCandidate::IceCandidate(absl::string_view sdp_mid,
       sdp_mline_index_(EnsureValidMLineIndex(sdp_mline_index)),
       candidate_(candidate) {}
 
-JsepCandidateCollection::JsepCandidateCollection() = default;
-
-JsepCandidateCollection::JsepCandidateCollection(JsepCandidateCollection&& o)
-    : candidates_(std::move(o.candidates_)) {}
-
-size_t JsepCandidateCollection::count() const {
-  return candidates_.size();
+void IceCandidateCollection::add(std::unique_ptr<IceCandidate> candidate) {
+  candidates_.push_back(std::move(candidate));
 }
 
-void JsepCandidateCollection::add(JsepIceCandidate* candidate) {
+void IceCandidateCollection::add(IceCandidate* candidate) {
   candidates_.push_back(absl::WrapUnique(candidate));
 }
 
-const IceCandidate* JsepCandidateCollection::at(size_t index) const {
+const IceCandidate* IceCandidateCollection::at(size_t index) const {
   return candidates_[index].get();
 }
 
-bool JsepCandidateCollection::HasCandidate(
-    const IceCandidate* candidate) const {
+bool IceCandidateCollection::HasCandidate(const IceCandidate* candidate) const {
+  const auto sdp_mid = candidate->sdp_mid();  // avoid string copy per entry.
   return absl::c_any_of(
-      candidates_, [&](const std::unique_ptr<JsepIceCandidate>& entry) {
-        return entry->sdp_mid() == candidate->sdp_mid() &&
-               entry->sdp_mline_index() == candidate->sdp_mline_index() &&
-               entry->candidate().IsEquivalent(candidate->candidate());
+      candidates_, [&](const std::unique_ptr<IceCandidate>& entry) {
+        if (!entry->candidate().IsEquivalent(candidate->candidate())) {
+          return false;
+        }
+        if (!sdp_mid.empty()) {
+          // In this case, we ignore the `sdp_mline_index()` property.
+          return sdp_mid == entry->sdp_mid();
+        }
+        RTC_DCHECK_NE(candidate->sdp_mline_index(), -1);
+        return candidate->sdp_mline_index() == entry->sdp_mline_index();
       });
 }
 
 size_t JsepCandidateCollection::remove(const Candidate& candidate) {
-  auto iter = absl::c_find_if(
-      candidates_, [&](const std::unique_ptr<JsepIceCandidate>& c) {
+  auto iter =
+      absl::c_find_if(candidates_, [&](const std::unique_ptr<IceCandidate>& c) {
         return candidate.MatchesForRemoval(c->candidate());
       });
   if (iter != candidates_.end()) {
@@ -81,6 +83,19 @@ size_t JsepCandidateCollection::remove(const Candidate& candidate) {
     return 1;
   }
   return 0;
+}
+
+size_t JsepCandidateCollection::remove(const IceCandidate* candidate) {
+  RTC_DCHECK(candidate);
+  auto iter =
+      absl::c_find_if(candidates_, [&](const std::unique_ptr<IceCandidate>& c) {
+        return c->candidate().MatchesForRemoval(candidate->candidate());
+      });
+  if (iter != candidates_.end()) {
+    candidates_.erase(iter);
+    return 1u;
+  }
+  return 0u;
 }
 
 }  // namespace webrtc

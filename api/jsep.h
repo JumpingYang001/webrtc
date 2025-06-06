@@ -25,6 +25,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "absl/base/nullability.h"
@@ -129,14 +130,55 @@ RTC_EXPORT std::unique_ptr<IceCandidate> CreateIceCandidate(
 
 // This class represents a collection of candidates for a specific m= section.
 // Used in SessionDescriptionInterface.
-class IceCandidateCollection {
+class IceCandidateCollection final {
  public:
-  virtual ~IceCandidateCollection() {}
-  virtual size_t count() const = 0;
+  IceCandidateCollection() = default;
+  explicit IceCandidateCollection(
+      std::vector<std::unique_ptr<IceCandidate>>&& candidates)
+      : candidates_(std::move(candidates)) {}
+  ~IceCandidateCollection() = default;
+
+  // Move constructor is defined so that a vector of IceCandidateCollections
+  // can be resized.
+  IceCandidateCollection(IceCandidateCollection&& o) = default;
+
+  IceCandidateCollection(const IceCandidateCollection&) = delete;
+  IceCandidateCollection& operator=(const IceCandidateCollection&) = delete;
+
+  size_t count() const { return candidates_.size(); }
+  bool empty() const { return candidates_.empty(); }
+  const IceCandidate* at(size_t index) const;
+
+  // Adds and takes ownership of the IceCandidate.
+  void add(std::unique_ptr<IceCandidate> candidate);
+  [[deprecated("Use unique_ptr version")]]
+  void add(IceCandidate* candidate);
+
+  // Removes the candidate that has a matching address and protocol.
+  //
+  // Returns the number of candidates that were removed.
+  size_t remove(const Candidate& candidate);
+
+  // Removes the candidate that has a matching address and protocol.
+  //
+  // Returns the number of candidates that were removed.
+  size_t remove(const IceCandidate* candidate);
+
+  const std::vector<std::unique_ptr<IceCandidate>>& candidates() const {
+    return candidates_;
+  }
+
   // Returns true if an equivalent `candidate` exist in the collection.
-  virtual bool HasCandidate(const IceCandidate* candidate) const = 0;
-  virtual const IceCandidate* at(size_t index) const = 0;
+  bool HasCandidate(const IceCandidate* candidate) const;
+
+  IceCandidateCollection Clone() const;
+
+ private:
+  std::vector<std::unique_ptr<IceCandidate>> candidates_;
 };
+
+// TODO: webrtc:406795492 - Deprecate.
+using JsepCandidateCollection = IceCandidateCollection;
 
 // Enum that describes the type of the SessionDescriptionInterface.
 // Corresponds to RTCSdpType in the WebRTC specification.

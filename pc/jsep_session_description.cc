@@ -20,7 +20,6 @@
 #include "absl/strings/string_view.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
-#include "api/jsep_ice_candidate.h"
 #include "p2p/base/p2p_constants.h"
 #include "p2p/base/transport_description.h"
 #include "p2p/base/transport_info.h"
@@ -252,7 +251,7 @@ bool JsepSessionDescription::AddCandidate(
   if (!candidate_collection_[mediasection_index].HasCandidate(
           updated_candidate_wrapper.get())) {
     candidate_collection_[mediasection_index].add(
-        updated_candidate_wrapper.release());
+        std::move(updated_candidate_wrapper));
     UpdateConnectionAddress(
         candidate_collection_[mediasection_index],
         description_->contents()[mediasection_index].media_description());
