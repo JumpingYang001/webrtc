@@ -11,14 +11,8 @@
 #include "modules/desktop_capture/linux/wayland/screencast_stream_utils.h"
 
 #include <libdrm/drm_fourcc.h>
-#include <pipewire/version.h>
-#include <spa/param/format.h>
-#include <spa/param/param.h>
-#include <spa/pod/builder.h>
-#include <spa/pod/iter.h>
-#include <spa/pod/pod.h>
-#include <spa/pod/vararg.h>
-#include <spa/utils/type.h>
+#include <pipewire/pipewire.h>
+#include <spa/param/video/format-utils.h>
 
 #include <cstdint>
 #include <optional>

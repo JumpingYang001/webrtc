@@ -67,6 +67,13 @@ _IWYU_MAPPING = {
 # Supported file suffices.
 _SUFFICES = [".cc", ".h"]
 
+# Ignored headers, used with `clang-include-cleaner --ignore-headers=`
+_IGNORED_HEADERS = [
+    ".pb.h",  # generated protobuf files.
+    "pipewire/.*.h",  # pipewire.
+    "spa/.*.h",  # pipewire.
+]
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Runs the include-cleaner tool on a list of files",
@@ -238,8 +245,8 @@ def main() -> None:
 
     # Build the execution command
     cmd = [str(_CLEANER_BINARY_PATH), "-p", str(args.work_dir)]
-    # Ignore generated .pb.h files.
-    cmd.append("--ignore-headers=.pb.h")
+    # Ignore some headers.
+    cmd.append("--ignore-headers=" + ",".join(_IGNORED_HEADERS))
     for extra_arg in _EXTRA_ARGS:
         cmd.append(f"--extra-arg={extra_arg}")
     if args.print or args.check_for_changes:

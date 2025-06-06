@@ -20,7 +20,7 @@
 #include <fcntl.h>
 #include <gbm.h>
 #include <libdrm/drm_fourcc.h>
-#include <spa/param/video/raw.h>
+#include <spa/param/video/format-utils.h>
 #include <unistd.h>
 #include <xf86drm.h>
 
