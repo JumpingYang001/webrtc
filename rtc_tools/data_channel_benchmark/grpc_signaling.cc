@@ -106,7 +106,7 @@ void ProcessMessages(StreamReader* stream, SessionData* session) {
     switch (message.Content_case()) {
       case SignalingMessage::ContentCase::kCandidate: {
         SdpParseError error;
-        auto jsep_candidate = JsepIceCandidate::Create(
+        auto jsep_candidate = ::webrtc::IceCandidate::Create(
             message.candidate().mid(), message.candidate().mline_index(),
             message.candidate().description(), &error);
         if (!jsep_candidate) {
