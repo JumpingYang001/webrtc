@@ -477,6 +477,14 @@ struct RTC_EXPORT RtpEncodingParameters {
   // unset SSRC acts as a "wildcard" SSRC.
   std::optional<uint32_t> ssrc;
 
+  // The list of CSRCs to be included in the RTP header. Defaults to an empty
+  // list. At most 15 CSRCs can be specified, and they must be the same for all
+  // encodings in an RtpParameters struct.
+  //
+  // If this field is set, the list is replaced with the specified values.
+  // Otherwise, it is left unchanged. Specify an empty vector to clear the list.
+  std::optional<std::vector<uint32_t>> csrcs;
+
   // The relative bitrate priority of this encoding. Currently this is
   // implemented for the entire rtp sender by using the value of the first
   // encoding parameter.
@@ -561,7 +569,8 @@ struct RTC_EXPORT RtpEncodingParameters {
   std::optional<RtpCodec> codec;
 
   bool operator==(const RtpEncodingParameters& o) const {
-    return ssrc == o.ssrc && bitrate_priority == o.bitrate_priority &&
+    return ssrc == o.ssrc && csrcs == o.csrcs &&
+           bitrate_priority == o.bitrate_priority &&
            network_priority == o.network_priority &&
            max_bitrate_bps == o.max_bitrate_bps &&
            min_bitrate_bps == o.min_bitrate_bps &&

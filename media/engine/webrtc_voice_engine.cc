@@ -1100,16 +1100,23 @@ class WebRtcVoiceSendChannel::WebRtcAudioSendStream : public AudioSource::Sink {
     double old_priority = rtp_parameters_.encodings[0].bitrate_priority;
     Priority old_dscp = rtp_parameters_.encodings[0].network_priority;
     bool old_adaptive_ptime = rtp_parameters_.encodings[0].adaptive_ptime;
+    std::optional<std::vector<uint32_t>> old_csrcs =
+        rtp_parameters_.encodings[0].csrcs;
+
     rtp_parameters_ = parameters;
     config_.bitrate_priority = rtp_parameters_.encodings[0].bitrate_priority;
     config_.has_dscp =
         (rtp_parameters_.encodings[0].network_priority != Priority::kLow);
+    if (rtp_parameters_.encodings[0].csrcs.has_value()) {
+      config_.rtp.csrcs = rtp_parameters_.encodings[0].csrcs.value();
+    }
 
     bool reconfigure_send_stream =
         (rtp_parameters_.encodings[0].max_bitrate_bps != old_rtp_max_bitrate) ||
         (rtp_parameters_.encodings[0].bitrate_priority != old_priority) ||
         (rtp_parameters_.encodings[0].network_priority != old_dscp) ||
-        (rtp_parameters_.encodings[0].adaptive_ptime != old_adaptive_ptime);
+        (rtp_parameters_.encodings[0].adaptive_ptime != old_adaptive_ptime) ||
+        (rtp_parameters_.encodings[0].csrcs != old_csrcs);
     if (rtp_parameters_.encodings[0].max_bitrate_bps != old_rtp_max_bitrate) {
       // Update the bitrate range.
       if (send_rate) {

@@ -2153,6 +2153,9 @@ RTCError WebRtcVideoSendChannel::WebRtcVideoSendStream::SetRtpParameters(
       new_send_state = true;
     }
   }
+  bool new_csrcs =
+      (new_parameters.encodings[0].csrcs.has_value() &&
+       new_parameters.encodings[0].csrcs != rtp_parameters_.encodings[0].csrcs);
 
   rtp_parameters_ = new_parameters;
   // Codecs are currently handled at the WebRtcVideoSendChannel level.
@@ -2166,6 +2169,9 @@ RTCError WebRtcVideoSendChannel::WebRtcVideoSendStream::SetRtpParameters(
     if (source_ && stream_) {
       stream_->SetSource(source_, GetDegradationPreference());
     }
+  }
+  if (stream_ && new_csrcs) {
+    stream_->SetCsrcs(rtp_parameters_.encodings[0].csrcs.value());
   }
   // Check if a key frame was requested via setParameters.
   std::vector<std::string> key_frames_requested_by_rid;
@@ -2668,6 +2674,10 @@ void WebRtcVideoSendChannel::WebRtcVideoSendStream::RecreateWebRtcStream() {
   } else {
     stream_ = call_->CreateVideoSendStream(std::move(config),
                                            parameters_.encoder_config.Copy());
+  }
+  if (!rtp_parameters_.encodings.empty() &&
+      rtp_parameters_.encodings[0].csrcs.has_value()) {
+    stream_->SetCsrcs(rtp_parameters_.encodings[0].csrcs.value());
   }
 
   parameters_.encoder_config.encoder_specific_settings = nullptr;
