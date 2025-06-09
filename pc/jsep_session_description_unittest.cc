@@ -21,7 +21,6 @@
 #include "absl/strings/str_cat.h"
 #include "api/candidate.h"
 #include "api/jsep.h"
-#include "api/jsep_ice_candidate.h"
 #include "media/base/codec.h"
 #include "p2p/base/p2p_constants.h"
 #include "p2p/base/transport_description.h"
@@ -181,6 +180,7 @@ TEST_F(JsepSessionDescriptionTest, AddCandidateWithoutMid) {
   candidate_.set_password(kCandidatePwdVoice);
   EXPECT_TRUE(ice_candidate->candidate().IsEquivalent(candidate_));
   EXPECT_EQ(0, ice_candidate->sdp_mline_index());
+  EXPECT_EQ("audio", ice_candidate->sdp_mid());
   EXPECT_EQ(0u, jsep_desc_->candidates(1)->count());
 }
 
