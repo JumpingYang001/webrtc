@@ -409,6 +409,117 @@ TEST_F(ChannelSendTest, EnqueuePacketsGracefullyHandlesNonInitializedPacer) {
   ProcessNextFrame();
 }
 
+TEST_F(ChannelSendTest, ConfiguredCsrcsAreIncludedInRtpPackets) {
+  channel_->StartSend();
+  std::vector<uint32_t> expected_csrcs = {1, 2, 3};
+  channel_->SetCsrcs(expected_csrcs);
+
+  std::vector<uint32_t> csrcs;
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
+                      const PacketOptions& /* options */) {
+    RtpPacketReceived packet;
+    packet.Parse(data);
+    csrcs = packet.Csrcs();
+    return true;
+  };
+
+  EXPECT_CALL(transport_, SendRtp).WillRepeatedly(Invoke(send_rtp));
+  ProcessNextFrame();
+  ProcessNextFrame();
+
+  EXPECT_EQ(csrcs, expected_csrcs);
+}
+
+// Creates a frame with the given CSRCs where other values are copied from the
+// template.
+std::unique_ptr<TransformableAudioFrameInterface> CreateMockFrameWithCsrcs(
+    const TransformableAudioFrameInterface* frame_template,
+    const std::vector<uint32_t>& csrcs) {
+  std::unique_ptr<MockTransformableAudioFrame> mock_frame =
+      std::make_unique<MockTransformableAudioFrame>();
+  EXPECT_CALL(*mock_frame, GetContributingSources)
+      .WillRepeatedly(Return(csrcs));
+
+  std::vector<uint8_t> frame_data = std::vector(
+      frame_template->GetData().begin(), frame_template->GetData().end());
+  ON_CALL(*mock_frame, GetData).WillByDefault(Return(frame_data));
+
+  ON_CALL(*mock_frame, GetTimestamp)
+      .WillByDefault(Return(frame_template->GetTimestamp()));
+  ON_CALL(*mock_frame, GetPayloadType)
+      .WillByDefault(Return(frame_template->GetPayloadType()));
+  ON_CALL(*mock_frame, GetSsrc)
+      .WillByDefault(Return(frame_template->GetSsrc()));
+  ON_CALL(*mock_frame, GetMimeType)
+      .WillByDefault(Return(frame_template->GetMimeType()));
+  ON_CALL(*mock_frame, SequenceNumber)
+      .WillByDefault(Return(frame_template->SequenceNumber()));
+  ON_CALL(*mock_frame, GetDirection)
+      .WillByDefault(Return(frame_template->GetDirection()));
+  ON_CALL(*mock_frame, AbsoluteCaptureTimestamp)
+      .WillByDefault(Return(frame_template->AbsoluteCaptureTimestamp()));
+  ON_CALL(*mock_frame, Type).WillByDefault(Return(frame_template->Type()));
+  ON_CALL(*mock_frame, AudioLevel)
+      .WillByDefault(Return(frame_template->AudioLevel()));
+  ON_CALL(*mock_frame, ReceiveTime)
+      .WillByDefault(Return(frame_template->ReceiveTime()));
+  ON_CALL(*mock_frame, CaptureTime)
+      .WillByDefault(Return(frame_template->CaptureTime()));
+  ON_CALL(*mock_frame, SenderCaptureTimeOffset)
+      .WillByDefault(Return(frame_template->SenderCaptureTimeOffset()));
+  return mock_frame;
+}
+
+TEST_F(ChannelSendTest, FrameTransformerTakesPrecedenceOverSetCsrcs) {
+  scoped_refptr<MockFrameTransformer> mock_frame_transformer =
+      make_ref_counted<MockFrameTransformer>();
+  scoped_refptr<TransformedFrameCallback> callback;
+  EXPECT_CALL(*mock_frame_transformer, RegisterTransformedFrameCallback)
+      .WillOnce(SaveArg<0>(&callback));
+  EXPECT_CALL(*mock_frame_transformer, UnregisterTransformedFrameCallback);
+  channel_->SetEncoderToPacketizerFrameTransformer(mock_frame_transformer);
+
+  // Configure the mock frame transformer to return a frame with different CSRCs
+  // than it is provided.
+  std::vector<uint32_t> csrcs_provided_to_frame_transformer;
+  std::vector<uint32_t> csrcs_output_by_frame_transformer = {1, 2, 3};
+  EXPECT_CALL(*mock_frame_transformer, Transform)
+      .WillRepeatedly(
+          Invoke([&](std::unique_ptr<TransformableFrameInterface> frame) {
+            auto audio_frame =
+                static_cast<TransformableAudioFrameInterface*>(frame.get());
+            csrcs_provided_to_frame_transformer.assign(
+                audio_frame->GetContributingSources().begin(),
+                audio_frame->GetContributingSources().end());
+            callback->OnTransformedFrame(CreateMockFrameWithCsrcs(
+                audio_frame, csrcs_output_by_frame_transformer));
+          }));
+
+  std::vector<uint32_t> set_csrcs = {4, 5, 6};
+  channel_->SetCsrcs(set_csrcs);
+  channel_->StartSend();
+
+  std::vector<uint32_t> sent_csrcs;
+  auto send_rtp = [&](ArrayView<const uint8_t> data,
+                      const PacketOptions& /* options */) {
+    RtpPacketReceived packet;
+    packet.Parse(data);
+    sent_csrcs = packet.Csrcs();
+    return true;
+  };
+
+  EXPECT_CALL(transport_, SendRtp).WillRepeatedly(Invoke(send_rtp));
+  ProcessNextFrame();
+  ProcessNextFrame();
+
+  EXPECT_EQ(csrcs_provided_to_frame_transformer, set_csrcs)
+      << "The CSRCs configured in ChannelSend should be passed to the frame "
+         "transformer.";
+  EXPECT_EQ(sent_csrcs, csrcs_output_by_frame_transformer)
+      << "CSRCs provided by the frame transformer should propagate to the RTP "
+         "packet.";
+}
+
 }  // namespace
 }  // namespace voe
 }  // namespace webrtc
