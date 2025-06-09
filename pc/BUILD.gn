@@ -2592,6 +2592,7 @@ if (rtc_include_tests && !build_with_chromium) {
       "../test:test_support",
       "../test:wait_until",
       "../test/pc/sctp:fake_sctp_transport",
+      "scenario_tests:pc_scenario_tests",
       "//third_party/abseil-cpp/absl/algorithm:container",
       "//third_party/abseil-cpp/absl/memory",
       "//third_party/abseil-cpp/absl/strings",

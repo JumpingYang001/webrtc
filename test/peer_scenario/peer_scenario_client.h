@@ -22,6 +22,7 @@
 #include "api/candidate.h"
 #include "api/data_channel_interface.h"
 #include "api/environment/environment.h"
+#include "api/field_trials.h"
 #include "api/jsep.h"
 #include "api/media_stream_interface.h"
 #include "api/peer_connection_interface.h"
@@ -39,6 +40,7 @@
 #include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/clock.h"
 #include "test/create_frame_generator_capturer.h"
+#include "test/create_test_field_trials.h"
 #include "test/frame_generator_capturer.h"
 #include "test/logging/log_writer.h"
 
@@ -88,6 +90,7 @@ class PeerScenarioClient {
         on_remove_track;
   };
   struct Config {
+    FieldTrials field_trials = CreateTestFieldTrials();
     // WebRTC only support one audio device that is setup up on construction, so
     // we provide the audio generator configuration here rather than on creation
     // of the tracks. This is unlike video, where multiple capture sources can
