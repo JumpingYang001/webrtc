@@ -198,7 +198,9 @@ class FieldTrialsOverriddenJitterEstimatorTest : public JitterEstimatorTest {
             "num_stddev_delay_outlier:2,"
             "num_stddev_size_outlier:3.1,"
             "congestion_rejection_factor:-1.55,"
-            "estimate_noise_when_congested:false/") {}
+            "estimate_noise_when_congested:false,"
+            "nack_limit:2,"
+            "nack_count_timeout:100ms/") {}
   ~FieldTrialsOverriddenJitterEstimatorTest() {}
 };
 
@@ -212,6 +214,8 @@ TEST_F(FieldTrialsOverriddenJitterEstimatorTest, FieldTrialsParsesCorrectly) {
   EXPECT_EQ(*config.num_stddev_size_outlier, 3.1);
   EXPECT_EQ(*config.congestion_rejection_factor, -1.55);
   EXPECT_FALSE(config.estimate_noise_when_congested);
+  EXPECT_EQ(*config.nack_limit, 2);
+  EXPECT_EQ(*config.nack_count_timeout, TimeDelta::Millis(100));
 }
 
 TEST_F(FieldTrialsOverriddenJitterEstimatorTest,
@@ -271,6 +275,51 @@ TEST_F(FieldTrialsOverriddenJitterEstimatorTest,
   EXPECT_EQ(outlier_jitter.ms(), steady_state_jitter.ms());
 }
 
+TEST_F(FieldTrialsOverriddenJitterEstimatorTest,
+       NackedFramesIncreaseEstimateWithinTimeoutWindow) {
+  ValueGenerator gen(10);
+  constexpr double kRttMult = 1.0;
+  constexpr TimeDelta kRttMultAddCap = TimeDelta::Millis(200);
+  constexpr TimeDelta kRtt = TimeDelta::Millis(100);
+  constexpr TimeDelta kInterArrivalTime = TimeDelta::Millis(33);
+  estimator_.UpdateRtt(kRtt);
+
+  // Ten perfect frames stabilize the estimate.
+  for (int i = 0; i < 10; ++i) {
+    fake_clock_.AdvanceTime(kInterArrivalTime);
+    estimator_.UpdateEstimate(gen.Delay(), gen.FrameSize());
+    gen.Advance();
+  }
+  EXPECT_EQ(estimator_.GetJitterEstimate(kRttMult, kRttMultAddCap),
+            TimeDelta::Millis(11));
+
+  // RTT is added to estimate after two NACKed frames.
+  fake_clock_.AdvanceTime(kInterArrivalTime);
+  estimator_.FrameNacked();
+  estimator_.UpdateEstimate(gen.Delay() + kRtt, gen.FrameSize());
+  gen.Advance();
+  EXPECT_EQ(estimator_.GetJitterEstimate(kRttMult, kRttMultAddCap),
+            TimeDelta::Millis(11));
+  fake_clock_.AdvanceTime(kInterArrivalTime);
+  estimator_.FrameNacked();
+  estimator_.UpdateEstimate(gen.Delay(), gen.FrameSize());
+  gen.Advance();
+  EXPECT_EQ(estimator_.GetJitterEstimate(kRttMult, kRttMultAddCap),
+            TimeDelta::Millis(111));
+
+  // RTT is removed from estimate after 101ms of no NACKed frames.
+  fake_clock_.AdvanceTime(TimeDelta::Millis(100));
+  estimator_.UpdateEstimate(gen.Delay() - kRtt, gen.FrameSize());
+  gen.Advance();
+  EXPECT_EQ(estimator_.GetJitterEstimate(kRttMult, kRttMultAddCap),
+            TimeDelta::Millis(111));
+  fake_clock_.AdvanceTime(TimeDelta::Millis(1));
+  estimator_.UpdateEstimate(gen.Delay(), gen.FrameSize());
+  gen.Advance();
+  EXPECT_EQ(estimator_.GetJitterEstimate(kRttMult, kRttMultAddCap),
+            TimeDelta::Millis(11));
+}
+
 class MisconfiguredFieldTrialsJitterEstimatorTest : public JitterEstimatorTest {
  protected:
   MisconfiguredFieldTrialsJitterEstimatorTest()
@@ -280,7 +329,9 @@ class MisconfiguredFieldTrialsJitterEstimatorTest : public JitterEstimatorTest {
             "frame_size_window:-1,"
             "num_stddev_delay_clamp:-1.9,"
             "num_stddev_delay_outlier:-2,"
-            "num_stddev_size_outlier:-23.1/") {}
+            "num_stddev_size_outlier:-23.1,"
+            "nack_limit:-1,"
+            "nack_count_timeout:0s/") {}
   ~MisconfiguredFieldTrialsJitterEstimatorTest() {}
 };
 
@@ -291,6 +342,8 @@ TEST_F(MisconfiguredFieldTrialsJitterEstimatorTest, FieldTrialsAreValidated) {
   EXPECT_EQ(*config.num_stddev_delay_clamp, 0.0);
   EXPECT_EQ(*config.num_stddev_delay_outlier, 0.0);
   EXPECT_EQ(*config.num_stddev_size_outlier, 0.0);
+  EXPECT_FALSE(config.nack_limit.has_value());
+  EXPECT_FALSE(config.nack_count_timeout.has_value());
 }
 
 }  // namespace
