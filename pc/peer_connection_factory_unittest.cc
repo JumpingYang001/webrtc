@@ -665,8 +665,7 @@ TEST_F(PeerConnectionFactoryTest, LocalRendering) {
 
 TEST(PeerConnectionFactoryDependenciesTest,
      CanInjectFieldTrialsWithEnvironment) {
-  std::unique_ptr<FieldTrialsView> field_trials =
-      FieldTrials::CreateNoGlobal("");
+  std::unique_ptr<FieldTrialsView> field_trials = FieldTrials::Create("");
   ASSERT_THAT(field_trials, NotNull());
   FieldTrialsView* raw_field_trials = field_trials.get();
 
@@ -682,10 +681,9 @@ TEST(PeerConnectionFactoryDependenciesTest,
 
 TEST(PeerConnectionFactoryDependenciesTest,
      PreferFieldTrialsInjectedExplicetly) {
-  std::unique_ptr<FieldTrialsView> env_field_trials =
-      FieldTrials::CreateNoGlobal("");
+  std::unique_ptr<FieldTrialsView> env_field_trials = FieldTrials::Create("");
   std::unique_ptr<FieldTrialsView> explicit_field_trials =
-      FieldTrials::CreateNoGlobal("");
+      FieldTrials::Create("");
   ASSERT_FALSE(env_field_trials.get() == explicit_field_trials.get());
   FieldTrialsView* raw_explicit_field_trials = explicit_field_trials.get();
 
