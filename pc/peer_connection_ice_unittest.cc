@@ -87,6 +87,7 @@ using RTCOfferAnswerOptions = PeerConnectionInterface::RTCOfferAnswerOptions;
 
 using ::testing::Combine;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Values;
 
@@ -595,7 +596,8 @@ TEST_P(PeerConnectionIceTest,
   std::unique_ptr<IceCandidate> ice_candidate =
       CreateIceCandidate(audio_content->mid(), 0, candidate);
   EXPECT_TRUE(caller->pc()->AddIceCandidate(ice_candidate.get()));
-  EXPECT_TRUE(caller->pc()->RemoveIceCandidates({candidate}));
+  // This will fail since `candidate.transport_name()` is empty.
+  EXPECT_FALSE(caller->pc()->RemoveIceCandidates({candidate}));
 }
 
 TEST_P(PeerConnectionIceTest, RemoveCandidateRemovesFromRemoteDescription) {
@@ -1598,12 +1600,14 @@ TEST_P(PeerConnectionIceTest, PrefersMidOverMLineIndex) {
 
   // `candidate.transport_name()` is empty.
   Candidate candidate = CreateLocalUdpCandidate(kCalleeAddress);
+  ASSERT_THAT(candidate.transport_name(), IsEmpty());
   auto* audio_content =
       GetFirstAudioContent(caller->pc()->local_description()->description());
   std::unique_ptr<IceCandidate> ice_candidate =
       CreateIceCandidate(audio_content->mid(), 65535, candidate);
   EXPECT_TRUE(caller->pc()->AddIceCandidate(ice_candidate.get()));
-  EXPECT_TRUE(caller->pc()->RemoveIceCandidates({candidate}));
+  // Removing the candidate will fail because of no transport_name().
+  EXPECT_FALSE(caller->pc()->RemoveIceCandidates({candidate}));
 }
 
 }  // namespace webrtc
