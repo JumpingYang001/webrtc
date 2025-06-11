@@ -255,9 +255,19 @@ class RTC_EXPORT SessionDescriptionInterface {
   // `candidate.sdp_mline_index()`.
   virtual bool AddCandidate(const IceCandidate* candidate) = 0;
 
+  // Removes the first matching candidate (at most 1) from the description
+  // that meets the `Candidate::MatchesForRemoval()` requirement and matches
+  // either the `IceCandidate::sdp_mid()` property or
+  // `IceCandidate::sdp_mline_index()`.
+  //
+  // Returns false if no matching candidate was found (and removed).
+  virtual bool RemoveCandidate(const IceCandidate* candidate) = 0;
+
   // Removes the candidates from the description, if found.
   //
   // Returns the number of candidates removed.
+  // TODO: webrtc:42233526 - Deprecate and eventually remove this method in
+  // favor of the IceCandidate version.
   virtual size_t RemoveCandidates(const std::vector<Candidate>& candidates);
 
   // Returns the number of m= sections in the session description.

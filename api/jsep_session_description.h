@@ -59,6 +59,9 @@ class JsepSessionDescription : public SessionDescriptionInterface {
   virtual std::string type() const { return SdpTypeToString(type_); }
   // Allows changing the type. Used for testing.
   virtual bool AddCandidate(const IceCandidate* candidate);
+  virtual bool RemoveCandidate(const IceCandidate* candidate);
+  // TODO: https://issues.webrtc.org/42233526 - Remove this method in favor of
+  // the IceCandidate version.
   virtual size_t RemoveCandidates(const std::vector<Candidate>& candidates);
   virtual size_t number_of_mediasections() const;
   virtual const IceCandidateCollection* candidates(
