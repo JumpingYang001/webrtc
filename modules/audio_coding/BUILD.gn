@@ -1086,15 +1086,12 @@ if (rtc_include_tests) {
       defines = []
       deps = [
         ":neteq_test_factory",
-        ":neteq_test_tools",
         ":neteq_tools_minimal",
         "../../rtc_base:checks",
         "../../rtc_base:stringutils",
-        "../../system_wrappers:field_trial",
-        "../../test:field_trial",
         "//third_party/abseil-cpp/absl/flags:flag",
         "//third_party/abseil-cpp/absl/flags:parse",
-        "//third_party/abseil-cpp/absl/strings",
+        "//third_party/abseil-cpp/absl/strings:string_view",
       ]
       sources = [ "neteq/tools/neteq_rtpplay.cc" ]
     }
