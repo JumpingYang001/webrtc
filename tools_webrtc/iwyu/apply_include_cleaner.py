@@ -72,6 +72,7 @@ _IGNORED_HEADERS = [
     ".pb.h",  # generated protobuf files.
     "pipewire/.*.h",  # pipewire.
     "spa/.*.h",  # pipewire.
+    "openssl/.*.h",  # openssl/boringssl.
 ]
 
 def _parse_args() -> argparse.Namespace:

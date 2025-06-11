@@ -20,17 +20,20 @@
 #include "absl/algorithm/container.h"
 #include "absl/strings/string_view.h"
 #include "api/array_view.h"
+#include "rtc_base/base64.h"
 #include "rtc_base/buffer.h"
 #include "rtc_base/openssl.h"
+#include "rtc_base/ssl_fingerprint.h"
+
 // IWYU pragma: begin_keep
 #ifdef OPENSSL_IS_BORINGSSL
+#include "rtc_base/boringssl_certificate.h"
 #include "rtc_base/boringssl_identity.h"
 #else
+#include "rtc_base/openssl_certificate.h"
 #include "rtc_base/openssl_identity.h"
 #endif
 // IWYU pragma: end_keep
-#include "rtc_base/base64.h"
-#include "rtc_base/ssl_fingerprint.h"
 
 namespace webrtc {
 

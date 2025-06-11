@@ -38,9 +38,16 @@
 #include "rtc_base/numerics/safe_conversions.h"
 #include "rtc_base/openssl_adapter.h"
 #include "rtc_base/openssl_digest.h"
+#include "rtc_base/openssl_utility.h"
+#include "rtc_base/ssl_certificate.h"
 #include "rtc_base/ssl_identity.h"
 #include "rtc_base/ssl_stream_adapter.h"
+#include "rtc_base/stream.h"
+#include "rtc_base/string_encode.h"
 #include "rtc_base/task_utils/repeating_task.h"
+#include "rtc_base/thread.h"
+#include "rtc_base/time_utils.h"
+
 #ifdef OPENSSL_IS_BORINGSSL
 #include <openssl/digest.h>
 #include <openssl/dtls1.h>
@@ -53,12 +60,6 @@
 #else
 #include "rtc_base/openssl_identity.h"
 #endif
-#include "rtc_base/openssl_utility.h"
-#include "rtc_base/ssl_certificate.h"
-#include "rtc_base/stream.h"
-#include "rtc_base/string_encode.h"
-#include "rtc_base/thread.h"
-#include "rtc_base/time_utils.h"
 
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L)
 #error "webrtc requires at least OpenSSL version 1.1.0, to support DTLS-SRTP"
