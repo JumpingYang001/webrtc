@@ -116,7 +116,6 @@
 #include "api/set_local_description_observer_interface.h"
 #include "api/set_remote_description_observer_interface.h"
 #include "api/stats/rtc_stats_collector_callback.h"
-#include "api/task_queue/task_queue_factory.h"
 #include "api/transport/bandwidth_estimation_settings.h"
 #include "api/transport/bitrate_settings.h"
 #include "api/transport/enums.h"
@@ -1430,15 +1429,11 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   SocketFactory* socket_factory = nullptr;
 
   // Provides common widely used dependencies for webrtc subcomponents.
-  // `task_queue_factory` and `field_trials` members below override values in
-  // `env` when set.
   std::optional<Environment> env;
 
   // The `packet_socket_factory` will only be used if CreatePeerConnection is
   // called without a `port_allocator`.
   std::unique_ptr<PacketSocketFactory> packet_socket_factory;
-  [[deprecated("Pass custom task queue factory through the 'env'")]]
-  std::unique_ptr<TaskQueueFactory> task_queue_factory;
   std::unique_ptr<RtcEventLogFactoryInterface> event_log_factory;
   std::unique_ptr<FecControllerFactoryInterface> fec_controller_factory;
   std::unique_ptr<NetworkStatePredictorFactoryInterface>
@@ -1453,8 +1448,6 @@ struct RTC_EXPORT PeerConnectionFactoryDependencies final {
   std::unique_ptr<NetworkMonitorFactory> network_monitor_factory;
   std::unique_ptr<NetEqFactory> neteq_factory;
   std::unique_ptr<SctpTransportFactoryInterface> sctp_factory;
-  [[deprecated("Pass custom field trials through the 'env'")]]
-  std::unique_ptr<FieldTrialsView> trials;
   std::unique_ptr<RtpTransportControllerSendFactoryInterface>
       transport_controller_send_factory;
   // Metronome used for decoding, must be called on the worker thread.

@@ -679,28 +679,6 @@ TEST(PeerConnectionFactoryDependenciesTest,
   EXPECT_EQ(&pcf->field_trials(), raw_field_trials);
 }
 
-TEST(PeerConnectionFactoryDependenciesTest,
-     PreferFieldTrialsInjectedExplicetly) {
-  std::unique_ptr<FieldTrialsView> env_field_trials = FieldTrials::Create("");
-  std::unique_ptr<FieldTrialsView> explicit_field_trials =
-      FieldTrials::Create("");
-  ASSERT_FALSE(env_field_trials.get() == explicit_field_trials.get());
-  FieldTrialsView* raw_explicit_field_trials = explicit_field_trials.get();
-
-  PeerConnectionFactoryDependencies pcf_dependencies;
-  pcf_dependencies.env = CreateEnvironment(std::move(env_field_trials));
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  pcf_dependencies.trials = std::move(explicit_field_trials);
-#pragma clang diagnostic pop
-  pcf_dependencies.adm = FakeAudioCaptureModule::Create();
-  EnableMediaWithDefaults(pcf_dependencies);
-
-  scoped_refptr<PeerConnectionFactory> pcf =
-      PeerConnectionFactory::Create(std::move(pcf_dependencies));
-  EXPECT_EQ(&pcf->field_trials(), raw_explicit_field_trials);
-}
-
 TEST(PeerConnectionFactoryDependenciesTest, UsesNetworkManager) {
   constexpr TimeDelta kWaitTimeout = TimeDelta::Seconds(10);
   auto mock_network_manager = std::make_unique<NiceMock<MockNetworkManager>>();
