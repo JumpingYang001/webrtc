@@ -161,7 +161,7 @@ void AddDefaultFeedbackParams(Codec* codec, const FieldTrialsView& trials) {
 // Also, is_decoder_factory is used to decide whether FlexFEC video format
 // should be advertised as supported.
 template <class T>
-std::vector<webrtc::SdpVideoFormat> GetDefaultSupportedFormats(
+std::vector<SdpVideoFormat> GetDefaultSupportedFormats(
     const T* factory,
     bool is_decoder_factory,
     const FieldTrialsView& trials) {
@@ -228,7 +228,7 @@ RTCErrorOr<Codec> AddRtx(const Codec& primary_codec,
 // TODO(kron): Perhaps it is better to move the implicit knowledge to the place
 // where codecs are negotiated.
 template <class T>
-std::vector<webrtc::Codec> GetPayloadTypesAndDefaultCodecs(
+std::vector<Codec> GetPayloadTypesAndDefaultCodecs(
     const T* factory,
     bool is_decoder_factory,
     bool include_rtx,
@@ -514,11 +514,9 @@ void FallbackToDefaultScalabilityModeIfNotSupported(
     const Codec& codec,
     const VideoSendStream::Config& config,
     std::vector<RtpEncodingParameters>& encodings) {
-  if (!absl::c_any_of(encodings,
-                      [](const webrtc::RtpEncodingParameters& encoding) {
-                        return encoding.scalability_mode &&
-                               !encoding.scalability_mode->empty();
-                      })) {
+  if (!absl::c_any_of(encodings, [](const RtpEncodingParameters& encoding) {
+        return encoding.scalability_mode && !encoding.scalability_mode->empty();
+      })) {
     // Fallback is only enabled if the scalability mode is configured for any of
     // the encodings for now.
     return;
@@ -2366,7 +2364,7 @@ void WebRtcVideoSendChannel::WebRtcVideoSendStream::ReconfigureEncoder(
     SetParametersCallback callback) {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   if (!stream_) {
-    // The webrtc::VideoSendStream `stream_` has not yet been created but other
+    // The VideoSendStream `stream_` has not yet been created but other
     // parameters has changed.
     InvokeSetParametersCallback(callback, RTCError::OK());
     return;

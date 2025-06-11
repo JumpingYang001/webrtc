@@ -221,7 +221,7 @@ RTCError CheckRtpParametersValues(const RtpParameters& rtp_parameters,
 
   if (has_scale_resolution_down_to &&
       absl::c_any_of(rtp_parameters.encodings,
-                     [](const webrtc::RtpEncodingParameters& encoding) {
+                     [](const RtpEncodingParameters& encoding) {
                        return encoding.active &&
                               !encoding.scale_resolution_down_to.has_value();
                      })) {
@@ -264,16 +264,16 @@ RTCError CheckRtpParametersInvalidModificationAndValues(
         "Attempted to set RtpParameters with modified header extensions");
   }
   if (!absl::c_equal(old_rtp_parameters.encodings, rtp_parameters.encodings,
-                     [](const webrtc::RtpEncodingParameters& encoding1,
-                        const webrtc::RtpEncodingParameters& encoding2) {
+                     [](const RtpEncodingParameters& encoding1,
+                        const RtpEncodingParameters& encoding2) {
                        return encoding1.rid == encoding2.rid;
                      })) {
     LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_MODIFICATION,
                          "Attempted to change RID values in the encodings.");
   }
   if (!absl::c_equal(old_rtp_parameters.encodings, rtp_parameters.encodings,
-                     [](const webrtc::RtpEncodingParameters& encoding1,
-                        const webrtc::RtpEncodingParameters& encoding2) {
+                     [](const RtpEncodingParameters& encoding1,
+                        const RtpEncodingParameters& encoding2) {
                        return encoding1.ssrc == encoding2.ssrc;
                      })) {
     LOG_AND_RETURN_ERROR(RTCErrorType::INVALID_MODIFICATION,

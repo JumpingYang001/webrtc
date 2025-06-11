@@ -90,7 +90,7 @@ class FakeAudioSendStream final : public AudioSendStream {
   bool muted() const { return muted_; }
 
  private:
-  // webrtc::AudioSendStream implementation.
+  // AudioSendStream implementation.
   void Reconfigure(const AudioSendStream::Config& config,
                    SetParametersCallback callback) override;
   void Start() override { sending_ = true; }
@@ -222,10 +222,10 @@ class FakeVideoSendStream final : public VideoSendStream,
   }
 
  private:
-  // webrtc::VideoSinkInterface<VideoFrame> implementation.
+  // VideoSinkInterface<VideoFrame> implementation.
   void OnFrame(const VideoFrame& frame) override;
 
-  // webrtc::VideoSendStream implementation.
+  // VideoSendStream implementation.
   void Start() override;
   void Stop() override;
   bool started() override { return IsSending(); }
