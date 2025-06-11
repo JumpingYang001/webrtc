@@ -317,8 +317,7 @@ std::unique_ptr<SessionDescriptionInterface> CreateSessionDescription(
     std::unique_ptr<SessionDescription> description);
 
 // CreateOffer and CreateAnswer callback interface.
-class RTC_EXPORT CreateSessionDescriptionObserver
-    : public webrtc::RefCountInterface {
+class RTC_EXPORT CreateSessionDescriptionObserver : public RefCountInterface {
  public:
   // This callback transfers the ownership of the `desc`.
   // TODO(deadbeef): Make this take an std::unique_ptr<> to avoid confusion
@@ -337,8 +336,7 @@ class RTC_EXPORT CreateSessionDescriptionObserver
 };
 
 // SetLocalDescription and SetRemoteDescription callback interface.
-class RTC_EXPORT SetSessionDescriptionObserver
-    : public webrtc::RefCountInterface {
+class RTC_EXPORT SetSessionDescriptionObserver : public RefCountInterface {
  public:
   virtual void OnSuccess() = 0;
   // See description in CreateSessionDescriptionObserver for OnFailure.

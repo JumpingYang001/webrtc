@@ -137,7 +137,7 @@ struct RTC_EXPORT RtpCodec {
   std::string name;
 
   // The media type of this codec. Equivalent to MIME top-level type.
-  webrtc::MediaType kind = webrtc::MediaType::AUDIO;
+  MediaType kind = MediaType::AUDIO;
 
   // If unset, the implementation default is used.
   std::optional<int> clock_rate;
@@ -195,7 +195,7 @@ struct RTC_EXPORT RtpCodecCapability : public RtpCodec {
 
   template <typename Sink>
   friend void AbslStringify(Sink& sink, const RtpCodecCapability& cap) {
-    if (cap.kind == webrtc::MediaType::AUDIO) {
+    if (cap.kind == MediaType::AUDIO) {
       absl::Format(&sink, "[audio/%s/%d/%d]", cap.name,
                    cap.clock_rate.value_or(0), cap.num_channels.value_or(1));
     } else {
@@ -214,7 +214,7 @@ struct RTC_EXPORT RtpCodecCapability : public RtpCodec {
 //
 // Note that ORTC includes a "kind" field, but we omit this because it's
 // redundant; if you call
-// "RtpReceiver::GetCapabilities(webrtc::MediaType::AUDIO)", you know you're
+// "RtpReceiver::GetCapabilities(MediaType::AUDIO)", you know you're
 // getting audio capabilities.
 struct RTC_EXPORT RtpHeaderExtensionCapability {
   // URI of this extension, as defined in RFC8285.
@@ -394,7 +394,7 @@ struct RTC_EXPORT RtpExtension {
   static constexpr char kRepairedRidUri[] =
       "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id";
 
-  // Header extension to propagate webrtc::VideoFrame id field
+  // Header extension to propagate VideoFrame id field
   static constexpr char kVideoFrameTrackingIdUri[] =
       "http://www.webrtc.org/experiments/rtp-hdrext/video-frame-tracking-id";
 
