@@ -79,7 +79,7 @@ class SessionData : public SignalingInterface {
   }
 
   void OnIceCandidate(
-      std::function<void(std::unique_ptr<::webrtc::IceCandidate> candidate)>
+      std::function<void(std::unique_ptr<webrtc::IceCandidate> candidate)>
           callback) override {
     RTC_LOG(LS_INFO) << "OnIceCandidate";
     ice_candidate_callback_ = callback;
@@ -89,7 +89,7 @@ class SessionData : public SignalingInterface {
 
   std::function<void(std::unique_ptr<webrtc::IceCandidate>)>
       ice_candidate_callback_;
-  std::function<void(std::unique_ptr<webrtc::SessionDescriptionInterface>)>
+  std::function<void(std::unique_ptr<SessionDescriptionInterface>)>
       remote_description_callback_;
 };
 
