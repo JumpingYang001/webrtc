@@ -269,7 +269,7 @@ class LatencyAudioStream : public AudioStream {
       PRINTD("(%zu, %zu)", max, index_of_max);
       int64_t now_time = TimeMillis();
       int extra_delay = IndexToMilliseconds(index_of_max, source.size());
-      PRINTD("[%d]", webrtc::checked_cast<int>(now_time - pulse_time_));
+      PRINTD("[%d]", checked_cast<int>(now_time - pulse_time_));
       PRINTD("[%d]", extra_delay);
       // Total latency is the difference between transmit time and detection
       // tome plus the extra delay within the buffer in which we detected the
