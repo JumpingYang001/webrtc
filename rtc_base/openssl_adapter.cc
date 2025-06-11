@@ -258,8 +258,8 @@ void OpenSSLAdapter::SetIdentity(std::unique_ptr<SSLIdentity> identity) {
   identity_ =
       absl::WrapUnique(static_cast<BoringSSLIdentity*>(identity.release()));
 #else
-  identity_ = absl::WrapUnique(
-      static_cast<webrtc::OpenSSLIdentity*>(identity.release()));
+  identity_ =
+      absl::WrapUnique(static_cast<OpenSSLIdentity*>(identity.release()));
 #endif
 }
 
@@ -912,7 +912,7 @@ int OpenSSLAdapter::SSLVerifyInternal(int previous_status,
   }
   const BoringSSLCertificate cert(std::move(crypto_buffer));
 #else
-  const webrtc::OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
+  const OpenSSLCertificate cert(X509_STORE_CTX_get_current_cert(store));
 #endif
   if (!ssl_cert_verifier_->Verify(cert)) {
     RTC_LOG(LS_INFO) << "Failed to verify certificate using custom callback";

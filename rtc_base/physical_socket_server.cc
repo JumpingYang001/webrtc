@@ -1825,7 +1825,7 @@ bool PhysicalSocketServer::WaitPoll(int cmsWait, bool process_io) {
   int64_t msStop = -1;
   if (cmsWait != kForeverMs) {
     msWait = cmsWait;
-    msStop = webrtc::TimeAfter(cmsWait);
+    msStop = TimeAfter(cmsWait);
   }
 
   std::vector<pollfd> pollfds;
@@ -1833,7 +1833,7 @@ bool PhysicalSocketServer::WaitPoll(int cmsWait, bool process_io) {
 
   while (fWait_) {
     {
-      webrtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       current_dispatcher_keys_.clear();
       pollfds.clear();
       pollfds.reserve(dispatcher_by_key_.size());
@@ -1867,7 +1867,7 @@ bool PhysicalSocketServer::WaitPoll(int cmsWait, bool process_io) {
       return true;
     } else {
       // We have signaled descriptors
-      webrtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       // Iterate only on the dispatchers whose file descriptors were passed into
       // poll; this avoids the ABA problem (a socket being destroyed and a new
       // one created with the same file descriptor).
@@ -1880,7 +1880,7 @@ bool PhysicalSocketServer::WaitPoll(int cmsWait, bool process_io) {
     }
 
     if (cmsWait != kForeverMs) {
-      msWait = webrtc::TimeDiff(msStop, webrtc::TimeMillis());
+      msWait = TimeDiff(msStop, TimeMillis());
       if (msWait < 0) {
         // Return success on timeout.
         return true;
@@ -1896,8 +1896,7 @@ bool PhysicalSocketServer::WaitPoll(int cmsWait, bool process_io) {
 #endif  // WEBRTC_POSIX
 
 #if defined(WEBRTC_WIN)
-bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
-                                bool process_io) {
+bool PhysicalSocketServer::Wait(TimeDelta max_wait_duration, bool process_io) {
   // We don't support reentrant waiting.
   RTC_DCHECK(!waiting_);
   ScopedSetTrue set(&waiting_);
@@ -1905,7 +1904,7 @@ bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
   int cmsWait = ToCmsWait(max_wait_duration);
   int64_t cmsTotal = cmsWait;
   int64_t cmsElapsed = 0;
-  int64_t msStart = webrtc::Time();
+  int64_t msStart = Time();
 
   fWait_ = true;
   while (fWait_) {
@@ -1915,7 +1914,7 @@ bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
     events.push_back(socket_ev_);
 
     {
-      webrtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       // Get a snapshot of all current dispatchers; this is used to avoid the
       // ABA problem (see later comment) and avoids the dispatcher_by_key_
       // iterator being invalidated by calling CheckSignalClose, which may
@@ -1971,7 +1970,7 @@ bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
       return true;
     } else {
       // Figure out which one it is and call it
-      webrtc::CritScope cr(&crit_);
+      CritScope cr(&crit_);
       int index = dw - WSA_WAIT_EVENT_0;
       if (index > 0) {
         --index;  // The first event is the socket event
@@ -2064,7 +2063,7 @@ bool PhysicalSocketServer::Wait(webrtc::TimeDelta max_wait_duration,
     // Break?
     if (!fWait_)
       break;
-    cmsElapsed = webrtc::TimeSince(msStart);
+    cmsElapsed = TimeSince(msStart);
     if ((cmsWait != kForeverMs) && (cmsElapsed >= cmsWait)) {
       break;
     }
