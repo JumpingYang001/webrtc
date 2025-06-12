@@ -168,16 +168,6 @@ TEST_F(JsepSessionDescriptionTest, CheckSessionDescription) {
   EXPECT_EQ(2u, jsep_desc_->number_of_mediasections());
 }
 
-TEST_F(JsepSessionDescriptionTest, IsValidMLineIndex) {
-  ASSERT_GT(jsep_desc_->number_of_mediasections(), 0u);
-  // Create a candidate with no mid and an illegal index.
-  IceCandidate ice_candidate("", -1, candidate_);
-  EXPECT_FALSE(jsep_desc_->AddCandidate(&ice_candidate));
-  IceCandidate ice_candidate2("", jsep_desc_->number_of_mediasections(),
-                              candidate_);
-  EXPECT_FALSE(jsep_desc_->AddCandidate(&ice_candidate2));
-}
-
 // Test that we can add a candidate to a session description without MID.
 TEST_F(JsepSessionDescriptionTest, AddCandidateWithoutMid) {
   IceCandidate jsep_candidate("", 0, candidate_);

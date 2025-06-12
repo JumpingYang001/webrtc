@@ -3001,7 +3001,7 @@ bool SdpOfferAnswerHandler::RemoveIceCandidates(
     return false;
   }
 
-  const size_t number_removed =
+  size_t number_removed =
       mutable_remote_description()->RemoveCandidates(candidates);
   if (number_removed != candidates.size()) {
     RTC_LOG(LS_ERROR)
@@ -3017,7 +3017,7 @@ bool SdpOfferAnswerHandler::RemoveIceCandidates(
         << "RemoveIceCandidates: Error when removing remote candidates: "
         << error.message();
   }
-  return number_removed != 0u;
+  return true;
 }
 
 void SdpOfferAnswerHandler::AddLocalIceCandidate(

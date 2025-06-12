@@ -75,9 +75,8 @@ class JsepSessionDescription : public SessionDescriptionInterface {
   SdpType type_;
   std::vector<JsepCandidateCollection> candidate_collection_;
 
-  bool IsValidMLineIndex(int index) const;
-  bool GetMediasectionIndex(const IceCandidate* candidate, size_t* index) const;
-  int GetMediasectionIndex(absl::string_view mid) const;
+  bool GetMediasectionIndex(const IceCandidate* candidate, size_t* index);
+  int GetMediasectionIndex(const Candidate& candidate);
 };
 
 }  // namespace webrtc
