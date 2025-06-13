@@ -10,13 +10,15 @@
 
 #include "test/testsupport/y4m_frame_generator.h"
 
-#include <cstdint>
+#include <stdio.h>
+
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <vector>
 
 #include "absl/strings/string_view.h"
+#include "api/test/frame_generator_interface.h"
 #include "test/gtest.h"
 #include "test/testsupport/file_utils.h"
 

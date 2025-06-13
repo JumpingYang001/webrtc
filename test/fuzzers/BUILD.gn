@@ -38,6 +38,7 @@ rtc_library("fuzz_data_helper") {
   deps = [
     "../../api:array_view",
     "../../modules/rtp_rtcp:rtp_rtcp_format",
+    "../../rtc_base:checks",
   ]
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
 }
