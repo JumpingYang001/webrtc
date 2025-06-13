@@ -26,6 +26,7 @@
 #include "api/call/bitrate_allocation.h"
 #include "api/crypto/frame_encryptor_interface.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
 #include "api/function_view.h"
 #include "api/make_ref_counted.h"
 #include "api/rtp_parameters.h"
@@ -51,11 +52,11 @@
 #include "modules/rtp_rtcp/mocks/mock_network_link_rtcp_observer.h"
 #include "modules/rtp_rtcp/mocks/mock_rtp_rtcp.h"
 #include "modules/rtp_rtcp/source/rtp_header_extensions.h"
+#include "test/create_test_field_trials.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_audio_encoder.h"
 #include "test/mock_audio_encoder_factory.h"
-#include "test/scoped_key_value_config.h"
 #include "test/time_controller/real_time_controller.h"
 
 namespace webrtc {
@@ -163,18 +164,18 @@ scoped_refptr<MockAudioEncoderFactory> SetupEncoderFactoryMock() {
   return factory;
 }
 
-struct ConfigHelper {
+class ConfigHelper {
+ public:
   ConfigHelper(bool audio_bwe_enabled,
                bool expect_set_encoder_call,
                bool use_null_audio_processing)
-      : stream_config_(/*send_transport=*/nullptr),
+      : field_trials_(CreateTestFieldTrials()),
+        stream_config_(/*send_transport=*/nullptr),
         audio_processing_(
             use_null_audio_processing
                 ? nullptr
                 : make_ref_counted<NiceMock<MockAudioProcessing>>()),
         audio_encoder_(nullptr) {
-    using ::testing::Invoke;
-
     AudioState::Config config;
     config.audio_mixer = AudioMixerImpl::Create();
     config.audio_processing = audio_processing_;
@@ -204,7 +205,7 @@ struct ConfigHelper {
 
   std::unique_ptr<internal::AudioSendStream> CreateAudioSendStream() {
     return std::make_unique<internal::AudioSendStream>(
-        CreateEnvironment(&field_trials, time_controller_.GetClock(),
+        CreateEnvironment(&field_trials_, time_controller_.GetClock(),
                           time_controller_.GetTaskQueueFactory()),
         stream_config_, audio_state_, &rtp_transport_, &bitrate_allocator_,
         std::nullopt,
@@ -331,9 +332,10 @@ struct ConfigHelper {
     }
   }
 
-  test::ScopedKeyValueConfig field_trials;
+  FieldTrials& field_trials() { return field_trials_; }
 
  private:
+  FieldTrials field_trials_;
   RealTimeController time_controller_;
   scoped_refptr<AudioState> audio_state_;
   AudioSendStream::Config stream_config_;
@@ -673,8 +675,8 @@ TEST(AudioSendStreamTest, SSBweTargetInRangeRespected) {
 TEST(AudioSendStreamTest, SSBweFieldTrialMinRespected) {
   for (bool use_null_audio_processing : {false, true}) {
     ConfigHelper helper(true, true, use_null_audio_processing);
-    ScopedKeyValueConfig field_trials(
-        helper.field_trials, "WebRTC-Audio-Allocation/min:6kbps,max:64kbps/");
+    helper.field_trials().Set("WebRTC-Audio-Allocation",
+                              "min:6kbps,max:64kbps");
     auto send_stream = helper.CreateAudioSendStream();
     EXPECT_CALL(
         *helper.channel_send(),
@@ -689,8 +691,8 @@ TEST(AudioSendStreamTest, SSBweFieldTrialMinRespected) {
 TEST(AudioSendStreamTest, SSBweFieldTrialMaxRespected) {
   for (bool use_null_audio_processing : {false, true}) {
     ConfigHelper helper(true, true, use_null_audio_processing);
-    ScopedKeyValueConfig field_trials(
-        helper.field_trials, "WebRTC-Audio-Allocation/min:6kbps,max:64kbps/");
+    helper.field_trials().Set("WebRTC-Audio-Allocation",
+                              "min:6kbps,max:64kbps");
     auto send_stream = helper.CreateAudioSendStream();
     EXPECT_CALL(
         *helper.channel_send(),
@@ -705,8 +707,7 @@ TEST(AudioSendStreamTest, SSBweFieldTrialMaxRespected) {
 TEST(AudioSendStreamTest, SSBweWithOverhead) {
   for (bool use_null_audio_processing : {false, true}) {
     ConfigHelper helper(true, true, use_null_audio_processing);
-    ScopedKeyValueConfig field_trials(helper.field_trials,
-                                      "WebRTC-Audio-LegacyOverhead/Disabled/");
+    helper.field_trials().Set("WebRTC-Audio-LegacyOverhead", "Disabled");
     EXPECT_CALL(*helper.rtp_rtcp(), ExpectedPerPacketOverhead)
         .WillRepeatedly(Return(kOverheadPerPacket.bytes<size_t>()));
     EXPECT_CALL(*helper.channel_send(), RegisterPacketOverhead);
@@ -726,10 +727,9 @@ TEST(AudioSendStreamTest, SSBweWithOverhead) {
 TEST(AudioSendStreamTest, SSBweWithOverheadMinRespected) {
   for (bool use_null_audio_processing : {false, true}) {
     ConfigHelper helper(true, true, use_null_audio_processing);
-    ScopedKeyValueConfig field_trials(
-        helper.field_trials,
-        "WebRTC-Audio-LegacyOverhead/Disabled/"
-        "WebRTC-Audio-Allocation/min:6kbps,max:64kbps/");
+    helper.field_trials().Set("WebRTC-Audio-LegacyOverhead", "Disabled");
+    helper.field_trials().Set("WebRTC-Audio-Allocation",
+                              "min:6kbps,max:64kbps");
     EXPECT_CALL(*helper.rtp_rtcp(), ExpectedPerPacketOverhead)
         .WillRepeatedly(Return(kOverheadPerPacket.bytes<size_t>()));
     EXPECT_CALL(*helper.channel_send(), RegisterPacketOverhead);
@@ -747,10 +747,9 @@ TEST(AudioSendStreamTest, SSBweWithOverheadMinRespected) {
 TEST(AudioSendStreamTest, SSBweWithOverheadMaxRespected) {
   for (bool use_null_audio_processing : {false, true}) {
     ConfigHelper helper(true, true, use_null_audio_processing);
-    ScopedKeyValueConfig field_trials(
-        helper.field_trials,
-        "WebRTC-Audio-LegacyOverhead/Disabled/"
-        "WebRTC-Audio-Allocation/min:6kbps,max:64kbps/");
+    helper.field_trials().Set("WebRTC-Audio-LegacyOverhead", "Disabled");
+    helper.field_trials().Set("WebRTC-Audio-Allocation",
+                              "min:6kbps,max:64kbps");
     EXPECT_CALL(*helper.rtp_rtcp(), ExpectedPerPacketOverhead)
         .WillRepeatedly(Return(kOverheadPerPacket.bytes<size_t>()));
     EXPECT_CALL(*helper.channel_send(), RegisterPacketOverhead);
@@ -959,8 +958,7 @@ TEST(AudioSendStreamTest, ReconfigureWithFrameEncryptor) {
 
 TEST(AudioSendStreamTest, DefaultsHonorsPriorityBitrate) {
   ConfigHelper helper(true, true, true);
-  ScopedKeyValueConfig field_trials(helper.field_trials,
-                                    "WebRTC-Audio-Allocation/prio_rate:20/");
+  helper.field_trials().Set("WebRTC-Audio-Allocation", "prio_rate:20");
   auto send_stream = helper.CreateAudioSendStream();
   EXPECT_CALL(*helper.bitrate_allocator(), AddObserver(send_stream.get(), _))
       .WillOnce(Invoke(
@@ -989,9 +987,8 @@ TEST(AudioSendStreamTest, DefaultsToContributeUnusedBitrate) {
 
 TEST(AudioSendStreamTest, OverridesPriorityBitrate) {
   ConfigHelper helper(true, true, true);
-  ScopedKeyValueConfig field_trials(helper.field_trials,
-                                    "WebRTC-Audio-Allocation/prio_rate:20/"
-                                    "WebRTC-Audio-PriorityBitrate/Disabled/");
+  helper.field_trials().Set("WebRTC-Audio-Allocation", "prio_rate:20");
+  helper.field_trials().Set("WebRTC-Audio-PriorityBitrate", "Disabled");
   auto send_stream = helper.CreateAudioSendStream();
   EXPECT_CALL(*helper.bitrate_allocator(), AddObserver(send_stream.get(), _))
       .WillOnce(Invoke(

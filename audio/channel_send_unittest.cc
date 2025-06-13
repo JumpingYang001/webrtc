@@ -28,6 +28,7 @@
 #include "api/crypto/crypto_options.h"
 #include "api/environment/environment.h"
 #include "api/environment/environment_factory.h"
+#include "api/field_trials.h"
 #include "api/frame_transformer_interface.h"
 #include "api/make_ref_counted.h"
 #include "api/rtp_headers.h"
@@ -43,10 +44,10 @@
 #include "call/rtp_transport_controller_send.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/rtp_packet_received.h"
+#include "test/create_test_field_trials.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 #include "test/mock_transport.h"
-#include "test/scoped_key_value_config.h"
 #include "test/time_controller/simulated_time_controller.h"
 #include "test/wait_until.h"
 
@@ -79,6 +80,7 @@ class ChannelSendTest : public ::testing::Test {
  protected:
   ChannelSendTest()
       : time_controller_(Timestamp::Seconds(1)),
+        field_trials_(CreateTestFieldTrials()),
         env_(CreateEnvironment(&field_trials_,
                                time_controller_.GetClock(),
                                time_controller_.CreateTaskQueueFactory())),
@@ -123,7 +125,7 @@ class ChannelSendTest : public ::testing::Test {
   void ProcessNextFrame() { ProcessNextFrame(CreateAudioFrame()); }
 
   GlobalSimulatedTimeController time_controller_;
-  test::ScopedKeyValueConfig field_trials_;
+  FieldTrials field_trials_;
   Environment env_;
   NiceMock<MockTransport> transport_;
   CryptoOptions crypto_options_;

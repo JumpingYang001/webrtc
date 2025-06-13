@@ -351,7 +351,7 @@ webrtc_fuzzer_test("audio_decoder_opus_fuzzer") {
   sources = [ "audio_decoder_opus_fuzzer.cc" ]
   deps = [
     ":audio_decoder_fuzzer",
-    "..:explicit_key_value_config",
+    "../../api:field_trials",
     "../../modules/audio_coding:webrtc_opus",
   ]
 }
@@ -360,7 +360,7 @@ webrtc_fuzzer_test("audio_decoder_opus_redundant_fuzzer") {
   sources = [ "audio_decoder_opus_redundant_fuzzer.cc" ]
   deps = [
     ":audio_decoder_fuzzer",
-    "..:explicit_key_value_config",
+    "../../api:field_trials",
     "../../modules/audio_coding:webrtc_opus",
   ]
 }
