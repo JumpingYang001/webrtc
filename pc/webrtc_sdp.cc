@@ -67,16 +67,156 @@
 #include "rtc_base/string_encode.h"
 #include "rtc_base/strings/string_builder.h"
 
-// TODO(deadbeef): Switch to using anonymous namespace rather than declaring
-// everything "static".
-namespace webrtc {
-
+namespace {
 // Line type
 // RFC 4566
 // An SDP session description consists of a number of lines of text of
 // the form:
 // <type>=<value>
 // where <type> MUST be exactly one case-significant character.
+const int kLinePrefixLength = 2;  // Length of <type>=
+const char kLineTypeVersion = 'v';
+const char kLineTypeOrigin = 'o';
+const char kLineTypeSessionName = 's';
+const char kLineTypeSessionInfo = 'i';
+const char kLineTypeSessionUri = 'u';
+const char kLineTypeSessionEmail = 'e';
+const char kLineTypeSessionPhone = 'p';
+const char kLineTypeSessionBandwidth = 'b';
+const char kLineTypeTiming = 't';
+const char kLineTypeRepeatTimes = 'r';
+const char kLineTypeTimeZone = 'z';
+const char kLineTypeEncryptionKey = 'k';
+const char kLineTypeMedia = 'm';
+const char kLineTypeConnection = 'c';
+const char kLineTypeAttributes = 'a';
+
+// Attributes
+const char kAttributeGroup[] = "group";
+const char kAttributeMid[] = "mid";
+const char kAttributeMsid[] = "msid";
+const char kAttributeBundleOnly[] = "bundle-only";
+const char kAttributeRtcpMux[] = "rtcp-mux";
+const char kAttributeRtcpReducedSize[] = "rtcp-rsize";
+const char kAttributeSsrc[] = "ssrc";
+const char kSsrcAttributeCname[] = "cname";
+const char kAttributeExtmapAllowMixed[] = "extmap-allow-mixed";
+const char kAttributeExtmap[] = "extmap";
+// draft-alvestrand-mmusic-msid-01
+// a=msid-semantic: WMS
+// This is a legacy field supported only for Plan B semantics.
+const char kAttributeMsidSemantics[] = "msid-semantic";
+const char kMediaStreamSemantic[] = "WMS";
+const char kSsrcAttributeMsid[] = "msid";
+const char kDefaultMsid[] = "default";
+const char kNoStreamMsid[] = "-";
+const char kAttributeSsrcGroup[] = "ssrc-group";
+const char kAttributeCandidate[] = "candidate";
+const char kAttributeCandidateTyp[] = "typ";
+const char kAttributeCandidateRaddr[] = "raddr";
+const char kAttributeCandidateRport[] = "rport";
+const char kAttributeCandidateUfrag[] = "ufrag";
+const char kAttributeCandidatePwd[] = "pwd";
+const char kAttributeCandidateGeneration[] = "generation";
+const char kAttributeCandidateNetworkId[] = "network-id";
+const char kAttributeCandidateNetworkCost[] = "network-cost";
+const char kAttributeFingerprint[] = "fingerprint";
+const char kAttributeSetup[] = "setup";
+const char kAttributeFmtp[] = "fmtp";
+const char kAttributeRtpmap[] = "rtpmap";
+const char kAttributeSctpmap[] = "sctpmap";
+const char kAttributeRtcp[] = "rtcp";
+const char kAttributeIceUfrag[] = "ice-ufrag";
+const char kAttributeIcePwd[] = "ice-pwd";
+const char kAttributeIceLite[] = "ice-lite";
+const char kAttributeIceOption[] = "ice-options";
+const char kAttributeSendOnly[] = "sendonly";
+const char kAttributeRecvOnly[] = "recvonly";
+const char kAttributeRtcpFb[] = "rtcp-fb";
+const char kAttributeSendRecv[] = "sendrecv";
+const char kAttributeInactive[] = "inactive";
+// draft-ietf-mmusic-sctp-sdp-26
+// a=sctp-port, a=max-message-size
+const char kAttributeSctpPort[] = "sctp-port";
+const char kAttributeMaxMessageSize[] = "max-message-size";
+const int kDefaultSctpMaxMessageSize = 65536;
+// draft-ietf-mmusic-sdp-simulcast-13
+// a=simulcast
+constexpr absl::string_view kAttributeSimulcast = "simulcast";
+// draft-ietf-mmusic-rid-15
+// a=rid
+constexpr absl::string_view kAttributeRid = "rid";
+const char kAttributePacketization[] = "packetization";
+
+// Experimental flags
+const char kAttributeXGoogleFlag[] = "x-google-flag";
+const char kValueConference[] = "conference";
+
+const char kAttributeRtcpRemoteEstimate[] = "remote-net-estimate";
+
+// Candidate
+const char kCandidateHost[] = "host";
+const char kCandidateSrflx[] = "srflx";
+const char kCandidatePrflx[] = "prflx";
+const char kCandidateRelay[] = "relay";
+const char kTcpCandidateType[] = "tcptype";
+
+// StringBuilder doesn't have a << overload for chars, while
+// split and tokenize_first both take a char delimiter. To
+// handle both cases these constants come in pairs of a chars and length-one
+// strings.
+const char kSdpDelimiterEqual[] = "=";
+const char kSdpDelimiterEqualChar = '=';
+const char kSdpDelimiterSpace[] = " ";
+const char kSdpDelimiterSpaceChar = ' ';
+constexpr absl::string_view kSdpDelimiterColon = ":";
+const char kSdpDelimiterColonChar = ':';
+const char kSdpDelimiterSemicolon[] = ";";
+const char kSdpDelimiterSemicolonChar = ';';
+const char kSdpDelimiterSlashChar = '/';
+const char kNewLineChar = '\n';
+const char kReturnChar = '\r';
+const char kLineBreak[] = "\r\n";
+
+// TODO(deadbeef): Generate the Session and Time description
+// instead of hardcoding.
+const char kSessionVersion[] = "v=0";
+// RFC 4566
+const char kSessionOriginUsername[] = "-";
+const char kSessionOriginSessionId[] = "0";
+const char kSessionOriginSessionVersion[] = "0";
+const char kSessionOriginNettype[] = "IN";
+const char kSessionOriginAddrtype[] = "IP4";
+const char kSessionOriginAddress[] = "127.0.0.1";
+const char kSessionName[] = "s=-";
+const char kTimeDescription[] = "t=0 0";
+const char kAttrGroup[] = "a=group:BUNDLE";
+const char kConnectionNettype[] = "IN";
+const char kConnectionIpv4Addrtype[] = "IP4";
+const char kConnectionIpv6Addrtype[] = "IP6";
+const char kSdpMediaTypeVideo[] = "video";
+const char kSdpMediaTypeAudio[] = "audio";
+const char kSdpMediaTypeData[] = "application";
+const char kMediaPortRejected[] = "0";
+// draft-ietf-mmusic-trickle-ice-01
+// When no candidates have been gathered, set the connection
+// address to IP6 ::.
+// TODO(perkj): FF can not parse IP6 ::. See http://crbug/430333
+// Use IPV4 per default.
+const char kDummyAddress[] = "0.0.0.0";
+const char kDummyPort[] = "9";
+
+const char kDefaultSctpmapProtocol[] = "webrtc-datachannel";
+
+// RTP payload type is in the 0-127 range. Use -1 to indicate "all" payload
+// types.
+const int kWildcardPayloadType = -1;
+
+}  // namespace
+
+// TODO(deadbeef): Switch to using anonymous namespace rather than declaring
+// everything "static".
+namespace webrtc {
 
 // Check if passed character is a "token-char" from RFC 4566.
 // https://datatracker.ietf.org/doc/html/rfc4566#section-9
@@ -87,144 +227,6 @@ bool IsTokenChar(char ch) {
          ch == 0x2d || ch == 0x2e || (ch >= 0x30 && ch <= 0x39) ||
          (ch >= 0x41 && ch <= 0x5a) || (ch >= 0x5e && ch <= 0x7e);
 }
-static const int kLinePrefixLength = 2;  // Length of <type>=
-static const char kLineTypeVersion = 'v';
-static const char kLineTypeOrigin = 'o';
-static const char kLineTypeSessionName = 's';
-static const char kLineTypeSessionInfo = 'i';
-static const char kLineTypeSessionUri = 'u';
-static const char kLineTypeSessionEmail = 'e';
-static const char kLineTypeSessionPhone = 'p';
-static const char kLineTypeSessionBandwidth = 'b';
-static const char kLineTypeTiming = 't';
-static const char kLineTypeRepeatTimes = 'r';
-static const char kLineTypeTimeZone = 'z';
-static const char kLineTypeEncryptionKey = 'k';
-static const char kLineTypeMedia = 'm';
-static const char kLineTypeConnection = 'c';
-static const char kLineTypeAttributes = 'a';
-
-// Attributes
-static const char kAttributeGroup[] = "group";
-static const char kAttributeMid[] = "mid";
-static const char kAttributeMsid[] = "msid";
-static const char kAttributeBundleOnly[] = "bundle-only";
-static const char kAttributeRtcpMux[] = "rtcp-mux";
-static const char kAttributeRtcpReducedSize[] = "rtcp-rsize";
-static const char kAttributeSsrc[] = "ssrc";
-static const char kSsrcAttributeCname[] = "cname";
-static const char kAttributeExtmapAllowMixed[] = "extmap-allow-mixed";
-static const char kAttributeExtmap[] = "extmap";
-// draft-alvestrand-mmusic-msid-01
-// a=msid-semantic: WMS
-// This is a legacy field supported only for Plan B semantics.
-static const char kAttributeMsidSemantics[] = "msid-semantic";
-static const char kMediaStreamSemantic[] = "WMS";
-static const char kSsrcAttributeMsid[] = "msid";
-static const char kDefaultMsid[] = "default";
-static const char kNoStreamMsid[] = "-";
-static const char kAttributeSsrcGroup[] = "ssrc-group";
-static const char kAttributeCandidate[] = "candidate";
-static const char kAttributeCandidateTyp[] = "typ";
-static const char kAttributeCandidateRaddr[] = "raddr";
-static const char kAttributeCandidateRport[] = "rport";
-static const char kAttributeCandidateUfrag[] = "ufrag";
-static const char kAttributeCandidatePwd[] = "pwd";
-static const char kAttributeCandidateGeneration[] = "generation";
-static const char kAttributeCandidateNetworkId[] = "network-id";
-static const char kAttributeCandidateNetworkCost[] = "network-cost";
-static const char kAttributeFingerprint[] = "fingerprint";
-static const char kAttributeSetup[] = "setup";
-static const char kAttributeFmtp[] = "fmtp";
-static const char kAttributeRtpmap[] = "rtpmap";
-static const char kAttributeSctpmap[] = "sctpmap";
-static const char kAttributeRtcp[] = "rtcp";
-static const char kAttributeIceUfrag[] = "ice-ufrag";
-static const char kAttributeIcePwd[] = "ice-pwd";
-static const char kAttributeIceLite[] = "ice-lite";
-static const char kAttributeIceOption[] = "ice-options";
-static const char kAttributeSendOnly[] = "sendonly";
-static const char kAttributeRecvOnly[] = "recvonly";
-static const char kAttributeRtcpFb[] = "rtcp-fb";
-static const char kAttributeSendRecv[] = "sendrecv";
-static const char kAttributeInactive[] = "inactive";
-// draft-ietf-mmusic-sctp-sdp-26
-// a=sctp-port, a=max-message-size
-static const char kAttributeSctpPort[] = "sctp-port";
-static const char kAttributeMaxMessageSize[] = "max-message-size";
-static const int kDefaultSctpMaxMessageSize = 65536;
-// draft-ietf-mmusic-sdp-simulcast-13
-// a=simulcast
-static constexpr absl::string_view kAttributeSimulcast = "simulcast";
-// draft-ietf-mmusic-rid-15
-// a=rid
-static constexpr absl::string_view kAttributeRid = "rid";
-static const char kAttributePacketization[] = "packetization";
-
-// Experimental flags
-static const char kAttributeXGoogleFlag[] = "x-google-flag";
-static const char kValueConference[] = "conference";
-
-static const char kAttributeRtcpRemoteEstimate[] = "remote-net-estimate";
-
-// Candidate
-static const char kCandidateHost[] = "host";
-static const char kCandidateSrflx[] = "srflx";
-static const char kCandidatePrflx[] = "prflx";
-static const char kCandidateRelay[] = "relay";
-static const char kTcpCandidateType[] = "tcptype";
-
-// StringBuilder doesn't have a << overload for chars, while
-// split and tokenize_first both take a char delimiter. To
-// handle both cases these constants come in pairs of a chars and length-one
-// strings.
-static const char kSdpDelimiterEqual[] = "=";
-static const char kSdpDelimiterEqualChar = '=';
-static const char kSdpDelimiterSpace[] = " ";
-static const char kSdpDelimiterSpaceChar = ' ';
-static constexpr absl::string_view kSdpDelimiterColon = ":";
-static const char kSdpDelimiterColonChar = ':';
-static const char kSdpDelimiterSemicolon[] = ";";
-static const char kSdpDelimiterSemicolonChar = ';';
-static const char kSdpDelimiterSlashChar = '/';
-static const char kNewLineChar = '\n';
-static const char kReturnChar = '\r';
-static const char kLineBreak[] = "\r\n";
-
-// TODO(deadbeef): Generate the Session and Time description
-// instead of hardcoding.
-static const char kSessionVersion[] = "v=0";
-// RFC 4566
-static const char kSessionOriginUsername[] = "-";
-static const char kSessionOriginSessionId[] = "0";
-static const char kSessionOriginSessionVersion[] = "0";
-static const char kSessionOriginNettype[] = "IN";
-static const char kSessionOriginAddrtype[] = "IP4";
-static const char kSessionOriginAddress[] = "127.0.0.1";
-static const char kSessionName[] = "s=-";
-static const char kTimeDescription[] = "t=0 0";
-static const char kAttrGroup[] = "a=group:BUNDLE";
-static const char kConnectionNettype[] = "IN";
-static const char kConnectionIpv4Addrtype[] = "IP4";
-static const char kConnectionIpv6Addrtype[] = "IP6";
-static const char kSdpMediaTypeVideo[] = "video";
-static const char kSdpMediaTypeAudio[] = "audio";
-static const char kSdpMediaTypeData[] = "application";
-static const char kMediaPortRejected[] = "0";
-// draft-ietf-mmusic-trickle-ice-01
-// When no candidates have been gathered, set the connection
-// address to IP6 ::.
-// TODO(perkj): FF can not parse IP6 ::. See http://crbug/430333
-// Use IPV4 per default.
-static const char kDummyAddress[] = "0.0.0.0";
-static const char kDummyPort[] = "9";
-
-static const char kDefaultSctpmapProtocol[] = "webrtc-datachannel";
-
-// RTP payload type is in the 0-127 range. Use -1 to indicate "all" payload
-// types.
-const int kWildcardPayloadType = -1;
-
 struct SsrcInfo {
   uint32_t ssrc_id;
   std::string cname;

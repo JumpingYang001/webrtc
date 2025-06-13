@@ -33,15 +33,14 @@ namespace webrtc {
 namespace {
 // Ratio allocation between temporal streams:
 // Values as required for the VP8 codec (accumulating).
-static const float
-    kLayerRateAllocation[kMaxTemporalStreams][kMaxTemporalStreams] = {
-        {1.0f, 1.0f, 1.0f, 1.0f},  // 1 layer
-        {0.6f, 1.0f, 1.0f, 1.0f},  // 2 layers {60%, 40%}
-        {0.4f, 0.6f, 1.0f, 1.0f},  // 3 layers {40%, 20%, 40%}
-        {0.25f, 0.4f, 0.6f, 1.0f}  // 4 layers {25%, 15%, 20%, 40%}
+const float kLayerRateAllocation[kMaxTemporalStreams][kMaxTemporalStreams] = {
+    {1.0f, 1.0f, 1.0f, 1.0f},  // 1 layer
+    {0.6f, 1.0f, 1.0f, 1.0f},  // 2 layers {60%, 40%}
+    {0.4f, 0.6f, 1.0f, 1.0f},  // 3 layers {40%, 20%, 40%}
+    {0.25f, 0.4f, 0.6f, 1.0f}  // 4 layers {25%, 15%, 20%, 40%}
 };
 
-static const float kBaseHeavy3TlRateAllocation[kMaxTemporalStreams] = {
+const float kBaseHeavy3TlRateAllocation[kMaxTemporalStreams] = {
     0.6f, 0.8f, 1.0f, 1.0f  // 3 layers {60%, 20%, 20%}
 };
 

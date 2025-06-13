@@ -25,7 +25,7 @@ namespace webrtc {
 
 namespace {
 
-static const char* kTestCertCommonName = "RTCCertificateTest's certificate";
+const char* kTestCertCommonName = "RTCCertificateTest's certificate";
 
 }  // namespace
 

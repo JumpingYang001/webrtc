@@ -123,7 +123,7 @@
 namespace webrtc {
 
 namespace {
-static const int REPORT_USAGE_PATTERN_DELAY_MS = 60000;
+const int REPORT_USAGE_PATTERN_DELAY_MS = 60000;
 
 class CodecLookupHelperForPeerConnection : public CodecLookupHelper {
  public:

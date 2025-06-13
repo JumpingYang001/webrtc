@@ -37,12 +37,12 @@ namespace {
 using ::testing::Bool;
 using ::testing::TestWithParam;
 
-static VideoCodec Configure(VideoCodecType codecType,
-                            size_t width,
-                            size_t height,
-                            size_t num_spatial_layers,
-                            size_t num_temporal_layers,
-                            bool is_screen_sharing) {
+VideoCodec Configure(VideoCodecType codecType,
+                     size_t width,
+                     size_t height,
+                     size_t num_spatial_layers,
+                     size_t num_temporal_layers,
+                     bool is_screen_sharing) {
   VideoCodec codec;
   codec.width = width;
   codec.height = height;

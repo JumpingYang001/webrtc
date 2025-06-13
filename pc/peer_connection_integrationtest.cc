@@ -1421,7 +1421,7 @@ TEST_P(PeerConnectionIntegrationTest, EndToEndCallWithTwoVideoTracks) {
   ASSERT_TRUE(ExpectNewFrames(media_expectations));
 }
 
-static void MakeSpecCompliantMaxBundleOffer(
+void MakeSpecCompliantMaxBundleOffer(
     std::unique_ptr<SessionDescriptionInterface>& sdp) {
   bool first = true;
   for (ContentInfo& content : sdp->description()->contents()) {

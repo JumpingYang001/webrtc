@@ -85,9 +85,9 @@ namespace internal {
 namespace {
 
 // Max positive size difference to treat allocations as "similar".
-static constexpr int kMaxVbaSizeDifferencePercent = 10;
+constexpr int kMaxVbaSizeDifferencePercent = 10;
 // Max time we will throttle similar video bitrate allocations.
-static constexpr int64_t kMaxVbaThrottleTimeMs = 500;
+constexpr int64_t kMaxVbaThrottleTimeMs = 500;
 
 constexpr TimeDelta kEncoderTimeOut = TimeDelta::Seconds(2);
 
@@ -102,7 +102,7 @@ constexpr int kMinDefaultAv1BitrateBps =
 // bandwidth rampup with less risk of overshoots causing adverse effects like
 // packet loss. Not used for receive side BWE, since there we lack the probing
 // feature and so may result in too slow initial rampup.
-static constexpr double kStrictPacingMultiplier = 1.1;
+constexpr double kStrictPacingMultiplier = 1.1;
 
 bool TransportSeqNumExtensionConfigured(const VideoSendStream::Config& config) {
   const std::vector<RtpExtension>& extensions = config.rtp.extensions;

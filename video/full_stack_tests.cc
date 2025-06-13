@@ -49,7 +49,7 @@ ABSL_FLAG(std::string,
 namespace webrtc {
 
 namespace {
-static const int kFullStackTestDurationSecs = 45;
+const int kFullStackTestDurationSecs = 45;
 
 struct ParamsWithLogging : public VideoQualityTest::Params {
  public:

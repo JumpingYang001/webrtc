@@ -97,9 +97,9 @@ std::vector<DataRate> AdjustAndVerify(
   return adjusted_spatial_layer_rates;
 }
 
-static std::vector<DataRate> SplitBitrate(size_t num_layers,
-                                          DataRate total_bitrate,
-                                          float rate_scaling_factor) {
+std::vector<DataRate> SplitBitrate(size_t num_layers,
+                                   DataRate total_bitrate,
+                                   float rate_scaling_factor) {
   std::vector<DataRate> bitrates;
 
   double denominator = 0.0;

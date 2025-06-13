@@ -111,7 +111,7 @@ namespace tracing {
 namespace {
 
 // Atomic-int fast path for avoiding logging when disabled.
-static std::atomic<int> g_event_logging_active(0);
+std::atomic<int> g_event_logging_active(0);
 
 // TODO(pbos): Log metadata for all threads, etc.
 class EventLogger final {
@@ -354,8 +354,8 @@ class EventLogger final {
   bool output_file_owned_ = false;
 };
 
-static std::atomic<EventLogger*> g_event_logger(nullptr);
-static const char* const kDisabledTracePrefix = TRACE_DISABLED_BY_DEFAULT("");
+std::atomic<EventLogger*> g_event_logger(nullptr);
+const char* const kDisabledTracePrefix = TRACE_DISABLED_BY_DEFAULT("");
 const unsigned char* InternalGetCategoryEnabled(const char* name) {
   const char* prefix_ptr = &kDisabledTracePrefix[0];
   const char* name_ptr = name;

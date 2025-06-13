@@ -128,48 +128,46 @@ using ::webrtc::SocketAddress;
 
 // Default timeout for tests in this file.
 // Should be large enough for slow buildbots to run the tests reliably.
-static const int kDefaultTimeout = 10000;
-static const int kMediumTimeout = 3000;
-static const int kShortTimeout = 1000;
+const int kDefaultTimeout = 10000;
+const int kMediumTimeout = 3000;
+const int kShortTimeout = 1000;
 
-static const int kOnlyLocalPorts = webrtc::PORTALLOCATOR_DISABLE_STUN |
-                                   webrtc::PORTALLOCATOR_DISABLE_RELAY |
-                                   webrtc::PORTALLOCATOR_DISABLE_TCP;
-static const int LOW_RTT = 20;
+const int kOnlyLocalPorts = webrtc::PORTALLOCATOR_DISABLE_STUN |
+                            webrtc::PORTALLOCATOR_DISABLE_RELAY |
+                            webrtc::PORTALLOCATOR_DISABLE_TCP;
+const int LOW_RTT = 20;
 // Addresses on the public internet.
-static const SocketAddress kPublicAddrs[2] = {SocketAddress("11.11.11.11", 0),
-                                              SocketAddress("22.22.22.22", 0)};
+const SocketAddress kPublicAddrs[2] = {SocketAddress("11.11.11.11", 0),
+                                       SocketAddress("22.22.22.22", 0)};
 // IPv6 Addresses on the public internet.
-static const SocketAddress kIPv6PublicAddrs[2] = {
+const SocketAddress kIPv6PublicAddrs[2] = {
     SocketAddress("2400:4030:1:2c00:be30:abcd:efab:cdef", 0),
     SocketAddress("2600:0:1000:1b03:2e41:38ff:fea6:f2a4", 0)};
 // For configuring multihomed clients.
-static const SocketAddress kAlternateAddrs[2] = {
-    SocketAddress("101.101.101.101", 0), SocketAddress("202.202.202.202", 0)};
-static const SocketAddress kIPv6AlternateAddrs[2] = {
+const SocketAddress kAlternateAddrs[2] = {SocketAddress("101.101.101.101", 0),
+                                          SocketAddress("202.202.202.202", 0)};
+const SocketAddress kIPv6AlternateAddrs[2] = {
     SocketAddress("2401:4030:1:2c00:be30:abcd:efab:cdef", 0),
     SocketAddress("2601:0:1000:1b03:2e41:38ff:fea6:f2a4", 0)};
 // Internal addresses for NAT boxes.
-static const SocketAddress kNatAddrs[2] = {SocketAddress("192.168.1.1", 0),
-                                           SocketAddress("192.168.2.1", 0)};
+const SocketAddress kNatAddrs[2] = {SocketAddress("192.168.1.1", 0),
+                                    SocketAddress("192.168.2.1", 0)};
 // Private addresses inside the NAT private networks.
-static const SocketAddress kPrivateAddrs[2] = {
-    SocketAddress("192.168.1.11", 0), SocketAddress("192.168.2.22", 0)};
+const SocketAddress kPrivateAddrs[2] = {SocketAddress("192.168.1.11", 0),
+                                        SocketAddress("192.168.2.22", 0)};
 // For cascaded NATs, the internal addresses of the inner NAT boxes.
-static const SocketAddress kCascadedNatAddrs[2] = {
-    SocketAddress("192.168.10.1", 0), SocketAddress("192.168.20.1", 0)};
+const SocketAddress kCascadedNatAddrs[2] = {SocketAddress("192.168.10.1", 0),
+                                            SocketAddress("192.168.20.1", 0)};
 // For cascaded NATs, private addresses inside the inner private networks.
-static const SocketAddress kCascadedPrivateAddrs[2] = {
+const SocketAddress kCascadedPrivateAddrs[2] = {
     SocketAddress("192.168.10.11", 0), SocketAddress("192.168.20.22", 0)};
 // The address of the public STUN server.
-static const SocketAddress kStunAddr("99.99.99.1", webrtc::STUN_SERVER_PORT);
+const SocketAddress kStunAddr("99.99.99.1", webrtc::STUN_SERVER_PORT);
 // The addresses for the public turn server.
-static const SocketAddress kTurnUdpIntAddr("99.99.99.3",
-                                           webrtc::STUN_SERVER_PORT);
-static const SocketAddress kTurnTcpIntAddr("99.99.99.4",
-                                           webrtc::STUN_SERVER_PORT + 1);
-static const SocketAddress kTurnUdpExtAddr("99.99.99.5", 0);
-static const webrtc::RelayCredentials kRelayCredentials("test", "test");
+const SocketAddress kTurnUdpIntAddr("99.99.99.3", webrtc::STUN_SERVER_PORT);
+const SocketAddress kTurnTcpIntAddr("99.99.99.4", webrtc::STUN_SERVER_PORT + 1);
+const SocketAddress kTurnUdpExtAddr("99.99.99.5", 0);
+const webrtc::RelayCredentials kRelayCredentials("test", "test");
 
 // Based on ICE_UFRAG_LENGTH
 const char* kIceUfrag[4] = {"UF00", "UF01", "UF02", "UF03"};
