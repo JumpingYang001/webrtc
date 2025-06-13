@@ -31,10 +31,12 @@
 #include "api/environment/environment_factory.h"
 #include "api/field_trials.h"
 #include "api/ice_transport_interface.h"
+#include "api/local_network_access_permission.h"
 #include "api/packet_socket_factory.h"
 #include "api/scoped_refptr.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/test/mock_async_dns_resolver.h"
+#include "api/test/mock_local_network_access_permission.h"
 #include "api/test/rtc_error_matchers.h"
 #include "api/transport/enums.h"
 #include "api/transport/stun.h"
@@ -280,6 +282,32 @@ class ResolverFactoryFixture : public webrtc::MockAsyncDnsResolverFactory {
   std::unique_ptr<webrtc::MockAsyncDnsResolver> mock_async_dns_resolver_;
   webrtc::MockAsyncDnsResolverResult mock_async_dns_resolver_result_;
   absl::AnyInvocable<void()> saved_callback_;
+};
+
+class PermissionFactoryFixture
+    : public webrtc::MockLocalNetworkAccessPermissionFactory {
+ public:
+  explicit PermissionFactoryFixture(
+      webrtc::LocalNetworkAccessPermissionStatus result) {
+    EXPECT_CALL(*this, Create()).WillRepeatedly([result]() {
+      auto mock_lna_permission =
+          std::make_unique<webrtc::MockLocalNetworkAccessPermission>();
+
+      EXPECT_CALL(*mock_lna_permission, RequestPermission(_, _))
+          .WillRepeatedly(
+              [result](
+                  const SocketAddress& /* addr */,
+                  absl::AnyInvocable<void(
+                      webrtc::LocalNetworkAccessPermissionStatus)> callback) {
+                webrtc::Thread::Current()->PostTask(
+                    [callback = std::move(callback), result]() mutable {
+                      callback(result);
+                    });
+              });
+
+      return mock_lna_permission;
+    });
+  }
 };
 
 bool HasLocalAddress(const webrtc::CandidatePairInterface* pair,
@@ -7180,6 +7208,125 @@ TEST_F(P2PTransportChannelTest, EnableDnsLookupsWithTransportPolicyNoHost) {
 
   DestroyChannels();
 }
+
+static struct LocalAreaNetworkPermissionTestConfig {
+  template <typename Sink>
+  friend void AbslStringify(
+      Sink& sink,
+      const LocalAreaNetworkPermissionTestConfig& config) {
+    sink.Append(config.address);
+    sink.Append("_");
+    switch (config.lna_permission_status) {
+      case webrtc::LocalNetworkAccessPermissionStatus::kDenied:
+        sink.Append("Denied");
+        break;
+      case webrtc::LocalNetworkAccessPermissionStatus::kGranted:
+        sink.Append("Granted");
+        break;
+    }
+  }
+
+  webrtc::LocalNetworkAccessPermissionStatus lna_permission_status;
+  absl::string_view address;
+  bool candidate_added;
+} kAllLocalAreNetworkPermissionTestConfigs[] = {
+    {LocalNetworkAccessPermissionStatus::kDenied, "127.0.0.1",
+     /*candidate_added=*/false},
+    {LocalNetworkAccessPermissionStatus::kDenied, "10.0.0.3",
+     /*candidate_added=*/false},
+    {LocalNetworkAccessPermissionStatus::kDenied, "1.1.1.1",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kDenied, "::1",
+     /*candidate_added=*/false},
+    {LocalNetworkAccessPermissionStatus::kDenied, "fd00:4860:4860::8844",
+     /*candidate_added=*/false},
+    {LocalNetworkAccessPermissionStatus::kDenied, "2001:4860:4860::8888",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "127.0.0.1",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "10.0.0.3",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "1.1.1.1",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "::1",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "fd00:4860:4860::8844",
+     /*candidate_added=*/true},
+    {LocalNetworkAccessPermissionStatus::kGranted, "2001:4860:4860::8888",
+     /*candidate_added=*/true},
+};
+
+class LocalAreaNetworkPermissionTest
+    : public P2PTransportChannelPingTest,
+      public ::testing::WithParamInterface<
+          LocalAreaNetworkPermissionTestConfig> {};
+
+TEST_P(LocalAreaNetworkPermissionTest, LiteralAddresses) {
+  const Environment env = CreateEnvironment();
+  FakePortAllocator pa(env, ss());
+  PermissionFactoryFixture lna_permission_factory(
+      GetParam().lna_permission_status);
+
+  IceTransportInit init;
+  init.set_port_allocator(&pa);
+  init.set_field_trials(&env.field_trials());
+  init.set_lna_permission_factory(&lna_permission_factory);
+
+  auto ch = P2PTransportChannel::Create("foo", 1, std::move(init));
+  PrepareChannel(ch.get());
+  ch->MaybeStartGathering();
+
+  ch->AddRemoteCandidate(
+      CreateUdpCandidate(IceCandidateType::kHost, GetParam().address, 5000, 1));
+
+  ASSERT_THAT(
+      WaitUntil([&] { return ch->PermissionQueriesOutstandingForTesting(); },
+                Eq(0)),
+      IsRtcOk());
+  if (GetParam().candidate_added) {
+    EXPECT_EQ(1u, ch->remote_candidates().size());
+  } else {
+    EXPECT_EQ(0u, ch->remote_candidates().size());
+  }
+}
+
+TEST_P(LocalAreaNetworkPermissionTest, UnresolvedAddresses) {
+  const Environment env = CreateEnvironment();
+  FakePortAllocator pa(env, ss());
+  PermissionFactoryFixture lna_permission_factory(
+      GetParam().lna_permission_status);
+
+  ResolverFactoryFixture resolver_fixture;
+  resolver_fixture.SetAddressToReturn({GetParam().address, 5000});
+
+  IceTransportInit init;
+  init.set_port_allocator(&pa);
+  init.set_field_trials(&env.field_trials());
+  init.set_lna_permission_factory(&lna_permission_factory);
+  init.set_async_dns_resolver_factory(&resolver_fixture);
+
+  auto ch = P2PTransportChannel::Create("foo", 1, std::move(init));
+  PrepareChannel(ch.get());
+  ch->MaybeStartGathering();
+
+  ch->AddRemoteCandidate(
+      CreateUdpCandidate(IceCandidateType::kHost, "fake.test", 5000, 1));
+
+  ASSERT_THAT(
+      WaitUntil([&] { return ch->PermissionQueriesOutstandingForTesting(); },
+                Eq(0)),
+      IsRtcOk());
+  if (GetParam().candidate_added) {
+    EXPECT_EQ(1u, ch->remote_candidates().size());
+  } else {
+    EXPECT_EQ(0u, ch->remote_candidates().size());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LocalAreaNetworkPermissionTest,
+    ::testing::ValuesIn(kAllLocalAreNetworkPermissionTestConfigs));
 
 class GatherAfterConnectedTest : public P2PTransportChannelTest,
                                  public WithParamInterface<bool> {};
