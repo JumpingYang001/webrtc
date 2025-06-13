@@ -240,7 +240,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
     server_thread()->BlockingCall([&]() { server_.allocator->Initialize(); });
   }
 
-  void TearDown() {
+  void TearDown() override {
     client_thread()->BlockingCall([&]() {
       client_.dtls.reset();
       client_.ice.reset();
@@ -254,7 +254,7 @@ class DtlsIceIntegrationTest : public ::testing::TestWithParam<std::tuple<
     });
   }
 
-  ~DtlsIceIntegrationTest() = default;
+  ~DtlsIceIntegrationTest() override = default;
 
   static int CountConnectionsWithFilter(
       IceTransportInternal* ice,

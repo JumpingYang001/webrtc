@@ -44,7 +44,7 @@ class SrtpSessionTest : public ::testing::Test {
   }
 
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     rtp_len_ = sizeof(kPcmuFrame);
     rtcp_len_ = sizeof(kRtcpReport);
     rtp_packet_.EnsureCapacity(rtp_len_ + 10);

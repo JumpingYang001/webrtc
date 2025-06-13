@@ -68,7 +68,7 @@ class ScreenshareLayerTest : public ::testing::Test {
         frame_size_(-1),
         timestamp_(90),
         config_updated_(false) {}
-  virtual ~ScreenshareLayerTest() {}
+  ~ScreenshareLayerTest() override {}
 
   void SetUp() override {
     layers_.reset(new ScreenshareLayers(2));

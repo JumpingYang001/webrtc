@@ -170,7 +170,7 @@ class VideoSendStreamImplTest : public ::testing::Test {
     ON_CALL(rtp_video_sender_, SetSending)
         .WillByDefault(SaveArg<0>(&rtp_sending_));
   }
-  ~VideoSendStreamImplTest() {}
+  ~VideoSendStreamImplTest() override {}
 
   VideoEncoderConfig TestVideoEncoderConfig(
       VideoEncoderConfig::ContentType content_type =

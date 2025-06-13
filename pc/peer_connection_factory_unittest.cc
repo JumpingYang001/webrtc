@@ -110,7 +110,7 @@ static const char kTurnIceServerWithIPv6Address[] = "turn:[2401:fa00:4::]:1234";
 
 class NullPeerConnectionObserver : public PeerConnectionObserver {
  public:
-  virtual ~NullPeerConnectionObserver() = default;
+  ~NullPeerConnectionObserver() override = default;
   void OnSignalingChange(
       PeerConnectionInterface::SignalingState new_state) override {}
   void OnAddStream(scoped_refptr<MediaStreamInterface> stream) override {}
@@ -143,7 +143,7 @@ class PeerConnectionFactoryTest : public ::testing::Test {
         main_thread_(socket_server_.get()) {}
 
  private:
-  void SetUp() {
+  void SetUp() override {
 #ifdef WEBRTC_ANDROID
     InitializeAndroidObjects();
 #endif

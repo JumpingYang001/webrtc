@@ -939,8 +939,9 @@ TEST_P(TestVp8ImplWithMaxFrameDropTrial, EnforcesMaxFrameDropInterval) {
     void ClearCallbackDeltas() { callback_deltas_.clear(); }
 
    protected:
-    Result OnEncodedImage(const EncodedImage& encoded_image,
-                          const CodecSpecificInfo* /* codec_specific_info */) {
+    Result OnEncodedImage(
+        const EncodedImage& encoded_image,
+        const CodecSpecificInfo* /* codec_specific_info */) override {
       Timestamp timestamp =
           Timestamp::Millis(encoded_image.RtpTimestamp() / 90);
       if (last_callback_.IsFinite()) {

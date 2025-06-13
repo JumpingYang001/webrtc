@@ -228,7 +228,7 @@ class SincResamplerTest
         rms_error_(std::get<2>(GetParam())),
         low_freq_error_(std::get<3>(GetParam())) {}
 
-  virtual ~SincResamplerTest() {}
+  ~SincResamplerTest() override {}
 
  protected:
   int input_rate_;

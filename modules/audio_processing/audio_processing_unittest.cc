@@ -370,8 +370,8 @@ bool ExpectMessageEq(ArrayView<const uint8_t> actual,
 class ApmTest : public ::testing::Test {
  protected:
   ApmTest();
-  virtual void SetUp();
-  virtual void TearDown();
+  void SetUp() override;
+  void TearDown() override;
 
   static void SetUpTestSuite() {}
 
@@ -1920,7 +1920,7 @@ class AudioProcessingTest
         expected_snr_(std::get<4>(GetParam())),
         expected_reverse_snr_(std::get<5>(GetParam())) {}
 
-  virtual ~AudioProcessingTest() {}
+  ~AudioProcessingTest() override {}
 
   static void SetUpTestSuite() {
     // Create all needed output reference files.
@@ -1937,7 +1937,7 @@ class AudioProcessingTest
     }
   }
 
-  void TearDown() {
+  void TearDown() override {
     // Remove "out" files after each test.
     ClearTempOutFiles();
   }

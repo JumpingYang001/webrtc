@@ -7048,7 +7048,7 @@ class ForgetLearnedStateControllerFactory
     controller_ = controller.get();
     return controller;
   }
-  virtual ~ForgetLearnedStateControllerFactory() = default;
+  ~ForgetLearnedStateControllerFactory() override = default;
 
   ForgetLearnedStateController* controller_;
 };

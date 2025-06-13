@@ -78,7 +78,9 @@ class IvfFileWriterEncodedCallback : public EncodedImageCallback {
         expected_frames_count_(expected_frames_count) {
     EXPECT_TRUE(file_writer_.get());
   }
-  ~IvfFileWriterEncodedCallback() { EXPECT_TRUE(file_writer_->Close()); }
+  ~IvfFileWriterEncodedCallback() override {
+    EXPECT_TRUE(file_writer_->Close());
+  }
 
   Result OnEncodedImage(const EncodedImage& encoded_image,
                         const CodecSpecificInfo* codec_specific_info) override {

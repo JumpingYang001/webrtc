@@ -155,7 +155,7 @@ class TestPort : public Port {
  public:
   TestPort(const PortParametersRef& args, uint16_t min_port, uint16_t max_port)
       : Port(args, IceCandidateType::kHost, min_port, max_port) {}
-  ~TestPort() {}
+  ~TestPort() override {}
 
   // Expose GetStunMessage so that we can test it.
   using Port::GetStunMessage;
@@ -178,7 +178,7 @@ class TestPort : public Port {
     return code;
   }
 
-  virtual void PrepareAddress() {
+  void PrepareAddress() override {
     // Act as if the socket was bound to the best IP on the network, to the
     // first port in the allowed range.
     SocketAddress addr(Network()->GetBestIP(), min_port());
@@ -186,11 +186,11 @@ class TestPort : public Port {
                ICE_TYPE_PREFERENCE_HOST, 0, "", true);
   }
 
-  virtual bool SupportsProtocol(absl::string_view /* protocol */) const {
+  bool SupportsProtocol(absl::string_view /* protocol */) const override {
     return true;
   }
 
-  virtual ProtocolType GetProtocol() const { return PROTO_UDP; }
+  ProtocolType GetProtocol() const override { return PROTO_UDP; }
 
   // Exposed for testing candidate building.
   void AddCandidateAddress(const SocketAddress& addr) {
@@ -206,8 +206,8 @@ class TestPort : public Port {
                type_preference, 0, "", final);
   }
 
-  virtual Connection* CreateConnection(const Candidate& remote_candidate,
-                                       CandidateOrigin /* origin */) {
+  Connection* CreateConnection(const Candidate& remote_candidate,
+                               CandidateOrigin /* origin */) override {
     Connection* conn = new ProxyConnection(NewWeakPtr(), 0, remote_candidate);
     AddOrReplaceConnection(conn);
     // Set use-candidate attribute flag as this will add USE-CANDIDATE attribute
@@ -215,11 +215,11 @@ class TestPort : public Port {
     conn->set_use_candidate_attr(true);
     return conn;
   }
-  virtual int SendTo(const void* data,
-                     size_t size,
-                     const SocketAddress& /* addr */,
-                     const AsyncSocketPacketOptions& /* options */,
-                     bool payload) {
+  int SendTo(const void* data,
+             size_t size,
+             const SocketAddress& /* addr */,
+             const AsyncSocketPacketOptions& /* options */,
+             bool payload) override {
     if (!payload) {
       auto msg = std::make_unique<IceMessage>();
       auto buf = std::make_unique<BufferT<uint8_t>>(
@@ -233,9 +233,11 @@ class TestPort : public Port {
     }
     return static_cast<int>(size);
   }
-  virtual int SetOption(Socket::Option /* opt */, int /* value */) { return 0; }
-  virtual int GetOption(Socket::Option opt, int* value) { return -1; }
-  virtual int GetError() { return 0; }
+  int SetOption(Socket::Option /* opt */, int /* value */) override {
+    return 0;
+  }
+  int GetOption(Socket::Option opt, int* value) override { return -1; }
+  int GetError() override { return 0; }
   void Reset() {
     last_stun_buf_.reset();
     last_stun_msg_.reset();
@@ -246,7 +248,7 @@ class TestPort : public Port {
 
  private:
   void OnSentPacket(AsyncPacketSocket* socket,
-                    const SentPacketInfo& sent_packet) {
+                    const SentPacketInfo& sent_packet) override {
     PortInterface::SignalSentPacket(sent_packet);
   }
   std::unique_ptr<BufferT<uint8_t>> last_stun_buf_;
@@ -296,7 +298,7 @@ class TestChannel : public sigslot::has_slots<> {
         [this](PortInterface* port) { OnSrcPortDestroyed(port); });
   }
 
-  ~TestChannel() { Stop(); }
+  ~TestChannel() override { Stop(); }
 
   int complete_count() { return complete_count_; }
   Connection* conn() { return conn_; }
@@ -438,7 +440,7 @@ class PortTest : public ::testing::Test, public sigslot::has_slots<> {
         role_conflict_(false),
         ports_destroyed_(0) {}
 
-  ~PortTest() {
+  ~PortTest() override {
     // Workaround for tests that trigger async destruction of objects that we
     // need to give an opportunity here to run, before proceeding with other
     // teardown.
@@ -1170,38 +1172,38 @@ class FakeAsyncPacketSocket : public AsyncPacketSocket {
  public:
   // Returns current local address. Address may be set to NULL if the
   // socket is not bound yet (GetState() returns STATE_BINDING).
-  virtual SocketAddress GetLocalAddress() const { return local_address_; }
+  SocketAddress GetLocalAddress() const override { return local_address_; }
 
   // Returns remote address. Returns zeroes if this is not a client TCP socket.
-  virtual SocketAddress GetRemoteAddress() const { return remote_address_; }
+  SocketAddress GetRemoteAddress() const override { return remote_address_; }
 
   // Send a packet.
-  virtual int Send(const void* pv,
-                   size_t cb,
-                   const AsyncSocketPacketOptions& options) {
+  int Send(const void* pv,
+           size_t cb,
+           const AsyncSocketPacketOptions& options) override {
     if (error_ == 0) {
       return static_cast<int>(cb);
     } else {
       return -1;
     }
   }
-  virtual int SendTo(const void* pv,
-                     size_t cb,
-                     const SocketAddress& addr,
-                     const AsyncSocketPacketOptions& options) {
+  int SendTo(const void* pv,
+             size_t cb,
+             const SocketAddress& addr,
+             const AsyncSocketPacketOptions& options) override {
     if (error_ == 0) {
       return static_cast<int>(cb);
     } else {
       return -1;
     }
   }
-  virtual int Close() { return 0; }
+  int Close() override { return 0; }
 
-  virtual State GetState() const { return state_; }
-  virtual int GetOption(Socket::Option opt, int* value) { return 0; }
-  virtual int SetOption(Socket::Option opt, int value) { return 0; }
-  virtual int GetError() const { return 0; }
-  virtual void SetError(int error) { error_ = error; }
+  State GetState() const override { return state_; }
+  int GetOption(Socket::Option opt, int* value) override { return 0; }
+  int SetOption(Socket::Option opt, int value) override { return 0; }
+  int GetError() const override { return 0; }
+  void SetError(int error) override { error_ = error; }
 
   void set_state(State state) { state_ = state; }
 
@@ -1217,14 +1219,14 @@ class FakeAsyncListenSocket : public AsyncListenSocket {
  public:
   // Returns current local address. Address may be set to NULL if the
   // socket is not bound yet (GetState() returns STATE_BINDING).
-  virtual SocketAddress GetLocalAddress() const { return local_address_; }
+  SocketAddress GetLocalAddress() const override { return local_address_; }
   void Bind(const SocketAddress& address) {
     local_address_ = address;
     state_ = State::kBound;
   }
   virtual int GetOption(Socket::Option opt, int* value) { return 0; }
   virtual int SetOption(Socket::Option opt, int value) { return 0; }
-  virtual State GetState() const { return state_; }
+  State GetState() const override { return state_; }
 
  private:
   SocketAddress local_address_;

@@ -73,7 +73,7 @@ class DtlsSrtpTransportIntegrationTest : public ::testing::Test {
     srtp_transport_.RegisterRtpDemuxerSink(demuxer_criteria,
                                            &srtp_transport_observer_);
   }
-  ~DtlsSrtpTransportIntegrationTest() {
+  ~DtlsSrtpTransportIntegrationTest() override {
     dtls_srtp_transport_.UnregisterRtpDemuxerSink(
         &dtls_srtp_transport_observer_);
     srtp_transport_.UnregisterRtpDemuxerSink(&srtp_transport_observer_);

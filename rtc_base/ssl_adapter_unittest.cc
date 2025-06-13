@@ -52,7 +52,7 @@ static webrtc::Socket* CreateSocket() {
 // Simple mock for the certificate verifier.
 class MockCertVerifier : public webrtc::SSLCertificateVerifier {
  public:
-  virtual ~MockCertVerifier() = default;
+  ~MockCertVerifier() override = default;
   MOCK_METHOD(bool, Verify, (const webrtc::SSLCertificate&), (override));
 };
 
@@ -61,7 +61,7 @@ class MockCertVerifier : public webrtc::SSLCertificateVerifier {
 class SSLAdapterTestDummy : public sigslot::has_slots<> {
  public:
   explicit SSLAdapterTestDummy() : socket_(CreateSocket()) {}
-  virtual ~SSLAdapterTestDummy() = default;
+  ~SSLAdapterTestDummy() override = default;
 
   void CreateSSLAdapter(webrtc::Socket* socket, webrtc::SSLRole role) {
     ssl_adapter_.reset(webrtc::SSLAdapter::Create(socket));

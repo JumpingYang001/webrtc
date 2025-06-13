@@ -164,7 +164,7 @@ class ChannelTest : public ::testing::Test, public sigslot::has_slots<> {
     RTC_DCHECK(network_thread_);
   }
 
-  ~ChannelTest() {
+  ~ChannelTest() override {
     if (network_thread_) {
       SendTask(network_thread_, [this]() {
         network_thread_safety_->SetNotAlive();

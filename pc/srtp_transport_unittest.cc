@@ -89,7 +89,7 @@ class SrtpTransportTest : public ::testing::Test, public sigslot::has_slots<> {
     srtp_transport2_->RegisterRtpDemuxerSink(demuxer_criteria, &rtp_sink2_);
   }
 
-  ~SrtpTransportTest() {
+  ~SrtpTransportTest() override {
     if (srtp_transport1_) {
       srtp_transport1_->UnregisterRtpDemuxerSink(&rtp_sink1_);
     }

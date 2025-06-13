@@ -58,7 +58,7 @@ class JitterEstimatorTest : public ::testing::Test {
         field_trials_(CreateTestFieldTrials(field_trials)),
         estimator_(&fake_clock_, field_trials_) {}
   JitterEstimatorTest() : JitterEstimatorTest("") {}
-  virtual ~JitterEstimatorTest() {}
+  ~JitterEstimatorTest() override {}
 
   void Run(int duration_s, int framerate_fps, ValueGenerator& gen) {
     TimeDelta tick = 1 / Frequency::Hertz(framerate_fps);
@@ -201,7 +201,7 @@ class FieldTrialsOverriddenJitterEstimatorTest : public JitterEstimatorTest {
             "estimate_noise_when_congested:false,"
             "nack_limit:2,"
             "nack_count_timeout:100ms/") {}
-  ~FieldTrialsOverriddenJitterEstimatorTest() {}
+  ~FieldTrialsOverriddenJitterEstimatorTest() override {}
 };
 
 TEST_F(FieldTrialsOverriddenJitterEstimatorTest, FieldTrialsParsesCorrectly) {
@@ -332,7 +332,7 @@ class MisconfiguredFieldTrialsJitterEstimatorTest : public JitterEstimatorTest {
             "num_stddev_size_outlier:-23.1,"
             "nack_limit:-1,"
             "nack_count_timeout:0s/") {}
-  ~MisconfiguredFieldTrialsJitterEstimatorTest() {}
+  ~MisconfiguredFieldTrialsJitterEstimatorTest() override {}
 };
 
 TEST_F(MisconfiguredFieldTrialsJitterEstimatorTest, FieldTrialsAreValidated) {

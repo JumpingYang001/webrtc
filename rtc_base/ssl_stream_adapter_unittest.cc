@@ -895,12 +895,12 @@ class SSLStreamAdapterTestDTLSBase : public SSLStreamAdapterTestBase {
         count_(0),
         sent_(0) {}
 
-  std::unique_ptr<StreamInterface> CreateClientStream() override final {
+  std::unique_ptr<StreamInterface> CreateClientStream() final {
     return absl::WrapUnique(
         new SSLDummyStream(this, "c2s", &client_buffer_, &server_buffer_));
   }
 
-  std::unique_ptr<StreamInterface> CreateServerStream() override final {
+  std::unique_ptr<StreamInterface> CreateServerStream() final {
     return absl::WrapUnique(
         new SSLDummyStream(this, "s2c", &server_buffer_, &client_buffer_));
   }
@@ -936,7 +936,7 @@ class SSLStreamAdapterTestDTLSBase : public SSLStreamAdapterTestBase {
     delete[] packet;
   }
 
-  void ReadData(StreamInterface* stream) override final {
+  void ReadData(StreamInterface* stream) final {
     uint8_t buffer[2000];
     size_t bread;
     int err2;

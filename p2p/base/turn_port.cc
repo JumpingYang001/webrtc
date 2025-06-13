@@ -169,7 +169,7 @@ class TurnEntry : public sigslot::has_slots<> {
  public:
   enum BindState { STATE_UNBOUND, STATE_BINDING, STATE_BOUND };
   TurnEntry(TurnPort* port, Connection* conn, int channel_id);
-  ~TurnEntry();
+  ~TurnEntry() override;
 
   TurnPort* port() { return port_; }
 

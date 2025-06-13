@@ -53,7 +53,7 @@ class DtlsSrtpTransportTest : public ::testing::Test,
  protected:
   DtlsSrtpTransportTest() {}
 
-  ~DtlsSrtpTransportTest() {
+  ~DtlsSrtpTransportTest() override {
     if (dtls_srtp_transport1_) {
       dtls_srtp_transport1_->UnregisterRtpDemuxerSink(&transport_observer1_);
     }

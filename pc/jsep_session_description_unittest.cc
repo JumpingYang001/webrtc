@@ -85,7 +85,7 @@ CreateCricketSessionDescription() {
 
 class JsepSessionDescriptionTest : public ::testing::Test {
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     int port = 1234;
     webrtc::SocketAddress address("127.0.0.1", port++);
     webrtc::Candidate candidate(webrtc::ICE_CANDIDATE_COMPONENT_RTP, "udp",

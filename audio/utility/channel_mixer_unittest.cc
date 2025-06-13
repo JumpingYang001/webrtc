@@ -35,7 +35,7 @@ class ChannelMixerTest : public ::testing::Test {
     EXPECT_TRUE(frame_.muted());
   }
 
-  virtual ~ChannelMixerTest() {}
+  ~ChannelMixerTest() override {}
 
   AudioFrame frame_;
 };

@@ -31,7 +31,7 @@ class MainThread : public Thread {
         current_setter_(this) {
     DoInit();
   }
-  ~MainThread() {
+  ~MainThread() override {
     Stop();
     DoDestroy();
   }

@@ -388,7 +388,7 @@ class TemporalLayersReferenceTest : public TemporalLayersTest,
       : timestamp_(1),
         last_sync_timestamp_(timestamp_),
         tl0_reference_(nullptr) {}
-  virtual ~TemporalLayersReferenceTest() {}
+  ~TemporalLayersReferenceTest() override {}
 
  protected:
   static const int kMaxPatternLength = 32;

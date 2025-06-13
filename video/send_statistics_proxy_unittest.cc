@@ -87,10 +87,10 @@ class SendStatisticsProxyTest : public ::testing::Test {
       : override_field_trials_(field_trials),
         fake_clock_(Timestamp::Seconds(1234)),
         config_(GetTestConfig()) {}
-  virtual ~SendStatisticsProxyTest() {}
+  ~SendStatisticsProxyTest() override {}
 
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     metrics::Reset();
     statistics_proxy_.reset(
         new SendStatisticsProxy(&fake_clock_, GetTestConfig(),

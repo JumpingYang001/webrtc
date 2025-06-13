@@ -278,7 +278,7 @@ class CpuOveruseDetectorProxy : public OveruseFrameDetector {
         last_target_framerate_fps_(-1),
         framerate_updated_event_(true /* manual_reset */,
                                  false /* initially_signaled */) {}
-  virtual ~CpuOveruseDetectorProxy() {}
+  ~CpuOveruseDetectorProxy() override {}
 
   void OnTargetFramerateUpdated(int framerate_fps) override {
     MutexLock lock(&lock_);
@@ -730,7 +730,7 @@ class SimpleVideoStreamEncoderFactory {
   class AdaptedVideoStreamEncoder : public VideoStreamEncoder {
    public:
     using VideoStreamEncoder::VideoStreamEncoder;
-    ~AdaptedVideoStreamEncoder() { Stop(); }
+    ~AdaptedVideoStreamEncoder() override { Stop(); }
   };
 
   class MockFakeEncoder : public test::FakeEncoder {
@@ -1367,7 +1367,7 @@ class VideoStreamEncoderTest : public ::testing::Test {
       return FakeEncoder::Release();
     }
 
-    void SetRates(const RateControlParameters& parameters) {
+    void SetRates(const RateControlParameters& parameters) override {
       MutexLock lock(&local_mutex_);
       num_set_rates_++;
       VideoBitrateAllocation adjusted_rate_allocation;
@@ -10238,7 +10238,7 @@ class VideoStreamEncoderFrameCadenceRestrictionTest : public ::testing::Test {
         video_stream_encoder_(
             factory_.Create(std::move(adapter_), &encoder_queue_)) {}
 
-  ~VideoStreamEncoderFrameCadenceRestrictionTest() {
+  ~VideoStreamEncoderFrameCadenceRestrictionTest() override {
     factory_.DepleteTaskQueues();
   }
 
