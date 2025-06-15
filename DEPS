@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': 'e112bd136d32ad168c59fa610349148b50fc9233',
+  'chromium_revision': 'cfd11adc6a2490f77b54bb542583e92408442682',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -78,13 +78,13 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@feffb416400b3ee496b74f208663fe06e1718a95',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@4112007672b2e8892008bd4924bf320b71a09dde',
     'condition': 'checkout_ios',
   },
   'src/testing':
     'https://chromium.googlesource.com/chromium/src/testing@56e71a875eeb99f2175eada7e7b8eca0ce040528',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@f37ee9465fd3e65ad21dae756481ad0104ece16a',
+    'https://chromium.googlesource.com/chromium/src/third_party@ee37aca27541af45f6175402bbc620efb3cc055d',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -317,13 +317,13 @@ deps = {
   'src/third_party/clang-format/script':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@37f6e68a107df43b7d7e044fd36a13cbae3413f2',
   'src/third_party/compiler-rt/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt.git@fd2d6af9160159f6a70af612e93faba530a2283b',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt.git@989fc59a095ba0e691f5bd893e33478336dc18dc',
   'src/third_party/libc++/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git@2c359c239b138a20a03f798e47889448ef131c22',
   'src/third_party/libc++abi/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git@e44c3c4560f1742744ef3f9fb4217a5f26ebca1b',
   'src/third_party/llvm-libc/src':
-    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc.git@ff75100b45027c70e17770cb80e720193b742c76',
+    'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc.git@a2f7b489cd4fecf856eb3739cc5a341545022896',
   'src/third_party/libunwind/src':
     'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git@5bbf35ae6801f579c523893176789774c0726e22',
 
@@ -485,7 +485,7 @@ deps = {
   'src/third_party/flatbuffers/src':
     'https://chromium.googlesource.com/external/github.com/google/flatbuffers.git@8db59321d9f02cdffa30126654059c7d02f70c32',
   'src/third_party/grpc/src': {
-    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@d87a9e69c070d900f2f4863519c33e26b3575f59',
+    'url': 'https://chromium.googlesource.com/external/github.com/grpc/grpc.git@8b27d1d6485432c2e88f1c1018f4d31905f0a444',
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -493,7 +493,7 @@ deps = {
       'condition': 'checkout_linux',
   },
   'src/third_party/freetype/src':
-    'https://chromium.googlesource.com/chromium/src/third_party/freetype2.git@fc051dc0beb44acc3a082b65b689dd38657fff54',
+    'https://chromium.googlesource.com/chromium/src/third_party/freetype2.git@738905b34bd1f5a8ff51bd2bc8e38a2d8be9bfd6',
   'src/third_party/harfbuzz-ng/src':
     'https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git@9f83bbbe64654b45ba5bb06927ff36c2e7588495',
   'src/third_party/google_benchmark/src': {
@@ -638,7 +638,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@84d004672ee96a394d9ba761dae835414a9331cc',
+    'https://chromium.googlesource.com/chromium/src/tools@5741202db174ee1408b2da73a1494cc1161a97d3',
 
   'src/third_party/espresso': {
       'packages': [
