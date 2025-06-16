@@ -711,7 +711,10 @@ webrtc_fuzzer_test("frame_buffer_fuzzer") {
 
 webrtc_fuzzer_test("field_trial_fuzzer") {
   sources = [ "field_trial_fuzzer.cc" ]
-  deps = [ "../../system_wrappers:field_trial" ]
+  deps = [
+    "../../api:field_trials",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
   seed_corpus = "corpora/field_trial-corpus"
 }
 
