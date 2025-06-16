@@ -46,6 +46,9 @@ const float kBaseHeavy3TlRateAllocation[kMaxTemporalStreams] = {
 
 const uint32_t kLegacyScreenshareTl0BitrateKbps = 200;
 const uint32_t kLegacyScreenshareTl1BitrateKbps = 1000;
+
+constexpr double kVideoHysteresisFactor = 1.2;
+constexpr double kScreenshareHysteresisFactor = 1.35;
 }  // namespace
 
 float SimulcastRateAllocator::GetTemporalRateAllocation(
@@ -65,7 +68,6 @@ float SimulcastRateAllocator::GetTemporalRateAllocation(
 SimulcastRateAllocator::SimulcastRateAllocator(const Environment& env,
                                                const VideoCodec& codec)
     : codec_(codec),
-      stable_rate_settings_(env.field_trials()),
       rate_control_settings_(env.field_trials()),
       legacy_conference_mode_(false) {}
 
@@ -75,10 +77,6 @@ VideoBitrateAllocation SimulcastRateAllocator::Allocate(
     VideoBitrateAllocationParameters parameters) {
   VideoBitrateAllocation allocated_bitrates;
   DataRate stable_rate = parameters.total_bitrate;
-  if (stable_rate_settings_.IsEnabled() &&
-      parameters.stable_bitrate > DataRate::Zero()) {
-    stable_rate = std::min(parameters.stable_bitrate, parameters.total_bitrate);
-  }
   DistributeAllocationToSimulcastLayers(parameters.total_bitrate, stable_rate,
                                         &allocated_bitrates);
   DistributeAllocationToTemporalLayers(&allocated_bitrates);
@@ -166,10 +164,9 @@ void SimulcastRateAllocator::DistributeAllocationToSimulcastLayers(
     // layers because they require a higher minimum bitrate.
     DataRate min_bitrate = DataRate::KilobitsPerSec(stream.minBitrate);
     DataRate target_bitrate = DataRate::KilobitsPerSec(stream.targetBitrate);
-    double hysteresis_factor =
-        codec_.mode == VideoCodecMode::kRealtimeVideo
-            ? stable_rate_settings_.GetVideoHysteresisFactor()
-            : stable_rate_settings_.GetScreenshareHysteresisFactor();
+    double hysteresis_factor = codec_.mode == VideoCodecMode::kRealtimeVideo
+                                   ? kVideoHysteresisFactor
+                                   : kScreenshareHysteresisFactor;
     if (!first_allocation && !stream_enabled_[layer_index[active_layer]]) {
       min_bitrate = std::min(hysteresis_factor * min_bitrate, target_bitrate);
     }

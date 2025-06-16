@@ -704,8 +704,8 @@ void VideoSendStreamImpl::StopVideoSendStream() {
   RTC_DCHECK_RUN_ON(&thread_checker_);
   bitrate_allocator_->RemoveObserver(this);
   check_encoder_activity_task_.Stop();
-  video_stream_encoder_->OnBitrateUpdated(DataRate::Zero(), DataRate::Zero(),
-                                          DataRate::Zero(), 0, 0, 0);
+  video_stream_encoder_->OnBitrateUpdated(DataRate::Zero(), DataRate::Zero(), 0,
+                                          0, 0);
   stats_proxy_.OnSetEncoderTargetRate(0);
 }
 
@@ -917,12 +917,6 @@ uint32_t VideoSendStreamImpl::OnBitrateUpdated(BitrateAllocationUpdate update) {
   RTC_DCHECK(rtp_video_sender_->IsActive())
       << "VideoSendStream::Start has not been called.";
 
-  // When the BWE algorithm doesn't pass a stable estimate, we'll use the
-  // unstable one instead.
-  if (update.stable_target_bitrate.IsZero()) {
-    update.stable_target_bitrate = update.target_bitrate;
-  }
-
   rtp_video_sender_->OnBitrateUpdated(update, stats_proxy_.GetSendFrameRate());
   encoder_target_rate_bps_ = rtp_video_sender_->GetPayloadBitrateBps();
   const uint32_t protection_bitrate_bps =
@@ -932,26 +926,12 @@ uint32_t VideoSendStreamImpl::OnBitrateUpdated(BitrateAllocationUpdate update) {
     link_allocation =
         DataRate::BitsPerSec(encoder_target_rate_bps_ - protection_bitrate_bps);
   }
-  DataRate overhead =
-      update.target_bitrate - DataRate::BitsPerSec(encoder_target_rate_bps_);
-  DataRate encoder_stable_target_rate = update.stable_target_bitrate;
-  if (encoder_stable_target_rate > overhead) {
-    encoder_stable_target_rate = encoder_stable_target_rate - overhead;
-  } else {
-    encoder_stable_target_rate = DataRate::BitsPerSec(encoder_target_rate_bps_);
-  }
-
   encoder_target_rate_bps_ =
       std::min(encoder_max_bitrate_bps_, encoder_target_rate_bps_);
-
-  encoder_stable_target_rate =
-      std::min(DataRate::BitsPerSec(encoder_max_bitrate_bps_),
-               encoder_stable_target_rate);
-
   DataRate encoder_target_rate = DataRate::BitsPerSec(encoder_target_rate_bps_);
   link_allocation = std::max(encoder_target_rate, link_allocation);
   video_stream_encoder_->OnBitrateUpdated(
-      encoder_target_rate, encoder_stable_target_rate, link_allocation,
+      encoder_target_rate, link_allocation,
       dchecked_cast<uint8_t>(update.packet_loss_ratio * 256),
       update.round_trip_time.ms(), update.cwnd_reduce_ratio);
   stats_proxy_.OnSetEncoderTargetRate(encoder_target_rate_bps_);
