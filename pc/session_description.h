@@ -141,10 +141,6 @@ class MediaContentDescription {
     rtp_header_extensions_.push_back(ext);
     rtp_header_extensions_set_ = true;
   }
-  void ClearRtpHeaderExtensions() {
-    rtp_header_extensions_.clear();
-    rtp_header_extensions_set_ = true;
-  }
   // We can't always tell if an empty list of header extensions is
   // because the other side doesn't support them, or just isn't hooked up to
   // signal them. For now we assume an empty list means no signaling, but
