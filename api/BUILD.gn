@@ -719,20 +719,6 @@ if (rtc_include_tests) {
       ]
     }
 
-    rtc_library("test_dependency_factory") {
-      visibility = [ "*" ]
-      testonly = true
-      sources = [
-        "test/test_dependency_factory.cc",
-        "test/test_dependency_factory.h",
-      ]
-      deps = [
-        ":video_quality_test_fixture_api",
-        "../rtc_base:checks",
-        "../rtc_base:platform_thread_types",
-      ]
-    }
-
     rtc_library("create_video_quality_test_fixture_api") {
       visibility = [ "*" ]
       testonly = true
@@ -741,9 +727,6 @@ if (rtc_include_tests) {
         "test/create_video_quality_test_fixture.h",
       ]
       deps = [
-        ":fec_controller_api",
-        ":network_state_predictor_api",
-        ":scoped_refptr",
         ":video_quality_test_fixture_api",
         "../video:video_quality_test",
       ]

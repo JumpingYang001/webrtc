@@ -207,10 +207,6 @@ specific_include_rules = {
     "+rtc_base/thread_annotations.h",
   ],
 
-  "test_dependency_factory\.h": [
-    "+rtc_base/thread_checker.h",
-  ],
-
   "time_controller\.h": [
     "+rtc_base/thread.h",
   ],
