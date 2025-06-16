@@ -520,9 +520,6 @@ POLICY_EXEMPT_FIELD_TRIALS: FrozenSet[FieldTrial] = frozenset([
     FieldTrial('WebRTC-Audio-Red-For-Opus',
                42221750,
                date(2024, 4, 1)),
-    FieldTrial('WebRTC-Audio-StableTargetAdaptation',
-               42221061,
-               INDEFINITE),
     FieldTrial('WebRTC-Audio-iOS-Holding',
                42233253,
                date(2024, 4, 1)),
@@ -902,7 +899,7 @@ POLICY_EXEMPT_FIELD_TRIALS: FrozenSet[FieldTrial] = frozenset([
 ])  # yapf: disable
 
 POLICY_EXEMPT_FIELD_TRIALS_DIGEST: str = \
-    '27afb1e1db877d182292c7226d6d6d1e7c4c2b64'
+    '625f8d689ab8bcfe4118347c6f8c852e3ac372c7'
 
 REGISTERED_FIELD_TRIALS: FrozenSet[FieldTrial] = ACTIVE_FIELD_TRIALS.union(
     POLICY_EXEMPT_FIELD_TRIALS)
