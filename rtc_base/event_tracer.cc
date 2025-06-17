@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 
+#include "api/units/time_delta.h"
 #include "rtc_base/trace_event.h"
 
 #if defined(RTC_USE_PERFETTO)

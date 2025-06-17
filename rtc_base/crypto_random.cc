@@ -12,9 +12,11 @@
 
 #include <openssl/rand.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "absl/strings/string_view.h"
