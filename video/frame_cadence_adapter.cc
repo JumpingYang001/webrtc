@@ -42,7 +42,6 @@
 #include "rtc_base/thread_annotations.h"
 #include "rtc_base/trace_event.h"
 #include "system_wrappers/include/clock.h"
-#include "system_wrappers/include/metrics.h"
 
 namespace webrtc {
 namespace {
@@ -402,7 +401,6 @@ class FrameCadenceAdapterImpl : public FrameCadenceAdapterInterface {
   const bool use_video_frame_timestamp_;
   // Used for verifying that timestamps are monotonically increasing.
   std::optional<Timestamp> last_incoming_frame_timestamp_;
-  bool incoming_frame_timestamp_monotonically_increasing_ = true;
 
   // The three possible modes we're under.
   std::optional<PassthroughAdapterMode> passthrough_adapter_;
@@ -418,10 +416,6 @@ class FrameCadenceAdapterImpl : public FrameCadenceAdapterInterface {
   // VSync encoding is used when this valid.
   Metronome* const metronome_;
   TaskQueueBase* const worker_queue_;
-
-  // Timestamp for statistics reporting.
-  std::optional<Timestamp> zero_hertz_adapter_created_timestamp_
-      RTC_GUARDED_BY(queue_);
 
   // Set up during Initialize.
   Callback* callback_ = nullptr;
@@ -718,10 +712,6 @@ void ZeroHertzAdapterMode::SendFrameNow(std::optional<Timestamp> post_time,
   TRACE_EVENT0("webrtc", __func__);
 
   Timestamp encode_start_time = clock_->CurrentTime();
-  if (post_time.has_value()) {
-    TimeDelta delay = (encode_start_time - *post_time);
-    RTC_HISTOGRAM_COUNTS_10000("WebRTC.Screenshare.ZeroHz.DelayMs", delay.ms());
-  }
 
   // Forward the frame and set `queue_overload` if is has been detected that it
   // is not possible to deliver frames at the expected rate due to slow
@@ -759,8 +749,6 @@ void ZeroHertzAdapterMode::SendFrameNow(std::optional<Timestamp> post_time,
   } else {
     queue_overload_count_--;
   }
-  RTC_HISTOGRAM_BOOLEAN("WebRTC.Screenshare.ZeroHz.QueueOverload",
-                        queue_overload_count_ > 0);
 }
 
 TimeDelta ZeroHertzAdapterMode::FrameDuration() const {
@@ -884,10 +872,6 @@ FrameCadenceAdapterImpl::~FrameCadenceAdapterImpl() {
     absl::Cleanup cleanup = [adapter = std::move(vsync_encode_adapter_)] {};
     worker_queue_->PostTask([cleanup = std::move(cleanup)] {});
   }
-
-  RTC_HISTOGRAM_BOOLEAN(
-      "WebRTC.Video.InputFrameTimestampMonotonicallyIncreasing",
-      incoming_frame_timestamp_monotonically_increasing_);
 }
 
 void FrameCadenceAdapterImpl::Initialize(Callback* callback) {
@@ -973,14 +957,6 @@ void FrameCadenceAdapterImpl::OnFrame(const VideoFrame& frame) {
   frames_scheduled_for_processing_.fetch_add(1, std::memory_order_relaxed);
   queue_->PostTask(SafeTask(safety_.flag(), [this, post_time, frame] {
     RTC_DCHECK_RUN_ON(queue_);
-    if (zero_hertz_adapter_created_timestamp_.has_value()) {
-      TimeDelta time_until_first_frame =
-          clock_->CurrentTime() - *zero_hertz_adapter_created_timestamp_;
-      zero_hertz_adapter_created_timestamp_ = std::nullopt;
-      RTC_HISTOGRAM_COUNTS_10000(
-          "WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs",
-          time_until_first_frame.ms());
-    }
 
     const int frames_scheduled_for_processing =
         frames_scheduled_for_processing_.fetch_sub(1,
@@ -1025,7 +1001,6 @@ void FrameCadenceAdapterImpl::OnFrameOnMainQueue(Timestamp post_time,
         << "Incoming frame timestamp is not monotonically increasing"
         << " current: " << frame.timestamp_us()
         << " last: " << last_incoming_frame_timestamp_.value().us();
-    incoming_frame_timestamp_monotonically_increasing_ = false;
   }
   last_incoming_frame_timestamp_ = Timestamp::Micros(frame.timestamp_us());
   Timestamp update_frame_rate_timestamp =
@@ -1068,7 +1043,6 @@ void FrameCadenceAdapterImpl::MaybeReconfigureAdapters(
           frame_cadence_adapter_zero_hertz_queue_overload_enabled_);
       zero_hertz_adapter_->UpdateVideoSourceRestrictions(
           restricted_max_frame_rate_);
-      zero_hertz_adapter_created_timestamp_ = clock_->CurrentTime();
     }
     zero_hertz_adapter_->ReconfigureParameters(zero_hertz_params_.value());
     current_adapter_mode_ = &zero_hertz_adapter_.value();
