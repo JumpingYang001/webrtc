@@ -19,7 +19,6 @@
 #include "p2p/base/ice_credentials_iterator.h"
 #include "p2p/base/transport_description.h"
 #include "rtc_base/rtc_certificate.h"
-#include "rtc_base/ssl_identity.h"
 
 namespace webrtc {
 

@@ -11,9 +11,8 @@
 #ifndef P2P_BASE_PSEUDO_TCP_H_
 #define P2P_BASE_PSEUDO_TCP_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <list>
 #include <memory>
 

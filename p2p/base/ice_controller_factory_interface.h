@@ -18,6 +18,7 @@
 #include "p2p/base/connection.h"
 #include "p2p/base/ice_controller_interface.h"
 #include "p2p/base/ice_transport_internal.h"
+#include "p2p/base/p2p_transport_channel_ice_field_trials.h"
 #include "p2p/base/transport_description.h"
 
 namespace webrtc {

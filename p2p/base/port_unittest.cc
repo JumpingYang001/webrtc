@@ -10,10 +10,10 @@
 
 #include "p2p/base/port.h"
 
-#include <string.h>
-
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <list>
 #include <memory>

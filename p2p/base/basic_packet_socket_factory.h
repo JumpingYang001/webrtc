@@ -11,8 +11,7 @@
 #ifndef P2P_BASE_BASIC_PACKET_SOCKET_FACTORY_H_
 #define P2P_BASE_BASIC_PACKET_SOCKET_FACTORY_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <memory>
 
 #include "api/async_dns_resolver.h"

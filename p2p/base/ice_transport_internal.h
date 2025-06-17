@@ -11,8 +11,7 @@
 #ifndef P2P_BASE_ICE_TRANSPORT_INTERNAL_H_
 #define P2P_BASE_ICE_TRANSPORT_INTERNAL_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <functional>
 #include <optional>
 #include <string>

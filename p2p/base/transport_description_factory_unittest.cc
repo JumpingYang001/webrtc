@@ -10,8 +10,7 @@
 
 #include "p2p/base/transport_description_factory.h"
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>

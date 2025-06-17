@@ -10,9 +10,8 @@
 
 #include "p2p/base/connection.h"
 
-#include <math.h>
-
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>

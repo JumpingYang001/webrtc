@@ -11,8 +11,7 @@
 #ifndef P2P_TEST_NAT_SOCKET_FACTORY_H_
 #define P2P_TEST_NAT_SOCKET_FACTORY_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>

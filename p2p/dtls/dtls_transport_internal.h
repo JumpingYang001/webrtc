@@ -11,9 +11,8 @@
 #ifndef P2P_DTLS_DTLS_TRANSPORT_INTERNAL_H_
 #define P2P_DTLS_DTLS_TRANSPORT_INTERNAL_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>

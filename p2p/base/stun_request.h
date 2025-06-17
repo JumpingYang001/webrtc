@@ -11,9 +11,8 @@
 #ifndef P2P_BASE_STUN_REQUEST_H_
 #define P2P_BASE_STUN_REQUEST_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <memory>

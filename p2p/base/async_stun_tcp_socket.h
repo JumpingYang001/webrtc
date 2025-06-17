@@ -11,8 +11,7 @@
 #ifndef P2P_BASE_ASYNC_STUN_TCP_SOCKET_H_
 #define P2P_BASE_ASYNC_STUN_TCP_SOCKET_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <cstdint>
 
 #include "api/array_view.h"

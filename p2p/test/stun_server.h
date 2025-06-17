@@ -11,8 +11,6 @@
 #ifndef P2P_TEST_STUN_SERVER_H_
 #define P2P_TEST_STUN_SERVER_H_
 
-#include <stddef.h>
-
 #include <memory>
 
 #include "absl/strings/string_view.h"
