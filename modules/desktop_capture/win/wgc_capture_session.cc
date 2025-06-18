@@ -237,7 +237,7 @@ void WgcCaptureSession::EnsureFrame() {
 
   // We failed to process the frame, but we do have a frame so just return that.
   if (queue_.current_frame()) {
-    RTC_LOG(LS_ERROR) << "ProcessFrame failed, using existing frame: " << hr;
+    RTC_LOG(LS_VERBOSE) << "ProcessFrame failed, using existing frame: " << hr;
     return;
   }
 
