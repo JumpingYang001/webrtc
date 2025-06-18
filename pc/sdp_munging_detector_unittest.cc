@@ -7,6 +7,7 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
+#include "pc/sdp_munging_detector.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -202,6 +203,142 @@ TEST_F(SdpMungingTest, DISABLED_ReportUMAMetricsWithNoMunging) {
   EXPECT_THAT(metrics::Samples(
                   "WebRTC.PeerConnection.SdpMunging.Answer.ConnectionClosed"),
               ElementsAre(Pair(SdpMungingType::kNoModification, 1)));
+}
+
+TEST_F(SdpMungingTest, AllowWithDenyListForRollout) {
+  // Don't munge and you are good.
+  EXPECT_TRUE(IsSdpMungingAllowed(SdpMungingType::kNoModification,
+                                  *FieldTrials::CreateNoGlobal("")));
+  // Empty string (default) means everything is allowed from the perspective of
+  // the trial.
+  EXPECT_TRUE(IsSdpMungingAllowed(SdpMungingType::kUnknownModification,
+                                  *FieldTrials::CreateNoGlobal("")));
+
+  // Deny list is set, modification on deny list is rejected.
+  EXPECT_FALSE(IsSdpMungingAllowed(
+      SdpMungingType::kUnknownModification /*=1*/,
+      *FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleReject/Enabled,1/")));
+
+  // Deny list is set, modification not on deny list is allowed.
+  EXPECT_TRUE(IsSdpMungingAllowed(
+      SdpMungingType::kWithoutCreateAnswer /*=2*/,
+      *FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleReject/Enabled,1/")));
+
+  // Split by comma.
+  EXPECT_FALSE(IsSdpMungingAllowed(
+      SdpMungingType::kUnknownModification /*=1*/,
+      *FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleReject/Enabled,1,2/")));
+  EXPECT_FALSE(IsSdpMungingAllowed(
+      SdpMungingType::kWithoutCreateAnswer /*=2*/,
+      *FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleReject/Enabled,1,2/")));
+  EXPECT_TRUE(IsSdpMungingAllowed(
+      SdpMungingType::kWithoutCreateOffer /*=3*/,
+      *FieldTrials::CreateNoGlobal("WebRTC-NoSdpMangleReject/Enabled,1,2,4/")));
+}
+
+TEST_F(SdpMungingTest, DenyWithAllowListForTesting) {
+  // Don't munge and you are good.
+  EXPECT_TRUE(IsSdpMungingAllowed(SdpMungingType::kNoModification,
+                                  *FieldTrials::CreateNoGlobal("")));
+  // Empty string (default) means everything is allowed from the perspective of
+  // the trial.
+  EXPECT_TRUE(IsSdpMungingAllowed(SdpMungingType::kUnknownModification,
+                                  *FieldTrials::CreateNoGlobal("")));
+
+  // Allow-list is set, modification is on allow list.
+  EXPECT_TRUE(
+      IsSdpMungingAllowed(SdpMungingType::kUnknownModification /*=1*/,
+                          *FieldTrials::CreateNoGlobal(
+                              "WebRTC-NoSdpMangleAllowForTesting/Enabled,1/")));
+
+  // Allow-list is set, modification is not on allow list.
+  EXPECT_FALSE(
+      IsSdpMungingAllowed(SdpMungingType::kWithoutCreateAnswer /*=2*/,
+                          *FieldTrials::CreateNoGlobal(
+                              "WebRTC-NoSdpMangleAllowForTesting/Enabled,1/")));
+
+  // Split by comma.
+  EXPECT_TRUE(IsSdpMungingAllowed(
+      SdpMungingType::kUnknownModification /*=1*/,
+      *FieldTrials::CreateNoGlobal(
+          "WebRTC-NoSdpMangleAllowForTesting/Enabled,1,2/")));
+  EXPECT_TRUE(IsSdpMungingAllowed(
+      SdpMungingType::kWithoutCreateAnswer /*=2*/,
+      *FieldTrials::CreateNoGlobal(
+          "WebRTC-NoSdpMangleAllowForTesting/Enabled,1,2/")));
+  EXPECT_FALSE(IsSdpMungingAllowed(
+      SdpMungingType::kWithoutCreateOffer /*=3*/,
+      *FieldTrials::CreateNoGlobal(
+          "WebRTC-NoSdpMangleAllowForTesting/Enabled,1,2,4/")));
+}
+
+TEST_F(SdpMungingTest, AllowListAcceptsUnmunged) {
+  auto pc = CreatePeerConnection("WebRTC-NoSdpMangle/Enabled/");
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+}
+
+TEST_F(SdpMungingTest, DenyListAcceptsUnmunged) {
+  auto pc = CreatePeerConnection("WebRTC-NoSdpMangleAllowForTesting/Enabled/");
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+}
+
+TEST_F(SdpMungingTest, DenyListThrows) {
+  // This test needs to use a feature that is not throwing by default.
+  // kAudioCodecsFmtpOpusStereo=68 is going to stay with us for quite a while.
+  auto pc = CreatePeerConnection("WebRTC-NoSdpMangleAllowForTesting/Enabled/");
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& contents = offer->description()->contents();
+  ASSERT_EQ(contents.size(), 1u);
+  auto* media_description = contents[0].media_description();
+  ASSERT_TRUE(media_description);
+  std::vector<Codec> codecs = media_description->codecs();
+  for (auto& codec : codecs) {
+    if (codec.name == kOpusCodecName) {
+      codec.SetParam(kCodecParamStereo, kParamValueTrue);
+    }
+  }
+  media_description->set_codecs(codecs);
+  RTCError error;
+  EXPECT_FALSE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kAudioCodecsFmtpOpusStereo, 1)));
+}
+
+TEST_F(SdpMungingTest, DenyListExceptionDoesNotThrow) {
+  // This test needs to use a feature that is not throwing by default.
+  // kAudioCodecsFmtpOpusStereo=68 is going to stay with us for quite a while.
+  auto pc =
+      CreatePeerConnection("WebRTC-NoSdpMangleAllowForTesting/Enabled,68/");
+  pc->AddAudioTrack("audio_track", {});
+
+  auto offer = pc->CreateOffer();
+  auto& contents = offer->description()->contents();
+  ASSERT_EQ(contents.size(), 1u);
+  auto* media_description = contents[0].media_description();
+  ASSERT_TRUE(media_description);
+  std::vector<Codec> codecs = media_description->codecs();
+  for (auto& codec : codecs) {
+    if (codec.name == kOpusCodecName) {
+      codec.SetParam(kCodecParamStereo, kParamValueTrue);
+    }
+  }
+  media_description->set_codecs(codecs);
+  RTCError error;
+  EXPECT_TRUE(pc->SetLocalDescription(std::move(offer), &error));
+  EXPECT_THAT(
+      metrics::Samples("WebRTC.PeerConnection.SdpMunging.Offer.Initial"),
+      ElementsAre(Pair(SdpMungingType::kAudioCodecsFmtpOpusStereo, 1)));
 }
 
 TEST_F(SdpMungingTest, InitialSetLocalDescriptionWithoutCreateOffer) {

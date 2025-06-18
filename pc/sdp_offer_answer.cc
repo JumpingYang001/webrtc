@@ -2483,6 +2483,8 @@ void SdpOfferAnswerHandler::DoSetLocalDescription(
                !pc_->trials().IsDisabled(
                    "WebRTC-NoSdpMangleNumberOfContents")) {
       reject_error = true;
+    } else {
+      reject_error = !IsSdpMungingAllowed(sdp_munging_type, pc_->trials());
     }
     SdpMungingOutcome outcome = reject_error ? SdpMungingOutcome::kRejected
                                              : SdpMungingOutcome::kAccepted;

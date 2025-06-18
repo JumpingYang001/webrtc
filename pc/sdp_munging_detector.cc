@@ -13,8 +13,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "absl/algorithm/container.h"
+#include "absl/strings/str_split.h"
+#include "absl/strings/string_view.h"
+#include "api/field_trials_view.h"
 #include "api/jsep.h"
 #include "api/media_types.h"
 #include "api/uma_metrics.h"
@@ -561,6 +565,35 @@ bool HasUfragSdpMunging(const SessionDescriptionInterface* sdesc,
     }
   }
   return false;
+}
+
+bool IsSdpMungingAllowed(SdpMungingType sdp_munging_type,
+                         const FieldTrialsView& trials) {
+  if (sdp_munging_type == SdpMungingType::kNoModification) {
+    return true;
+  }
+  std::string type_as_string =
+      std::to_string(static_cast<int>(sdp_munging_type));
+
+  std::string trial;
+  // NoSdpMangleReject is for rollout, disallowing specific types of munging
+  // via Finch. It is a comma-separated list of SdpMungingTypes
+  if (trials.IsEnabled("WebRTC-NoSdpMangleReject")) {
+    trial = trials.Lookup("WebRTC-NoSdpMangleReject");
+    const std::vector<absl::string_view> rejected_types =
+        absl::StrSplit(trial, ',');
+    return absl::c_find(rejected_types, type_as_string) == rejected_types.end();
+  }
+  // NoSdpMangleAllowForTesting is for running E2E tests which should reject
+  // by default with a test-supplied list of exceptions as a comma-separated
+  // list.
+  if (!trials.IsEnabled("WebRTC-NoSdpMangleAllowForTesting")) {
+    return true;
+  }
+  trial = trials.Lookup("WebRTC-NoSdpMangleAllowForTesting");
+  const std::vector<absl::string_view> allowed_types =
+      absl::StrSplit(trial, ',');
+  return absl::c_find(allowed_types, type_as_string) != allowed_types.end();
 }
 
 }  // namespace webrtc
