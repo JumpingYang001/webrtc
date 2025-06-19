@@ -10,7 +10,7 @@ vars = {
   # chromium waterfalls. More info at: crbug.com/570091.
   'checkout_configuration': 'default',
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration == "default"',
-  'chromium_revision': '5cf5464c8c494b965044347b324c9461e06bc881',
+  'chromium_revision': '8e70ee464c79d017691a330b61753439634e7c49',
 
   # Fetch the prebuilt binaries for llvm-cov and llvm-profdata. Needed to
   # process the raw profiles produced by instrumented targets (built with
@@ -78,13 +78,13 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/ios': {
-    'url': 'https://chromium.googlesource.com/chromium/src/ios@0099f5e74472a91cde6374d7eb4845af782dc846',
+    'url': 'https://chromium.googlesource.com/chromium/src/ios@bd65dc6c16d7cb03dc2e5e310104598ff8e8aae2',
     'condition': 'checkout_ios',
   },
   'src/testing':
-    'https://chromium.googlesource.com/chromium/src/testing@0e999e317061ae23868b7f88878767abd7d7c701',
+    'https://chromium.googlesource.com/chromium/src/testing@2c5d9246d1aba7157835dc2cca737c91a1f405c7',
   'src/third_party':
-    'https://chromium.googlesource.com/chromium/src/third_party@f1487200a2168553173945271d87f5407a1aff86',
+    'https://chromium.googlesource.com/chromium/src/third_party@7677cb86e52bb163d7133487eaf3bda51105f2d4',
 
   'src/buildtools/linux64': {
     'packages': [
@@ -421,7 +421,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'RiplT9oTSE0lQHviAF6FMk5P9863t0-WHcl2te12hi0C',
+               'version': 'KOECi08Fw4fRTVXkKocxg94coB-e_dlcHRokC21yxyoC',
           },
       ],
       'condition': 'checkout_android',
@@ -443,7 +443,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': '3bWjs4NjBtTIXoWH03nPx8c--ehZzlDkL8PUE_GaPKUC',
+               'version': 'Ddt_nMFT2APf615MrUZPaZpe-MqZSNrJmk8s9ud-f3gC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -489,7 +489,7 @@ deps = {
   },
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
-      'url': 'https://chromium.googlesource.com/external/fontconfig.git@f71f39e7da6bccfb5a803a4adcdfe88d382a6eab',
+      'url': 'https://chromium.googlesource.com/external/fontconfig.git@c527fe1452d469e5fa1a211180dd40bcdb79fb2a',
       'condition': 'checkout_linux',
   },
   'src/third_party/freetype/src':
@@ -545,7 +545,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'E405j4iATVcDLLGq9LbG61CRuyD0rs08XuMkg_GCJAwC',
+              'version': 'tLtdnQg608nJL86aqaHDj7zYXia6baxVWj0T0AvFGeYC',
           },
       ],
       'condition': 'checkout_android',
@@ -638,7 +638,7 @@ deps = {
     'condition': 'checkout_android',
   },
   'src/tools':
-    'https://chromium.googlesource.com/chromium/src/tools@35d91186b00f2281c9aab14b0ef3cdc884ce45ae',
+    'https://chromium.googlesource.com/chromium/src/tools@f0e2edc1dac3ca589ddb7bd61704d2493d02323e',
 
   'src/third_party/espresso': {
       'packages': [
@@ -688,7 +688,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'AFWUMAcwcd0L1DG2-ib4ghtQYFsCvZjWuQkhuTJl4ToC',
+               'version': 'JcTHGCKOl5tWhax5LSv_vf5dQV14RZdPF9xSRKU76JgC',
           },
       ],
       'condition': 'checkout_android',
